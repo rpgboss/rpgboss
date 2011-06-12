@@ -8,7 +8,7 @@ import org.postgresql.ds.PGPoolingDataSource
 
 object UserNotFound
 
-case class User(username: String, pwhash: String)
+case class User(username: String, pwhash: String, email: String)
 
 case class UserDBError(val msg: String)
 
@@ -35,10 +35,15 @@ object UserDB {
   }
   
   val nameRegex = """^[a-z][-a-z0-9_]*\$""".r
+  val emailRegex = """(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b""".r
   
-  val addUserSql = "INSERT INTO users VALUES (?, ?)"
+  def isEmailValid(email: String) =
+    emailRegex.pattern.matcher(email).matches
+  
+  val addUserSql = "INSERT INTO users VALUES (?, ?, ?)"
   val selUserSql = "SELECT * FROM users WHERE username = ?"
   val chgPassSql = "UPDATE users SET pwhash = ? WHERE username = ?"
+  val chgEmailSql = "UPDATE users SET email = ? WHERE username = ?"
   
   protected def Ex(msg: String) = new RuntimeException(msg)
   
@@ -47,14 +52,16 @@ object UserDB {
       st.setString(1, username.toLowerCase)
       using(st.executeQuery()) { rs =>
         if(rs.next())
-          Some(User(rs.getString(1), rs.getString(2)))
+          Some(User(rs.getString(1), rs.getString(2), rs.getString(3)))
         else
           None
       }
     })
   }
   
-  def addUser(username: String, password: String) = {    
+  def addUser(username: String, password: String, email: String) = {
+    if(username.length < 3)
+      throw(Ex("Username must be at least 3 characters."))    
     if(username.length > 32)
       throw(Ex("Username must be 32 characters or less."))
     else if( !nameRegex.pattern.matcher(username.toLowerCase).matches )
@@ -62,6 +69,8 @@ object UserDB {
                "dashes, and underscores. It must begin with a letter."))
     else if( password.length < 6 )
       throw(Ex("Passwords must be at least 6 characters."))
+    else if( !isEmailValid(email) )
+      throw(Ex("Invalid email."))
     else {
           
       using(source.getConnection()) { conn =>
@@ -72,6 +81,7 @@ object UserDB {
           {
             st.setString(1, username.toLowerCase)
             st.setString(2, BCrypt.hashpw(password, BCrypt.gensalt()))
+            st.setString(3, email)
             
             st.executeUpdate() == 1
           }
@@ -81,21 +91,22 @@ object UserDB {
     
   }
   
-  def authenticate(username: String, password: String) : Boolean =
+  def authenticate(username: String, password: String) : Option[User] =
     using(source.getConnection()) { conn =>
       authenticate(conn, username, password)
     }
   
-  protected def authenticate(conn: Connection, 
-                             username: String, password: String) = 
+  protected def authenticate(conn: Connection, username: String, 
+                             password: String) : Option[User] = 
     selUser(conn, username) match {
-      case Some(dbUser: User) => BCrypt.checkpw(password, dbUser.pwhash)
-      case None => false
+      case Some(dbUser: User) => 
+        if(BCrypt.checkpw(password, dbUser.pwhash)) Some(dbUser) else None
+      case None => None
     }
   
   def changePassword(username: String, oldPass: String, newPass: String) = {
     using(source.getConnection()) { conn =>
-      if(authenticate(conn, username, oldPass)) {
+      if(authenticate(conn, username, oldPass).isDefined) {
         using(conn.prepareStatement(chgPassSql))( st => 
         {
           st.setString(1, username.toLowerCase)
@@ -106,6 +117,19 @@ object UserDB {
       } else throw Ex("Incorrect old password provided.")
     }
   }
-    
-
+  
+  def changeEmail(username: String, oldPass: String, email: String) = {
+    using(source.getConnection()) { conn =>
+      if(authenticate(conn, username, oldPass).isDefined) {
+        using(conn.prepareStatement(chgEmailSql))( st => 
+        {
+          st.setString(1, username.toLowerCase)
+          st.setString(2, email)
+          
+          st.executeUpdate() == 1
+        })
+      } else throw Ex("Incorrect old password provided.")
+    }
+  }
+  
 }
