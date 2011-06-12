@@ -10,7 +10,7 @@ object UserNotFound
 
 case class User(username: String, pwhash: String, email: String)
 
-case class UserDBError(val msg: String)
+case class UserDBError(val msg: String) extends Exception(msg)
 
 object UserDB {
   // create database connection
@@ -34,7 +34,7 @@ object UserDB {
     }
   }
   
-  val nameRegex = """^[a-z][-a-z0-9_]*\$""".r
+  val nameRegex = """^[a-z][-a-z0-9_]*$""".r
   val emailRegex = """(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b""".r
   
   def isEmailValid(email: String) =
@@ -45,7 +45,7 @@ object UserDB {
   val chgPassSql = "UPDATE users SET pwhash = ? WHERE username = ?"
   val chgEmailSql = "UPDATE users SET email = ? WHERE username = ?"
   
-  protected def Ex(msg: String) = new RuntimeException(msg)
+  protected def Ex(msg: String) = UserDBError(msg)
   
   protected def selUser(conn: Connection, username: String) : Option[User] = {
     using(conn.prepareStatement(selUserSql)) ( st => {
@@ -62,7 +62,7 @@ object UserDB {
   def addUser(username: String, password: String, email: String) = {
     if(username.length < 3)
       throw(Ex("Username must be at least 3 characters."))    
-    if(username.length > 32)
+    else if(username.length > 32)
       throw(Ex("Username must be 32 characters or less."))
     else if( !nameRegex.pattern.matcher(username.toLowerCase).matches )
       throw(Ex("Username may contain only lowercase letters, numbers, " +
