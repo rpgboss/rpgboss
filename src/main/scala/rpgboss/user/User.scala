@@ -1,4 +1,4 @@
-package impulsestorm.user
+package rpgboss.user
 
 import java.sql._
 
