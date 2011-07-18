@@ -7,24 +7,23 @@ import FileHelper._
 import scala.collection.JavaConversions._
 
 object Resource {
-  val resourceTypes = Map("tileset"->Tileset)
+  val resourceTypes : Map[String, MetaResource] = Map("tileset"->Tileset)
   
-  def listShared(owner: String) = listForDir(
-    List(Paths.profiles, owner, Paths.resources))
-  
-  def listforGame(owner: String, game: String) = listForDir(
-    List(Paths.profiles, owner, Paths.games, game, Paths.resources))
-  
-  def listForDir(path: List[String]) = {
-    val rcDir = new File(path.mkString("/"))
+  def listResources(owner: String, game: Option[String]) 
+  : Map[String, List[ObjName]] = 
+  {
+    val rcDir = new File(ObjPath.rcPath(owner, game))
     
-    def walkResourceDir(rcType: String) : List[String] = {
-      val rcTypeDir = new File(rcDir, rcType)
+    def walkResourceDir(rType: String) : (String, List[ObjName]) = {
+      val rTypeDir = new File(rcDir, rType)
       
-      if(rcTypeDir.forceMkdirs()) 
+      val listOfResources = if(rTypeDir.forceMkdirs()) 
         Nil 
-      else // subdirs
-        rcTypeDir.listFiles.toList.filter(f => f.isDirectory).map(_.toString) 
+      else // list of subdirectories (named after the resource name)
+        rTypeDir.listFiles.toList.filter(f => f.isDirectory).map(_.toString)
+      
+      rType->listOfResources.map(rName => 
+        ObjName(owner, game, Some(rType->rName))) 
     }
     
     if(rcDir.forceMkdirs())
@@ -36,17 +35,12 @@ object Resource {
 }
 
 trait Resource {
+  def name: ObjName
+  def meta: MetaResource
+}
+
+trait MetaResource {
   def resourceType: String
-  
-  def owner: String
-  def game: String
-  def name: String
-  
-  def path = {
-    val pathList = List(Paths.profiles, owner) ++
-      (if(game.isEmpty) Nil else List(Paths.games, game)) ++ 
-      List(Paths.resources, resourceType, name)
-    
-    pathList.mkString("/")
-  }
+  def displayName: String
+  def displayNamePlural: String
 }
