@@ -7,7 +7,6 @@ import rpgboss.model._
 import rpgboss.message._
 
 import net.liftweb.json._
-import net.liftweb.json.Serialization
 
 import org.apache.http.impl.client._
 import org.apache.http.entity.StringEntity
@@ -24,9 +23,7 @@ extends BoxPanel(Orientation.Vertical)
   val http = new DefaultHttpClient()
   
   try {
-    // Need to provide full type hints
-    implicit val formats = 
-      Serialization.formats(FullTypeHints(Messages.requestMsgClasses))
+    implicit val formats = Message.formats
     
     val jsonReq = Serialization.write(RequestItem(username, token, objName))
   
@@ -36,7 +33,14 @@ extends BoxPanel(Orientation.Vertical)
   
     val handler = new BasicResponseHandler() 
   
-    val resp = http.execute(post, new BasicResponseHandler())
+    val respStr = http.execute(post, new BasicResponseHandler())
+    
+    val respMsg = Serialization.read[ResponseMessage](respStr)
+      
+    val resp = respMsg match {
+      case NoSuchItem() => "No such item!"
+      case _ => respStr
+    }
     
     contents += new Label(resp)
   
