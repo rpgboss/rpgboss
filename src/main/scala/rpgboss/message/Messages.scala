@@ -1,6 +1,7 @@
 package rpgboss.message
 
 import rpgboss.model._
+import net.liftweb.json._
 
 trait Message
 
@@ -17,8 +18,13 @@ extends RequestMessage
 case class NoSuchItem() extends ResponseMessage
 case class AuthFailure() extends ResponseMessage
 
-object Message {  
-  val requestMsgClasses = List(classOf[RequestItem])
+object Message {
+  
+  val formats  = Serialization.formats(FullTypeHints(List(
+    classOf[RequestItem],
+    classOf[NoSuchItem],
+    classOf[AuthFailure]
+  )))
 }
 
 
