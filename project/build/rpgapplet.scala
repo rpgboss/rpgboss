@@ -7,7 +7,7 @@ extends DefaultProject(info) with ProguardProject
   val liftVersion = "2.4-M1"
   
   override def mainClass = 
-    Some("rpgboss.rpgapplet.ui.RpgSimpleSwingApplication")
+    Some("rpgboss.rpgapplet.RpgDesktop")
   
   override def proguardInJars = super.proguardInJars +++ scalaLibraryPath
   
