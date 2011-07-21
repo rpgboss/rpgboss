@@ -3,16 +3,20 @@ package rpgboss.message
 import rpgboss.model._
 import net.liftweb.json._
 
-trait Message
+case class Header(username: String, token: Long, name: ObjName)
 
-trait RequestMessage extends Message {
-  def username: String
-  def token: Long
+abstract class Message
+
+abstract class RequestMessage extends Message {
+  def head: Header 
 }
 
-trait ResponseMessage extends Message
+abstract class ResponseMessage extends Message
 
-case class RequestItem(username: String, token: Long, name: ObjName) 
+case class RequestItem(head: Header) 
+extends RequestMessage
+
+case class NewTileset(head: Header, metadata: TilesetMetadata)
 extends RequestMessage
 
 case class NoSuchItem() extends ResponseMessage
@@ -22,6 +26,7 @@ object Message {
   
   val formats  = Serialization.formats(FullTypeHints(List(
     classOf[RequestItem],
+    classOf[NewTileset],
     classOf[NoSuchItem],
     classOf[AuthFailure]
   )))
