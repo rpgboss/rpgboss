@@ -27,7 +27,7 @@ class FileHelper(file : File) {
     deleteFile(file)
   }
 
-  def getBytesFromFile = {
+  def getBytes = {
 
     val is = new FileInputStream(file)
 
@@ -53,7 +53,7 @@ class FileHelper(file : File) {
 
   // assumes can read
   def base64Contents : String = 
-    new String(Base64.encodeBase64(getBytesFromFile))
+    new String(Base64.encodeBase64(getBytes))
   
   def copyTo(dest: File) = {
     dest.createNewFile()

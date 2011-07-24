@@ -23,6 +23,8 @@ case class ObjName(owner: String, game: Option[String],
   
   def dirFile = new File(fileRoot + "/" + partialPath)
   def exists = dirFile.isDirectory
+  
+  def metadataFile = new File(dirFile, "metadata.json")
 }
 
 object ObjName {

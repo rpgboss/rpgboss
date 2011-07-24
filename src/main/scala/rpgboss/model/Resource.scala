@@ -7,7 +7,7 @@ import FileHelper._
 import scala.collection.JavaConversions._
 
 object Resource {
-  val resourceTypes : Map[String, MetaResource] = Map("tileset"->Tileset)
+  val resourceTypes = Map("tileset"->Tileset)
   
   def listResources(owner: String, game: Option[String]) 
   : Map[String, List[ObjName]] = 
@@ -32,15 +32,23 @@ object Resource {
       resourceTypes.map( kv => walkResourceDir(kv._1) )
     }
   }
+  
+  def readFromDisk(name: ObjName) : Option[Resource] = 
+    if(name.exists) resourceTypes.get(name.rType) match {
+      case Some(metaResource) => metaResource.readFromDisk(name)
+      case None => None
+    }
+    else None
 }
 
 trait Resource {
   def name: ObjName
-  def meta: MetaResource
 }
 
-trait MetaResource {
+trait MetaResource[T <: Resource] {
   def resourceType: String
   def displayName: String
   def displayNamePlural: String
+  
+  def readFromDisk(name: ObjName) : Option[T]
 }
