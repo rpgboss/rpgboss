@@ -13,10 +13,9 @@ extends BoxPanel(Orientation.Vertical)
   def objName = head.name
   
   def setContent(c: Component) = {
-    println("setContent")
     contents.clear()
     contents += c
-    repaint()
+    revalidate()
   }
   
   setContent(new LoadingPanel(this))
@@ -26,9 +25,7 @@ extends BoxPanel(Orientation.Vertical)
   }
   
   def error(s: String) = {
-    
-    
     println("Error: " + s)
-    setContent(new Label(s))
+    //setContent(new Label(s))
   }
 }

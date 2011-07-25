@@ -9,9 +9,11 @@ import rpgboss.message._
 class LoadingPanel(val mainP: MainPanel)
 extends BoxPanel(Orientation.Vertical) with HttpPanel
 {
+  preferredSize = new Dimension(800, 600)
+  
   contents += new Label("Loading resource: " + mainP.toEdit)
   
-  httpSend(RequestItem(mainP.head), _ match {    
+  httpSend(GetTileset(mainP.head), _ match {    
     case NoSuchItem() =>
       mainP.handleNoSuchItem()
     case x => 

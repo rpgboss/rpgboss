@@ -1,6 +1,6 @@
 package rpgboss.rpgapplet
 
-import rpgboss.message._
+import rpgboss.message.{Message, RequestMessage, ResponseMessage}
 
 import net.liftweb.json._
 
@@ -14,7 +14,13 @@ trait HttpPanel
 {
   def mainP: MainPanel
   
-  def httpSend(msg: Message, respFunc: Any => Unit) = concurrent.ops.spawn({
+  def spawn(p: => Unit) : Unit = {
+    val t = new Thread() { override def run() = p }
+    t.start()
+  }
+  
+  def httpSend(msg: RequestMessage, respFunc: ResponseMessage => Unit) = 
+  spawn {
     val http = new DefaultHttpClient()
     
     try {
@@ -30,14 +36,18 @@ trait HttpPanel
     
       val respStr = http.execute(post, new BasicResponseHandler())
       
-      val respMsg = Serialization.read[Any](respStr)
+      val parsedResp = JsonParser.parse(respStr)
+      
+      val respMsg = parsedResp.extract[ResponseMessage]
+      
+      println(respMsg.toString)
       
       Swing.onEDT({respFunc(respMsg)})
     
     } finally {
       http.getConnectionManager.shutdown()
     }
-  })
+  }
   
   
 }
