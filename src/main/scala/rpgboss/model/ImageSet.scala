@@ -31,6 +31,8 @@ object Tileset extends MetaResource[Tileset] {
   def displayName = "Tileset"
   def displayNamePlural = "Tilesets"
   
+  val tilesize = 32
+  
   def readFromDisk(name: ObjName) : Option[Tileset] = {
     implicit val formats = Message.formats
     
@@ -52,5 +54,5 @@ object Tileset extends MetaResource[Tileset] {
   def getDataFile(rcDir: File) = new File(rcDir, "imageset.png")
 }
 
-case class TilesetMetadata(val tilesize: Int, xTiles: Int, yTiles: Int)
+case class TilesetMetadata(xTiles: Int, yTiles: Int)
 

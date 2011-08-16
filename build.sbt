@@ -1,3 +1,7 @@
+import sbtprotobuf.{SbtProtobufPlugin=>PB}
+
+seq(PB.protobufSettings: _*)
+
 name := "rpglib"
 
 version := "0.1"

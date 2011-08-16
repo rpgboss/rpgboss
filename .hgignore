@@ -1,5 +1,6 @@
 # use glob syntax.
 syntax: glob
 
+.history
 target/
 project/boot/
