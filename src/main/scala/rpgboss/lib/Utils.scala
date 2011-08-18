@@ -1,8 +1,6 @@
 package rpgboss.lib 
 import java.io._
 import scala.io.Source
-
-import org.apache.commons.codec.binary.Base64
   
 class FileHelper(file : File) {
   def write(text : String) : Unit = {
@@ -41,19 +39,11 @@ class FileHelper(file : File) {
     bytes
   }
 
-  def saveBytesToFile(bytes: Array[Byte]) = {
+  def writeBytes(bytes: Array[Byte]) = {
     val fos = new FileOutputStream(file)
     fos.write(bytes)
     fos.close()
   }
-
-  def saveBase64To(b64: String) = {
-    saveBytesToFile(Base64.decodeBase64(b64))
-  }
-
-  // assumes can read
-  def base64Contents : String = 
-    new String(Base64.encodeBase64(getBytes))
   
   def copyTo(dest: File) = {
     dest.createNewFile()

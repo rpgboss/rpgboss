@@ -1,0 +1,14 @@
+package rpgboss.message;
+
+option java_outer_classname = "ModelSerialization";
+
+message TilesetMetadata {
+  required int32 xTiles = 1;
+  required int32 yTiles = 2;
+}
+
+message TilesetSerial {
+  required string partialPath = 1;
+  required TilesetMetadata metadata = 2;
+  optional bytes pngData = 3;
+}

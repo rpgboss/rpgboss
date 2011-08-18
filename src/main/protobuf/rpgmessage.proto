@@ -1,5 +1,7 @@
 package rpgboss.message;
 
+option java_outer_classname = "Messages";
+
 message Header {
   required string username = 1;
   required sint64 token = 2;
@@ -12,7 +14,8 @@ message Login {
 
 message LoginResp {
   required bool success = 1;
-  optional int64 token = 2;
+  optional string username = 2;
+  optional int64 token = 3;
 }
 
 message ListMyGames {

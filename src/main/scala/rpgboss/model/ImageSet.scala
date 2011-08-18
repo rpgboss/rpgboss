@@ -1,10 +1,8 @@
 package rpgboss.model
 
 import rpgboss.lib._
-import rpgboss.message._
+import rpgboss.message.ModelSerialization._
 import rpgboss.lib.FileHelper._
-
-import net.liftweb.json.Serialization
 
 import java.io._
 
@@ -15,14 +13,11 @@ extends Resource
 {
   
   def writeToDisk() = {
-    val dirFile = name.dirFile
+    name.dirFile.forceMkdirs()
     
-    // make the directory
-    dirFile.forceMkdirs()
+    metadata.writeTo(new FileOutputStream(name.metadataFile))
     
-    implicit val formats = Message.formats
-    
-    name.metadataFile.write(Serialization.write(metadata))
+    Tileset.getDatafile(name).writeBytes(bytes)
   }
 }
 
@@ -34,16 +29,14 @@ object Tileset extends MetaResource[Tileset] {
   val tilesize = 32
   
   def readFromDisk(name: ObjName) : Option[Tileset] = {
-    implicit val formats = Message.formats
-    
     val metadataFile = name.metadataFile
     
     if(metadataFile.canRead)
     {
       val metadata = 
-        Serialization.read[TilesetMetadata](new FileReader(metadataFile))
+        TilesetMetadata.parseFrom(new FileInputStream(metadataFile))
       
-      val dataFile = getDataFile(name.dirFile) 
+      val dataFile = getDatafile(name)
       val bytes = if(dataFile.canRead) dataFile.getBytes else Array.empty[Byte]
       
       Some(Tileset(name, metadata, bytes))
@@ -51,8 +44,6 @@ object Tileset extends MetaResource[Tileset] {
     else None
   }
   
-  def getDataFile(rcDir: File) = new File(rcDir, "imageset.png")
+  def getDatafile(name: ObjName) = new File(name.dirFile, "imageset.png")
 }
-
-case class TilesetMetadata(xTiles: Int, yTiles: Int)
 
