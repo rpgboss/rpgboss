@@ -5,24 +5,16 @@ import scala.swing._
 import rpgboss.model._
 import rpgboss.message._
 
-class MainPanel(val username: String, val token: Long, val toEdit: String)
+class MainPanel(val topWin: Window)
 extends BoxPanel(Orientation.Vertical) 
 {
-  val head = Header(username, token, ObjName.resolve(toEdit))
-  
-  def objName = head.name
-  
   def setContent(c: Component) = {
     contents.clear()
     contents += c
     revalidate()
   }
   
-  setContent(new LoadingPanel(this))
-  
-  def handleNoSuchItem() = {
-    setContent(new TilesetNewPanel(this))
-  }
+  setContent(new StartPanel(this))
   
   def error(s: String) = {
     println("Error: " + s)

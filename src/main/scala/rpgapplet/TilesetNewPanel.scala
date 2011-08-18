@@ -11,12 +11,7 @@ import javax.swing.SpinnerNumberModel
 import rpgboss.model._
 import rpgboss.message._
 
-import net.liftweb.json._
-
-import org.apache.http.impl.client._
-import org.apache.http.entity.StringEntity
-import org.apache.http.client.methods.HttpPost
-
+/*
 class TilesetNewPanel(val mainP: MainPanel)
 extends GridBagPanel with HttpPanel
 {
@@ -85,5 +80,5 @@ extends GridBagPanel with HttpPanel
   }
   
   
-}
+}*/
 

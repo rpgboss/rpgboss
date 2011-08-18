@@ -26,10 +26,10 @@ object RpgApplet extends Build
     organization := "rpgboss",
     scalaVersion := scalaVer,
     libraryDependencies := Seq(
-      "commons-codec" % "commons-codec" % "1.5",
-      "net.liftweb" %% "lift-json" % liftVersion,
       "org.scala-lang" % "scala-swing" % scalaVer,
-      "org.apache.httpcomponents" % "httpclient" % "4.1.1"
+      "org.apache.httpcomponents" % "httpclient" % "4.1.1",
+      "org.apache.sanselan" % "sanselan" % "0.97-incubator",
+      "com.google.protobuf" % "protobuf-java" % "2.4.1"
     )
   )
   
