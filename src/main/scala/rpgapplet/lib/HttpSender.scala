@@ -19,7 +19,8 @@ trait HttpSender
   def httpSend[T](cmdStr: String,
                   request: { def toByteArray() : Array[Byte] }, 
                   parserFunc: Array[Byte] => T,
-                  respFunc: T => Any) = 
+                  respFunc: T => Any,
+                  failFunc: () => Any) = 
   spawn {
     val http = new DefaultHttpClient()
     
@@ -42,6 +43,8 @@ trait HttpSender
       
       Swing.onEDT({respFunc(respObj)})
     
+    } catch {
+      case _ => failFunc()
     } finally {
       http.getConnectionManager.shutdown()
     }
