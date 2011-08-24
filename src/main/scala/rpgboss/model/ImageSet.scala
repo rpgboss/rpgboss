@@ -13,7 +13,7 @@ extends Resource
 {
   
   def writeToDisk() = {
-    name.dirFile.forceMkdirs()
+    name.dirFile.makeWriteableDir()
     
     metadata.writeTo(new FileOutputStream(name.metadataFile))
     

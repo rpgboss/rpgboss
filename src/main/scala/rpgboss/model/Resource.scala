@@ -17,7 +17,7 @@ object Resource {
     def walkResourceDir(rType: String) : (String, List[ObjName]) = {
       val rTypeDir = new File(rcDir, rType)
       
-      val listOfResources = if(rTypeDir.forceMkdirs()) 
+      val listOfResources = if(rTypeDir.makeWriteableDir()) 
         Nil 
       else // list of subdirectories (named after the resource name)
         rTypeDir.listFiles.toList.filter(f => f.isDirectory).map(_.toString)
@@ -26,7 +26,7 @@ object Resource {
         ObjName(owner, game, Some(rType->rName))) 
     }
     
-    if(rcDir.forceMkdirs())
+    if(rcDir.makeWriteableDir())
       resourceTypes.mapValues( v => Nil )
     else {
       resourceTypes.map( kv => walkResourceDir(kv._1) )

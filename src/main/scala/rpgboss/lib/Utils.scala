@@ -16,12 +16,17 @@ class FileHelper(file : File) {
       None
   }
   
-  def deleteAll() : Unit = {
-    def deleteFile(dfile : File) : Unit = {
-      if(dfile.isDirectory)
-        dfile.listFiles.foreach{ f => deleteFile(f) }
-      dfile.delete
+  def deleteAll() : Boolean = {
+    def deleteFile(dfile : File) : Boolean = {
+      val subFilesGone = 
+        if(dfile.isDirectory) 
+          dfile.listFiles.foldLeft(true)( _ && deleteFile(_) )
+        else 
+          true
+      
+      subFilesGone && dfile.delete
     }
+    
     deleteFile(file)
   }
 
@@ -54,19 +59,23 @@ class FileHelper(file : File) {
     desChan.close
   }
   
-  // return value: if a new empty directory was created
-  def forceMkdirs() = {
+  // return value: if we can write to resultant directory
+  def makeWriteableDir() : Boolean = {
     if(file.exists) {
-      if(!file.isDirectory) {
-        deleteAll()
-        file.mkdirs()
-        true
-      } else false
+      if(file.isDirectory)
+        return file.canWrite
+      else {
+        // It's an ordinary file. Delete and recreate
+        file.delete() && file.mkdirs() && file.canWrite
+      }
     } else {
-      file.mkdirs()
-      true
+      file.mkdirs() && file.canWrite
     }
   }
+  
+  // True if it exists and is writeable, OR if we make a new one
+  def canWriteToFile() : Boolean = 
+    file.canWrite || file.createNewFile()
 }
 
 object FileHelper {
