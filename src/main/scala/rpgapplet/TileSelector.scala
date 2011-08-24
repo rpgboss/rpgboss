@@ -14,13 +14,13 @@ import java.awt.Graphics2D
   tileset: must be guaranteed to be the correct dimensions as
            specified by the tileset metadata (tilesize*xTiles, tilesize*yTiles)
 */
-class TilesetTileSelector(tileset: BufferedImage, 
-                          selectTileF: ((Int, Int)) => Unit,
-                          initialSelection: Option[(Int, Int)] = Some((0,0)))
+class TileSelector(tileset: BufferedImage, 
+                   selectTileF: ((Int, Int)) => Unit,
+                   initialSelection: Option[(Int, Int)] = Some((0,0)))
 extends ScrollPane
 {
   import Tileset._
-  import TilesetTileSelector._
+  import TileSelector._
   
   minimumSize = new Dimension(640, 480)
   
@@ -79,7 +79,7 @@ extends ScrollPane
   
 }
 
-object TilesetTileSelector {
+object TileSelector {
   val xTilesVisible = 8
   
   // does ceil integer division, Number Conversion, Roland Backhouse, 2001

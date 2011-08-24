@@ -48,8 +48,8 @@ extends GridBagPanel with HttpPanel
   add(rightLabel("Tile size (px):"), c(0, 2))
   add(tilesizeField, c(1, 2))
   
-  val xTilesField_j = new JSpinner(new SpinnerNumberModel(30, 6, 60, 1))
-  val yTilesField_j = new JSpinner(new SpinnerNumberModel(16, 6, 60, 1))
+  val xTilesField_j = new JSpinner(new SpinnerNumberModel(30, 6, 64, 1))
+  val yTilesField_j = new JSpinner(new SpinnerNumberModel(16, 6, 64, 1))
   
   add(rightLabel("X Tiles:"), c(0,3))
   add(Component.wrap(xTilesField_j), c(1,3))

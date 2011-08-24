@@ -10,6 +10,8 @@ import rpgboss.message.Messages._
 
 import net.java.dev.designgridlayout._
 
+import java.io.File
+
 class NewProjectDialog(owner: Window, onSuccess: Project => Any) 
   extends StdDialog(owner, "New Project")
 {  
@@ -17,8 +19,15 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     xAlignment = Alignment.Left
   }
   
+  val rootChooser = new FileChooser() {
+    fileSelectionMode = FileChooser.SelectionMode.DirectoriesOnly
+    multiSelectionEnabled = false
+    title = "Choose directory to contain all projects"
+  }
+  
   val projectsRootField = new TextField() {
     columns = 18
+    text = rootChooser.peer.getFileSystemView.getDefaultDirectory.getPath
   }
   
   val shortnameField = new TextField() {
@@ -31,16 +40,25 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
   
   val statusLabel = new Label(" ")
   
-  val rootChooser = new FileChooser() {
-    fileSelectionMode = FileChooser.SelectionMode.DirectoriesOnly
-    multiSelectionEnabled = false
-    title = "Choose directory to contain all projects"
-  }
-  
   def okFunc() = {
+    if(shortnameField.text.isEmpty)
+      Dialog.showMessage(shortnameField, "Need a short name.")
+    else {    
+      val p = Project.startingProject(shortnameField.text, 
+                                      gameTitleField.text,
+                                      projectsRootField.text)
+      if(p.writeToDisk())
+        onSuccess(p)
+      else 
+        Dialog.showMessage(okButton, "Could not write file", "Error", 
+                           Dialog.Message.Error)
+    }
   }
   
   val elipsisBtn = new Button(Action("...") {
+    if(rootChooser.showDialog(projectsRootField, "Select") == 
+       FileChooser.Result.Approve)
+      projectsRootField.text = rootChooser.selectedFile.getPath
   })
   
   contents = new DesignGridPanel {
@@ -57,5 +75,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     row().grid().add(statusLabel)
     
     addButtons(cancelButton, okButton)
+    
+    shortnameField.requestFocus()
   }
 }

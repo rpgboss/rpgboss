@@ -31,7 +31,8 @@ object RpgApplet extends Build
       "org.apache.sanselan" % "sanselan" % "0.97-incubator",
       "com.google.protobuf" % "protobuf-java" % "2.4.1",
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
-    )
+    ),
+    fork in run := true
   )
   
   

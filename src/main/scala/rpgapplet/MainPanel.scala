@@ -16,6 +16,10 @@ extends BoxPanel(Orientation.Vertical)
   
   setContent(new StartPanel(this))
   
+  def projectGui(p: Project) = {
+    
+  }
+  
   def error(s: String) = {
     println("Error: " + s)
     //setContent(new Label(s))
