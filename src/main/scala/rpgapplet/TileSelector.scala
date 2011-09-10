@@ -11,12 +11,12 @@ import java.awt.image.BufferedImage
 import java.awt.Graphics2D
 
 /*
-  tileset: must be guaranteed to be the correct dimensions as
-           specified by the tileset metadata (tilesize*xTiles, tilesize*yTiles)
+  tilesetImg: must be guaranteed to be the correct dimensions as
+    specified by the tileset metadata (tilesize*xTiles, tilesize*yTiles)
 */
-class TileSelector(tileset: BufferedImage, 
+class TileSelector(tilesetImg: BufferedImage, 
                    selectTileF: ((Int, Int)) => Unit,
-                   initialSelection: Option[(Int, Int)] = Some((0,0)))
+                   private var selection: (Int, Int) = (0,0))
 extends ScrollPane
 {
   import Tileset._
@@ -26,38 +26,24 @@ extends ScrollPane
   
   def imageSlices = ceilIntDiv(tileset.getWidth / tilesize, xTilesVisible)
   
-  // x coord has max of xTilesVisible, then it wraps around
-  var selectedTileInSelectorSpace : Option[(Int, Int)] = initialSelection
-  
-  def selectedTileInTilesetSpace = selectedTileInSelectorSpace.map { 
-    case (selTileX, selTileY) => {
-      val yTiles = tileset.getHeight / tilesize
-        
-      val tileX = selTileX + selTileY/yTiles*xTilesVisible
-      val tileY = selTileY % yTiles
-        
-      (tileX, tileY)
-    }
-  }
-  
   val canvasPanel = new Panel() {
     preferredSize = new Dimension(xTilesVisible*tilesize, 
-                                  imageSlices*tileset.getHeight)
+                                  imageSlices*tilesetImg.getHeight)
     
     override def paintComponent(g: Graphics2D) = {
       super.paintComponent(g)
       
       for(i <- 0 until imageSlices) {
-        g.drawImage(tileset, 
-                    0, i*tileset.getHeight,
-                    xTilesVisible*tilesize, (i+1)*tileset.getHeight,
+        g.drawImage(tilesetImg, 
+                    0, i*tilesetImg.getHeight,
+                    xTilesVisible*tilesize, (i+1)*tilesetImg.getHeight,
                     i*xTilesVisible*tilesize, 0,
-                    (i+1)*xTilesVisible*tilesize, tileset.getHeight,
+                    (i+1)*xTilesVisible*tilesize, tilesetImg.getHeight,
                     null)
       }
       
       // draw selection square
-      selectedTileInSelectorSpace map {
+      selectionInSelectorSpace map {
         case (selTileX, selTileY) => g.draw3DRect(selTileX*tilesize,
                                                   selTileY*tilesize,
                                                   tilesize, tilesize, true)
@@ -71,9 +57,17 @@ extends ScrollPane
   
   reactions += {
     case MouseClicked(`canvasPanel`, point, _, _, _) => {
-      selectedTileInSelectorSpace = 
+      var selTileX = 
+      selectionInSelectorSpace = 
         Some((point.getX.toInt/tilesize, point.getY.toInt/tilesize))
-      selectedTileInTilesetSpace.foreach(selectTileF)
+      selectionInTilesetSpace.foreach(selectTileF)
+      
+      val yTiles = tilesetImg.getHeight / tilesize
+        
+      val tileX = selTileX + selTileY/yTiles*xTilesVisible
+      val tileY = selTileY % yTiles
+        
+      (tileX, tileY)
     }
   }
   
