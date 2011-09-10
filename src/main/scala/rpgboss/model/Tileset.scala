@@ -11,6 +11,18 @@ case class Tileset(name: ObjName,
                    bytes: Array[Byte] = Array.empty) 
 extends Resource
 {
+  import Tileset._
+  
+  def xPixels = metadata.xTiles*tilesize
+  def yPixels = metadata.yTiles*tilesize
+  
+  def getImage = {
+    // Draws image from bytes onto a new image of correct dimensions.
+    val imgFromBytes = ImageIO.read(new ByteArrayInputStream(bytes))
+    
+    val imgWithRightDims = new BufferedImage(xPixels, yPixels, TYPE_4BYTE_ABGR)
+    imgWithRightDims.getGraphics.drawImage(imgFromBytes, 0, 0, null)
+  }
   
   def writeToDisk() = {
     name.dirFile.makeWriteableDir()
