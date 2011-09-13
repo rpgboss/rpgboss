@@ -3,6 +3,8 @@ import java.io._
 import scala.io.Source
   
 class FileHelper(file : File) {
+  import FileHelper._
+  
   def write(text : String) : Unit = {
     val fw = new FileWriter(file)
     try{ fw.write(text) }
@@ -76,8 +78,17 @@ class FileHelper(file : File) {
   // True if it exists and is writeable, OR if we make a new one
   def canWriteToFile() : Boolean = 
     file.canWrite || file.createNewFile()
+  
+  // creates parent directory and file if necessary. ensure writable
+  def prepareWrite(writeFunc : (FileOutputStream) => Boolean) : Boolean = 
+  {
+    if(file.getParentFile().makeWriteableDir() && file.canWriteToFile())
+      writeFunc(new FileOutputStream(file))
+    else
+      false
+  }
 }
 
 object FileHelper {
-  implicit def file2helper(file : File) = new FileHelper(file)
+  implicit def file2helper(file : File) : FileHelper = new FileHelper(file)
 }

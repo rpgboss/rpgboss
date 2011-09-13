@@ -13,23 +13,21 @@ extends HasName
   def name = title
   
   def writeToDisk() : Boolean = {
-    val dataFile = new File(projectDir, ProjectMetadata.fileName)
-    
-    if(projectDir.makeWriteableDir() && dataFile.canWriteToFile()) {
+    ProjectMetadata.filename(projectDir).prepareWrite({ fos =>
       ProjectSerial.newBuilder()
         .setTitle(title)
       .build()
-      .writeTo(new FileOutputStream(dataFile))
+      .writeTo(fos)
       
       true
-    } else false
+    })
   }
 }
 
 case class Project(metadata: ProjectMetadata, maps: Vector[RpgMap])
 { 
   def saveAll() : Boolean = 
-    metadata.writeToDisk() && maps.map(_.writeToDisk()).reduceLeft(_&&_)
+    metadata.writeToDisk() && maps.map(_.writeToDisk(this)).reduceLeft(_&&_)
 }
 
 object Project {
@@ -45,10 +43,10 @@ object Project {
 }
 
 object ProjectMetadata {
-  val fileName = "project.rpgproject"
+  def filename(dir: File) = new File(dir, "project.rpgproject")
   
   def readFromDisk(dir: File) = {
-    val projFile = new File(dir, fileName)
+    val projFile = filename(dir)
     
     if(projFile.canRead)
     {
