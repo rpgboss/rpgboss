@@ -14,10 +14,10 @@ message TilesetSerial {
 }
 
 message ProjectSerial {
-  required string gameTitle = 1;
+  required string title = 1;
 }
 
-message MapSerial {
+message MapMetadataSerial {
   required int32 id = 1; // goes from 1 up
   required int32 parent = 2; // -1 or no id
   required string name = 3;
@@ -26,10 +26,10 @@ message MapSerial {
   required int32 ySize = 5; // 15 to 500
   
   repeated string tilesets = 6;
-  
+}
+
+message MapDataSerial {
   optional bytes botLayer = 7;
   optional bytes midLayer = 8;
   optional bytes topLayer = 9;
-  
-  
 }
