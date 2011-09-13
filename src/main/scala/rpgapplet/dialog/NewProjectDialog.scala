@@ -15,20 +15,7 @@ import java.io.File
 class NewProjectDialog(owner: Window, onSuccess: Project => Any) 
   extends StdDialog(owner, "New Project")
 {  
-  def label(s: String) = new Label(s) {
-    xAlignment = Alignment.Left
-  }
-  
-  val rootChooser = new FileChooser() {
-    fileSelectionMode = FileChooser.SelectionMode.DirectoriesOnly
-    multiSelectionEnabled = false
-    title = "Choose directory to contain all projects"
-  }
-  
-  val projectsRootField = new TextField() {
-    columns = 18
-    text = rootChooser.peer.getFileSystemView.getDefaultDirectory.getPath
-  }
+  val rootChooser = Paths.getRootChooserPanel(() => Unit)
   
   val shortnameField = new TextField() {
     columns = 12
@@ -38,16 +25,15 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     columns = 20
   }
   
-  val statusLabel = new Label(" ")
-  
   def okFunc() = {
     if(shortnameField.text.isEmpty)
       Dialog.showMessage(shortnameField, "Need a short name.")
     else {    
-      val p = Project.startingProject(shortnameField.text, 
+      val shortname = shortnameField.text
+      val p = Project.startingProject(shortname, 
                                       gameTitleField.text,
-                                      projectsRootField.text)
-      if(p.writeToDisk())
+                                      new File(rootChooser.getRoot, shortname))
+      if(p.saveAll())
         onSuccess(p)
       else 
         Dialog.showMessage(okButton, "Could not write file", "Error", 
@@ -55,24 +41,17 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     }
   }
   
-  val elipsisBtn = new Button(Action("...") {
-    if(rootChooser.showDialog(projectsRootField, "Select") == 
-       FileChooser.Result.Approve)
-      projectsRootField.text = rootChooser.selectedFile.getPath
-  })
   
   contents = new DesignGridPanel {
     
-    row().grid().add(label("Directory for all projects:"))
-    row().grid().add(projectsRootField, 6).add(elipsisBtn)
+    row().grid().add(leftLabel("Directory for all projects:"))
+    row().grid().add(rootChooser)
     
-    row().grid().add(label("Project shortname:"))
+    row().grid().add(leftLabel("Project shortname (ex. 'chronotrigger'):"))
     row().grid().add(shortnameField)
     
-    row().grid().add(label("Game title:"))
+    row().grid().add(leftLabel("Game title (ex: 'Chrono Trigger'):"))
     row().grid().add(gameTitleField)
-    
-    row().grid().add(statusLabel)
     
     addButtons(cancelButton, okButton)
     

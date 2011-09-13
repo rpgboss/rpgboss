@@ -14,6 +14,10 @@ abstract class StdDialog(owner: Window, titleArg: String)
   
   def okFunc()
   
+  def leftLabel(s: String) = new Label(s) {
+    xAlignment = Alignment.Left
+  }
+  
   lazy val cancelButton = new Button(Action("Cancel") { close() })
   
   lazy val okButton = new Button(new Action("OK") {

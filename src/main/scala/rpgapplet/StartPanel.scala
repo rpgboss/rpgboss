@@ -21,9 +21,8 @@ class StartPanel(val mainP: MainPanel)
     })
     
     contents += new Button(Action("Load Game Project") {
-      LoginDialog.loginFirst(mainP.topWin) {
-        println("Login success")
-      }
+      val d = new LoadProjectDialog(mainP.topWin, p => mainP.projectGui(p))
+      d.open()
     })
   }
 }

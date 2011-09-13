@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage
 class TilesetSidebar()
 extends BoxPanel(Orientation.Vertical)
 {
+  var numberedTilesets : List[(Int, Tileset)] = Nil
   var tilesetOpt : Option[(Int, Tileset)] = None
   var tileSelection: Option[(Int, Int)] = None
   
@@ -42,20 +43,19 @@ extends BoxPanel(Orientation.Vertical)
   contents += toolbar
   contents += selectorContainer
   
-  def setTilesets(numberedTilesets : List[(Int, Tileset)], sel: Some[Int]) = {
-    if(!numberedTilesets.isEmpty) {
-      // update combobox
-      selectBox.peer.setModel(ComboBox.newConstantModel(numberedTilesets))
-      
-      // clear selector container
-      selectorContainer.setContent(None)
-      
-      // Update combobox selection
-      sel map { s =>
-        val selIdx = numberedTilesets.indexWhere(_._1 == s)
-        if(selIdx != -1) selectBox.selection.index = selIdx
-      }
-    }
+  def setTilesets(newTilesets : List[(Int, Tileset)], sel: Some[Int]) = {
+    numberedTilesets = newTilesets
+    
+    // update combobox
+    selectBox.peer.setModel(ComboBox.newConstantModel(numberedTilesets))
+    
+    // clear selector container
+    selectorContainer.setContent(None)
+  }
+  
+  def selectTileset(selection: Int) = {
+    val selIdx = numberedTilesets.indexWhere(_._1 == selection)
+    if(selIdx != -1) selectBox.selection.index = selIdx
   }
   
   listenTo(selectBox.selection)
