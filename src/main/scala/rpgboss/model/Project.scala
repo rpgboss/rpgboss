@@ -45,15 +45,15 @@ object Project {
 object ProjectMetadata {
   def filename(dir: File) = new File(dir, "project.rpgproject")
   
-  def readFromDisk(dir: File) = {
-    val projFile = filename(dir)
+  def readFromDisk(projDir: File) = {
+    val projFile = filename(projDir)
     
     if(projFile.canRead)
     {
       val serial = 
         ProjectSerial.parseFrom(new FileInputStream(projFile))
       
-      Some(ProjectMetadata(dir.getName, serial.getTitle, dir))
+      Some(ProjectMetadata(projDir.getName, serial.getTitle, projDir))
     }
     else None
   }
