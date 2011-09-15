@@ -30,10 +30,7 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
         val projMetadatas : Array[Option[ProjectMetadata]] = 
           rootPath.listFiles.map( child => {
             if(child.isDirectory && child.canRead) 
-            {
-              ProjectMetadata.readFromDisk(
-                new File(child, ProjectMetadata.fileName))
-            } 
+              ProjectMetadata.readFromDisk(child)
             else None
           })
         
@@ -56,10 +53,15 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       }
       
       override def isCellEditable(r: Int, c: Int) = false
-    }
+    } 
     
     projList.model = tableModel
+    
+    projList.peer.getColumnModel().getColumn(0).setPreferredWidth(50)
+    projList.peer.getColumnModel().getColumn(1).setPreferredWidth(100)  
   }
+  
+  populateList()
   
   def okFunc() = {
     
@@ -73,6 +75,7 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
     
     row().grid().add(leftLabel("Projects:"))
     row().grid().add(new ScrollPane {
+      preferredSize = new Dimension(300, 150)
       contents = projList
     })
       
