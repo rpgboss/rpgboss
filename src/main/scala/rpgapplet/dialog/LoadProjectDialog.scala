@@ -23,18 +23,18 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
   }
   
   def populateList() : Unit = {
-    val projects : Array[ProjectMetadata] = {
+    val projects : Array[Project] = {
       val rootPath = rootChooser.getRoot
       if(rootPath.isDirectory && rootPath.canRead) 
       {
-        val projMetadatas : Array[Option[ProjectMetadata]] = 
+        val projs : Array[Option[Project]] = 
           rootPath.listFiles.map( child => {
             if(child.isDirectory && child.canRead) 
-              ProjectMetadata.readFromDisk(child)
+              Project.readFromDisk(child)
             else None
           })
         
-        projMetadatas.flatten
+        projs.flatten
       }
       else Array.empty
     }
@@ -47,7 +47,7 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       
       override def getColumnName(col: Int) = cols(col)
       
-      def getValueAt(r: Int, c: Int) = c match {
+      def getValueAt(r: Int, c: Int) : String = c match {
         case 0 => projects(r).shortName
         case _ => projects(r).title
       }
@@ -64,7 +64,16 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
   populateList()
   
   def okFunc() = {
-    
+    if(!projList.selection.rows.isEmpty) {
+      val shortName = 
+        projList.model.getValueAt(projList.selection.rows.head, 0).toString
+      val pOpt = Project.readFromDisk(new File(rootChooser.getRoot, shortName))
+      pOpt.map(p => onSuccess(p))
+      close()
+    } else {
+      Dialog.showMessage(okButton, "No project selected", "Error", 
+                         Dialog.Message.Error)
+    }
   }
   
   
@@ -80,5 +89,11 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
     })
       
     addButtons(cancelButton, okButton)
+  }
+  
+  listenTo(projList.mouse.clicks)
+      
+  reactions += {
+    case MouseClicked(`projList`, _, _, 2, _) => okButton.doClick() 
   }
 }

@@ -8,10 +8,14 @@ import rpgboss.message._
 import rpgboss.rpgapplet.tileset._
 
 class MapSelector(project: Project, tsSidebar: TilesetSidebar) 
-extends Tree[Any] 
+extends Tree[HasName] 
 {
-  /*treeData = TreeModel[HasName](Seq(project))({
-    case RpgMap(
-  })*/
+  var maps = project.getMaps
+  
+  treeData = TreeModel[HasName](project)({
+    case `project` => maps.filter(_.parent == -1)
+    case m: RpgMap => maps.filter(_.parent == m.id)
+  })
 
+  expandPath(project :: Nil)
 }

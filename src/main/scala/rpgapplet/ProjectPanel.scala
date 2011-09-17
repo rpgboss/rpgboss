@@ -16,7 +16,7 @@ class ProjectPanel(mainP: MainPanel, project: Project)
   val tilesetSidebar = new TilesetSidebar()
   val mapSelector = new MapSelector(project, tilesetSidebar)
   
-  contents += new SplitPane(Orientation.Vertical, tilesetSidebar, mapSelector)
+  contents += new SplitPane(Orientation.Horizontal, tilesetSidebar, mapSelector)
   contents += new MapView()
 }
 

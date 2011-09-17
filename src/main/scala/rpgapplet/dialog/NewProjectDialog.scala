@@ -33,10 +33,20 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       val p = Project.startingProject(shortname, 
                                       gameTitleField.text,
                                       new File(rootChooser.getRoot, shortname))
-      if(p.saveAll())
+      
+      val m = RpgMap.defaultMap
+      
+      val allSavedOkay = 
+        p.writeMetadata() &&
+        m.saveMetadata(p) &&
+        m.saveMapData(p, RpgMap.defaultMapData)
+      
+      if(allSavedOkay) {
         onSuccess(p)
+        close()
+      }
       else 
-        Dialog.showMessage(okButton, "Could not write file", "Error", 
+        Dialog.showMessage(okButton, "File write error", "Error", 
                            Dialog.Message.Error)
     }
   }

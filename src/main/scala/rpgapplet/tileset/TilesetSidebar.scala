@@ -17,7 +17,7 @@ extends BoxPanel(Orientation.Vertical)
   
   val selectBox = new ComboBox(List.empty[(Int, Tileset)]) {
     import scala.swing.ListView._
-    renderer = Renderer(_._2.name.rName)
+    //renderer = Renderer(_._2.name.rName)
   }
   
   val toolbar = new BoxPanel(Orientation.Horizontal) {
