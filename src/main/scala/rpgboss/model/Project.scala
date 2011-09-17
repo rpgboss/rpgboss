@@ -6,14 +6,14 @@ import rpgboss.lib.FileHelper._
 
 import java.io._
 
-case class ProjectMetadata(shortName: String, title: String, 
-                           projectDir: File)
+case class Project(shortName: String, title: String, 
+                   projectDir: File)
 extends HasName
 {
   def name = title
   
-  def writeToDisk() : Boolean = {
-    ProjectMetadata.filename(projectDir).prepareWrite({ fos =>
+  def writeMetadata() : Boolean = {
+    Project.filename(projectDir).prepareWrite({ fos =>
       ProjectSerial.newBuilder()
         .setTitle(title)
       .build()
@@ -22,27 +22,22 @@ extends HasName
       true
     })
   }
-}
-
-case class Project(metadata: ProjectMetadata, maps: Vector[RpgMap])
-{ 
-  def saveAll() : Boolean = 
-    metadata.writeToDisk() && maps.map(_.writeToDisk(this)).reduceLeft(_&&_)
+  
+  def getMaps : Array[RpgMap] = {
+    RpgMap.mapsDir(this)
+      .listFiles.filter(_.getName.endsWith(RpgMap.metadataExt))
+      .map(RpgMap.readMetadata).flatten
+  }
 }
 
 object Project {
   
   def startingProject(shortName: String, 
                       title: String, 
-                      dir: File) = 
-  {
-    val m = ProjectMetadata(shortName, title, dir)                    
-    Project(m, Vector(RpgMap.firstMap))
-  }
+                      dir: File) =
+    Project(shortName, title, dir)
   
-}
-
-object ProjectMetadata {
+  
   def filename(dir: File) = new File(dir, "project.rpgproject")
   
   def readFromDisk(projDir: File) = {
@@ -53,7 +48,7 @@ object ProjectMetadata {
       val serial = 
         ProjectSerial.parseFrom(new FileInputStream(projFile))
       
-      Some(ProjectMetadata(projDir.getName, serial.getTitle, projDir))
+      Some(Project(projDir.getName, serial.getTitle, projDir))
     }
     else None
   }

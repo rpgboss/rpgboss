@@ -9,16 +9,16 @@ import com.google.protobuf.ByteString
 
 import java.io._
 
-case class RpgMapMetadata(id: Int,
-                          parent: Int,
-                          name: String,
-                          xSize: Int,
-                          ySize: Int,
-                          tilesets: Vector[String])
+case class RpgMap(id: Int,
+                  parent: Int,
+                  name: String,
+                  xSize: Int,
+                  ySize: Int,
+                  tilesets: Vector[String])
 extends HasName
 {
-  def writeToDisk(project: Project) = {
-    RpgMap.metadataFile(project, id).prepareWrite({ fos =>
+  def saveMetadata(p: Project) = {
+    RpgMap.metadataFile(p, id).prepareWrite({ fos =>
       MapMetadataSerial.newBuilder()
         .setId(id)
         .setParent(parent)
@@ -32,16 +32,17 @@ extends HasName
       true
     })
   }
+  
+  def saveMapData(p: Project, d: RpgMapData) =
+    d.writeToFile(RpgMap.dataFile(p, id))
 }
 
-case class RpgMap(metadata: RpgMapMetadata, 
-                  botLayer: Array[Byte],
-                  midLayer: Array[Byte],
-                  topLayer: Array[Byte])
+// this class has mutable members
+case class RpgMapData(botLayer: Array[Byte],
+                      midLayer: Array[Byte],
+                      topLayer: Array[Byte])
 {
-  def writeToDisk(p: Project) = 
-    metadata.writeToDisk(p) && 
-    RpgMap.dataFile(p, metadata.id).prepareWrite({ fos =>
+  def writeToFile(f: File) = f.prepareWrite({ fos =>
     MapDataSerial.newBuilder()
       .setBotLayer(ByteString.copyFrom(botLayer))
       .setMidLayer(ByteString.copyFrom(midLayer))
@@ -54,23 +55,42 @@ case class RpgMap(metadata: RpgMapMetadata,
 }
 
 object RpgMap {
-  def mapsDir(project: Project) = new File(project.metadata.projectDir, "maps")
+  def mapsDir(p: Project) = new File(p.projectDir, "maps")
   
-  def metadataFile(project: Project, id: Int) = 
-    new File(mapsDir(project), "Map%d.rpgmapmeta".format(id))
-  def dataFile(project: Project, id: Int) = 
-    new File(mapsDir(project), "Map%d.rpgmapdata".format(id))
-    
-  def firstMap = {
-    val initXSize = 20
-    val initYSize = 15
-    val metadata = RpgMapMetadata(1, -1, "Starting Map", 
-                                  initXSize, initYSize, Vector("town"))
-    
-    val arySize = 20*15*bytesPerTile
-    val defaultLayerData = Array.fill[Byte](arySize)(0)
-    RpgMap(metadata, defaultLayerData, defaultLayerData, defaultLayerData)
+  def metadataExt = "rpgmapmeta"
+  
+  def metadataFile(p: Project, id: Int) = 
+    new File(mapsDir(p), "Map%d.%s".format(id, metadataExt))
+  def dataFile(p: Project, id: Int) = 
+    new File(mapsDir(p), "Map%d.rpgmapdata".format(id))
+  
+  def readMetadata(f: File) : Option[RpgMap] = {
+    if(f.canRead)
+    {
+      val serial = 
+        MapMetadataSerial.parseFrom(new FileInputStream(f))
+      
+      Some(RpgMap(serial.getId, serial.getParent, serial.getName,
+                  serial.getXSize, serial.getYSize, 
+                  Vector.empty ++ serial.getTilesetsList))
+    }
+    else None
   }
+
+  def initXSize = 20
+  def initYSize = 15
   
   def bytesPerTile = 2
+  def dataArySize = initXSize*initYSize*bytesPerTile
+    
+  def defaultMap = {
+    RpgMap(1, -1, "Starting Map", 
+           initXSize, initYSize, Vector("town"))
+  }
+  
+  def defaultMapData = {
+    val dfltLayer = Array.fill[Byte](dataArySize)(0)
+    RpgMapData(dfltLayer, dfltLayer, dfltLayer)  
+  }
+  
 }
