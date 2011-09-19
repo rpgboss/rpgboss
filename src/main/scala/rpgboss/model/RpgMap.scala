@@ -80,12 +80,17 @@ object RpgMap {
   def initXSize = 20
   def initYSize = 15
   
-  def bytesPerTile = 2
+  def bytesPerTile = 4
   def dataArySize = initXSize*initYSize*bytesPerTile
     
   def defaultMap = {
     RpgMap(1, -1, "Starting Map", 
-           initXSize, initYSize, Vector("town"))
+           initXSize, initYSize, 
+           Vector("Refmap-TileA5",
+                  "Refmap-TileB",
+                  "Refmap-TileC",
+                  "Refmap-TileD",
+                  "Refmap-TileE"))
   }
   
   def defaultMapData = {

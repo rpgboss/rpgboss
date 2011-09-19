@@ -15,6 +15,10 @@ message TilesetSerial {
 
 message ProjectSerial {
   required string title = 1;
+  
+  repeated string autotiles = 2;
+  
+  optional int32 recentMapId = 3;
 }
 
 message MapMetadataSerial {
