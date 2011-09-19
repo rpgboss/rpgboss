@@ -10,7 +10,9 @@ import rpgboss.message.Messages._
 
 import net.java.dev.designgridlayout._
 
-import java.io.File
+import java.io._
+
+import rpgboss.lib.FileHelper._
 
 class NewProjectDialog(owner: Window, onSuccess: Project => Any) 
   extends StdDialog(owner, "New Project")
@@ -41,7 +43,37 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
         m.saveMetadata(p) &&
         m.saveMapData(p, RpgMap.defaultMapData)
       
-      if(allSavedOkay) {
+      val cl = getClass.getClassLoader
+        
+      val copiedAllResources = {
+        val projRcDir = p.rcDir
+        
+        val resources = 
+          io.Source.fromInputStream(
+            cl.getResourceAsStream("defaultrc/enumerated.txt")
+          ).getLines().toList
+        
+        for(resourceName <- resources) {
+          
+          val target = new File(projRcDir, resourceName)
+          
+          target.getParentFile.mkdirs()
+          
+          val fos = new FileOutputStream(target)
+          
+          val buffer = new Array[Byte](1024*32)
+          
+          val sourceStr =    
+            cl.getResourceAsStream("defaultrc/%s".format(resourceName))
+          
+          Iterator.continually(sourceStr.read(buffer))
+            .takeWhile(_ != -1).foreach(fos.write(buffer, 0, _))
+        }
+        
+        true
+      }
+      
+      if(allSavedOkay && copiedAllResources) {
         onSuccess(p)
         close()
       }

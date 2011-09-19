@@ -15,6 +15,10 @@ extends BoxPanel(Orientation.Vertical)
   var tilesetOpt : Option[(Int, Tileset)] = None
   var tileSelection: Option[(Int, Int)] = None
   
+  /*val tilesetTabPane = new TabbedPane() {
+    pages += new Page("", 
+  }*/
+  
   val selectBox = new ComboBox(List.empty[(Int, Tileset)]) {
     import scala.swing.ListView._
     //renderer = Renderer(_._2.name.rName)

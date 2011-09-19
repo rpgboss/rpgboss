@@ -18,4 +18,6 @@ extends Tree[HasName]
   })
 
   expandPath(project :: Nil)
+  
+  //tsSidebar.select
 }
