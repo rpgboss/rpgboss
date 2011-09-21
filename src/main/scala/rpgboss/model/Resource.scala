@@ -2,15 +2,16 @@ package rpgboss.model
 
 import rpgboss.lib._
 
-import java.io.File
+import java.io._
 import FileHelper._
 import scala.collection.JavaConversions._
 
 object Resource {
-  val resourceTypes = Map("tileset"->Tileset)
+  val resourceTypes = List(Autotile, Tileset)
   
-  def listResources(owner: String, game: Option[String]) 
-  : Map[String, List[ObjName]] = 
+  /*
+  def listResources(p: Project) 
+  : Map[String, List[String]] = 
   {
     val rcDir = new File(ObjPath.rcPath(owner, game))
     
@@ -38,17 +39,44 @@ object Resource {
       case Some(metaResource) => metaResource.readFromDisk(name)
       case None => None
     }
-    else None
+    else None*/
 }
 
-trait Resource {
-  def name: ObjName
+trait Resource[T] {
+  def name: String
+  def meta: MetaResource[T]
+  def proj: Project
+  
+  def rcTypeDir = new File(proj.rcDir, meta.rcType)
+  
+  def writeMetadataToFos(fos: FileOutputStream)
+  
+  def writeToDisk() =
+    writeMetadataToFos(new FileOutputStream(meta.metadataFile(proj, name)))
 }
 
-trait MetaResource[T <: Resource] {
-  def resourceType: String
+trait MetaResource[T] {
+  def rcType: String
   def displayName: String
   def displayNamePlural: String
   
-  def readFromDisk(name: ObjName) : Option[T]
+  def metadataFile(proj: Project, name: String) =
+    new File(new File(proj.rcDir, rcType), "%s.%s".format(name, rcType))
+  
+  def defaultInstance(proj: Project, name: String) : T
+  
+  def fromMetadata(proj: Project, name: String, fis: FileInputStream) : T
+    
+  def readFromDisk(proj: Project, name: String) : T = {
+    val mf = metadataFile(proj, name)
+    
+    if(mf.canRead)
+      fromMetadata(proj, name, new FileInputStream(mf))
+    else 
+      defaultInstance(proj, name)
+  }
+  
+  //def readFromDisk(name: String) : Option[T]
 }
+
+

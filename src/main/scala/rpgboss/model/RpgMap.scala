@@ -19,7 +19,7 @@ extends HasName
 {
   def saveMetadata(p: Project) = {
     RpgMap.metadataFile(p, id).prepareWrite({ fos =>
-      MapMetadataSerial.newBuilder()
+      MapMetadata.newBuilder()
         .setId(id)
         .setParent(parent)
         .setName(name)
@@ -68,7 +68,7 @@ object RpgMap {
     if(f.canRead)
     {
       val serial = 
-        MapMetadataSerial.parseFrom(new FileInputStream(f))
+        MapMetadata.parseFrom(new FileInputStream(f))
       
       Some(RpgMap(serial.getId, serial.getParent, serial.getName,
                   serial.getXSize, serial.getYSize, 
