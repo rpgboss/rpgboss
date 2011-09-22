@@ -6,24 +6,23 @@ import scala.swing.event._
 import rpgboss.model._
 import rpgboss.message._
 
+import rpgboss.rpgapplet._
+
 import java.awt.image.BufferedImage
 
-class TilesetSidebar()
+class TilesetSidebar(sm: StateMaster)
 extends BoxPanel(Orientation.Vertical)
 {
-  var mapsToTabbedPanes : Map[Int, TabbedPane] = Map()
-  
   def selectMap(map: RpgMap) = {
+    val tilesetsPane = new TabbedPane() {
+      tabPlacement(Alignment.Bottom)
+      pages += new TabbedPane.Page("Autotiles", new AutotileSelector(sm.proj))
+      
+      
+    }
     
+    swapPanel.setContent(Some(tilesetsPane))
   }
-  
-  def createMapTab(map: RpgMap) = new TabbedPane() {
-    tabPlacement(Alignment.Bottom)
-    pages += new Page("Autotiles", new AutotileSelector(proj))
-    
-    
-  }
-  
   val toolbar = new BoxPanel(Orientation.Horizontal) {
     val pencilBtn = new RadioButton("Pencil")
     val bGrp = new ButtonGroup(pencilBtn)

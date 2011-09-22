@@ -13,8 +13,10 @@ import rpgboss.message._
 class ProjectPanel(mainP: MainPanel, project: Project)
   extends BoxPanel(Orientation.Horizontal)
 {
-  val tilesetSidebar = new TilesetSidebar()
-  val mapSelector = new MapSelector(project, tilesetSidebar)
+  val stateMaster = new StateMaster(project)
+  
+  val tilesetSidebar = new TilesetSidebar(stateMaster)
+  val mapSelector = new MapSelector(stateMaster, tilesetSidebar)
   
   contents += new SplitPane(Orientation.Horizontal, tilesetSidebar, mapSelector)
   contents += new MapView()
