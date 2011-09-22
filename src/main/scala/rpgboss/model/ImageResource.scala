@@ -11,5 +11,5 @@ import javax.imageio._
 trait ImageResource[T] extends Resource[T] {
   def imgFile = new File(rcTypeDir, "%s.png".format(name))
   
-  def img = ImageIO.read(imgFile)
+  def getImg() = Option(ImageIO.read(imgFile))
 }
