@@ -11,5 +11,12 @@ import javax.imageio._
 trait ImageResource[T] extends Resource[T] {
   def imgFile = new File(rcTypeDir, "%s.png".format(name))
   
-  def getImg() = Option(ImageIO.read(imgFile))
+  lazy val imageOpt = Option(ImageIO.read(imgFile))
+}
+
+object ImageResource {
+  lazy val errorTile = { 
+    val errImgStream = getClass.getClassLoader.getResourceAsStream("error.png")
+    ImageIO.read(errImgStream)
+  }
 }

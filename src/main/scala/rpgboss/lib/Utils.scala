@@ -92,3 +92,9 @@ class FileHelper(file : File) {
 object FileHelper {
   implicit def file2helper(file : File) : FileHelper = new FileHelper(file)
 }
+
+object Utils {
+  // does ceil integer division, Number Conversion, Roland Backhouse, 2001
+  // http://stackoverflow.com/questions/17944/
+  def ceilIntDiv(n: Int, m: Int) = (n-1)/m + 1
+}

@@ -23,8 +23,8 @@ extends ImageResource[Autotile]
       .setPassability(passability)
       .build().writeTo(fos)
   
-  def representativeImg = {
-    getImg() map { diskImg =>
+  def representativeImg() = {
+    imageOpt map { diskImg =>
       val targetImage = 
         new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_4BYTE_ABGR)
     
@@ -59,12 +59,11 @@ extends ImageResource[Autotile]
       targetImage
       
     } getOrElse {
-      val errImgStream = 
-        getClass.getClassLoader.getResourceAsStream("error.png")
-      
-      ImageIO.read(errImgStream)
+      ImageResource.errorTile
     }
   }
+  
+  def getTile(autotileConfig: Int, frame: Byte) = representativeImg
 }
 
 object Autotile extends MetaResource[Autotile] {

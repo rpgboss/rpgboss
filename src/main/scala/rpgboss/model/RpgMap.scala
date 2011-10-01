@@ -35,6 +35,21 @@ extends HasName
   
   def saveMapData(p: Project, d: RpgMapData) =
     d.writeToFile(RpgMap.dataFile(p, id))
+  
+  def readMapData(p: Project) : Option[RpgMapData] = {
+    val f = RpgMap.dataFile(p, id)
+    if(f.canRead)
+    {
+      val serial = 
+        MapDataSerial.parseFrom(new FileInputStream(f))
+      
+      Some(RpgMapData(serial.getBotLayer.toByteArray,
+                      serial.getMidLayer.toByteArray,
+                      serial.getTopLayer.toByteArray))
+    }
+    else None
+  }
+    
 }
 
 // this class has mutable members
@@ -52,6 +67,8 @@ case class RpgMapData(botLayer: Array[Byte],
     
     true
   })
+  
+  def drawOrder = List(botLayer, midLayer, topLayer)
 }
 
 object RpgMap {
@@ -77,11 +94,13 @@ object RpgMap {
     else None
   }
 
-  def initXSize = 20
-  def initYSize = 15
+  val initXSize = 20
+  val initYSize = 15
   
-  def bytesPerTile = 4
-  def dataArySize = initXSize*initYSize*bytesPerTile
+  val bytesPerTile = 3
+  
+  val autotileByte : Byte = -2
+  val emptyTileByte : Byte = -1
     
   def defaultMap = {
     RpgMap(1, -1, "Starting Map", 
@@ -93,9 +112,20 @@ object RpgMap {
                   "Refmap-TileE"))
   }
   
-  def defaultMapData = {
-    val dfltLayer = Array.fill[Byte](dataArySize)(0)
-    RpgMapData(dfltLayer, dfltLayer, dfltLayer)  
+  def emptyMapData(xSize: Int, ySize: Int) = {
+    val dataArySize = xSize*ySize*bytesPerTile
+    val autoLayer  = {
+      val a = Array[Byte](autotileByte,0,0)
+      Array.tabulate[Byte](dataArySize)(i => a(i))
+    }
+    val emptyLayer = { 
+      val a = Array[Byte](emptyTileByte,0,0)
+      Array.tabulate[Byte](dataArySize)(i => a(i))
+    }
+    
+    RpgMapData(autoLayer, emptyLayer, emptyLayer)
   }
+  
+  def defaultMapData = emptyMapData(initXSize, initYSize)
   
 }
