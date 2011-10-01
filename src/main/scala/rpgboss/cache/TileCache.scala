@@ -14,17 +14,16 @@ class TileCache(proj: Project, map: RpgMap, cacheMaxSize: Int) {
     .softValues()
     .maximumSize(cacheMaxSize)
     .expireAfterWrite(10, java.util.concurrent.TimeUnit.MINUTES)
-    .build(new CacheLoader[Integer, BufferedImage] {
-      def load(tilecode: Integer) = {
-        val tilesetIdx = (tilecode >>> 24).asInstanceOf[Byte]
-        val secondByte = (tilecode >>> 16)&0xff
-        val thirdByte = (tilecode >>> 8)&0xff
-        val frame = tilecode.asInstanceOf[Byte] // just the last bits
+    .build(new CacheLoader[(Byte, Byte, Byte, Byte), BufferedImage] {
+      def load(tileTuple: (Byte, Byte, Byte, Byte)) = {
+        val (tilesetIdx, secondByte, thirdByte, frame) = tileTuple
+        val secondBytePos = secondByte & 0xff
+        val thirdBytePos = thirdByte & 0xff
         
         if(tilesetIdx == RpgMap.autotileByte) {
           // Autotile
-          val autotileNum = secondByte
-          val autotileConfig = thirdByte
+          val autotileNum = secondBytePos
+          val autotileConfig = thirdBytePos
           
           if(autotiles.length > autotileNum) {
             autotiles(autotileNum).getTile(autotileConfig, frame)
@@ -32,8 +31,8 @@ class TileCache(proj: Project, map: RpgMap, cacheMaxSize: Int) {
           
         } else if(tilesetIdx >= 0) {
           // Regular tile
-          val x = secondByte
-          val y = thirdByte
+          val x = secondBytePos
+          val y = thirdBytePos
           
           if(tilesets.length > tilesetIdx) {
             tilesets(tilesetIdx).getTile(x, y)
@@ -44,13 +43,6 @@ class TileCache(proj: Project, map: RpgMap, cacheMaxSize: Int) {
     })
   
   // frame here means the animation frame
-  def getTileImage(mapData: Array[Byte], bi: Int, frame: Byte = 0) = {
-    val tilecode : Int = 
-      ((mapData(bi)&0xff) << 24) |
-      ((mapData(bi+1)&0xff) << 16) |
-      ((mapData(bi+2)&0xff) << 8) |
-      ((frame&0xff))
-    
-    cache.get(new Integer(tilecode))
-  }
+  def getTileImage(mapData: Array[Byte], bi: Int, frame: Byte = 0) =
+    cache.get((mapData(bi), mapData(bi+1), mapData(bi+2), frame))
 }
