@@ -5,7 +5,7 @@ import rpgboss.model._
 import java.awt.image._
 import com.google.common.cache._
 
-class TileCache(proj: Project, map: RpgMap, cacheMaxSize: Int) {
+class TileCache(proj: Project, map: RpgMap, cacheMaxSize: Int = 5000) {
   val autotiles = proj.autotiles.map(Autotile.readFromDisk(proj, _))
   val tilesets  = map.tilesets.map(Tileset.readFromDisk(proj, _))
   
@@ -43,6 +43,6 @@ class TileCache(proj: Project, map: RpgMap, cacheMaxSize: Int) {
     })
   
   // frame here means the animation frame
-  def getTileImage(mapData: Array[Byte], bi: Int, frame: Byte = 0) =
+  def getTileImage(mapData: Array[Byte], bi: Int, frame: Byte = 0) = 
     cache.get((mapData(bi), mapData(bi+1), mapData(bi+2), frame))
 }

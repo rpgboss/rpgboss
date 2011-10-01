@@ -116,11 +116,11 @@ object RpgMap {
     val dataArySize = xSize*ySize*bytesPerTile
     val autoLayer  = {
       val a = Array[Byte](autotileByte,0,0)
-      Array.tabulate[Byte](dataArySize)(i => a(i))
+      Array.tabulate[Byte](dataArySize)(i => a(i%a.length))
     }
     val emptyLayer = { 
       val a = Array[Byte](emptyTileByte,0,0)
-      Array.tabulate[Byte](dataArySize)(i => a(i))
+      Array.tabulate[Byte](dataArySize)(i => a(i%a.length))
     }
     
     RpgMapData(autoLayer, emptyLayer, emptyLayer)
