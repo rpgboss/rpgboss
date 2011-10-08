@@ -11,14 +11,32 @@ import rpgboss.model._
 import rpgboss.message._
 
 class ProjectPanel(mainP: MainPanel, project: Project)
-  extends BoxPanel(Orientation.Horizontal)
+  extends SplitPane(Orientation.Vertical)
 {
-  val stateMaster = new StateMaster(project)
+  val sm = new StateMaster(project)
   
-  val tilesetSidebar = new TilesetSidebar(stateMaster)
-  val mapSelector = new MapSelector(stateMaster, tilesetSidebar)
+  val tilesetSidebar = new TilesetSidebar(sm)
+  val mapSelector = new MapSelector(sm, this)
+  val mapView = new MapView(sm, tilesetSidebar)
   
-  contents += new SplitPane(Orientation.Horizontal, tilesetSidebar, mapSelector)
-  contents += new MapView()
+  topComponent =
+    new SplitPane(Orientation.Horizontal, tilesetSidebar, mapSelector)
+  bottomComponent = mapView
+  enabled = false
+  
+  def selectMap(map: RpgMap) = {
+    tilesetSidebar.selectMap(map)
+    mapView.selectMap(map)
+  }
+  
+  // select most recent or first map if not empty
+  if(!sm.maps.isEmpty) 
+  {
+    val recentMap = 
+      sm.maps.find(_.id == sm.proj.recentMapId) getOrElse sm.maps.head
+    selectMap(recentMap)
+  }
+  
+  mainP.revalidate()
 }
 

@@ -7,9 +7,12 @@ import rpgboss.model._
 import rpgboss.message._
 import rpgboss.rpgapplet.tileset._
 
-class MapSelector(sm: StateMaster, tsSidebar: TilesetSidebar) 
+class MapSelector(sm: StateMaster, projPanel: ProjectPanel) 
 extends Tree[HasName] 
 {
+  
+  preferredSize = new Dimension(8*32, 200)
+  
   def maps = sm.maps
   
   treeData = {
@@ -24,11 +27,4 @@ extends Tree[HasName]
   }
 
   expandPath(sm.proj :: Nil)
-  
-  // select most recent or first map if not empty
-  if(!maps.isEmpty) 
-  {
-    val recentMap = maps.find(_.id == sm.proj.recentMapId) getOrElse maps.head
-    tsSidebar.selectMap(recentMap)
-  }
 }

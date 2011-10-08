@@ -8,12 +8,12 @@ import rpgboss.message._
 
 import java.awt.image.BufferedImage
 
-class AutotileSelector(p: Project) 
+class AutotileSelector(proj: Project, tilesetSidebar: TilesetSidebar) 
 extends BoxPanel(Orientation.Vertical) {
   import Tileset.tilesize
   
   val autotiles : Vector[Autotile] = 
-    p.autotiles.map(Autotile.readFromDisk(p, _))
+    proj.autotiles.map(Autotile.readFromDisk(proj, _))
   
   // draw every autotile onto collageImage in one huge row.
   // ImageSelector will group them into 8s
@@ -26,9 +26,16 @@ extends BoxPanel(Orientation.Vertical) {
     
     autotiles.zipWithIndex map {
       case (autotile, i) => 
-        g.drawImage(autotile.representativeImg, i*tilesize, 0, null)
+        g.drawImage(autotile.isolatedImg, i*tilesize, 0, null)
     }
   }
   
-  contents += new ImageTileSelector(collageImage, t => Unit)
+  // x coordiate corresponds to tileset number,
+  // other two bytes we leave blank. 
+  contents += new ImageTileSelector(collageImage, tXYArray => 
+    tilesetSidebar.selectedTileCodes = tXYArray.map(_.map({
+      case (xTile, yTile) => 
+        (RpgMap.autotileByte, xTile, 0.asInstanceOf[Byte])
+    }))
+  )
 }

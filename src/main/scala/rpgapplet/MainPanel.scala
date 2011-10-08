@@ -8,6 +8,8 @@ import rpgboss.message._
 class MainPanel(val topWin: Window)
 extends BoxPanel(Orientation.Vertical) 
 {
+  minimumSize = new Dimension(800, 600)
+  
   def setContent(c: Component) = {
     contents.clear()
     contents += c

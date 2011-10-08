@@ -30,7 +30,8 @@ object RpgApplet extends Build
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
       "org.apache.sanselan" % "sanselan" % "0.97-incubator",
       "com.google.protobuf" % "protobuf-java" % "2.4.1",
-      "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
+      "net.java.dev.designgridlayout" % "designgridlayout" % "1.8",
+      "com.google.guava" % "guava" % "10.0" 
     ),
     fork in run := true
   )

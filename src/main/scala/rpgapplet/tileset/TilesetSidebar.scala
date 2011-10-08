@@ -11,38 +11,50 @@ import rpgboss.rpgapplet._
 import java.awt.image.BufferedImage
 
 class TilesetSidebar(sm: StateMaster)
-extends BoxPanel(Orientation.Vertical)
+extends BoxPanel(Orientation.Horizontal)
 {
+  val thisSidebar = this
+  
+  def defaultTileCodes = Array(Array(
+    (RpgMap.autotileByte, 0.asInstanceOf[Byte], 0.asInstanceOf[Byte])))
+  
+  // This var must always have at least be 1x1.
+  // array of row vectors, so selectedTileCodes(y)(x)
+  var selectedTileCodes : Array[Array[(Byte, Byte, Byte)]] = defaultTileCodes
+  
   def selectMap(map: RpgMap) = {
     val tilesetsPane = new TabbedPane() {
       tabPlacement(Alignment.Bottom)
-      pages += new TabbedPane.Page("Autotiles", new AutotileSelector(sm.proj))
       
+      val autotileSel = new AutotileSelector(sm.proj, TilesetSidebar.this)
+      pages += new TabbedPane.Page("Autotiles", autotileSel)
       
+      map.tilesets.zipWithIndex.map({
+        case (tsName, i) => 
+          val tileset = Tileset.readFromDisk(sm.proj, tsName)
+          val tabComponent = tileset.imageOpt.map { img =>
+            new ImageTileSelector(img, tXYArray =>
+              selectedTileCodes = tXYArray.map(_.map({
+                case (xTile, yTile) => 
+                  (i.asInstanceOf[Byte], xTile, yTile)
+              }))
+            )
+          } getOrElse new Label("No image")
+          
+          pages += new TabbedPane.Page(tsName, tabComponent)
+      })
+      
+      // select first Autotile code
+      selectedTileCodes = defaultTileCodes
     }
     
-    swapPanel.setContent(Some(tilesetsPane))
-  }
-  val toolbar = new BoxPanel(Orientation.Horizontal) {
-    val pencilBtn = new RadioButton("Pencil")
-    val bGrp = new ButtonGroup(pencilBtn)
-    
-    contents += pencilBtn
-    
-    contents += new Button(Action("Tileset Properties") {
-      
-    })
+    setContent(Some(tilesetsPane))
   }
   
-  val swapPanel = new BoxPanel(Orientation.Vertical) {
-    def setContent(cOpt: Option[Component]) = {
-      contents.clear()
-      cOpt map { contents += _ }
-      revalidate()
-    }
+  def setContent(cOpt: Option[Component]) = {
+    contents.clear()
+    cOpt map { contents += _ }
+    revalidate()
   }
-  
-  contents += toolbar
-  contents += swapPanel
 }
 
