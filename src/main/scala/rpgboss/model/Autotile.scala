@@ -8,6 +8,7 @@ import scala.collection.JavaConversions._
 
 import java.io._
 import java.awt.image.BufferedImage
+import java.awt.Graphics2D
 import javax.imageio.ImageIO
 
 case class Autotile(proj: Project,
@@ -24,37 +25,44 @@ extends ImageResource[Autotile]
       .setPassability(passability)
       .build().writeTo(fos)
   
-  def representativeImg() = {
+  private def draw(g: Graphics2D, srcImg: BufferedImage,
+                   srcXHt: Int, srcYHt: Int, destXHt: Int, destYHt: Int,
+                   widthHt: Int, heightHt: Int) =
+  {
+    val ht = tilesize/2
+    g.drawImage(srcImg,
+                destXHt*ht, destYHt*ht, 
+                (destXHt+widthHt)*ht, (destYHt+heightHt)*ht,
+                srcXHt*ht, srcYHt*ht, 
+                (srcXHt+widthHt)*ht, (srcYHt+heightHt)*ht,
+                null)
+  }
+  
+  // draw corner helper method
+  def drawCorner(g: Graphics2D, srcImg: BufferedImage, 
+                 srcXHt: Int, srcYHt: Int, destMask: Int) = 
+  {
+    val destXHt = if((destMask & NE) > 0 || (destMask & SE) > 0) 1 else 0
+    val destYHt = if((destMask & SE) > 0 || (destMask & SW) > 0) 1 else 0
+    
+    //println("Drawing a corner")
+    draw(g, srcImg, srcXHt, srcYHt, destXHt, destYHt, 1, 1)
+  }
+      
+  def isolatedImg() = {
     imageOpt map { img =>
       val targetImage = 
         new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_4BYTE_ABGR)
     
       val g = targetImage.createGraphics()
       
-      if(img.getHeight == 3*tilesize) {
-        g.drawImage(img, 
-                    0, 0, tilesize, tilesize,
-                    0, 0, tilesize, tilesize,
-                    null)
-      } else {
-        val halftile = tilesize/2
-        g.drawImage(img,
-                    0, 0, halftile, halftile,
-                    0, 0, halftile, halftile,
-                    null)
-        g.drawImage(img,
-                    halftile, 0, tilesize, halftile,
-                    tilesize+halftile, 0, 2*tilesize, halftile,
-                    null)
-        g.drawImage(img,
-                    0, halftile, halftile, tilesize,
-                    0, img.getHeight-halftile, halftile, img.getHeight,
-                    null)
-        g.drawImage(img,
-                    halftile, halftile, tilesize, tilesize,
-                    img.getWidth-halftile, img.getHeight-halftile,
-                    img.getWidth, img.getHeight,
-                    null)
+      if(img.getHeight == 3*tilesize)
+        draw(g, img, 0, 0, 0, 0, 2, 2)
+      else {
+        drawCorner(g, img, 0, 0, NW)
+        drawCorner(g, img, 3, 0, NE)
+        drawCorner(g, img, 0, 3, SW)
+        drawCorner(g, img, 3, 3, SE)
       }
       
       targetImage
@@ -67,6 +75,7 @@ extends ImageResource[Autotile]
   // autotileConfig must be a positive integer
   def getTile(autotileConfig: Int, frame: Byte) = imageOpt map { img =>
     require(autotileConfig >= 0, "Autotile config integer must be positive.")
+    require(frame >= 0, "Frame byte must be positive.")
     
     println("Autotile.getTile(%d, %d)".format(autotileConfig, frame))
     
@@ -76,73 +85,63 @@ extends ImageResource[Autotile]
     val g = tile.createGraphics()
     val c = autotileConfig
     val ht = tilesize/2
-    
-    g.drawRect(5, 5, 5, 5)
-    
-    // draw corner helper method
-    def drawCorner(srcXHt: Int, srcYHt: Int, destMask: Int) = {
-      val destX = 
-        if((destMask & NE) > 0 || (destMask & SE) > 0) ht else 0
-      val destY =
-        if((destMask & SE) > 0 || (destMask & SW) > 0) ht else 0
-      
-      g.drawImage(img,
-                  destX, destY, destX+ht, destY+ht,
-                  srcXHt*ht, srcYHt*ht, (srcXHt+1)*ht, (srcYHt+1)*ht,
-                  null)
+        
+    def drawCardinalEdges(srcImg: BufferedImage, yOffset: Int) = {
+      // draw cardinal direction edges
+      if((c & NORTH) > 0) draw(g, srcImg, 1, 0+yOffset, 0, 0, 2, 1)
+      if((c & EAST) > 0)  draw(g, srcImg, 3, 1+yOffset, 1, 0, 1, 2)
+      if((c & SOUTH) > 0) draw(g, srcImg, 1, 3+yOffset, 0, 1, 2, 1)
+      if((c & WEST) > 0)  draw(g, srcImg, 0, 1+yOffset, 0, 0, 1, 2)
     }
     
-    if(img.getHeight == 3*tilesize) {
-      if(autotileConfig == 0xff)
-        // completely isolated: draw isolated part
-        g.drawImage(img, 0, 0, tilesize, tilesize, null)
-      else {
-        // draw center portion. We'll fill in edges after.
-        g.drawImage(img, ht, ht*3, tilesize, tilesize, null)
+    if(autotileConfig == 0xff) // completely isolated
+      isolatedImg()
+    else if(img.getHeight == 3*tilesize) {
+      val framewidth = 2*tilesize
+      val availableFrames = img.getWidth / framewidth
+      val frameIdx = frame % availableFrames
+      
+      val frameImg = 
+        img.getSubimage(framewidth*frameIdx, 0, framewidth, img.getHeight)
+      
+      // draw center portion. We'll fill in edges after.
+      draw(g, frameImg, 1, 3, 0, 0, 2, 2)
+      
+      // handle edges and corners if exist
+      if(c > 0) {
+        drawCardinalEdges(frameImg, 2)
         
-        // handle edges and corners if exist
-        if(c > 0) {
-          // draw cardinal direction edges
-          if((c & NORTH) > 0)
-            g.drawImage(img,
-                        0, 0, 2*ht, 1*ht,
-                        1*ht, 2*ht, 3*ht, 3*ht, 
-                        null)
-          
-          if((c & EAST) > 0)
-            g.drawImage(img,
-                        1*ht, 0, 2*ht, 2*ht,
-                        3*ht, 3*ht ,4*ht, 5*ht,
-                        null)
-          
-          if((c & SOUTH) > 0)
-            g.drawImage(img,
-                        0, 1*ht, 2*ht, 2*ht,
-                        1*ht, 5*ht, 3*ht, 6*ht,
-                        null)
-          
-          if((c & WEST) > 0)
-            g.drawImage(img,
-                        0, 0, 1*ht, 2*ht,
-                        0, 3*ht, 1*ht, 5*ht,
-                        null)
-          
-          def handleCorner(cardinalDirs: Int, ordinalDir: Int,
-                           cornerXHt: Int, cornerYHt: Int,
-                           inverseXHt: Int, inverseYHt: Int) = {
-            if((c & cardinalDirs) == cardinalDirs)
-              drawCorner(cornerXHt*ht, cornerYHt*ht, ordinalDir)
-            else if((c & cardinalDirs) == 0 && (c & ordinalDir) > 0)
-              drawCorner(inverseXHt*ht, inverseYHt*ht, ordinalDir)
-          }
-          
-          handleCorner(NORTH|EAST, NE, 3, 2, 3, 0)
-          handleCorner(SOUTH|EAST, SE, 3, 5, 3, 1)
-          handleCorner(SOUTH|WEST, SW, 0, 5, 2, 1)
-          handleCorner(NORTH|WEST, NW, 0, 2, 2, 0)    
+        def handleCorner(cardinalDirs: Int, ordinalDir: Int,
+                         cornerXHt: Int, cornerYHt: Int,
+                         inverseXHt: Int, inverseYHt: Int) = {
+          if((c & cardinalDirs) == cardinalDirs)
+            drawCorner(g, frameImg, cornerXHt, cornerYHt, ordinalDir)
+          else if((c & cardinalDirs) == 0 && (c & ordinalDir) > 0)
+            drawCorner(g, frameImg, inverseXHt, inverseYHt, ordinalDir)
         }
+        
+        handleCorner(NORTH|EAST, NE, 3, 2, 3, 0)
+        handleCorner(SOUTH|EAST, SE, 3, 5, 3, 1)
+        handleCorner(SOUTH|WEST, SW, 0, 5, 2, 1)
+        handleCorner(NORTH|WEST, NW, 0, 2, 2, 0)    
       }
     } else {
+      draw(g, img, 1, 1, 0, 0, 2, 2) // draw whole center portion
+      
+      if(c > 0) {
+        drawCardinalEdges(img, 0)
+        
+        def handleCorner(cardinalDirs: Int, ordinalDir: Int,
+                         cornerXHt: Int, cornerYHt: Int) = {
+          if((c & cardinalDirs) == cardinalDirs)
+            drawCorner(g, img, cornerXHt, cornerYHt, ordinalDir)
+        }
+        
+        handleCorner(NORTH|EAST, NE, 3, 0)
+        handleCorner(SOUTH|EAST, SE, 3, 3)
+        handleCorner(SOUTH|WEST, SW, 0, 3)
+        handleCorner(NORTH|WEST, NW, 0, 0)    
+      }
     }
     
     tile

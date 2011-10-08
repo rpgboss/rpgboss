@@ -1,6 +1,7 @@
 package rpgboss.lib 
 import java.io._
 import scala.io.Source
+import java.awt._
   
 class FileHelper(file : File) {
   import FileHelper._
