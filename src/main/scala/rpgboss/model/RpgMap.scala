@@ -126,6 +126,8 @@ object RpgMap {
     RpgMapData(autoLayer, emptyLayer, emptyLayer)
   }
   
+  def dataIndex(x: Int, y: Int, xSize: Int) = (y*xSize+x)*bytesPerTile
+  
   def defaultMapData = emptyMapData(initXSize, initYSize)
   
 }
