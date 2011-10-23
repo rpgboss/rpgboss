@@ -12,58 +12,65 @@ import scala.math._
 import scala.swing._
 import scala.swing.event._
 
-//import java.awt._
+import java.awt.{Dimension, Rectangle}
 
-case class MapInfo(map: RpgMap, mapData: RpgMapData, tilecache: TileCache)
+// all units in tiles
+case class CursorSquare(xTile: Int, yTile: Int, xSize: Int, ySize: Int) {
+  def rect = MapUtils.tileRect(xTile, yTile, xSize, ySize)
+}
 
 class MapView(sm: StateMaster, tilesetSidebar: TilesetSidebar)
 extends BoxPanel(Orientation.Vertical)
 {
-  var curMapInfo : Option[MapInfo] = None
+  //--- VARIABLES ---//
+  var viewStateOpt : Option[MapViewState] = None
   var curTilesize = Tileset.tilesize
-    
-  val pencilBtn    = new RadioButton("Pencil")
-  val rectangleBtn = new RadioButton("Rectangle")
-  val elipseBtn    = new RadioButton("Elipse")
-  val selectBtn    = new RadioButton("Select")
   
+  //--- BUTTONS ---//
   def scaleButton(title: String, invScale: Int) = new RadioButton() { 
     action = Action(title) {
       curTilesize = Tileset.tilesize / invScale
-      canvasPanel.revalidate()
-      canvasPanel.repaint()
+      resizeRevalidateRepaint()
     }
-  } 
+  }
   
   val s11Btn = scaleButton("1/1", 1)
   val s12Btn = scaleButton("1/2", 2)
   val s14Btn = scaleButton("1/4", 4)
   
+  //--- WIDGETS --//
   val toolbar = new BoxPanel(Orientation.Horizontal) {
-    val tools = List(pencilBtn, rectangleBtn, elipseBtn, selectBtn)
-    val toolsGrp = new ButtonGroup(tools : _*)
-    toolsGrp.select(pencilBtn)
+    def addBtnsAsGrp(btns: List[RadioButton]) = {
+      val grp = new ButtonGroup(btns : _*)
+      grp.select(btns.head)
+      
+      contents ++= btns
+    }
     
-    val scales = List(s11Btn, s12Btn, s14Btn)
-    val scalesGrp = new ButtonGroup(scales : _*)
-    scalesGrp.select(s11Btn)
+    def enumButtons[T](enum: ListedEnum[T]) = 
+      enum.valueList.map { eVal =>
+        new RadioButton() {
+          action = Action(eVal.toString) { enum.selected = eVal }
+        }
+      }
     
-    contents ++= tools
-    contents ++= scales
+    addBtnsAsGrp(enumButtons(MapLayers))
+    addBtnsAsGrp(enumButtons(MapViewTools))
+    addBtnsAsGrp(List(s11Btn, s12Btn, s14Btn))
     
     contents += Swing.HGlue
   }
   
   val canvasPanel = new Panel() {
-    var cursorSquare : Option[(Int, Int, Int, Int)] = None
+    var cursorSquare : Option[CursorSquare] = None
     
     override def paintComponent(g: Graphics2D) =
     {
       super.paintComponent(g)
       
-      curMapInfo.map(mapInfo => {
+      viewStateOpt.map(vs => {
         def byteIdx(xTile: Int, yTile: Int) = 
-          (xTile + (yTile*mapInfo.map.xSize))*RpgMap.bytesPerTile
+          (xTile + (yTile*vs.mapMeta.xSize))*RpgMap.bytesPerTile
         
         val bounds = g.getClipBounds
         val tilesize = curTilesize
@@ -72,9 +79,9 @@ extends BoxPanel(Orientation.Vertical)
         val minYTile = (bounds.getMinY/tilesize).toInt
         
         val maxXTile = 
-          min(mapInfo.map.xSize-1, (bounds.getMaxX/tilesize).toInt)
+          min(vs.mapMeta.xSize-1, (bounds.getMaxX.toInt-1)/tilesize)
         val maxYTile = 
-          min(mapInfo.map.ySize-1, (bounds.getMaxY/tilesize).toInt)
+          min(vs.mapMeta.ySize-1, (bounds.getMaxY.toInt-1)/tilesize)
         
         g.clip(new Rectangle(minXTile*tilesize, minYTile*tilesize,
                              (maxXTile-minXTile+1)*tilesize,
@@ -84,11 +91,11 @@ extends BoxPanel(Orientation.Vertical)
           minXTile, maxXTile, minYTile, maxYTile))
         
         // draw tiles
-        mapInfo.mapData.drawOrder.map(curLayer => {
+        vs.nextMapData.drawOrder.map(layer => {
           for(xTile <- minXTile to maxXTile; yTile <- minYTile to maxYTile) {
             val bi = byteIdx(xTile, yTile)
-            if(curLayer(bi) != -1) {
-              val tileImg = mapInfo.tilecache.getTileImage(curLayer, bi, 0)
+            if(layer(bi) != -1) {
+              val tileImg = vs.tilecache.getTileImage(layer, bi, 0)
               
               g.drawImage(tileImg, 
                           xTile*tilesize, yTile*tilesize,
@@ -101,62 +108,109 @@ extends BoxPanel(Orientation.Vertical)
         
         // draw selection square
         cursorSquare map {
-          case(xTile, yTile, widthTiles, heightTiles) =>
+          case CursorSquare(xTile, yTile, widthTiles, heightTiles) =>
             GraphicsUtils.drawSelRect(g, xTile*curTilesize, yTile*curTilesize,
                                       widthTiles*curTilesize,
                                       heightTiles*curTilesize)
         }
-        
-        println("Canvaspanel size %s".format(size))
       })
     }
   }
   
-  def selectMap(map: RpgMap) = {
-    curMapInfo = map.readMapData(sm.proj).map(mapData => {
-      val tilecache = new TileCache(sm.proj, map)
-      Some(MapInfo(map, mapData, tilecache))
-    }) getOrElse {
-      Dialog.showMessage(this, "Map data file missing. Delete map.", 
-                         "Error", 
-                         Dialog.Message.Error)
-      None
-    }
-    
-    val mapDims = new Dimension(map.xSize*curTilesize, map.ySize*curTilesize) 
-    canvasPanel.preferredSize = mapDims      
-    
-    canvasPanel.revalidate()
-    canvasPanel.repaint()
-  }
-  
+  //--- ADDING WIDGETS ---//
   contents += toolbar
   contents += new ScrollPane(canvasPanel) {
     horizontalScrollBarPolicy = ScrollPane.BarPolicy.Always
     verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
   }
   
-  listenTo(canvasPanel.mouse.clicks, canvasPanel.mouse.moves)
-  
+  //--- MISC FUNCTIONS ---//
   def toTileCoords(p: Point) = 
     (p.getX.toInt/curTilesize, p.getY.toInt/curTilesize) 
+  
+  def resizeRevalidateRepaint() = {
+    canvasPanel.preferredSize = viewStateOpt.map { vs =>
+      new Dimension(vs.mapMeta.xSize*curTilesize,
+                    vs.mapMeta.ySize*curTilesize)
+    } getOrElse {
+      new Dimension(0,0)
+    }
+    
+    canvasPanel.revalidate()
+    canvasPanel.repaint()
+  }
+  
+  def selectMap(mapOpt: Option[RpgMap]) = {
+    viewStateOpt = mapOpt map { mapMeta =>
+      val tc = new TileCache(sm.proj, mapMeta)
+      new MapViewState(sm, mapMeta.id, tc)
+    }
+      
+    resizeRevalidateRepaint()
+  }
+  
+  // Returns Rectangle to redraw
+  def updateCursorSq(visible: Boolean, x: Int = 0, y: Int = 0) : Rectangle = {
+    def rectOption(c: Option[CursorSquare]) = 
+      c.map(_.rect) getOrElse new Rectangle()
+    
+    val oldSq = canvasPanel.cursorSquare
+    val newSq = if(visible) {
+      val tCodes = tilesetSidebar.selectedTileCodes 
+      assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
+      Some(CursorSquare(x, y, tCodes(0).length, tCodes.length))
+    } else None
+    
+    if(oldSq != newSq) {
+      canvasPanel.cursorSquare = newSq
+      rectOption(oldSq) union rectOption(newSq)
+    } else new Rectangle()
+  }
+  
+  //--- REACTIONS ---//
+  listenTo(canvasPanel.mouse.clicks, canvasPanel.mouse.moves)
+  
   
   reactions += {
     case MouseMoved(`canvasPanel`, p, _) => {
       val (tileX, tileY) = toTileCoords(p)
-      
-      val tCodes = tilesetSidebar.selectedTileCodes 
-      assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
-      
-      val newCursorSq = Some((tileX, tileY, tCodes(0).length, tCodes.length))
-      
-      if(canvasPanel.cursorSquare != newCursorSq) {
-        canvasPanel.cursorSquare = newCursorSq
-        canvasPanel.repaint()
-      }
+      canvasPanel.repaint(updateCursorSq(true, tileX, tileY))
     }
     case MouseExited(`canvasPanel`, _, _) =>
-      canvasPanel.cursorSquare = None
-      canvasPanel.repaint()
+      canvasPanel.repaint(updateCursorSq(false))
+    case MousePressed(`canvasPanel`, point, _, _, _) => {
+      viewStateOpt map { vs => 
+        val tCodes = tilesetSidebar.selectedTileCodes
+        val tool = MapViewTools.selected
+        val (x1, y1) = toTileCoords(point)
+        
+        def repaintRegions(r1: Rectangle, r2: Rectangle = new Rectangle()) =
+          canvasPanel.repaint(r1 union r2)
+        
+        repaintRegions(
+          updateCursorSq(tool.selectionSqOnDrag, x1, y1),
+          MapViewTools.selected.onMousePressed(vs, tCodes, x1, y1))
+        
+        lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
+          case MouseDragged(`canvasPanel`, point, _) => {
+            val (x2, y2) = toTileCoords(point)
+            
+            repaintRegions(
+              updateCursorSq(tool.selectionSqOnDrag, x2, y2),
+              MapViewTools.selected.onMouseDragged(vs, tCodes, x1, y1, x2, y2))
+          }
+          case MouseReleased(`canvasPanel`, point, _, _, _) => {
+            val (x2, y2) = toTileCoords(point)
+            vs.commitNextData()
+            
+            repaintRegions(updateCursorSq(true, x2, y2))
+            
+            reactions -= temporaryReactions
+          }
+        }
+        
+        reactions += temporaryReactions
+      }
+    }
   }
 }

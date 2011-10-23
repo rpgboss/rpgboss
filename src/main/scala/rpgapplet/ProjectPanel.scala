@@ -24,18 +24,24 @@ class ProjectPanel(mainP: MainPanel, project: Project)
   bottomComponent = mapView
   enabled = false
   
-  def selectMap(map: RpgMap) = {
-    tilesetSidebar.selectMap(map)
-    mapView.selectMap(map)
+  def selectMap(mapOpt: Option[RpgMap]) = {
+    tilesetSidebar.selectMap(mapOpt)
+    mapView.selectMap(mapOpt)
   }
   
   // select most recent or first map if not empty
-  if(!sm.maps.isEmpty) 
-  {
-    val recentMap = 
-      sm.maps.find(_.id == sm.proj.recentMapId) getOrElse sm.maps.head
-    selectMap(recentMap)
-  }
+  selectMap({
+    if(!sm.maps.isEmpty) {
+      val idToLoad =
+        if(sm.maps.contains(sm.proj.recentMapId))
+          sm.proj.recentMapId
+        else
+          sm.maps.keys.min
+      
+      sm.maps.get(idToLoad).map(_.mapMeta)
+    }
+    else None
+  })
   
   mainP.revalidate()
 }

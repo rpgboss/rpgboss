@@ -35,7 +35,7 @@ extends BoxPanel(Orientation.Vertical) {
   contents += new ImageTileSelector(collageImage, tXYArray => 
     tilesetSidebar.selectedTileCodes = tXYArray.map(_.map({
       case (xTile, yTile) => 
-        (RpgMap.autotileByte, xTile, 0.asInstanceOf[Byte])
+        Array(RpgMap.autotileByte, xTile, 0.asInstanceOf[Byte])
     }))
   )
 }
