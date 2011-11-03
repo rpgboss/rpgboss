@@ -1,12 +1,13 @@
 package rpgboss.rpgapplet
 
-import rpgboss.lib.Utils._
+import rpgboss.lib._
 import rpgboss.cache._
 import rpgboss.model._
 import rpgboss.message._
 
 import rpgboss.rpgapplet.tileset._
 import rpgboss.rpgapplet.lib._
+import rpgboss.rpgapplet.lib.GraphicsUtils._
 
 import scala.math._
 import scala.swing._
@@ -16,7 +17,7 @@ import java.awt.{Dimension, Rectangle}
 
 // all units in tiles
 case class CursorSquare(xTile: Int, yTile: Int, xSize: Int, ySize: Int) {
-  def rect = MapUtils.tileRect(xTile, yTile, xSize, ySize)
+  def rect = tileRect(xTile, yTile, xSize, ySize)
 }
 
 class MapView(sm: StateMaster, tilesetSidebar: TilesetSidebar)
@@ -152,7 +153,7 @@ extends BoxPanel(Orientation.Vertical)
   // Returns Rectangle to redraw
   def updateCursorSq(visible: Boolean, x: Int = 0, y: Int = 0) : Rectangle = {
     def rectOption(c: Option[CursorSquare]) = 
-      c.map(_.rect) getOrElse new Rectangle()
+      c.map(_.rect) getOrElse NilRect()
     
     val oldSq = canvasPanel.cursorSquare
     val newSq = if(visible) {
@@ -164,7 +165,7 @@ extends BoxPanel(Orientation.Vertical)
     if(oldSq != newSq) {
       canvasPanel.cursorSquare = newSq
       rectOption(oldSq) union rectOption(newSq)
-    } else new Rectangle()
+    } else NilRect()
   }
   
   //--- REACTIONS ---//
@@ -184,7 +185,7 @@ extends BoxPanel(Orientation.Vertical)
         val tool = MapViewTools.selected
         val (x1, y1) = toTileCoords(point)
         
-        def repaintRegions(r1: Rectangle, r2: Rectangle = new Rectangle()) =
+        def repaintRegions(r1: Rectangle, r2: Rectangle = NilRect()) =
           canvasPanel.repaint(r1 union r2)
         
         repaintRegions(

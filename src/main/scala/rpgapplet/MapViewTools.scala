@@ -19,9 +19,7 @@ trait MapViewTool {
 object MapViewTools extends ListedEnum[MapViewTool] {
   case object Pencil extends MapViewTool {
     val name = "Pencil"
-    def onMousePressed(vs: MapViewState, 
-                       tCodes: Array[Array[Array[Byte]]], 
-                       x: Int, y: Int) = 
+    def onMousePressed(vs, tCodes, x, y) = 
     {
       import MapLayers._
       
@@ -45,16 +43,14 @@ object MapViewTools extends ListedEnum[MapViewTool] {
         }
       }
       
-      MapUtils.tileRect(x, y, tCodes(0).length, tCodes.length)
+      GraphicsUtils.tileRect(x, y, tCodes(0).length, tCodes.length)
     }
-    def onMouseDragged(vs: MapViewState, 
-                       tCodes: Array[Array[Array[Byte]]],
-                       x1: Int, y1: Int, x2: Int, y2: Int) = 
+    def onMouseDragged(vs, tCodes, x1, y1, x2, y2) = 
     {
       onMousePressed(vs, tCodes, x2, y2) // no difference
     }
   }
   
   val valueList = List(Pencil)
-  def defaultSelection = Pencil
+  selected = Pencil
 }

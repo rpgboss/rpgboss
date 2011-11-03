@@ -12,14 +12,17 @@ import scala.math._
 
 trait ListedEnum[T] {
   def valueList : List[T]
-  def defaultSelection : T
-  var selected = defaultSelection
+  private var selectedVar : T = null.asInstanceOf[T]
+  
+  def selected : T = selectedVar
+  def selected_=(x: T) = selectedVar = x 
 }
 
 object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
   val Bot, Mid, Top, Evt = Value
   val valueList = List(Bot, Mid, Top, Evt)
-  def defaultSelection = Bot
+  
+  selected = Bot
 }
 
 // The view state for a single map. Needs to be recreated for a different map
