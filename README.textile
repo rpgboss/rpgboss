@@ -1,0 +1,21 @@
+h1. rpgboss-editor
+
+RPG game editor.
+
+h2. License
+
+Licensed under AGPL3.
+
+h2. Building
+
+Use sbt 0.10 series.
+
+This depends on the rpgboss-rpglib package. Copy rpgboss-rpglib jar into the lib/ folder of the project root directory.
+
+h2. Material
+
+This package includes material derived from:
+http://www.tekepon.net/fsm/
+
+Material license: 
+http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
