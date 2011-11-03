@@ -1,6 +1,6 @@
-package rpgboss.rpgapplet
+package rpgboss.editor
 
-import rpgboss.rpgapplet.lib._
+import rpgboss.editor.lib._
 import rpgboss.model._
 import java.awt.Rectangle
 

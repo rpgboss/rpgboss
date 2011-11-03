@@ -1,7 +1,7 @@
-package rpgboss.rpgapplet
+package rpgboss.editor
 
-import rpgboss.rpgapplet.lib._
-import rpgboss.rpgapplet.tileset._
+import rpgboss.editor.lib._
+import rpgboss.editor.tileset._
 
 import rpgboss.model._
 import rpgboss.message._

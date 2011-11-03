@@ -1,8 +1,8 @@
-package rpgboss.rpgapplet
+package rpgboss.editor
 
-import rpgboss.rpgapplet.dialog._
-import rpgboss.rpgapplet.lib._
-import rpgboss.rpgapplet.tileset._
+import rpgboss.editor.dialog._
+import rpgboss.editor.lib._
+import rpgboss.editor.tileset._
 
 import scala.swing._
 import scala.swing.event._

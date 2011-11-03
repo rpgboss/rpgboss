@@ -1,4 +1,4 @@
-package rpgboss.rpgapplet.tileset
+package rpgboss.editor.tileset
 
 import scala.swing._
 import scala.swing.event._
@@ -6,7 +6,7 @@ import scala.swing.event._
 import rpgboss.model._
 import rpgboss.message._
 
-import rpgboss.rpgapplet._
+import rpgboss.editor._
 
 import java.awt.image.BufferedImage
 

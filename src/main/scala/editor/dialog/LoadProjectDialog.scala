@@ -1,6 +1,6 @@
-package rpgboss.rpgapplet.dialog
+package rpgboss.editor.dialog
 
-import rpgboss.rpgapplet.lib._
+import rpgboss.editor.lib._
 import scala.swing._
 import scala.swing.event._
 

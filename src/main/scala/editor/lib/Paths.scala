@@ -1,8 +1,8 @@
-package rpgboss.rpgapplet.lib
+package rpgboss.editor.lib
 
 import scala.swing._
 import scala.swing.event._
-import rpgboss.rpgapplet._
+import rpgboss.editor._
 
 object Paths {
   def getRootChooserPanel(changedCallback: () => Unit) = 

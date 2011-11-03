@@ -1,11 +1,11 @@
-package rpgboss.rpgapplet
+package rpgboss.editor
 
 import scala.swing._
 
 import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.message._
-import rpgboss.rpgapplet.tileset._
+import rpgboss.editor.tileset._
 
 class MapSelector(sm: StateMaster, projPanel: ProjectPanel) 
 extends Tree[HasName] 

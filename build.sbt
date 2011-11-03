@@ -17,13 +17,13 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "10.0"
 )
 
-mainClass in (Compile, run) := Some("rpgboss.rpgapplet.RpgDesktop")
+mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop")
 
 scalacOptions ++= List("-deprecation", "-Xexperimental")
 
 proguardOptions ++= List(
   "-dontshrink",
-  "-keep class rpgboss.rpgapplet.RpgApplet",
+  "-keep class rpgboss.editor.RpgApplet",
   """-keepclasseswithmembers public class * {
        public static void main(java.lang.String[]);
   }""")

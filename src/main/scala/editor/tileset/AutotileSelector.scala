@@ -1,4 +1,4 @@
-package rpgboss.rpgapplet.tileset
+package rpgboss.editor.tileset
 
 import scala.swing._
 import scala.swing.event._

@@ -1,13 +1,13 @@
-package rpgboss.rpgapplet
+package rpgboss.editor
 
 import rpgboss.lib._
 import rpgboss.cache._
 import rpgboss.model._
 import rpgboss.message._
 
-import rpgboss.rpgapplet.tileset._
-import rpgboss.rpgapplet.lib._
-import rpgboss.rpgapplet.lib.GraphicsUtils._
+import rpgboss.editor.tileset._
+import rpgboss.editor.lib._
+import rpgboss.editor.lib.GraphicsUtils._
 
 import scala.math._
 import scala.swing._

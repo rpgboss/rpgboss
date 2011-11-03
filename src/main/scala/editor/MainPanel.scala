@@ -1,4 +1,4 @@
-package rpgboss.rpgapplet
+package rpgboss.editor
 
 import scala.swing._
 

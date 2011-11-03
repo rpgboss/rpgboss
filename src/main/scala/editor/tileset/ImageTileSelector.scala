@@ -1,4 +1,4 @@
-package rpgboss.rpgapplet.tileset
+package rpgboss.editor.tileset
 
 import scala.math._
 import scala.swing._
@@ -7,7 +7,7 @@ import scala.swing.event._
 import rpgboss.lib.Utils._
 import rpgboss.model._
 import rpgboss.message._
-import rpgboss.rpgapplet.lib._
+import rpgboss.editor.lib._
 
 import java.awt.image.BufferedImage
 import java.awt.{Point, Color}
