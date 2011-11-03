@@ -1,0 +1,11 @@
+h1. rpgboss-rpglib
+
+Library used by rpgboss-editor and rpgboss-player.
+
+h2. License
+
+Licensed under AGPL3.
+
+h2. Building
+
+Use sbt 0.10 series.
