@@ -20,6 +20,9 @@ extends ImageResource[Autotile]
   import Autotile.DirectionMasks._
   def meta = Autotile
   
+  lazy val terrainMode = 
+    imageOpt.map(_.getHeight == 3*tilesize).getOrElse(false)
+  
   def writeMetadataToFos(fos: FileOutputStream) =
     AutotileMetadata.newBuilder()
       .setPassability(passability)
@@ -48,7 +51,7 @@ extends ImageResource[Autotile]
     //println("Drawing a corner")
     draw(g, srcImg, srcXHt, srcYHt, destXHt, destYHt, 1, 1)
   }
-      
+  
   def isolatedImg() = {
     imageOpt map { img =>
       val targetImage = 
@@ -56,7 +59,7 @@ extends ImageResource[Autotile]
     
       val g = targetImage.createGraphics()
       
-      if(img.getHeight == 3*tilesize)
+      if(terrainMode)
         draw(g, img, 0, 0, 0, 0, 2, 2)
       else {
         drawCorner(g, img, 0, 0, NW)
@@ -79,72 +82,77 @@ extends ImageResource[Autotile]
     
     println("Autotile.getTile(%d, %d)".format(autotileConfig, frame))
     
-    val tile = 
-      new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_4BYTE_ABGR)
-    
-    val g = tile.createGraphics()
-    val c = autotileConfig
-    val ht = tilesize/2
-        
-    def drawCardinalEdges(srcImg: BufferedImage, yOffset: Int) = {
-      // draw cardinal direction edges
-      if((c & NORTH) > 0) draw(g, srcImg, 1, 0+yOffset, 0, 0, 2, 1)
-      if((c & EAST) > 0)  draw(g, srcImg, 3, 1+yOffset, 1, 0, 1, 2)
-      if((c & SOUTH) > 0) draw(g, srcImg, 1, 3+yOffset, 0, 1, 2, 1)
-      if((c & WEST) > 0)  draw(g, srcImg, 0, 1+yOffset, 0, 0, 1, 2)
-    }
-    
-    if(autotileConfig == 0xff) // completely isolated
+    if(autotileConfig == 0xff) {
+      // completely isolated
+      println("Return isolated img")
       isolatedImg()
-    else if(img.getHeight == 3*tilesize) {
-      val framewidth = 2*tilesize
-      val availableFrames = img.getWidth / framewidth
-      val frameIdx = frame % availableFrames
-      
-      val frameImg = 
-        img.getSubimage(framewidth*frameIdx, 0, framewidth, img.getHeight)
-      
-      // draw center portion. We'll fill in edges after.
-      draw(g, frameImg, 1, 3, 0, 0, 2, 2)
-      
-      // handle edges and corners if exist
-      if(c > 0) {
-        drawCardinalEdges(frameImg, 2)
-        
-        def handleCorner(cardinalDirs: Int, ordinalDir: Int,
-                         cornerXHt: Int, cornerYHt: Int,
-                         inverseXHt: Int, inverseYHt: Int) = {
-          if((c & cardinalDirs) == cardinalDirs)
-            drawCorner(g, frameImg, cornerXHt, cornerYHt, ordinalDir)
-          else if((c & cardinalDirs) == 0 && (c & ordinalDir) > 0)
-            drawCorner(g, frameImg, inverseXHt, inverseYHt, ordinalDir)
-        }
-        
-        handleCorner(NORTH|EAST, NE, 3, 2, 3, 0)
-        handleCorner(SOUTH|EAST, SE, 3, 5, 3, 1)
-        handleCorner(SOUTH|WEST, SW, 0, 5, 2, 1)
-        handleCorner(NORTH|WEST, NW, 0, 2, 2, 0)    
-      }
     } else {
-      draw(g, img, 1, 1, 0, 0, 2, 2) // draw whole center portion
-      
-      if(c > 0) {
-        drawCardinalEdges(img, 0)
-        
-        def handleCorner(cardinalDirs: Int, ordinalDir: Int,
-                         cornerXHt: Int, cornerYHt: Int) = {
-          if((c & cardinalDirs) == cardinalDirs)
-            drawCorner(g, img, cornerXHt, cornerYHt, ordinalDir)
-        }
-        
-        handleCorner(NORTH|EAST, NE, 3, 0)
-        handleCorner(SOUTH|EAST, SE, 3, 3)
-        handleCorner(SOUTH|WEST, SW, 0, 3)
-        handleCorner(NORTH|WEST, NW, 0, 0)    
-      }
-    }
     
-    tile
+      val tile = 
+        new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_4BYTE_ABGR)
+      
+      val g = tile.createGraphics()
+      val c = autotileConfig
+      val ht = tilesize/2
+          
+      def drawCardinalEdges(srcImg: BufferedImage, yOffset: Int) = {
+        // draw cardinal direction edges
+        if((c & NORTH) > 0) draw(g, srcImg, 1, 0+yOffset, 0, 0, 2, 1)
+        if((c & EAST) > 0)  draw(g, srcImg, 3, 1+yOffset, 1, 0, 1, 2)
+        if((c & SOUTH) > 0) draw(g, srcImg, 1, 3+yOffset, 0, 1, 2, 1)
+        if((c & WEST) > 0)  draw(g, srcImg, 0, 1+yOffset, 0, 0, 1, 2)
+      }
+      
+      if(terrainMode) {
+        val framewidth = 2*tilesize
+        val availableFrames = img.getWidth / framewidth
+        val frameIdx = frame % availableFrames
+        
+        val frameImg = 
+          img.getSubimage(framewidth*frameIdx, 0, framewidth, img.getHeight)
+        
+        // draw center portion. We'll fill in edges after.
+        draw(g, frameImg, 1, 3, 0, 0, 2, 2)
+        
+        // handle edges and corners if exist
+        if(c > 0) {
+          drawCardinalEdges(frameImg, 2)
+          
+          def handleCorner(cardinalDirs: Int, ordinalDir: Int,
+                           cornerXHt: Int, cornerYHt: Int,
+                           inverseXHt: Int, inverseYHt: Int) = {
+            if((c & cardinalDirs) == cardinalDirs)
+              drawCorner(g, frameImg, cornerXHt, cornerYHt, ordinalDir)
+            else if((c & cardinalDirs) == 0 && (c & ordinalDir) > 0)
+              drawCorner(g, frameImg, inverseXHt, inverseYHt, ordinalDir)
+          }
+          
+          handleCorner(NORTH|EAST, NE, 3, 2, 3, 0)
+          handleCorner(SOUTH|EAST, SE, 3, 5, 3, 1)
+          handleCorner(SOUTH|WEST, SW, 0, 5, 2, 1)
+          handleCorner(NORTH|WEST, NW, 0, 2, 2, 0)    
+        }
+      } else {
+        draw(g, img, 1, 1, 0, 0, 2, 2) // draw whole center portion
+        
+        if(c > 0) {
+          drawCardinalEdges(img, 0)
+          
+          def handleCorner(cardinalDirs: Int, ordinalDir: Int,
+                           cornerXHt: Int, cornerYHt: Int) = {
+            if((c & cardinalDirs) == cardinalDirs)
+              drawCorner(g, img, cornerXHt, cornerYHt, ordinalDir)
+          }
+          
+          handleCorner(NORTH|EAST, NE, 3, 0)
+          handleCorner(SOUTH|EAST, SE, 3, 3)
+          handleCorner(SOUTH|WEST, SW, 0, 3)
+          handleCorner(NORTH|WEST, NW, 0, 0)    
+        }
+      }
+      
+      tile
+    }
   } getOrElse ImageResource.errorTile
 }
 
@@ -161,6 +169,8 @@ object Autotile extends MetaResource[Autotile] {
     Autotile(proj, name, m.getPassability.toShort)
   }
   
+  // The mask is ON if that direction contains a tile DIFFERENT from
+  // the current autotile type
   object DirectionMasks {
     val NORTH = 1 << 0
     val EAST  = 1 << 1
@@ -170,5 +180,16 @@ object Autotile extends MetaResource[Autotile] {
     val SE    = 1 << 5
     val SW    = 1 << 6
     val NW    = 1 << 7
-  }
+    
+    val offsets = Map(
+      NORTH->(0, -1),
+      EAST ->(1, 0),
+      SOUTH->(0, 1),
+      WEST ->(-1, 0),
+      NE   ->(1, -1),
+      SE   ->(1, 1),
+      SW   ->(-1, 1),
+      NW   ->(-1, -1)
+    )
+  } 
 }
