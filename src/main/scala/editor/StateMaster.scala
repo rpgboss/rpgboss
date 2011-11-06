@@ -27,6 +27,8 @@ class StateMaster(projectArgument: Project)
     Map(states : _*)
   }
   
+  var autotiles = proj.autotiles.map(Autotile.readFromDisk(proj, _))
+  
   def getMapMetas = maps.values.map(_.mapMeta).toSeq
   
   // Must be sure that mapId exists and map data loaded to call
