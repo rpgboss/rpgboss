@@ -82,30 +82,37 @@ extends ScrollPane
     selectTileF(selectedTiles)
   }
   
+  // If xTile and yTile are within the bounds of the image in selector space
+  def inBounds(xTile: Int, yTile: Int) =
+    xTile < xTilesVisible && yTile < imageSlices*yTiles
+  
   reactions += {
     
     case MousePressed(`canvasPanel`, point, _, _, _) => {
       val (x1, y1) = toSelTiles(point)
-      
-      xRngInSelectorSpace = x1 to x1
-      yRngInSelectorSpace = y1 to y1
-      canvasPanel.repaint()
-      
-     lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
-        case MouseDragged(`canvasPanel`, point, _) => {
-          val (x2, y2) = toSelTiles(point)
-      
-          xRngInSelectorSpace = min(x1, x2) to max(x1, x2)
-          yRngInSelectorSpace = min(y1, y2) to max(y1, y2)
-          canvasPanel.repaint()
+      if(inBounds(x1, y1)) {
+        xRngInSelectorSpace = x1 to x1
+        yRngInSelectorSpace = y1 to y1
+        canvasPanel.repaint()
+        
+        lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
+          case MouseDragged(`canvasPanel`, point, _) => {
+            val (x2, y2) = toSelTiles(point)
+            if(inBounds(x2, y2)) {
+          
+              xRngInSelectorSpace = min(x1, x2) to max(x1, x2)
+              yRngInSelectorSpace = min(y1, y2) to max(y1, y2)
+              canvasPanel.repaint()
+            }
+          }
+          case MouseReleased(`canvasPanel`, point, _, _, _) => {
+            triggerSelectTileF()
+            reactions -= temporaryReactions
+          }
         }
-        case MouseReleased(`canvasPanel`, point, _, _, _) => {
-          triggerSelectTileF()
-          reactions -= temporaryReactions
-        }
+        
+        reactions += temporaryReactions
       }
-      
-      reactions += temporaryReactions
     }
   }
   
