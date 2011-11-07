@@ -3,6 +3,7 @@ package rpgboss.editor
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
 import rpgboss.model._
+import rpgboss.model.Autotile.DirectionMasks._
 import rpgboss.model.RpgMap._
 
 import scala.annotation.tailrec
@@ -35,18 +36,39 @@ object MapViewTools extends ListedEnum[MapViewTool] {
       for(x <- x0-1 to x1+1;
           y <- y0-1 to y1+1;
           if withinBounds(mapMeta, x, y)) yield (x, y)
-    
+
+    // some utility functions
     def idx(x: Int, y: Int) = dataIndex(x, y, mapMeta.xSize)
+    def isAutotile(x: Int, y: Int) = layerAry(idx(x, y)) == autotileByte
+    def getAutotileNum(x: Int, y: Int) = layerAry(idx(x, y)+1) & 0xff
+    def findLastAutotile(autotileNum: Int, begin: IntVec, dir: Int) =
+    {
+      val dirOffset = offsets(dir)
+      @tailrec def testTile(cur: IntVec) : IntVec = {
+        val nextTile = cur+dirOffset
+        // stop if next is out of bounds, non autotile, or diferent autotile
+        if( !withinBounds(mapMeta, nextTile.x, nextTile.y) ||
+            !isAutotile(nextTile.x, nextTile.y) ||
+            getAutotileNum(nextTile.x, nextTile.y) != autotileNum )
+          cur 
+        else 
+          testTile(nextTile)
+      }
+      testTile(begin)
+    }
           
     // assume all tiles in set are within bounds
     @tailrec def setFirstTile(tilesRemainingToSet: Seq[(Int, Int)],
                               accumRect: Rectangle = NilRect()) : Rectangle = 
     {
-      if(!tilesRemainingToSet.isEmpty) {
+      if(tilesRemainingToSet.isEmpty) accumRect else {
         val (x, y) = tilesRemainingToSet.head
-        def getAutotileNum(x: Int, y: Int) = layerAry(idx(x, y)+1) & 0xff
         
         val autotileNum = getAutotileNum(x, y)
+        def sameType(xTest: Int, yTest: Int) = 
+          getAutotileNum(xTest, yTest) == autotileNum        
+        def mask(tileI: Int, maskInt: Int) =
+          layerAry.update(tileI+2, maskInt.asInstanceOf[Byte])
         
         if(autotiles.length > autotileNum) {
           val autotile = autotiles(autotileNum)
@@ -57,19 +79,46 @@ object MapViewTools extends ListedEnum[MapViewTool] {
             var newConfig = 0
             for((mask, (dx, dy)) <- Autotile.DirectionMasks.offsets;
                 if withinBounds(mapMeta, x+dx, y+dy);
-                if getAutotileNum(x+dx, y+dy) != autotileNum)
+                if !sameType(x+dx, y+dy))
               newConfig = newConfig | mask
             
-            layerAry.update(idx(x,y)+2, newConfig.asInstanceOf[Byte])
+            mask(idx(x,y), newConfig)
             setFirstTile(
               tilesRemainingToSet.tail, accumRect union tileRect(x, y))
           } else {
-            println("No terrain")
-            setFirstTile(tilesRemainingToSet.tail, accumRect)
+            val findLast = findLastAutotile(autotileNum, _: IntVec, _: Int)
+            val wallNorth = findLast((x,y), NORTH).y
+            val wallSouth = findLast((x,y), SOUTH).y
+            val wallWest  = findLast((x, wallNorth), WEST).x
+            val wallEast  = findLast((x, wallNorth), EAST).x
+            
+            for(xInWall <- wallWest to wallEast;
+                yInWall <- wallNorth to wallSouth;
+                if sameType(xInWall, yInWall)) 
+            {
+              var newConfig = 0
+              if(xInWall == wallWest)  newConfig |= WEST
+              if(xInWall == wallEast)  newConfig |= EAST
+              if(yInWall == wallNorth) newConfig |= NORTH
+              if(yInWall == wallSouth) newConfig |= SOUTH
+              mask(idx(xInWall, yInWall), newConfig)
+            }
+            
+            // only choose tiles that are not in the wall we just calculated
+            val remaining = tilesRemainingToSet.tail.filterNot {
+              case (xRem, yRem) => 
+                xRem >= wallWest && xRem <= wallEast && 
+                yRem >= wallNorth && yRem <= wallSouth
+            }
+            
+            val newRect = accumRect union tileRect(
+              wallEast, wallNorth, wallWest-wallEast+1, wallSouth-wallNorth+1)
+                       
+            setFirstTile(remaining, newRect)
           }
           
         } else setFirstTile(tilesRemainingToSet.tail, accumRect) // do nothing
-      } else accumRect
+      }
     }
     
     setFirstTile(initialSeqOfTiles)

@@ -27,4 +27,12 @@ object GraphicsUtils {
   }
   
   def NilRect() = new Rectangle(0, 0, -1, -1)
+  
+  case class IntVec(tup: Tuple2[Int, Int]) {
+    def x = tup._1
+    def y = tup._2
+    def +(other: IntVec) = IntVec((x+other.x, y+other.y))
+  }
+  
+  implicit def toIntVec(tup: Tuple2[Int, Int]) = IntVec(tup)
 }
