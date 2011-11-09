@@ -32,41 +32,43 @@ object MapViewTools extends ListedEnum[MapViewTool] {
                        layerAry: Array[Byte],  
                        x0: Int, y0: Int, x1: Int, y1: Int) = 
   {
-    val initialSeqOfTiles =
-      for(x <- x0-1 to x1+1;
-          y <- y0-1 to y1+1;
-          if withinBounds(mapMeta, x, y)) yield (x, y)
-
     // some utility functions
     def idx(x: Int, y: Int) = dataIndex(x, y, mapMeta.xSize)
     def isAutotile(x: Int, y: Int) = layerAry(idx(x, y)) == autotileByte
     def getAutotileNum(x: Int, y: Int) = layerAry(idx(x, y)+1) & 0xff
-    def findLastAutotile(autotileNum: Int, begin: IntVec, dir: Int) =
+    def findLast(stopPredicate: IntVec => Boolean, begin: IntVec, dir: Int) =
     {
       val dirOffset = offsets(dir)
       @tailrec def testTile(cur: IntVec) : IntVec = {
         val nextTile = cur+dirOffset
         // stop if next is out of bounds, non autotile, or diferent autotile
-        if( !withinBounds(mapMeta, nextTile.x, nextTile.y) ||
-            !isAutotile(nextTile.x, nextTile.y) ||
-            getAutotileNum(nextTile.x, nextTile.y) != autotileNum )
-          cur 
-        else 
-          testTile(nextTile)
+        if(stopPredicate(nextTile)) cur else testTile(nextTile)
       }
       testTile(begin)
     }
+    
+    // Only need to adjust autotiles in this rect
+    val initialSeqOfTiles =
+      for(x <- x0-1 to x1+1;
+          y <- y0-1 to y1+1;
+          if withinBounds(mapMeta, x, y) && isAutotile(x,y)) yield (x, y)
           
     // assume all tiles in set are within bounds
     @tailrec def setFirstTile(tilesRemainingToSet: Seq[(Int, Int)],
                               accumRect: Rectangle = NilRect()) : Rectangle = 
     {
       if(tilesRemainingToSet.isEmpty) accumRect else {
-        val (x, y) = tilesRemainingToSet.head
+        val (xToSet, yToSet) = tilesRemainingToSet.head
         
-        val autotileNum = getAutotileNum(x, y)
-        def sameType(xTest: Int, yTest: Int) = 
-          getAutotileNum(xTest, yTest) == autotileNum        
+        val autotileNum = getAutotileNum(xToSet, yToSet)
+        def sameType(x: Int, y: Int) =
+          isAutotile(x, y) && getAutotileNum(x, y) == autotileNum
+        def diffTypeOutsideSame(v: IntVec) =
+          withinBounds(mapMeta, v.x, v.y) && !sameType(v.x, v.y)
+        def diffTypeOutsideDiff(v: IntVec) =
+          !withinBounds(mapMeta, v.x, v.y) || !sameType(v.x, v.y)
+        
+        // MUTABLE
         def mask(tileI: Int, maskInt: Int) =
           layerAry.update(tileI+2, maskInt.asInstanceOf[Byte])
         
@@ -74,31 +76,57 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           val autotile = autotiles(autotileNum)
           
           if(autotile.terrainMode) {
-            // easy. Just iterate through directions, setting flags
+            // NOTE: In terrain mode, an out-of-bound tile counts as the 
+            // same type tile.
+            
+            // This is easy. Just iterate through directions, setting flags
             // Mutable is more readable in this case
             var newConfig = 0
             for((mask, (dx, dy)) <- Autotile.DirectionMasks.offsets;
-                if withinBounds(mapMeta, x+dx, y+dy);
-                if !sameType(x+dx, y+dy))
+                if diffTypeOutsideSame(xToSet+dx, yToSet+dy))
               newConfig = newConfig | mask
             
-            mask(idx(x,y), newConfig)
-            setFirstTile(
-              tilesRemainingToSet.tail, accumRect union tileRect(x, y))
+            mask(idx(xToSet,yToSet), newConfig)
+            setFirstTile(tilesRemainingToSet.tail, 
+              accumRect union tileRect(xToSet, yToSet))
           } else {
-            val findLast = findLastAutotile(autotileNum, _: IntVec, _: Int)
-            val wallNorth = findLast((x,y), NORTH).y
-            val wallSouth = findLast((x,y), SOUTH).y
-            val wallWest  = findLast((x, wallNorth), WEST).x
-            val wallEast  = findLast((x, wallNorth), EAST).x
+            val findVertBounds = findLast(
+              diffTypeOutsideDiff, (xToSet,yToSet), _: Int)
             
-            for(xInWall <- wallWest to wallEast;
-                yInWall <- wallNorth to wallSouth;
+            val wallNorth = findVertBounds(NORTH).y
+            val wallSouth = findVertBounds(SOUTH).y
+            
+            // either find different tile, or run into larger wall
+            def wallBoundary(tileVec: IntVec) = 
+              diffTypeOutsideDiff(tileVec) || 
+              !diffTypeOutsideDiff(tileVec+offsets(NORTH))
+            
+            val findWallBoundary = 
+              findLast(wallBoundary, (xToSet, wallNorth), _: Int)
+            
+            val wallWest  = findWallBoundary(WEST).x
+            val wallEast  = findWallBoundary(EAST).x
+            
+            val wallXBounds = wallWest to wallEast
+            val wallYBounds = wallNorth to wallSouth
+            
+            // determine if all tiles (xTest, y) 
+            // where y elem [wallNorth, wallSouth] are same type autotile
+            def allSameType(xTest: Int) = {
+              // all same for out of bounds
+              !withinBounds(mapMeta, xTest, wallNorth) || 
+              wallYBounds.map(y => (xTest, y)).forall(
+                t => sameType(t._1, t._2))
+            }
+            val inferiorWest = allSameType(wallWest-1)
+            val inferiorEast = allSameType(wallEast+1)
+            
+            for(xInWall <- wallXBounds; yInWall <- wallYBounds;
                 if sameType(xInWall, yInWall)) 
             {
               var newConfig = 0
-              if(xInWall == wallWest)  newConfig |= WEST
-              if(xInWall == wallEast)  newConfig |= EAST
+              if(!inferiorWest && xInWall == wallWest)  newConfig |= WEST
+              if(!inferiorEast && xInWall == wallEast)  newConfig |= EAST
               if(yInWall == wallNorth) newConfig |= NORTH
               if(yInWall == wallSouth) newConfig |= SOUTH
               mask(idx(xInWall, yInWall), newConfig)
@@ -107,14 +135,14 @@ object MapViewTools extends ListedEnum[MapViewTool] {
             // only choose tiles that are not in the wall we just calculated
             val remaining = tilesRemainingToSet.tail.filterNot {
               case (xRem, yRem) => 
-                xRem >= wallWest && xRem <= wallEast && 
-                yRem >= wallNorth && yRem <= wallSouth
+                wallXBounds.contains(xRem) && wallYBounds.contains(yRem)
             }
             
-            val newRect = accumRect union tileRect(
-              wallEast, wallNorth, wallWest-wallEast+1, wallSouth-wallNorth+1)
+            val wallRect = tileRect(
+              wallEast, wallNorth, wallXBounds.size, wallYBounds.size)
+            println(wallRect)
                        
-            setFirstTile(remaining, newRect)
+            setFirstTile(remaining, accumRect union wallRect)
           }
           
         } else setFirstTile(tilesRemainingToSet.tail, accumRect) // do nothing
@@ -160,8 +188,6 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           setAutotileFlags(vs.mapMeta, vs.sm.autotiles, layerAry, 
                            x1, y1, x1+tCodes(0).length-1, y1+tCodes.length-1)
         
-        println(directlyEditedRect union autotileRect)
-          
         directlyEditedRect union autotileRect
       } getOrElse {
         NilRect()
