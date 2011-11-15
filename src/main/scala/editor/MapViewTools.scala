@@ -14,10 +14,10 @@ trait MapViewTool {
   def name: String
   override def toString = name
   def onMousePressed(vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
-                     x1: Int, y1: Int) : Rectangle
+                     x1: Int, y1: Int) : TileRect
   // x1, y1 are init press coords; x2, y2 are where mouse has been dragged 
   def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
-                     x1: Int, y1: Int, x2: Int, y2: Int) : Rectangle
+                     x1: Int, y1: Int, x2: Int, y2: Int) : TileRect
   
   def selectionSqOnDrag: Boolean = true
 }
@@ -30,7 +30,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
   
   def setAutotileFlags(mapMeta: RpgMap, autotiles: Vector[Autotile],
                        layerAry: Array[Byte],  
-                       x0: Int, y0: Int, x1: Int, y1: Int) = 
+                       x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = 
   {
     // some utility functions
     def idx(x: Int, y: Int) = dataIndex(x, y, mapMeta.xSize)
@@ -55,7 +55,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           
     // assume all tiles in set are within bounds
     @tailrec def setFirstTile(tilesRemainingToSet: Seq[(Int, Int)],
-                              accumRect: Rectangle = NilRect()) : Rectangle = 
+                              accumRect: TileRect) : TileRect = 
     {
       if(tilesRemainingToSet.isEmpty) accumRect else {
         val (xToSet, yToSet) = tilesRemainingToSet.head
@@ -88,7 +88,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
             
             mask(idx(xToSet,yToSet), newConfig)
             setFirstTile(tilesRemainingToSet.tail, 
-              accumRect union tileRect(xToSet, yToSet))
+                         accumRect|TileRect(xToSet, yToSet))
           } else {
             val findVertBounds = findLast(
               diffTypeOutsideDiff, (xToSet,yToSet), _: Int)
@@ -138,18 +138,17 @@ object MapViewTools extends ListedEnum[MapViewTool] {
                 wallXBounds.contains(xRem) && wallYBounds.contains(yRem)
             }
             
-            val wallRect = tileRect(
+            val wallRect = TileRect(
               wallEast, wallNorth, wallXBounds.size, wallYBounds.size)
-            println(wallRect)
-                       
-            setFirstTile(remaining, accumRect union wallRect)
+            
+            setFirstTile(remaining, accumRect|wallRect)
           }
           
         } else setFirstTile(tilesRemainingToSet.tail, accumRect) // do nothing
       }
     }
     
-    setFirstTile(initialSeqOfTiles)
+    setFirstTile(initialSeqOfTiles, TileRect())
   }
   
   case object Pencil extends MapViewTool {
@@ -182,15 +181,15 @@ object MapViewTools extends ListedEnum[MapViewTool] {
         }
         
         val directlyEditedRect = 
-          tileRect(x1, y1, tCodes(0).length, tCodes.length)
+          TileRect(x1, y1, tCodes(0).length, tCodes.length)
         
         val autotileRect =
           setAutotileFlags(vs.mapMeta, vs.sm.autotiles, layerAry, 
                            x1, y1, x1+tCodes(0).length-1, y1+tCodes.length-1)
         
-        directlyEditedRect union autotileRect
+        directlyEditedRect|autotileRect
       } getOrElse {
-        NilRect()
+        TileRect()
       }
     }
     def onMouseDragged(vs, tCodes, x1, y1, x2, y2) = 

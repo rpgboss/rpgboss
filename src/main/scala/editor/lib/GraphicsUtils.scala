@@ -1,10 +1,17 @@
 package rpgboss.editor.lib
 
 import rpgboss.model._
+
+import scala.math._
 import java.awt._
 
 object GraphicsUtils {
-  def drawSelRect(g: Graphics, x1: Int, y1: Int, w: Int, h: Int) = {
+  // This function defined in units of pixels
+  def drawSelRect(g: Graphics, rect: Rectangle) = {
+    val x1 = rect.getMinX.toInt
+    val y1 = rect.getMinY.toInt
+    val h = rect.getHeight.toInt
+    val w = rect.getWidth.toInt
     g.setColor(Color.BLACK)
     // need additional -1 because 
     // "The left and right edges of the rectangle are at x and x + width"
@@ -15,18 +22,30 @@ object GraphicsUtils {
     g.drawRect(x1+2, y1+2, w-4-1, h-4-1)
   }
   
-  // x2, y2, must be greater than x1, y1
-  def tileRect(xTile: Int, yTile: Int, 
-               widthTiles: Int = 1, heightTiles: Int = 1) = 
+  case class TileRect(x1: Int, y1: Int, 
+                      wTiles: Int = 1, hTiles: Int = 1) 
   {
-    val x = xTile*Tileset.tilesize
-    val w = widthTiles*Tileset.tilesize
-    val y = yTile*Tileset.tilesize
-    val h = heightTiles*Tileset.tilesize
-    new Rectangle(x, y, w, h)
+    def x2 = x1+wTiles-1
+    def y2 = y1+hTiles-1
+    def empty = wTiles < 1 || hTiles < 1
+    
+    def |(o: TileRect) =  if(o.empty) this else
+      TileRect(min(x1, o.x1), min(y1, o.y1),
+               max(x2, o.x2)-min(x1, o.x1)+1,
+               max(y2, o.y2)-min(y1, o.y1)+1)
+   
+    def rect(xTilesize: Int, yTilesize: Int) =
+      if(empty) new Rectangle(0, 0, -1, -1)
+      else new Rectangle(x1*xTilesize, y1*yTilesize, 
+                         wTiles*xTilesize, hTiles*yTilesize)
+    
+    def optionallyDrawSelRect(g: Graphics, xTilesize: Int, yTilesize: Int) = 
+      if(!empty) drawSelRect(g, rect(xTilesize, yTilesize))
   }
   
-  def NilRect() = new Rectangle(0, 0, -1, -1)
+  object TileRect {
+    def apply() : TileRect = TileRect(0, 0, -1, -1)
+  }
   
   case class IntVec(tup: Tuple2[Int, Int]) {
     def x = tup._1

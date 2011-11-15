@@ -8,6 +8,7 @@ import rpgboss.lib.Utils._
 import rpgboss.model._
 import rpgboss.message._
 import rpgboss.editor.lib._
+import rpgboss.editor.lib.GraphicsUtils._
 
 import java.awt.image.BufferedImage
 import java.awt.{Point, Color}
@@ -51,13 +52,9 @@ extends ScrollPane
                     null)
       }
       
-      // draw selection square
-      val x1 = xRngInSelectorSpace.head*tilesizeX
-      val w  = xRngInSelectorSpace.length*tilesizeX
-      val y1 = yRngInSelectorSpace.head*tilesizeY
-      val h  = yRngInSelectorSpace.length*tilesizeY
-      
-      GraphicsUtils.drawSelRect(g, x1, y1, w, h)
+      TileRect(xRngInSelectorSpace.head, yRngInSelectorSpace.head,
+               xRngInSelectorSpace.length, yRngInSelectorSpace.length)
+        .optionallyDrawSelRect(g, tilesizeX, tilesizeY)
     }
   }
   

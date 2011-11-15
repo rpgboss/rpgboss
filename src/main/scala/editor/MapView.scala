@@ -15,11 +15,6 @@ import scala.swing.event._
 
 import java.awt.{Dimension, Rectangle}
 
-// all units in tiles
-case class CursorSquare(xTile: Int, yTile: Int, xSize: Int, ySize: Int) {
-  def rect = tileRect(xTile, yTile, xSize, ySize)
-}
-
 class MapView(sm: StateMaster, tilesetSidebar: TilesetSidebar)
 extends BoxPanel(Orientation.Vertical)
 {
@@ -63,7 +58,7 @@ extends BoxPanel(Orientation.Vertical)
   }
   
   val canvasPanel = new Panel() {
-    var cursorSquare : Option[CursorSquare] = None
+    var cursorSquare : TileRect = TileRect()
     
     override def paintComponent(g: Graphics2D) =
     {
@@ -108,12 +103,7 @@ extends BoxPanel(Orientation.Vertical)
         })
         
         // draw selection square
-        cursorSquare map {
-          case CursorSquare(xTile, yTile, widthTiles, heightTiles) =>
-            GraphicsUtils.drawSelRect(g, xTile*curTilesize, yTile*curTilesize,
-                                      widthTiles*curTilesize,
-                                      heightTiles*curTilesize)
-        }
+        cursorSquare.optionallyDrawSelRect(g, curTilesize, curTilesize)
       })
     }
   }
@@ -150,44 +140,42 @@ extends BoxPanel(Orientation.Vertical)
     resizeRevalidateRepaint()
   }
   
-  // Returns Rectangle to redraw
-  def updateCursorSq(visible: Boolean, x: Int = 0, y: Int = 0) : Rectangle = {
-    def rectOption(c: Option[CursorSquare]) = 
-      c.map(_.rect) getOrElse NilRect()
-    
+  // Returns TileRect to redraw
+  def updateCursorSq(visible: Boolean, x: Int = 0, y: Int = 0) : TileRect = 
+  {
     val oldSq = canvasPanel.cursorSquare
     val newSq = if(visible) {
       val tCodes = tilesetSidebar.selectedTileCodes 
       assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
-      Some(CursorSquare(x, y, tCodes(0).length, tCodes.length))
-    } else None
+      TileRect(x, y, tCodes(0).length, tCodes.length)
+    } else TileRect()
     
+    // if updated, redraw. otherwise, don't redraw
     if(oldSq != newSq) {
       canvasPanel.cursorSquare = newSq
-      rectOption(oldSq) union rectOption(newSq)
-    } else NilRect()
+      oldSq|newSq
+    } else TileRect()
   }
   
   //--- REACTIONS ---//
   listenTo(canvasPanel.mouse.clicks, canvasPanel.mouse.moves)
   
+  def repaintRegions(r1: TileRect, r2: TileRect = TileRect()) =
+    canvasPanel.repaint((r1|r2).rect(curTilesize, curTilesize))
   
   reactions += {
     case MouseMoved(`canvasPanel`, p, _) => {
       val (tileX, tileY) = toTileCoords(p)
-      canvasPanel.repaint(updateCursorSq(true, tileX, tileY))
+      repaintRegions(updateCursorSq(true, tileX, tileY))
     }
     case MouseExited(`canvasPanel`, _, _) =>
-      canvasPanel.repaint(updateCursorSq(false))
+      repaintRegions(updateCursorSq(false))
     case MousePressed(`canvasPanel`, point, _, _, _) => {
       viewStateOpt map { vs => 
         val tCodes = tilesetSidebar.selectedTileCodes
         val tool = MapViewTools.selected
         val (x1, y1) = toTileCoords(point)
-        
-        def repaintRegions(r1: Rectangle, r2: Rectangle = NilRect()) =
-          canvasPanel.repaint(r1 union r2)
-        
+                
         repaintRegions(
           updateCursorSq(tool.selectionSqOnDrag, x1, y1),
           MapViewTools.selected.onMousePressed(vs, tCodes, x1, y1))
