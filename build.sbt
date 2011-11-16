@@ -8,6 +8,8 @@ organization := "rpgboss"
 
 scalaVersion := "2.9.0-1"
 
+fork := true
+
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-swing" % "2.9.0-1",
   "org.apache.httpcomponents" % "httpclient" % "4.1.1",

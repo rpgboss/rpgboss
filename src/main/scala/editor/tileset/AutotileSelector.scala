@@ -8,7 +8,7 @@ import rpgboss.message._
 
 import java.awt.image.BufferedImage
 
-class AutotileSelector(proj: Project, tilesetSidebar: TilesetSidebar) 
+class AutotileSelector(proj: Project, tileSelector: TabbedTileSelector) 
 extends BoxPanel(Orientation.Vertical) {
   import Tileset.tilesize
   
@@ -33,7 +33,7 @@ extends BoxPanel(Orientation.Vertical) {
   // x coordiate corresponds to tileset number,
   // other two bytes we leave blank. 
   contents += new ImageTileSelector(collageImage, tXYArray => 
-    tilesetSidebar.selectedTileCodes = tXYArray.map(_.map({
+    tileSelector.selectedTileCodes = tXYArray.map(_.map({
       case (xTile, yTile) => 
         Array(RpgMap.autotileByte, xTile, 0.asInstanceOf[Byte])
     }))

@@ -15,8 +15,8 @@ import scala.swing.event._
 
 import java.awt.{Dimension, Rectangle}
 
-class MapView(sm: StateMaster, tilesetSidebar: TilesetSidebar)
-extends BoxPanel(Orientation.Vertical)
+class MapView(sm: StateMaster, tileSelector: TabbedTileSelector)
+extends BoxPanel(Orientation.Vertical) with SelectsMap
 {
   //--- VARIABLES ---//
   var viewStateOpt : Option[MapViewState] = None
@@ -36,6 +36,7 @@ extends BoxPanel(Orientation.Vertical)
   
   //--- WIDGETS --//
   val toolbar = new BoxPanel(Orientation.Horizontal) {
+    minimumSize = new Dimension(200, 32)
     def addBtnsAsGrp(btns: List[RadioButton]) = {
       val grp = new ButtonGroup(btns : _*)
       grp.select(btns.head)
@@ -145,7 +146,7 @@ extends BoxPanel(Orientation.Vertical)
   {
     val oldSq = canvasPanel.cursorSquare
     val newSq = if(visible) {
-      val tCodes = tilesetSidebar.selectedTileCodes 
+      val tCodes = tileSelector.selectedTileCodes 
       assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
       TileRect(x, y, tCodes(0).length, tCodes.length)
     } else TileRect()
@@ -172,7 +173,7 @@ extends BoxPanel(Orientation.Vertical)
       repaintRegions(updateCursorSq(false))
     case MousePressed(`canvasPanel`, point, _, _, _) => {
       viewStateOpt map { vs => 
-        val tCodes = tilesetSidebar.selectedTileCodes
+        val tCodes = tileSelector.selectedTileCodes
         val tool = MapViewTools.selected
         val (x1, y1) = toTileCoords(point)
                 

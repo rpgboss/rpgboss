@@ -1,6 +1,5 @@
 package rpgboss.editor
 
-import rpgboss.editor.dialog._
 import rpgboss.editor.lib._
 import rpgboss.editor.tileset._
 
@@ -10,23 +9,38 @@ import scala.swing.event._
 import rpgboss.model._
 import rpgboss.message._
 
-class ProjectPanel(mainP: MainPanel, project: Project)
-  extends SplitPane(Orientation.Vertical)
-{
-  val sm = new StateMaster(project)
-  
-  val tilesetSidebar = new TilesetSidebar(sm)
+class ProjectPanel(mainP: MainPanel, sm: StateMaster)
+  extends SplitPane(Orientation.Vertical) with SelectsMap
+{  
+  val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new MapSelector(sm, this)
-  val mapView = new MapView(sm, tilesetSidebar)
+  val mapView = new MapView(sm, tileSelector)
+  
+  val projMenu = new PopupMenu {
+    contents += new MenuItem(mainP.actionNew)
+    contents += new MenuItem(mainP.actionOpen)
+    contents += new MenuItem(mainP.actionSave)
+	}
+  
+  val menuAndSelector = new BoxPanel(Orientation.Vertical) {
+    contents += new BoxPanel(Orientation.Horizontal) {
+      contents += new Button {
+        val btn = this
+        action = Action("Project \u25BC") {
+          projMenu.show(btn, 0, btn.bounds.height)
+        }
+      }
+    }
+    contents += tileSelector
+  }
   
   topComponent =
-    new SplitPane(Orientation.Horizontal, tilesetSidebar, mapSelector)
+    new SplitPane(Orientation.Horizontal, menuAndSelector, mapSelector)
   bottomComponent = mapView
   enabled = false
   
   def selectMap(mapOpt: Option[RpgMap]) = {
-    tilesetSidebar.selectMap(mapOpt)
-    mapView.selectMap(mapOpt)
+    List(sm, tileSelector, mapView).map(_.selectMap(mapOpt))
   }
   
   // select most recent or first map if not empty

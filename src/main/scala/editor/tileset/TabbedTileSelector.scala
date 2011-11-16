@@ -7,11 +7,12 @@ import rpgboss.model._
 import rpgboss.message._
 
 import rpgboss.editor._
+import rpgboss.editor.lib._
 
 import java.awt.image.BufferedImage
 
-class TilesetSidebar(sm: StateMaster)
-extends BoxPanel(Orientation.Horizontal)
+class TabbedTileSelector(sm: StateMaster)
+extends BoxPanel(Orientation.Horizontal) with SelectsMap
 {
   val thisSidebar = this
   
@@ -26,7 +27,7 @@ extends BoxPanel(Orientation.Horizontal)
     new TabbedPane() {
       tabPlacement(Alignment.Bottom)
       
-      val autotileSel = new AutotileSelector(sm.proj, TilesetSidebar.this)
+      val autotileSel = new AutotileSelector(sm.proj, TabbedTileSelector.this)
       pages += new TabbedPane.Page("Autotiles", autotileSel)
       
       map.tilesets.zipWithIndex.map({

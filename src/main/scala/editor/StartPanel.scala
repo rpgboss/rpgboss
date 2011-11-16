@@ -15,15 +15,8 @@ class StartPanel(val mainP: MainPanel)
   contents += new Label("Logo here")
   
   contents += new BoxPanel(Orientation.Vertical) {
-    contents += new Button(Action("New Game Project") {
-      val d = new NewProjectDialog(mainP.topWin, p => mainP.projectGui(p))
-      d.open()
-    })
-    
-    contents += new Button(Action("Load Game Project") {
-      val d = new LoadProjectDialog(mainP.topWin, p => mainP.projectGui(p))
-      d.open()
-    })
+    contents += new Button(mainP.actionNew)
+    contents += new Button(mainP.actionOpen)
   }
 }
 
