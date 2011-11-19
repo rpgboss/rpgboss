@@ -7,11 +7,13 @@ import java.awt._
 
 object GraphicsUtils {
   // This function defined in units of pixels
-  def drawSelRect(g: Graphics, rect: Rectangle) = {
+  def drawSelRect(g: Graphics2D, rect: Rectangle) = {
     val x1 = rect.getMinX.toInt
     val y1 = rect.getMinY.toInt
     val h = rect.getHeight.toInt
     val w = rect.getWidth.toInt
+    g.setStroke(new BasicStroke())
+    g.setComposite(AlphaComposite.SrcOver)
     g.setColor(Color.BLACK)
     // need additional -1 because 
     // "The left and right edges of the rectangle are at x and x + width"
@@ -39,7 +41,7 @@ object GraphicsUtils {
       else new Rectangle(x1*xTilesize, y1*yTilesize, 
                          wTiles*xTilesize, hTiles*yTilesize)
     
-    def optionallyDrawSelRect(g: Graphics, xTilesize: Int, yTilesize: Int) = 
+    def optionallyDrawSelRect(g: Graphics2D, xTilesize: Int, yTilesize: Int) = 
       if(!empty) drawSelRect(g, rect(xTilesize, yTilesize))
   }
   

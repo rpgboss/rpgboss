@@ -157,15 +157,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
     {
       import MapLayers._
       
-      val d = vs.mapData
-      val layerOpt = MapLayers.selected match {
-        case Bot => Some(d.botLayer)
-        case Mid => Some(d.midLayer) 
-        case Top => Some(d.topLayer)
-        case _ => None
-      }
-      
-      layerOpt map { layerAry =>
+      mapOfArrays(vs.mapData).get(MapLayers.selected).map { layerAry =>
         for((tileRow, yi) <- tCodes.zipWithIndex;
             (tCode, xi) <- tileRow.zipWithIndex)
         {

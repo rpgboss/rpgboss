@@ -22,6 +22,12 @@ object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
   val Bot, Mid, Top, Evt = Value
   val valueList = List(Bot, Mid, Top, Evt)
   
+  def enumDrawOrder(mapData: RpgMapData) = 
+    List(Bot, Mid, Top) zip mapData.drawOrder
+  
+  def mapOfArrays(mapData: RpgMapData) : Map[Enumeration#Value, Array[Byte]] = 
+    Map(enumDrawOrder(mapData) : _*)
+  
   selected = Bot
 }
 

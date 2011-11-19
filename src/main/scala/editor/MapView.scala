@@ -13,7 +13,8 @@ import scala.math._
 import scala.swing._
 import scala.swing.event._
 
-import java.awt.{Dimension, Rectangle}
+import java.awt.{BasicStroke, AlphaComposite, Color}
+import java.awt.geom.Line2D
 
 class MapView(sm: StateMaster, tileSelector: TabbedTileSelector)
 extends BoxPanel(Orientation.Vertical) with SelectsMap
@@ -47,7 +48,10 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
     def enumButtons[T](enum: ListedEnum[T]) = 
       enum.valueList.map { eVal =>
         new RadioButton() {
-          action = Action(eVal.toString) { enum.selected = eVal }
+          action = Action(eVal.toString) { 
+            enum.selected = eVal 
+            resizeRevalidateRepaint()
+          }
         }
       }
     
@@ -60,6 +64,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
   
   val canvasPanel = new Panel() {
     var cursorSquare : TileRect = TileRect()
+    
+    background = Color.WHITE
     
     override def paintComponent(g: Graphics2D) =
     {
@@ -86,22 +92,45 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
         
         println("Paint Tiles: x: [%d,%d], y: [%d,%d]".format(
           minXTile, maxXTile, minYTile, maxYTile))
-        
+          
         // draw tiles
-        vs.nextMapData.drawOrder.map(layer => {
-          for(xTile <- minXTile to maxXTile; yTile <- minYTile to maxYTile) {
-            val bi = byteIdx(xTile, yTile)
-            if(layer(bi) != -1) {
-              val tileImg = vs.tilecache.getTileImage(layer, bi, 0)
-              
-              g.drawImage(tileImg, 
-                          xTile*tilesize, yTile*tilesize,
-                          (xTile+1)*tilesize, (yTile+1)*tilesize,
-                          0, 0, Tileset.tilesize, Tileset.tilesize,
-                          null)
-            }
-          }   
-        })
+        import MapLayers._
+        enumDrawOrder(vs.nextMapData).map {
+          case(curLayer, layerAry) => 
+            if(MapLayers.selected != Evt && MapLayers.selected != curLayer)
+              g.setComposite(AlphaComposite.getInstance(
+                AlphaComposite.SRC_OVER, 0.5f))
+            else
+              g.setComposite(AlphaComposite.SrcOver)
+            
+            for(xTile <- minXTile to maxXTile; yTile <- minYTile to maxYTile) {
+              val bi = byteIdx(xTile, yTile)
+              if(layerAry(bi) != -1) {
+                val tileImg = vs.tilecache.getTileImage(layerAry, bi, 0)
+                
+                g.drawImage(tileImg, 
+                            xTile*tilesize, yTile*tilesize,
+                            (xTile+1)*tilesize, (yTile+1)*tilesize,
+                            0, 0, Tileset.tilesize, Tileset.tilesize,
+                            null)
+              }
+            }   
+        }
+        
+        // draw grid if on evt layer
+        if(MapLayers.selected == Evt) {
+          g.setComposite(AlphaComposite.getInstance(
+            AlphaComposite.SRC_OVER, 0.5f))
+          g.setStroke(new BasicStroke(2.0f))
+          for(xTile <- minXTile to maxXTile+1) {
+            g.draw(new Line2D.Double(xTile*tilesize, minYTile*tilesize,
+                                     xTile*tilesize, (maxYTile+1)*tilesize))
+          }
+          for(yTile <- minYTile to maxYTile+1) {
+            g.draw(new Line2D.Double(minXTile*tilesize, yTile*tilesize,
+                                     (maxXTile+1)*tilesize, yTile*tilesize))
+          }
+        }
         
         // draw selection square
         cursorSquare.optionallyDrawSelRect(g, curTilesize, curTilesize)
