@@ -23,6 +23,9 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
   var viewStateOpt : Option[MapViewState] = None
   var curTilesize = Tileset.tilesize
   
+  //--- CONVENIENCE DEFS ---//
+  def selectedLayer = MapLayers.selected
+  
   //--- BUTTONS ---//
   def scaleButton(title: String, invScale: Int) = new RadioButton() { 
     action = Action(title) {
@@ -97,7 +100,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
         import MapLayers._
         enumDrawOrder(vs.nextMapData).map {
           case(curLayer, layerAry) => 
-            if(MapLayers.selected != Evt && MapLayers.selected != curLayer)
+            if(selectedLayer != Evt && selectedLayer != curLayer)
               g.setComposite(AlphaComposite.getInstance(
                 AlphaComposite.SRC_OVER, 0.5f))
             else
@@ -118,7 +121,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
         }
         
         // draw grid if on evt layer
-        if(MapLayers.selected == Evt) {
+        if(selectedLayer == Evt) {
           g.setComposite(AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, 0.5f))
           g.setStroke(new BasicStroke(2.0f))
@@ -130,10 +133,10 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
             g.draw(new Line2D.Double(minXTile*tilesize, yTile*tilesize,
                                      (maxXTile+1)*tilesize, yTile*tilesize))
           }
+        } else {        
+          // draw selection square
+          cursorSquare.optionallyDrawSelRect(g, curTilesize, curTilesize)
         }
-        
-        // draw selection square
-        cursorSquare.optionallyDrawSelRect(g, curTilesize, curTilesize)
       })
     }
   }
@@ -193,14 +196,16 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
   def repaintRegions(r1: TileRect, r2: TileRect = TileRect()) =
     canvasPanel.repaint((r1|r2).rect(curTilesize, curTilesize))
   
+  import MapLayers._
   reactions += {
-    case MouseMoved(`canvasPanel`, p, _) => {
+    case MouseMoved(`canvasPanel`, p, _) if selectedLayer != Evt => {
       val (tileX, tileY) = toTileCoords(p)
       repaintRegions(updateCursorSq(true, tileX, tileY))
     }
-    case MouseExited(`canvasPanel`, _, _) =>
+    case MouseExited(`canvasPanel`, _, _) if selectedLayer != Evt=>
       repaintRegions(updateCursorSq(false))
-    case MousePressed(`canvasPanel`, point, _, _, _) => {
+    case MousePressed(`canvasPanel`, point, _, _, _) 
+    if selectedLayer != Evt => {
       viewStateOpt map { vs => 
         val tCodes = tileSelector.selectedTileCodes
         val tool = MapViewTools.selected
