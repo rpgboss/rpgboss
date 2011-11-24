@@ -10,13 +10,13 @@ import net.iharder.Base64
 import java.io._
 import java.util.zip._
 
-case class Event()
+case class RpgEvent()
 
 // this class has mutable members
 case class RpgMapData(botLayer: Array[Byte],
                       midLayer: Array[Byte],
                       topLayer: Array[Byte],
-                      events: Array[Event])
+                      events: Array[RpgEvent])
 {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
@@ -38,7 +38,7 @@ case class RpgMapData(botLayer: Array[Byte],
 case class RpgMapDataIntermediate(botLayerStr: String,
                                   midLayerStr: String,
                                   topLayerStr: String,
-                                  events: Array[Event])
+                                  events: Array[RpgEvent])
 
 case object RpgMapData {
   def dataFile(p: Project, name: String) = 

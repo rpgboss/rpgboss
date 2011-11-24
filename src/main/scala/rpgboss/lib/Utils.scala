@@ -89,9 +89,10 @@ class FileHelper(file : File) {
   def getWriter() : Option[Writer] =
     getFos().map(new OutputStreamWriter(_))
     
-  def getReader() : Option[Reader] =
+  def getReader() : Option[BufferedReader] =
     if(file.isFile && file.canRead)
-      Some(new InputStreamReader(new FileInputStream(file)))
+      Some(new BufferedReader(new InputStreamReader(
+        new FileInputStream(file))))
     else None
 }
 

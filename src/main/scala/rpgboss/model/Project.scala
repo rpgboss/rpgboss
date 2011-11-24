@@ -10,7 +10,7 @@ import java.io._
 
 case class ProjectData(title: String, 
                        autotiles: Vector[String],
-                       recentMapId: Int) 
+                       recentMapId: String) 
 
 case class Project(dir: File, data: ProjectData)
 {
@@ -21,7 +21,7 @@ case class Project(dir: File, data: ProjectData)
     } getOrElse false
   
   def getMaps : Array[RpgMap] = {
-    mapsDir.listFiles.map(_.getName).filter(_.endsWith(RpgMap.metadataExt))
+    Resource.listResources(mapsDir, RpgMap.metadataExt)
       .map(RpgMap.readFromDisk(this, _))
   }
   
@@ -33,17 +33,31 @@ object Project {
   
   def startingProject(title: String, 
                       dir: File) =
-    Project(dir, ProjectData(title, defaultAutotiles, 1))
+    Project(dir, ProjectData(title, defaultAutotiles, ""))
   
   
   def filename(dir: File) = new File(dir, "rpgproject.json")
   
-  def readFromDisk(projDir: File) : Option[Project] = {
-    implicit val formats = net.liftweb.json.DefaultFormats
-    filename(projDir).getReader().map { rdr =>
-      Project(projDir, Serialization.read(rdr))
+  def readFromDisk(projDir: File) : Option[Project] =
+    filename(projDir).readAsString.map { str =>
+      implicit val formats = net.liftweb.json.DefaultFormats
+      /*println("Test reader:")
+      rdr.mark(500000)
+      while(rdr.ready()) {
+        println(rdr.readLine())
+      }
+      rdr.reset()
+      println(projDir)
+      println("Start serialization read")
+      println(rdr)
+      */
+      println(str)
+      println("String")
+      val pd = Serialization.read[ProjectData](str)
+      println("Finish serialization read:")
+      println(pd)
+      Project(projDir, pd)
     }
-  }
   
   def defaultAutotiles = Vector(
     "Refmap-A1-0-0-A",
