@@ -7,7 +7,6 @@ import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 
 import rpgboss.model._
-import rpgboss.message._
 
 import javax.imageio.ImageIO
 import java.io._

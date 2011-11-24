@@ -3,7 +3,6 @@ package rpgboss.editor
 import rpgboss.lib._
 import rpgboss.cache._
 import rpgboss.model._
-import rpgboss.message._
 
 import rpgboss.editor.tileset._
 import rpgboss.editor.lib._
@@ -120,8 +119,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
             }   
         }
         
-        // draw grid if on evt layer
         if(selectedLayer == Evt) {
+          // draw grid if on evt layer
           g.setComposite(AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, 0.5f))
           g.setStroke(new BasicStroke(2.0f))
@@ -134,7 +133,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
                                      (maxXTile+1)*tilesize, yTile*tilesize))
           }
         } else {        
-          // draw selection square
+          // otherwise draw selection square
           cursorSquare.optionallyDrawSelRect(g, curTilesize, curTilesize)
         }
       })
@@ -167,7 +166,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
   def selectMap(mapOpt: Option[RpgMap]) = {
     viewStateOpt = mapOpt map { mapMeta =>
       val tc = new TileCache(sm.proj, sm.autotiles, mapMeta)
-      new MapViewState(sm, mapMeta.id, tc)
+      new MapViewState(sm, mapMeta.name, tc)
     }
       
     resizeRevalidateRepaint()

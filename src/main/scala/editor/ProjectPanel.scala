@@ -7,7 +7,6 @@ import scala.swing._
 import scala.swing.event._
 
 import rpgboss.model._
-import rpgboss.message._
 
 class ProjectPanel(mainP: MainPanel, sm: StateMaster)
   extends SplitPane(Orientation.Vertical) with SelectsMap
@@ -40,19 +39,19 @@ class ProjectPanel(mainP: MainPanel, sm: StateMaster)
   enabled = false
   
   def selectMap(mapOpt: Option[RpgMap]) = {
-    List(sm, tileSelector, mapView).map(_.selectMap(mapOpt))
+    List(tileSelector, mapView).map(_.selectMap(mapOpt))
   }
   
   // select most recent or first map if not empty
   selectMap({
-    if(!sm.maps.isEmpty) {
+    if(!sm.mapStates.isEmpty) {
       val idToLoad =
-        if(sm.maps.contains(sm.proj.recentMapId))
-          sm.proj.recentMapId
+        if(sm.mapStates.contains(sm.proj.data.recentMapId))
+          sm.proj.data.recentMapId
         else
-          sm.maps.keys.min
+          sm.mapStates.keys.min
       
-      sm.maps.get(idToLoad).map(_.mapMeta)
+      sm.mapStates.get(idToLoad).map(_.map)
     }
     else None
   })

@@ -19,7 +19,7 @@ object Settings {
   
   def set(k: String, v: String) = {
     props.setProperty(k, v)
-    propsFile.prepareWrite({ fos =>
+    propsFile.getFos().map({ fos =>
       props.store(fos, "rpgboss editor settings")
       true
     })

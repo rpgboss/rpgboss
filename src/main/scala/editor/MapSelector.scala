@@ -4,11 +4,10 @@ import scala.swing._
 
 import rpgboss.lib._
 import rpgboss.model._
-import rpgboss.message._
 import rpgboss.editor.tileset._
 
 class MapSelector(sm: StateMaster, projPanel: ProjectPanel) 
-extends Tree[HasName] 
+extends Tree[Any] 
 {
   
   preferredSize = new Dimension(8*32, 200)
@@ -20,9 +19,9 @@ extends Tree[HasName]
     // because can only match on stable values
     val proj = sm.proj
     
-    TreeModel[HasName](proj)({
-      case `proj` => mapMetas.filter(_.parent == -1)
-      case m: RpgMap => mapMetas.filter(_.parent == m.id)
+    TreeModel[Any](proj)({
+      case `proj` => mapMetas.filter(_.metadata.parent == "")
+      case m: RpgMap => mapMetas.filter(_.metadata.parent == m.name)
     })
   }
 

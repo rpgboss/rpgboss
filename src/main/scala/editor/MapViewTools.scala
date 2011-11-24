@@ -24,11 +24,11 @@ trait MapViewTool {
 
 object MapViewTools extends ListedEnum[MapViewTool] {
   
-  def withinBounds(mapMeta: RpgMap, x: Int, y: Int) = {
+  def withinBounds(mapMeta: RpgMapMetadata, x: Int, y: Int) = {
     x < mapMeta.xSize && y < mapMeta.ySize && x >= 0 && y >= 0 
   }
   
-  def setAutotileFlags(mapMeta: RpgMap, autotiles: Vector[Autotile],
+  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Vector[Autotile],
                        layerAry: Array[Byte],  
                        x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = 
   {

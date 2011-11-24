@@ -6,8 +6,6 @@ import scala.swing.event._
 
 import rpgboss.model._
 
-import rpgboss.message.Messages._
-
 import net.java.dev.designgridlayout._
 
 import java.io.File
@@ -27,11 +25,14 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       val rootPath = rootChooser.getRoot
       if(rootPath.isDirectory && rootPath.canRead) 
       {
-        val projs : Array[Option[Project]] = 
+        val projs = 
           rootPath.listFiles.map( child => {
-            if(child.isDirectory && child.canRead) 
-              Project.readFromDisk(child)
-            else None
+            if(child.isDirectory && child.canRead) {
+              println("Read from disk")
+              val po = Project.readFromDisk(child)
+              println("end read from disk")
+              po
+            } else None
           })
         
         projs.flatten
@@ -48,8 +49,8 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       override def getColumnName(col: Int) = cols(col)
       
       def getValueAt(r: Int, c: Int) : String = c match {
-        case 0 => projects(r).shortName
-        case _ => projects(r).title
+        case 0 => projects(r).dir.getName
+        case _ => projects(r).data.title
       }
       
       override def isCellEditable(r: Int, c: Int) = false

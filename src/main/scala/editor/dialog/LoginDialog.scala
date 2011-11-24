@@ -3,9 +3,7 @@ package rpgboss.editor.dialog
 import rpgboss.editor.lib._
 import scala.swing._
 import scala.swing.event._
-
-import rpgboss.message.Messages._
-
+/*
 object LoginDialog {
   var auth: Option[(String, Long)] = None
   
@@ -79,4 +77,4 @@ class LoginDialog(owner: Window, loginFunc: Option[(String, Long)] => Any)
     case KeyReleased(`passwordField`, Key.Enter, _, _) => okButton.doClick()
   }
 }
-
+*/

@@ -3,7 +3,6 @@ package rpgboss.editor
 import rpgboss.lib.Utils._
 import rpgboss.cache._
 import rpgboss.model._
-import rpgboss.message._
 
 import rpgboss.editor.tileset._
 import rpgboss.editor.lib._
@@ -32,12 +31,13 @@ object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
 }
 
 // The view state for a single map. Needs to be recreated for a different map
-class MapViewState(val sm: StateMaster, val mapId: Int, 
+class MapViewState(val sm: StateMaster, val mapId: String, 
                    val tilecache: TileCache) 
 {
   var undoStack: List[RpgMapData] = Nil
   
-  def mapMeta = sm.getMapMeta(mapId)
+  def map = sm.getMap(mapId)
+  def mapMeta = map.metadata
   def mapData = sm.getMapData(mapId)
   
   // map data in editing, for example while mouse is down

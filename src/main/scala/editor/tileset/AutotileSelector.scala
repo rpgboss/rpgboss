@@ -4,7 +4,6 @@ import scala.swing._
 import scala.swing.event._
 
 import rpgboss.model._
-import rpgboss.message._
 
 import java.awt.image.BufferedImage
 
@@ -13,7 +12,7 @@ extends BoxPanel(Orientation.Vertical) {
   import Tileset.tilesize
   
   val autotiles : Vector[Autotile] = 
-    proj.autotiles.map(Autotile.readFromDisk(proj, _))
+    proj.data.autotiles.map(Autotile.readFromDisk(proj, _))
   
   // draw every autotile onto collageImage in one huge row.
   // ImageSelector will group them into 8s

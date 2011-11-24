@@ -4,7 +4,6 @@ import scala.swing._
 import scala.swing.event._
 
 import rpgboss.model._
-import rpgboss.message._
 
 import rpgboss.editor._
 import rpgboss.editor.lib._
@@ -30,7 +29,7 @@ extends BoxPanel(Orientation.Horizontal) with SelectsMap
       val autotileSel = new AutotileSelector(sm.proj, TabbedTileSelector.this)
       pages += new TabbedPane.Page("Autotiles", autotileSel)
       
-      map.tilesets.zipWithIndex.map({
+      map.metadata.tilesets.zipWithIndex.map({
         case (tsName, i) => 
           val tileset = Tileset.readFromDisk(sm.proj, tsName)
           val tabComponent = tileset.imageOpt.map { img =>

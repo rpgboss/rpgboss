@@ -6,8 +6,6 @@ import scala.swing.event._
 
 import rpgboss.model._
 
-import rpgboss.message.Messages._
-
 import net.java.dev.designgridlayout._
 
 import java.io._
@@ -32,16 +30,15 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       Dialog.showMessage(shortnameField, "Need a short name.")
     else {    
       val shortname = shortnameField.text
-      val p = Project.startingProject(shortname, 
-                                      gameTitleField.text,
+      val p = Project.startingProject(gameTitleField.text,
                                       new File(rootChooser.getRoot, shortname))
       
-      val m = RpgMap.defaultMap
+      val m = RpgMap.defaultInstance(p, "Map0")
       
       val allSavedOkay = 
         p.writeMetadata() &&
-        m.saveMetadata(p) &&
-        m.saveMapData(p, RpgMap.defaultMapData)
+        m.writeMetadata() &&
+        m.saveMapData(RpgMap.defaultMapData)
       
       val cl = getClass.getClassLoader
         

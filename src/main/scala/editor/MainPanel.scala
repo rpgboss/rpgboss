@@ -3,7 +3,6 @@ package rpgboss.editor
 import scala.swing._
 
 import rpgboss.model._
-import rpgboss.message._
 import rpgboss.editor.dialog._
 
 class MainPanel(val topWin: Window)
