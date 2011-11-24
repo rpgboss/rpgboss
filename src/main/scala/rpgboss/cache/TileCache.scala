@@ -7,7 +7,7 @@ import com.google.common.cache._
 
 class TileCache(proj: Project, autotiles: Vector[Autotile], 
                 map: RpgMap, cacheMaxSize: Int = 5000) {
-  val tilesets  = map.tilesets.map(Tileset.readFromDisk(proj, _))
+  val tilesets  = map.metadata.tilesets.map(Tileset.readFromDisk(proj, _))
   
   def loadTile(tileTuple: (Byte, Byte, Byte, Byte)) = {
     val (tilesetIdx, secondByte, thirdByte, frame) = tileTuple

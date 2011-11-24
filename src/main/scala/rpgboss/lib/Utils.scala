@@ -81,13 +81,18 @@ class FileHelper(file : File) {
     file.canWrite || file.createNewFile()
   
   // creates parent directory and file if necessary. ensure writable
-  def prepareWrite(writeFunc : (FileOutputStream) => Boolean) : Boolean = 
-  {
+  def getFos() : Option[FileOutputStream] = 
     if(file.getParentFile().makeWriteableDir() && file.canWriteToFile())
-      writeFunc(new FileOutputStream(file))
-    else
-      false
-  }
+      Some(new FileOutputStream(file))
+    else None
+  
+  def getWriter() : Option[Writer] =
+    getFos().map(new OutputStreamWriter(_))
+    
+  def getReader() : Option[Reader] =
+    if(file.isFile && file.canRead)
+      Some(new InputStreamReader(new FileInputStream(file)))
+    else None
 }
 
 object FileHelper {

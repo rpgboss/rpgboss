@@ -1,8 +1,9 @@
 package rpgboss.model
 
 import rpgboss.lib._
-import rpgboss.message.ModelSerialization._
 import rpgboss.lib.FileHelper._
+
+import net.liftweb.json.Serialization
 
 import scala.collection.JavaConversions._
 
@@ -11,10 +12,12 @@ import java.awt.image.BufferedImage
 import java.awt.Graphics2D
 import javax.imageio.ImageIO
 
+case class AutotileMetadata(passability: Short = 0)
+
 case class Autotile(proj: Project,
                     name: String,
-                    passability: Short)
-extends ImageResource[Autotile]
+                    metadata: AutotileMetadata)
+extends ImageResource[Autotile, AutotileMetadata]
 {
   import Tileset.tilesize
   import Autotile.DirectionMasks._
@@ -22,11 +25,6 @@ extends ImageResource[Autotile]
   
   lazy val terrainMode = 
     imageOpt.map(_.getHeight == 3*tilesize).getOrElse(false)
-  
-  def writeMetadataToFos(fos: FileOutputStream) =
-    AutotileMetadata.newBuilder()
-      .setPassability(passability)
-      .build().writeTo(fos)
   
   private def draw(g: Graphics2D, srcImg: BufferedImage,
                    srcXHt: Int, srcYHt: Int, destXHt: Int, destYHt: Int,
@@ -156,18 +154,11 @@ extends ImageResource[Autotile]
   } getOrElse ImageResource.errorTile
 }
 
-object Autotile extends MetaResource[Autotile] {
+object Autotile extends MetaResource[Autotile, AutotileMetadata] {
   def rcType = "autotile"
-  def displayName = "Autotile"
-  def displayNamePlural = "Autotiles"
   
   def defaultInstance(proj: Project, name: String) = 
-    Autotile(proj, name, 0)
-  
-  def fromMetadata(proj: Project, name: String, fis: FileInputStream) = {
-    val m = AutotileMetadata.parseFrom(fis)
-    Autotile(proj, name, m.getPassability.toShort)
-  }
+    Autotile(proj, name, AutotileMetadata())
   
   // The mask is ON if that direction contains a tile DIFFERENT from
   // the current autotile type

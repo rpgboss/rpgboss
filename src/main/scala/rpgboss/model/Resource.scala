@@ -1,10 +1,13 @@
 package rpgboss.model
 
 import rpgboss.lib._
+import rpgboss.lib.FileHelper._
+
+import net.liftweb.json.Serialization
+
+import scala.collection.JavaConversions._
 
 import java.io._
-import FileHelper._
-import scala.collection.JavaConversions._
 
 object Resource {
   val resourceTypes = List(Autotile, Tileset)
@@ -42,41 +45,39 @@ object Resource {
     else None*/
 }
 
-trait Resource[T] {
+trait Resource[T, MT <: AnyRef] {
   def name: String
-  def meta: MetaResource[T]
+  def metadata: MT
+  def meta: MetaResource[T, MT]
   def proj: Project
   
   def rcTypeDir = new File(proj.rcDir, meta.rcType)
   
-  def writeMetadataToFos(fos: FileOutputStream)
-  
-  def writeToDisk() =
-    writeMetadataToFos(new FileOutputStream(meta.metadataFile(proj, name)))
+  def writeMetadata() : Boolean =
+    meta.metadataFile(proj, name).getWriter().map { writer =>
+      implicit val formats = net.liftweb.json.DefaultFormats
+      Serialization.write(metadata, writer) != null
+    } getOrElse false
 }
 
-trait MetaResource[T] {
+trait MetaResource[T, MT] {
   def rcType: String
-  def displayName: String
-  def displayNamePlural: String
   
   def metadataFile(proj: Project, name: String) =
-    new File(new File(proj.rcDir, rcType), "%s.%s".format(name, rcType))
+    new File(new File(proj.rcDir, rcType), "%s.%s.json".format(name, rcType))
   
   def defaultInstance(proj: Project, name: String) : T
   
-  def fromMetadata(proj: Project, name: String, fis: FileInputStream) : T
-    
-  def readFromDisk(proj: Project, name: String) : T = {
-    val mf = metadataFile(proj, name)
-    
-    if(mf.canRead)
-      fromMetadata(proj, name, new FileInputStream(mf))
-    else 
-      defaultInstance(proj, name)
-  }
+  def apply(proj: Project, name: String, metadata: MT) : T
   
-  //def readFromDisk(name: String) : Option[T]
+  // Returns default instance in case of failure to retrieve
+  
+  def readFromDisk(proj: Project, name: String) : T = {
+    implicit val formats = net.liftweb.json.DefaultFormats
+    metadataFile(proj, name).getReader().map { reader => 
+      apply(proj, name, Serialization.read(reader))
+    } getOrElse defaultInstance(proj, name)
+  }
 }
 
 

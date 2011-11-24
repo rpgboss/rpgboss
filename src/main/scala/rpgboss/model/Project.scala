@@ -1,67 +1,48 @@
 package rpgboss.model
 
 import rpgboss.lib._
-import rpgboss.message.ModelSerialization._
 import rpgboss.lib.FileHelper._
+
+import net.liftweb.json.Serialization
 
 import scala.collection.JavaConversions._
 import java.io._
 
-case class Project(shortName: String, title: String, 
-                   projectDir: File,
-                   autotiles: Vector[String],
-                   recentMapId: Int)
-extends HasName
+case class ProjectData(title: String, 
+                       autotiles: Vector[String],
+                       recentMapId: Int) 
+
+case class Project(dir: File, data: ProjectData)
 {
-  def name = title
-  
-  def writeMetadata() : Boolean = {
-    Project.filename(projectDir).prepareWrite({ fos =>
-      ProjectSerial.newBuilder()
-        .setTitle(title)
-        .addAllAutotiles(autotiles)
-        .setRecentMapId(recentMapId)
-      .build()
-      .writeTo(fos)
-      
-      true
-    })
-  }
+  def writeMetadata() : Boolean = 
+    Project.filename(dir).getWriter().map { writer =>
+      implicit val formats = net.liftweb.json.DefaultFormats
+      Serialization.write(data, writer) != null
+    } getOrElse false
   
   def getMaps : Array[RpgMap] = {
-    RpgMap.mapsDir(this)
-      .listFiles.filter(_.getName.endsWith(RpgMap.metadataExt))
-      .map(RpgMap.readMetadata).flatten
+    mapsDir.listFiles.map(_.getName).filter(_.endsWith(RpgMap.metadataExt))
+      .map(RpgMap.readFromDisk(this, _))
   }
   
-  def rcDir = {
-    new File(projectDir, "rc")
-  }
+  def rcDir   = new File(dir, "rc")
+  def mapsDir = new File(dir, "maps")
 }
 
 object Project {
   
-  def startingProject(shortName: String, 
-                      title: String, 
+  def startingProject(title: String, 
                       dir: File) =
-    Project(shortName, title, dir, defaultAutotiles, 1)
+    Project(dir, ProjectData(title, defaultAutotiles, 1))
   
   
-  def filename(dir: File) = new File(dir, "project.rpgproject")
+  def filename(dir: File) = new File(dir, "rpgproject.json")
   
-  def readFromDisk(projDir: File) = {
-    val projFile = filename(projDir)
-    
-    if(projFile.canRead)
-    {
-      val serial = 
-        ProjectSerial.parseFrom(new FileInputStream(projFile))
-      
-      Some(Project(projDir.getName, serial.getTitle, projDir, 
-                   Vector.empty ++ serial.getAutotilesList,
-                   serial.getRecentMapId))
+  def readFromDisk(projDir: File) : Option[Project] = {
+    implicit val formats = net.liftweb.json.DefaultFormats
+    filename(projDir).getReader().map { rdr =>
+      Project(projDir, Serialization.read(rdr))
     }
-    else None
   }
   
   def defaultAutotiles = Vector(

@@ -1,98 +1,38 @@
 package rpgboss.model
 
 import rpgboss.lib._
-import rpgboss.message.ModelSerialization._
 import rpgboss.lib.FileHelper._
 
-import scala.collection.JavaConversions._
-import com.google.protobuf.ByteString
+import net.liftweb.json.Serialization
 
+import scala.collection.JavaConversions._
 import java.io._
 
-case class RpgMap(id: Int,
-                  parent: Int,
-                  name: String,
-                  xSize: Int,
-                  ySize: Int,
-                  tilesets: Vector[String])
-extends HasName
+case class RpgMapMetadata(parent: String,
+                          title: String,
+                          xSize: Int,
+                          ySize: Int,
+                          tilesets: Vector[String])
+
+case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
+extends Resource[RpgMap, RpgMapMetadata]
 {
-  def saveMetadata(p: Project) = {
-    RpgMap.metadataFile(p, id).prepareWrite({ fos =>
-      MapMetadata.newBuilder()
-        .setId(id)
-        .setParent(parent)
-        .setName(name)
-        .setXSize(xSize)
-        .setYSize(ySize)
-        .addAllTilesets(tilesets)
-      .build()
-      .writeTo(fos)
-      
-      true
-    })
-  }
+  def meta = RpgMap
   
-  def saveMapData(p: Project, d: RpgMapData) =
-    d.writeToFile(RpgMap.dataFile(p, id))
+  def saveMapData(d: RpgMapData) =
+    d.writeToFile(proj, name)
   
-  def readMapData(p: Project) : Option[RpgMapData] = {
-    val f = RpgMap.dataFile(p, id)
-    if(f.canRead)
-    {
-      val serial = 
-        MapDataSerial.parseFrom(new FileInputStream(f))
-      
-      Some(RpgMapData(serial.getBotLayer.toByteArray,
-                      serial.getMidLayer.toByteArray,
-                      serial.getTopLayer.toByteArray))
-    }
-    else None
-  }
-    
+  def readMapData() : Option[RpgMapData] = 
+    RpgMapData.readFromDisk(proj, name)
 }
 
-// this class has mutable members
-case class RpgMapData(botLayer: Array[Byte],
-                      midLayer: Array[Byte],
-                      topLayer: Array[Byte])
-{
-  def writeToFile(f: File) = f.prepareWrite({ fos =>
-    MapDataSerial.newBuilder()
-      .setBotLayer(ByteString.copyFrom(botLayer))
-      .setMidLayer(ByteString.copyFrom(midLayer))
-      .setTopLayer(ByteString.copyFrom(topLayer))
-    .build()
-    .writeTo(fos)
-    
-    true
-  })
+object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
+  def rcType = "map"
   
-  def drawOrder = List(botLayer, midLayer, topLayer)
-}
-
-object RpgMap {
-  def mapsDir(p: Project) = new File(p.projectDir, "maps")
+  def metadataExt = "mapmeta.json"
   
-  def metadataExt = "rpgmapmeta"
-  
-  def metadataFile(p: Project, id: Int) = 
-    new File(mapsDir(p), "Map%d.%s".format(id, metadataExt))
-  def dataFile(p: Project, id: Int) = 
-    new File(mapsDir(p), "Map%d.rpgmapdata".format(id))
-  
-  def readMetadata(f: File) : Option[RpgMap] = {
-    if(f.canRead)
-    {
-      val serial = 
-        MapMetadata.parseFrom(new FileInputStream(f))
-      
-      Some(RpgMap(serial.getId, serial.getParent, serial.getName,
-                  serial.getXSize, serial.getYSize, 
-                  Vector.empty ++ serial.getTilesetsList))
-    }
-    else None
-  }
+  override def metadataFile(p: Project, name: String) = 
+    new File(p.mapsDir, "%s.%s".format(name, metadataExt))
 
   val initXSize = 20
   val initYSize = 15
@@ -102,14 +42,15 @@ object RpgMap {
   val autotileByte : Byte = -2
   val emptyTileByte : Byte = -1
     
-  def defaultMap = {
-    RpgMap(1, -1, "Starting Map", 
-           initXSize, initYSize, 
-           Vector("Refmap-TileA5",
-                  "Refmap-TileB",
-                  "Refmap-TileC",
-                  "Refmap-TileD",
-                  "Refmap-TileE"))
+  def defaultInstance(proj: Project, name: String) = {
+    val m = RpgMapMetadata("", "Starting Map", 
+                           initXSize, initYSize, 
+                           Vector("Refmap-TileA5",
+                                  "Refmap-TileB",
+                                  "Refmap-TileC",
+                                  "Refmap-TileD",
+                                  "Refmap-TileE"))
+    RpgMap(proj, name, m)
   }
   
   def emptyMapData(xSize: Int, ySize: Int) = {
@@ -123,7 +64,7 @@ object RpgMap {
       Array.tabulate[Byte](dataArySize)(i => a(i%a.length))
     }
     
-    RpgMapData(autoLayer, emptyLayer, emptyLayer)
+    RpgMapData(autoLayer, emptyLayer, emptyLayer, Array.empty)
   }
   
   def dataIndex(x: Int, y: Int, xSize: Int) = (y*xSize+x)*bytesPerTile
