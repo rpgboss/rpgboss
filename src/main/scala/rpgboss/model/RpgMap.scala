@@ -7,12 +7,13 @@ import net.liftweb.json.Serialization
 
 import scala.collection.JavaConversions._
 import java.io._
+import java.util.Arrays
 
 case class RpgMapMetadata(parent: String,
                           title: String,
                           xSize: Int,
                           ySize: Int,
-                          tilesets: Vector[String])
+                          tilesets: List[String])
 
 case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
 extends Resource[RpgMap, RpgMapMetadata]
@@ -43,13 +44,13 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   val emptyTileByte : Byte = -1
     
   def defaultInstance(proj: Project, name: String) = {
-    val m = RpgMapMetadata("", "Starting Map", 
+    val m = RpgMapMetadata("", "Starting Map",
                            initXSize, initYSize, 
-                           Vector("Refmap-TileA5",
-                                  "Refmap-TileB",
-                                  "Refmap-TileC",
-                                  "Refmap-TileD",
-                                  "Refmap-TileE"))
+                           List("Refmap-TileA5",
+                                "Refmap-TileB",
+                                "Refmap-TileC",
+                                "Refmap-TileD",
+                                "Refmap-TileE"))
     RpgMap(proj, name, m)
   }
   

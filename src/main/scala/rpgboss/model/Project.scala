@@ -9,7 +9,7 @@ import scala.collection.JavaConversions._
 import java.io._
 
 case class ProjectData(title: String, 
-                       autotiles: Vector[String],
+                       autotiles: List[String],
                        recentMapId: String) 
 
 case class Project(dir: File, data: ProjectData)
@@ -41,25 +41,11 @@ object Project {
   def readFromDisk(projDir: File) : Option[Project] =
     filename(projDir).readAsString.map { str =>
       implicit val formats = net.liftweb.json.DefaultFormats
-      /*println("Test reader:")
-      rdr.mark(500000)
-      while(rdr.ready()) {
-        println(rdr.readLine())
-      }
-      rdr.reset()
-      println(projDir)
-      println("Start serialization read")
-      println(rdr)
-      */
-      println(str)
-      println("String")
       val pd = Serialization.read[ProjectData](str)
-      println("Finish serialization read:")
-      println(pd)
       Project(projDir, pd)
     }
   
-  def defaultAutotiles = Vector(
+  def defaultAutotiles = List(
     "Refmap-A1-0-0-A",
     "Refmap-A1-0-0-B",
     "Refmap-A1-0-1-A",

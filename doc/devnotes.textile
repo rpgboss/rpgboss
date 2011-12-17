@@ -1,0 +1,1 @@
+* We choose to use List as the collection in JSONable models. lift-json does not support Vector, which would be ideal. Array is out because its borked equality operations make unit tests not work right.

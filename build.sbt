@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m",
   "com.google.guava" % "guava" % "10.0",
   "net.liftweb" %% "lift-json" % "2.4-M4",
-  "net.iharder" % "base64" % "2.3.8"
+  "net.iharder" % "base64" % "2.3.8",
+  "org.scalatest" %% "scalatest" % "1.6.1" % "test"
 )
 
 scalacOptions += "-deprecation"

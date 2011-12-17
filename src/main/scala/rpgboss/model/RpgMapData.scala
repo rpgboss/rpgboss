@@ -8,7 +8,6 @@ import net.liftweb.json.Serialization
 import net.iharder.Base64
 
 import java.io._
-import java.util.zip._
 
 case class RpgEvent()
 
@@ -55,25 +54,6 @@ case object RpgMapData {
     }
   }
   
-  def aryToStr(ary: Array[Byte]) = {
-    val byteOutput = new ByteArrayOutputStream()
-    val gzipOutput = new GZIPOutputStream(new Base64.OutputStream(byteOutput))
-    
-    gzipOutput.write(ary, 0, ary.length)
-    byteOutput.toString("ASCII")
-  }
-  
-  def strToAry(str: String) = {
-    val compressedAry = Base64.decode(str)
-    val gzipInputStream = new GZIPInputStream(
-      new ByteArrayInputStream(compressedAry))
-    
-    val buffer = new Array[Byte](1024*32)
-    val outputBytes = new ByteArrayOutputStream()
-    
-    Iterator.continually(gzipInputStream.read(buffer))
-      .takeWhile(_ != -1).foreach(outputBytes.write(buffer, 0, _))
-    
-    outputBytes.toByteArray()
-  }
+  def aryToStr(ary: Array[Byte]) = Base64.encodeBytes(ary, Base64.GZIP)
+  def strToAry(str: String) = Base64.decode(str)
 }

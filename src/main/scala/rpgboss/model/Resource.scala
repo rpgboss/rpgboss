@@ -3,17 +3,20 @@ package rpgboss.model
 import rpgboss.lib._
 import rpgboss.lib.FileHelper._
 
-import net.liftweb.json.Serialization
+import net.liftweb.json._
 
 import scala.collection.JavaConversions._
 
 import java.io._
 
 object Resource {
-  val resourceTypes = List(Autotile, Tileset)
+  val formats = Serialization.formats(ShortTypeHints(
+    List(classOf[Autotile], classOf[Tileset], classOf[RpgMapMetadata])))
   
-  def listResources(dir: File, ext: String) = 
-    dir.listFiles.map(_.getName).filter(_.endsWith(ext)).dropRight(ext.length)
+  def listResources(dir: File, ext: String) =
+    dir.listFiles.map(_.getName)
+      .filter(_.endsWith(ext))
+      .map(_.dropRight(ext.length+1)) // +1 to drop the dot before the name
 }
 
 trait Resource[T, MT <: AnyRef] {
@@ -26,7 +29,7 @@ trait Resource[T, MT <: AnyRef] {
   
   def writeMetadata() : Boolean =
     meta.metadataFile(proj, name).getWriter().map { writer =>
-      implicit val formats = net.liftweb.json.DefaultFormats
+      implicit val formats = Resource.formats
       Serialization.write(metadata, writer) != null
     } getOrElse false
 }
@@ -44,7 +47,8 @@ trait MetaResource[T, MT] {
   // Returns default instance in case of failure to retrieve
   
   def readFromDisk(proj: Project, name: String) : T = {
-    implicit val formats = net.liftweb.json.DefaultFormats
+    implicit val formats = Resource.formats
+    println(metadataFile(proj, name))
     metadataFile(proj, name).getReader().map { reader => 
       apply(proj, name, Serialization.read(reader))
     } getOrElse defaultInstance(proj, name)
