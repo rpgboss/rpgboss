@@ -48,7 +48,6 @@ trait MetaResource[T, MT] {
   
   def readFromDisk(proj: Project, name: String) : T = {
     implicit val formats = Resource.formats
-    println(metadataFile(proj, name))
     metadataFile(proj, name).getReader().map { reader => 
       apply(proj, name, Serialization.read(reader))
     } getOrElse defaultInstance(proj, name)

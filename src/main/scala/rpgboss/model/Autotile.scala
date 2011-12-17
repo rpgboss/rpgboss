@@ -5,6 +5,8 @@ import rpgboss.lib.FileHelper._
 
 import net.liftweb.json.Serialization
 
+import com.weiglewilczek.slf4s.Logging
+
 import scala.collection.JavaConversions._
 
 import java.io._
@@ -17,7 +19,7 @@ case class AutotileMetadata(passability: Short = 0)
 case class Autotile(proj: Project,
                     name: String,
                     metadata: AutotileMetadata)
-extends ImageResource[Autotile, AutotileMetadata]
+extends ImageResource[Autotile, AutotileMetadata] with Logging
 {
   import Tileset.tilesize
   import Autotile.DirectionMasks._
@@ -46,7 +48,6 @@ extends ImageResource[Autotile, AutotileMetadata]
     val destXHt = if((destMask & NE) > 0 || (destMask & SE) > 0) 1 else 0
     val destYHt = if((destMask & SE) > 0 || (destMask & SW) > 0) 1 else 0
     
-    //println("Drawing a corner")
     draw(g, srcImg, srcXHt, srcYHt, destXHt, destYHt, 1, 1)
   }
   
@@ -78,11 +79,10 @@ extends ImageResource[Autotile, AutotileMetadata]
     require(autotileConfig >= 0, "Autotile config integer must be positive.")
     require(frame >= 0, "Frame byte must be positive.")
     
-    println("Autotile.getTile(%d, %d)".format(autotileConfig, frame))
+    logger.info("getTile (%d, %d) - %s".format(autotileConfig, frame, name))
     
     if(autotileConfig == 0xff) {
       // completely isolated
-      println("Return isolated img")
       isolatedImg()
     } else {
     
