@@ -36,7 +36,6 @@ class StateMaster(val proj: Project)
   def loadUpMaps() = {
     val states = proj.getMaps.map(rpgMap => 
       rpgMap.name->MapState(rpgMap, Dirtiness.Clean, None))
-    println(states.deep)
     
     Map(states : _*)
   }

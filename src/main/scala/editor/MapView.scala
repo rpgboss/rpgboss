@@ -8,6 +8,8 @@ import rpgboss.editor.tileset._
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
 
+import com.weiglewilczek.slf4s.Logging
+
 import scala.math._
 import scala.swing._
 import scala.swing.event._
@@ -16,7 +18,7 @@ import java.awt.{BasicStroke, AlphaComposite, Color}
 import java.awt.geom.Line2D
 
 class MapView(sm: StateMaster, tileSelector: TabbedTileSelector)
-extends BoxPanel(Orientation.Vertical) with SelectsMap
+extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
 {
   //--- VARIABLES ---//
   var viewStateOpt : Option[MapViewState] = None
@@ -88,12 +90,13 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
         val maxYTile = 
           min(vs.mapMeta.ySize-1, (bounds.getMaxY.toInt-1)/tilesize)
         
+        /* Not sure what the purpose of this is
         g.clip(new Rectangle(minXTile*tilesize, minYTile*tilesize,
                              (maxXTile-minXTile+1)*tilesize,
-                             (maxYTile-minYTile+1)*tilesize))
+                             (maxYTile-minYTile+1)*tilesize))*/
         
-        println("Paint Tiles: x: [%d,%d], y: [%d,%d]".format(
-          minXTile, maxXTile, minYTile, maxYTile))
+        /*logger.info("Paint Tiles: x: [%d,%d], y: [%d,%d]".format(
+          minXTile, maxXTile, minYTile, maxYTile))*/
           
         // draw tiles
         import MapLayers._
