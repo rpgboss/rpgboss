@@ -36,6 +36,7 @@ class StateMaster(val proj: Project)
   def loadUpMaps() = {
     val states = proj.getMaps.map(rpgMap => 
       rpgMap.name->MapState(rpgMap, Dirtiness.Clean, None))
+    println(states.deep)
     
     Map(states : _*)
   }
@@ -65,7 +66,8 @@ class StateMaster(val proj: Project)
     } else true
   }
   
-  var autotiles = proj.data.autotiles.map(Autotile.readFromDisk(proj, _))
+  var autotiles = 
+    proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
   
   def getMapMetas = mapStates.values.map(_.map).toSeq
   
@@ -79,9 +81,8 @@ class StateMaster(val proj: Project)
   
   def getMapData(mapId: String) = {
     assert(mapStates.contains(mapId), "map id %d doesn't exist".format(mapId))
-    println(mapId)
     val mapState = mapStates.get(mapId).get
-    mapStates.get(mapId).get.mapDataOpt getOrElse {
+    mapState.mapDataOpt getOrElse {
       val mapData = mapState.map.readMapData() getOrElse {
         Dialog.showMessage(null, "Map data file missing. Recreating.", 
                            "Error", Dialog.Message.Error)

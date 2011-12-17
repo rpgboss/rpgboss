@@ -165,7 +165,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap
   
   def selectMap(mapOpt: Option[RpgMap]) = {
     viewStateOpt = mapOpt map { mapMeta =>
-      val tc = new TileCache(sm.proj, sm.autotiles, mapMeta)
+      val tc = new TileCache(sm.proj, sm.autotiles.toArray, mapMeta)
       new MapViewState(sm, mapMeta.name, tc)
     }
       

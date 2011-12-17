@@ -28,10 +28,7 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
         val projs = 
           rootPath.listFiles.map( child => {
             if(child.isDirectory && child.canRead) {
-              println("Read from disk")
-              val po = Project.readFromDisk(child)
-              println("end read from disk")
-              po
+              Project.readFromDisk(child)
             } else None
           })
         

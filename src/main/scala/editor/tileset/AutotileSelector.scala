@@ -11,8 +11,8 @@ class AutotileSelector(proj: Project, tileSelector: TabbedTileSelector)
 extends BoxPanel(Orientation.Vertical) {
   import Tileset.tilesize
   
-  val autotiles : Vector[Autotile] = 
-    proj.data.autotiles.map(Autotile.readFromDisk(proj, _))
+  val autotiles : Array[Autotile] = 
+    proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
   
   // draw every autotile onto collageImage in one huge row.
   // ImageSelector will group them into 8s

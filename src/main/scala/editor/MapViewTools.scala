@@ -28,7 +28,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
     x < mapMeta.xSize && y < mapMeta.ySize && x >= 0 && y >= 0 
   }
   
-  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Vector[Autotile],
+  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
                        layerAry: Array[Byte],  
                        x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = 
   {
