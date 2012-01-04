@@ -217,13 +217,22 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
           updateCursorSq(tool.selectionSqOnDrag, x1, y1),
           MapViewTools.selected.onMousePressed(vs, tCodes, x1, y1))
         
+        var (xLastDrag, yLastDrag) = (-1, -1) // init to impossible value
+          
         lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
           case MouseDragged(`canvasPanel`, point, _) => {
             val (x2, y2) = toTileCoords(point)
             
-            repaintRegions(
-              updateCursorSq(tool.selectionSqOnDrag, x2, y2),
-              MapViewTools.selected.onMouseDragged(vs, tCodes, x1, y1, x2, y2))
+            // only redo action if dragged to a different square
+            if( (x2, y2) != (xLastDrag, yLastDrag) ) {
+              repaintRegions(
+                updateCursorSq(tool.selectionSqOnDrag, x2, y2),
+                MapViewTools.selected.onMouseDragged(
+                  vs, tCodes, x1, y1, x2, y2))
+              
+              xLastDrag = x2
+              yLastDrag = y2
+            }
           }
           case MouseReleased(`canvasPanel`, point, _, _, _) => {
             val (x2, y2) = toTileCoords(point)
