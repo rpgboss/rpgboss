@@ -176,7 +176,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           TileRect(x1, y1, tCodes(0).length, tCodes.length)
         
         val autotileRect =
-          setAutotileFlags(vs.mapMeta, vs.sm.autotiles, layerAry, 
+          setAutotileFlags(vs.mapMeta, vs.sm.getAutotiles, layerAry, 
                            x1, y1, x1+tCodes(0).length-1, y1+tCodes.length-1)
         
         directlyEditedRect|autotileRect

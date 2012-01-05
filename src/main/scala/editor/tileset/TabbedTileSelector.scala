@@ -26,12 +26,12 @@ extends BoxPanel(Orientation.Horizontal) with SelectsMap
     new TabbedPane() {
       tabPlacement(Alignment.Bottom)
       
-      val autotileSel = new AutotileSelector(sm.proj, TabbedTileSelector.this)
-      pages += new TabbedPane.Page("Autotiles", autotileSel)
+      pages += new TabbedPane.Page("Autotiles", 
+        new AutotileSelector(sm.getProj, TabbedTileSelector.this))
       
       map.metadata.tilesets.zipWithIndex.map({
         case (tsName, i) => 
-          val tileset = Tileset.readFromDisk(sm.proj, tsName)
+          val tileset = Tileset.readFromDisk(sm.getProj, tsName)
           val tabComponent = tileset.imageOpt.map { img =>
             new ImageTileSelector(img, tXYArray =>
               selectedTileCodes = tXYArray.map(_.map({

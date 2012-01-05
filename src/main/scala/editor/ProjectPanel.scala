@@ -29,6 +29,10 @@ class ProjectPanel(mainP: MainPanel, sm: StateMaster)
           projMenu.show(btn, 0, btn.bounds.height)
         }
       }
+      contents += new Button(Action("Database...") {
+        val d = new rpgboss.editor.dialog.DatabaseDialog(mainP.topWin, sm)
+        d.open()
+      })
     }
     contents += tileSelector
   }
@@ -44,14 +48,15 @@ class ProjectPanel(mainP: MainPanel, sm: StateMaster)
   
   // select most recent or first map if not empty
   selectMap({
-    if(!sm.mapStates.isEmpty) {
+    val mapStates = sm.getMapStates
+    if(!mapStates.isEmpty) {
       val idToLoad =
-        if(sm.mapStates.contains(sm.proj.data.recentMapId))
-          sm.proj.data.recentMapId
+        if(mapStates.contains(sm.getProj.data.recentMapId))
+          sm.getProj.data.recentMapId
         else
-          sm.mapStates.keys.min
+          mapStates.keys.min
       
-      sm.mapStates.get(idToLoad).map(_.map)
+      mapStates.get(idToLoad).map(_.map)
     }
     else None
   })

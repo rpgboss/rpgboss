@@ -29,27 +29,46 @@ case class MapState(map: RpgMap,
   }
 }
 
-class StateMaster(val proj: Project)
+class StateMaster(private var proj: Project)
 {
   import Dirtiness._
   
-  def loadUpMaps() = {
+  private var projDirty = Dirtiness.Clean
+  
+  private var autotiles: Array[Autotile] = null
+  private var mapStates: Map[String, MapState] = null
+  
+  def loadProjectData() = {
+    autotiles =
+      proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
+    
     val states = proj.getMaps.map(rpgMap => 
       rpgMap.name->MapState(rpgMap, Dirtiness.Clean, None))
     
-    Map(states : _*)
+    mapStates = Map(states : _*)
   }
   
-  var mapStates: Map[String, MapState] = loadUpMaps()
+  loadProjectData()
   
   // maps map is cleared of excess data upon saving
   def save() = {
-    mapStates.values.map(_.save(proj)) // save it all
-    mapStates = loadUpMaps() // refresh stale shit
+    // save project (database, etc.)
+    if(projDirty == Dirty) {
+      if(proj.writeMetadata()) {
+        projDirty = Clean
+      }
+    }
+    
+    mapStates.values.map(_.save(proj)) // save all the maps
+    
+    loadProjectData() // refresh stale shit
   }
   
+  def stateDirty =
+    projDirty == Clean && mapStates.values.exists(_.dirty != Clean)
+  
   def askSaveUnchanged(diagParent: Component) = {
-    if(mapStates.values.exists(_.dirty != Clean)) {
+    if(stateDirty) {
       Dialog.showConfirmation(diagParent,
                               "Save changes to project?",
                               "rpgboss",
@@ -65,8 +84,15 @@ class StateMaster(val proj: Project)
     } else true
   }
   
-  var autotiles = 
-    proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
+  def getProj = proj
+  def setProj(newProj: Project) = {
+    proj = newProj
+    projDirty = Dirty
+  }
+  
+  def getMapStates = mapStates
+  
+  def getAutotiles = autotiles
   
   def getMapMetas = mapStates.values.map(_.map).toSeq
   

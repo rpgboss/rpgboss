@@ -17,7 +17,8 @@ extends Tree[Any]
   treeData = {
     // need to make a value copy of sm.proj 
     // because can only match on stable values
-    val proj = sm.proj
+    // FIXME: not currently doing this... wtf is going on here
+    val proj = sm.getProj
     
     TreeModel[Any](proj)({
       case `proj` => mapMetas.filter(_.metadata.parent == "")
@@ -25,5 +26,5 @@ extends Tree[Any]
     })
   }
 
-  expandPath(sm.proj :: Nil)
+  expandPath(sm.getProj :: Nil)
 }
