@@ -12,11 +12,6 @@ import java.io._
 object Resource {
   val formats = Serialization.formats(ShortTypeHints(
     List(classOf[Autotile], classOf[Tileset], classOf[RpgMapMetadata])))
-  
-  def listResources(dir: File, ext: String) =
-    dir.listFiles.map(_.getName)
-      .filter(_.endsWith(ext))
-      .map(_.dropRight(ext.length+1)) // +1 to drop the dot before the name
 }
 
 trait Resource[T, MT <: AnyRef] {
@@ -36,9 +31,17 @@ trait Resource[T, MT <: AnyRef] {
 
 trait MetaResource[T, MT] {
   def rcType: String
+  val metadataExt = "%s.json".format(rcType) 
+  def keyExt : String // extension to search for when listing resources
+  
+  def rcDir(proj: Project) = new File(proj.rcDir, rcType)
+  def list(proj: Project) = 
+    rcDir(proj).listFiles.map(_.getName)
+      .filter(_.endsWith(keyExt))
+      .map(_.dropRight(keyExt.length+1)) // +1 to drop the dot before the name
   
   def metadataFile(proj: Project, name: String) =
-    new File(new File(proj.rcDir, rcType), "%s.%s.json".format(name, rcType))
+    new File(rcDir(proj), "%s.%s".format(name, metadataExt))
   
   def defaultInstance(proj: Project, name: String) : T
   

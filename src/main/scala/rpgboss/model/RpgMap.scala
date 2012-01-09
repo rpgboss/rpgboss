@@ -9,16 +9,17 @@ import scala.collection.JavaConversions._
 import java.io._
 import java.util.Arrays
 
-case class RpgMapMetadata(parent: String,
+case class RpgMapMetadata(parent: Int,
                           title: String,
                           xSize: Int,
                           ySize: Int,
                           tilesets: List[String])
 
-case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
+case class RpgMap(proj: Project, id: Int, metadata: RpgMapMetadata)
 extends Resource[RpgMap, RpgMapMetadata]
 {
   def meta = RpgMap
+  def name = RpgMap.idToName(id)
   
   def saveMapData(d: RpgMapData) =
     d.writeToFile(proj, name)
@@ -29,11 +30,17 @@ extends Resource[RpgMap, RpgMapMetadata]
 
 object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   def rcType = "map"
+  def keyExt = metadataExt
   
-  def metadataExt = "mapmeta.json"
+  def idToName(id: Int) = "Map%d".format(id)
   
-  override def metadataFile(p: Project, name: String) = 
-    new File(p.mapsDir, "%s.%s".format(name, metadataExt))
+  def apply(proj: Project, name: String, metadata: RpgMapMetadata) = 
+    apply(proj, name.drop(3).toInt, metadata)
+  
+  def readFromDisk(proj: Project, id: Int) : RpgMap = 
+    readFromDisk(proj, idToName(id))
+    
+  override def rcDir(proj: Project) = proj.mapsDir
 
   val initXSize = 20
   val initYSize = 15
@@ -43,8 +50,8 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   val autotileByte : Byte = -2
   val emptyTileByte : Byte = -1
     
-  def defaultInstance(proj: Project, name: String) = {
-    val m = RpgMapMetadata("", "Starting Map",
+  def defaultInstance(proj: Project, name: String) : RpgMap = {
+    val m = RpgMapMetadata(-1, "Starting Map",
                            initXSize, initYSize, 
                            List("Refmap-TileA5",
                                 "Refmap-TileB",
@@ -53,6 +60,8 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
                                 "Refmap-TileE"))
     RpgMap(proj, name, m)
   }
+  def defaultInstance(proj: Project, id: Int) : RpgMap = 
+    defaultInstance(proj, idToName(id))
   
   def emptyMapData(xSize: Int, ySize: Int) = {
     val dataArySize = xSize*ySize*bytesPerTile

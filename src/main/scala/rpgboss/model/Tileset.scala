@@ -32,6 +32,7 @@ extends ImageResource[Tileset, TilesetMetadata]
 
 object Tileset extends MetaResource[Tileset, TilesetMetadata] {
   def rcType = "tileset"
+  def keyExt = "png"
   
   def tilesize = 32
   

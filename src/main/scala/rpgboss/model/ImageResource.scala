@@ -13,7 +13,7 @@ trait ImageResource[T, MT <: AnyRef] extends Resource[T, MT] {
   lazy val imageOpt = Option(ImageIO.read(imgFile))
 }
 
-object ImageResource {
+object ImageResource {  
   lazy val errorTile = { 
     val errImgStream = getClass.getClassLoader.getResourceAsStream("error.png")
     ImageIO.read(errImgStream)

@@ -156,6 +156,7 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
 
 object Autotile extends MetaResource[Autotile, AutotileMetadata] {
   def rcType = "autotile"
+  def keyExt = "png"
   
   def defaultInstance(proj: Project, name: String) = 
     Autotile(proj, name, AutotileMetadata())
