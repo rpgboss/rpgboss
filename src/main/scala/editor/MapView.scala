@@ -169,7 +169,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   def selectMap(mapOpt: Option[RpgMap]) = {
     viewStateOpt = mapOpt map { mapMeta =>
       val tc = new TileCache(sm.getProj, sm.getAutotiles, mapMeta)
-      new MapViewState(sm, mapMeta.name, tc)
+      new MapViewState(sm, mapMeta.id, tc)
     }
       
     resizeRevalidateRepaint()

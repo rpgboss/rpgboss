@@ -36,14 +36,14 @@ class StateMaster(private var proj: Project)
   private var projDirty = Dirtiness.Clean
   
   private var autotiles: Array[Autotile] = null
-  private var mapStates: Map[String, MapState] = null
+  private var mapStates: Map[Int, MapState] = null
   
   def loadProjectData() = {
     autotiles =
       proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
     
-    val states = proj.getMaps.map(rpgMap => 
-      rpgMap.name->MapState(rpgMap, Dirtiness.Clean, None))
+    val states = RpgMap.list(proj).map(RpgMap.readFromDisk(proj, _)).map(
+      rpgMap => rpgMap.id->MapState(rpgMap, Dirtiness.Clean, None))
     
     mapStates = Map(states : _*)
   }
@@ -97,14 +97,14 @@ class StateMaster(private var proj: Project)
   def getMapMetas = mapStates.values.map(_.map).toSeq
   
   // Must be sure that mapId exists and map data loaded to call
-  def getMap(mapId: String) =
+  def getMap(mapId: Int) =
     mapStates.get(mapId).get.map
   
-  def setMap(mapId: String, map: RpgMap) =
+  def setMap(mapId: Int, map: RpgMap) =
     mapStates = mapStates.updated(mapId,
       mapStates.get(mapId).get.copy(map = map, dirty = Dirtiness.Dirty)) 
   
-  def getMapData(mapId: String) = {
+  def getMapData(mapId: Int) = {
     assert(mapStates.contains(mapId), "map id %d doesn't exist".format(mapId))
     val mapState = mapStates.get(mapId).get
     mapState.mapDataOpt getOrElse {
@@ -122,7 +122,7 @@ class StateMaster(private var proj: Project)
     }
   }
   
-  def setMapData(mapId: String, mapData: RpgMapData) = {
+  def setMapData(mapId: Int, mapData: RpgMapData) = {
     mapStates = mapStates.updated(mapId,
       mapStates.get(mapId).get.copy(
         mapDataOpt = Some(mapData), dirty = Dirtiness.Dirty))

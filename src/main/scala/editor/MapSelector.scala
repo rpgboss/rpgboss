@@ -21,8 +21,8 @@ extends Tree[Any]
     val proj = sm.getProj
     
     TreeModel[Any](proj)({
-      case `proj` => mapMetas.filter(_.metadata.parent == "")
-      case m: RpgMap => mapMetas.filter(_.metadata.parent == m.name)
+      case `proj` => mapMetas.filter(_.metadata.parent < 0)
+      case m: RpgMap => mapMetas.filter(_.metadata.parent == m.id)
     })
   }
 

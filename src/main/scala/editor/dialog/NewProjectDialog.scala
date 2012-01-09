@@ -33,7 +33,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       val p = Project.startingProject(gameTitleField.text,
                                       new File(rootChooser.getRoot, shortname))
       
-      val m = RpgMap.defaultInstance(p, "Map0")
+      val m = RpgMap.defaultInstance(p, 0)
       
       val allSavedOkay = 
         p.writeMetadata() &&

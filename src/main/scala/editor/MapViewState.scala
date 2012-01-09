@@ -31,7 +31,7 @@ object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
 }
 
 // The view state for a single map. Needs to be recreated for a different map
-class MapViewState(val sm: StateMaster, val mapId: String, 
+class MapViewState(val sm: StateMaster, val mapId: Int, 
                    val tilecache: TileCache) 
 {
   var undoStack: List[RpgMapData] = Nil
