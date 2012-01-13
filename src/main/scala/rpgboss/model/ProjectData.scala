@@ -1,11 +1,16 @@
 package rpgboss.model
 
 case class MapLoc(map: Int, x: Float, y: Float)
+case class SpriteSpec(spriteName: String, index: Int) 
+
+case class Actor(defaultName: String,
+                 sprite: SpriteSpec)
 
 case class ProjectData(title: String, 
                        autotiles: List[String],
                        recentMapId: Int,
-                       startingLoc: MapLoc)
+                       startingLoc: MapLoc,
+                       actors: Array[Actor])
 
 object ProjectData {
   def defaultInstance(title: String) = 
@@ -13,8 +18,15 @@ object ProjectData {
       title, 
       defaultAutotiles, 
       -1, 
-      MapLoc(0, 10, 10)
+      MapLoc(0, 5, 5),
+      Array(
+        Actor("Pando", SpriteSpec("vx_chara01_a", 4)),
+        Actor("Estine", SpriteSpec("vx_chara01_a", 1)),
+        Actor("Leoge", SpriteSpec("vx_chara01_a", 3)),
+        Actor("Graven", SpriteSpec("vx_chara01_a", 2)),
+        Actor("Carona", SpriteSpec("vx_chara01_a", 6))
       )
+    )
   
   def defaultAutotiles = List(
     "Refmap-A1-0-0-A",
