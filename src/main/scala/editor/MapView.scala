@@ -14,6 +14,8 @@ import scala.math._
 import scala.swing._
 import scala.swing.event._
 
+import javax.imageio._
+
 import java.awt.{BasicStroke, AlphaComposite, Color}
 import java.awt.geom.Line2D
 
@@ -90,11 +92,6 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
         val maxYTile = 
           min(vs.mapMeta.ySize-1, (bounds.getMaxY.toInt-1)/tilesize)
         
-        /* Not sure what the purpose of this is
-        g.clip(new Rectangle(minXTile*tilesize, minYTile*tilesize,
-                             (maxXTile-minXTile+1)*tilesize,
-                             (maxYTile-minYTile+1)*tilesize))*/
-        
         /*logger.info("Paint Tiles: x: [%d,%d], y: [%d,%d]".format(
           minXTile, maxXTile, minYTile, maxYTile))*/
           
@@ -134,6 +131,18 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
           for(yTile <- minYTile to maxYTile+1) {
             g.draw(new Line2D.Double(minXTile*tilesize, yTile*tilesize,
                                      (maxXTile+1)*tilesize, yTile*tilesize))
+          }
+          
+          // draw start loc
+          val startingLoc = sm.getProj.data.startingLoc
+          if(startingLoc.map == vs.mapId &&
+             startingLoc.x >= minXTile && startingLoc.x <= maxXTile &&
+             startingLoc.y >= minYTile && startingLoc.y <= maxYTile) {
+            g.setComposite(AlphaComposite.SrcOver)
+            g.drawImage(MapView.startLocTile,
+              (startingLoc.x*tilesize).toInt, 
+              (startingLoc.y*tilesize).toInt, 
+              null, null) 
           }
         } else {        
           // otherwise draw selection square
@@ -248,4 +257,9 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       }
     }
   }
+}
+
+object MapView {
+  lazy val startLocTile = ImageIO.read(
+    getClass.getClassLoader.getResourceAsStream("player_play.png"))
 }
