@@ -32,14 +32,11 @@ extends BoxPanel(Orientation.Horizontal) with SelectsMap
       map.metadata.tilesets.zipWithIndex.map({
         case (tsName, i) => 
           val tileset = Tileset.readFromDisk(sm.getProj, tsName)
-          val tabComponent = tileset.imageOpt.map { img =>
-            new ImageTileSelector(img, tXYArray =>
-              selectedTileCodes = tXYArray.map(_.map({
-                case (xTile, yTile) => 
-                  Array(i.asInstanceOf[Byte], xTile, yTile)
-              }))
-            )
-          } getOrElse new Label("No image")
+          val tabComponent = new ImageTileSelector(tileset.img, tXYArray =>
+            selectedTileCodes = tXYArray.map(_.map({
+              case (xTile, yTile) => 
+                Array(i.asInstanceOf[Byte], xTile, yTile)
+            })))
           
           pages += new TabbedPane.Page(tsName, tabComponent)
       })
