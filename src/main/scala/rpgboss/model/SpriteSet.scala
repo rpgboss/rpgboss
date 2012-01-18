@@ -18,9 +18,18 @@ case class SpritesetMetadata(boundsX: Int = Tileset.tilesize,
 case class Spriteset(proj: Project,
                      name: String, 
                      metadata: SpritesetMetadata) 
-extends ImageResource[Spriteset, SpritesetMetadata]
+extends TiledImageResource[Spriteset, SpritesetMetadata]
 {
   def meta = Spriteset
+  
+  val (tileH, tileW) = {
+    val oneSprite = name(0) == '$'
+    
+    val tileH = img.height / 3 / (if(oneSprite) 1 else 2)
+    val tileW = img.width  / 4 / (if(oneSprite) 1 else 4)
+    
+    (tileH, tileW)
+  }
   
   
 }

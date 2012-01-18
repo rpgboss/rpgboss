@@ -25,57 +25,50 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
   import Autotile.DirectionMasks._
   def meta = Autotile
   
-  lazy val terrainMode = 
-    imageOpt.map(_.getHeight == 3*tilesize).getOrElse(false)
+  lazy val terrainMode = img.height == 3*tilesize
   
-  private def draw(g: Graphics2D, srcImg: BufferedImage,
+  private def draw(g: Graphics2D,
                    srcXHt: Int, srcYHt: Int, destXHt: Int, destYHt: Int,
                    widthHt: Int, heightHt: Int) =
   {
     val ht = tilesize/2
-    g.drawImage(srcImg,
-                destXHt*ht, destYHt*ht, 
-                (destXHt+widthHt)*ht, (destYHt+heightHt)*ht,
-                srcXHt*ht, srcYHt*ht, 
-                (srcXHt+widthHt)*ht, (srcYHt+heightHt)*ht,
-                null)
+    val sourceSlice = img.subimage(
+      srcXHt*ht, srcYHt*ht, widthHt*ht, heightHt*ht)
+    
+    g.drawImage(sourceSlice, destXHt*ht, destYHt*ht, null)
   }
   
   // draw corner helper method
-  def drawCorner(g: Graphics2D, srcImg: BufferedImage, 
+  // htXOffset offsets the x axis in halftiles (for multiframe tiles)
+  def drawCorner(g: Graphics2D, htXOffset: Int, 
                  srcXHt: Int, srcYHt: Int, destMask: Int) = 
   {
     val destXHt = if((destMask & NE) > 0 || (destMask & SE) > 0) 1 else 0
     val destYHt = if((destMask & SE) > 0 || (destMask & SW) > 0) 1 else 0
     
-    draw(g, srcImg, srcXHt, srcYHt, destXHt, destYHt, 1, 1)
+    draw(g, htXOffset+srcXHt, srcYHt, destXHt, destYHt, 1, 1)
   }
   
   def isolatedImg() = {
-    imageOpt map { img =>
-      val targetImage = 
-        new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_4BYTE_ABGR)
+    val targetImage = 
+      new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_4BYTE_ABGR)
+  
+    val g = targetImage.createGraphics()
     
-      val g = targetImage.createGraphics()
-      
-      if(terrainMode)
-        draw(g, img, 0, 0, 0, 0, 2, 2)
-      else {
-        drawCorner(g, img, 0, 0, NW)
-        drawCorner(g, img, 3, 0, NE)
-        drawCorner(g, img, 0, 3, SW)
-        drawCorner(g, img, 3, 3, SE)
-      }
-      
-      targetImage
-      
-    } getOrElse {
-      ImageResource.errorTile
+    if(terrainMode)
+      draw(g, 0, 0, 0, 0, 2, 2)
+    else {
+      drawCorner(g, 0, 0, 0, NW)
+      drawCorner(g, 0, 3, 0, NE)
+      drawCorner(g, 0, 0, 3, SW)
+      drawCorner(g, 0, 3, 3, SE)
     }
+    
+    targetImage
   }
   
   // autotileConfig must be a positive integer
-  def getTile(autotileConfig: Int, frame: Byte) = imageOpt map { img =>
+  def getTile(autotileConfig: Int, frame: Byte) = { 
     require(autotileConfig >= 0, "Autotile config integer must be positive.")
     require(frame >= 0, "Frame byte must be positive.")
     
@@ -92,37 +85,39 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
       val g = tile.createGraphics()
       val c = autotileConfig
       val ht = tilesize/2
-          
-      def drawCardinalEdges(srcImg: BufferedImage, yOffset: Int) = {
+      
+      // htXOffset offsets the x axis in halftiles (for multiframe tiles)
+      def drawCardinalEdges(htXOffset: Int, yOffset: Int) = {
         // draw cardinal direction edges
-        if((c & NORTH) > 0) draw(g, srcImg, 1, 0+yOffset, 0, 0, 2, 1)
-        if((c & EAST) > 0)  draw(g, srcImg, 3, 1+yOffset, 1, 0, 1, 2)
-        if((c & SOUTH) > 0) draw(g, srcImg, 1, 3+yOffset, 0, 1, 2, 1)
-        if((c & WEST) > 0)  draw(g, srcImg, 0, 1+yOffset, 0, 0, 1, 2)
+        if((c & NORTH) > 0) draw(g, htXOffset+1, yOffset+0, 0, 0, 2, 1)
+        if((c & EAST) > 0)  draw(g, htXOffset+3, yOffset+1, 1, 0, 1, 2)
+        if((c & SOUTH) > 0) draw(g, htXOffset+1, yOffset+3, 0, 1, 2, 1)
+        if((c & WEST) > 0)  draw(g, htXOffset+0, yOffset+1, 0, 0, 1, 2)
       }
       
       if(terrainMode) {
-        val framewidth = 2*tilesize
-        val availableFrames = img.getWidth / framewidth
+        val frameWidth = 2*tilesize
+        val availableFrames = img.width / frameWidth
         val frameIdx = frame % availableFrames
         
-        val frameImg = 
-          img.getSubimage(framewidth*frameIdx, 0, framewidth, img.getHeight)
+        // how many half tiles to offset to get the right frame
+        val frameHtXOffset = 4*frameIdx
         
         // draw center portion. We'll fill in edges after.
-        draw(g, frameImg, 1, 3, 0, 0, 2, 2)
+        // third argument does X offset to get to the correct frame
+        draw(g, frameHtXOffset+1, 3, 0, 0, 2, 2)
         
         // handle edges and corners if exist
         if(c > 0) {
-          drawCardinalEdges(frameImg, 2)
+          drawCardinalEdges(frameHtXOffset, 2)
           
           def handleCorner(cardinalDirs: Int, ordinalDir: Int,
                            cornerXHt: Int, cornerYHt: Int,
                            inverseXHt: Int, inverseYHt: Int) = {
             if((c & cardinalDirs) == cardinalDirs)
-              drawCorner(g, frameImg, cornerXHt, cornerYHt, ordinalDir)
+              drawCorner(g, frameHtXOffset, cornerXHt, cornerYHt, ordinalDir)
             else if((c & cardinalDirs) == 0 && (c & ordinalDir) > 0)
-              drawCorner(g, frameImg, inverseXHt, inverseYHt, ordinalDir)
+              drawCorner(g, frameHtXOffset, inverseXHt, inverseYHt, ordinalDir)
           }
           
           handleCorner(NORTH|EAST, NE, 3, 2, 3, 0)
@@ -131,15 +126,15 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
           handleCorner(NORTH|WEST, NW, 0, 2, 2, 0)    
         }
       } else {
-        draw(g, img, 1, 1, 0, 0, 2, 2) // draw whole center portion
+        draw(g, 1, 1, 0, 0, 2, 2) // draw whole center portion
         
         if(c > 0) {
-          drawCardinalEdges(img, 0)
+          drawCardinalEdges(0, 0)
           
           def handleCorner(cardinalDirs: Int, ordinalDir: Int,
                            cornerXHt: Int, cornerYHt: Int) = {
             if((c & cardinalDirs) == cardinalDirs)
-              drawCorner(g, img, cornerXHt, cornerYHt, ordinalDir)
+              drawCorner(g, 0, cornerXHt, cornerYHt, ordinalDir)
           }
           
           handleCorner(NORTH|EAST, NE, 3, 0)
@@ -151,7 +146,7 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
       
       tile
     }
-  } getOrElse ImageResource.errorTile
+  }
 }
 
 object Autotile extends MetaResource[Autotile, AutotileMetadata] {

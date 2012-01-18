@@ -57,4 +57,5 @@ trait MetaResource[T, MT] {
   }
 }
 
+case class ResourceException(msg: String) extends Exception(msg)
 

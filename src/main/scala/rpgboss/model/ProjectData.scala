@@ -10,7 +10,8 @@ case class ProjectData(title: String,
                        autotiles: List[String],
                        recentMapId: Int,
                        startingLoc: MapLoc,
-                       actors: Array[Actor])
+                       actors: Array[Actor],
+                       windowskin: String)
 
 object ProjectData {
   def defaultInstance(title: String) = 
@@ -25,7 +26,8 @@ object ProjectData {
         Actor("Leoge", SpriteSpec("vx_chara01_a", 3)),
         Actor("Graven", SpriteSpec("vx_chara01_a", 2)),
         Actor("Carona", SpriteSpec("vx_chara01_a", 6))
-      )
+      ),
+      "LastPhantasm"
     )
   
   def defaultAutotiles = List(

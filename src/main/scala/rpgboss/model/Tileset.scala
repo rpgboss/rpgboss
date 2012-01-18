@@ -17,17 +17,13 @@ case class TilesetMetadata(passabilities: Array[Byte] = Array.empty)
 case class Tileset(proj: Project,
                    name: String, 
                    metadata: TilesetMetadata) 
-extends ImageResource[Tileset, TilesetMetadata]
+extends TiledImageResource[Tileset, TilesetMetadata]
 {
   import Tileset.tilesize
   def meta = Tileset
-      
-  def getTile(x: Int, y: Int) = imageOpt.map(img => {
-    if(x < img.getWidth/tilesize && y < img.getHeight/tilesize)
-      img.getSubimage(x*tilesize, y*tilesize, tilesize, tilesize)
-    else 
-      ImageResource.errorTile
-  }).getOrElse(ImageResource.errorTile)
+  
+  def tileH = tilesize
+  def tileW = tilesize
 }
 
 object Tileset extends MetaResource[Tileset, TilesetMetadata] {
