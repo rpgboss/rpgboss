@@ -27,7 +27,7 @@ object ProjectData {
         Actor("Graven", SpriteSpec("vx_chara01_a", 2)),
         Actor("Carona", SpriteSpec("vx_chara01_a", 6))
       ),
-      "LastPhantasm"
+      "LastPhantasmScanlines"
     )
   
   def defaultAutotiles = List(
