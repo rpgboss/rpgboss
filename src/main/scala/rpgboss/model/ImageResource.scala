@@ -10,7 +10,15 @@ import javax.imageio._
 // Wrapper class in case I need to tweak subimage to speed things up
 case class FastImage(img: BufferedImage) {
   // FIXME: I believe this destroys the HW acceleration
-  def subimage(x: Int, y: Int, w: Int, h: Int) = img.getSubimage(x, y, w, h)
+  def subimage(x: Int, y: Int, w: Int, h: Int) = {
+    val sub = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR)
+    val g = sub.createGraphics()
+    g.drawImage(img, 0, 0, w, h,
+                     x, y, x+w, y+h, null)
+    g.dispose()
+    sub
+    //img.getSubimage(x, y, w, h)
+  }
   
   def width = img.getWidth()
   def height = img.getHeight()
