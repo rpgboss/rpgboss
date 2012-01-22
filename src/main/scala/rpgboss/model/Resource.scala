@@ -21,6 +21,7 @@ trait Resource[T, MT <: AnyRef] {
   def proj: Project
   
   def rcTypeDir = new File(proj.rcDir, meta.rcType)
+  def dataFile = new File(rcTypeDir, "%s.%s".format(name, meta.keyExt))
   
   def writeMetadata() : Boolean =
     meta.metadataFile(proj, name).getWriter().map { writer =>
@@ -35,6 +36,7 @@ trait MetaResource[T, MT] {
   def keyExt : String // extension to search for when listing resources
   
   def rcDir(proj: Project) = new File(proj.rcDir, rcType)
+  
   def list(proj: Project) = 
     rcDir(proj).listFiles.map(_.getName)
       .filter(_.endsWith(keyExt))

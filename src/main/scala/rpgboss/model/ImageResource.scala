@@ -40,10 +40,8 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   }
 }
 
-trait ImageResource[T, MT <: AnyRef] extends Resource[T, MT] {
-  def imgFile = new File(rcTypeDir, "%s.png".format(name))
-  
-  lazy val img = Option(ImageIO.read(imgFile)).map(FastImage) getOrElse {
+trait ImageResource[T, MT <: AnyRef] extends Resource[T, MT] {  
+  lazy val img = Option(ImageIO.read(dataFile)).map(FastImage) getOrElse {
     throw ResourceException("Can't load window skin: %s".format(name))
   }
 }
