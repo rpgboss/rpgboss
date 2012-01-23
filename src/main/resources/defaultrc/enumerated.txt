@@ -3,6 +3,7 @@ tileset/Refmap-TileB.png
 tileset/Refmap-TileC.png
 tileset/Refmap-TileD.png
 tileset/Refmap-TileE.png
+picture/LordSpirit.png
 autotile/Refmap-A1-0-1-A.png
 autotile/Refmap-A4-0-0.png
 autotile/Refmap-A1-2-0-A.png
@@ -131,6 +132,12 @@ autotile/Refmap-A4-3-4.png
 autotile/Refmap-A1-3-1-A.png
 autotile/Refmap-A4-4-2.png
 autotile/Refmap-A4-3-3.png
+msgfont/VeraMono-Bold.ttf
+msgfont/VeraMono-Italic.ttf
+msgfont/VeraMono.ttf
+msgfont/Vera-Bold.ttf
+msgfont/Vera.ttf
+msgfont/Vera-Italic.ttf
 spriteset/vx_chara07_a.png
 spriteset/!object.png
 spriteset/vx_chara04_a.png

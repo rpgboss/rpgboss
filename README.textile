@@ -12,15 +12,21 @@ Use sbt 0.10 series.
 
 h2. Material
 
-Autotiles, Spritesets, Tilesets from:
+h3. Autotiles, Spritesets, Tilesets
+
 http://www.tekepon.net/fsm/
 http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
 
-Faces from:
+h3. Faces
 
+h3. Window Skin
 
-Window skin from:
 http://rpgmakertimes.agilityhoster.com/2011/02/final-fantasy-i-xpvx-windowskin/
+
+h3. Picture
+LordSpirit.jpg:
+http://www.rpgrevolution.com/forums/index.php?autocom=gallery&req=si&img=3701
+
 
 h2. Material Rules
 
