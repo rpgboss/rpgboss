@@ -30,7 +30,7 @@ extends Resource[RpgMap, RpgMapMetadata]
 
 object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   def rcType = "map"
-  def keyExt = metadataExt
+  def keyExts = Array(metadataExt)
   
   def idToName(id: Int) = "Map%d".format(id)
   

@@ -21,7 +21,7 @@ extends Resource[Msgfont, MsgfontMetadata]
 
 object Msgfont extends MetaResource[Msgfont, MsgfontMetadata] {
   def rcType = "msgfont"
-  def keyExt = "ttf"
+  def keyExts = Array("ttf")
   
   def defaultInstance(proj: Project, name: String) = 
     Msgfont(proj, name, MsgfontMetadata())

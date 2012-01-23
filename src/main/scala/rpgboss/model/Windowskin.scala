@@ -52,7 +52,7 @@ extends TiledImageResource[Windowskin, WindowskinMetadata]
 
 object Windowskin extends MetaResource[Windowskin, WindowskinMetadata] {
   def rcType = "windowskin"
-  def keyExt = "png"
+  def keyExts = Array("png")
   
   def defaultInstance(proj: Project, name: String) = 
     Windowskin(proj, name, WindowskinMetadata())

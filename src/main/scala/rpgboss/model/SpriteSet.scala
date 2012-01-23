@@ -36,7 +36,7 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
 
 object Spriteset extends MetaResource[Spriteset, SpritesetMetadata] {
   def rcType = "spriteset"
-  def keyExt = "png"
+  def keyExts = Array("png")
   
   def defaultInstance(proj: Project, name: String) = 
     Spriteset(proj, name, SpritesetMetadata())
