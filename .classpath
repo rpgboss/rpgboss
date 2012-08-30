@@ -1,0 +1,21 @@
+<classpath>
+  <classpathentry output="target/scala-2.9.1/classes" path="src/main/scala" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.9.1/classes" path="src/main/java" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.9.1/test-classes" path="src/test/scala" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.9.1/test-classes" path="src/test/java" kind="src"></classpathentry>
+  <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/postgresql/postgresql/jars/postgresql-9.0-801.jdbc4.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/org.mindrot/jbcrypt/jars/jbcrypt-0.3m.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/com.google.guava/guava/jars/guava-10.0.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/com.google.code.findbugs/jsr305/jars/jsr305-1.3.9.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/net.liftweb/lift-json_2.9.1/jars/lift-json_2.9.1-2.4-M4.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/com.thoughtworks.paranamer/paranamer/jars/paranamer-2.3.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/org.scala-lang/scalap/jars/scalap-2.9.1.jar" kind="lib"></classpathentry>
+  <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_COMPILER_CONTAINER"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/net.iharder/base64/jars/base64-2.3.8.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/com.weiglewilczek.slf4s/slf4s_2.9.1/jars/slf4s_2.9.1-1.0.7.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar" kind="lib"></classpathentry>
+  <classpathentry path="/home/tommycli/.ivy2/cache/org.scalatest/scalatest_2.9.1/jars/scalatest_2.9.1-1.6.1.jar" kind="lib"></classpathentry>
+  <classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"></classpathentry>
+  <classpathentry path="bin" kind="output"></classpathentry>
+</classpath>
