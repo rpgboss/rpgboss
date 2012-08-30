@@ -25,9 +25,9 @@ case class RpgMapData(botLayer: Array[Byte],
                            events)
   
   def writeToFile(p: Project, name: String) =
-    RpgMapData.dataFile(p, name).getWriter().map { writer =>
+    RpgMapData.dataFile(p, name).useWriter { writer =>
       implicit val formats = net.liftweb.json.DefaultFormats
-      Serialization.write(this.toIntermediate, writer) != null
+      Serialization.writePretty(this.toIntermediate, writer) != null
     } getOrElse false
 }
 

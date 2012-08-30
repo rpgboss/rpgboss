@@ -86,8 +86,13 @@ class FileHelper(file : File) {
       Some(new FileOutputStream(file))
     else None
   
-  def getWriter() : Option[Writer] =
-    getFos().map(new OutputStreamWriter(_))
+  def useWriter[T](useFunc: (Writer) => T) : Option[T] = {
+    getFos().map(new OutputStreamWriter(_)) map { writer =>
+      val retVal = useFunc(writer)
+      writer.close()
+      retVal
+    }
+  } 
     
   def getReader() : Option[BufferedReader] =
     if(file.isFile && file.canRead)

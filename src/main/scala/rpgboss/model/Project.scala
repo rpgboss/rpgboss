@@ -11,9 +11,9 @@ import java.io._
 case class Project(dir: File, data: ProjectData)
 {
   def writeMetadata() : Boolean = 
-    Project.filename(dir).getWriter().map { writer =>
+    Project.filename(dir).useWriter { writer =>
       implicit val formats = net.liftweb.json.DefaultFormats
-      Serialization.write(data, writer) != null
+      Serialization.writePretty(data, writer) != null
     } getOrElse false
   
   def rcDir   = new File(dir, "rc")

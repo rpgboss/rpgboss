@@ -24,9 +24,9 @@ trait Resource[T, MT <: AnyRef] {
   def dataFile = new File(rcTypeDir, "%s.%s".format(name, meta.keyExts(0)))
   
   def writeMetadata() : Boolean =
-    meta.metadataFile(proj, name).getWriter().map { writer =>
+    meta.metadataFile(proj, name).useWriter { writer =>
       implicit val formats = Resource.formats
-      Serialization.write(metadata, writer) != null
+      Serialization.writePretty(metadata, writer) != null
     } getOrElse false
 }
 
