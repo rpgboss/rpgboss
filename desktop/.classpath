@@ -1,0 +1,14 @@
+<classpath>
+  <classpathentry output="target/scala-2.9.2/classes" path="src/main/scala" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.9.2/classes" path="src/main/java" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.9.2/test-classes" path="src/test/scala" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.9.2/test-classes" path="src/test/java" kind="src"></classpathentry>
+  <classpathentry path="../desktop/lib/gdx-natives.jar" kind="lib"></classpathentry>
+  <classpathentry path="../desktop/lib/gdx-backend-lwjgl.jar" kind="lib"></classpathentry>
+  <classpathentry path="../desktop/lib/gdx-backend-lwjgl-natives.jar" kind="lib"></classpathentry>
+  <classpathentry path="../common/lib/gdx.jar" kind="lib"></classpathentry>
+  <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"></classpathentry>
+  <classpathentry exported="true" path="/common" kind="src" combineaccessrules="false"></classpathentry>
+  <classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"></classpathentry>
+  <classpathentry path="bin" kind="output"></classpathentry>
+</classpath>
