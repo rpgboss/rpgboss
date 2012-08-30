@@ -20,18 +20,6 @@ class ModelSpec extends Spec with BeforeAndAfter {
   after {
     tempdir.deleteAll()
   }
-
-  describe("RpgModelData") {
-
-    it("bytearray->str->bytearray") {
-      val x0 = fakeByteAry()
-      
-      val strRep = RpgMapData.aryToStr(x0)
-      val x1 = RpgMapData.strToAry(strRep)
-      
-      assert(x0 === x1)
-    }
-  }
   
   describe("Project") {
     it("de/serialization") {

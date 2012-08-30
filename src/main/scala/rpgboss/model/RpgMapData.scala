@@ -5,8 +5,6 @@ import rpgboss.lib.FileHelper._
 
 import net.liftweb.json.Serialization
 
-import net.iharder.Base64
-
 import java.io._
 
 case class RpgEvent()
@@ -21,9 +19,9 @@ case class RpgMapData(botLayer: Array[Byte],
   def drawOrder = List(botLayer, midLayer, topLayer)
   
   def toIntermediate = 
-    RpgMapDataIntermediate(aryToStr(botLayer),
-                           aryToStr(midLayer),
-                           aryToStr(topLayer),
+    RpgMapDataIntermediate(botLayer.map(_.toInt),
+                           midLayer.map(_.toInt),
+                           topLayer.map(_.toInt),
                            events)
   
   def writeToFile(p: Project, name: String) =
@@ -34,9 +32,9 @@ case class RpgMapData(botLayer: Array[Byte],
 }
 
 // Actually jsonable case class
-case class RpgMapDataIntermediate(botLayerStr: String,
-                                  midLayerStr: String,
-                                  topLayerStr: String,
+case class RpgMapDataIntermediate(botLayer: Array[Int],
+                                  midLayer: Array[Int],
+                                  topLayer: Array[Int],
                                   events: Array[RpgEvent])
 
 case object RpgMapData {
@@ -47,13 +45,10 @@ case object RpgMapData {
     implicit val formats = net.liftweb.json.DefaultFormats
     dataFile(proj, name).getReader().map { reader => 
       val intermediate = Serialization.read[RpgMapDataIntermediate](reader)
-      RpgMapData(strToAry(intermediate.botLayerStr),
-                 strToAry(intermediate.midLayerStr),
-                 strToAry(intermediate.topLayerStr),
+      RpgMapData(intermediate.botLayer.map(_.toByte),
+                 intermediate.midLayer.map(_.toByte),
+                 intermediate.topLayer.map(_.toByte),
                  intermediate.events)
     }
   }
-  
-  def aryToStr(ary: Array[Byte]) = Base64.encodeBytes(ary, Base64.GZIP)
-  def strToAry(str: String) = Base64.decode(str)
 }
