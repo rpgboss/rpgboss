@@ -17,6 +17,7 @@ class Game(gamepath: File) extends ApplicationListener {
   var map: RpgMap = null
   var mapData: RpgMapData = null
   var camera: OrthographicCamera = null
+  var autotiles: Array[Autotile] = null
   var tilesets: Array[Tileset] = null
   var batch: SpriteBatch = null
   
@@ -55,13 +56,16 @@ class Game(gamepath: File) extends ApplicationListener {
     
     val packer = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
     
+    autotiles = project.data.autotiles.map { name =>
+      Autotile.readFromDisk(project, name)
+    }
+    
     // Pack all the autotiles
-    project.data.autotiles.map { name =>
-      val autotile = Autotile.readFromDisk(project, name)
+    autotiles.map { autotile =>
       val autotilePix = new Pixmap(
           Gdx.files.absolute(autotile.dataFile.getAbsolutePath()))
       
-      packer.pack("autotiles/%s".format(name), autotilePix)
+      packer.pack("autotiles/%s".format(autotile.name), autotilePix)
 
       // No need to dispose of pixmaps, I believe, as they get disposed of
       // when the TextureAtlas gets disposed
@@ -99,6 +103,8 @@ class Game(gamepath: File) extends ApplicationListener {
     batch = new SpriteBatch() 
   }
   override def render() {
+    import Tileset._
+    
     // Log fps
     fps.log()
     
@@ -132,8 +138,25 @@ class Game(gamepath: File) extends ApplicationListener {
           
           if(byte1 < 0) {
             if(byte1 == RpgMap.autotileByte) { // Autotile
-              // TODO
-              //println("Draw autotile")
+              val autotile = autotiles(byte2)
+              val region = 
+                atlas.findRegion("autotiles/%s".format(autotile.name))
+                
+              val srcDestPositions = autotile.getHalfTiles(byte3, 0)
+              
+              srcDestPositions map {
+                case ((srcXHt, srcYHt), (dstXHt, dstYHt)) =>
+                  batch.draw(
+                      region.getTexture(),
+                      tileX.toFloat+dstXHt*0.5f,
+                      tileY.toFloat+dstYHt*0.5f,
+                      0.5f, 0.5f,
+                      region.getRegionX() + srcXHt*halftile,
+                      region.getRegionY() + srcYHt*halftile,
+                      halftile, halftile,
+                      false, true
+                      )
+              }
             }
           } else { // Regular tile
             //println("Draw regular tile")
@@ -141,11 +164,12 @@ class Game(gamepath: File) extends ApplicationListener {
               atlas.findRegion("tilesets/%s".format(tilesets(byte1).name))
             batch.draw(
                 region.getTexture(),
-                region.getRegionX()+tileX.toFloat, 
-                region.getRegionY()+tileY.toFloat,
+                tileX.toFloat, 
+                tileY.toFloat,
                 1.0f, 1.0f,
-                byte2*Tileset.tilesize, byte3*Tileset.tilesize,
-                Tileset.tilesize, Tileset.tilesize,
+                region.getRegionX() + byte2*tilesize, 
+                region.getRegionY() + byte3*tilesize,
+                tilesize, tilesize,
                 false, true)
             
           }
