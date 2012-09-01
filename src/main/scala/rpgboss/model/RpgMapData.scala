@@ -9,7 +9,11 @@ import java.io._
 
 case class RpgEvent()
 
-// this class has mutable members
+/*
+ * This class has mutable members.
+ * 
+ * See RpgMap object for an explanation of the data format.
+ */
 case class RpgMapData(botLayer: Array[Byte],
                       midLayer: Array[Byte],
                       topLayer: Array[Byte],

@@ -7,7 +7,7 @@ case class Actor(defaultName: String,
                  sprite: SpriteSpec)
 
 case class ProjectData(title: String, 
-                       autotiles: List[String],
+                       autotiles: Array[String],
                        recentMapId: Int,
                        startingLoc: MapLoc,
                        actors: Array[Actor],
@@ -34,7 +34,7 @@ object ProjectData {
       24
     )
   
-  def defaultAutotiles = List(
+  def defaultAutotiles = Array(
     "Refmap-A1-0-0-A",
     "Refmap-A1-0-0-B",
     "Refmap-A1-0-1-A",

@@ -13,7 +13,9 @@ case class RpgMapMetadata(parent: Int,
                           title: String,
                           xSize: Int,
                           ySize: Int,
-                          tilesets: List[String])
+                          tilesets: List[String]) {
+  def idx(x: Int, y: Int) = (x+y*xSize)*RpgMap.bytesPerTile
+}
 
 case class RpgMap(proj: Project, id: Int, metadata: RpgMapMetadata)
 extends Resource[RpgMap, RpgMapMetadata]
@@ -25,9 +27,30 @@ extends Resource[RpgMap, RpgMapMetadata]
     d.writeToFile(proj, name)
   
   def readMapData() : Option[RpgMapData] = 
-    RpgMapData.readFromDisk(proj, name)
+    RpgMapData.readFromDisk(proj, name)  
 }
 
+/*
+ * An explanation of the data format.
+ * 
+ * Each tile on the map is comprised of 3 bytes.
+ * 
+ * Byte 1 value:
+ * -2 = autotile
+ * -1 = empty tile
+ * 0-127 = one of the 128 tilesets possible
+ * 
+ * Byte 2 value:
+ * If autotile, then the autotile number from 0-255
+ * If regular tile, then x tile index ranging from 0-255
+ * If empty, ignored.
+ * 
+ * Byte 3 value:
+ * If autotile, then this byte describes the border configuration.
+ *    See Autotile.DirectionMasks for how this works specifically.
+ * If regular tile, then the y tile index from 0-255
+ * If empty, ignored
+ */
 object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   def rcType = "map"
   def keyExts = Array(metadataExt)
@@ -76,8 +99,6 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     
     RpgMapData(autoLayer, emptyLayer, emptyLayer, Array.empty)
   }
-  
-  def dataIndex(x: Int, y: Int, xSize: Int) = (y*xSize+x)*bytesPerTile
   
   def defaultMapData = emptyMapData(initXSize, initYSize)
   
