@@ -7,14 +7,17 @@ import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.utils.Logger
 
 class Game(gamepath: File) extends ApplicationListener {
+  val logger = new Logger("Game")
+  val fps = new FPSLogger()
   val project = Project.readFromDisk(gamepath).get 
   var map: RpgMap = null
   var mapData: RpgMapData = null
   var camera: OrthographicCamera = null
   var tilesets: Array[Tileset] = null
-  var tilesetTexs: Array[Texture] = null
   var batch: SpriteBatch = null
   
   var atlas: TextureAtlas = null
@@ -62,15 +65,25 @@ class Game(gamepath: File) extends ApplicationListener {
 
       // No need to dispose of pixmaps, I believe, as they get disposed of
       // when the TextureAtlas gets disposed
-      
     }
     
+    // Pack all tilesets
     tilesets = map.metadata.tilesets.map(
         name => Tileset.readFromDisk(project, name)).toArray[Tileset]
     
-    tilesetTexs = tilesets.map(
-        x => new Texture(Gdx.files.absolute(x.dataFile.getAbsolutePath())))
+    tilesets.map { tileset =>
+      val tilesetPix = new Pixmap(
+          Gdx.files.absolute(tileset.dataFile.getAbsolutePath()))
+      
+      packer.pack("tilesets/%s".format(tileset.name), tilesetPix)
+    }
     
+    logger.info("Packed textures into %d pages".format(
+        packer.getPages().size))
+    
+    // Generate texture atlas, nearest neighbor with no mipmaps
+    atlas = packer.generateTextureAtlas(
+        TextureFilter.Nearest, TextureFilter.Nearest, false)
     
     /*
      * SpriteBatch manages its own matrices. By default, it sets its modelview
@@ -86,6 +99,9 @@ class Game(gamepath: File) extends ApplicationListener {
     batch = new SpriteBatch() 
   }
   override def render() {
+    // Log fps
+    fps.log()
+    
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
@@ -121,10 +137,12 @@ class Game(gamepath: File) extends ApplicationListener {
             }
           } else { // Regular tile
             //println("Draw regular tile")
-            val tex = tilesetTexs(byte1)
+            val region = 
+              atlas.findRegion("tilesets/%s".format(tilesets(byte1).name))
             batch.draw(
-                tex,
-                tileX.toFloat, tileY.toFloat,
+                region.getTexture(),
+                region.getRegionX()+tileX.toFloat, 
+                region.getRegionY()+tileY.toFloat,
                 1.0f, 1.0f,
                 byte2*Tileset.tilesize, byte3*Tileset.tilesize,
                 Tileset.tilesize, Tileset.tilesize,
