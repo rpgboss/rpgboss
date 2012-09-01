@@ -33,7 +33,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
                        x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = 
   {
     // some utility functions
-    def idx(x: Int, y: Int) = dataIndex(x, y, mapMeta.xSize)
+    def idx(x: Int, y: Int) = mapMeta.idx(x, y)
     def isAutotile(x: Int, y: Int) = layerAry(idx(x, y)) == autotileByte
     def getAutotileNum(x: Int, y: Int) = layerAry(idx(x, y)+1) & 0xff
     def findLast(stopPredicate: IntVec => Boolean, begin: IntVec, dir: Int) =
@@ -165,7 +165,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           val y = y1+yi
           
           if(withinBounds(vs.mapMeta, x, y)) {
-            val i = dataIndex(x, y, vs.mapMeta.xSize)
+            val i = vs.mapMeta.idx(x, y)
             println("Modified tile: (%d, %d)".format(x, y))
             for(j <- 0 until bytesPerTile) 
               layerAry.update(i+j, tCode(j)) 
