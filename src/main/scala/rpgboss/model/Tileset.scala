@@ -31,6 +31,7 @@ object Tileset extends MetaResource[Tileset, TilesetMetadata] {
   def keyExts = Array("png")
   
   def tilesize = 32
+  def halftile = tilesize/2
   
   def defaultInstance(proj: Project, name: String) = 
     Tileset(proj, name, TilesetMetadata())
