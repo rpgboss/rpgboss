@@ -140,8 +140,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
              startingLoc.y >= minYTile && startingLoc.y <= maxYTile) {
             g.setComposite(AlphaComposite.SrcOver)
             g.drawImage(MapView.startLocTile,
-              (startingLoc.x*tilesize).toInt, 
-              (startingLoc.y*tilesize).toInt, 
+              (startingLoc.x*tilesize).toInt-MapView.startLocTile.getWidth()/2, 
+              (startingLoc.y*tilesize).toInt-MapView.startLocTile.getHeight()/2, 
               null, null) 
           }
         } else {        
