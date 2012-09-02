@@ -27,7 +27,7 @@ object ProjectData {
       title, 
       defaultAutotiles, 
       -1, 
-      MapLoc(0, 5, 5),
+      MapLoc(0, 5.5f, 5.5f),
       Array(
         Actor("Pando", SpriteSpec("vx_chara01_a", 4)),
         Actor("Estine", SpriteSpec("vx_chara01_a", 1)),
