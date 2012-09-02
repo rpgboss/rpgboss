@@ -10,8 +10,17 @@ import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.utils.Logger
 
+class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
+  def this(other: MapLoc) = this(other.map, other.x, other.y)
+  def set(other: MapLoc) = {
+    this.map = other.map
+    this.x = other.x
+    this.y = other.y
+  }
+}
+
 class Game(gamepath: File) extends ApplicationListener {
-  val logger = new Logger("Game")
+  val logger = new Logger("Game", Logger.INFO)
   val fps = new FPSLogger()
   val project = Project.readFromDisk(gamepath).get 
   var map: RpgMap = null
@@ -19,23 +28,31 @@ class Game(gamepath: File) extends ApplicationListener {
   var camera: OrthographicCamera = null
   var autotiles: Array[Autotile] = null
   var tilesets: Array[Tileset] = null
+  var spritesets: Map[String, Spriteset] = null
   var batch: SpriteBatch = null
   
-  var atlas: TextureAtlas = null
+  var atlasTiles: TextureAtlas = null
+  var atlasSprites: TextureAtlas = null
   
   // in units of tiles
   var screenW = 20.0
   var screenH = 15.0
   
+  // Where in the "second" we are. Varies from 0 to 1.0
+  var deltaTime : Float = 0.0f
+  
   // camera position and boundaries
-  var cameraLoc: MapLoc = null
+  val cameraLoc = new MutableMapLoc()
   var cameraL: Double = 0
   var cameraR: Double = 0
   var cameraT: Double = 0
   var cameraB: Double = 0
   
+  // protagonist location
+  var characterLoc = new MutableMapLoc()
+  
   def setCameraLoc(loc: MapLoc) = {
-    cameraLoc = loc
+    cameraLoc.set(loc)
     cameraL = loc.x - screenW/2
     cameraR = loc.x + screenW/2
     cameraT = loc.y - screenH/2
@@ -53,8 +70,9 @@ class Game(gamepath: File) extends ApplicationListener {
     camera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
     
     setCameraLoc(project.data.startingLoc)
+    characterLoc.set(project.data.startingLoc)
     
-    val packer = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
+    val packerTiles = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
     
     autotiles = project.data.autotiles.map { name =>
       Autotile.readFromDisk(project, name)
@@ -65,7 +83,7 @@ class Game(gamepath: File) extends ApplicationListener {
       val autotilePix = new Pixmap(
           Gdx.files.absolute(autotile.dataFile.getAbsolutePath()))
       
-      packer.pack("autotiles/%s".format(autotile.name), autotilePix)
+      packerTiles.pack("autotile/%s".format(autotile.name), autotilePix)
 
       // No need to dispose of pixmaps, I believe, as they get disposed of
       // when the TextureAtlas gets disposed
@@ -79,14 +97,31 @@ class Game(gamepath: File) extends ApplicationListener {
       val tilesetPix = new Pixmap(
           Gdx.files.absolute(tileset.dataFile.getAbsolutePath()))
       
-      packer.pack("tilesets/%s".format(tileset.name), tilesetPix)
+      packerTiles.pack("tileset/%s".format(tileset.name), tilesetPix)
     }
     
-    logger.info("Packed textures into %d pages".format(
-        packer.getPages().size))
+    logger.info("Packed tilesets and autotiles into %d pages".format(
+        packerTiles.getPages().size))
     
     // Generate texture atlas, nearest neighbor with no mipmaps
-    atlas = packer.generateTextureAtlas(
+    atlasTiles = packerTiles.generateTextureAtlas(
+        TextureFilter.Nearest, TextureFilter.Nearest, false)
+    
+    // Generate and pack sprites
+    spritesets = Map() ++ Spriteset.list(project).map(
+        name => (name, Spriteset.readFromDisk(project, name)))
+    val packerSprites = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
+    spritesets.foreach { 
+      case (name, spriteset) =>
+        packerSprites.pack(spriteset.name, 
+            new Pixmap(Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
+        )
+    }
+    
+    logger.info("Packed sprites into %d pages".format(
+        packerSprites.getPages().size))
+    
+    atlasSprites = packerSprites.generateTextureAtlas(
         TextureFilter.Nearest, TextureFilter.Nearest, false)
     
     /*
@@ -104,6 +139,9 @@ class Game(gamepath: File) extends ApplicationListener {
   }
   override def render() {
     import Tileset._
+    
+    // Set delta time
+    deltaTime = (deltaTime + Gdx.graphics.getRawDeltaTime()) % 1.0f
     
     // Log fps
     fps.log()
@@ -140,9 +178,11 @@ class Game(gamepath: File) extends ApplicationListener {
             if(byte1 == RpgMap.autotileByte) { // Autotile
               val autotile = autotiles(byte2)
               val region = 
-                atlas.findRegion("autotiles/%s".format(autotile.name))
+                atlasTiles.findRegion("autotile/%s".format(autotile.name))
+              
+              val frameIdx = (deltaTime*autotile.frames).toInt
                 
-              val srcDestPositions = autotile.getHalfTiles(byte3, 0)
+              val srcDestPositions = autotile.getHalfTiles(byte3, frameIdx)
               
               srcDestPositions map {
                 case ((srcXHt, srcYHt), (dstXHt, dstYHt)) =>
@@ -161,7 +201,7 @@ class Game(gamepath: File) extends ApplicationListener {
           } else { // Regular tile
             //println("Draw regular tile")
             val region = 
-              atlas.findRegion("tilesets/%s".format(tilesets(byte1).name))
+              atlasTiles.findRegion("tileset/%s".format(tilesets(byte1).name))
             batch.draw(
                 region.getTexture(),
                 tileX.toFloat, 
@@ -177,10 +217,38 @@ class Game(gamepath: File) extends ApplicationListener {
       }
     }
     
+    // Draw protagonist
+    val protagonistActor = project.data.actors(project.data.startingParty(0))
+    
+    val region =
+      atlasSprites.findRegion(protagonistActor.sprite.spriteset)
+    val protagonistSpriteset = spritesets(protagonistActor.sprite.spriteset)
+      
+    val (srcX, srcY) = protagonistSpriteset.srcTexels(
+        protagonistActor.sprite.spriteindex,
+        Spriteset.DirectionOffsets.SOUTH,
+        Spriteset.Steps.STILL)
+    
+    val (dstOriginX, dstOriginY, dstWTiles, dstHTiles) = 
+      protagonistSpriteset.dstPosition(characterLoc.x, characterLoc.y)
+      
+    batch.draw(
+        region.getTexture(),
+        dstOriginX.toFloat, 
+        dstOriginY.toFloat,
+        dstWTiles, dstHTiles,
+        region.getRegionX() + srcX, 
+        region.getRegionY() + srcY,
+        protagonistSpriteset.tileW, 
+        protagonistSpriteset.tileH,
+        false, true)
     
     batch.end()
   }
-  override def dispose() {}
+  override def dispose() {
+    // Dispose of texture atlas
+    atlasTiles.dispose()
+  }
   override def pause() {}
   override def resume() {}
   override def resize(x: Int, y: Int) {}
