@@ -1,7 +1,12 @@
 package rpgboss.model
 
+/**
+ * These locations are given with the top-left of the map being at (0, 0).
+ * This means that the center of the tiles are actually at 0.5 intervals. 
+ */
 case class MapLoc(map: Int, x: Float, y: Float)
-case class SpriteSpec(spriteName: String, index: Int) 
+
+case class SpriteSpec(spriteset: String, spriteindex: Int) 
 
 case class Actor(defaultName: String,
                  sprite: SpriteSpec)
@@ -11,6 +16,7 @@ case class ProjectData(title: String,
                        recentMapId: Int,
                        startingLoc: MapLoc,
                        actors: Array[Actor],
+                       startingParty: Array[Int],
                        windowskin: String,
                        msgfont: String,
                        fontsize: Float)
@@ -29,6 +35,7 @@ object ProjectData {
         Actor("Graven", SpriteSpec("vx_chara01_a", 2)),
         Actor("Carona", SpriteSpec("vx_chara01_a", 6))
       ),
+      Array(0, 1),
       "LastPhantasmScanlines",
       "Vera",
       24
