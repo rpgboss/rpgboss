@@ -50,6 +50,8 @@ class Game(gamepath: File) extends ApplicationListener {
   
   // protagonist location
   var characterLoc = new MutableMapLoc()
+  var characterDirection : Int = Spriteset.DirectionOffsets.SOUTH
+  var characterMoving = false
   
   def setCameraLoc(loc: MapLoc) = {
     cameraLoc.set(loc)
@@ -178,6 +180,44 @@ class Game(gamepath: File) extends ApplicationListener {
     // Log fps
     fps.log()
     
+    // Update game state
+    {
+      import com.badlogic.gdx.Input._
+
+      def isKeyPressed(x: Int) = Gdx.input.isKeyPressed(x)
+      
+      characterMoving = false
+      val baseSpeed = 0.05 // tiles per frame 
+      
+      val projSpeed =
+        if((isKeyPressed(Keys.LEFT) || isKeyPressed(Keys.RIGHT)) &&
+           (isKeyPressed(Keys.UP) || isKeyPressed(Keys.DOWN))) {
+          (baseSpeed/math.sqrt(2.0)).toFloat
+        } else {
+          baseSpeed.toFloat
+        }
+      
+      if(Gdx.input.isKeyPressed(Keys.LEFT)) {
+        characterMoving = true
+        characterLoc.x -= projSpeed
+        characterDirection = Spriteset.DirectionOffsets.WEST
+      } else if(Gdx.input.isKeyPressed(Keys.RIGHT)) {
+        characterMoving = true
+        characterLoc.x += projSpeed
+        characterDirection = Spriteset.DirectionOffsets.EAST
+      }
+      
+      if(Gdx.input.isKeyPressed(Keys.UP)) {
+        characterMoving = true
+        characterLoc.y -= projSpeed
+        characterDirection = Spriteset.DirectionOffsets.NORTH
+      } else if(Gdx.input.isKeyPressed(Keys.DOWN)) {
+        characterMoving = true
+        characterLoc.y += projSpeed
+        characterDirection = Spriteset.DirectionOffsets.SOUTH
+      }
+    }    
+    
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
@@ -255,11 +295,25 @@ class Game(gamepath: File) extends ApplicationListener {
     val region =
       atlasSprites.findRegion(protagonistActor.sprite.spriteset)
     val protagonistSpriteset = spritesets(protagonistActor.sprite.spriteset)
-      
+    
+    val step = if(characterMoving) {
+      val stepsPerSec = 6 // MUST BE EVEN
+      val stepTime = 1.0f/stepsPerSec
+      if((deltaTime / stepTime).toInt % 2 == 0) {
+        println("Step 1: " + deltaTime.toString())
+        Spriteset.Steps.STEP1
+      } else {
+        println("Step 2: " + deltaTime.toString())
+        Spriteset.Steps.STEP2
+      }
+    } else {
+      Spriteset.Steps.STILL
+    }
+    
     val (srcX, srcY) = protagonistSpriteset.srcTexels(
         protagonistActor.sprite.spriteindex,
-        Spriteset.DirectionOffsets.SOUTH,
-        Spriteset.Steps.STILL)
+        characterDirection,
+        step)
     
     val (dstOriginX, dstOriginY, dstWTiles, dstHTiles) = 
       protagonistSpriteset.dstPosition(characterLoc.x, characterLoc.y)
