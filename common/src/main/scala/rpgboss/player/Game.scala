@@ -85,8 +85,7 @@ class Game(gamepath: File) extends ApplicationListener {
       
       packerTiles.pack("autotile/%s".format(autotile.name), autotilePix)
 
-      // No need to dispose of pixmaps, I believe, as they get disposed of
-      // when the TextureAtlas gets disposed
+      autotilePix.dispose()
     }
     
     // Pack all tilesets
@@ -98,6 +97,8 @@ class Game(gamepath: File) extends ApplicationListener {
           Gdx.files.absolute(tileset.dataFile.getAbsolutePath()))
       
       packerTiles.pack("tileset/%s".format(tileset.name), tilesetPix)
+      
+      tilesetPix.dispose()
     }
     
     logger.info("Packed tilesets and autotiles into %d pages".format(
@@ -113,9 +114,39 @@ class Game(gamepath: File) extends ApplicationListener {
     val packerSprites = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
     spritesets.foreach { 
       case (name, spriteset) =>
-        packerSprites.pack(spriteset.name, 
-            new Pixmap(Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
-        )
+        val srcPixmap = new Pixmap(
+            Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
+        
+        val srcFormat = srcPixmap.getFormat()
+        if(srcFormat == Pixmap.Format.RGBA8888 || 
+            srcFormat == Pixmap.Format.RGBA4444) {
+            
+          // Already has transparency. Pack and dispose.
+          packerSprites.pack(spriteset.name, srcPixmap)
+          srcPixmap.dispose()
+        } else if(srcFormat == Pixmap.Format.RGB888){
+          // TODO: Optimize pixel transfer         
+          
+          // Build transparency from (0, 0) pixel
+          val dstPixmap = new Pixmap(
+            srcPixmap.getWidth(), srcPixmap.getHeight(), Pixmap.Format.RGBA8888)
+    
+          val transparentVal = srcPixmap.getPixel(0, 0)
+          
+          for(y <- 0 until srcPixmap.getHeight()) {
+            for(x <- 0 until srcPixmap.getWidth()) {
+              val curPixel = srcPixmap.getPixel(x, y)
+              
+              if(curPixel != transparentVal) {
+                dstPixmap.drawPixel(x, y, curPixel)
+              }
+            } 
+          }
+          
+          packerSprites.pack(spriteset.name, dstPixmap)
+          srcPixmap.dispose()
+          dstPixmap.dispose()
+        }
     }
     
     logger.info("Packed sprites into %d pages".format(
@@ -135,7 +166,8 @@ class Game(gamepath: File) extends ApplicationListener {
      * If you'd like to specify your objects in some other space, simply
      * change the projection and modelview (transform) matrices.
      */
-    batch = new SpriteBatch() 
+    batch = new SpriteBatch()
+    batch.enableBlending()
   }
   override def render() {
     import Tileset._
