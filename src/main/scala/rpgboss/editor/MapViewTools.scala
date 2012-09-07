@@ -29,13 +29,13 @@ object MapViewTools extends ListedEnum[MapViewTool] {
   }
   
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
-                       layerAry: Array[Byte],  
+                       layerAry: Array[Array[Byte]],  
                        x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = 
   {
+    import RpgMap.bytesPerTile
     // some utility functions
-    def idx(x: Int, y: Int) = mapMeta.idx(x, y)
-    def isAutotile(x: Int, y: Int) = layerAry(idx(x, y)) == autotileByte
-    def getAutotileNum(x: Int, y: Int) = layerAry(idx(x, y)+1) & 0xff
+    def isAutotile(x: Int, y: Int) = layerAry(y)(x*bytesPerTile) == autotileByte
+    def getAutotileNum(x: Int, y: Int) = layerAry(y)(x*bytesPerTile+1) & 0xff
     def findLast(stopPredicate: IntVec => Boolean, begin: IntVec, dir: Int) =
     {
       val dirOffset = offsets(dir)
@@ -69,8 +69,9 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           !withinBounds(mapMeta, v.x, v.y) || !sameType(v.x, v.y)
         
         // MUTABLE
-        def mask(tileI: Int, maskInt: Int) =
-          layerAry.update(tileI+2, maskInt.asInstanceOf[Byte])
+        def mask(xToSet: Int, yToSet: Int, maskInt: Int) =
+          layerAry(yToSet).update(
+              xToSet*bytesPerTile+2, maskInt.asInstanceOf[Byte])
         
         if(autotiles.length > autotileNum) {
           val autotile = autotiles(autotileNum)
@@ -86,7 +87,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
                 if diffTypeOutsideSame(xToSet+dx, yToSet+dy))
               newConfig = newConfig | mask
             
-            mask(idx(xToSet,yToSet), newConfig)
+            mask(xToSet, yToSet, newConfig)
             setFirstTile(tilesRemainingToSet.tail, 
                          accumRect|TileRect(xToSet, yToSet))
           } else {
@@ -129,7 +130,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
               if(!inferiorEast && xInWall == wallEast)  newConfig |= EAST
               if(yInWall == wallNorth) newConfig |= NORTH
               if(yInWall == wallSouth) newConfig |= SOUTH
-              mask(idx(xInWall, yInWall), newConfig)
+              mask(xInWall, yInWall, newConfig)
             }
             
             // only choose tiles that are not in the wall we just calculated
@@ -165,10 +166,9 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           val y = y1+yi
           
           if(withinBounds(vs.mapMeta, x, y)) {
-            val i = vs.mapMeta.idx(x, y)
             println("Modified tile: (%d, %d)".format(x, y))
             for(j <- 0 until bytesPerTile) 
-              layerAry.update(i+j, tCode(j)) 
+              layerAry(y).update(x*bytesPerTile+j, tCode(j)) 
           }
         }
         

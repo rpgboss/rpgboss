@@ -78,8 +78,6 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       super.paintComponent(g)
       
       viewStateOpt.map(vs => {
-        def byteIdx(xTile: Int, yTile: Int) = 
-          (xTile + (yTile*vs.mapMeta.xSize))*RpgMap.bytesPerTile
         
         val bounds = g.getClipBounds
         val tilesize = curTilesize
@@ -106,9 +104,9 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
               g.setComposite(AlphaComposite.SrcOver)
             
             for(xTile <- minXTile to maxXTile; yTile <- minYTile to maxYTile) {
-              val bi = byteIdx(xTile, yTile)
-              if(layerAry(bi) != -1) {
-                val tileImg = vs.tilecache.getTileImage(layerAry, bi, 0)
+              if(layerAry(yTile)(xTile*RpgMap.bytesPerTile) != -1) {
+                val tileImg = 
+                  vs.tilecache.getTileImage(layerAry, xTile, yTile, 0)
                 
                 g.drawImage(tileImg, 
                             xTile*tilesize, yTile*tilesize,
