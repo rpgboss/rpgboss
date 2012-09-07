@@ -14,18 +14,18 @@ case class RpgEvent()
  * 
  * See RpgMap object for an explanation of the data format.
  */
-case class RpgMapData(botLayer: Array[Byte],
-                      midLayer: Array[Byte],
-                      topLayer: Array[Byte],
+case class RpgMapData(botLayer: Array[Array[Byte]],
+                      midLayer: Array[Array[Byte]],
+                      topLayer: Array[Array[Byte]],
                       events: Array[RpgEvent])
 {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
   
   def toIntermediate = 
-    RpgMapDataIntermediate(botLayer.map(_.toInt),
-                           midLayer.map(_.toInt),
-                           topLayer.map(_.toInt),
+    RpgMapDataIntermediate(botLayer.map(_.map(_.toInt)),
+                           midLayer.map(_.map(_.toInt)),
+                           topLayer.map(_.map(_.toInt)),
                            events)
   
   def writeToFile(p: Project, name: String) =
@@ -36,9 +36,9 @@ case class RpgMapData(botLayer: Array[Byte],
 }
 
 // Actually jsonable case class
-case class RpgMapDataIntermediate(botLayer: Array[Int],
-                                  midLayer: Array[Int],
-                                  topLayer: Array[Int],
+case class RpgMapDataIntermediate(botLayer: Array[Array[Int]],
+                                  midLayer: Array[Array[Int]],
+                                  topLayer: Array[Array[Int]],
                                   events: Array[RpgEvent])
 
 case object RpgMapData {
@@ -49,9 +49,9 @@ case object RpgMapData {
     implicit val formats = net.liftweb.json.DefaultFormats
     dataFile(proj, name).getReader().map { reader => 
       val intermediate = Serialization.read[RpgMapDataIntermediate](reader)
-      RpgMapData(intermediate.botLayer.map(_.toByte),
-                 intermediate.midLayer.map(_.toByte),
-                 intermediate.topLayer.map(_.toByte),
+      RpgMapData(intermediate.botLayer.map(_.map(_.toByte)),
+                 intermediate.midLayer.map(_.map(_.toByte)),
+                 intermediate.topLayer.map(_.map(_.toByte)),
                  intermediate.events)
     }
   }

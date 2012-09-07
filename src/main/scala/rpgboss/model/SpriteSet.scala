@@ -88,7 +88,7 @@ object Spriteset extends MetaResource[Spriteset, SpritesetMetadata] {
   object Steps {
     val STEP1 = 0
     val STEP2 = 2
-    val STILL = 1 
+    val STILL = 1
   }
 }
 

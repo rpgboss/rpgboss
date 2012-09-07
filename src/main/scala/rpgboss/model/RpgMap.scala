@@ -14,7 +14,6 @@ case class RpgMapMetadata(parent: Int,
                           xSize: Int,
                           ySize: Int,
                           tilesets: List[String]) {
-  def idx(x: Int, y: Int) = (x+y*xSize)*RpgMap.bytesPerTile
 }
 
 case class RpgMap(proj: Project, id: Int, metadata: RpgMapMetadata)
@@ -87,14 +86,18 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     defaultInstance(proj, idToName(id))
   
   def emptyMapData(xSize: Int, ySize: Int) = {
-    val dataArySize = xSize*ySize*bytesPerTile
     val autoLayer  = {
+      // Generate a 3-byte tile
       val a = Array[Byte](autotileByte,0,0)
-      Array.tabulate[Byte](dataArySize)(i => a(i%a.length))
+      // Make a whole row of that
+      val row = Array.tabulate[Byte](xSize*bytesPerTile)(i => a(i%a.length))
+      // Make multiple rows
+      Array.tabulate[Array[Byte]](ySize)(i => row.clone())
     }
     val emptyLayer = { 
       val a = Array[Byte](emptyTileByte,0,0)
-      Array.tabulate[Byte](dataArySize)(i => a(i%a.length))
+      val row = Array.tabulate[Byte](xSize*bytesPerTile)(i => a(i%a.length))
+      Array.tabulate[Array[Byte]](ySize)(i => row.clone())
     }
     
     RpgMapData(autoLayer, emptyLayer, emptyLayer, Array.empty)

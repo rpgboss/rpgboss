@@ -46,8 +46,12 @@ class TileCache(proj: Project, autotiles: Array[Autotile],
     
   
   // frame here means the animation frame
-  def getTileImage(mapData: Array[Byte], bi: Int, frame: Byte = 0) = {
-    val tileTuple = (mapData(bi), mapData(bi+1), mapData(bi+2), frame) 
+  def getTileImage(
+      mapData: Array[Array[Byte]], xTile: Int, yTile: Int, frame: Byte = 0) = {
+    
+    val row = mapData(yTile)
+    val idx = xTile*RpgMap.bytesPerTile
+    val tileTuple = (row(idx), row(idx+1), row(idx+2), frame) 
     cache.get(tileTuple)
     //loadTile(tileTuple)
   }

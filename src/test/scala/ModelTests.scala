@@ -8,7 +8,7 @@ class ModelSpec extends Spec with BeforeAndAfter {
   
   var tempdir: File = _
   var proj : Project = _
-  def fakeByteAry() = { Array[Byte](1,2,3,4,5) }
+  def fakeByteAry() = { Array(Array[Byte](1,2,3), Array[Byte](1,4,5)) }
   
   before {
     tempdir = File.createTempFile("rpgtest", "tmp")
@@ -38,9 +38,30 @@ class ModelSpec extends Spec with BeforeAndAfter {
     
     def mapDataEquals(d0: RpgMapData, d1: RpgMapData) = {
       import java.util.Arrays
-      assert(Arrays.equals(d0.botLayer, d1.botLayer))
-      assert(Arrays.equals(d0.midLayer, d1.midLayer))
-      assert(Arrays.equals(d0.topLayer, d1.topLayer))
+      val pairsToCompare = Array(
+          d0.botLayer->d1.botLayer,
+          d0.midLayer->d1.midLayer,
+          d0.topLayer->d1.topLayer
+      )
+      
+      // Assert all the maps are the same
+      assert(pairsToCompare map {
+        case (layer0, layer1) => 
+          def sameLength = (layer0.length == layer1.length)
+          def rowsSame = {
+            val interleavedRows = layer0 zip layer1
+            // Find if a row exists that doesn't match
+            val mismatch = interleavedRows.exists {
+              case (row0, row1) => !Array.equals(row0, row1)
+            }
+            // Return true if there's no mismatches,
+            (!mismatch)
+          }
+          
+          sameLength && rowsSame
+      } reduceLeft (_ && _))
+      
+      // Assert rows are the same
       assert(d0.events.toList === d1.events.toList)
     }
     
