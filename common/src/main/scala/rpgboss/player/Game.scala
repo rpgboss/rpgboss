@@ -240,11 +240,13 @@ class Game(gamepath: File) extends ApplicationListener {
     for(layerAry <- List(
         mapData.botLayer, mapData.midLayer, mapData.topLayer)) {
       for(tileY <- tileT to tileB) {
+        val row = layerAry(tileY)
+        import RpgMap.bytesPerTile
         for(tileX <- tileL to tileR) {
-          val idx = map.metadata.idx(tileX, tileY)
-          val byte1 = layerAry(idx)
-          val byte2 = layerAry(idx+1)
-          val byte3 = layerAry(idx+2)
+          val idx = tileX*bytesPerTile
+          val byte1 = row(idx)
+          val byte2 = row(idx+1)
+          val byte3 = row(idx+2)
           
           if(byte1 < 0) {
             if(byte1 == RpgMap.autotileByte) { // Autotile
@@ -297,14 +299,16 @@ class Game(gamepath: File) extends ApplicationListener {
     val protagonistSpriteset = spritesets(protagonistActor.sprite.spriteset)
     
     val step = if(characterMoving) {
-      val stepsPerSec = 6 // MUST BE EVEN
+      val stepsPerSec = 8 // MUST BE EVEN
       val stepTime = 1.0f/stepsPerSec
-      if((deltaTime / stepTime).toInt % 2 == 0) {
-        println("Step 1: " + deltaTime.toString())
+      if((deltaTime / stepTime).toInt % 4 == 0) {
+        //println("Step 1: " + deltaTime.toString())
         Spriteset.Steps.STEP1
-      } else {
-        println("Step 2: " + deltaTime.toString())
+      } else if((deltaTime / stepTime).toInt % 4 == 2) {
+        //println("Step 2: " + deltaTime.toString())
         Spriteset.Steps.STEP2
+      } else {
+        Spriteset.Steps.STILL
       }
     } else {
       Spriteset.Steps.STILL
