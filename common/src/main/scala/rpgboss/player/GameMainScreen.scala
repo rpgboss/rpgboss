@@ -1,6 +1,6 @@
 package rpgboss.player
 
-import com.badlogic.gdx.ApplicationListener
+import com.badlogic.gdx.Screen
 import java.io.File
 import rpgboss.model._
 import com.badlogic.gdx.graphics._
@@ -19,17 +19,32 @@ class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
   }
 }
 
-class Game(gamepath: File) extends ApplicationListener {
+class GameMainScreen(game: MyGame) extends Screen {
+  val project = game.project
   val logger = new Logger("Game", Logger.INFO)
-  val fps = new FPSLogger()
-  val project = Project.readFromDisk(gamepath).get 
-  var map: RpgMap = null
-  var mapData: RpgMapData = null
-  var camera: OrthographicCamera = null
+  val fps = new FPSLogger() 
+  var map: RpgMap = RpgMap.readFromDisk(project, project.data.startingLoc.map)
+  var mapData: RpgMapData = map.readMapData().get
+  
+  val tileCamera: OrthographicCamera = new OrthographicCamera()
+  tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
+  
   var autotiles: Array[Autotile] = null
   var tilesets: Array[Tileset] = null
   var spritesets: Map[String, Spriteset] = null
-  var batch: SpriteBatch = null
+  
+  /*
+   * SpriteBatch manages its own matrices. By default, it sets its modelview
+   * matrix to the identity, and the projection matrix to an orthographic
+   * projection with its lower left corner of the screen at (0, 0) and its
+   * upper right corner at (Gdx.graphics.getWidth(), Gdx.graphics.getHeight())
+   * 
+   * This makes the eye-coordinates the same as the screen-coordinates.
+   * 
+   * If you'd like to specify your objects in some other space, simply
+   * change the projection and modelview (transform) matrices.
+   */
+  var batch: SpriteBatch = new SpriteBatch()
   
   var atlasTiles: TextureAtlas = null
   var atlasSprites: TextureAtlas = null
@@ -39,7 +54,7 @@ class Game(gamepath: File) extends ApplicationListener {
   var screenH = 15.0
   
   // Where in the "second" we are. Varies from 0 to 1.0
-  var deltaTime : Float = 0.0f
+  var accumDelta : Float = 0.0f
   
   // camera position and boundaries
   val cameraLoc = new MutableMapLoc()
@@ -59,18 +74,13 @@ class Game(gamepath: File) extends ApplicationListener {
     cameraR = loc.x + screenW/2
     cameraT = loc.y - screenH/2
     cameraB = loc.y + screenH/2
-    camera.position.x = loc.x
-    camera.position.y = loc.y
-    camera.update()
+    tileCamera.position.x = loc.x
+    tileCamera.position.y = loc.y
+    tileCamera.update()
   }
   
-  override def create() {
-    map = RpgMap.readFromDisk(project, project.data.startingLoc.map)
-    mapData = map.readMapData().get
-    
-    camera = new OrthographicCamera()
-    camera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
-    
+  // Other creation stuff that was formerly in create()
+  { 
     setCameraLoc(project.data.startingLoc)
     characterLoc.set(project.data.startingLoc)
     
@@ -157,25 +167,21 @@ class Game(gamepath: File) extends ApplicationListener {
     atlasSprites = packerSprites.generateTextureAtlas(
         TextureFilter.Nearest, TextureFilter.Nearest, false)
     
-    /*
-     * SpriteBatch manages its own matrices. By default, it sets its modelview
-     * matrix to the identity, and the projection matrix to an orthographic
-     * projection with its lower left corner of the screen at (0, 0) and its
-     * upper right corner at (Gdx.graphics.getWidth(), Gdx.graphics.getHeight())
-     * 
-     * This makes the eye-coordinates the same as the screen-coordinates.
-     * 
-     * If you'd like to specify your objects in some other space, simply
-     * change the projection and modelview (transform) matrices.
-     */
-    batch = new SpriteBatch()
-    batch.enableBlending()
+    
   }
-  override def render() {
+  
+  override def dispose() {
+    // Dispose of texture atlas
+    atlasTiles.dispose()
+  }
+  override def hide() {}
+  override def pause() {}
+  
+  override def render(delta: Float) {
     import Tileset._
     
     // Set delta time
-    deltaTime = (deltaTime + Gdx.graphics.getRawDeltaTime()) % 1.0f
+    accumDelta = (accumDelta + delta)% 1.0f
     
     // Log fps
     fps.log()
@@ -224,7 +230,7 @@ class Game(gamepath: File) extends ApplicationListener {
     
     // Set the projection matrix to the combined camera matrices
     // This seems to be the only thing that works...
-    batch.setProjectionMatrix(camera.combined)
+    batch.setProjectionMatrix(tileCamera.combined)
     batch.begin()
     
     // Leftmost, rightmost, topmost, bottom-most tiles to render
@@ -254,7 +260,7 @@ class Game(gamepath: File) extends ApplicationListener {
               val region = 
                 atlasTiles.findRegion("autotile/%s".format(autotile.name))
               
-              val frameIdx = (deltaTime*autotile.frames).toInt
+              val frameIdx = (accumDelta*autotile.frames).toInt
                 
               val srcDestPositions = autotile.getHalfTiles(byte3, frameIdx)
               
@@ -301,10 +307,10 @@ class Game(gamepath: File) extends ApplicationListener {
     val step = if(characterMoving) {
       val stepsPerSec = 8 // MUST BE EVEN
       val stepTime = 1.0f/stepsPerSec
-      if((deltaTime / stepTime).toInt % 4 == 0) {
+      if((accumDelta / stepTime).toInt % 4 == 0) {
         //println("Step 1: " + deltaTime.toString())
         Spriteset.Steps.STEP1
-      } else if((deltaTime / stepTime).toInt % 4 == 2) {
+      } else if((accumDelta / stepTime).toInt % 4 == 2) {
         //println("Step 2: " + deltaTime.toString())
         Spriteset.Steps.STEP2
       } else {
@@ -335,11 +341,9 @@ class Game(gamepath: File) extends ApplicationListener {
     
     batch.end()
   }
-  override def dispose() {
-    // Dispose of texture atlas
-    atlasTiles.dispose()
-  }
-  override def pause() {}
-  override def resume() {}
+  
+  
   override def resize(x: Int, y: Int) {}
+  override def resume() {}
+  override def show() {}
 }
