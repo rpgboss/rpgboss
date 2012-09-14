@@ -65,7 +65,7 @@ object RpgMap {
   def readFromDisk(proj: Project, id: Int) : RpgMap = {
     metadataFile(proj, id).getReader().map { reader => 
       implicit val formats = DefaultFormats
-      apply(proj, id, Serialization.read(reader))
+      apply(proj, id, Serialization.read[RpgMapMetadata](reader))
     } getOrElse defaultInstance(proj, id)
   }
   

@@ -19,7 +19,7 @@ case class ProjectData(title: String,
                        startingParty: Array[Int],
                        windowskin: String,
                        msgfont: String,
-                       fontsize: Float)
+                       fontsize: Int)
 
 object ProjectData {
   def defaultInstance(title: String) = 
