@@ -6,6 +6,9 @@ import java.awt._
 import java.awt.image._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
+import com.badlogic.gdx.graphics.Color
 
 object Window {
   val Opening = 0
@@ -30,11 +33,11 @@ case class Window(proj: Project,
                   x: Int, y: Int, w: Int, h: Int,
                   skin: Windowskin,
                   region: TextureRegion,
-                  font: Font,
+                  fontbmp: BitmapFont,
                   var state: Int = Window.Opening, 
                   var stateAge: Int = 0,
-                  openCloseFrames: Int = 40,
-                  framesPerChar: Int = 7,
+                  openCloseFrames: Int = 25,
+                  framesPerChar: Int = 5,
                   linesPerBlock: Int = 4,
                   var textBlock: Int = 0,
                   justification: Int = Window.Left) 
@@ -43,83 +46,67 @@ extends Entity
   // stateAge is used for:
   // - controlling the opening and closing of windows
   
+  val window = this
+  
   object textImage extends Entity {
-    val textW = w-40
-    val textH = h-24
+    val xpad = 24f
+    val ypad = 24f
+    val textW = w-2*xpad
+    val textH = h-2*ypad
     val lineHeight = 32f
     
     var lineI = 0
     var charI = 0
     
-    // these must be initialized later
-    var curX = -1f
-    var curY = -1f
-    
-    val imgOpt = if(textW > 0 && textH > 0) {
-      val img = new BufferedImage(textW, textH, BufferedImage.TYPE_4BYTE_ABGR)
-      val g = img.createGraphics()
-      g.setFont(font)
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
-      //g.drawRect(0, 0, textW-1, textH-1)
-      val fm = g.getFontMetrics()
-      curY = fm.getHeight()
-      Some((img, g, fm))
-    } else None
-    
     var tickNum = 0
     
-    def xStartForJustify(fm: FontMetrics, line: String) = {
-      if(justification == Window.Left) 0 else {
-        val strWidth = fm.stringWidth(line)
-        
-        if(justification == Window.Right)
-          textW-strWidth
-        else
-          (textW-strWidth)/2
-      }
+    val fontAlign = justification match {
+      case Window.Left => HAlignment.LEFT
+      case Window.Center => HAlignment.CENTER
+      case Window.Right => HAlignment.RIGHT
     }
     
-    def update() = imgOpt map { case (img, g, fm) =>
+    def drawText(b: SpriteBatch, text: String, x: Float, y: Float) = {
+      // Draw shadow
+      fontbmp.setColor(Color.BLACK)
+      fontbmp.drawMultiLine(b, text, 
+          window.x + xpad + x + 2, 
+          window.y + ypad + y + 2, 
+          textW, fontAlign)
       
+      fontbmp.setColor(Color.WHITE)
+      fontbmp.drawMultiLine(b, text, 
+          window.x + xpad + x, 
+          window.y + ypad + y, 
+          textW, fontAlign)
+    }
+    
+    def update() = {
       if(tickNum % framesPerChar == 0 && lineI < text.length) {
         val line = text(lineI)
-        
-        // FIXME: need to adjust width for control characters
-        // fix x cursor start to accomodate justifications
-        if(charI == 0) {
-          curX = xStartForJustify(fm, line)
-        }
-        
-        // FIXME: Right now doesn't handle variables, character names,
-        // or any control characters for that matter
-        var charStr = line.substring(charI, charI+1)
-        println("g.drawString(%s, %f, %f)".format(charStr, curX, curY))
-        g.setColor(Color.BLACK)
-        g.drawString(charStr, curX+2, curY+2)
-        g.setColor(Color.WHITE)
-        g.drawString(charStr, curX, curY)
+   
         charI += 1
-        curX += fm.stringWidth(charStr)
         
         // advance line if out of characters
         if(charI >= line.length()) {
           lineI += 1
           charI = 0
-          
-          curX = 0 // will be readjusted on next update
-          curY += lineHeight // advance line height
         }
-        
       }
       
-      tickNum += 1      
+      tickNum += 1
     }
     
-    /*def render(g: Graphics2D) = imgOpt map { case (img, _, _) =>
-      g.drawImage(img, x+20, y+12, null)
-    }*/
-    def render(b: SpriteBatch) = {}
+    def render(b: SpriteBatch) = {
+      // Draw all complete lines
+      for(i <- 0 to (lineI-1)) {
+        drawText(b, text(i), 0, i*lineHeight)
+      }
+      
+      if(lineI < text.length) {
+        drawText(b, text(lineI).take(charI), 0, lineI*lineHeight)
+      }
+    }
   }
   
   def update() = {
@@ -149,7 +136,8 @@ extends Entity
         math.max(32+(stateAge.toDouble/openCloseFrames*(h-32)).toInt, 32)
       
       val wVisible = 
-        math.max(32+(stateAge.toDouble/openCloseFrames*(w-32)).toInt, 32)     
+        //math.max(32+(stateAge.toDouble/openCloseFrames*(w-32)).toInt, 32)
+        w
       
       skin.draw(b, region, x, y, wVisible, hVisible)
     }

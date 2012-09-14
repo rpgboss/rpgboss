@@ -12,5 +12,7 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/common"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/rpgboss-rpglib"/>
+	<classpathentry kind="lib" path="lib/extensions/gdx-audio-natives.jar"/>
+	<classpathentry kind="lib" path="lib/extensions/gdx-freetype-natives.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

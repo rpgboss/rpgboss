@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import rpgboss.player.entity.Window
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 
 /**
  * @author tommycli
@@ -27,6 +28,7 @@ class GameStartScreen(game: MyGame) extends Screen {
   val windowskinRegion = new TextureRegion(windowskinTexture)
   
   val font = Msgfont.readFromDisk(project, project.data.msgfont)
+  val fontbmp : BitmapFont = font.getBitmapFont()
   
   val fps = new FPSLogger() 
   val batch = new SpriteBatch()
@@ -45,7 +47,8 @@ class GameStartScreen(game: MyGame) extends Screen {
             "the third test line",
             "Fourth line"),
            0, 320, 640, 160,
-           windowskin, windowskinRegion, font.font))
+           windowskin, windowskinRegion, fontbmp,
+           state = Window.Open))
   
   def render(delta: Float): Unit = {
     /*

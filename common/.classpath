@@ -8,5 +8,7 @@
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/rpgboss-rpglib"/>
+	<classpathentry kind="lib" path="lib/extensions/gdx-audio.jar"/>
+	<classpathentry kind="lib" path="lib/extensions/gdx-freetype.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
