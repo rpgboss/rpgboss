@@ -1,6 +1,7 @@
 package rpgboss.editor.lib
 
 import rpgboss.model._
+import rpgboss.model.resource._
 
 import scala.math._
 import java.awt._

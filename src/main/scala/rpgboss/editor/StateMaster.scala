@@ -4,6 +4,7 @@ import rpgboss.editor.lib._
 import rpgboss.editor.tileset._
 
 import rpgboss.model._
+import rpgboss.model.resource._
 
 import scala.swing._
 
@@ -23,7 +24,7 @@ case class MapState(map: RpgMap,
       mapDataOpt.map(data => map.saveMapData(data))
     } else if(dirty == Deleted) {
       // Effect deletion
-      RpgMap.metadataFile(p, map.name).delete()
+      RpgMap.metadataFile(p, map.id).delete()
       RpgMapData.dataFile(p, map.name).delete()
     }
   }

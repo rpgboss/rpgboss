@@ -5,6 +5,7 @@ import scala.swing._
 import scala.swing.event._
 
 import rpgboss.model._
+import rpgboss.model.resource._
 
 import net.java.dev.designgridlayout._
 

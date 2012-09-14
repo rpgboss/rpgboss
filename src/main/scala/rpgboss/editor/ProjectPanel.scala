@@ -7,6 +7,7 @@ import scala.swing._
 import scala.swing.event._
 
 import rpgboss.model._
+import rpgboss.model.resource._
 
 class ProjectPanel(mainP: MainPanel, sm: StateMaster)
   extends SplitPane(Orientation.Vertical) with SelectsMap

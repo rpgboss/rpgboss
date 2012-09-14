@@ -3,6 +3,7 @@ package rpgboss.editor
 import rpgboss.lib._
 import rpgboss.cache._
 import rpgboss.model._
+import rpgboss.model.resource._
 
 import rpgboss.editor.tileset._
 import rpgboss.editor.lib._

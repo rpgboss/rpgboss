@@ -9,6 +9,7 @@ import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 
 import rpgboss.model._
+import rpgboss.model.resource._
 
 /*
 class TilesetNewPanel(val mainP: MainPanel)

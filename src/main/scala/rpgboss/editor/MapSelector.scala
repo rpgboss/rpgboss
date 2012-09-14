@@ -5,6 +5,7 @@ import scala.swing.tree._
 
 import rpgboss.lib._
 import rpgboss.model._
+import rpgboss.model.resource._
 import rpgboss.editor.tileset._
 
 class MapSelector(sm: StateMaster, projPanel: ProjectPanel) 

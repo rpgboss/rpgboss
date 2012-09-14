@@ -6,6 +6,7 @@ import scala.swing.event._
 
 import rpgboss.lib.Utils._
 import rpgboss.model._
+import rpgboss.model.resource._
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
 
