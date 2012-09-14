@@ -3,6 +3,7 @@ package rpgboss.player
 import com.badlogic.gdx.Screen
 import java.io.File
 import rpgboss.model._
+import rpgboss.model.resource._
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.Gdx

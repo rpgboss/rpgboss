@@ -1,6 +1,7 @@
 package rpgboss.player.entity
 
 import rpgboss.model._
+import rpgboss.model.resource._
 import java.awt._
 import java.awt.image._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch

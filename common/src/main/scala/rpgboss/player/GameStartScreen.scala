@@ -4,14 +4,13 @@
 package rpgboss.player
 
 import com.badlogic.gdx.Screen
-import rpgboss.model.Windowskin
+import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.FPSLogger
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL10
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import rpgboss.player.entity.Window
-import rpgboss.model.Msgfont
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.Texture
 
