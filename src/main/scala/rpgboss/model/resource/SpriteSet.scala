@@ -1,6 +1,7 @@
-package rpgboss.model
+package rpgboss.model.resource
 
 import rpgboss.lib._
+import rpgboss.model._
 import rpgboss.lib.FileHelper._
 
 import net.liftweb.json.Serialization

@@ -2,12 +2,11 @@ package rpgboss.model
 
 import rpgboss.lib._
 import rpgboss.lib.FileHelper._
-
 import net.liftweb.json.Serialization
-
 import scala.collection.JavaConversions._
 import java.io._
 import java.util.Arrays
+import net.liftweb.json.DefaultFormats
 
 case class RpgMapMetadata(parent: Int,
                           title: String,
@@ -17,7 +16,6 @@ case class RpgMapMetadata(parent: Int,
 }
 
 case class RpgMap(proj: Project, id: Int, metadata: RpgMapMetadata)
-extends Resource[RpgMap, RpgMapMetadata]
 {
   def meta = RpgMap
   def name = RpgMap.idToName(id)
@@ -27,6 +25,12 @@ extends Resource[RpgMap, RpgMapMetadata]
   
   def readMapData() : Option[RpgMapData] = 
     RpgMapData.readFromDisk(proj, name)  
+  
+  def writeMetadata() : Boolean =
+    meta.metadataFile(proj, id).useWriter { writer =>
+      implicit val formats = DefaultFormats
+      Serialization.writePretty(metadata, writer) != null
+    } getOrElse false
 }
 
 /*
@@ -50,20 +54,28 @@ extends Resource[RpgMap, RpgMapMetadata]
  * If regular tile, then the y tile index from 0-255
  * If empty, ignored
  */
-object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
-  def rcType = "map"
-  def keyExts = Array(metadataExt)
+object RpgMap {
+  val metadataExt = "map.json"
   
   def idToName(id: Int) = "Map%d".format(id)
   
-  def apply(proj: Project, name: String, metadata: RpgMapMetadata) = 
-    apply(proj, name.drop(3).toInt, metadata)
+  def metadataFile(proj: Project, id: Int) =
+    new File(proj.mapsDir, "%s.%s".format(idToName(id), metadataExt))
   
-  def readFromDisk(proj: Project, id: Int) : RpgMap = 
-    readFromDisk(proj, idToName(id))
-    
-  override def rcDir(proj: Project) = proj.mapsDir
-
+  def readFromDisk(proj: Project, id: Int) : RpgMap = {
+    metadataFile(proj, id).getReader().map { reader => 
+      implicit val formats = DefaultFormats
+      apply(proj, id, Serialization.read(reader))
+    } getOrElse defaultInstance(proj, id)
+  }
+  
+    // not guaranteed to be in any particular order
+  def list(proj: Project) = 
+    proj.mapsDir.listFiles.map(_.getName)
+      .filter(_.endsWith(metadataExt))
+      .map(_.dropRight(metadataExt.length+1).drop(3).toInt)
+        // +1 to drop the dot before the name
+  
   val initXSize = 20
   val initYSize = 15
   
@@ -71,19 +83,17 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   
   val autotileByte : Byte = -2
   val emptyTileByte : Byte = -1
-    
-  def defaultInstance(proj: Project, name: String) : RpgMap = {
+
+  def defaultInstance(proj: Project, id: Int) : RpgMap = { 
     val m = RpgMapMetadata(-1, "Starting Map",
-                           initXSize, initYSize, 
-                           List("Refmap-TileA5",
-                                "Refmap-TileB",
-                                "Refmap-TileC",
-                                "Refmap-TileD",
-                                "Refmap-TileE"))
-    RpgMap(proj, name, m)
+                       initXSize, initYSize, 
+                       List("Refmap-TileA5",
+                            "Refmap-TileB",
+                            "Refmap-TileC",
+                            "Refmap-TileD",
+                            "Refmap-TileE"))
+    RpgMap(proj, id, m)
   }
-  def defaultInstance(proj: Project, id: Int) : RpgMap = 
-    defaultInstance(proj, idToName(id))
   
   def emptyMapData(xSize: Int, ySize: Int) = {
     val autoLayer  = {

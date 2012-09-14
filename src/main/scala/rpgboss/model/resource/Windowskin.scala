@@ -1,6 +1,7 @@
-package rpgboss.model
+package rpgboss.model.resource
 
 import rpgboss.lib._
+import rpgboss.model._
 import rpgboss.lib.Utils._
 import rpgboss.lib.FileHelper._
 import java.awt.image.BufferedImage

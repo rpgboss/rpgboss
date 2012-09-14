@@ -1,4 +1,6 @@
-package rpgboss.model
+package rpgboss.model.resource
+
+import rpgboss.model._
 
 case class PictureMetadata()
 

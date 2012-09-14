@@ -1,6 +1,7 @@
 package rpgboss.cache
 
 import rpgboss.model._
+import rpgboss.model.resource._
 
 import java.awt.image._
 import com.google.common.cache._

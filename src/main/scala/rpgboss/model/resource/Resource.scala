@@ -1,17 +1,15 @@
-package rpgboss.model
+package rpgboss.model.resource
 
 import rpgboss.lib._
 import rpgboss.lib.FileHelper._
-
 import net.liftweb.json._
-
 import scala.collection.JavaConversions._
-
 import java.io._
+import rpgboss.model.Project
 
 object Resource {
   val formats = Serialization.formats(ShortTypeHints(
-    List(classOf[Autotile], classOf[Tileset], classOf[RpgMapMetadata])))
+    List(classOf[Autotile], classOf[Tileset])))
 }
 
 trait Resource[T, MT <: AnyRef] {

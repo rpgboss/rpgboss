@@ -39,7 +39,9 @@ object Settings {
 
     // Extract jars into their respective lib folders.
     val commonDest = file("lib")
-    val commonFilter = new ExactFilter("gdx.jar")
+    val commonFilter = new ExactFilter("gdx.jar") |
+	new ExactFilter("extensions/gdx-freetype.jar") |
+	new ExactFilter("extensions/gdx-audio.jar")
     IO.unzip(zipFile, commonDest, commonFilter)
 
     // Destroy the file.

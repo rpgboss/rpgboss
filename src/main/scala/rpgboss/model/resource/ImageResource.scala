@@ -1,4 +1,4 @@
-package rpgboss.model
+package rpgboss.model.resource
 
 import rpgboss.lib._
 import rpgboss.lib.FileHelper._

@@ -1,4 +1,5 @@
 import rpgboss.model._
+import rpgboss.model.resource._
 import rpgboss.lib.FileHelper._
 
 import org.scalatest._
@@ -75,7 +76,7 @@ class ModelSpec extends Spec with BeforeAndAfter {
     }
     
     it("read/write by map") {
-      val map = RpgMap.defaultInstance(proj, "RpgMapData-readwritefromMap")
+      val map = RpgMap.defaultInstance(proj, 0)
       val d0 = makeMapData()
       map.saveMapData(d0)
       val d1 = map.readMapData().get
