@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.FPSLogger
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL10
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import rpgboss.player.entity.Window
+import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -37,18 +37,22 @@ class GameStartScreen(game: MyGame) extends Screen {
   camera.setToOrtho(true, 640, 480) // y points down
   camera.update()
   
-  val windows = new collection.mutable.HashMap[String, Window]
+  var windows = collection.mutable.Stack[Window]()
   
-  windows.put("test",
-    Window(project, "test", 
-           Array(
-            "Hello", 
-            "I am", 
-            "the third test line",
-            "Fourth line"),
-           0, 320, 640, 160,
-           windowskin, windowskinRegion, fontbmp,
-           state = Window.Open))
+  {
+    val winW = 200
+    windows.push(new ChoiceWindow(project,
+       Array(
+        "New Game", 
+        "Load Game", 
+        "Quit"),
+       320-(winW/2), 280, winW, 130,
+       windowskin, windowskinRegion, fontbmp,
+       state = Window.Opening,
+       framesPerChar = 0,
+       justification = Window.Center)
+    )
+  }
   
   def render(delta: Float): Unit = {
     /*
@@ -70,8 +74,9 @@ class GameStartScreen(game: MyGame) extends Screen {
     batch.setProjectionMatrix(camera.combined)
     batch.begin()
     
-    windows.values.foreach(_.update())
-    windows.values.foreach(_.render(batch))
+    windows.head.update(true)
+    windows.tail.foreach(_.update(false))
+    windows.foreach(_.render(batch))
     //windowskin.draw(batch, windowskinRegion, 0, 200, 200, 64)
     
     batch.end()

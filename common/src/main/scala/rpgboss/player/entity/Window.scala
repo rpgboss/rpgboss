@@ -28,34 +28,35 @@ object Window {
 
 // stateAge starts at 0 and goes up as window opens or closes
 case class Window(proj: Project,
-                  name: String,
                   text: Array[String] = Array(),
                   x: Int, y: Int, w: Int, h: Int,
                   skin: Windowskin,
-                  region: TextureRegion,
+                  skinRegion: TextureRegion,
                   fontbmp: BitmapFont,
                   var state: Int = Window.Opening, 
                   var stateAge: Int = 0,
                   openCloseFrames: Int = 25,
                   framesPerChar: Int = 5,
                   linesPerBlock: Int = 4,
-                  var textBlock: Int = 0,
                   justification: Int = Window.Left) 
-extends Entity
 {
+  var deleted = false
+  def delete() = deleted = true
+  
   // stateAge is used for:
   // - controlling the opening and closing of windows
   
   val window = this
   
-  object textImage extends Entity {
+  object textImage {
     val xpad = 24f
     val ypad = 24f
     val textW = w-2*xpad
     val textH = h-2*ypad
     val lineHeight = 32f
     
-    var lineI = 0
+    // If display instantly...
+    var lineI = if(framesPerChar == 0) text.length else 0
     var charI = 0
     
     var tickNum = 0
@@ -82,19 +83,20 @@ extends Entity
     }
     
     def update() = {
-      if(tickNum % framesPerChar == 0 && lineI < text.length) {
-        val line = text(lineI)
-   
-        charI += 1
-        
-        // advance line if out of characters
-        if(charI >= line.length()) {
-          lineI += 1
-          charI = 0
+      if(framesPerChar > 0) {
+        if(tickNum % framesPerChar == 0 && lineI < text.length) {
+          val line = text(lineI)
+     
+          charI += 1
+          
+          // advance line if out of characters
+          if(charI >= line.length()) {
+            lineI += 1
+            charI = 0
+          }
         }
+        tickNum += 1
       }
-      
-      tickNum += 1
     }
     
     def render(b: SpriteBatch) = {
@@ -109,7 +111,7 @@ extends Entity
     }
   }
   
-  def update() = {
+  def update(acceptInput: Boolean) = {
     // change state of "expired" opening or closing animations
     if(stateAge >= openCloseFrames) {
       state match {
@@ -128,7 +130,7 @@ extends Entity
   
   def render(b: SpriteBatch) = state match {
     case Window.Open => {
-      skin.draw(b, region, x, y, w, h)
+      skin.draw(b, skinRegion, x, y, w, h)
       textImage.render(b)
     }
     case Window.Opening => {
@@ -139,7 +141,7 @@ extends Entity
         //math.max(32+(stateAge.toDouble/openCloseFrames*(w-32)).toInt, 32)
         w
       
-      skin.draw(b, region, x, y, wVisible, hVisible)
+      skin.draw(b, skinRegion, x, y, wVisible, hVisible)
     }
   }
 }
