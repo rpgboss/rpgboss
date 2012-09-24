@@ -15,7 +15,12 @@ object Settings {
       "com.weiglewilczek.slf4s" % "slf4s_2.9.1" % "1.0.7",
       "org.scalatest" %% "scalatest" % "1.6.1" % "test"
     ),
-    scalacOptions += "-deprecation"
+    scalacOptions += "-deprecation",
+    unmanagedJars in Compile <<= baseDirectory map { base =>
+      var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
+      var jars = baseDirectories ** "*.jar"
+      jars.classpath
+    }
    )
 
   val updateLibgdx = TaskKey[Unit]("update-gdx", "Updates libgdx")
