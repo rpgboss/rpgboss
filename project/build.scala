@@ -7,11 +7,21 @@ object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     version := "0.1",
     scalaVersion := "2.9.2",
+    libraryDependencies ++= Seq(
+      "com.google.guava" % "guava" % "10.0",
+      "net.liftweb" % "lift-json_2.9.1" % "2.4",
+      "com.weiglewilczek.slf4s" % "slf4s_2.9.1" % "1.0.7"
+    ),
     updateLibgdxTask
    )
 
   lazy val desktop = Settings.common ++ Seq (
-    fork in Compile := true
+    fork in Compile := true,
+    unmanagedJars in Compile <<= baseDirectory map { base =>
+      var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
+      var jars = baseDirectories ** "*.jar"
+      jars.classpath
+    }
   )
 
   lazy val android = Settings.common ++
