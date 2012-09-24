@@ -51,7 +51,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     batch = new SpriteBatch()
     
     mapLayer = new MapLayer(this)
-    //screenLayer = new ScreenLayer(this)
+    screenLayer = new ScreenLayer(this)
   }
   
   override def dispose() {
@@ -73,7 +73,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     
     
     mapLayer.update()
-    //screenLayer.update()
+    screenLayer.update()
     
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
@@ -81,7 +81,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     
     batch.begin()
     mapLayer.render()
-    //screenLayer.render()
+    screenLayer.render()
         
     batch.end()
   }
