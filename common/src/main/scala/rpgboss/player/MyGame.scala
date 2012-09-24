@@ -33,21 +33,6 @@ class MyGame(gamepath: File) extends ApplicationListener {
   
   var windows = collection.mutable.Stack[Window]()
   
-  {
-    val winW = 200
-    windows.push(new ChoiceWindow(project,
-       Array(
-        "New Game", 
-        "Load Game", 
-        "Quit"),
-       320-(winW/2), 280, winW, 130,
-       windowskin, windowskinRegion, fontbmp,
-       state = Window.Opening,
-       framesPerChar = 0,
-       justification = Window.Center)
-    )
-  }
-  
   val screenCamera: OrthographicCamera = new OrthographicCamera()
   
   var autotiles: Array[Autotile] = null
@@ -112,6 +97,21 @@ class MyGame(gamepath: File) extends ApplicationListener {
     windowskinRegion = new TextureRegion(windowskinTexture)
     
     fontbmp = font.getBitmapFont()
+    
+    {
+      val winW = 200
+      windows.push(new ChoiceWindow(project,
+         Array(
+          "New Game", 
+          "Load Game", 
+          "Quit"),
+         320-(winW/2), 280, winW, 130,
+         windowskin, windowskinRegion, fontbmp,
+         state = Window.Opening,
+         framesPerChar = 0,
+         justification = Window.Center)
+      )
+    }
     
     tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
     
@@ -383,13 +383,12 @@ class MyGame(gamepath: File) extends ApplicationListener {
      * JRPG look, and I'm not sure how to support varying aspect ratios without
      * really complicating the code...
      */
-    /*
+    
     batch.setProjectionMatrix(screenCamera.combined)
     
     windows.head.update(true)
     windows.tail.foreach(_.update(false))
     windows.foreach(_.render(batch))
-    */
         
     batch.end()
   }
