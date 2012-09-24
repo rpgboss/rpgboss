@@ -13,6 +13,15 @@ import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 
+class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
+  def this(other: MapLoc) = this(other.map, other.x, other.y)
+  def set(other: MapLoc) = {
+    this.map = other.map
+    this.x = other.x
+    this.y = other.y
+  }
+}
+
 class MyGame(gamepath: File) extends ApplicationListener {
   val project = Project.readFromDisk(gamepath).get
   
