@@ -87,11 +87,11 @@ object RpgMap {
   def defaultInstance(proj: Project, id: Int) : RpgMap = { 
     val m = RpgMapMetadata(-1, "Starting Map",
                        initXSize, initYSize, 
-                       List("Refmap-TileA5",
-                            "Refmap-TileB",
-                            "Refmap-TileC",
-                            "Refmap-TileD",
-                            "Refmap-TileE"))
+                       List("Refmap-TileA5.png",
+                            "Refmap-TileB.png",
+                            "Refmap-TileC.png",
+                            "Refmap-TileD.png",
+                            "Refmap-TileE.png"))
     RpgMap(proj, id, m)
   }
   

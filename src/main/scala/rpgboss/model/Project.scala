@@ -24,7 +24,7 @@ object Project {
   
   def startingProject(title: String, 
                       dir: File) =
-    Project(dir, ProjectData.defaultInstance(title))
+    Project(dir, ProjectData(title = title))
   
   def filename(dir: File) = new File(dir, "rpgproject.json")
   

@@ -19,7 +19,7 @@ trait Resource[T, MT <: AnyRef] {
   def proj: Project
   
   def rcTypeDir = new File(proj.rcDir, meta.rcType)
-  def dataFile = new File(rcTypeDir, "%s.%s".format(name, meta.keyExts(0)))
+  def dataFile = new File(rcTypeDir, name)
   
   def writeMetadata() : Boolean =
     meta.metadataFile(proj, name).useWriter { writer =>
@@ -30,7 +30,6 @@ trait Resource[T, MT <: AnyRef] {
 
 trait MetaResource[T, MT] {
   def rcType: String
-  val metadataExt = "%s.json".format(rcType) 
   def keyExts : Array[String] // extension to search for when listing resources
   
   def rcDir(proj: Project) = new File(proj.rcDir, rcType)
@@ -40,15 +39,13 @@ trait MetaResource[T, MT] {
     val listsByType = keyExts.map { keyExt =>    
       rcDir(proj).listFiles.map(_.getName)
         .filter(_.endsWith(keyExt))
-        .map(_.dropRight(keyExt.length+1)) 
-        // +1 to drop the dot before the name
     }
     
     Array.concat(listsByType : _*)
   }
   
   def metadataFile(proj: Project, name: String) =
-    new File(rcDir(proj), "%s.%s".format(name, metadataExt))
+    new File(rcDir(proj), "%s.%s.json".format(name, rcType))
   
   def defaultInstance(proj: Project, name: String) : T
   
