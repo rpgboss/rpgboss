@@ -11,6 +11,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import org.mozilla.javascript.{Context, ScriptableObject, Scriptable}
 
 class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
@@ -27,8 +28,12 @@ class MyGame(gamepath: File) extends ApplicationListener {
   val logger = new Logger("Game", Logger.INFO)
   val fps = new FPSLogger() 
   
-  var mapLayer : MapLayer = null
+  var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
+  
+  val jsInterface = new ScriptInterface(this)
+  var jsContext: Context = null
+  var jsScope: Scriptable = null
   
   /*
    * SpriteBatch manages its own matrices. By default, it sets its modelview
@@ -48,10 +53,23 @@ class MyGame(gamepath: File) extends ApplicationListener {
   
   // Other creation stuff that was formerly in create()
   def create() = {
+    jsContext = Context.enter()
+    jsScope = jsContext.initStandardObjects()
+    
+    val jsWrappedInterface = Context.javaToJS(jsInterface, jsScope)
+    ScriptableObject.putProperty(jsScope, "sys", jsWrappedInterface)
+    
     batch = new SpriteBatch()
     
     mapLayer = new MapLayer(this)
     screenLayer = new ScreenLayer(this)
+    
+    val mainScript = Script.readFromDisk(project, "main")
+    jsContext.evaluateString(
+        jsScope, 
+        mainScript.getAsString,
+        mainScript.name,
+        1, null)
   }
   
   override def dispose() {

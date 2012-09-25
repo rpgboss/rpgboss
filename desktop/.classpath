@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="../desktop/lib/gdx-natives.jar"/>
 	<classpathentry kind="lib" path="../desktop/lib/gdx-backend-lwjgl.jar"/>
 	<classpathentry kind="lib" path="../desktop/lib/gdx-backend-lwjgl-natives.jar"/>
-	<classpathentry kind="lib" path="../common/lib/gdx.jar"/>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/common"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>

@@ -10,8 +10,14 @@ object Settings {
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % "10.0",
       "net.liftweb" % "lift-json_2.9.1" % "2.4",
-      "com.weiglewilczek.slf4s" % "slf4s_2.9.1" % "1.0.7"
+      "com.weiglewilczek.slf4s" % "slf4s_2.9.1" % "1.0.7",
+      "rhino" % "js" % "1.7R2"
     ),
+    unmanagedJars in Compile <<= baseDirectory map { base =>
+      var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
+      var jars = baseDirectories ** "*.jar"
+      jars.classpath
+    },
     updateLibgdxTask
    )
 
