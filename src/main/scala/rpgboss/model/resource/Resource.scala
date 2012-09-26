@@ -6,20 +6,25 @@ import net.liftweb.json._
 import scala.collection.JavaConversions._
 import java.io._
 import rpgboss.model.Project
+import com.weiglewilczek.slf4s.Logging
 
 object Resource {
   val formats = Serialization.formats(ShortTypeHints(
     List(classOf[Autotile], classOf[Tileset])))
 }
 
-trait Resource[T, MT <: AnyRef] {
+trait Resource[T, MT <: AnyRef] extends Logging {
   def name: String
   def metadata: MT
   def meta: MetaResource[T, MT]
   def proj: Project
   
   def rcTypeDir = new File(proj.rcDir, meta.rcType)
-  def dataFile = new File(rcTypeDir, name)
+  val dataFileVar = new File(rcTypeDir, name)
+  if(!(dataFileVar.isFile && dataFileVar.canRead))
+    logger.error("Can't read: %s".format(dataFileVar.getCanonicalPath()))
+    
+  def dataFile = dataFileVar
   
   def writeMetadata() : Boolean =
     meta.metadataFile(proj, name).useWriter { writer =>
