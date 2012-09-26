@@ -16,7 +16,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
  */
-class ScreenLayer(game: MyGame) {
+class ScreenLayer(game: MyGame, state: GameState) {
   def project = game.project
   def batch = game.batch
   
@@ -28,26 +28,9 @@ class ScreenLayer(game: MyGame) {
   val font = Msgfont.readFromDisk(project, project.data.msgfont)
   var fontbmp : BitmapFont = font.getBitmapFont()
 
-  var windows = collection.mutable.Stack[Window]()
-  
   val screenCamera: OrthographicCamera = new OrthographicCamera()
   screenCamera.setToOrtho(true, 640, 480) // y points down
   screenCamera.update()
-
-  {
-    val winW = 200
-    windows.push(new ChoiceWindow(project,
-       Array(
-        "New Game", 
-        "Load Game", 
-        "Quit"),
-       320-(winW/2), 280, winW, 130,
-       windowskin, windowskinRegion, fontbmp,
-       state = Window.Opening,
-       framesPerChar = 0,
-       justification = Window.Center)
-    )
-  }
   
   def update() = {
     
@@ -65,9 +48,18 @@ class ScreenLayer(game: MyGame) {
     
     batch.setProjectionMatrix(screenCamera.combined)
     
-    windows.head.update(true)
-    windows.tail.foreach(_.update(false))
-    windows.foreach(_.render(batch))
+    // Render pictures
+    for(pic <- state.pictures) {
+      if(pic != null) {
+        pic.render(batch)
+      } 
+    }
+    
+    if(!state.windows.isEmpty) 
+      state.windows.head.update(true)
+    if(state.windows.length > 1)
+      state.windows.tail.foreach(_.update(false))
+    state.windows.foreach(_.render(batch))
   }
   
   def dispose() = {

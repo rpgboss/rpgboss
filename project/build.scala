@@ -23,6 +23,9 @@ object Settings {
 
   lazy val desktop = Settings.common ++ Seq (
     fork in Compile := true,
+    libraryDependencies ++= Seq(
+      "ch.qos.logback" % "logback-classic" % "1.0.6"
+    ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
       var jars = baseDirectories ** "*.jar"

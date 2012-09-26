@@ -11,7 +11,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import org.mozilla.javascript.{Context, ScriptableObject, Scriptable}
 
 class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
@@ -28,12 +27,8 @@ class MyGame(gamepath: File) extends ApplicationListener {
   val logger = new Logger("Game", Logger.INFO)
   val fps = new FPSLogger() 
   
-  var mapLayer: MapLayer = null
+  var mapLayer: Option[MapLayer] = None
   var screenLayer: ScreenLayer = null
-  
-  val jsInterface = new ScriptInterface(this)
-  var jsContext: Context = null
-  var jsScope: Scriptable = null
   
   /*
    * SpriteBatch manages its own matrices. By default, it sets its modelview
@@ -51,29 +46,20 @@ class MyGame(gamepath: File) extends ApplicationListener {
   // Where in the "second" we are. Varies from 0 to 1.0
   var accumDelta : Float = 0.0f
   
+  val state = new GameState(project)
+  
   // Other creation stuff that was formerly in create()
   def create() = {
-    jsContext = Context.enter()
-    jsScope = jsContext.initStandardObjects()
-    
-    val jsWrappedInterface = Context.javaToJS(jsInterface, jsScope)
-    ScriptableObject.putProperty(jsScope, "sys", jsWrappedInterface)
     
     batch = new SpriteBatch()
     
-    mapLayer = new MapLayer(this)
-    screenLayer = new ScreenLayer(this)
+    screenLayer = new ScreenLayer(this, state)
     
-    val mainScript = Script.readFromDisk(project, "main")
-    jsContext.evaluateString(
-        jsScope, 
-        mainScript.getAsString,
-        mainScript.name,
-        1, null)
+    ScriptThread(this, "main.js", "main()").run()
   }
   
   override def dispose() {
-    mapLayer.dispose()
+    mapLayer.map(_.dispose())
     screenLayer.dispose()
   }
   
@@ -90,7 +76,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     fps.log()
     
     
-    mapLayer.update()
+    mapLayer.map(_.update())
     screenLayer.update()
     
     // Clear the context
@@ -98,7 +84,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
     
     batch.begin()
-    mapLayer.render()
+    mapLayer.map(_.render())
     screenLayer.render()
         
     batch.end()

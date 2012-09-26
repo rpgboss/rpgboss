@@ -13,5 +13,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/rpgboss-rpglib"/>
 	<classpathentry kind="lib" path="lib/extensions/gdx-audio-natives.jar"/>
 	<classpathentry kind="lib" path="lib/extensions/gdx-freetype-natives.jar"/>
+	<classpathentry kind="lib" path="/home/tommycli/.ivy2/cache/ch.qos.logback/logback-classic/jars/logback-classic-1.0.6.jar"/>
+	<classpathentry kind="lib" path="/home/tommycli/.ivy2/cache/ch.qos.logback/logback-core/jars/logback-core-1.0.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
