@@ -7,7 +7,7 @@ import scala.concurrent.ops.spawn
 case class ScriptThread(game: MyGame, scriptName: String, fnToRun: String = "") {
   def run() = spawn {
     val script = Script.readFromDisk(game.project, scriptName)
-    val jsInterface = new ScriptInterface(game)
+    val jsInterface = game.state
     
     val jsContext = Context.enter()
     val jsScope = jsContext.initStandardObjects()

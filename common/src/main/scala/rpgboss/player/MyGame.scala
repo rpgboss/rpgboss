@@ -11,6 +11,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import akka.dispatch.{ExecutionContext}
+import java.util.concurrent.Executors
 
 class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
@@ -21,6 +23,12 @@ class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
   }
 }
 
+object Global {
+  val pool = Executors.newCachedThreadPool()
+
+  implicit val ec = ExecutionContext.fromExecutorService(pool)
+}
+
 class MyGame(gamepath: File) extends ApplicationListener {
   val project = Project.readFromDisk(gamepath).get
   
@@ -29,6 +37,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
   
   var mapLayer: Option[MapLayer] = None
   var screenLayer: ScreenLayer = null
+  val inputs = new MyInputMultiplexer()
   
   /*
    * SpriteBatch manages its own matrices. By default, it sets its modelview
@@ -46,10 +55,11 @@ class MyGame(gamepath: File) extends ApplicationListener {
   // Where in the "second" we are. Varies from 0 to 1.0
   var accumDelta : Float = 0.0f
   
-  val state = new GameState(project)
+  val state = new GameState(this, project)
   
-  // Other creation stuff that was formerly in create()
   def create() = {
+    // Attach inputs
+    Gdx.input.setInputProcessor(inputs)
     
     batch = new SpriteBatch()
     

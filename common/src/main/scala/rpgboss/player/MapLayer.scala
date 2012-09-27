@@ -16,7 +16,10 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
  */
-class MapLayer(game: MyGame) {
+class MapLayer(game: MyGame) extends IsDownInputHandler {
+  // Add input handling
+  game.inputs.prepend(this)
+  
   def project = game.project
   def batch = game.batch
   
@@ -145,36 +148,34 @@ class MapLayer(game: MyGame) {
   
   // Update
   def update() = {
-    import com.badlogic.gdx.Input._
-
-    def isKeyPressed(x: Int) = Gdx.input.isKeyPressed(x)
+    import MyKeys._
     
     characterMoving = false
     val baseSpeed = 0.05 // tiles per frame 
     
     val projSpeed =
-      if((isKeyPressed(Keys.LEFT) || isKeyPressed(Keys.RIGHT)) &&
-         (isKeyPressed(Keys.UP) || isKeyPressed(Keys.DOWN))) {
+      if((down(Left) || down(Right)) &&
+         (down(Up) || down(Down))) {
         (baseSpeed/math.sqrt(2.0)).toFloat
       } else {
         baseSpeed.toFloat
       }
     
-    if(Gdx.input.isKeyPressed(Keys.LEFT)) {
+    if(down(Left)) {
       characterMoving = true
       characterLoc.x -= projSpeed
       characterDirection = Spriteset.DirectionOffsets.WEST
-    } else if(Gdx.input.isKeyPressed(Keys.RIGHT)) {
+    } else if(down(Right)) {
       characterMoving = true
       characterLoc.x += projSpeed
       characterDirection = Spriteset.DirectionOffsets.EAST
     }
     
-    if(Gdx.input.isKeyPressed(Keys.UP)) {
+    if(down(Up)) {
       characterMoving = true
       characterLoc.y -= projSpeed
       characterDirection = Spriteset.DirectionOffsets.NORTH
-    } else if(Gdx.input.isKeyPressed(Keys.DOWN)) {
+    } else if(down(Down)) {
       characterMoving = true
       characterLoc.y += projSpeed
       characterDirection = Spriteset.DirectionOffsets.SOUTH
@@ -299,5 +300,6 @@ class MapLayer(game: MyGame) {
   def dispose() = {
     atlasTiles.dispose()
     atlasSprites.dispose()
+    game.inputs.remove(this)
   }
 }

@@ -11,5 +11,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/extensions/gdx-audio.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/extensions/gdx-freetype.jar"/>
 	<classpathentry exported="true" kind="lib" path="/home/tommycli/.ivy2/cache/rhino/js/jars/js-1.7R2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/tommycli/.ivy2/cache/com.typesafe.akka/akka-actor/jars/akka-actor-2.0.3.jar"/>
+	<classpathentry kind="lib" path="/home/tommycli/.ivy2/cache/com.typesafe/config/bundles/config-0.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

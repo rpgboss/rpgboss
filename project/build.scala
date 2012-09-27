@@ -7,10 +7,12 @@ object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     version := "0.1",
     scalaVersion := "2.9.2",
+    resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % "10.0",
       "net.liftweb" % "lift-json_2.9.1" % "2.4",
       "com.weiglewilczek.slf4s" % "slf4s_2.9.1" % "1.0.7",
+      "com.typesafe.akka" % "akka-actor" % "2.0.3",
       "rhino" % "js" % "1.7R2"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>

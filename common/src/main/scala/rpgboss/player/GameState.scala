@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.Gdx
 import java.util.concurrent.FutureTask
 import java.util.concurrent.Callable
+import akka.dispatch.Await
+import akka.util.Duration
 
 /**
  * This class contains all the state information about the game.
@@ -17,9 +19,11 @@ import java.util.concurrent.Callable
  * Moreover, OpenGL operations may only occur on the GDX rendering thread.
  * This object must post those operations to that thread via postRunnable
  */
-class GameState(project: Project) {
+class GameState(game: MyGame, project: Project) {
+  // No need for syncronization, since it's a synchronized collection
   val windows = new collection.mutable.SynchronizedStack[Window]()
   
+  // Should only be accessed on the Gdx thread, so no synchronization needed
   val pictures = new Array[PictureInfo](32)
   
   /**
@@ -55,6 +59,32 @@ class GameState(project: Project) {
     pictures(slot).dispose()
     pictures(slot) = null
   }
+  
+  def choiceWindow(
+      choices: Array[String],
+      x: Int, y: Int, w: Int, h: Int,
+      justification: Int) = {
+    val window = new ChoiceWindow(project,
+        choices,
+        x, y, w, h,
+        game.screenLayer.windowskin, 
+        game.screenLayer.windowskinRegion, 
+        game.screenLayer.fontbmp,
+        state = Window.Opening,
+        framesPerChar = 0,
+        justification = justification)
+    
+    windows.push(window)
+    game.inputs.prepend(window)
+    
+    // Return the choice... eventually...
+    Await.result(window.result.future, Duration.Inf)
+    game.inputs.remove(window)
+  }
+  
+  val LEFT = Window.Left
+  val CENTER = Window.Center
+  val RIGHT = Window.Right
 }
 
 /**

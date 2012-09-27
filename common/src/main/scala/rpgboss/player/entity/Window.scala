@@ -67,7 +67,9 @@ case class Window(proj: Project,
       case Window.Right => HAlignment.RIGHT
     }
     
-    def drawText(b: SpriteBatch, text: String, x: Float, y: Float) = {
+    def drawText(
+        b: SpriteBatch, text: String, 
+        x: Float, y: Float) : BitmapFont.TextBounds = {
       // Draw shadow
       fontbmp.setColor(Color.BLACK)
       fontbmp.drawMultiLine(b, text, 
