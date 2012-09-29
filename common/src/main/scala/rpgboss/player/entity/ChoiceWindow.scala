@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import akka.dispatch.Promise
 import rpgboss.player.Global._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import rpgboss.player.MenuInputHandler
+import rpgboss.player.ChoiceInputHandler
 import rpgboss.player.MyKeys
 import com.badlogic.gdx.assets.AssetManager
 
@@ -30,7 +30,7 @@ class ChoiceWindow(
       assets, proj, text = choices, x, y, w, h, skin, skinRegion, fontbmp,
       state = initialState, openCloseMs, msPerChar, linesPerBlock,
       justification)
-  with MenuInputHandler {
+  with ChoiceInputHandler {
   
   var curChoice = defaultChoice
   

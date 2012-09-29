@@ -4,9 +4,16 @@ import com.badlogic.gdx.Input._
 import com.badlogic.gdx.utils.Timer
 
 trait InputHandler {
-  def keyDown(key: Int) : Boolean
+  import MyKeys._
   
-  def keyUp(key: Int) : Boolean
+  def keyDown(key: Int): Boolean
+  
+  def keyUp(key: Int): Boolean
+  
+  // Called when an input handler gets put ahead of this one, capturing a key
+  def keyCapturedByOther(key: Int) = {}
+  
+  def capturedKeys = List(Up, Down, Left, Right, A)
 }
 
 object MyKeys {
@@ -19,24 +26,25 @@ object MyKeys {
   val totalNumber = 5
 }
 
-/**
- * Simple one that just detects whether or not the key is down
- */
-trait IsDownInputHandler extends InputHandler {
+trait MoveInputHandler extends InputHandler {
   // Initialized to all false
-  private val downMap = new Array[Boolean](5)
+  private val isActiveMap = new Array[Boolean](5)
   
-  def keyDown(key: Int) = {
-    downMap(key) = true
+  def isActive(key: Int) = isActiveMap(key)
+  
+  override def keyDown(key: Int) = {
+    isActiveMap(key) = true
     true
   }
   
-  def keyUp(key: Int) = {
-    downMap(key) = false
+  override def keyUp(key: Int) = {
+    isActiveMap(key) = false
     true
   }
   
-  def down(key: Int) = downMap(key)
+  override def keyCapturedByOther(key: Int) = {
+    isActiveMap(key) = false
+  }
 }
 
 /**
@@ -46,7 +54,7 @@ trait IsDownInputHandler extends InputHandler {
  * 
  * This is useful for scrolling through menu items.
  */
-trait MenuInputHandler extends IsDownInputHandler {
+trait ChoiceInputHandler extends InputHandler {
   def keyDelay: Float = 0.5f
   def keyInterval: Float = 0.1f
   
@@ -58,9 +66,7 @@ trait MenuInputHandler extends IsDownInputHandler {
     }
   }
   
-  override def keyDown(key: Int) = {
-    super.keyDown(key)
-    
+  def keyDown(key: Int) = {
     // Initial activation
     keyActivate(key)
     
@@ -69,9 +75,7 @@ trait MenuInputHandler extends IsDownInputHandler {
     true
   }
   
-  override def keyUp(key: Int) = {
-    super.keyUp(key)
-    
+  def keyUp(key: Int) = {
     // Cancel task
     activateTasks(key).cancel()
     true
@@ -85,6 +89,7 @@ trait MenuInputHandler extends IsDownInputHandler {
  */
 class MyInputMultiplexer extends InputAdapter {
   val inputProcessors = new scala.collection.mutable.ListBuffer[InputHandler]()
+  
   
   // Maps 
   def mapKey(keycode: Int): Option[Int] = keycode match {
@@ -112,8 +117,13 @@ class MyInputMultiplexer extends InputAdapter {
     } isDefined
   } getOrElse false
   
-  def prepend(handler: InputHandler) = {
-    inputProcessors.prepend(handler)
+  def prepend(newHandler: InputHandler) = {
+    // Send a signal to all existing input handlers, as if they keep track of
+    // the 'down' position, they should know that it's been captured.
+    for(handler <- inputProcessors; key <- newHandler.capturedKeys)
+      handler.keyCapturedByOther(key)
+    
+    inputProcessors.prepend(newHandler)
   }
   
   def remove(handler: InputHandler) = {

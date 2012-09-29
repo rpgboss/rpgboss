@@ -38,7 +38,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
   val logger = new Logger("Game", Logger.INFO)
   val fps = new FPSLogger() 
   
-  var mapLayer: Option[MapLayer] = None
+  var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
   val inputs = new MyInputMultiplexer()
   
@@ -64,13 +64,14 @@ class MyGame(gamepath: File) extends ApplicationListener {
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
     
+    mapLayer = new MapLayer(this)
     screenLayer = new ScreenLayer(this, state)
     
     ScriptThread(this, "main.js", "main()").run()
   }
   
   override def dispose() {
-    mapLayer.map(_.dispose())
+    mapLayer.dispose()
     screenLayer.dispose()
   }
   
@@ -89,7 +90,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     // update state
     state.update()
     
-    mapLayer.map(_.update())
+    mapLayer.update()
     screenLayer.update()
     
     // Clear the context
@@ -98,7 +99,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     Gdx.gl.glEnable(GL10.GL_BLEND)
     
     // Render the two layers
-    mapLayer.map(_.render())
+    mapLayer.render()
     screenLayer.render()
   }
   

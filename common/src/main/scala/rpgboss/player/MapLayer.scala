@@ -16,21 +16,20 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
  */
-class MapLayer(game: MyGame) extends IsDownInputHandler {
+class MapLayer(game: MyGame) extends MoveInputHandler {
   // Add input handling
   game.inputs.prepend(this)
   
   def project = game.project
+  def state = game.state
   val batch = new SpriteBatch()
   
-  var map: RpgMap = RpgMap.readFromDisk(project, project.data.startingLoc.map)
-  var mapData: RpgMapData = map.readMapData().get
+  var mapIdOnLastUpdate = -1
+  var mapAndAssetsOption : Option[MapAndAssets] = None
   
   var screenW = 20.0
   var screenH = 15.0
   
-  // camera position and boundaries
-  val cameraLoc = new MutableMapLoc()
   var cameraL: Double = 0
   var cameraR: Double = 0
   var cameraT: Double = 0
@@ -39,68 +38,19 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
   val tileCamera: OrthographicCamera = new OrthographicCamera()
   tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
   
-  // protagonist location
-  val characterLoc = new MutableMapLoc()
-  characterLoc.set(project.data.startingLoc)
-  var characterDirection : Int = Spriteset.DirectionOffsets.SOUTH
-  var characterMoving = false
-  
-  def setCameraLoc(loc: MapLoc) = {
-    cameraLoc.set(loc)
-    cameraL = loc.x - screenW/2
-    cameraR = loc.x + screenW/2
-    cameraT = loc.y - screenH/2
-    cameraB = loc.y + screenH/2
-    tileCamera.position.x = loc.x
-    tileCamera.position.y = loc.y
+  def updateCameraLoc() = {
+    cameraL = state.cameraLoc.x - screenW/2
+    cameraR = state.cameraLoc.x + screenW/2
+    cameraT = state.cameraLoc.y - screenH/2
+    cameraB = state.cameraLoc.y + screenH/2
+    tileCamera.position.x = state.cameraLoc.x
+    tileCamera.position.y = state.cameraLoc.y
     tileCamera.update()
-  }  
-  setCameraLoc(project.data.startingLoc)
+  }
   
   // Set the projection matrix to the combined camera matrices
   // This seems to be the only thing that works...
   batch.setProjectionMatrix(tileCamera.combined)
-  
-  /***
-   * This section is all the stuff that finds the graphics and packs it into
-   * texture atlases.
-   */
-  
-  val packerTiles = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
-    
-  val autotiles = project.data.autotiles.map { name =>
-    Autotile.readFromDisk(project, name)
-  }
-    
-  // Pack all the autotiles
-  autotiles.map { autotile =>
-    val autotilePix = new Pixmap(
-        Gdx.files.absolute(autotile.dataFile.getAbsolutePath()))
-    
-    packerTiles.pack("autotile/%s".format(autotile.name), autotilePix)
-
-    autotilePix.dispose()
-  }
-  
-  val tilesets = map.metadata.tilesets.map(
-    name => Tileset.readFromDisk(project, name)).toArray[Tileset]
-  
-  // Pack all tilesets
-  tilesets.map { tileset =>
-    val tilesetPix = new Pixmap(
-        Gdx.files.absolute(tileset.dataFile.getAbsolutePath()))
-    
-    packerTiles.pack("tileset/%s".format(tileset.name), tilesetPix)
-    
-    tilesetPix.dispose()
-  }
-  
-  game.logger.info("Packed tilesets and autotiles into %d pages".format(
-      packerTiles.getPages().size))
-  
-  // Generate texture atlas, nearest neighbor with no mipmaps
-  val atlasTiles = packerTiles.generateTextureAtlas(
-      TextureFilter.Nearest, TextureFilter.Nearest, false)
     
   // Generate and pack sprites
   val spritesets = Map() ++ Spriteset.list(project).map(
@@ -150,43 +100,59 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
   val atlasSprites = packerSprites.generateTextureAtlas(
       TextureFilter.Nearest, TextureFilter.Nearest, false)
   
-  // Update
+  // Update. Called on Gdx thread before render.
   def update() = {
-    import MyKeys._
+    if(mapIdOnLastUpdate != state.cameraLoc.map) {
+      // Update internal resources for the map
+      if(state.cameraLoc.map == -1) {
+        mapAndAssetsOption.map(_.dispose())
+        mapAndAssetsOption = None
+      } else {
+        mapAndAssetsOption.map(_.dispose())
+        mapAndAssetsOption = 
+          Some(new MapAndAssets(project, state.cameraLoc.map))
+      }
+      mapIdOnLastUpdate = state.cameraLoc.map
+    }
     
-    characterMoving = false
-    val baseSpeed = 0.05 // tiles per frame 
+    import MyKeys._
+        
+    state.playerMoving = false
+    
+    val baseSpeed = 0.05 // tiles per frame
     
     val projSpeed =
-      if((down(Left) || down(Right)) &&
-         (down(Up) || down(Down))) {
+      if((isActive(Left) || isActive(Right)) &&
+         (isActive(Up) || isActive(Down))) {
         (baseSpeed/math.sqrt(2.0)).toFloat
       } else {
         baseSpeed.toFloat
       }
     
-    if(down(Left)) {
-      characterMoving = true
-      characterLoc.x -= projSpeed
-      characterDirection = Spriteset.DirectionOffsets.WEST
-    } else if(down(Right)) {
-      characterMoving = true
-      characterLoc.x += projSpeed
-      characterDirection = Spriteset.DirectionOffsets.EAST
+    if(isActive(Left)) {
+      state.playerMoving = true
+      state.playerLoc.x -= projSpeed
+      state.playerDir = Spriteset.DirectionOffsets.WEST
+    } else if(isActive(Right)) {
+      state.playerMoving = true
+      state.playerLoc.x += projSpeed
+      state.playerDir = Spriteset.DirectionOffsets.EAST
     }
     
-    if(down(Up)) {
-      characterMoving = true
-      characterLoc.y -= projSpeed
-      characterDirection = Spriteset.DirectionOffsets.NORTH
-    } else if(down(Down)) {
-      characterMoving = true
-      characterLoc.y += projSpeed
-      characterDirection = Spriteset.DirectionOffsets.SOUTH
+    if(isActive(Up)) {
+      state.playerMoving = true
+      state.playerLoc.y -= projSpeed
+      state.playerDir = Spriteset.DirectionOffsets.NORTH
+    } else if(isActive(Down)) {
+      state.playerMoving = true
+      state.playerLoc.y += projSpeed
+      state.playerDir = Spriteset.DirectionOffsets.SOUTH
     }
   }    
       
-  def render() = {
+  def render() = mapAndAssetsOption map { mapAndAssets =>
+    import mapAndAssets._
+    
     import Tileset._
     
     batch.begin()
@@ -262,7 +228,7 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
       atlasSprites.findRegion(protagonistActor.sprite.spriteset)
     val protagonistSpriteset = spritesets(protagonistActor.sprite.spriteset)
     
-    val step = if(characterMoving) {
+    val step = if(state.playerMoving) {
       val stepsPerSec = 8 // MUST BE EVEN
       val stepTime = 1.0f/stepsPerSec
       if((game.accumDelta / stepTime).toInt % 4 == 0) {
@@ -280,11 +246,12 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
     
     val (srcX, srcY) = protagonistSpriteset.srcTexels(
         protagonistActor.sprite.spriteindex,
-        characterDirection,
+        state.playerDir,
         step)
     
     val (dstOriginX, dstOriginY, dstWTiles, dstHTiles) = 
-      protagonistSpriteset.dstPosition(characterLoc.x, characterLoc.y)
+      protagonistSpriteset.dstPosition(
+          state.playerLoc.x, state.playerLoc.y)
     
     // Draw protagonist
     batch.draw(
@@ -302,7 +269,7 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
   }
       
   def dispose() = {
-    atlasTiles.dispose()
+    mapAndAssetsOption.map(_.dispose())
     atlasSprites.dispose()
     game.inputs.remove(this)
     batch.dispose()

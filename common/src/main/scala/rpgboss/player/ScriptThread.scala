@@ -3,6 +3,7 @@ package rpgboss.player
 import org.mozilla.javascript.{Context, ScriptableObject, Scriptable}
 import rpgboss.model.resource.Script
 import scala.concurrent.ops.spawn
+import rpgboss.model.MapLoc
 
 case class ScriptThread(game: MyGame, scriptName: String, fnToRun: String = "") {
   def run() = spawn {
@@ -14,8 +15,15 @@ case class ScriptThread(game: MyGame, scriptName: String, fnToRun: String = "") 
     
     ScriptableObject.putProperty(jsScope, "game", 
         Context.javaToJS(jsInterface, jsScope))
+    ScriptableObject.putProperty(jsScope, "project", 
+        Context.javaToJS(game.project, jsScope))
+        
     ScriptableObject.putProperty(jsScope, "out", 
         Context.javaToJS(System.out, jsScope))
+        
+    // Some models to be imported
+    ScriptableObject.putProperty(jsScope, "MapLoc", 
+        Context.javaToJS(MapLoc, jsScope))
     
     jsContext.evaluateString(
         jsScope, 

@@ -27,11 +27,18 @@ class GameState(game: MyGame, project: Project) {
   // Should only be accessed on the Gdx thread, so no synchronization needed
   val pictures = new Array[PictureInfo](32)
   
-  // Changes to this need to synchronize on this object
+  // Should only be modified on the Gdx thread
   var curTransition: Option[Transition] = None
+  
+  // protagonist and camera position. Modify all these things on the Gdx thread
+  val cameraLoc = new MutableMapLoc()
+  val playerLoc = new MutableMapLoc()
+  var playerDir : Int = Spriteset.DirectionOffsets.SOUTH
+  var playerMoving = false
   
   // Called every frame... by MyGame's render call. 
   def update() = {
+    
     curTransition.synchronized {
       curTransition map { transition =>
         if(transition.done) {
@@ -65,10 +72,27 @@ class GameState(game: MyGame, project: Project) {
     future.get
   }
   
-  def setTransition(startAlpha: Float, endAlpha: Float, durationMs: Int) = {
-    curTransition.synchronized {
-      curTransition = Some(Transition(startAlpha, endAlpha, durationMs))
-    }
+  /*
+   * The below functions are all called from the script threads only.
+   */
+  
+  /*
+   * Things to do with the player's location and camera
+   */
+  def setPlayerLoc(loc: MapLoc) = syncRun {
+    playerLoc.set(loc)
+  }
+  
+  def setCameraLoc(loc: MapLoc) = syncRun {
+    cameraLoc.set(loc)
+  }
+  
+  /* 
+   * Things to do with the screen
+   */
+  
+  def setTransition(startAlpha: Float, endAlpha: Float, durationMs: Int) = syncRun {
+    curTransition = Some(Transition(startAlpha, endAlpha, durationMs))
   }
   
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =  
@@ -79,6 +103,13 @@ class GameState(game: MyGame, project: Project) {
   def hidePicture(slot: Int) = syncRun {
     pictures(slot).dispose()
     pictures(slot) = null
+  }
+  
+  /*
+   * Things to do with user interaction
+   */
+  def sleep(durationMs: Int) = {
+    Thread.sleep(durationMs)
   }
   
   def choiceWindow(
