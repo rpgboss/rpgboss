@@ -47,8 +47,8 @@ trait IsDownInputHandler extends InputHandler {
  * This is useful for scrolling through menu items.
  */
 trait MenuInputHandler extends IsDownInputHandler {
-  def keyDelay: Float
-  def keyInterval: Float
+  def keyDelay: Float = 0.5f
+  def keyInterval: Float = 0.1f
   
   private val activateTasks = (0 until MyKeys.totalNumber) map { key =>
     new Timer.Task() {
@@ -64,7 +64,7 @@ trait MenuInputHandler extends IsDownInputHandler {
     // Initial activation
     keyActivate(key)
     
-    // Schedule a task to be repeated
+    // Schedule a task to be repeated 
     Timer.schedule(activateTasks(key), keyDelay, keyInterval)
     true
   }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.assets.AssetManager
 
 object Window {
   val Opening = 0
@@ -27,24 +28,22 @@ object Window {
 }
 
 // stateAge starts at 0 and goes up as window opens or closes
-case class Window(proj: Project,
+case class Window(assets: RpgAssetManager,
+                  proj: Project,
                   text: Array[String] = Array(),
                   x: Int, y: Int, w: Int, h: Int,
                   skin: Windowskin,
                   skinRegion: TextureRegion,
                   fontbmp: BitmapFont,
-                  var state: Int = Window.Opening, 
-                  var stateAge: Int = 0,
-                  openCloseFrames: Int = 25,
-                  framesPerChar: Int = 5,
+                  var state: Int = Window.Opening,
+                  openCloseMs: Int = 250,
+                  msPerChar: Int = 80,
                   linesPerBlock: Int = 4,
                   justification: Int = Window.Left) 
 {
-  var deleted = false
-  def delete() = deleted = true
-  
-  // stateAge is used for:
-  // - controlling the opening and closing of windows
+  // Used to determine when to expire the state and move onto next state
+  var stateStarttime = System.currentTimeMillis()
+  def stateAge = System.currentTimeMillis() - stateStarttime
   
   val window = this
   
@@ -56,10 +55,12 @@ case class Window(proj: Project,
     val lineHeight = 32f
     
     // If display instantly...
-    var lineI = if(framesPerChar == 0) text.length else 0
+    var lineI = if(msPerChar == 0) text.length else 0
     var charI = 0
     
-    var tickNum = 0
+    // Get age of text image in milliseconds
+    var lastCharPrintTime = System.currentTimeMillis()
+    def timeSinceLastChar = System.currentTimeMillis() - lastCharPrintTime
     
     val fontAlign = justification match {
       case Window.Left => HAlignment.LEFT
@@ -85,8 +86,8 @@ case class Window(proj: Project,
     }
     
     def update() = {
-      if(framesPerChar > 0) {
-        if(tickNum % framesPerChar == 0 && lineI < text.length) {
+      if(msPerChar > 0 && lineI < text.length) {
+        while(timeSinceLastChar > msPerChar) {
           val line = text(lineI)
      
           charI += 1
@@ -96,8 +97,9 @@ case class Window(proj: Project,
             lineI += 1
             charI = 0
           }
+          
+          lastCharPrintTime = System.currentTimeMillis()
         }
-        tickNum += 1
       }
     }
     
@@ -113,21 +115,21 @@ case class Window(proj: Project,
     }
   }
   
+  def changeState(newState: Int) = {
+    state = newState
+    stateStarttime = System.currentTimeMillis()
+  }
+  
   def update(acceptInput: Boolean) = {
     // change state of "expired" opening or closing animations
-    if(stateAge >= openCloseFrames) {
+    if(stateAge >= openCloseMs) {
       state match {
-        case Window.Opening => 
-          state = Window.Open
-          stateAge = 0
+        case Window.Opening => changeState(Window.Open)
         case Window.Open => textImage.update()
-        case Window.Closing => delete()
+        case Window.Closing => postClose()
         case _ => Unit
       } 
     }
-    
-    // increase stateAge of every window
-    stateAge += 1
   }
   
   def render(b: SpriteBatch) = state match {
@@ -137,13 +139,17 @@ case class Window(proj: Project,
     }
     case Window.Opening => {
       val hVisible = 
-        math.max(32+(stateAge.toDouble/openCloseFrames*(h-32)).toInt, 32)
+        math.max(32+(stateAge.toDouble/openCloseMs*(h-32)).toInt, 32)
       
-      val wVisible = 
-        //math.max(32+(stateAge.toDouble/openCloseFrames*(w-32)).toInt, 32)
-        w
+      skin.draw(b, skinRegion, x, y, w, hVisible)
+    }
+    case Window.Closing => {
+      val hVisible = 
+        math.max(h-(stateAge.toDouble/openCloseMs*(h-32)).toInt, 32)
       
-      skin.draw(b, skinRegion, x, y, wVisible, hVisible)
+      skin.draw(b, skinRegion, x, y, w, hVisible)
     }
   }
+  
+  def postClose() = {}
 }

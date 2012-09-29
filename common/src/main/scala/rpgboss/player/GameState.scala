@@ -21,7 +21,8 @@ import akka.util.Duration
  */
 class GameState(game: MyGame, project: Project) {
   // No need for syncronization, since it's a synchronized collection
-  val windows = new collection.mutable.SynchronizedStack[Window]()
+  val windows = new collection.mutable.ArrayBuffer[Window] 
+      with collection.mutable.SynchronizedBuffer[Window]
   
   // Should only be accessed on the Gdx thread, so no synchronization needed
   val pictures = new Array[PictureInfo](32)
@@ -63,23 +64,29 @@ class GameState(game: MyGame, project: Project) {
   def choiceWindow(
       choices: Array[String],
       x: Int, y: Int, w: Int, h: Int,
-      justification: Int) = {
-    val window = new ChoiceWindow(project,
+      justification: Int) : Int= {
+    val window = new ChoiceWindow(
+        game.assets, 
+        project,
         choices,
         x, y, w, h,
         game.screenLayer.windowskin, 
         game.screenLayer.windowskinRegion, 
         game.screenLayer.fontbmp,
-        state = Window.Opening,
-        framesPerChar = 0,
+        initialState = Window.Opening,
+        msPerChar = 80,
         justification = justification)
     
-    windows.push(window)
+    windows.prepend(window)
     game.inputs.prepend(window)
     
     // Return the choice... eventually...
-    Await.result(window.result.future, Duration.Inf)
+    val choice = Await.result(window.result.future, Duration.Inf)
+    
     game.inputs.remove(window)
+    windows -= window
+    
+    choice
   }
   
   val LEFT = Window.Left

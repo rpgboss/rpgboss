@@ -13,6 +13,9 @@ import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import akka.dispatch.{ExecutionContext}
 import java.util.concurrent.Executors
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.FileHandleResolver
+import rpgboss.model.resource.RpgAssetManager
 
 class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
@@ -57,6 +60,8 @@ class MyGame(gamepath: File) extends ApplicationListener {
   
   val state = new GameState(this, project)
   
+  val assets = new RpgAssetManager(project)
+  
   def create() = {
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
@@ -84,7 +89,6 @@ class MyGame(gamepath: File) extends ApplicationListener {
     
     // Log fps
     fps.log()
-    
     
     mapLayer.map(_.update())
     screenLayer.update()
