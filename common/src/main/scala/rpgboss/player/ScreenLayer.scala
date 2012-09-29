@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
 /**
  * This class renders stuff on the screen.
@@ -18,7 +19,8 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
  */
 class ScreenLayer(game: MyGame, state: GameState) {
   def project = game.project
-  def batch = game.batch
+  val batch = new SpriteBatch()
+  val shapeRenderer = new ShapeRenderer()
   
   val windowskin = Windowskin.readFromDisk(project, project.data.windowskin)
   val windowskinTexture = 
@@ -31,6 +33,11 @@ class ScreenLayer(game: MyGame, state: GameState) {
   val screenCamera: OrthographicCamera = new OrthographicCamera()
   screenCamera.setToOrtho(true, 640, 480) // y points down
   screenCamera.update()
+  
+  batch.setProjectionMatrix(screenCamera.combined)
+  batch.enableBlending()
+  batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+  shapeRenderer.setProjectionMatrix(screenCamera.combined)
   
   def update() = {
     
@@ -46,23 +53,40 @@ class ScreenLayer(game: MyGame, state: GameState) {
      * really complicating the code...
      */
     
-    batch.setProjectionMatrix(screenCamera.combined)
+    batch.begin()
     
     // Render pictures
     for(pic <- state.pictures) {
       if(pic != null) {
         pic.render(batch)
-      } 
+      }
     }
     
+    // Render all windows
     if(!state.windows.isEmpty) 
       state.windows.head.update(true)
     if(state.windows.length > 1)
       state.windows.tail.foreach(_.update(false))
     state.windows.foreach(_.render(batch))
+    
+    batch.end()
+    
+    // Render transition
+    state.curTransition.synchronized {
+      state.curTransition map { transition =>
+        
+        // Spritebatch seems to turn off blending after it's done. Turn it on.
+        Gdx.gl.glEnable(GL10.GL_BLEND)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.FilledRectangle)
+        
+        shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
+        shapeRenderer.filledRect(0, 0, 640, 480)
+        shapeRenderer.end()
+      }
+    }
   }
   
   def dispose() = {
-    
+    batch.dispose()
   }
 }

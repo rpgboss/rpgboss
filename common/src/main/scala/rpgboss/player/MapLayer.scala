@@ -21,7 +21,7 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
   game.inputs.prepend(this)
   
   def project = game.project
-  def batch = game.batch
+  val batch = new SpriteBatch()
   
   var map: RpgMap = RpgMap.readFromDisk(project, project.data.startingLoc.map)
   var mapData: RpgMapData = map.readMapData().get
@@ -56,6 +56,10 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
     tileCamera.update()
   }  
   setCameraLoc(project.data.startingLoc)
+  
+  // Set the projection matrix to the combined camera matrices
+  // This seems to be the only thing that works...
+  batch.setProjectionMatrix(tileCamera.combined)
   
   /***
    * This section is all the stuff that finds the graphics and packs it into
@@ -185,9 +189,7 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
   def render() = {
     import Tileset._
     
-    // Set the projection matrix to the combined camera matrices
-    // This seems to be the only thing that works...
-    batch.setProjectionMatrix(tileCamera.combined)
+    batch.begin()
     
     // Leftmost, rightmost, topmost, bottom-most tiles to render
     val tileL = math.max(0, cameraL.toInt)
@@ -295,11 +297,14 @@ class MapLayer(game: MyGame) extends IsDownInputHandler {
         protagonistSpriteset.tileW, 
         protagonistSpriteset.tileH,
         false, true)
+    
+    batch.end()
   }
       
   def dispose() = {
     atlasTiles.dispose()
     atlasSprites.dispose()
     game.inputs.remove(this)
+    batch.dispose()
   }
 }

@@ -53,8 +53,6 @@ class MyGame(gamepath: File) extends ApplicationListener {
    * If you'd like to specify your objects in some other space, simply
    * change the projection and modelview (transform) matrices.
    */
-  var batch: SpriteBatch = null
-  
   // Where in the "second" we are. Varies from 0 to 1.0
   var accumDelta : Float = 0.0f
   
@@ -65,8 +63,6 @@ class MyGame(gamepath: File) extends ApplicationListener {
   def create() = {
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
-    
-    batch = new SpriteBatch()
     
     screenLayer = new ScreenLayer(this, state)
     
@@ -90,18 +86,20 @@ class MyGame(gamepath: File) extends ApplicationListener {
     // Log fps
     fps.log()
     
+    // update state
+    state.update()
+    
     mapLayer.map(_.update())
     screenLayer.update()
     
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
+    Gdx.gl.glEnable(GL10.GL_BLEND)
     
-    batch.begin()
+    // Render the two layers
     mapLayer.map(_.render())
     screenLayer.render()
-        
-    batch.end()
   }
   
   

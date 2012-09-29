@@ -21,7 +21,7 @@ class ChoiceWindow(
     fontbmp: BitmapFont,
     initialState: Int = Window.Opening, 
     openCloseMs: Int = 250,
-    msPerChar: Int = 80,
+    msPerChar: Int = 0,
     linesPerBlock: Int = 4,
     justification: Int = Window.Left,
     defaultChoice: Int = 0,

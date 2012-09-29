@@ -27,6 +27,20 @@ class GameState(game: MyGame, project: Project) {
   // Should only be accessed on the Gdx thread, so no synchronization needed
   val pictures = new Array[PictureInfo](32)
   
+  // Changes to this need to synchronize on this object
+  var curTransition: Option[Transition] = None
+  
+  // Called every frame... by MyGame's render call. 
+  def update() = {
+    curTransition.synchronized {
+      curTransition map { transition =>
+        if(transition.done) {
+          curTransition = None
+        }
+      }
+    }
+  }
+  
   /**
    * Run the following on the GUI thread synchronously...
    */
@@ -49,6 +63,12 @@ class GameState(game: MyGame, project: Project) {
     Gdx.app.postRunnable(future)
     
     future.get
+  }
+  
+  def setTransition(startAlpha: Float, endAlpha: Float, durationMs: Int) = {
+    curTransition.synchronized {
+      curTransition = Some(Transition(startAlpha, endAlpha, durationMs))
+    }
   }
   
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =  
@@ -74,7 +94,7 @@ class GameState(game: MyGame, project: Project) {
         game.screenLayer.windowskinRegion, 
         game.screenLayer.fontbmp,
         initialState = Window.Opening,
-        msPerChar = 80,
+        msPerChar = 0,
         justification = justification)
     
     windows.prepend(window)
