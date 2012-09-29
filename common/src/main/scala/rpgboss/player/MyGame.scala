@@ -19,7 +19,14 @@ import rpgboss.model.resource.RpgAssetManager
 
 class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
+  
   def set(other: MapLoc) = {
+    this.map = other.map
+    this.x = other.x
+    this.y = other.y
+  }
+  
+  def set(other: MutableMapLoc) = {
     this.map = other.map
     this.x = other.x
     this.y = other.y

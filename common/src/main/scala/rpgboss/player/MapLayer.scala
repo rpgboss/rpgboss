@@ -46,11 +46,11 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
     tileCamera.position.x = state.cameraLoc.x
     tileCamera.position.y = state.cameraLoc.y
     tileCamera.update()
+    
+    // Set the projection matrix to the combined camera matrices
+    // This seems to be the only thing that works...
+    batch.setProjectionMatrix(tileCamera.combined)
   }
-  
-  // Set the projection matrix to the combined camera matrices
-  // This seems to be the only thing that works...
-  batch.setProjectionMatrix(tileCamera.combined)
     
   // Generate and pack sprites
   val spritesets = Map() ++ Spriteset.list(project).map(
@@ -148,12 +148,19 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
       state.playerLoc.y += projSpeed
       state.playerDir = Spriteset.DirectionOffsets.SOUTH
     }
+    
+    if(state.playerMoving) {
+      state.cameraLoc.set(state.playerLoc)
+    }
+    
   }    
       
   def render() = mapAndAssetsOption map { mapAndAssets =>
     import mapAndAssets._
     
     import Tileset._
+    
+    updateCameraLoc()
     
     batch.begin()
     
