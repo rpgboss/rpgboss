@@ -32,6 +32,9 @@ object GraphicsUtils {
     def y2 = y1+hTiles-1
     def empty = wTiles < 1 || hTiles < 1
     
+    /**
+     * Union of two TileRects. Used MapViewTools
+     */
     def |(o: TileRect) =  if(o.empty) this else
       TileRect(min(x1, o.x1), min(y1, o.y1),
                max(x2, o.x2)-min(x1, o.x1)+1,

@@ -71,6 +71,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   
   val canvasPanel = new Panel() {
     var cursorSquare : TileRect = TileRect()
+    var eventSelection : TileRect = TileRect()
     
     background = Color.WHITE
     
@@ -132,6 +133,9 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
                                      (maxXTile+1)*tilesize, yTile*tilesize))
           }
           
+          // draw selection square
+          eventSelection.optionallyDrawSelRect(g, tilesize, tilesize)
+          
           // draw start loc
           val startingLoc = sm.getProj.data.startingLoc
           if(startingLoc.map == vs.mapId &&
@@ -183,47 +187,48 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
     resizeRevalidateRepaint()
   }
   
-  // Returns TileRect to redraw
-  def updateCursorSq(visible: Boolean, x: Int = 0, y: Int = 0) : TileRect = 
+  // Updates cursor square, and queues up any appropriate repaints
+  def updateCursorSq(visible: Boolean, x: Int = 0, y: Int = 0) = 
   {
     val oldSq = canvasPanel.cursorSquare
-    val newSq = if(visible) {
+    canvasPanel.cursorSquare = if(visible) {
       val tCodes = tileSelector.selectedTileCodes 
       assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
       TileRect(x, y, tCodes(0).length, tCodes.length)
     } else TileRect()
     
     // if updated, redraw. otherwise, don't redraw
-    if(oldSq != newSq) {
-      canvasPanel.cursorSquare = newSq
-      oldSq|newSq
-    } else TileRect()
+    if(oldSq != canvasPanel.cursorSquare) {
+      repaintRegion(oldSq)
+      repaintRegion(canvasPanel.cursorSquare)
+    }
   }
   
   //--- REACTIONS ---//
   listenTo(canvasPanel.mouse.clicks, canvasPanel.mouse.moves)
   
-  def repaintRegions(r1: TileRect, r2: TileRect = TileRect()) =
-    canvasPanel.repaint((r1|r2).rect(curTilesize, curTilesize))
+  def repaintRegion(r1: TileRect) =
+    canvasPanel.repaint(r1.rect(curTilesize, curTilesize))
   
   import MapLayers._
   reactions += {
+    /**
+     * Three reactions in the case that the selectedLayer is not the Evt layer
+     */
     case MouseMoved(`canvasPanel`, p, _) if selectedLayer != Evt => {
       val (tileX, tileY) = toTileCoords(p)
-      repaintRegions(updateCursorSq(true, tileX, tileY))
+      updateCursorSq(true, tileX, tileY)
     }
-    case MouseExited(`canvasPanel`, _, _) if selectedLayer != Evt=>
-      repaintRegions(updateCursorSq(false))
-    case MousePressed(`canvasPanel`, point, _, _, _) 
-    if selectedLayer != Evt => {
+    case MouseExited(`canvasPanel`, _, _) if selectedLayer != Evt =>
+      updateCursorSq(false)
+    case MousePressed(`canvasPanel`, point, _, _, _) if selectedLayer != Evt => 
       viewStateOpt map { vs => 
         val tCodes = tileSelector.selectedTileCodes
         val tool = MapViewTools.selected
         val (x1, y1) = toTileCoords(point)
                 
-        repaintRegions(
-          updateCursorSq(tool.selectionSqOnDrag, x1, y1),
-          MapViewTools.selected.onMousePressed(vs, tCodes, x1, y1))
+        updateCursorSq(tool.selectionSqOnDrag, x1, y1)
+        repaintRegion(MapViewTools.selected.onMousePressed(vs, tCodes, x1, y1))
         
         var (xLastDrag, yLastDrag) = (-1, -1) // init to impossible value
           
@@ -233,9 +238,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
             
             // only redo action if dragged to a different square
             if( (x2, y2) != (xLastDrag, yLastDrag) ) {
-              repaintRegions(
-                updateCursorSq(tool.selectionSqOnDrag, x2, y2),
-                MapViewTools.selected.onMouseDragged(
+              updateCursorSq(tool.selectionSqOnDrag, x2, y2)
+              repaintRegion(MapViewTools.selected.onMouseDragged(
                   vs, tCodes, x1, y1, x2, y2))
               
               xLastDrag = x2
@@ -246,7 +250,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
             val (x2, y2) = toTileCoords(point)
             vs.commitNextData()
             
-            repaintRegions(updateCursorSq(true, x2, y2))
+            updateCursorSq(true, x2, y2)
             
             reactions -= temporaryReactions
           }
@@ -254,7 +258,15 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
         
         reactions += temporaryReactions
       }
-    }
+    case MousePressed(`canvasPanel`, point, _, _, _) if selectedLayer == Evt => 
+      viewStateOpt map { vs => 
+        val (x1, y1) = toTileCoords(point)
+        
+        val oldEvtSelection = canvasPanel.eventSelection
+        canvasPanel.eventSelection = TileRect(x1, y1)
+        repaintRegion(oldEvtSelection)
+        repaintRegion(canvasPanel.eventSelection)
+      }
   }
 }
 
