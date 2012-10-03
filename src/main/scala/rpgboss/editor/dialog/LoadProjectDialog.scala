@@ -3,13 +3,11 @@ package rpgboss.editor.dialog
 import rpgboss.editor.lib._
 import scala.swing._
 import scala.swing.event._
-
 import rpgboss.model._
 import rpgboss.model.resource._
-
 import net.java.dev.designgridlayout._
-
 import java.io.File
+import rpgboss.editor.Settings
 
 class LoadProjectDialog(owner: Window, onSuccess: Project => Any) 
   extends StdDialog(owner, "Load Project")
@@ -66,7 +64,9 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
     if(!projList.selection.rows.isEmpty) {
       val shortName = 
         projList.model.getValueAt(projList.selection.rows.head, 0).toString
-      val pOpt = Project.readFromDisk(new File(rootChooser.getRoot, shortName))
+      val projectFile = new File(rootChooser.getRoot, shortName)
+      val pOpt = Project.readFromDisk(projectFile)
+      Settings.set("project.last", projectFile.getAbsolutePath())
       pOpt.map(p => onSuccess(p))
       close()
     } else {

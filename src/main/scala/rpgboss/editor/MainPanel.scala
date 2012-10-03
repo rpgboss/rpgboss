@@ -1,10 +1,10 @@
 package rpgboss.editor
 
 import scala.swing._
-
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.dialog._
+import java.io.File
 
 class MainPanel(val topWin: Window)
 extends BoxPanel(Orientation.Vertical) 
@@ -36,6 +36,15 @@ extends BoxPanel(Orientation.Vertical)
   }
   
   setContent(new StartPanel(this))
+  
+  Settings.get("project.last") map { path =>
+    val file = new File(path)
+    if(file.isDirectory() && file.canRead()) {
+      Project.readFromDisk(file) map { proj =>
+        setProject(proj)
+      }
+    }
+  }
   
   var smOpt : Option[StateMaster] = None
   
