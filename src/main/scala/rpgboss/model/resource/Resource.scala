@@ -25,6 +25,7 @@ trait Resource[T, MT <: AnyRef] extends Logging {
     logger.error("Can't read: %s".format(dataFileVar.getCanonicalPath()))
     
   def dataFile = dataFileVar
+  val absPath = dataFile.getAbsolutePath()
   
   def writeMetadata() : Boolean =
     meta.metadataFile(proj, name).useWriter { writer =>

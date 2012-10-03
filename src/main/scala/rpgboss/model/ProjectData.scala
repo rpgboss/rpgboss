@@ -22,9 +22,15 @@ case class ProjectData(title: String,
                        
                        titlePic: String = "LordSpirit.jpg",
                        startingParty: Array[Int] = Array(0),
+                       
                        windowskin: String = "LastPhantasmScanlines.png",
                        msgfont: String = "Vera.ttf",
-                       fontsize: Int = 24)
+                       fontsize: Int = 24,
+                       soundCursor: String = "MenuCursor.wav",
+                       soundSelect: String = "MenuSelect.wav",
+                       soundCancel: String = "MenuCancel.wav",
+                       soundCannot: String = "MenuCannot.wav"
+                       )
 
 object ProjectData {
   def defaultActors = Array(

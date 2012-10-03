@@ -15,7 +15,7 @@
 	<classpathentry kind="lib" path="/home/tommycli/.ivy2/cache/org.scala-lang/scalap/jars/scalap-2.9.1.jar"/>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_COMPILER_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="/home/tommycli/.ivy2/cache/com.weiglewilczek.slf4s/slf4s_2.9.1/jars/slf4s_2.9.1-1.0.7.jar"/>
-	<classpathentry kind="lib" path="/home/tommycli/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/tommycli/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="/home/tommycli/.ivy2/cache/org.scalatest/scalatest_2.9.2/jars/scalatest_2.9.2-1.6.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/extensions/gdx-audio.jar"/>

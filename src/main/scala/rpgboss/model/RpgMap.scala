@@ -76,8 +76,8 @@ object RpgMap {
       .map(_.dropRight(metadataExt.length+1).drop(3).toInt)
         // +1 to drop the dot before the name
   
-  val initXSize = 20
-  val initYSize = 15
+  val initXSize = 40
+  val initYSize = 30
   
   val bytesPerTile = 3
   
