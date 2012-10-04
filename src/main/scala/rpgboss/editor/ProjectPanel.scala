@@ -9,12 +9,12 @@ import scala.swing.event._
 import rpgboss.model._
 import rpgboss.model.resource._
 
-class ProjectPanel(mainP: MainPanel, sm: StateMaster)
+class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends SplitPane(Orientation.Vertical) with SelectsMap
 {  
   val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new MapSelector(sm, this)
-  val mapView = new MapView(sm, tileSelector)
+  val mapView = new MapView(this, sm, tileSelector)
   
   val projMenu = new PopupMenu {
     contents += new MenuItem(mainP.actionNew)

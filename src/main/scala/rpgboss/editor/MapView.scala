@@ -4,24 +4,24 @@ import rpgboss.lib._
 import rpgboss.cache._
 import rpgboss.model._
 import rpgboss.model.resource._
-
 import rpgboss.editor.tileset._
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
-
 import com.weiglewilczek.slf4s.Logging
-
 import scala.math._
 import scala.swing._
 import scala.swing.event._
-
 import javax.imageio._
-
 import java.awt.{BasicStroke, AlphaComposite, Color}
 import java.awt.geom.Line2D
 import java.awt.event.MouseEvent
+import rpgboss.model.event.RpgEvent
+import rpgboss.editor.dialog.EventDialog
 
-class MapView(sm: StateMaster, tileSelector: TabbedTileSelector)
+class MapView(
+    projectPanel: ProjectPanel, 
+    sm: StateMaster, 
+    tileSelector: TabbedTileSelector)
 extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
 {
   //--- VARIABLES ---//
@@ -71,8 +71,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   }
   
   val canvasPanel = new Panel() {
-    var cursorSquare : TileRect = TileRect()
-    var eventSelection : TileRect = TileRect()
+    var cursorSquare : TileRect = TileRect.empty
+    var eventSelection : TileRect = TileRect.empty
     
     background = Color.WHITE
     
@@ -196,7 +196,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       val tCodes = tileSelector.selectedTileCodes 
       assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
       TileRect(x, y, tCodes(0).length, tCodes.length)
-    } else TileRect()
+    } else TileRect.empty
     
     // if updated, redraw. otherwise, don't redraw
     if(oldSq != canvasPanel.cursorSquare) {
@@ -211,13 +211,56 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
     None
   }
   
+  /**
+   * Brings up dialog to create new or edit event at the selected event tile
+   */
+  import MapLayers._
+  def newOrEditEvent() = viewStateOpt map { vs =>
+    if(selectedLayer == Evt && !canvasPanel.eventSelection.empty) {
+      val selectedLoc = canvasPanel.eventSelection
+      val existingEventIdx = 
+        vs.nextMapData.events.indexWhere(e => 
+          e.x == selectedLoc.x1 && e.y == selectedLoc.y1)
+      
+      val isNewEvent = existingEventIdx == -1
+      
+      vs.begin()
+      
+      val event = if(isNewEvent) {
+        vs.nextMapData = vs.nextMapData.copy(
+            lastGeneratedEventId = vs.nextMapData.lastGeneratedEventId + 1)
+        RpgEvent.blank(
+            vs.nextMapData.lastGeneratedEventId, selectedLoc.x1, selectedLoc.y1)
+      } else {
+        vs.nextMapData.events(existingEventIdx)
+      }
+      
+      val dialog = new EventDialog(
+          projectPanel.mainP.topWin, 
+          event,
+          onOk = { e: RpgEvent =>
+            if(isNewEvent) 
+              vs.nextMapData = vs.nextMapData.copy(
+                  events = vs.nextMapData.events ++ Array(e))
+            else
+              vs.nextMapData.events.update(existingEventIdx, e)
+            
+            vs.commit()
+          },
+          onCancel = { e: RpgEvent =>
+            vs.abort()
+          })
+      
+      dialog.open()
+    }
+  }
+  
   //--- REACTIONS ---//
   listenTo(canvasPanel.mouse.clicks, canvasPanel.mouse.moves)
   
   def repaintRegion(r1: TileRect) =
     canvasPanel.repaint(r1.rect(curTilesize, curTilesize))
   
-  import MapLayers._
   reactions += {
     /**
      * Three reactions in the case that the selectedLayer is not the Evt layer
@@ -230,6 +273,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       updateCursorSq(false)
     case MousePressed(`canvasPanel`, point, _, _, _) if selectedLayer != Evt => 
       viewStateOpt map { vs => 
+        vs.begin()
+        
         val tCodes = tileSelector.selectedTileCodes
         val tool = MapViewTools.selected
         val (x1, y1) = toTileCoords(point)
@@ -255,7 +300,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
           }
           case MouseReleased(`canvasPanel`, point, _, _, _) => {
             val (x2, y2) = toTileCoords(point)
-            vs.commitNextData()
+            vs.commit()
             
             updateCursorSq(true, x2, y2)
             

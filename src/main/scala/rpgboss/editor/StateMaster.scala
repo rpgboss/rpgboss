@@ -30,6 +30,9 @@ case class MapState(map: RpgMap,
   }
 }
 
+/**
+ * This class manages the dirtiness and saving of all the open maps.
+ */
 class StateMaster(private var proj: Project)
 {
   import Dirtiness._

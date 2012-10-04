@@ -50,7 +50,7 @@ object GraphicsUtils {
   }
   
   object TileRect {
-    def apply() : TileRect = TileRect(0, 0, -1, -1)
+    def empty : TileRect = TileRect(0, 0, -1, -1)
   }
   
   case class IntVec(tup: Tuple2[Int, Int]) {

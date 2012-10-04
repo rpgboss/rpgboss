@@ -31,22 +31,54 @@ object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
   selected = Bot
 }
 
-// The view state for a single map. Needs to be recreated for a different map
+/**
+ *  The view state for a single map. Needs to be recreated for a different map.
+ *  
+ *  This implements simple transaction semantics. This is needed because
+ *  editing tools often make temporary changes that will be displayed, but not
+ *  necessarily desired, i.e. a rectangle or ellipse tool.
+ *  
+ *  These transactions will be often aborted when in such circumstances.
+ *  
+ *  This class also provides a stack of old states for an undo mechanism.
+ */
 class MapViewState(val sm: StateMaster, val mapName: String, 
                    val tilecache: TileCache) 
 {
-  var undoStack: List[RpgMapData] = Nil
+  var prevStates: List[RpgMapData] = List()
   
   def map = sm.getMap(mapName)
   def mapMeta = map.metadata
-  def mapData = sm.getMapData(mapName)
   
-  // map data in editing, for example while mouse is down
-  var nextMapData = mapData
+  // Map data in editing, for example while mouse is down.
+  // Need to be able to get the previous map data from the undo stack
+  // Think of this as the working copy
+  var nextMapData = sm.getMapData(mapName)
   
-  def commitNextData() = {
-    undoStack = (mapData :: undoStack).take(10)
-    sm.setMapData(mapName, nextMapData)
+  var inTransaction = false
+  
+  def begin() = {
+    if(inTransaction) {
+      throw new RuntimeException(
+          "Tried to enter MapViewState transaction while already in one")    
+    } else {
+      inTransaction = true
+    }
+  }
+  
+  def abort() = {
+    nextMapData = prevStates.head
+    inTransaction = false
+  }
+  
+  def commit() = {
+    if(inTransaction) {
+      prevStates = (nextMapData :: prevStates).take(10)
+      sm.setMapData(mapName, nextMapData)
+      inTransaction = false
+    } else {
+      throw new RuntimeException("Can't commit outside of transaction.")
+    }
   }
 }
 

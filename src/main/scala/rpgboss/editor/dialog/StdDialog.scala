@@ -13,12 +13,13 @@ abstract class StdDialog(owner: Window, titleArg: String)
   setLocationRelativeTo(owner)
   
   def okFunc()
+  def cancelFunc() = close()
   
   def leftLabel(s: String) = new Label(s) {
     xAlignment = Alignment.Left
   }
   
-  lazy val cancelButton = new Button(Action("Cancel") { close() })
+  lazy val cancelButton = new Button(Action("Cancel") { cancelFunc() })
   
   lazy val okButton = new Button(new Action("OK") {
     mnemonic = Key.O.id

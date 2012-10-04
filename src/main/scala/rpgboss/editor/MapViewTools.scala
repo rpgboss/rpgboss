@@ -150,7 +150,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
       }
     }
     
-    setFirstTile(initialSeqOfTiles, TileRect())
+    setFirstTile(initialSeqOfTiles, TileRect.empty)
   }
   
   case object Pencil extends MapViewTool {
@@ -159,7 +159,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
     {
       import MapLayers._
       
-      mapOfArrays(vs.mapData).get(MapLayers.selected).map { layerAry =>
+      mapOfArrays(vs.nextMapData).get(MapLayers.selected).map { layerAry =>
         for((tileRow, yi) <- tCodes.zipWithIndex;
             (tCode, xi) <- tileRow.zipWithIndex)
         {
@@ -182,7 +182,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
         
         directlyEditedRect|autotileRect
       } getOrElse {
-        TileRect()
+        TileRect.empty
       }
     }
     def onMouseDragged(vs, tCodes, x1, y1, x2, y2) = 
