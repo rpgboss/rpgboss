@@ -46,7 +46,7 @@ trait MetaResource[T, MT] {
   }
   
   def metadataFile(proj: Project, name: String) =
-    new File(rcDir(proj), "%s.%s.json".format(name, rcType))
+    new File(rcDir(proj), "%s.metadata.json".format(name))
   
   def defaultInstance(proj: Project, name: String) : T
   

@@ -2,6 +2,7 @@ package rpgboss.model
 
 import rpgboss.lib._
 import rpgboss.model._
+import rpgboss.model.event._
 import rpgboss.lib.FileHelper._
 import net.liftweb.json.Serialization
 import java.io._

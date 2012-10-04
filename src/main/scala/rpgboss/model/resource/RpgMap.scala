@@ -65,8 +65,10 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   def generateName(id: Int) = 
     "Map%06d.%s".formatLocal(java.util.Locale.US, id, mapExt)
   
-  def defaultInstance(proj: Project, name: String) : RpgMap = { 
-    val m = RpgMapMetadata("", "Starting Map",
+  def defaultInstance(proj: Project, name: String) : RpgMap = {
+    val idxOfDot = name.indexOf(".")
+    val title = if(idxOfDot > 0) name.substring(0, idxOfDot) else name
+    val m = RpgMapMetadata("", title,
                        initXSize, initYSize, 
                        List("Refmap-TileA5.png",
                             "Refmap-TileB.png",

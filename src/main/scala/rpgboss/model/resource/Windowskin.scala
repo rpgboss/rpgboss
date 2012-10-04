@@ -118,6 +118,41 @@ extends TiledImageResource[Windowskin, WindowskinMetadata]
     drawSubimage16(7, 1, 1, 2, w-16, 16  , 16  , h-32) // W
     
   }
+  
+  /**
+   * Draw a square block at srcXBlock and srcYBlock of size blockSize
+   */
+  def drawBlock(
+      batch: SpriteBatch, 
+      region: TextureRegion,
+      dstX: Float, dstY: Float,
+      dstW: Float, dstH: Float,
+      blockSize: Int,
+      srcXBlock: Int, srcYBlock: Int) = {
+    batch.draw(
+        region.getTexture(),
+        dstX, dstY,
+        dstW, dstH,
+        region.getRegionX()+srcXBlock*blockSize, 
+        region.getRegionY()+srcYBlock*blockSize,
+        blockSize, blockSize,
+        false, true
+        )
+  }
+  
+  def drawCursor(
+      batch: SpriteBatch, 
+      region: TextureRegion,
+      dstX: Float, dstY: Float,
+      dstW: Float, dstH: Float) =
+        drawBlock(batch, region, dstX, dstY, dstW, dstH, 32, 2, 3)
+  
+  def drawArrow(
+      batch: SpriteBatch, 
+      region: TextureRegion,
+      dstX: Float, dstY: Float,
+      dstW: Float, dstH: Float) = 
+        drawBlock(batch, region, dstX, dstY, dstW, dstH, 16, 6, 4)
 }
 
 object Windowskin extends MetaResource[Windowskin, WindowskinMetadata] {
