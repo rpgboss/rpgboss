@@ -1,13 +1,11 @@
 package rpgboss.model
 
 import rpgboss.lib._
+import rpgboss.model._
 import rpgboss.lib.FileHelper._
-
 import net.liftweb.json.Serialization
-
 import java.io._
-
-case class RpgEvent()
+import rpgboss.model.resource.RpgMap
 
 /*
  * This class has mutable members.
@@ -43,7 +41,7 @@ case class RpgMapDataIntermediate(botLayer: Array[Array[Int]],
 
 case object RpgMapData {
   def dataFile(p: Project, name: String) = 
-    new File(p.mapsDir, "%s.mapdata.json".format(name))
+    new File(RpgMap.rcDir(p), name)
   
   def readFromDisk(proj: Project, name: String) : Option[RpgMapData] = {
     implicit val formats = net.liftweb.json.DefaultFormats

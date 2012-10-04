@@ -16,8 +16,7 @@ case class Project(dir: File, data: ProjectData)
       Serialization.writePretty(data, writer) != null
     } getOrElse false
   
-  def rcDir   = new File(dir, "rc")
-  def mapsDir = new File(dir, "maps")
+  def rcDir   = dir
 }
 
 object Project {

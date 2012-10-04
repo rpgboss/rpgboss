@@ -76,7 +76,7 @@ class ModelSpec extends Spec with BeforeAndAfter {
     }
     
     it("read/write by map") {
-      val map = RpgMap.defaultInstance(proj, 0)
+      val map = RpgMap.defaultInstance(proj, "Map0."+RpgMap.mapExt)
       val d0 = makeMapData()
       map.saveMapData(d0)
       val d1 = map.readMapData().get

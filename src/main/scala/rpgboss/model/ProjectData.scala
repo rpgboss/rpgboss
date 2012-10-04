@@ -1,22 +1,14 @@
 package rpgboss.model
-
-/**
- * These locations are given with the top-left of the map being at (0, 0).
- * This means that the center of the tiles are actually at 0.5 intervals. 
- */
-case class MapLoc(map: Int, x: Float, y: Float)
-
-case class SpriteSpec(spriteset: String, spriteindex: Int) 
-
-case class Actor(defaultName: String,
-                 sprite: SpriteSpec)
-               
+import rpgboss.model.resource.RpgMap
                  
 case class ProjectData(title: String, 
-                       recentMapId: Int = -1,
-                       startingLoc: MapLoc = MapLoc(0, 5.5f, 5.5f),
+                       recentMapName: String = "",
+                       lastCreatedMapId: Int = 0,
+                       startingLoc: MapLoc = 
+                         MapLoc(RpgMap.generateName(0), 5.5f, 5.5f),
                        
-                       actors: Array[Actor] = ProjectData.defaultActors,
+                       characters: Array[Character] = 
+                         ProjectData.defaultCharacters,
                        
                        autotiles: Array[String] = ProjectData.defaultAutotiles,
                        
@@ -33,12 +25,12 @@ case class ProjectData(title: String,
                        )
 
 object ProjectData {
-  def defaultActors = Array(
-    Actor("Pando", SpriteSpec("vx_chara01_a.png", 4)),
-    Actor("Estine", SpriteSpec("vx_chara01_a.png", 1)),
-    Actor("Leoge", SpriteSpec("vx_chara01_a.png", 3)),
-    Actor("Graven", SpriteSpec("vx_chara01_a.png", 2)),
-    Actor("Carona", SpriteSpec("vx_chara01_a.png", 6))
+  def defaultCharacters = Array(
+    Character("Pando", SpriteSpec("vx_chara01_a.png", 4)),
+    Character("Estine", SpriteSpec("vx_chara01_a.png", 1)),
+    Character("Leoge", SpriteSpec("vx_chara01_a.png", 3)),
+    Character("Graven", SpriteSpec("vx_chara01_a.png", 2)),
+    Character("Carona", SpriteSpec("vx_chara01_a.png", 6))
   )
   
   def defaultAutotiles = Array(

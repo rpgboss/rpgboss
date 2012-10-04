@@ -8,11 +8,6 @@ import java.io._
 import rpgboss.model.Project
 import com.weiglewilczek.slf4s.Logging
 
-object Resource {
-  val formats = Serialization.formats(ShortTypeHints(
-    List(classOf[Autotile], classOf[Tileset])))
-}
-
 trait Resource[T, MT <: AnyRef] extends Logging {
   def name: String
   def metadata: MT
@@ -29,7 +24,7 @@ trait Resource[T, MT <: AnyRef] extends Logging {
   
   def writeMetadata() : Boolean =
     meta.metadataFile(proj, name).useWriter { writer =>
-      implicit val formats = Resource.formats
+      implicit val formats = DefaultFormats
       Serialization.writePretty(metadata, writer) != null
     } getOrElse false
 }
@@ -59,10 +54,10 @@ trait MetaResource[T, MT] {
   
   // Returns default instance in case of failure to retrieve
   
-  def readFromDisk(proj: Project, name: String) : T = {
-    implicit val formats = Resource.formats
+  def readFromDisk(proj: Project, name: String)(implicit m: Manifest[MT]): T = {
+    implicit val formats = DefaultFormats
     metadataFile(proj, name).getReader().map { reader => 
-      apply(proj, name, Serialization.read(reader))
+      apply(proj, name, Serialization.read[MT](reader))
     } getOrElse defaultInstance(proj, name)
   }
 }
