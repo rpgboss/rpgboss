@@ -34,12 +34,13 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       val p = Project.startingProject(gameTitleField.text,
                                       new File(rootChooser.getRoot, shortname))
       
-      val m = RpgMap.defaultInstance(p, RpgMap.generateName(0))
+      val mapName = RpgMap.generateName(0)
+      RpgMap.defaultMapData.writeToFile(p, mapName)
       
       val allSavedOkay = 
         p.writeMetadata() &&
-        m.writeMetadata() &&
-        m.saveMapData(RpgMap.defaultMapData)
+        RpgMap.defaultMapData.writeToFile(p, mapName) &&
+        RpgMap.defaultInstance(p, mapName).writeMetadata()
       
       val cl = getClass.getClassLoader
         
