@@ -6,9 +6,9 @@ import com.badlogic.gdx.utils.Timer
 trait InputHandler {
   import MyKeys._
   
-  def keyDown(key: Int): Boolean
+  def keyDown(key: Int): Boolean = true
   
-  def keyUp(key: Int): Boolean
+  def keyUp(key: Int): Boolean = true
   
   // Called when an input handler gets put ahead of this one, capturing a key
   def keyCapturedByOther(key: Int) = {}
@@ -66,7 +66,7 @@ trait ChoiceInputHandler extends InputHandler {
     }
   }
   
-  def keyDown(key: Int) = {
+  override def keyDown(key: Int) = {
     // Initial activation
     keyActivate(key)
     
@@ -75,7 +75,7 @@ trait ChoiceInputHandler extends InputHandler {
     true
   }
   
-  def keyUp(key: Int) = {
+  override def keyUp(key: Int) = {
     // Cancel task
     activateTasks(key).cancel()
     true

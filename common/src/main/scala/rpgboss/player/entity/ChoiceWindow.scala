@@ -28,9 +28,11 @@ class ChoiceWindow(
     allowCancel: Boolean = false)
   extends Window(
       assets, proj, text = choices, x, y, w, h, skin, skinRegion, fontbmp,
-      state = initialState, openCloseMs, msPerChar, linesPerBlock,
+      initialState, openCloseMs, msPerChar, linesPerBlock,
       justification)
   with ChoiceInputHandler {
+  
+  override def drawAwaitingArrow = false
   
   var curChoice = defaultChoice
   
@@ -82,18 +84,10 @@ class ChoiceWindow(
       val textStartX = 
         x+textImage.xpad
       
-      b.draw(
-          skinRegion.getTexture(),
+      skin.drawCursor(b, skinRegion,
           textStartX - 32,
           y+textImage.ypad + textImage.lineHeight*curChoice - 8,
-          32f, 32f,
-          skinRegion.getRegionX()+2*32, 
-          skinRegion.getRegionY()+3*32,
-          32, 32,
-          false, true
-          )
+          32f, 32f)
     }
   }
-  
-  val result = Promise[Int]()
 }

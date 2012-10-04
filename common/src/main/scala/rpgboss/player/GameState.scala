@@ -140,6 +140,30 @@ class GameState(game: MyGame, project: Project) {
     choice
   }
   
+  def textWindowWithPosition(
+      text: Array[String],
+      x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {
+    val window = new Window(
+        game.assets,
+        project,
+        text,
+        x, y, w, h,
+        game.screenLayer.windowskin, 
+        game.screenLayer.windowskinRegion, 
+        game.screenLayer.fontbmp,
+        initialState = Window.Opening)
+    
+    windows.prepend(window)
+    game.inputs.prepend(window)
+    
+    Await.result(window.result.future, Duration.Inf)
+    
+    game.inputs.remove(window)
+    windows -= window
+  }
+  
+  def textWindow(text: Array[String]) = textWindowWithPosition(text)
+  
   val LEFT = Window.Left
   val CENTER = Window.Center
   val RIGHT = Window.Right
