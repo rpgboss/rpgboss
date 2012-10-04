@@ -16,7 +16,8 @@ import rpgboss.model.resource.RpgMap
 case class RpgMapData(botLayer: Array[Array[Byte]],
                       midLayer: Array[Array[Byte]],
                       topLayer: Array[Array[Byte]],
-                      events: Array[RpgEvent])
+                      events: Array[RpgEvent],
+                      lastGeneratedEventId: Int = 0)
 {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)

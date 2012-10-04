@@ -9,9 +9,14 @@ object EventTrigger extends Enumeration {
 
 import EventTrigger._
 
-case class RpgEvent(loc: MapLoc, states: Array[RpgEventState])
+case class RpgEvent(label: String, x: Int, y: Int, states: Array[RpgEventState])
+
+object RpgEvent {
+  def blank(idFromMap: Int, x: Int, y: Int) = 
+    RpgEvent("Event%05d".format(idFromMap), x, y, Array(RpgEventState()))
+}
 
 case class RpgEventState(
-    sprite: SpriteSpec, 
-    trigger: EventTrigger,
-    cmds: Array[EventCmd])
+    sprite: Option[SpriteSpec] = None, 
+    trigger: EventTrigger = Button,
+    cmds: Array[EventCmd] = Array.empty)  
