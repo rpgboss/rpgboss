@@ -24,7 +24,7 @@ case class MapState(map: RpgMap,
       mapDataOpt.map(data => map.saveMapData(data))
     } else if(dirty == Deleted) {
       // Effect deletion
-      RpgMap.metadataFile(p, map.id).delete()
+      RpgMap.metadataFile(p, map.name).delete()
       RpgMapData.dataFile(p, map.name).delete()
     }
   }
@@ -37,14 +37,14 @@ class StateMaster(private var proj: Project)
   private var projDirty = Dirtiness.Clean
   
   private var autotiles: Array[Autotile] = null
-  private var mapStates: Map[Int, MapState] = null
+  private var mapStates: Map[String, MapState] = null
   
   def loadProjectData() = {
     autotiles =
       proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
     
     val states = RpgMap.list(proj).map(RpgMap.readFromDisk(proj, _)).map(
-      rpgMap => rpgMap.id->MapState(rpgMap, Dirtiness.Clean, None))
+      rpgMap => rpgMap.name->MapState(rpgMap, Dirtiness.Clean, None))
     
     mapStates = Map(states : _*)
   }
@@ -98,16 +98,16 @@ class StateMaster(private var proj: Project)
   def getMapMetas = mapStates.values.map(_.map).toSeq
   
   // Must be sure that mapId exists and map data loaded to call
-  def getMap(mapId: Int) =
-    mapStates.get(mapId).get.map
+  def getMap(mapName: String) =
+    mapStates.get(mapName).get.map
   
-  def setMap(mapId: Int, map: RpgMap) =
-    mapStates = mapStates.updated(mapId,
-      mapStates.get(mapId).get.copy(map = map, dirty = Dirtiness.Dirty)) 
+  def setMap(mapName: String, map: RpgMap) =
+    mapStates = mapStates.updated(mapName,
+      mapStates.get(mapName).get.copy(map = map, dirty = Dirtiness.Dirty)) 
   
-  def getMapData(mapId: Int) = {
-    assert(mapStates.contains(mapId), "map id %d doesn't exist".format(mapId))
-    val mapState = mapStates.get(mapId).get
+  def getMapData(mapName: String) = {
+    assert(mapStates.contains(mapName), "map %d doesn't exist".format(mapName))
+    val mapState = mapStates.get(mapName).get
     mapState.mapDataOpt getOrElse {
       val mapData = mapState.map.readMapData() getOrElse {
         Dialog.showMessage(null, "Map data file missing. Recreating.", 
@@ -116,16 +116,16 @@ class StateMaster(private var proj: Project)
                             mapState.map.metadata.ySize)
       }
         
-      mapStates = mapStates.updated(mapId, 
+      mapStates = mapStates.updated(mapName, 
         mapState.copy(mapDataOpt = Some(mapData)))
       
       mapData
     }
   }
   
-  def setMapData(mapId: Int, mapData: RpgMapData) = {
-    mapStates = mapStates.updated(mapId,
-      mapStates.get(mapId).get.copy(
+  def setMapData(mapName: String, mapData: RpgMapData) = {
+    mapStates = mapStates.updated(mapName,
+      mapStates.get(mapName).get.copy(
         mapDataOpt = Some(mapData), dirty = Dirtiness.Dirty))
   }
 }

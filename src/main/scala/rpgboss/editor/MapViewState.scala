@@ -32,21 +32,21 @@ object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
 }
 
 // The view state for a single map. Needs to be recreated for a different map
-class MapViewState(val sm: StateMaster, val mapId: Int, 
+class MapViewState(val sm: StateMaster, val mapName: String, 
                    val tilecache: TileCache) 
 {
   var undoStack: List[RpgMapData] = Nil
   
-  def map = sm.getMap(mapId)
+  def map = sm.getMap(mapName)
   def mapMeta = map.metadata
-  def mapData = sm.getMapData(mapId)
+  def mapData = sm.getMapData(mapName)
   
   // map data in editing, for example while mouse is down
   var nextMapData = mapData
   
   def commitNextData() = {
     undoStack = (mapData :: undoStack).take(10)
-    sm.setMapData(mapId, nextMapData)
+    sm.setMapData(mapName, nextMapData)
   }
 }
 

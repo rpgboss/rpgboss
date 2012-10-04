@@ -4,8 +4,8 @@ import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
 import rpgboss.model._
 import rpgboss.model.resource._
+import rpgboss.model.resource.RpgMap._
 import rpgboss.model.resource.Autotile.DirectionMasks._
-import rpgboss.model.RpgMap._
 
 import scala.annotation.tailrec
 

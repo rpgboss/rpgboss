@@ -19,6 +19,7 @@ import javax.imageio._
 
 import java.awt.{BasicStroke, AlphaComposite, Color}
 import java.awt.geom.Line2D
+import java.awt.event.MouseEvent
 
 class MapView(sm: StateMaster, tileSelector: TabbedTileSelector)
 extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
@@ -138,7 +139,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
           
           // draw start loc
           val startingLoc = sm.getProj.data.startingLoc
-          if(startingLoc.map == vs.mapId &&
+          if(startingLoc.map == vs.mapName &&
              startingLoc.x >= minXTile && startingLoc.x <= maxXTile &&
              startingLoc.y >= minYTile && startingLoc.y <= maxYTile) {
             g.setComposite(AlphaComposite.SrcOver)
@@ -181,7 +182,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   def selectMap(mapOpt: Option[RpgMap]) = {
     viewStateOpt = mapOpt map { mapMeta =>
       val tc = new TileCache(sm.getProj, sm.getAutotiles, mapMeta)
-      new MapViewState(sm, mapMeta.id, tc)
+      new MapViewState(sm, mapMeta.name, tc)
     }
       
     resizeRevalidateRepaint()
@@ -202,6 +203,12 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       repaintRegion(oldSq)
       repaintRegion(canvasPanel.cursorSquare)
     }
+  }
+  
+  //--- EVENT POPUP MENU ---//
+  var evtPopupMenu: Option[PopupMenu] = None
+  def makePopupMenu(x: Int, y: Int) : Option[PopupMenu] = {
+    None
   }
   
   //--- REACTIONS ---//
@@ -258,14 +265,21 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
         
         reactions += temporaryReactions
       }
-    case MousePressed(`canvasPanel`, point, _, _, _) if selectedLayer == Evt => 
+    case e: MousePressed if e.source == canvasPanel && selectedLayer == Evt => 
       viewStateOpt map { vs => 
-        val (x1, y1) = toTileCoords(point)
+        val (x1, y1) = toTileCoords(e.point)
         
         val oldEvtSelection = canvasPanel.eventSelection
         canvasPanel.eventSelection = TileRect(x1, y1)
         repaintRegion(oldEvtSelection)
         repaintRegion(canvasPanel.eventSelection)
+        
+        // Update the stored popup menu
+        evtPopupMenu = makePopupMenu(x1, y1)
+        
+        if(e.peer.getButton() == MouseEvent.BUTTON3) {
+          
+        }
       }
   }
 }

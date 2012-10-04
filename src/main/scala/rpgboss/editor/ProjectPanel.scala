@@ -52,8 +52,8 @@ class ProjectPanel(mainP: MainPanel, sm: StateMaster)
     val mapStates = sm.getMapStates
     if(!mapStates.isEmpty) {
       val idToLoad =
-        if(mapStates.contains(sm.getProj.data.recentMapId))
-          sm.getProj.data.recentMapId
+        if(mapStates.contains(sm.getProj.data.recentMapName))
+          sm.getProj.data.recentMapName
         else
           mapStates.keys.min
       
