@@ -24,7 +24,7 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
   def state = game.state
   val batch = new SpriteBatch()
   
-  var mapIdOnLastUpdate = -1
+  var mapNameOnLastUpdate = ""
   var mapAndAssetsOption : Option[MapAndAssets] = None
   
   var screenW = 20.0
@@ -102,7 +102,7 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
   
   // Update. Called on Gdx thread before render.
   def update() = {
-    if(mapIdOnLastUpdate != state.cameraLoc.map) {
+    if(mapNameOnLastUpdate != state.cameraLoc.map) {
       // Update internal resources for the map
       if(state.cameraLoc.map == -1) {
         mapAndAssetsOption.map(_.dispose())
@@ -112,7 +112,7 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
         mapAndAssetsOption = 
           Some(new MapAndAssets(project, state.cameraLoc.map))
       }
-      mapIdOnLastUpdate = state.cameraLoc.map
+      mapNameOnLastUpdate = state.cameraLoc.map
     }
     
     import MyKeys._
@@ -229,11 +229,11 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
     }
     
     // Draw protagonist
-    val protagonistActor = project.data.actors(project.data.startingParty(0))
+    val protagonistChar = project.data.characters(project.data.startingParty(0))
     
     val region =
-      atlasSprites.findRegion(protagonistActor.sprite.spriteset)
-    val protagonistSpriteset = spritesets(protagonistActor.sprite.spriteset)
+      atlasSprites.findRegion(protagonistChar.sprite.spriteset)
+    val protagonistSpriteset = spritesets(protagonistChar.sprite.spriteset)
     
     val step = if(state.playerMoving) {
       val stepsPerSec = 8 // MUST BE EVEN
@@ -252,7 +252,7 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
     }
     
     val (srcX, srcY) = protagonistSpriteset.srcTexels(
-        protagonistActor.sprite.spriteindex,
+        protagonistChar.sprite.spriteindex,
         state.playerDir,
         step)
     

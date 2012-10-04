@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
  * This class wraps a map and its assets. It should only be instantiated
  * on the Gdx thread, as it makes calls to OpenGL
  */
-class MapAndAssets(project: Project, id: Int) {
+class MapAndAssets(project: Project, name: String) {
   val map: RpgMap = RpgMap.readFromDisk(project, project.data.startingLoc.map)
   val mapData: RpgMapData = map.readMapData().get
   

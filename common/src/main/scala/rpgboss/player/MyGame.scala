@@ -17,7 +17,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.FileHandleResolver
 import rpgboss.model.resource.RpgAssetManager
 
-class MutableMapLoc(var map: Int = -1, var x: Float = 0, var y: Float = 0) {
+class MutableMapLoc(var map: String = "", var x: Float = 0, var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
   
   def set(other: MapLoc) = {
