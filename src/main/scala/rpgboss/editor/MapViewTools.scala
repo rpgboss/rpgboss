@@ -155,8 +155,9 @@ object MapViewTools extends ListedEnum[MapViewTool] {
   
   case object Pencil extends MapViewTool {
     val name = "Pencil"
-    def onMousePressed(vs, tCodes, x1, y1) = 
-    {
+    def onMousePressed(
+        vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
+        x1: Int, y1: Int) = {
       import MapLayers._
       
       mapOfArrays(vs.nextMapData).get(MapLayers.selected).map { layerAry =>
@@ -185,8 +186,8 @@ object MapViewTools extends ListedEnum[MapViewTool] {
         TileRect.empty
       }
     }
-    def onMouseDragged(vs, tCodes, x1, y1, x2, y2) = 
-    {
+    def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                     x1: Int, y1: Int, x2: Int, y2: Int) = {
       onMousePressed(vs, tCodes, x2, y2) // no difference
     }
   }

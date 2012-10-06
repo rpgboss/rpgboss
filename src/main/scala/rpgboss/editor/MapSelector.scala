@@ -1,7 +1,7 @@
 package rpgboss.editor
 
 import scala.swing._
-import scala.swing.tree._
+//import scala.swing.tree._
 
 import rpgboss.lib._
 import rpgboss.model._

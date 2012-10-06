@@ -206,26 +206,23 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   }
   
   //--- EVENT POPUP MENU ---//
-  var evtPopupMenu: Option[PopupMenu] = None
-  def makePopupMenu(x: Int, y: Int) : Option[PopupMenu] = {
-    None
-  }
-  
-  /**
-   * Brings up dialog to create new or edit event at the selected event tile
-   */
   import MapLayers._
-  def newOrEditEvent() = viewStateOpt map { vs =>
-    if(selectedLayer == Evt && !canvasPanel.eventSelection.empty) {
-      val selectedLoc = canvasPanel.eventSelection
-      val existingEventIdx = 
-        vs.nextMapData.events.indexWhere(e => 
-          e.x == selectedLoc.x1 && e.y == selectedLoc.y1)
-      
-      val isNewEvent = existingEventIdx == -1
-      
+  def evtPopupMenu(): Option[PopupMenu] = viewStateOpt map { vs =>
+    val selectedLoc = canvasPanel.eventSelection
+    val existingEventIdx = 
+      vs.nextMapData.events.indexWhere(e => 
+        e.x == selectedLoc.x1 && e.y == selectedLoc.y1)
+  
+    val isNewEvent = existingEventIdx == -1
+    
+    val evtText = if(isNewEvent) "New event" else "Edit event"
+    
+    /**
+    * Brings up dialog to create new or edit event at the selected event tile
+    */
+    val evtAction = Action(evtText) {
       vs.begin()
-      
+        
       val event = if(isNewEvent) {
         vs.nextMapData = vs.nextMapData.copy(
             lastGeneratedEventId = vs.nextMapData.lastGeneratedEventId + 1)
@@ -253,6 +250,12 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       
       dialog.open()
     }
+    
+    val menu = new PopupMenu {
+      contents += new MenuItem(evtAction)
+    }
+    
+    menu
   }
   
   //--- REACTIONS ---//
@@ -319,11 +322,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
         repaintRegion(oldEvtSelection)
         repaintRegion(canvasPanel.eventSelection)
         
-        // Update the stored popup menu
-        evtPopupMenu = makePopupMenu(x1, y1)
-        
         if(e.peer.getButton() == MouseEvent.BUTTON3) {
-          
+          evtPopupMenu().map { _.show(canvasPanel, e.point.x, e.point.y) }
         }
       }
   }
