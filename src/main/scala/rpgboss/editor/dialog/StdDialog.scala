@@ -5,7 +5,7 @@ import scala.swing._
 import scala.swing.event._
 
 abstract class StdDialog(owner: Window, titleArg: String) 
-  extends Dialog(owner) with HttpSender
+  extends Dialog(owner)
 {
   title = titleArg
   modal = true

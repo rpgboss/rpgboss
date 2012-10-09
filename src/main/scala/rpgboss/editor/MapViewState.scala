@@ -57,6 +57,10 @@ class MapViewState(val sm: StateMaster, val mapName: String,
   
   var inTransaction = false
   
+  // Do this to initialize the prevStates list with the initial state
+  begin()
+  commit()
+  
   def begin() = {
     if(inTransaction) {
       throw new RuntimeException(
