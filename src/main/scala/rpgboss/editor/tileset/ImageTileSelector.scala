@@ -13,11 +13,28 @@ import rpgboss.editor.lib.GraphicsUtils._
 import java.awt.image.BufferedImage
 import java.awt.{Point, Color}
 
+/**
+ * @param   selectTileF         Function called when user selects a new group
+ *                              of tiles.
+ *                              
+ *                              It's in the same format as how the tiles are 
+ *                              spatially, i.e.
+ *                              
+ *                              [ [(x1, y1), ..., (x2, y1)],
+ *                                [          ...          ],
+ *                                [(x2, y1), ..., (x2, y2)] ]
+ *                              
+ *                              x1 is the smallest tileX index. x2 is largest.
+ *                              Same deal with y1 and y2.
+ *                              
+ * @param   allowMultiselect    Allow user to select multiple tiles.
+ */
 class ImageTileSelector(srcImg: BufferedImage,
                         selectTileF: Array[Array[(Byte, Byte)]] => Unit,
                         val tilesizeX : Int = 32,
                         val tilesizeY : Int = 32,
-                        val xTilesVisible : Int = 8)
+                        val xTilesVisible : Int = 8,
+                        allowMultiselect: Boolean = true)
 extends ScrollPane
 { 
   horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never

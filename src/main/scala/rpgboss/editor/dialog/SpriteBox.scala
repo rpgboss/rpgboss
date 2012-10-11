@@ -23,7 +23,7 @@ class SpriteBox(
   def updateImg() = spriteSpecOpt.map { spriteSpec =>
     val spriteset = Spriteset.readFromDisk(project, spriteSpec.spriteset)
     val (xTile, yTile) = spriteset.srcTile(
-        spriteSpec.spriteindex,
+        spriteSpec.spriteIndex,
         Spriteset.DirectionOffsets.SOUTH,
         Spriteset.Steps.STILL)
     spriteset.getTileImage(xTile, yTile)
@@ -51,11 +51,10 @@ class SpriteBox(
   listenTo(this.mouse.clicks)
   reactions += {
     case e: MouseClicked =>
-      println("Reaction")
       val diag = new SpriteSelectDialog(
           owner,
           project,
-          initialSelection = spriteSpecOpt,
+          initialSelectionOpt = spriteSpecOpt,
           onSuccess = { selectedSpriteSpecOpt =>
             spriteSpecOpt = selectedSpriteSpecOpt
             updateImg()
