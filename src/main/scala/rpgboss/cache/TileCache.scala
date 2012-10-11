@@ -21,7 +21,7 @@ class TileCache(proj: Project, autotiles: Array[Autotile],
       val autotileConfig = thirdBytePos
       
       if(autotiles.length > autotileNum) {
-        autotiles(autotileNum).getTile(autotileConfig, frame)
+        autotiles(autotileNum).getTileImage(autotileConfig, frame)
       } else ImageResource.errorTile
       
     } else if(tilesetIdx >= 0) {
@@ -30,7 +30,7 @@ class TileCache(proj: Project, autotiles: Array[Autotile],
       val y = thirdBytePos
       
       if(tilesets.length > tilesetIdx) {
-        tilesets(tilesetIdx).getTile(x, y)
+        tilesets(tilesetIdx).getTileImage(x, y)
         
       } else ImageResource.errorTile
     } else ImageResource.errorTile

@@ -16,6 +16,14 @@ import java.awt.image._
 case class SpritesetMetadata(boundsX: Int = Tileset.tilesize, 
                              boundsY: Int = Tileset.tilesize)
 
+/***
+ * This Spriteset class deals with image meeting the following criteria:
+ * 
+ * It must either be a single sprite with a name beginning with a "$",
+ * or it must contain 4 sprites in the x axis and 2 in the y axis
+ * 
+ * Each spriteset follows the rpgmaker xp format.
+ */
 case class Spriteset(proj: Project,
                      name: String, 
                      metadata: SpritesetMetadata) 
@@ -24,33 +32,50 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
   def meta = Spriteset
   
   /**
-   * Gets the size of the sprites
+   * Gets the size of the sprites as well as the numerosity
    */
-  val (tileH, tileW) = {
+  val (tileH, tileW, xSprites, ySprites) = {
     val oneSprite = name(0) == '$'
     
-    val tileH = img.height / 4 / (if(oneSprite) 1 else 2)
-    val tileW = img.width  / 3 / (if(oneSprite) 1 else 4)
+    if(oneSprite) {
+      (img.getHeight()/4, img.getWidth()/3, 1, 1)
+    } else {
+      val tileH = img.getHeight() / (4*2)
+      val tileW = img.getWidth()  / (3*4)
+      (tileH, tileW, 4, 2)
+    }
+  }
+  
+  val nSprites = xSprites*ySprites
+  
+  /**
+   * Gets the offset for a given sprite in tiles.
+   * 
+   * @param index   Given between 0-7. The sprite number in the page.
+   * @param dir     One of Spriteset.DirectionOffsets. 0-3
+   * @param step    One of Spriteset.Steps. 0-3
+   */
+  def srcTile(index: Int, dir: Int, step: Int) = {
+    // In units of sprites. tileW, tileH
+    val xOffset = (index % 4)*(3)
+    val yOffset = (index / 4)*(4)
     
-    (tileH, tileW)
+    val xTile = (xOffset+step)
+    val yTile = (yOffset+dir)
+    
+    (xTile, yTile)
   }
   
   /**
-   * Gets the offset for a given sprite in pixels. (texels if used as texture)
+   * Gets the offset for a given sprite in texels
    * 
    * @param index   Given between 0-7. The sprite number in the page.
    * @param dir     One of Spriteset.DirectionOffsets. 0-3
    * @param step    One of Spriteset.Steps. 0-3
    */
   def srcTexels(index: Int, dir: Int, step: Int) = {
-    // In units of sprites. tileW, tileH
-    val xOffset = (index % 4)*(3)
-    val yOffset = (index / 4)*(4)
-    
-    val xPix = (xOffset+step)*tileW
-    val yPix = (yOffset+dir)*tileH
-    
-    (xPix, yPix)
+    val (xTile, yTile) = srcTile(index, dir, step)
+    (xTile*tileW, yTile*tileH)
   }
   
   /**

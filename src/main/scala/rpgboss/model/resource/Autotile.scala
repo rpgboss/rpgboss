@@ -26,18 +26,18 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
   import Autotile.DirectionMasks._
   def meta = Autotile
   
-  val terrainMode = img.height == 3*tilesize
+  val terrainMode = img.getHeight() == 3*tilesize
   val frames = if(terrainMode) {
     val frameWidth = 2*tilesize
-    img.width / frameWidth
+    img.getWidth() / frameWidth
   } else 1
   
   def isolatedImg() = {
-    getTile(0xff, 0)
+    getTileImage(0xff, 0)
   }
   
   // autotileConfig must be a positive integer
-  def getTile(autotileConfig: Int, frame: Byte) = { 
+  def getTileImage(autotileConfig: Int, frame: Byte) = { 
     require(autotileConfig >= 0, "Autotile config integer must be positive.")
     require(frame >= 0, "Frame byte must be positive.")
     
@@ -52,7 +52,7 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
     getHalfTiles(autotileConfig.toByte, frame) map {
       case ((srcXHt, srcYHt), (dstXHt, dstYHt)) =>
         g.drawImage(
-            img.img, 
+            img, 
             dstXHt*ht, dstYHt*ht,
             dstXHt*ht+ht, dstYHt*ht+ht,
             srcXHt*ht, srcYHt*ht,

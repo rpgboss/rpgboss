@@ -9,7 +9,7 @@ object EventTrigger extends Enumeration {
 
 import EventTrigger._
 
-case class RpgEvent(label: String, x: Int, y: Int, states: Array[RpgEventState])
+case class RpgEvent(name: String, x: Int, y: Int, states: Array[RpgEventState])
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Int, y: Int) = 
