@@ -32,7 +32,7 @@ extends BoxPanel(Orientation.Vertical) {
   
   // x coordiate corresponds to tileset number,
   // other two bytes we leave blank. 
-  contents += new ImageTileSelector(FastImage(collageImage), tXYArray => 
+  contents += new ImageTileSelector(collageImage, tXYArray => 
     tileSelector.selectedTileCodes = tXYArray.map(_.map({
       case (xTile, yTile) => 
         Array(RpgMap.autotileByte, xTile, 0.asInstanceOf[Byte])

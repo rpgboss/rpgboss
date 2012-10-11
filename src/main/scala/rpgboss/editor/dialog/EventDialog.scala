@@ -6,9 +6,11 @@ import rpgboss.model.event._
 import rpgboss.editor.lib.DesignGridPanel
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.TabbedPane.Page
+import rpgboss.model.Project
 
 class EventDialog(
-    owner: Window, 
+    owner: Window,
+    project: Project,
     initialEvent: RpgEvent, 
     onOk: RpgEvent => Any,
     onCancel: RpgEvent => Any)
@@ -23,9 +25,12 @@ class EventDialog(
     new BoxPanel(Orientation.Horizontal) {
       contents += new DesignGridPanel {
         val triggerBox = new ComboBox(EventTrigger.values.toSeq)
+        val spriteBox = new SpriteBox(owner, project, curEvtState.sprite)
         
         row().grid().add(leftLabel("Trigger:"))
         row().grid().add(triggerBox)
+        row().grid().add(leftLabel("Sprite:"))
+        row().grid().add(spriteBox)
         
         reactions += {
           case SelectionChanged(`triggerBox`) =>

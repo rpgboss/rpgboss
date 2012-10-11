@@ -13,7 +13,7 @@ import rpgboss.editor.lib.GraphicsUtils._
 import java.awt.image.BufferedImage
 import java.awt.{Point, Color}
 
-class ImageTileSelector(srcImg: FastImage,
+class ImageTileSelector(srcImg: BufferedImage,
                         selectTileF: Array[Array[(Byte, Byte)]] => Unit,
                         val tilesizeX : Int = 32,
                         val tilesizeY : Int = 32,
@@ -24,9 +24,9 @@ extends ScrollPane
   verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
   
   // restrict to 256 by 256 tiles
-  val img = srcImg.subimage(0, 0, 
-                            min(255*tilesizeX, srcImg.width),
-                            min(255*tilesizeY, srcImg.height))
+  val img = srcImg.getSubimage(0, 0, 
+                               min(255*tilesizeX, srcImg.getWidth),
+                               min(255*tilesizeY, srcImg.getHeight))
   
   val imageSlices = ceilIntDiv(img.getWidth / tilesizeX, xTilesVisible)
   val yTiles = img.getHeight / tilesizeY
