@@ -13,7 +13,7 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   def name: String
   
   def drawTileAt(ti: Int, tj: Int, g: Graphics, dstX: Int, dstY: Int) = {
-    if(ti < img.getWidth()/tileH && tj < img.getHeight()/tileH) {
+    if(ti < img.getWidth()/tileW && tj < img.getHeight()/tileH) {
       g.drawImage(img, 
           dstX, dstY, 
           dstX+tileW, dstY+tileH,

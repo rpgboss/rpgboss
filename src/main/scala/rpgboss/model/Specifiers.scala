@@ -6,6 +6,6 @@ package rpgboss.model
  */
 case class MapLoc(map: String, x: Float, y: Float)
 
-case class SpriteSpec(spriteset: String, spriteindex: Int) 
+case class SpriteSpec(spriteset: String, spriteIndex: Int) 
 
 case class Character(defaultName: String, sprite: SpriteSpec)
