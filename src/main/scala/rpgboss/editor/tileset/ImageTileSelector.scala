@@ -114,9 +114,13 @@ extends ScrollPane
           case MouseDragged(`canvasPanel`, point, _) => {
             val (x2, y2) = toSelTiles(point)
             if(inBounds(x2, y2)) {
-          
-              xRngInSelectorSpace = min(x1, x2) to max(x1, x2)
-              yRngInSelectorSpace = min(y1, y2) to max(y1, y2)
+              if(allowMultiselect) {
+                xRngInSelectorSpace = min(x1, x2) to max(x1, x2)
+                yRngInSelectorSpace = min(y1, y2) to max(y1, y2)
+              } else {
+                xRngInSelectorSpace = x2 to x2
+                yRngInSelectorSpace = y2 to y2
+              }
               canvasPanel.repaint()
             }
           }

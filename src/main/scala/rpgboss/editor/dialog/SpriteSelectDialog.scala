@@ -4,20 +4,24 @@ import scala.swing.event._
 import rpgboss.editor.lib.DesignGridPanel
 import rpgboss.model._
 import rpgboss.model.resource._
-import rpgboss.editor.tileset.SpriteIndexSelector
+import rpgboss.editor.tileset.SpriteSelector
+import com.weiglewilczek.slf4s.Logging
 
 class SpriteSelectDialog(
     owner: Window, 
     project: Project,
     initialSelectionOpt: Option[SpriteSpec],
     onSuccess: (Option[SpriteSpec]) => Any)
-  extends StdDialog(owner, "Select a Sprite") {
+  extends StdDialog(owner, "Select a Sprite") with Logging {
   
   val spritesets = Spriteset.list(project)
   
   var selection : Option[SpriteSpec] = None
   
-  def okFunc(): Unit = { onSuccess(selection) }
+  def okFunc(): Unit = { 
+    onSuccess(selection)
+    close()
+  }
   
   val spritesetList = new ListView(spritesets)
   
@@ -38,17 +42,19 @@ class SpriteSelectDialog(
       val spriteset = Spriteset.readFromDisk(project, spriteSpec.spriteset)
       
       spriteSelectorContainer.contents.clear()
-      spriteSelectorContainer.contents += new SpriteIndexSelector(
+      spriteSelectorContainer.contents += new SpriteSelector(
           spriteset,
-          (spriteIndex: Int) => {
-            selection = selection.map {_.copy(spriteIndex = spriteIndex)}
+          (spriteSpec: SpriteSpec) => {
+            selection = Some(spriteSpec)
           }
       )
       
     } getOrElse {
       spriteSelectorContainer.contents.clear()
-      spriteSelectorContainer.contents += new Label("No spritset selected")
+      spriteSelectorContainer.contents += new Label("No spriteset selected")
     }
+    
+    spriteSelectorContainer.revalidate()
   }
   
   // Initialize the selection, but first check to make sure it's valid
@@ -80,6 +86,7 @@ class SpriteSelectDialog(
         close()
       }
     case ListSelectionChanged(`spritesetList`, _, _) =>
+      logger.info("Selected a different sprite")
       updateSelection(Some(SpriteSpec(spritesetList.selection.items.head, 0)))
   }
 }

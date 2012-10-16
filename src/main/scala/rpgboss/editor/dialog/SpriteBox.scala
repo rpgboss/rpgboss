@@ -20,13 +20,16 @@ class SpriteBox(
   /**
    * Updates the cached sprite image used for drawing the component
    */
-  def updateImg() = spriteSpecOpt.map { spriteSpec =>
-    val spriteset = Spriteset.readFromDisk(project, spriteSpec.spriteset)
-    val (xTile, yTile) = spriteset.srcTile(
-        spriteSpec.spriteIndex,
-        Spriteset.DirectionOffsets.SOUTH,
-        Spriteset.Steps.STILL)
-    spriteset.getTileImage(xTile, yTile)
+  def updateImg() = {
+    spriteImg = spriteSpecOpt.map { spriteSpec =>
+      val spriteset = Spriteset.readFromDisk(project, spriteSpec.spriteset)
+      val (xTile, yTile) = spriteset.srcTile(
+          spriteSpec.spriteIndex,
+          spriteSpec.dir,
+          spriteSpec.step)
+      spriteset.getTileImage(xTile, yTile)
+    }
+    this.repaint()
   }
   updateImg()
   
