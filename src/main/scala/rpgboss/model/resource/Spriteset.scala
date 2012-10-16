@@ -31,6 +31,10 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
 {
   def meta = Spriteset
   
+  // How many tiles are in X and Y
+  val spriteXTiles = 3
+  val spriteYTiles = 4
+  
   /**
    * Gets the size of the sprites as well as the numerosity
    */
@@ -60,7 +64,10 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
     val xOffset = (index % 4)*(3)
     val yOffset = (index / 4)*(4)
     
-    val xTile = (xOffset+step)
+    // Account for the fact that 
+    val normalizedStep = if(step == 3) 1 else step
+    
+    val xTile = (xOffset+normalizedStep)
     val yTile = (yOffset+dir)
     
     (xTile, yTile)
@@ -103,18 +110,5 @@ object Spriteset extends MetaResource[Spriteset, SpritesetMetadata] {
   
   def defaultInstance(proj: Project, name: String) = 
     Spriteset(proj, name, SpritesetMetadata())
-  
-  object DirectionOffsets {
-    val SOUTH = 0
-    val WEST  = 1
-    val EAST  = 2
-    val NORTH = 3
-  }
-  
-  object Steps {
-    val STEP1 = 0
-    val STEP2 = 2
-    val STILL = 1
-  }
 }
 
