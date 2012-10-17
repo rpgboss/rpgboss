@@ -27,6 +27,10 @@ h3. Picture
 LordSpirit.jpg:
 http://www.rpgrevolution.com/forums/index.php?autocom=gallery&req=si&img=3701
 
+h3. Sounds
+
+Generated using bfxr at:
+http://www.bfxr.net/
 
 h2. Material Rules
 

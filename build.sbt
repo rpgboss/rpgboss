@@ -6,7 +6,7 @@ version := "0.1"
 
 organization := "rpgboss"
 
-scalaVersion := "2.9.1"
+scalaVersion := "2.9.2"
 
 TaskKey[Unit]("generateEnum") := {  
   SysProcess("python GenerateFileEnum.py", new File("src/main/resources")).run()
