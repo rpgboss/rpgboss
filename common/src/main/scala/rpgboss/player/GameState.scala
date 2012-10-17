@@ -33,8 +33,9 @@ class GameState(game: MyGame, project: Project) {
   // protagonist and camera position. Modify all these things on the Gdx thread
   val cameraLoc = new MutableMapLoc()
   val playerLoc = new MutableMapLoc()
-  var playerDir : Int = Spriteset.DirectionOffsets.SOUTH
+  var playerDir : Int = SpriteSpec.Directions.SOUTH
   var playerMoving = false
+  var playerMovingSince: Long = 0
   
   // Called every frame... by MyGame's render call. 
   def update() = {

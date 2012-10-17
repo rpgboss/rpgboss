@@ -116,7 +116,8 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
     }
     
     import MyKeys._
-        
+    
+    val previouslyMoving = state.playerMoving
     state.playerMoving = false
     
     val baseSpeed = 0.05 // tiles per frame
@@ -132,27 +133,29 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
     if(isActive(Left)) {
       state.playerMoving = true
       state.playerLoc.x -= projSpeed
-      state.playerDir = Spriteset.DirectionOffsets.WEST
+      state.playerDir = SpriteSpec.Directions.WEST
     } else if(isActive(Right)) {
       state.playerMoving = true
       state.playerLoc.x += projSpeed
-      state.playerDir = Spriteset.DirectionOffsets.EAST
+      state.playerDir = SpriteSpec.Directions.EAST
     }
     
     if(isActive(Up)) {
       state.playerMoving = true
       state.playerLoc.y -= projSpeed
-      state.playerDir = Spriteset.DirectionOffsets.NORTH
+      state.playerDir = SpriteSpec.Directions.NORTH
     } else if(isActive(Down)) {
       state.playerMoving = true
       state.playerLoc.y += projSpeed
-      state.playerDir = Spriteset.DirectionOffsets.SOUTH
+      state.playerDir = SpriteSpec.Directions.SOUTH
     }
     
     if(state.playerMoving) {
+      if(!previouslyMoving) {
+        state.playerMovingSince = System.currentTimeMillis()
+      }
       state.cameraLoc.set(state.playerLoc)
     }
-    
   }    
       
   def render() = mapAndAssetsOption map { mapAndAssets =>
@@ -236,23 +239,16 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
     val protagonistSpriteset = spritesets(protagonistChar.sprite.spriteset)
     
     val step = if(state.playerMoving) {
-      val stepsPerSec = 8 // MUST BE EVEN
-      val stepTime = 1.0f/stepsPerSec
-      if((game.accumDelta / stepTime).toInt % 4 == 0) {
-        //println("Step 1: " + deltaTime.toString())
-        Spriteset.Steps.STEP1
-      } else if((game.accumDelta / stepTime).toInt % 4 == 2) {
-        //println("Step 2: " + deltaTime.toString())
-        Spriteset.Steps.STEP2
-      } else {
-        Spriteset.Steps.STILL
-      }
+      val msPerStep = 128
+      
+      val timeInCycle = (System.currentTimeMillis() % (msPerStep*4)).toInt
+      timeInCycle / msPerStep
     } else {
-      Spriteset.Steps.STILL
+      SpriteSpec.Steps.STILL
     }
     
     val (srcX, srcY) = protagonistSpriteset.srcTexels(
-        protagonistChar.sprite.spriteindex,
+        protagonistChar.sprite.spriteIndex,
         state.playerDir,
         step)
     
