@@ -12,17 +12,33 @@ abstract class StdDialog(owner: Window, titleArg: String)
   defaultButton = okButton
   setLocationRelativeTo(owner)
   
+  private var okPressed = false
+  
   def okFunc()
-  def cancelFunc() = close()
+  def cancelFunc() = {}
   
   def leftLabel(s: String) = new Label(s) {
     xAlignment = Alignment.Left
   }
   
-  lazy val cancelButton = new Button(Action("Cancel") { cancelFunc() })
+  lazy val cancelButton = new Button(Action("Cancel") { 
+    cancelFunc()
+    close()
+  })
   
   lazy val okButton = new Button(new Action("OK") {
     mnemonic = Key.O.id
-    def apply() = okFunc
+    def apply() = {
+      okPressed = true
+      okFunc()
+    }
   })
+  
+  /**
+  * Treat closing the dialog without pressing OK as a Cancel.
+  */
+  val me = this
+  reactions += {
+    case WindowClosing(`me`) if(!okPressed) => cancelFunc()
+  }
 }

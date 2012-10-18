@@ -9,6 +9,8 @@ import java.io.File
 class MainPanel(val topWin: Window)
 extends BoxPanel(Orientation.Vertical) 
 {
+  var smOpt : Option[StateMaster] = None
+  
   minimumSize = new Dimension(800, 600)
   
   val actionNew = Action("New Project") {
@@ -45,8 +47,6 @@ extends BoxPanel(Orientation.Vertical)
       }
     }
   }
-  
-  var smOpt : Option[StateMaster] = None
   
   def setProject(p: Project) = {
     val sm = new StateMaster(p)

@@ -10,28 +10,30 @@ import java.awt.image.BufferedImage
 class SpriteBox(
     owner: Window, 
     project: Project, 
-    initialSpriteSpecOpt: Option[SpriteSpec]) 
+    initialSpriteSpecOpt: Option[SpriteSpec],
+    onUpdate: (Option[SpriteSpec]) => Any) 
   extends Component {
   import Tileset.tilesize
   
-  private var spriteSpecOpt = initialSpriteSpecOpt
+  private var spriteSpecOpt: Option[SpriteSpec] = None
   private var spriteImg: Option[BufferedImage] = None
   
   /**
    * Updates the cached sprite image used for drawing the component
    */
-  def updateImg() = {
+  def updateSpriteSpec(s: Option[SpriteSpec]) = {
+    spriteSpecOpt = s
     spriteImg = spriteSpecOpt.map { spriteSpec =>
       val spriteset = Spriteset.readFromDisk(project, spriteSpec.spriteset)
-      val (xTile, yTile) = spriteset.srcTile(
-          spriteSpec.spriteIndex,
-          spriteSpec.dir,
-          spriteSpec.step)
-      spriteset.getTileImage(xTile, yTile)
+      spriteset.srcTileImg(spriteSpec)
     }
+    
+    onUpdate(spriteSpecOpt)
+    
     this.repaint()
   }
-  updateImg()
+  
+  updateSpriteSpec(initialSpriteSpecOpt)
   
   val componentW = tilesize*2
   val componentH = tilesize*3
@@ -58,10 +60,7 @@ class SpriteBox(
           owner,
           project,
           initialSelectionOpt = spriteSpecOpt,
-          onSuccess = { selectedSpriteSpecOpt =>
-            spriteSpecOpt = selectedSpriteSpecOpt
-            updateImg()
-          })
+          onSuccess = updateSpriteSpec(_))
       diag.open()
   }
 }
