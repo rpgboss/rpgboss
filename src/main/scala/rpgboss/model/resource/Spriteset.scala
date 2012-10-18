@@ -73,6 +73,14 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
     (xTile, yTile)
   }
   
+  def srcTile(spec: SpriteSpec) : (Int, Int) = 
+    srcTile(spec.spriteIndex, spec.dir, spec.step)
+  
+  def srcTileImg(spec: SpriteSpec) = {
+    val (xTile, yTile) = srcTile(spec)
+    getTileImage(xTile, yTile)
+  }
+  
   /**
    * Gets the offset for a given sprite in texels
    * 

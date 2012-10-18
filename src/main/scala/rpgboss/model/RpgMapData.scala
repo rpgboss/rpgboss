@@ -7,6 +7,7 @@ import rpgboss.lib.FileHelper._
 import net.liftweb.json.Serialization
 import java.io._
 import rpgboss.model.resource.RpgMap
+import net.liftweb.json.ShortTypeHints
 
 /*
  * This class has mutable members.
@@ -30,7 +31,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
   
   def writeToFile(p: Project, name: String) =
     RpgMapData.dataFile(p, name).useWriter { writer =>
-      implicit val formats = net.liftweb.json.DefaultFormats
+      implicit val formats = RpgMapData.formats
       Serialization.writePretty(this.toIntermediate, writer) != null
     } getOrElse false
 }
@@ -45,8 +46,11 @@ case object RpgMapData {
   def dataFile(p: Project, name: String) = 
     new File(RpgMap.rcDir(p), name)
   
+  val formats = Serialization.formats(ShortTypeHints(
+      EventCmd.types))
+  
   def readFromDisk(proj: Project, name: String) : Option[RpgMapData] = {
-    implicit val formats = net.liftweb.json.DefaultFormats
+    implicit val formats = RpgMapData.formats
     dataFile(proj, name).getReader().map { reader => 
       val intermediate = Serialization.read[RpgMapDataIntermediate](reader)
       RpgMapData(intermediate.botLayer.map(_.map(_.toByte)),

@@ -2,21 +2,34 @@ package rpgboss.model.event
 
 import rpgboss.model._
 
-object EventTrigger extends Enumeration {
-  type EventTrigger = Value
-  val Button, Touch = Value 
+object EventTrigger {
+  val NoTrigger = 0
+  val Button    = 1
+  val Touch     = 2 
+  
+  val choices = Array("None", "Button", "Touch")
 }
 
 import EventTrigger._
 
-case class RpgEvent(name: String, x: Int, y: Int, states: Array[RpgEventState])
+/**
+ * Guaranteed to have at least one state
+ */
+case class RpgEvent(
+    name: String, 
+    x: Float, 
+    y: Float, 
+    states: Array[RpgEventState] = Array(RpgEventState()))
 
 object RpgEvent {
-  def blank(idFromMap: Int, x: Int, y: Int) = 
+  def blank(idFromMap: Int, x: Float, y: Float) = 
     RpgEvent("Event%05d".format(idFromMap), x, y, Array(RpgEventState()))
 }
 
+/**
+ * cmds guaranteed to be of at least length 1 and end with an EndOfScript()
+ */
 case class RpgEventState(
     sprite: Option[SpriteSpec] = None, 
-    trigger: EventTrigger = Button,
-    cmds: Array[EventCmd] = Array.empty)  
+    trigger: Int = Button,
+    cmds: Array[EventCmd] = Array(EndOfScript()))  
