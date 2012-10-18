@@ -113,7 +113,7 @@ class GameState(game: MyGame, project: Project) {
     Thread.sleep(durationMs)
   }
   
-  def choiceWindow(
+  def showChoices(
       choices: Array[String],
       x: Int, y: Int, w: Int, h: Int,
       justification: Int) : Int= {
@@ -141,7 +141,7 @@ class GameState(game: MyGame, project: Project) {
     choice
   }
   
-  def textWindowWithPosition(
+  def showTextWithPosition(
       text: Array[String],
       x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {
     val window = new Window(
@@ -163,7 +163,7 @@ class GameState(game: MyGame, project: Project) {
     windows -= window
   }
   
-  def textWindow(text: Array[String]) = textWindowWithPosition(text)
+  def showText(text: Array[String]) = showTextWithPosition(text)
   
   val LEFT = Window.Left
   val CENTER = Window.Center
