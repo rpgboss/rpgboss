@@ -2,6 +2,7 @@ import sbt._
 
 import Keys._
 import AndroidKeys._
+import scala.sys.process.{Process => SysProcess}
 
 object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
@@ -13,7 +14,8 @@ object Settings {
       "net.liftweb" % "lift-json_2.9.1" % "2.4",
       "com.weiglewilczek.slf4s" % "slf4s_2.9.1" % "1.0.7",
       "com.typesafe.akka" % "akka-actor" % "2.0.3",
-      "rhino" % "js" % "1.7R2"
+      "rhino" % "js" % "1.7R2",
+      "org.scalatest" %% "scalatest" % "1.6.1" % "test"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
@@ -23,7 +25,7 @@ object Settings {
     updateLibgdxTask
    )
 
-  lazy val desktop = Settings.common ++ Seq (
+  lazy val playerDesktop = Settings.common ++ Seq (
     fork in Compile := true,
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.0.6"
@@ -35,7 +37,7 @@ object Settings {
     }
   )
 
-  lazy val android = Settings.common ++
+  lazy val playerAndroid = Settings.common ++
     AndroidProject.androidSettings ++
     AndroidMarketPublish.settings ++ Seq (
       platformName in Android := "android-8",
@@ -44,6 +46,22 @@ object Settings {
       unmanagedBase <<= baseDirectory( _ /"src/main/libs" ),
       unmanagedClasspath in Runtime <+= (baseDirectory) map { bd => Attributed.blank(bd / "src/main/libs") }
     )
+  
+  lazy val editor = Settings.playerDesktop ++ Seq(
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-swing" % "2.9.2",
+      "org.apache.httpcomponents" % "httpclient" % "4.1.1",
+      "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
+    ),
+    mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
+    scalacOptions ++= List("-deprecation", "-unchecked"),
+    TaskKey[Unit]("generateEnum") := {  
+      SysProcess("python GenerateFileEnum.py", new File("editor/src/main/resources")).run()
+      println("Generated file enumeration")
+      Unit
+    },
+    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum")
+  )
 
   val updateLibgdx = TaskKey[Unit]("update-gdx", "Updates libgdx")
 
@@ -71,7 +89,7 @@ object Settings {
 	new ExactFilter("extensions/gdx-audio.jar")
     IO.unzip(zipFile, commonDest, commonFilter)
 
-    val desktopDest = file("desktop/lib")
+    val desktopDest = file("player-desktop/lib")
     val desktopFilter = new ExactFilter("gdx-natives.jar") |
     new ExactFilter("gdx-backend-lwjgl.jar") |
     new ExactFilter("gdx-backend-lwjgl-natives.jar") |
@@ -80,7 +98,7 @@ object Settings {
     new ExactFilter("extensions/gdx-audio-natives.jar")
     IO.unzip(zipFile, desktopDest, desktopFilter)
 
-    val androidDest = file("android/src/main/libs")
+    val androidDest = file("player-android/src/main/libs")
     val androidFilter = new ExactFilter("gdx-backend-android.jar") |
     new ExactFilter("armeabi/libgdx.so") |
     new ExactFilter("armeabi/libandroidgl20.so") |
@@ -107,15 +125,21 @@ object LibgdxBuild extends Build {
     settings = Settings.common
   )
 
-  lazy val desktop = Project (
-    "desktop",
-    file("desktop"),
-    settings = Settings.desktop
+  lazy val playerDesktop = Project (
+    "player-desktop",
+    file("player-desktop"),
+    settings = Settings.playerDesktop
   ) dependsOn common
 
-  lazy val android = Project (
-    "android",
-    file("android"),
-    settings = Settings.android
+  lazy val playerAndroid = Project (
+    "player-android",
+    file("player-android"),
+    settings = Settings.playerAndroid
   ) dependsOn common
+  
+  lazy val editor = Project (
+    "editor",
+    file("editor"),
+    settings = Settings.editor
+  ) dependsOn playerDesktop
 }
