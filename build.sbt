@@ -1,3 +1,5 @@
+import scala.sys.process.{Process => SysProcess}
+
 //seq(ProguardPlugin.proguardSettings :_*)
 
 name := "rpgboss-editor"
@@ -23,7 +25,15 @@ libraryDependencies ++= Seq(
 
 mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop")
 
-scalacOptions ++= List("-deprecation", "-Xexperimental", "-unchecked")
+scalacOptions ++= List("-deprecation", "-unchecked")
+
+TaskKey[Unit]("generateEnum") := {  
+  SysProcess("python GenerateFileEnum.py", new File("src/main/resources")).run()
+  println("Generated file enumeration")
+  Unit
+}
+
+Keys.`package` <<= (Keys.`package` in Compile) dependsOn TaskKey[Unit]("generateEnum")
 
 //proguardOptions ++= List(
 //  "-dontshrink",

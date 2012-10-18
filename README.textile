@@ -14,3 +14,33 @@ This depends on the rpgboss-rpglib package. Copy rpgboss-rpglib jar into the lib
 
 This also depends on https://github.com/kenbot/ScalaSwingTreeWrapper, the jar of which should also go in lib/.
 
+h2. Material
+
+h3. Autotiles, Spritesets, Tilesets
+
+http://www.tekepon.net/fsm/
+http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
+
+h3. Faces
+
+h3. Window Skin
+
+http://rpgmakertimes.agilityhoster.com/2011/02/final-fantasy-i-xpvx-windowskin/
+
+h3. Picture
+LordSpirit.jpg:
+http://www.rpgrevolution.com/forums/index.php?autocom=gallery&req=si&img=3701
+
+h3. Sounds
+
+Generated using bfxr at:
+http://www.bfxr.net/
+
+h2. Material Rules
+
+Autotiles are individual files in Rpg Maker VX format.
+Spritesets are in Rpg Maker VX format.
+Tilesets only constrained to be comprised of 32x32 square tiles.
+
+Windowskins are in the Rpg Maker XP format.
+
