@@ -39,13 +39,9 @@ class StateMaster(private var proj: Project)
   
   private var projDirty = Dirtiness.Clean
   
-  private var autotiles: Array[Autotile] = null
   private var mapStates: Map[String, MapState] = null
   
   def loadProjectData() = {
-    autotiles =
-      proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
-    
     val states = RpgMap.list(proj).map(RpgMap.readFromDisk(proj, _)).map(
       rpgMap => rpgMap.name->MapState(rpgMap, Dirtiness.Clean, None))
     
@@ -95,8 +91,6 @@ class StateMaster(private var proj: Project)
   }
   
   def getMapStates = mapStates
-  
-  def getAutotiles = autotiles
   
   def getMapMetas = mapStates.values.map(_.map).toSeq
   

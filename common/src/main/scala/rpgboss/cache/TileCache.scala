@@ -6,9 +6,10 @@ import rpgboss.model.resource._
 import java.awt.image._
 import com.google.common.cache._
 
-class TileCache(proj: Project, autotiles: Array[Autotile], 
+class TileCache(proj: Project, 
                 map: RpgMap, cacheMaxSize: Int = 5000) {
   val tilesets  = map.metadata.tilesets.map(Tileset.readFromDisk(proj, _))
+  val autotiles = map.metadata.autotiles.map(Autotile.readFromDisk(proj, _))
   
   def loadTile(tileTuple: (Byte, Byte, Byte, Byte)) = {
     val (tilesetIdx, secondByte, thirdByte, frame) = tileTuple

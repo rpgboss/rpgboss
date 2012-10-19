@@ -23,15 +23,21 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 	}
   
   val menuAndSelector = new BoxPanel(Orientation.Vertical) {
+    import rpgboss.editor.dialog._
+    
     contents += new BoxPanel(Orientation.Horizontal) {
       contents += new Button {
         val btn = this
-        action = Action("Project \u25BC") {
+        action = Action("RPG \u25BC") {
           projMenu.show(btn, 0, btn.bounds.height)
         }
       }
-      contents += new Button(Action("Database...") {
-        val d = new rpgboss.editor.dialog.DatabaseDialog(mainP.topWin, sm)
+      contents += new Button(Action("DB...") {
+        val d = new DatabaseDialog(mainP.topWin, sm)
+        d.open()
+      })
+      contents += new Button(Action("Resources...") {
+        val d = new ResourcesDialog(mainP.topWin, sm)
         d.open()
       })
     }

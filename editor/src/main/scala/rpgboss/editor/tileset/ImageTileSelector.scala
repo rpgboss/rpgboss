@@ -34,7 +34,8 @@ class ImageTileSelector(srcImg: BufferedImage,
                         val tilesizeX : Int = 32,
                         val tilesizeY : Int = 32,
                         val xTilesVisible : Int = 8,
-                        allowMultiselect: Boolean = true)
+                        allowMultiselect: Boolean = true,
+                        drawSelectionSq: Boolean = true)
 extends ScrollPane
 { 
   horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
@@ -70,9 +71,11 @@ extends ScrollPane
                     null)
       }
       
-      TileRect(xRngInSelectorSpace.head, yRngInSelectorSpace.head,
-               xRngInSelectorSpace.length, yRngInSelectorSpace.length)
-        .optionallyDrawSelRect(g, tilesizeX, tilesizeY)
+      if(allowMultiselect) {
+        TileRect(xRngInSelectorSpace.head, yRngInSelectorSpace.head,
+                 xRngInSelectorSpace.length, yRngInSelectorSpace.length)
+          .optionallyDrawSelRect(g, tilesizeX, tilesizeY)
+      }
     }
   }
   
@@ -110,27 +113,27 @@ extends ScrollPane
         yRngInSelectorSpace = y1 to y1
         canvasPanel.repaint()
         
-        lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
-          case MouseDragged(`canvasPanel`, point, _) => {
-            val (x2, y2) = toSelTiles(point)
-            if(inBounds(x2, y2)) {
-              if(allowMultiselect) {
+        // If allowed to drag to select multiple ones
+        if(allowMultiselect) {
+          lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
+            case MouseDragged(`canvasPanel`, point, _) => {
+              val (x2, y2) = toSelTiles(point)
+              if(inBounds(x2, y2)) {
+                
                 xRngInSelectorSpace = min(x1, x2) to max(x1, x2)
                 yRngInSelectorSpace = min(y1, y2) to max(y1, y2)
-              } else {
-                xRngInSelectorSpace = x2 to x2
-                yRngInSelectorSpace = y2 to y2
+              
+                canvasPanel.repaint()
               }
-              canvasPanel.repaint()
+            }
+            case MouseReleased(`canvasPanel`, point, _, _, _) => {
+              triggerSelectTileF()
+              reactions -= temporaryReactions
             }
           }
-          case MouseReleased(`canvasPanel`, point, _, _, _) => {
-            triggerSelectTileF()
-            reactions -= temporaryReactions
-          }
+          
+          reactions += temporaryReactions
         }
-        
-        reactions += temporaryReactions
       }
     }
   }

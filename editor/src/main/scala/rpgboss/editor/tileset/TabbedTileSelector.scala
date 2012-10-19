@@ -27,8 +27,8 @@ extends BoxPanel(Orientation.Horizontal) with SelectsMap
     new TabbedPane() {
       tabPlacement(Alignment.Bottom)
       
-      pages += new TabbedPane.Page("Autotiles", 
-        new AutotileSelector(sm.getProj, TabbedTileSelector.this))
+      pages += new TabbedPane.Page("A", 
+        new AutotileSelector(sm.getProj, map, TabbedTileSelector.this))
       
       map.metadata.tilesets.zipWithIndex.map({
         case (tsName, i) => 
@@ -39,7 +39,7 @@ extends BoxPanel(Orientation.Horizontal) with SelectsMap
                 Array(i.asInstanceOf[Byte], xTile, yTile)
             })))
           
-          pages += new TabbedPane.Page(tsName, tabComponent)
+          pages += new TabbedPane.Page("T%d".format(i), tabComponent)
       })
       
       // select first Autotile code

@@ -1,6 +1,7 @@
 package rpgboss.editor.dialog
 
 import rpgboss.editor.lib._
+import rpgboss.editor.lib.SwingUtils._
 import scala.swing._
 import scala.swing.event._
 
@@ -47,10 +48,8 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       val copiedAllResources = {
         val projRcDir = p.rcDir
         
-        val resources = 
-          io.Source.fromInputStream(
-            cl.getResourceAsStream("defaultrc/enumerated.txt")
-          ).getLines().toList
+        val rcStream = cl.getResourceAsStream("defaultrc/enumerated.txt")
+        val resources = io.Source.fromInputStream(rcStream).getLines().toList
         
         for(resourceName <- resources) {
           
@@ -62,10 +61,10 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
           
           val buffer = new Array[Byte](1024*32)
           
-          val sourceStr =    
+          val sourceStream = 
             cl.getResourceAsStream("defaultrc/%s".format(resourceName))
           
-          Iterator.continually(sourceStr.read(buffer))
+          Iterator.continually(sourceStream.read(buffer))
             .takeWhile(_ != -1).foreach(fos.write(buffer, 0, _))
         }
         

@@ -2,33 +2,20 @@ package rpgboss.editor.tileset
 
 import scala.swing._
 import scala.swing.event._
-
+import rpgboss.editor.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
-
 import java.awt.image.BufferedImage
+import rpgboss.editor.StateMaster
 
-class AutotileSelector(proj: Project, tileSelector: TabbedTileSelector) 
-extends BoxPanel(Orientation.Vertical) {
-  import Tileset.tilesize
+class AutotileSelector( 
+    proj: Project,
+    map: RpgMap,
+    tileSelector: TabbedTileSelector) 
+  extends BoxPanel(Orientation.Vertical) {
   
-  val autotiles : Array[Autotile] = 
-    proj.data.autotiles.toArray.map(Autotile.readFromDisk(proj, _))
-  
-  // draw every autotile onto collageImage in one huge row.
-  // ImageSelector will group them into 8s
-  val collageImage = new BufferedImage(autotiles.length*tilesize, 
-                                       tilesize,
-                                       BufferedImage.TYPE_4BYTE_ABGR)
-  
-  {
-    val g = collageImage.createGraphics()
-    
-    autotiles.zipWithIndex map {
-      case (autotile, i) => 
-        g.drawImage(autotile.isolatedImg, i*tilesize, 0, null)
-    }
-  }
+  val autotiles = map.metadata.autotiles.map(Autotile.readFromDisk(proj, _))
+  val collageImage = TileUtils.getAutotileCollageImg(autotiles)
   
   // x coordiate corresponds to tileset number,
   // other two bytes we leave blank. 
