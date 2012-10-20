@@ -26,15 +26,11 @@ case class AutotileMetadata(blockedDirs: Byte = 0)
 case class Autotile(proj: Project,
                     name: String,
                     metadata: AutotileMetadata)
-extends ImageResource[Autotile, AutotileMetadata] with Logging
+  extends ImageResource[Autotile, AutotileMetadata] 
+  with Logging
 {
   import Tileset.tilesize
   def meta = Autotile
-  
-  import Constants.DirectionMasks._
-  def allPassable = (metadata.blockedDirs & ALLCARDINAL) == 0
-  def allBlocked  = (metadata.blockedDirs & ALLCARDINAL) == ALLCARDINAL
-  def someBlocked = (metadata.blockedDirs & ALLCARDINAL) > 0
   
   val terrainMode = img.getHeight() == 3*tilesize
   val frames = if(terrainMode) {

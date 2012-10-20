@@ -7,7 +7,7 @@ import scala.swing.event._
 import rpgboss.model._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
-import rpgboss.editor.tileset.AutotileMetadataEditorPanel
+import rpgboss.editor.tileset.metadata._
 
 class ResourcesDialog(owner: Window, sm: StateMaster) 
   extends StdDialog(owner, "Resources")
@@ -18,7 +18,7 @@ class ResourcesDialog(owner: Window, sm: StateMaster)
   
   val tabPane = new TabbedPane() {
     import TabbedPane._
-    pages += new Page("Autotiles", new AutotileMetadataEditorPanel(sm))
+    pages += new Page("Autotiles", new AutotileMetadataPanel(sm))
     pages += new Page("Tilesets", new BoxPanel(Orientation.Vertical))
   }
   

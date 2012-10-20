@@ -1,6 +1,8 @@
-package rpgboss.editor.tileset
+package rpgboss.editor.tileset.metadata
 
 import scala.swing._
+
+import rpgboss.editor.tileset._
 import rpgboss.editor.lib.SwingUtils._
 import scala.swing.event._
 import rpgboss.editor.lib._
@@ -12,50 +14,47 @@ import javax.imageio.ImageIO
 import java.awt.geom.Line2D
 import java.awt.AlphaComposite
 
-class AutotileMetadataEditorPanel(sm: StateMaster) 
+object MetadataModeEnum extends Enumeration {
+  type MetadataMode = Value
+  val Passability = Value
+}
+import MetadataModeEnum._
+
+trait TileMetadataPanelOwner {
+  // Returns a tuple of metadata i.e. Some((blockedDirs)) if tile exists
+  def getTileMeta(xTile: Int, yTile: Int): Option[(Byte)]
+  def clickTile(xTile: Int, yTile: Int): Unit
+}
+
+class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner) 
   extends BoxPanel(Orientation.Horizontal) {
   
-  // A mutable array that we update as we modify things
-  val autotiles = 
-    Autotile.list(sm.getProj).map(Autotile.readFromDisk(sm.getProj, _))
-  
-  val dirtyIdxs = collection.mutable.Set[Int]()
-    
-  val collageImage = TileUtils.getAutotileCollageImg(autotiles)
-  
-  // idx is guaranteed to be valid here.
-  def clickAutotile(idx: Int): Unit = {
-    val autotile = autotiles(idx)
-    
-    import Constants.DirectionMasks._
-    import tileClicker.ModeEnum._
-    
-    val newMetadata = 
-      if(tileClicker.mode == Passability) {
-        val newBlockedDirs = 
-          if(autotile.allBlocked) {
-            NONE
-          } else {
-            ALLCARDINAL
-          }
-        autotile.metadata.copy(blockedDirs = newBlockedDirs.toByte)
-      } else {
-        autotile.metadata
-      }
-    
-    val newAutotile = autotile.copy(metadata=newMetadata)
-    
-    autotiles.update(idx, newAutotile)
-    
-    dirtyIdxs.add(idx)
+  // Returns the new tile metadata as a result of the click
+  def getNewTileMetadataFromClick(xTile: Int, yTile: Int): Option[(Byte)] = {
+    owner.getTileMeta(xTile, yTile) map { blockedDirs => 
+      import Constants.DirectionMasks._
+      
+      val newMetadataTuple: (Byte) = 
+        if(tileClicker.mode == Passability) {
+          val newBlockedDirs = 
+            if(allBlocked(blockedDirs)) {
+              NONE
+            } else {
+              ALLCARDINAL
+            }
+          (newBlockedDirs.toByte)
+        } else {
+          (blockedDirs)
+        }
+      
+      newMetadataTuple
+    }
   }
   
   val tileClicker = new ImageTileSelector(
-      srcImg = collageImage, 
+      srcImg = srcImg, 
       selectTileF = { tXYArray =>
-        // Just xTile, as the collageImage just puts it in a huge row
-        val autotileIdx = tXYArray.head.head._1 
-        clickAutotile(autotileIdx)
+        owner.clickTile(tXYArray.head.head._1, tXYArray.head.head._2)
       },
       allowMultiselect = false,
       drawSelectionSq = false) {
@@ -67,13 +66,7 @@ class AutotileMetadataEditorPanel(sm: StateMaster)
     val iconPass = loadIcon("oxygen/22x22/actions/dialog-ok-apply_mod.png")
     val iconStop = loadIcon("oxygen/22x22/actions/edit-delete_mod.png")
     
-    object ModeEnum extends Enumeration {
-      type Mode = Value
-      val Passability = Value
-    }
-    import ModeEnum._
-    
-    var mode: Mode = Passability
+    var mode: MetadataMode = Passability
     
     override def canvasPanelPaintComponent(g: Graphics2D) = {
       super.canvasPanelPaintComponent(g)
@@ -98,18 +91,16 @@ class AutotileMetadataEditorPanel(sm: StateMaster)
         g.drawImage(icon, x1, y1, null)
       }
       
-      for(xTile <- minXTile to maxXTile; yTile <- minYTile to maxYTile) {
-        val autotileIdx = yTile*xTilesVisible + xTile
-        if(autotileIdx < autotiles.length) {
-          val autotile = autotiles(autotileIdx)
+      for(xTile <- minXTile to maxXTile; 
+          yTile <- minYTile to maxYTile;
+          blockedDirs <- owner.getTileMeta(xTile, yTile)) {
           
-          if(autotile.allPassable)
-            draw22Icon(iconPass, xTile, yTile)
-          else if(autotile.allBlocked)
-            draw22Icon(iconStop, xTile, yTile)
-          else
-            None
-        }
+        if(allPassable(blockedDirs))
+          draw22Icon(iconPass, xTile, yTile)
+        else if(allBlocked(blockedDirs))
+          draw22Icon(iconStop, xTile, yTile)
+        else
+          None
       }
     }
   }
