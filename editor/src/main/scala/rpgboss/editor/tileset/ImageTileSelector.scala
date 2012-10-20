@@ -3,15 +3,14 @@ package rpgboss.editor.tileset
 import scala.math._
 import scala.swing._
 import scala.swing.event._
-
 import rpgboss.lib.Utils._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
-
 import java.awt.image.BufferedImage
 import java.awt.{Point, Color}
+import java.awt.AlphaComposite
 
 /**
  * @param   selectTileF         Function called when user selects a new group
@@ -47,7 +46,7 @@ extends ScrollPane
                                min(255*tilesizeY, srcImg.getHeight))
   
   val imageSlices = ceilIntDiv(img.getWidth / tilesizeX, xTilesVisible)
-  val yTiles = img.getHeight / tilesizeY
+  val yTilesInSlice = img.getHeight / tilesizeY
   
   peer.getViewport.setMinimumSize(
     new Dimension(xTilesVisible*tilesizeX, 4*tilesizeY))
@@ -55,27 +54,32 @@ extends ScrollPane
   var xRngInSelectorSpace = 0 to 0
   var yRngInSelectorSpace = 0 to 0
   
+  // Defined out here so that subclasses can override it
+  def canvasPanelPaintComponent(g: Graphics2D) = {
+    g.setComposite(AlphaComposite.SrcOver)     
+    for(i <- 0 until imageSlices) {
+      g.drawImage(img, 
+                  0, i*img.getHeight,
+                  xTilesVisible*tilesizeX, (i+1)*img.getHeight,
+                  i*xTilesVisible*tilesizeX, 0,
+                  (i+1)*xTilesVisible*tilesizeX, img.getHeight,
+                  null)
+    }
+    
+    if(allowMultiselect) {
+      TileRect(xRngInSelectorSpace.head, yRngInSelectorSpace.head,
+               xRngInSelectorSpace.length, yRngInSelectorSpace.length)
+        .optionallyDrawSelRect(g, tilesizeX, tilesizeY)
+    }
+  }
+  
   val canvasPanel = new Panel() {    
     preferredSize = new Dimension(xTilesVisible*tilesizeX, 
                                   imageSlices*img.getHeight)
     
     override def paintComponent(g: Graphics2D) = {
       super.paintComponent(g)
-      
-      for(i <- 0 until imageSlices) {
-        g.drawImage(img, 
-                    0, i*img.getHeight,
-                    xTilesVisible*tilesizeX, (i+1)*img.getHeight,
-                    i*xTilesVisible*tilesizeX, 0,
-                    (i+1)*xTilesVisible*tilesizeX, img.getHeight,
-                    null)
-      }
-      
-      if(allowMultiselect) {
-        TileRect(xRngInSelectorSpace.head, yRngInSelectorSpace.head,
-                 xRngInSelectorSpace.length, yRngInSelectorSpace.length)
-          .optionallyDrawSelRect(g, tilesizeX, tilesizeY)
-      }
+      canvasPanelPaintComponent(g)
     }
   }
   
@@ -88,8 +92,8 @@ extends ScrollPane
     (p.getX.toInt/tilesizeX, p.getY.toInt/tilesizeY)
   
   def toTilesetSpace(selTileX: Int, selTileY: Int) = {
-    val tileX = selTileX + selTileY/yTiles*xTilesVisible
-    val tileY = selTileY % yTiles
+    val tileX = selTileX + selTileY/yTilesInSlice*xTilesVisible
+    val tileY = selTileY % yTilesInSlice
     (tileX.asInstanceOf[Byte], tileY.asInstanceOf[Byte])
   }
   
@@ -102,7 +106,7 @@ extends ScrollPane
   
   // If xTile and yTile are within the bounds of the image in selector space
   def inBounds(xTile: Int, yTile: Int) =
-    xTile < xTilesVisible && yTile < imageSlices*yTiles
+    xTile < xTilesVisible && yTile < imageSlices*yTilesInSlice
   
   reactions += {
     
@@ -133,6 +137,8 @@ extends ScrollPane
           }
           
           reactions += temporaryReactions
+        } else {
+          triggerSelectTileF()
         }
       }
     }

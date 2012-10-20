@@ -15,7 +15,13 @@ import java.awt.image.BufferedImage
 import java.awt.Graphics2D
 import javax.imageio.ImageIO
 
-case class AutotileMetadata(passability: Short = 0)
+/**
+ * @param blockedDirs   Bit is on for each direction that is blocked.
+ *                      Uses masks according to DirectionMasks
+ *                      The the four "biggest" bits are undefined.
+ *                      
+ */
+case class AutotileMetadata(blockedDirs: Byte = 0)
 
 case class Autotile(proj: Project,
                     name: String,
@@ -23,8 +29,12 @@ case class Autotile(proj: Project,
 extends ImageResource[Autotile, AutotileMetadata] with Logging
 {
   import Tileset.tilesize
-  import Autotile.DirectionMasks._
   def meta = Autotile
+  
+  import Constants.DirectionMasks._
+  def allPassable = (metadata.blockedDirs & ALLCARDINAL) == 0
+  def allBlocked  = (metadata.blockedDirs & ALLCARDINAL) == ALLCARDINAL
+  def someBlocked = (metadata.blockedDirs & ALLCARDINAL) > 0
   
   val terrainMode = img.getHeight() == 3*tilesize
   val frames = if(terrainMode) {
@@ -98,7 +108,7 @@ extends ImageResource[Autotile, AutotileMetadata] with Logging
     val frameI = frame % frames
     
     import Autotile._
-    import Autotile.DirectionMasks._
+    import Constants.DirectionMasks._
     import Autotile.SubtileOffsets._
     
     val AHt = getCornerHt(borderConfig, WEST, NORTH, NW, As)
@@ -155,30 +165,6 @@ object Autotile extends MetaResource[Autotile, AutotileMetadata] {
         subtile(SubtileOffsets.InteriorCorner)
       }
     }
-  }
-    
-  // The mask is ON if that direction contains a tile DIFFERENT from
-  // the current autotile type
-  object DirectionMasks {
-    val NORTH = 1 << 0
-    val EAST  = 1 << 1
-    val SOUTH = 1 << 2
-    val WEST  = 1 << 3
-    val NE    = 1 << 4
-    val SE    = 1 << 5
-    val SW    = 1 << 6
-    val NW    = 1 << 7
-    
-    val offsets = Map(
-      NORTH->(0, -1),
-      EAST ->(1, 0),
-      SOUTH->(0, 1),
-      WEST ->(-1, 0),
-      NE   ->(1, -1),
-      SE   ->(1, 1),
-      SW   ->(-1, 1),
-      NW   ->(-1, -1)
-    )
   }
   
   // In units of half-tiles. Origin is top-left corner of A2

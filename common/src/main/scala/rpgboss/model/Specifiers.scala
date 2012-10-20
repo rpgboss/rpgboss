@@ -34,3 +34,8 @@ object SpriteSpec {
     val STILL = 1
   }
 }
+
+object Tiles {
+  object PassabilityMasks {
+  }
+}

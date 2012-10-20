@@ -43,8 +43,13 @@ object Settings {
       platformName in Android := "android-8",
       keyalias in Android := "change-me",
       mainAssetsPath in Android := file("common/src/main/resources"),
-      unmanagedBase <<= baseDirectory( _ /"src/main/libs" ),
-      unmanagedClasspath in Runtime <+= (baseDirectory) map { bd => Attributed.blank(bd / "src/main/libs") }
+      unmanagedJars in Compile <++= baseDirectory map { base =>
+        var baseDirectories = 
+          (base / "src" / "main" / "libs") +++ 
+          (base / "src" / "main" / "libs" / "extensions")
+        var jars = baseDirectories ** "*.jar"
+        jars.classpath
+      }
     )
   
   lazy val editor = Settings.playerDesktop ++ Seq(

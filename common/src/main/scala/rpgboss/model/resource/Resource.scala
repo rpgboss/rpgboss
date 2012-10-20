@@ -35,14 +35,14 @@ trait MetaResource[T, MT] {
   
   def rcDir(proj: Project) = new File(proj.rcDir, rcType)
   
-  // not guaranteed to be in any particular order
+  // in alphabetical order
   def list(proj: Project) = {
     val listsByType = keyExts.map { keyExt =>    
       rcDir(proj).listFiles.map(_.getName)
         .filter(_.endsWith(keyExt))
     }
     
-    Array.concat(listsByType : _*)
+    Array.concat(listsByType : _*).sortWith(_ < _)
   }
   
   def metadataFile(proj: Project, name: String) =

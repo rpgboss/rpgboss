@@ -119,16 +119,10 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
         val bounds = g.getClipBounds
         val tilesize = curTilesize
         
-        val minX = bounds.getMinX/tilesize
-        val maxX = bounds.getMaxX/tilesize
-        val minY = bounds.getMinY/tilesize
-        val maxY = bounds.getMaxY/tilesize
-        
-        val minXTile = minX.toInt
-        val minYTile = minY.toInt
-        
-        val maxXTile = min(vs.mapMeta.xSize-1, maxX.toInt)
-        val maxYTile = min(vs.mapMeta.ySize-1, maxY.toInt)
+        val (minX, minY, maxX, maxY, minXTile, minYTile, maxXTile, maxYTile) =
+          TileUtils.getTileBounds(
+              g.getClipBounds(), tilesize, tilesize, 
+              vs.mapMeta.xSize, vs.mapMeta.ySize)
         
         logger.info("Paint Tiles: x: [%d,%d], y: [%d,%d]".format(
           minXTile, maxXTile, minYTile, maxYTile))
@@ -204,18 +198,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
         
         if(selectedLayer == Evt) {
           // draw grid if on evt layer
-          g.setComposite(AlphaComposite.getInstance(
-            AlphaComposite.SRC_OVER, 0.5f))
-          g.setStroke(new BasicStroke(2.0f))
-          g.setColor(new Color(0f, 0f, 0f, 0.5f))
-          for(xTile <- minXTile to maxXTile+1) {
-            g.draw(new Line2D.Double(xTile*tilesize, minYTile*tilesize,
-                                     xTile*tilesize, (maxYTile+1)*tilesize))
-          }
-          for(yTile <- minYTile to maxYTile+1) {
-            g.draw(new Line2D.Double(minXTile*tilesize, yTile*tilesize,
-                                     (maxXTile+1)*tilesize, yTile*tilesize))
-          }
+          TileUtils.drawGrid(
+              g, tilesize, tilesize, minXTile, minYTile, maxXTile, maxYTile)
           
           // draw selection square
           eventCursor.optionallyDrawSelRect(g, tilesize, tilesize)

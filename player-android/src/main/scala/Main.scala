@@ -1,8 +1,8 @@
 package rpgboss.player
 
 import android.os.Bundle
-
 import com.badlogic.gdx.backends.android._
+import java.io.File
 
 class Main extends AndroidApplication {
   override def onCreate(savedInstanceState: Bundle) {
@@ -13,6 +13,6 @@ class Main extends AndroidApplication {
     config.useWakelock = true
     config.depth = 0
     config.useGL20 = false
-    initialize(new MyGame(), config)
+    initialize(new MyGame(new File("")), config)
   }
 }

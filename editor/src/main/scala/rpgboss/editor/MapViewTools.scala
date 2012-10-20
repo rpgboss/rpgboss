@@ -3,9 +3,10 @@ package rpgboss.editor
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
 import rpgboss.model._
+import rpgboss.model.Constants.DirectionMasks._
+import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.model.resource.RpgMap._
-import rpgboss.model.resource.Autotile.DirectionMasks._
 
 import scala.annotation.tailrec
 
@@ -39,7 +40,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
     def getAutotileNum(x: Int, y: Int) = layerAry(y)(x*bytesPerTile+1) & 0xff
     def findLast(stopPredicate: IntVec => Boolean, begin: IntVec, dir: Int) =
     {
-      val dirOffset = offsets(dir)
+      val dirOffset = DirectionOffsets(dir)
       @tailrec def testTile(cur: IntVec) : IntVec = {
         val nextTile = cur+dirOffset
         // stop if next is out of bounds, non autotile, or diferent autotile
@@ -84,7 +85,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
             // This is easy. Just iterate through directions, setting flags
             // Mutable is more readable in this case
             var newConfig = 0
-            for((mask, (dx, dy)) <- Autotile.DirectionMasks.offsets;
+            for((mask, (dx, dy)) <- DirectionOffsets;
                 if diffTypeOutsideSame(xToSet+dx, yToSet+dy))
               newConfig = newConfig | mask
             
@@ -101,7 +102,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
             // either find different tile, or run into larger wall
             def wallBoundary(tileVec: IntVec) = 
               diffTypeOutsideDiff(tileVec) || 
-              !diffTypeOutsideDiff(tileVec+offsets(NORTH))
+              !diffTypeOutsideDiff(tileVec+DirectionOffsets(NORTH))
             
             val findWallBoundary = 
               findLast(wallBoundary, (xToSet, wallNorth), _: Int)
