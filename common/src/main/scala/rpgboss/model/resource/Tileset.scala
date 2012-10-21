@@ -13,7 +13,7 @@ import javax.imageio._
 import java.io._
 import java.awt.image._
 
-case class TilesetMetadata(passabilities: Array[Byte] = Array.empty)
+case class TilesetMetadata(blockedDirsAry: Array[Array[Byte]])
 
 case class Tileset(proj: Project,
                    name: String, 
@@ -25,6 +25,8 @@ extends TiledImageResource[Tileset, TilesetMetadata]
   
   def tileH = tilesize
   def tileW = tilesize
+  val xTiles = img.getWidth()/tileW
+  val yTiles = img.getHeight()/tileH
 }
 
 object Tileset extends MetaResource[Tileset, TilesetMetadata] {
@@ -34,7 +36,16 @@ object Tileset extends MetaResource[Tileset, TilesetMetadata] {
   def tilesize = 32
   def halftile = tilesize/2
   
-  def defaultInstance(proj: Project, name: String) = 
-    Tileset(proj, name, TilesetMetadata())
+  def defaultInstance(proj: Project, name: String) = {
+    val tilesetWOMetadata = Tileset(proj, name, TilesetMetadata(Array.empty))
+    
+    import Constants.DirectionMasks._
+    
+    // Generate blockedDirs array
+    val row = Array.fill(tilesetWOMetadata.xTiles)(NONE.toByte)
+    val blockedDirs = Array.tabulate(tilesetWOMetadata.yTiles)(i => row.clone())
+    
+    tilesetWOMetadata.copy(metadata = TilesetMetadata(blockedDirs))    
+  }
 }
 

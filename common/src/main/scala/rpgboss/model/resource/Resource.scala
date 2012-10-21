@@ -48,15 +48,15 @@ trait MetaResource[T, MT] {
   def metadataFile(proj: Project, name: String) =
     new File(rcDir(proj), "%s.metadata.json".format(name))
   
-  def defaultInstance(proj: Project, name: String) : T
+  // Create a new instance with the default metadata
+  def defaultInstance(proj: Project, name: String): T
   
-  def apply(proj: Project, name: String, metadata: MT) : T
+  def apply(proj: Project, name: String, metadata: MT): T
   
   // Returns default instance in case of failure to retrieve
-  
   def readFromDisk(proj: Project, name: String)(implicit m: Manifest[MT]): T = {
     implicit val formats = DefaultFormats
-    metadataFile(proj, name).getReader().map { reader => 
+    metadataFile(proj, name).getReader().map { reader =>
       apply(proj, name, Serialization.read[MT](reader))
     } getOrElse defaultInstance(proj, name)
   }

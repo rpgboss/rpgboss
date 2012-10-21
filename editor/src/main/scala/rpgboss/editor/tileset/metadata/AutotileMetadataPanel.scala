@@ -24,28 +24,23 @@ class AutotileMetadataPanel(sm: StateMaster)
   
   def srcImg = TileUtils.getAutotileCollageImg(autotiles)
   
-  def getTileMeta(xTile: Int, yTile: Int): Option[(Byte)] = {
-    val idx = xTile+yTile*tileClicker.xTilesVisible
+  def getTileMeta(xTile: Int, yTile: Int) = {
+    val idx = xTile
     if(idx < autotiles.length) {
-      Some((autotiles(idx).metadata.blockedDirs))
+      Some(TileMetadata(autotiles(idx).metadata.blockedDirs))
     } else None
   }
   
-  def clickTile(xTile: Int, yTile: Int): Unit = {
-    tileMetadataPanel.getNewTileMetadataFromClick(xTile, yTile) map { 
-      newMetadata =>
-        val (newBlockedDirs) = newMetadata      
-        val idx = xTile+yTile*tileClicker.xTilesVisible
-        val autotile = autotiles(idx)
-        val newAutotileMetadata = autotile.metadata.copy(
-            blockedDirs = newBlockedDirs)
-        autotiles.update(idx, autotile.copy(metadata = newAutotileMetadata))
-        dirtyIdxs.add(idx)
-    }
+  def updateTileMeta(xTile: Int, yTile: Int, newMetadata: TileMetadata) = {
+    val (newBlockedDirs) = newMetadata      
+    val idx = xTile
+    val autotile = autotiles(idx)
+    val newAutotileMetadata = autotile.metadata.copy(
+        blockedDirs = newMetadata.blockedDirs)
+    autotiles.update(idx, autotile.copy(metadata = newAutotileMetadata))
+    dirtyIdxs.add(idx)
   }
   
   val tileMetadataPanel = new TileMetadataPanel(srcImg, this)
-  def tileClicker = tileMetadataPanel.tileClicker
-  
   contents += tileMetadataPanel
 }

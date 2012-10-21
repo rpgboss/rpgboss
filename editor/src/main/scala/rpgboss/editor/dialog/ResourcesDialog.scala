@@ -19,7 +19,7 @@ class ResourcesDialog(owner: Window, sm: StateMaster)
   val tabPane = new TabbedPane() {
     import TabbedPane._
     pages += new Page("Autotiles", new AutotileMetadataPanel(sm))
-    pages += new Page("Tilesets", new BoxPanel(Orientation.Vertical))
+    pages += new Page("Tilesets", new TilesetsMetadataPanel(sm))
   }
   
   contents = new DesignGridPanel {
