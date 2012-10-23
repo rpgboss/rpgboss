@@ -41,6 +41,12 @@ class AutotileMetadataPanel(sm: StateMaster)
     dirtyIdxs.add(idx)
   }
   
+  def save() = {
+    for(i <- dirtyIdxs) {
+      autotiles(i).writeMetadata()
+    }
+  }
+  
   val tileMetadataPanel = new TileMetadataPanel(srcImg, this)
   contents += tileMetadataPanel
 }

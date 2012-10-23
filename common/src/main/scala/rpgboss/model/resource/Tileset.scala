@@ -13,7 +13,11 @@ import javax.imageio._
 import java.io._
 import java.awt.image._
 
-case class TilesetMetadata(blockedDirsAry: Array[Array[Byte]])
+/**
+ * @param blockedDirsAry  Array of blocked directions. Should be a Byte,
+ *                        but lift-json doesn't support that. Fuck it.
+ */
+case class TilesetMetadata(blockedDirsAry: Array[Array[Int]])
 
 case class Tileset(proj: Project,
                    name: String, 
@@ -42,7 +46,7 @@ object Tileset extends MetaResource[Tileset, TilesetMetadata] {
     import Constants.DirectionMasks._
     
     // Generate blockedDirs array
-    val row = Array.fill(tilesetWOMetadata.xTiles)(NONE.toByte)
+    val row = Array.fill(tilesetWOMetadata.xTiles)(NONE)
     val blockedDirs = Array.tabulate(tilesetWOMetadata.yTiles)(i => row.clone())
     
     tilesetWOMetadata.copy(metadata = TilesetMetadata(blockedDirs))    

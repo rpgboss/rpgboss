@@ -29,7 +29,8 @@ class TilesetsMetadataPanel(sm: StateMaster)
   // tilesetIdx is always going to be valid when this is called
   def getTileMeta(xTile: Int, yTile: Int) = {
     val tileset = tilesets(tilesetIdx)
-    Some(TileMetadata(tileset.metadata.blockedDirsAry(yTile)(xTile)))
+    val blockedDir = tileset.metadata.blockedDirsAry(yTile)(xTile)
+    Some(TileMetadata(blockedDir.toByte))
   }
   
   // tilesetIdx is always going to be valid when this is called
@@ -57,6 +58,12 @@ class TilesetsMetadataPanel(sm: StateMaster)
     
     tilesetIdx = idx
     metadataPanelContainer.revalidate()
+  }
+  
+  def save() = {
+    for(i <- dirtyTilesetIdxs) {
+      tilesets(i).writeMetadata()
+    }
   }
   
   if(!tilesets.isEmpty) updateTilesetSelection(0)

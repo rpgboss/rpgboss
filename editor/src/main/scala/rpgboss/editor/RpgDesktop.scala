@@ -26,7 +26,7 @@ object RpgDesktop
   }
   
   override def startup(args: Array[String]) = {
-    System.setProperty("sun.awt.exception.handler", getClass().getName());
+    System.setProperty("sun.awt.exception.handler", "rpgboss.editor.EDTErrorHandler");
     Thread.setDefaultUncaughtExceptionHandler(this);
     
     // code adapted from SimpleSwingApplication.scala
@@ -35,4 +35,16 @@ object RpgDesktop
     t.visible = true
   }
 }
+
+class EDTErrorHandler  
+{  
+  /** 
+   * This method is invoked by the AWT event dispatch mechanism when an 
+   * unexpected exception or error is thrown during event dispatching. 
+   */  
+  def handle(t: Throwable)  
+  {  
+    t.printStackTrace()
+  }  
+}  
 
