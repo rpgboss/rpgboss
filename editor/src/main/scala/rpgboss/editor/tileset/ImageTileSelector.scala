@@ -66,7 +66,7 @@ extends ScrollPane
                   null)
     }
     
-    if(allowMultiselect) {
+    if(drawSelectionSq) {
       TileRect(xRngInSelectorSpace.head, yRngInSelectorSpace.head,
                xRngInSelectorSpace.length, yRngInSelectorSpace.length)
         .optionallyDrawSelRect(g, tilesizeX, tilesizeY)

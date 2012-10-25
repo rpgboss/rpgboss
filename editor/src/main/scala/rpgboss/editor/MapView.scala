@@ -1,6 +1,7 @@
 package rpgboss.editor
 
 import rpgboss.lib._
+import rpgboss.editor.lib.SwingUtils._
 import rpgboss.cache._
 import rpgboss.model._
 import rpgboss.model.resource._
@@ -19,6 +20,7 @@ import rpgboss.model.event.RpgEvent
 import rpgboss.editor.dialog.EventDialog
 import com.google.common.cache._
 import java.awt.image.BufferedImage
+import scala.collection.mutable.Buffer
 
 class MapView(
     projectPanel: ProjectPanel, 
@@ -79,26 +81,12 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   //--- WIDGETS --//
   val toolbar = new BoxPanel(Orientation.Horizontal) {
     minimumSize = new Dimension(200, 32)
-    def addBtnsAsGrp(btns: List[RadioButton]) = {
-      val grp = new ButtonGroup(btns : _*)
-      grp.select(btns.head)
-      
-      contents ++= btns
-    }
     
-    def enumButtons[T](enum: ListedEnum[T]) = 
-      enum.valueList.map { eVal =>
-        new RadioButton() {
-          action = Action(eVal.toString) { 
-            enum.selected = eVal 
-            resizeRevalidateRepaint()
-          }
-        }
-      }
-    
-    addBtnsAsGrp(enumButtons(MapLayers))
-    addBtnsAsGrp(enumButtons(MapViewTools))
-    addBtnsAsGrp(List(s11Btn, s12Btn, s14Btn))
+    addBtnsAsGrp(contents, 
+        enumButtons(MapLayers, () => resizeRevalidateRepaint()))
+    addBtnsAsGrp(contents, 
+        enumButtons(MapViewTools, () => resizeRevalidateRepaint()))
+    addBtnsAsGrp(contents, List(s11Btn, s12Btn, s14Btn))
     
     contents += Swing.HGlue
   }

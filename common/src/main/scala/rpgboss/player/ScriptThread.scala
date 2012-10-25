@@ -4,9 +4,14 @@ import org.mozilla.javascript.{Context, ScriptableObject, Scriptable}
 import rpgboss.model.resource.Script
 import scala.concurrent.ops.spawn
 import rpgboss.model.MapLoc
+import java.lang.Thread.UncaughtExceptionHandler
 
-case class ScriptThread(game: MyGame, scriptName: String, fnToRun: String = "") {
+case class ScriptThread(game: MyGame, scriptName: String, fnToRun: String = "") 
+  extends UncaughtExceptionHandler
+{
   def run() = spawn {
+    Thread.setDefaultUncaughtExceptionHandler(this)
+    
     val script = Script.readFromDisk(game.project, scriptName)
     val jsInterface = game.state
     
@@ -38,5 +43,9 @@ case class ScriptThread(game: MyGame, scriptName: String, fnToRun: String = "") 
           fnToRun,
           1, null)
     }
+  }
+  
+  def uncaughtException(thread: Thread, ex: Throwable) = {
+    ex.printStackTrace()
   }
 }

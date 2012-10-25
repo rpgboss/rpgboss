@@ -92,24 +92,6 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
     val (xTile, yTile) = srcTile(index, dir, step)
     (xTile*tileW, yTile*tileH)
   }
-  
-  /**
-   * Given the position we want to sprite to be. Give the origin and size of
-   * the sprite reasonably. If we specify the sprite to be at the center of a 
-   * tile, i.e., at (2.5, 7.5), the sprite's bottom should be at 8.0, since we
-   * want the bottom of the sprite to be at the bottom of the tile...
-   * 
-   * Note that the destination's "origin" is the top-left of the sprite, since
-   * we have flipped the y-axis in libgdx.
-   */
-  def dstPosition(posX: Float, posY: Float) : (Float, Float, Float, Float) = {
-    val dstWTiles = tileW.toFloat/Tileset.tilesize.toFloat
-    val dstHTiles = tileH.toFloat/Tileset.tilesize.toFloat
-    val dstOriginX = posX - dstWTiles/2.0f
-    val dstOriginY = posY - dstHTiles + 0.5f
-    
-    (dstOriginX, dstOriginY, dstWTiles, dstHTiles)
-  }
 }
 
 object Spriteset extends MetaResource[Spriteset, SpritesetMetadata] {

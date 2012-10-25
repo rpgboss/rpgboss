@@ -32,20 +32,32 @@ class GameState(game: MyGame, project: Project) {
   
   // protagonist and camera position. Modify all these things on the Gdx thread
   val cameraLoc = new MutableMapLoc()
-  val playerLoc = new MutableMapLoc()
-  var playerDir : Int = SpriteSpec.Directions.SOUTH
-  var playerMoving = false
-  var playerMovingSince: Long = 0
+  var playerEvt: Event = new PlayerEvent(game)
   
   // Called every frame... by MyGame's render call. 
-  def update() = {
+  def update(delta: Float) = {
+    // Update events
+    playerEvt.update(delta)
     
+    // Update windows
+    if(!windows.isEmpty) 
+      windows.head.update(delta, true)
+    if(windows.length > 1)
+      windows.tail.foreach(_.update(delta, false))
+    
+    // Update current transition
     curTransition.synchronized {
       curTransition map { transition =>
         if(transition.done) {
           curTransition = None
         }
       }
+    }
+    
+    // Update camera location
+    if(playerEvt.isMoving) {
+      cameraLoc.x = playerEvt.x
+      cameraLoc.y = playerEvt.y
     }
   }
   
@@ -80,8 +92,14 @@ class GameState(game: MyGame, project: Project) {
   /*
    * Things to do with the player's location and camera
    */
+  
+  def setPlayerSprite(spritespec: SpriteSpec) = syncRun {
+    playerEvt.setSprite(Some(spritespec))
+  }
+  
   def setPlayerLoc(loc: MapLoc) = syncRun {
-    playerLoc.set(loc)
+    playerEvt.x = loc.x
+    playerEvt.y = loc.y
   }
   
   def setCameraLoc(loc: MapLoc) = syncRun {

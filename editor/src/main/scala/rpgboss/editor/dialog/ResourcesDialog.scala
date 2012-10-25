@@ -13,17 +13,14 @@ class ResourcesDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Resources")
 {
   def okFunc() = {
-    autotileMetadataPanel.save()
     tilesetsMetadataPanel.save()
     close()
   }
   
-  val autotileMetadataPanel = new AutotileMetadataPanel(sm)
   val tilesetsMetadataPanel = new TilesetsMetadataPanel(sm)
   
   val tabPane = new TabbedPane() {
     import TabbedPane._
-    pages += new Page("Autotiles", autotileMetadataPanel)
     pages += new Page("Tilesets", tilesetsMetadataPanel)
   }
   

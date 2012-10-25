@@ -17,7 +17,15 @@ import java.awt.image._
  * @param blockedDirsAry  Array of blocked directions. Should be a Byte,
  *                        but lift-json doesn't support that. Fuck it.
  */
-case class TilesetMetadata(blockedDirsAry: Array[Array[Int]])
+case class TilesetMetadata(
+    blockedDirsAry: Array[Array[Int]],
+    heightAry: Array[Array[Int]]) {
+  
+  // Constructor to port legacy data
+  def this(blockedDirsAry: Array[Array[Int]]) = {
+    this(blockedDirsAry, blockedDirsAry.map(a => new Array[Int](a.length)))
+  }
+}
 
 case class Tileset(proj: Project,
                    name: String, 
@@ -41,15 +49,20 @@ object Tileset extends MetaResource[Tileset, TilesetMetadata] {
   def halftile = tilesize/2
   
   def defaultInstance(proj: Project, name: String) = {
-    val tilesetWOMetadata = Tileset(proj, name, TilesetMetadata(Array.empty))
+    val tilesetWOMetadata = Tileset(proj, name, 
+        new TilesetMetadata(Array.empty))
     
     import Constants.DirectionMasks._
     
     // Generate blockedDirs array
-    val row = Array.fill(tilesetWOMetadata.xTiles)(NONE)
-    val blockedDirs = Array.tabulate(tilesetWOMetadata.yTiles)(i => row.clone())
+    val x = tilesetWOMetadata.xTiles
+    val y = tilesetWOMetadata.yTiles
+    val blockedDirsAry = Array.fill(x, y)(NONE)
+    val heightAry      = Array.fill(x, y)(0)
     
-    tilesetWOMetadata.copy(metadata = TilesetMetadata(blockedDirs))    
+    
+    tilesetWOMetadata.copy(metadata = 
+      TilesetMetadata(blockedDirsAry, heightAry))    
   }
 }
 

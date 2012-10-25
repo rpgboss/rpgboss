@@ -32,6 +32,8 @@ object SpriteSpec {
     val STEP3 = 3
     
     val STILL = 1
+    
+    val TOTALSTEPS = 4
   }
 }
 

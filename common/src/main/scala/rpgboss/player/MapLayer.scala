@@ -16,9 +16,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
  */
-class MapLayer(game: MyGame) extends MoveInputHandler {
-  // Add input handling
-  game.inputs.prepend(this)
+class MapLayer(game: MyGame) {
   
   def project = game.project
   def state = game.state
@@ -101,7 +99,7 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
       TextureFilter.Nearest, TextureFilter.Nearest, false)
   
   // Update. Called on Gdx thread before render.
-  def update() = {
+  def update(delta: Float) = {
     if(mapNameOnLastUpdate != state.cameraLoc.map) {
       // Update internal resources for the map
       if(state.cameraLoc.map == -1) {
@@ -113,48 +111,6 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
           Some(new MapAndAssets(project, state.cameraLoc.map))
       }
       mapNameOnLastUpdate = state.cameraLoc.map
-    }
-    
-    import MyKeys._
-    
-    val previouslyMoving = state.playerMoving
-    state.playerMoving = false
-    
-    val baseSpeed = 0.05 // tiles per frame
-    
-    val projSpeed =
-      if((isActive(Left) || isActive(Right)) &&
-         (isActive(Up) || isActive(Down))) {
-        (baseSpeed/math.sqrt(2.0)).toFloat
-      } else {
-        baseSpeed.toFloat
-      }
-    
-    if(isActive(Left)) {
-      state.playerMoving = true
-      state.playerLoc.x -= projSpeed
-      state.playerDir = SpriteSpec.Directions.WEST
-    } else if(isActive(Right)) {
-      state.playerMoving = true
-      state.playerLoc.x += projSpeed
-      state.playerDir = SpriteSpec.Directions.EAST
-    }
-    
-    if(isActive(Up)) {
-      state.playerMoving = true
-      state.playerLoc.y -= projSpeed
-      state.playerDir = SpriteSpec.Directions.NORTH
-    } else if(isActive(Down)) {
-      state.playerMoving = true
-      state.playerLoc.y += projSpeed
-      state.playerDir = SpriteSpec.Directions.SOUTH
-    }
-    
-    if(state.playerMoving) {
-      if(!previouslyMoving) {
-        state.playerMovingSince = System.currentTimeMillis()
-      }
-      state.cameraLoc.set(state.playerLoc)
     }
   }    
       
@@ -172,6 +128,9 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
     val tileR = math.min(map.metadata.xSize-1, cameraR.toInt+1)
     val tileT = math.max(0, cameraT.toInt)
     val tileB = math.min(map.metadata.ySize-1, cameraB.toInt+1)
+    
+    // Where we are in the current second. Varies within [0, 1.0)
+    val whereInSecond = (System.currentTimeMillis() % 1000).toFloat / 1000f
     /*println("Render")
     println(tileL)
     println(tileR)
@@ -194,7 +153,7 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
               val region = 
                 atlasTiles.findRegion("autotile/%s".format(autotile.name))
               
-              val frameIdx = (game.accumDelta*autotile.frames).toInt
+              val frameIdx = (whereInSecond*autotile.frames).toInt
                 
               val srcDestPositions = autotile.getHalfTiles(byte3, frameIdx)
               
@@ -231,42 +190,8 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
       }
     }
     
-    // Draw protagonist
-    val protagonistChar = project.data.characters(project.data.startingParty(0))
-    
-    val region =
-      atlasSprites.findRegion(protagonistChar.sprite.spriteset)
-    val protagonistSpriteset = spritesets(protagonistChar.sprite.spriteset)
-    
-    val step = if(state.playerMoving) {
-      val msPerStep = 128
-      
-      val timeInCycle = (System.currentTimeMillis() % (msPerStep*4)).toInt
-      timeInCycle / msPerStep
-    } else {
-      SpriteSpec.Steps.STILL
-    }
-    
-    val (srcX, srcY) = protagonistSpriteset.srcTexels(
-        protagonistChar.sprite.spriteIndex,
-        state.playerDir,
-        step)
-    
-    val (dstOriginX, dstOriginY, dstWTiles, dstHTiles) = 
-      protagonistSpriteset.dstPosition(
-          state.playerLoc.x, state.playerLoc.y)
-    
-    // Draw protagonist
-    batch.draw(
-        region.getTexture(),
-        dstOriginX.toFloat, 
-        dstOriginY.toFloat,
-        dstWTiles, dstHTiles,
-        region.getRegionX() + srcX, 
-        region.getRegionY() + srcY,
-        protagonistSpriteset.tileW, 
-        protagonistSpriteset.tileH,
-        false, true)
+    // Render the player event
+    state.playerEvt.render(batch, atlasSprites)
     
     batch.end()
   }
@@ -274,7 +199,6 @@ class MapLayer(game: MyGame) extends MoveInputHandler {
   def dispose() = {
     mapAndAssetsOption.map(_.dispose())
     atlasSprites.dispose()
-    game.inputs.remove(this)
     batch.dispose()
   }
 }

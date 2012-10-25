@@ -16,6 +16,7 @@ import java.util.concurrent.Executors
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.FileHandleResolver
 import rpgboss.model.resource.RpgAssetManager
+import java.lang.Thread.UncaughtExceptionHandler
 
 class MutableMapLoc(var map: String = "", var x: Float = 0, var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
@@ -39,7 +40,9 @@ object Global {
   implicit val ec = ExecutionContext.fromExecutorService(pool)
 }
 
-class MyGame(gamepath: File) extends ApplicationListener {
+class MyGame(gamepath: File) 
+  extends ApplicationListener   
+{
   val project = Project.readFromDisk(gamepath).get
   
   val logger = new Logger("Game", Logger.INFO)
@@ -60,10 +63,8 @@ class MyGame(gamepath: File) extends ApplicationListener {
    * If you'd like to specify your objects in some other space, simply
    * change the projection and modelview (transform) matrices.
    */
-  // Where in the "second" we are. Varies from 0 to 1.0
-  var accumDelta : Float = 0.0f
   
-  val state = new GameState(this, project)
+  var state: GameState = null
   
   val assets = new RpgAssetManager(project)
   
@@ -71,6 +72,7 @@ class MyGame(gamepath: File) extends ApplicationListener {
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
     
+    state = new GameState(this, project)
     mapLayer = new MapLayer(this)
     screenLayer = new ScreenLayer(this, state)
     
@@ -88,17 +90,15 @@ class MyGame(gamepath: File) extends ApplicationListener {
     import Tileset._
     
     val delta = Gdx.graphics.getDeltaTime()
-    // Set delta time
-    accumDelta = (accumDelta + delta)% 1.0f
     
     // Log fps
     fps.log()
     
     // update state
-    state.update()
+    state.update(delta)
     
-    mapLayer.update()
-    screenLayer.update()
+    mapLayer.update(delta)
+    screenLayer.update(delta)
     
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
@@ -113,5 +113,4 @@ class MyGame(gamepath: File) extends ApplicationListener {
   
   override def resize(x: Int, y: Int) {}
   override def resume() {}
-
 }

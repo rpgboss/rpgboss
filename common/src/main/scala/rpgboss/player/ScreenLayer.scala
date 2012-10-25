@@ -39,8 +39,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
   
-  def update() = {
-    
+  def update(delta: Float) = {
   }
   
   def render() = {
@@ -63,10 +62,6 @@ class ScreenLayer(game: MyGame, state: GameState) {
     }
     
     // Render all windows
-    if(!state.windows.isEmpty) 
-      state.windows.head.update(true)
-    if(state.windows.length > 1)
-      state.windows.tail.foreach(_.update(false))
     state.windows.foreach(_.render(batch))
     
     batch.end()

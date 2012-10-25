@@ -165,7 +165,7 @@ case class Window(assets: RpgAssetManager,
     }
   }
   
-  def update(acceptInput: Boolean) = {
+  def update(delta: Float, acceptInput: Boolean) = {
     // change state of "expired" opening or closing animations
     if(stateAge >= openCloseMs) {
       state match {

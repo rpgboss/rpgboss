@@ -1,7 +1,6 @@
 package rpgboss.editor.tileset.metadata
 
 import scala.swing._
-
 import rpgboss.editor.tileset._
 import rpgboss.editor.lib.SwingUtils._
 import scala.swing.event._
@@ -13,14 +12,24 @@ import rpgboss.editor.StateMaster
 import javax.imageio.ImageIO
 import java.awt.geom.Line2D
 import java.awt.AlphaComposite
+import rpgboss.editor.ListedEnum
+import java.awt.Font
+import java.awt.Color
 
-object MetadataModeEnum extends Enumeration {
+object MetadataMode
+  extends Enumeration 
+  with ListedEnum[Enumeration#Value]
+{
   type MetadataMode = Value
-  val Passability = Value
+  val Passability, Height = Value
+  
+  val valueList = List(Passability, Height)
+  
+  selected = Passability
 }
-import MetadataModeEnum._
 
-case class TileMetadata(blockedDirs: Byte)
+
+case class TileMetadata(blockedDirs: Byte, height: Byte)
 
 trait TileMetadataPanelOwner {
   /**
@@ -36,24 +45,29 @@ trait TileMetadataPanelOwner {
 }
 
 class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner) 
-  extends BoxPanel(Orientation.Horizontal) {
+  extends BoxPanel(Orientation.Horizontal) 
+{  
+  import MetadataMode._
   
   // Returns the new tile metadata as a result of the click
   def updatedMetadata(xTile: Int, yTile: Int): Option[TileMetadata] = {
-    owner.getTileMeta(xTile, yTile) map { curMetadata => 
+    owner.getTileMeta(xTile, yTile) map { metadata => 
       import Constants.DirectionMasks._
       
       val newMetadata = 
-        if(tileClicker.mode == Passability) {
+        if(MetadataMode.selected == Passability) {
           val newBlockedDirs = 
-            if(allBlocked(curMetadata.blockedDirs)) {
+            if(allBlocked(metadata.blockedDirs)) {
               NONE
             } else {
               ALLCARDINAL
             }
-          curMetadata.copy(blockedDirs = newBlockedDirs.toByte)
+          metadata.copy(blockedDirs = newBlockedDirs.toByte)
+        } else if(MetadataMode.selected == Height) {
+          val newHeight = if(metadata.height == 5) 0 else metadata.height+1 
+          metadata.copy(height = newHeight.toByte)
         } else {
-          curMetadata
+          metadata
         }
       
       newMetadata
@@ -79,7 +93,8 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
     val iconPass = loadIcon("oxygen/22x22/actions/dialog-ok-apply_mod.png")
     val iconStop = loadIcon("oxygen/22x22/actions/edit-delete_mod.png")
     
-    var mode: MetadataMode = Passability
+    val iconHeights = for(i <- 0 to 5) 
+      yield loadIcon("tilesetMetadataIcons/height%d.png".format(i))
     
     override def canvasPanelPaintComponent(g: Graphics2D) = {
       super.canvasPanelPaintComponent(g)
@@ -105,29 +120,36 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
         g.drawImage(icon, x1, y1, null)
       }
       
+      def draw32Icon(icon: BufferedImage, xTile: Int, yTile: Int) = {
+        val x1 = xTile*tilesizeX
+        val y1 = yTile*tilesizeY
+        g.drawImage(icon, x1, y1, null)
+      }
+      
       /*
-       * Since the coordinates are natively in the selector space, we must
-       * covert to the srcImg space (tileset space) before we do ops on it
+       * xTile and yTile are in selector space
+       * xTileTS and yTileTS are in tileset space
        */
-      for(yTileSelSpace <- minYTile to maxYTile;
-          xTileSelSpace <- minXTile to maxXTile; 
-          val (xTile, yTile) = toTilesetSpace(xTileSelSpace, yTileSelSpace); 
-          metadata <- owner.getTileMeta(xTile, yTile)) {
-          
-        if(allPassable(metadata.blockedDirs))
-          draw22Icon(iconPass, xTileSelSpace, yTileSelSpace)
-        else if(allBlocked(metadata.blockedDirs))
-          draw22Icon(iconStop, xTileSelSpace, yTileSelSpace)
-        else
-          None
+      for(yTile <- minYTile to maxYTile;
+          xTile <- minXTile to maxXTile; 
+          val (xTileTS, yTileTS) = toTilesetSpace(xTile, yTile); 
+          metadata <- owner.getTileMeta(xTileTS, yTileTS)) {
+        
+        if(MetadataMode.selected == Passability) {
+          if(allPassable(metadata.blockedDirs))
+            draw22Icon(iconPass, xTile, yTile)
+          else if(allBlocked(metadata.blockedDirs))
+            draw22Icon(iconStop, xTile, yTile)
+          else
+            None
+        } else if(MetadataMode.selected == Height) {
+          draw32Icon(iconHeights(metadata.height), xTile, yTile)
+        }
       }
     }
   }
-    
+  
+  val outerThis = this
   
   contents += tileClicker
-  
-  contents += new BoxPanel(Orientation.Vertical) {
-    
-  }
 }
