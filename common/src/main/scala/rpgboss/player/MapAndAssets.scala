@@ -49,6 +49,123 @@ class MapAndAssets(project: Project, name: String) {
     tilesetPix.dispose()
   }
   
+  /**
+   * Tests if there is a collision of a box moving from (x0, y0) to 
+   * (x0+dx, x0+dy).
+   * 
+   * Will make optimizations to only test for points along the "leading" edgess
+   */
+  def mapCollisionBox(
+      x0: Float, 
+      y0: Float, 
+      dx: Float, 
+      dy: Float, 
+      size: Float): Boolean = 
+  {    
+    import math._
+    val halfsize = size/2
+    
+    if(dy == 0f) {
+      val edgeX = x0+signum(dx)*halfsize
+      mapCollisionPoint(edgeX, y0-halfsize, dx, dy) ||
+      mapCollisionPoint(edgeX, y0+halfsize, dx, dy)
+    } else if(dx == 0f) {
+      val edgeY = y0+signum(dy)*halfsize
+      mapCollisionPoint(x0+halfsize, edgeY, dx, dy) ||
+      mapCollisionPoint(x0-halfsize, edgeY, dx, dy)
+    } else {
+      val edgeXCenterOffset = signum(dx)*halfsize
+      val edgeYCenterOffset = signum(dy)*halfsize
+      mapCollisionPoint(x0+edgeXCenterOffset, y0+edgeYCenterOffset, dx, dy) ||
+      mapCollisionPoint(x0+edgeXCenterOffset, y0-edgeYCenterOffset, dx, dy) ||
+      mapCollisionPoint(x0-edgeXCenterOffset, y0+edgeYCenterOffset, dx, dy)
+    }
+  }
+  
+  /**
+   * Test if there is a collision of a POINT moving from positions from 
+   * (x0, y0) to (x0+dx, x0+dy).
+   * 
+   * Generally speaking one will want to test the Collission of the four
+   * corners of a bounding box, so use mapCollisionBox
+   * 
+   * @return  true if there is a collision, false if it's a pass
+   */
+  def mapCollisionPoint(x0: Float, y0: Float, dx: Float, dy: Float): Boolean = 
+  {
+    import RpgMap._
+    import Constants.DirectionMasks._
+    
+    val xTile0 = x0.toInt
+    val yTile0 = y0.toInt
+    val xTile1 = (x0+dx).toInt
+    val yTile1 = (y0+dy).toInt
+    
+    // Check if destination tile is within map. If not, it's a collision
+    if(xTile1 < 0 || xTile1 >= map.metadata.xSize || 
+        yTile1 < 0 || yTile1 >= map.metadata.ySize) {
+      return true
+    }
+    
+    // If the point doesn't even change which tile it's in, allow a pass.
+    val changeTileX = xTile0 != xTile1
+    val changeTileY = yTile0 != yTile1
+    
+    def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
+      val xIdx = xTile*bytesPerTile
+      
+      // Test top layer first, as if the top layer provides an answer, there is
+      // no need to test subsequent layers
+      for(layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer))
+      {
+        val row = layerAry(yTile)
+        val byte1 = row(xIdx)
+        val byte2 = row(xIdx+1)
+        val byte3 = row(xIdx+2)
+  
+        if(byte1 < 0) {
+          // Empty tile or autotile
+          if(byte1 == autotileByte) {
+            return autotiles(byte2).metadata.blockedDirs
+          } else { 
+            // Do nothing... just continue with next layer
+          }
+        } else { // tileset tile
+          return tilesets(byte1).metadata.blockedDirsAry(yTile)(xTile).toByte
+        }
+      }
+      
+      // It seems that all layers had an empty tile. Default to not blocked
+      return NONE.toByte
+    }
+    
+    if(!changeTileX && !changeTileY) {
+      return false
+    } else {
+      val blockedDirs0 = getBlockedDirsOf(xTile0, yTile0)
+      val blockedDirs1 = getBlockedDirsOf(xTile1, yTile1)
+      
+      def isBlocked(blockMask: Byte, dir: Int) = (blockMask & dir) == dir
+      
+      if(changeTileX) {
+        // Test x direction collision first
+        if(dx > 0) {
+          return isBlocked(blockedDirs0, EAST)||isBlocked(blockedDirs1, WEST)
+        } else {
+          return isBlocked(blockedDirs0, WEST)||isBlocked(blockedDirs1, EAST)
+        }
+      } else {
+        // Test y direction collision next. 
+        // (We've established that tile changes in at least one direction.)
+        if(dy > 0) {
+          return isBlocked(blockedDirs0, SOUTH)||isBlocked(blockedDirs1, NORTH)
+        } else {
+          return isBlocked(blockedDirs0, NORTH)||isBlocked(blockedDirs1, SOUTH)
+        }
+      } 
+    }
+  }
+  
   //info("Packed tilesets and autotiles into %d pages".format(
   //    packerTiles.getPages().size))
   

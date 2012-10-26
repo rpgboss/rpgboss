@@ -16,34 +16,26 @@ class PlayerEvent(game: MyGame)
     var vx = 0f
     var vy = 0f
     
-    val baseSpeed = 3.0f // tiles per second
-    
-    val projSpeed =
-      if((isActive(Left) || isActive(Right)) &&
-         (isActive(Up) || isActive(Down))) {
-        (baseSpeed/math.sqrt(2.0)).toFloat
-      } else {
-        baseSpeed.toFloat
-      }
-    
-    if(isActive(Left)) {
-      playerMoving = true
-      vx = -projSpeed
-      dir = SpriteSpec.Directions.WEST
-    } else if(isActive(Right)) {
-      playerMoving = true
-      vx = projSpeed
-      dir = SpriteSpec.Directions.EAST
-    }
+    val speed = 3.0f // tiles per second
     
     if(isActive(Up)) {
       playerMoving = true
-      vy = -projSpeed
+      vy = -speed
       dir = SpriteSpec.Directions.NORTH
     } else if(isActive(Down)) {
       playerMoving = true
-      vy = projSpeed
+      vy = speed
       dir = SpriteSpec.Directions.SOUTH
+    }
+    
+    if(isActive(Left)) {
+      playerMoving = true
+      vx = -speed
+      dir = SpriteSpec.Directions.WEST
+    } else if(isActive(Right)) {
+      playerMoving = true
+      vx = speed
+      dir = SpriteSpec.Directions.EAST
     }
     
     setMoving(playerMoving, vx, vy)

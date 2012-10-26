@@ -72,12 +72,13 @@ class Event(
     spriteIdx = s.spriteIndex
     graphicWTiles = spriteset.tileW.toFloat/Tileset.tilesize.toFloat
     graphicHTiles = spriteset.tileH.toFloat/Tileset.tilesize.toFloat
-    boundBoxTiles = graphicWTiles
+    // Multiplier to allow sprites to fit into other tiles
+    boundBoxTiles = graphicWTiles*0.8f
     dir = s.dir
     stillStep = s.step
   } getOrElse {
     spriteset = null
-    boundBoxTiles = 1.0f
+    boundBoxTiles = 1.0f*0.8f
   }
   
   /**
@@ -98,8 +99,61 @@ class Event(
   def update(delta: Float) = {
     // Handle moving
     if(isMoving) {
-      x += delta*vx
-      y += delta*vy 
+      import math._
+      
+      val totalDx = delta*vx
+      val totalDy = delta*vy
+      
+      var dxTravelled = 0f
+      var dyTravelled = 0f
+      
+      def travelBlocked(dxArg: Float, dyArg: Float) = {
+        game.mapLayer.mapAndAssetsOption map { mapAndAssets =>
+          mapAndAssets.mapCollisionBox(x, y, dxArg, dyArg, boundBoxTiles)
+        } getOrElse false
+      }
+      
+      var travelDone = false
+      while(!travelDone)    
+      {
+        // Increment to travel and test collisions with
+        // This is so that the increments are along the travel line set by
+        // totalDx and totalDy
+        val (dx, dy) = if(abs(totalDx) > abs(totalDy)) {
+          val dx = min(abs(0.05f), abs(totalDx))*signum(totalDx)
+          val dy = totalDy/totalDx*dx
+          (dx, dy)
+        } else {
+          val dy = min(abs(0.05f), abs(totalDy))*signum(totalDy)
+          val dx = totalDx/totalDy*dy
+          (dx, dy)
+        }
+        
+        val travellingInX = (totalDx != 0) && !travelBlocked(dx, 0)
+        
+        if(travellingInX) {
+          x += dx
+          dxTravelled += dx
+          if(abs(dxTravelled) >= abs(totalDx)) {
+            travelDone = true
+          }
+        }
+        
+        val travellingInY = (totalDy != 0) && !travelBlocked(0, dy)
+        
+        if(travellingInY) {
+          y += dy
+          dyTravelled += dy
+          
+          if(abs(dyTravelled) >= abs(totalDy)) {
+            travelDone = true
+          }
+        }
+        
+        if(!travellingInX && !travellingInY) {
+          travelDone = true
+        }
+      }
     }
   }
   
