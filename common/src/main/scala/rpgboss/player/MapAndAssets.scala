@@ -49,42 +49,84 @@ class MapAndAssets(project: Project, name: String) {
     tilesetPix.dispose()
   }
   
+  def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
+    import RpgMap._
+    import Constants.DirectionMasks._
+    val xIdx = xTile*bytesPerTile
+    
+    // Test top layer first, as if the top layer provides an answer, there is
+    // no need to test subsequent layers
+    for(layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer))
+    {
+      val row = layerAry(yTile)
+      val byte1 = row(xIdx)
+      val byte2 = row(xIdx+1)
+      val byte3 = row(xIdx+2)
+
+      if(byte1 < 0) {
+        // Empty tile or autotile
+        if(byte1 == autotileByte) {
+          return autotiles(byte2).metadata.blockedDirs
+        } else { 
+          // Do nothing... just continue with next layer
+        }
+      } else { // tileset tile
+        return tilesets(byte1).metadata.blockedDirsAry(yTile)(xTile).toByte
+      }
+    }
+    
+    // It seems that all layers had an empty tile. Default to not blocked
+    return NONE.toByte
+  }
+  
   /**
    * Tests if there is a collision of a box moving from (x0, y0) to 
    * (x0+dx, x0+dy).
    * 
-   * Will make optimizations to only test for points along the "leading" edgess
+   * Important restriction - only one of dx or dy may be nonzero.
+   * Implement diagonal movement as small alternating movements in dx and dy.
+   * 
+   * Will make optimizations to only test for points along the leading
+   * 
+   * @return  Returning a tuple allows us to implement sliding around corners.
+   *          Essentially, if dx != 0, then tuple represents collisions in
+   *          the tests of:
+   *          ((xEdge+dx, y+boundingBox/2), (xEdge+dx, y-boundingBox/2))
    */
   def mapCollisionBox(
       x0: Float, 
       y0: Float, 
       dx: Float, 
       dy: Float, 
-      size: Float): Boolean = 
+      size: Float): (Boolean, Boolean) = 
   {    
     import math._
     val halfsize = size/2
     
     if(dy == 0f) {
       val edgeX = x0+signum(dx)*halfsize
-      mapCollisionPoint(edgeX, y0-halfsize, dx, dy) ||
-      mapCollisionPoint(edgeX, y0+halfsize, dx, dy)
+      (
+          mapCollisionPoint(edgeX, y0+halfsize, dx, dy),
+          mapCollisionPoint(edgeX, y0-halfsize, dx, dy)
+      )
     } else if(dx == 0f) {
       val edgeY = y0+signum(dy)*halfsize
-      mapCollisionPoint(x0+halfsize, edgeY, dx, dy) ||
-      mapCollisionPoint(x0-halfsize, edgeY, dx, dy)
+      (
+          mapCollisionPoint(x0+halfsize, edgeY, dx, dy),
+          mapCollisionPoint(x0-halfsize, edgeY, dx, dy)
+      )
     } else {
-      val edgeXCenterOffset = signum(dx)*halfsize
-      val edgeYCenterOffset = signum(dy)*halfsize
-      mapCollisionPoint(x0+edgeXCenterOffset, y0+edgeYCenterOffset, dx, dy) ||
-      mapCollisionPoint(x0+edgeXCenterOffset, y0-edgeYCenterOffset, dx, dy) ||
-      mapCollisionPoint(x0-edgeXCenterOffset, y0+edgeYCenterOffset, dx, dy)
+      (true, true) // Not sure why trying to move diagonal. Disallow this.
     }
   }
   
   /**
    * Test if there is a collision of a POINT moving from positions from 
    * (x0, y0) to (x0+dx, x0+dy).
+   * 
+   * However, this is only accurate if only one of dx or dy is nonzero.
+   * This is because diagonal movement is implemented as small alternating
+   * movements along x and y axis.
    * 
    * Generally speaking one will want to test the Collission of the four
    * corners of a bounding box, so use mapCollisionBox
@@ -110,34 +152,6 @@ class MapAndAssets(project: Project, name: String) {
     // If the point doesn't even change which tile it's in, allow a pass.
     val changeTileX = xTile0 != xTile1
     val changeTileY = yTile0 != yTile1
-    
-    def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
-      val xIdx = xTile*bytesPerTile
-      
-      // Test top layer first, as if the top layer provides an answer, there is
-      // no need to test subsequent layers
-      for(layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer))
-      {
-        val row = layerAry(yTile)
-        val byte1 = row(xIdx)
-        val byte2 = row(xIdx+1)
-        val byte3 = row(xIdx+2)
-  
-        if(byte1 < 0) {
-          // Empty tile or autotile
-          if(byte1 == autotileByte) {
-            return autotiles(byte2).metadata.blockedDirs
-          } else { 
-            // Do nothing... just continue with next layer
-          }
-        } else { // tileset tile
-          return tilesets(byte1).metadata.blockedDirsAry(yTile)(xTile).toByte
-        }
-      }
-      
-      // It seems that all layers had an empty tile. Default to not blocked
-      return NONE.toByte
-    }
     
     if(!changeTileX && !changeTileY) {
       return false

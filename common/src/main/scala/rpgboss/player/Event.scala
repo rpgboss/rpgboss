@@ -101,16 +101,20 @@ class Event(
     if(isMoving) {
       import math._
       
-      val totalDx = delta*vx
-      val totalDy = delta*vy
+      var totalDx = delta*vx
+      var totalDy = delta*vy
       
       var dxTravelled = 0f
       var dyTravelled = 0f
       
-      def travelBlocked(dxArg: Float, dyArg: Float) = {
-        game.mapLayer.mapAndAssetsOption map { mapAndAssets =>
-          mapAndAssets.mapCollisionBox(x, y, dxArg, dyArg, boundBoxTiles)
-        } getOrElse false
+      def getCollisions(dxArg: Float, dyArg: Float) = {
+        if(dxArg == 0 && dyArg == 0) {
+          (false, false) 
+        } else {
+          game.mapLayer.mapAndAssetsOption map { mapAndAssets =>
+            mapAndAssets.mapCollisionBox(x, y, dxArg, dyArg, boundBoxTiles)
+          } getOrElse (true, true)
+        }
       }
       
       var travelDone = false
@@ -129,29 +133,71 @@ class Event(
           (dx, dy)
         }
         
-        val travellingInX = (totalDx != 0) && !travelBlocked(dx, 0)
+        // Determine collisions in x direction on the y-positive corner
+        // and the y negative corner of the bounding box
+        val (xBlockedYPos, xBlockedYNeg) = getCollisions(dx, 0)
+        // Same deal on the y direction
+        val (yBlockedXPos, yBlockedXNeg) = getCollisions(0, dy)
         
-        if(travellingInX) {
-          x += dx
-          dxTravelled += dx
-          if(abs(dxTravelled) >= abs(totalDx)) {
-            travelDone = true
+        var dxThisLoop = 0f
+        var dyThisLoop = 0f
+        
+        // Conventional movement if no blockages along direction
+        if(totalDx != 0) {
+          if(!xBlockedYPos && !xBlockedYNeg) {
+            dxThisLoop += dx
+          }
+        }
+        if(totalDy != 0) {
+          if(!yBlockedXPos && !yBlockedXNeg) {
+            dyThisLoop += dy
           }
         }
         
-        val travellingInY = (totalDy != 0) && !travelBlocked(0, dy)
-        
-        if(travellingInY) {
-          y += dy
-          dyTravelled += dy
+        // Was able to move conventionally
+        // Implement moves into actual position, then check for travel done
+        if(dxThisLoop != 0 || dyThisLoop != 0) {
+          x += dxThisLoop
+          y += dyThisLoop
+          dxTravelled += dxThisLoop
+          dyTravelled += dyThisLoop
+           
+          // Check if we are done travelling by distance measure
+          if((totalDx != 0 && abs(dxTravelled) >= abs(totalDx)) ||
+             (totalDy != 0 && abs(dyTravelled) >= abs(totalDy)))
+          {
+            travelDone = true           
+          }
+        } else {
+          // Was unable to move conventionally. Try sliding
+          var slidSuccessfully = false
           
-          if(abs(dyTravelled) >= abs(totalDy)) {
+          // Try to slide in the x direction first
+          if(totalDx != 0) {
+            if(!xBlockedYPos) {
+              totalDy += abs(dx)
+              slidSuccessfully = true
+            } else if(!xBlockedYNeg){
+              totalDy -= abs(dx)
+              slidSuccessfully = true
+            }
+          }
+          
+          // Try to slide in the y direction if we didn't already slide 
+          if(dyThisLoop == 0 && totalDy != 0) {
+            if(!yBlockedXPos) {
+              totalDx += abs(dy)
+              slidSuccessfully = true
+            } else if(!yBlockedXNeg){
+              totalDx -= abs(dy)
+              slidSuccessfully = true
+            }
+          }
+          
+          // Man, we can't even slide. Let's quit
+          if(!slidSuccessfully) {
             travelDone = true
           }
-        }
-        
-        if(!travellingInX && !travellingInY) {
-          travelDone = true
         }
       }
     }
