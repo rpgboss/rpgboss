@@ -133,35 +133,56 @@ class Event(
           (dx, dy)
         }
         
-        // Determine collisions in x direction on the y-positive corner
-        // and the y negative corner of the bounding box
-        val (xBlockedYPos, xBlockedYNeg) = getCollisions(dx, 0)
-        // Same deal on the y direction
-        val (yBlockedXPos, yBlockedXNeg) = getCollisions(0, dy)
-        
         var dxThisLoop = 0f
         var dyThisLoop = 0f
         
-        // Conventional movement if no blockages along direction
+        var slidSuccessfully = false
+        
+        // Try conventional movement along x first
         if(totalDx != 0) {
+          // Determine collisions in x direction on the y-positive corner
+          // and the y negative corner of the bounding box
+          val (xBlockedYPos, xBlockedYNeg) = getCollisions(dx, 0)
+        
+          // Conventional movement if it succeeeds
           if(!xBlockedYPos && !xBlockedYNeg) {
             dxThisLoop += dx
+            x += dx
+            dxTravelled += dx
+          } else if(totalDy == 0) {
+            if(!xBlockedYPos) {
+              totalDy += abs(totalDx)
+              slidSuccessfully = true
+            } else if(!xBlockedYNeg){
+              totalDy -= abs(totalDx)
+              slidSuccessfully = true
+            }
           }
         }
+        
+        // Then try conventional movement along y
         if(totalDy != 0) {
+          val (yBlockedXPos, yBlockedXNeg) = getCollisions(0, dy)
+        
           if(!yBlockedXPos && !yBlockedXNeg) {
             dyThisLoop += dy
+            y += dy
+            dyTravelled += dy
+          } else if(totalDx == 0 && !slidSuccessfully) {
+            if(!yBlockedXPos) {
+              totalDx += abs(totalDy)
+              slidSuccessfully = true
+            } else if(!yBlockedXNeg){
+              totalDx -= abs(totalDy)
+              slidSuccessfully = true
+            }
           }
         }
         
         // Was able to move conventionally
         // Implement moves into actual position, then check for travel done
         if(dxThisLoop != 0 || dyThisLoop != 0) {
-          x += dxThisLoop
-          y += dyThisLoop
-          dxTravelled += dxThisLoop
-          dyTravelled += dyThisLoop
-           
+          
           // Check if we are done travelling by distance measure
           if((totalDx != 0 && abs(dxTravelled) >= abs(totalDx)) ||
              (totalDy != 0 && abs(dyTravelled) >= abs(totalDy)))
@@ -169,31 +190,6 @@ class Event(
             travelDone = true           
           }
         } else {
-          // Was unable to move conventionally. Try sliding
-          var slidSuccessfully = false
-          
-          // Try to slide in the x direction first
-          if(totalDx != 0) {
-            if(!xBlockedYPos) {
-              totalDy += abs(dx)
-              slidSuccessfully = true
-            } else if(!xBlockedYNeg){
-              totalDy -= abs(dx)
-              slidSuccessfully = true
-            }
-          }
-          
-          // Try to slide in the y direction if we didn't already slide 
-          if(dyThisLoop == 0 && totalDy != 0) {
-            if(!yBlockedXPos) {
-              totalDx += abs(dy)
-              slidSuccessfully = true
-            } else if(!yBlockedXNeg){
-              totalDx -= abs(dy)
-              slidSuccessfully = true
-            }
-          }
-          
           // Man, we can't even slide. Let's quit
           if(!slidSuccessfully) {
             travelDone = true
