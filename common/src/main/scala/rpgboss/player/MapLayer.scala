@@ -22,9 +22,6 @@ class MapLayer(game: MyGame) {
   def state = game.state
   val batch = new SpriteBatch()
   
-  var mapNameOnLastUpdate = ""
-  var mapAndAssetsOption : Option[MapAndAssets] = None
-  
   var screenW = 20.0
   var screenH = 15.0
   
@@ -100,21 +97,9 @@ class MapLayer(game: MyGame) {
   
   // Update. Called on Gdx thread before render.
   def update(delta: Float) = {
-    if(mapNameOnLastUpdate != state.cameraLoc.map) {
-      // Update internal resources for the map
-      if(state.cameraLoc.map == -1) {
-        mapAndAssetsOption.map(_.dispose())
-        mapAndAssetsOption = None
-      } else {
-        mapAndAssetsOption.map(_.dispose())
-        mapAndAssetsOption = 
-          Some(new MapAndAssets(project, state.cameraLoc.map))
-      }
-      mapNameOnLastUpdate = state.cameraLoc.map
-    }
   }    
       
-  def render() = mapAndAssetsOption map { mapAndAssets =>
+  def render() = state.mapAndAssetsOption map { mapAndAssets =>
     import mapAndAssets._
     
     import Tileset._
@@ -191,13 +176,12 @@ class MapLayer(game: MyGame) {
     }
     
     // Render the player event
-    state.playerEvt.render(batch, atlasSprites)
+    state.allEvts.sortBy(_.y).foreach(_.render(batch, atlasSprites))
     
     batch.end()
   }
       
   def dispose() = {
-    mapAndAssetsOption.map(_.dispose())
     atlasSprites.dispose()
     batch.dispose()
   }

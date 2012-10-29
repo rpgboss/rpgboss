@@ -80,6 +80,7 @@ class MyGame(gamepath: File)
   }
   
   override def dispose() {
+    state.dispose()
     mapLayer.dispose()
     screenLayer.dispose()
   }

@@ -80,47 +80,6 @@ class MapAndAssets(project: Project, name: String) {
   }
   
   /**
-   * Tests if there is a collision of a box moving from (x0, y0) to 
-   * (x0+dx, x0+dy).
-   * 
-   * Important restriction - only one of dx or dy may be nonzero.
-   * Implement diagonal movement as small alternating movements in dx and dy.
-   * 
-   * Will make optimizations to only test for points along the leading
-   * 
-   * @return  Returning a tuple allows us to implement sliding around corners.
-   *          Essentially, if dx != 0, then tuple represents collisions in
-   *          the tests of:
-   *          ((xEdge+dx, y+boundingBox/2), (xEdge+dx, y-boundingBox/2))
-   */
-  def mapCollisionBox(
-      x0: Float, 
-      y0: Float, 
-      dx: Float, 
-      dy: Float, 
-      size: Float): (Boolean, Boolean) = 
-  {    
-    import math._
-    val halfsize = size/2
-    
-    if(dy == 0f) {
-      val edgeX = x0+signum(dx)*halfsize
-      (
-          mapCollisionPoint(edgeX, y0+halfsize, dx, dy),
-          mapCollisionPoint(edgeX, y0-halfsize, dx, dy)
-      )
-    } else if(dx == 0f) {
-      val edgeY = y0+signum(dy)*halfsize
-      (
-          mapCollisionPoint(x0+halfsize, edgeY, dx, dy),
-          mapCollisionPoint(x0-halfsize, edgeY, dx, dy)
-      )
-    } else {
-      (true, true) // Not sure why trying to move diagonal. Disallow this.
-    }
-  }
-  
-  /**
    * Test if there is a collision of a POINT moving from positions from 
    * (x0, y0) to (x0+dx, x0+dy).
    * 

@@ -18,7 +18,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
  * 
  * Bottom edge length is boundBoxTiles
  */
-class Event(
+class EventEntity(
     game: MyGame,
     var x: Float = 0f, 
     var y: Float = 0f, 
@@ -96,6 +96,93 @@ class Event(
     (dstOriginX, dstOriginY, graphicWTiles, graphicHTiles)
   }
   
+  /**
+   * Tests if there is a collision of a box moving from (x, y) to 
+   * (x+dx, x+dy).
+   * 
+   * Important restriction - only one of dx or dy may be nonzero.
+   * Implement diagonal movement as small alternating movements in dx and dy.
+   * 
+   * Will make optimizations to only test for points along the leading
+   * 
+   * @return  Returning a tuple allows us to implement sliding around corners.
+   *          Essentially, if dx != 0, then tuple represents collisions in
+   *          the tests of:
+   *          ((xEdge+dx, y+boundingBox/2), (xEdge+dx, y-boundingBox/2))
+   */
+  def collisionBox( 
+      dx: Float, 
+      dy: Float, 
+      size: Float,
+      collisionPointF: (Float, Float, Float, Float) => Boolean)
+      : (Boolean, Boolean) = 
+  {    
+    import math._
+    val halfsize = size/2
+    
+    if(dy == 0f) {
+      val edgeX = x+signum(dx)*halfsize
+      (
+          collisionPointF(edgeX, y+halfsize, dx, dy),
+          collisionPointF(edgeX, y-halfsize, dx, dy)
+      )
+    } else if(dx == 0f) {
+      val edgeY = y+signum(dy)*halfsize
+      (
+          collisionPointF(x+halfsize, edgeY, dx, dy),
+          collisionPointF(x-halfsize, edgeY, dx, dy)
+      )
+    } else {
+      (true, true) // Not sure why trying to move diagonal. Disallow this.
+    }
+  }
+  
+  def pointInSelf(xArg: Float, yArg: Float) = {
+    val halfLength = boundBoxTiles/2
+    
+    (
+        xArg < x + halfLength && xArg > x - halfLength &&
+        yArg < y + halfLength && yArg > y - halfLength
+    )
+  }
+  
+  def collisionTestPoint(x0: Float, y0: Float, dx: Float, dy: Float) = {
+    pointInSelf(x0+dx, y0+dy)
+  }
+  
+  def getCollisions(dxArg: Float, dyArg: Float) = {
+    if(dxArg == 0 && dyArg == 0) {
+      (false, false) 
+    } else {
+      val mapCollision = game.state.mapAndAssetsOption map { mapAndAssets =>
+        collisionBox(
+            dxArg, 
+            dyArg, 
+            boundBoxTiles,
+            mapAndAssets.mapCollisionPoint _)
+      } getOrElse (true, true)
+      
+      // If map is an all-clear, do a check for sprites, otherwise, go...
+      if(mapCollision == (false, false)) {
+        val spriteCollide = game.state.allEvts.exists(otherEvt =>
+            collisionBox(
+                dxArg,
+                dyArg,
+                boundBoxTiles,
+                otherEvt.collisionTestPoint _) != (false, false)
+        )
+        
+        // If collide with a sprite, disallow sliding, otherwise, proceed
+        if(spriteCollide) {
+          (true, true)
+        } else {
+          (false, false)
+        }
+        
+      } else mapCollision
+    }
+  }
+  
   def update(delta: Float) = {
     // Handle moving
     if(isMoving) {
@@ -106,16 +193,6 @@ class Event(
       
       var dxTravelled = 0f
       var dyTravelled = 0f
-      
-      def getCollisions(dxArg: Float, dyArg: Float) = {
-        if(dxArg == 0 && dyArg == 0) {
-          (false, false) 
-        } else {
-          game.mapLayer.mapAndAssetsOption map { mapAndAssets =>
-            mapAndAssets.mapCollisionBox(x, y, dxArg, dyArg, boundBoxTiles)
-          } getOrElse (true, true)
-        }
-      }
       
       var travelDone = false
       while(!travelDone)    
@@ -150,6 +227,7 @@ class Event(
             x += dx
             dxTravelled += dx
           } else if(totalDy == 0) {
+            // Conventional movement blocked. Try sliding perpendicularly
             if(!xBlockedYPos) {
               totalDy += abs(totalDx)
               slidSuccessfully = true
@@ -169,6 +247,7 @@ class Event(
             y += dy
             dyTravelled += dy
           } else if(totalDx == 0 && !slidSuccessfully) {
+            // Conventional movement blocked. Try sliding perpendicularly
             if(!yBlockedXPos) {
               totalDx += abs(totalDy)
               slidSuccessfully = true
@@ -182,7 +261,6 @@ class Event(
         // Was able to move conventionally
         // Implement moves into actual position, then check for travel done
         if(dxThisLoop != 0 || dyThisLoop != 0) {
-          
           // Check if we are done travelling by distance measure
           if((totalDx != 0 && abs(dxTravelled) >= abs(totalDx)) ||
              (totalDy != 0 && abs(dyTravelled) >= abs(totalDy)))

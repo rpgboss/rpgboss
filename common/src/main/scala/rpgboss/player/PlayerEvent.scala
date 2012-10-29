@@ -3,7 +3,7 @@ package rpgboss.player
 import rpgboss.model._
 
 class PlayerEvent(game: MyGame) 
-  extends Event(game: MyGame)
+  extends EventEntity(game: MyGame)
   with MoveInputHandler
 {
   // Add input handling

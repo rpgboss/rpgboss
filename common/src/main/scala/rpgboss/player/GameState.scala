@@ -30,14 +30,20 @@ class GameState(game: MyGame, project: Project) {
   // Should only be modified on the Gdx thread
   var curTransition: Option[Transition] = None
   
+  // current map
+  var mapAndAssetsOption : Option[MapAndAssets] = None
+  
   // protagonist and camera position. Modify all these things on the Gdx thread
   val cameraLoc = new MutableMapLoc()
-  var playerEvt: Event = new PlayerEvent(game)
+  var playerEvt: EventEntity = new PlayerEvent(game)
+  
+  // All the events on the current map, including the player event
+  var allEvts = List[EventEntity](playerEvt)
   
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
-    // Update events
-    playerEvt.update(delta)
+    // Update events, including player event
+    allEvts.foreach(_.update(delta))
     
     // Update windows
     if(!windows.isEmpty) 
@@ -85,6 +91,13 @@ class GameState(game: MyGame, project: Project) {
     future.get
   }
   
+  /**
+   * Dispose of any disposable resources
+   */
+  def dispose() = {
+    mapAndAssetsOption.map(_.dispose())
+  }
+  
   /*
    * The below functions are all called from the script threads only.
    */
@@ -104,6 +117,21 @@ class GameState(game: MyGame, project: Project) {
   
   def setCameraLoc(loc: MapLoc) = syncRun {
     cameraLoc.set(loc)
+    
+    // Update internal resources for the map
+    if(cameraLoc.map.isEmpty()) {
+      mapAndAssetsOption.map(_.dispose())
+      mapAndAssetsOption = None
+      allEvts = List(playerEvt)
+    } else {
+      mapAndAssetsOption.map(_.dispose())
+      
+      val mapAndAssets = new MapAndAssets(project, cameraLoc.map)
+      mapAndAssetsOption = Some(mapAndAssets)
+      allEvts = playerEvt :: mapAndAssets.mapData.events.map {
+        new NonplayerEvent(game, _)
+      }.toList
+    }
   }
   
   /* 
