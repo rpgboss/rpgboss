@@ -76,7 +76,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
         close()
       }
       else 
-        Dialog.showMessage(okButton, "File write error", "Error", 
+        Dialog.showMessage(okBtn, "File write error", "Error", 
                            Dialog.Message.Error)
     }
   }
@@ -93,7 +93,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     row().grid().add(leftLabel("Game title (ex: 'Chrono Trigger'):"))
     row().grid().add(gameTitleField)
     
-    addButtons(cancelButton, okButton)
+    addButtons(cancelBtn, okBtn)
     
     shortnameField.requestFocus()
   }

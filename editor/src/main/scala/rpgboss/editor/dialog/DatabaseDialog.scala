@@ -25,7 +25,7 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   
   contents = new DesignGridPanel {
     row().grid().add(tabPane)
-    addButtons(cancelButton, okButton)
+    addButtons(cancelBtn, okBtn)
   }
 
 }

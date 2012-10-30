@@ -32,4 +32,8 @@ object RpgEvent {
 case class RpgEventState(
     sprite: Option[SpriteSpec] = None, 
     trigger: Int = Button,
-    cmds: Array[EventCmd] = Array(EndOfScript()))  
+    cmds: Array[EventCmd] = RpgEventState.defaultCmds)
+
+object RpgEventState {
+  def defaultCmds: Array[EventCmd] = Array(EndOfScript())
+}

@@ -1,9 +1,13 @@
-package rpgboss.player
+package rpgboss.player.entity
 import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import rpgboss.model.SpriteSpec.Steps.TOTALSTEPS
+import rpgboss.player.MyGame
+import scala.math.abs
+import scala.math.min
+import scala.math.signum
 
 /*
  * Position is marked as such:

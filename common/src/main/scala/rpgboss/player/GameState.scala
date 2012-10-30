@@ -9,6 +9,9 @@ import java.util.concurrent.FutureTask
 import java.util.concurrent.Callable
 import akka.dispatch.Await
 import akka.util.Duration
+import rpgboss.player.entity.PlayerEvent
+import rpgboss.player.entity.NonplayerEvent
+import rpgboss.player.entity.EventEntity
 
 /**
  * This class contains all the state information about the game.

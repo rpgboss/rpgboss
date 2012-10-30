@@ -71,7 +71,7 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       pOpt.map(p => onSuccess(p))
       close()
     } else {
-      Dialog.showMessage(okButton, "No project selected", "Error", 
+      Dialog.showMessage(okBtn, "No project selected", "Error", 
                          Dialog.Message.Error)
     }
   }
@@ -88,12 +88,12 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       contents = projList
     })
       
-    addButtons(cancelButton, okButton)
+    addButtons(cancelBtn, okBtn)
   }
   
   listenTo(projList.mouse.clicks)
       
   reactions += {
-    case MouseClicked(`projList`, _, _, 2, _) => okButton.doClick() 
+    case MouseClicked(`projList`, _, _, 2, _) => okBtn.doClick() 
   }
 }

@@ -64,7 +64,7 @@ class LoginDialog(owner: Window, loginFunc: Option[(String, Long)] => Any)
     
     row().center().fill().add(statusLabel)
     
-    addButtons(cancelButton, okButton)
+    addButtons(cancelBtn, okBtn)
   }
   
   listenTo(usernameField, usernameField.keys, passwordField, passwordField.keys)
@@ -74,7 +74,7 @@ class LoginDialog(owner: Window, loginFunc: Option[(String, Long)] => Any)
     case FocusGained(`passwordField`, _, false) => passwordField.selectAll()
     case KeyReleased(`usernameField`, Key.Enter, _, _) =>   
       passwordField.requestFocus()
-    case KeyReleased(`passwordField`, Key.Enter, _, _) => okButton.doClick()
+    case KeyReleased(`passwordField`, Key.Enter, _, _) => okBtn.doClick()
   }
 }
 */

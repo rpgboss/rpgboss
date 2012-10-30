@@ -9,7 +9,7 @@ abstract class StdDialog(owner: Window, titleArg: String)
 {
   title = titleArg
   modal = true
-  defaultButton = okButton
+  defaultButton = okBtn
   setLocationRelativeTo(owner)
   
   private var okPressed = false
@@ -17,12 +17,12 @@ abstract class StdDialog(owner: Window, titleArg: String)
   def okFunc()
   def cancelFunc() = {}
   
-  lazy val cancelButton = new Button(Action("Cancel") { 
+  lazy val cancelBtn = new Button(Action("Cancel") { 
     cancelFunc()
     close()
   })
   
-  lazy val okButton = new Button(new Action("OK") {
+  lazy val okBtn = new Button(new Action("OK") {
     mnemonic = Key.O.id
     def apply() = {
       okPressed = true

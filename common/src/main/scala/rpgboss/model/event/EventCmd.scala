@@ -15,12 +15,22 @@ trait EventCmd {
   }
 }
 
+object EventCmd {
+  def types = List(
+    classOf[EndOfScript],
+    classOf[ShowText]
+  )
+  
+  def aryToJs[T](a: Array[T]) = a.mkString("[", ", ", "]") 
+}
+
+import EventCmd._
+
 case class EndOfScript() extends EventCmd {
   def toJs() = Nil
 }
 
-object EventCmd {
-  def types = List(
-      classOf[EndOfScript]
-      )
+case class ShowText(lines: Array[String] = Array()) extends EventCmd {
+  def toJs() = List("showText(" + aryToJs(lines) + ");")
 }
+

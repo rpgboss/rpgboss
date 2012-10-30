@@ -15,6 +15,10 @@ class DesignGridPanel extends Panel {
       .add(cancelBtn, Tag.CANCEL)
       .add(okBtn, Tag.OK)
   
+  def addCancel(cancelBtn: Button) = 
+    row().bar()
+      .add(cancelBtn, Tag.CANCEL)
+  
   implicit def scalaSwingToJava(c: Component) : javax.swing.JComponent = c.peer
   implicit def labelToPeer(l: Label) : javax.swing.JLabel = l.peer
 }

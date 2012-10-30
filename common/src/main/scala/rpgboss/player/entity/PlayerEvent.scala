@@ -1,6 +1,13 @@
-package rpgboss.player
+package rpgboss.player.entity
 
 import rpgboss.model._
+import rpgboss.player._
+import rpgboss.player.entity.EventEntity
+
+import MyKeys.Down
+import MyKeys.Left
+import MyKeys.Right
+import MyKeys.Up
 
 class PlayerEvent(game: MyGame) 
   extends EventEntity(game: MyGame)

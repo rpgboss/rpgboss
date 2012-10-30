@@ -70,7 +70,7 @@ class SpriteSelectDialog(
   contents = new DesignGridPanel {
     row().grid().add(leftLabel("Spritesets"), leftLabel("Sprites"))
     row().grid().add(spritesetList, spriteSelectorContainer)
-    addButtons(cancelButton, okButton)
+    addButtons(cancelBtn, okBtn)
   }
   
   val thiss = this

@@ -91,17 +91,19 @@ class EventDialog(
         .add(
             new Button(Action("Add state") {
               // Add to list of states
-              val newState = event.states.last.copy(cmds = Array())
+              val newState = event.states.last.copy(
+                  cmds = RpgEventState.defaultCmds)
               event = event.copy(states = event.states ++ Array(newState))
               // Add tabpane for it
               tabPane.pages += new Page(
                   "State %d".format(event.states.length), 
                   paneForEvtState(event.states.length-1))
+              tabPane.selection.page = tabPane.pages.last
             }))          
       
       row.grid().add(tabPane)
       
-      addButtons(cancelButton, okButton)
+      addButtons(cancelBtn, okBtn)
     }
   }
 

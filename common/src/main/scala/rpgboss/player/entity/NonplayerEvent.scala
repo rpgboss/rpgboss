@@ -1,6 +1,8 @@
-package rpgboss.player
+package rpgboss.player.entity
 
-import rpgboss.model.event.RpgEvent
+import rpgboss.model.event._
+import rpgboss.player.MyGame
+import rpgboss.player.entity.EventEntity
 
 class NonplayerEvent(game: MyGame, mapEvent: RpgEvent) 
   extends EventEntity(
