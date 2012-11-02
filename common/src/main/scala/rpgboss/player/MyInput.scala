@@ -6,14 +6,15 @@ import com.badlogic.gdx.utils.Timer
 trait InputHandler {
   import MyKeys._
   
-  def keyDown(key: Int): Boolean = true
+  def keyDown(key: Int) = {}
   
-  def keyUp(key: Int): Boolean = true
+  def keyUp(key: Int) = {}
   
   // Called when an input handler gets put ahead of this one, capturing a key
   def keyCapturedByOther(key: Int) = {}
   
-  def capturedKeys = List(Up, Down, Left, Right, A)
+  // Defines list of keys swallowed by this event handler
+  val capturedKeys = Set(Up, Down, Left, Right, OK)
 }
 
 object MyKeys {
@@ -21,9 +22,10 @@ object MyKeys {
   val Down = 1
   val Left = 2
   val Right = 3
-  val A = 4
+  val OK = 4
+  val Cancel = 5
   
-  val totalNumber = 5
+  val totalNumber = 6
 }
 
 trait MoveInputHandler extends InputHandler {
@@ -97,7 +99,7 @@ class MyInputMultiplexer extends InputAdapter {
     case Keys.DOWN => Some(MyKeys.Down)
     case Keys.LEFT => Some(MyKeys.Left)
     case Keys.RIGHT => Some(MyKeys.Right)
-    case Keys.SPACE => Some(MyKeys.A)
+    case Keys.SPACE => Some(MyKeys.OK)
     case _ => None
   }
   
@@ -106,22 +108,23 @@ class MyInputMultiplexer extends InputAdapter {
      * This bit of hackery iterates through the whole list looking for a
      * handler that handles the input correctly.
      */
-    inputProcessors.find { handler =>
-      handler.keyDown(key)
-    } isDefined // returns false if it doesn't find anything
+    val handler = inputProcessors.find { _.capturedKeys.contains(key) }
+    handler.map { _.keyDown(key) }.isDefined
   } getOrElse false
   
   override def keyUp(keycode: Int) = mapKey(keycode) map { key =>
-    inputProcessors.find { handler =>
-      handler.keyUp(key)
-    } isDefined
+    val handler = inputProcessors.find { _.capturedKeys.contains(key) }
+    handler.map { _.keyUp(key) }.isDefined
   } getOrElse false
   
   def prepend(newHandler: InputHandler) = {
     // Send a signal to all existing input handlers, as if they keep track of
     // the 'down' position, they should know that it's been captured.
-    for(handler <- inputProcessors; key <- newHandler.capturedKeys)
-      handler.keyCapturedByOther(key)
+    for(handler <- inputProcessors; key <- newHandler.capturedKeys) {
+      if(handler.capturedKeys.contains(key)) { 
+        handler.keyCapturedByOther(key)
+      }
+    }
     
     inputProcessors.prepend(newHandler)
   }

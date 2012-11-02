@@ -41,7 +41,7 @@ case class Window(assets: RpgAssetManager,
                   fontbmp: BitmapFont,
                   initialState: Int = Window.Opening,
                   openCloseMs: Int = 250,
-                  msPerChar: Int = 80,
+                  msPerChar: Int = 50,
                   linesPerBlock: Int = 4,
                   justification: Int = Window.Left) 
   extends InputHandler
@@ -148,14 +148,16 @@ case class Window(assets: RpgAssetManager,
     stateStarttime = System.currentTimeMillis()
   }
   
+  override val capturedKeys = Set(MyKeys.OK)
+  
   override def keyDown(key: Int) = {
     import MyKeys._
-    if(key == A) {
+    if(key == OK) {
       // If we have already printed the last line, set to closing
       // otherwise, advance the block.
       
       if(textImage.lineI < text.length) {
-        textImage.blockI += 1
+        textImage.lineI += 1
       } else {
         changeState(Window.Closing)
       }
@@ -167,10 +169,11 @@ case class Window(assets: RpgAssetManager,
   
   def update(delta: Float, acceptInput: Boolean) = {
     // change state of "expired" opening or closing animations
+    textImage.update()
     if(stateAge >= openCloseMs) {
       state match {
         case Window.Opening => changeState(Window.Open)
-        case Window.Open => textImage.update()
+        case Window.Open =>
         case Window.Closing => postClose()
         case _ => Unit
       } 
@@ -187,6 +190,7 @@ case class Window(assets: RpgAssetManager,
         math.max(32+(stateAge.toDouble/openCloseMs*(h-32)).toInt, 32)
       
       skin.draw(b, skinRegion, x, y, w, hVisible)
+      textImage.render(b)
     }
     case Window.Closing => {
       val hVisible = 

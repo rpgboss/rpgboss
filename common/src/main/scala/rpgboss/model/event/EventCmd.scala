@@ -21,7 +21,8 @@ object EventCmd {
     classOf[ShowText]
   )
   
-  def aryToJs[T](a: Array[T]) = a.mkString("[", ", ", "]") 
+  def aryToJs(a: Array[String]) = a.map(strToJs(_)).mkString("[", ", ", "]")
+  def strToJs(s: String) = """"%s"""".format(s.replaceAll("\"", "\\\\\""))
 }
 
 import EventCmd._
@@ -31,6 +32,6 @@ case class EndOfScript() extends EventCmd {
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
-  def toJs() = List("showText(" + aryToJs(lines) + ");")
+  def toJs() = List("game.showText(" + aryToJs(lines) + ");")
 }
 

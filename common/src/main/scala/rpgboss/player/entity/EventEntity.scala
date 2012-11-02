@@ -154,6 +154,19 @@ class EventEntity(
     pointInSelf(x0+dx, y0+dy)
   }
   
+  /**
+   * Finds all events with which this dxArg and dyArg collides with
+   */
+  def getAllEventCollisions(dxArg: Float, dyArg: Float) = {
+    game.state.npcEvts.filter(otherEvt =>
+        collisionBox(
+            dxArg,
+            dyArg,
+            boundBoxTiles,
+            otherEvt.collisionTestPoint _) != (false, false)
+    )
+  }
+  
   def getCollisions(dxArg: Float, dyArg: Float) = {
     if(dxArg == 0 && dyArg == 0) {
       (false, false) 
@@ -168,13 +181,8 @@ class EventEntity(
       
       // If map is an all-clear, do a check for sprites, otherwise, go...
       if(mapCollision == (false, false)) {
-        val spriteCollide = game.state.allEvts.exists(otherEvt =>
-            collisionBox(
-                dxArg,
-                dyArg,
-                boundBoxTiles,
-                otherEvt.collisionTestPoint _) != (false, false)
-        )
+        // XXX: Definitely suboptimal to get all instead of just check existence
+        val spriteCollide = !getAllEventCollisions(dxArg, dyArg).isEmpty
         
         // If collide with a sprite, disallow sliding, otherwise, proceed
         if(spriteCollide) {

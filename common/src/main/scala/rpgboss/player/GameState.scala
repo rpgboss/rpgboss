@@ -38,15 +38,16 @@ class GameState(game: MyGame, project: Project) {
   
   // protagonist and camera position. Modify all these things on the Gdx thread
   val cameraLoc = new MutableMapLoc()
-  var playerEvt: EventEntity = new PlayerEvent(game)
+  var playerEvt: PlayerEvent = new PlayerEvent(game)
   
   // All the events on the current map, including the player event
-  var allEvts = List[EventEntity](playerEvt)
+  var npcEvts = List[NonplayerEvent]()
   
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
     // Update events, including player event
-    allEvts.foreach(_.update(delta))
+    npcEvts.foreach(_.update(delta))
+    playerEvt.update(delta)
     
     // Update windows
     if(!windows.isEmpty) 
@@ -73,7 +74,7 @@ class GameState(game: MyGame, project: Project) {
   /**
    * Run the following on the GUI thread synchronously...
    */
-  private def syncRun(op: => Any) = {
+  def syncRun(op: => Any) = {
     val runnable = new Runnable() {
       def run() = op
     }
@@ -83,7 +84,7 @@ class GameState(game: MyGame, project: Project) {
   /**
    * Calls the following on the GUI thread. Takes a frame's worth of time.
    */
-  private def syncCall[T](op: => T): T = {
+  def syncCall[T](op: => T): T = {
     val callable = new Callable[T]() {
       def call() = op
     }
@@ -125,13 +126,13 @@ class GameState(game: MyGame, project: Project) {
     if(cameraLoc.map.isEmpty()) {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None
-      allEvts = List(playerEvt)
+      npcEvts = List()
     } else {
       mapAndAssetsOption.map(_.dispose())
       
       val mapAndAssets = new MapAndAssets(project, cameraLoc.map)
       mapAndAssetsOption = Some(mapAndAssets)
-      allEvts = playerEvt :: mapAndAssets.mapData.events.map {
+      npcEvts = mapAndAssets.mapData.events.map {
         new NonplayerEvent(game, _)
       }.toList
     }

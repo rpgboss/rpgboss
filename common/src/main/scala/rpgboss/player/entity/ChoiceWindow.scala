@@ -64,7 +64,7 @@ class ChoiceWindow(
       soundCursor.getAsset(assets).play()
     }
     
-    if(key == A && !result.isCompleted) {
+    if(key == OK && !result.isCompleted) {
       changeState(Window.Closing)
       soundSelect.getAsset(assets).play()
     }

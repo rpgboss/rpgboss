@@ -76,7 +76,7 @@ class MyGame(gamepath: File)
     mapLayer = new MapLayer(this)
     screenLayer = new ScreenLayer(this, state)
     
-    ScriptThread(this, "main.js", "main()").run()
+    ScriptThread.fromFile(this, "main.js", "main()").run()
   }
   
   override def dispose() {
