@@ -10,7 +10,8 @@ import rpgboss.model._
 import rpgboss.model.resource._
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
-  extends SplitPane(Orientation.Vertical) with SelectsMap
+  extends BorderPanel
+  with SelectsMap
 {  
   val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new MapSelector(sm, this)
@@ -22,36 +23,35 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     contents += new MenuItem(mainP.actionSave)
 	}
   
-  val menuAndSelector = new BoxPanel(Orientation.Vertical) {
-    import rpgboss.editor.dialog._
-    
-    contents += new BoxPanel(Orientation.Horizontal) {
-      contents += new Button {
-        val btn = this
-        action = Action("RPG \u25BC") {
-          projMenu.show(btn, 0, btn.bounds.height)
-        }
-      }
-      contents += new Button(Action("DB...") {
-        val d = new DatabaseDialog(mainP.topWin, sm)
-        d.open()
-      })
-      contents += new Button(Action("Resources...") {
-        val d = new ResourcesDialog(mainP.topWin, sm)
-        d.open()
-      })
-    }
-    contents += tileSelector
-  }
-  
-  topComponent =
-    new SplitPane(Orientation.Horizontal, menuAndSelector, mapSelector)
-  bottomComponent = mapView
-  enabled = false
-  
   def selectMap(mapOpt: Option[RpgMap]) = {
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
   }
+  
+  val topBar = new BoxPanel(Orientation.Horizontal) {
+    import rpgboss.editor.dialog._
+    
+    contents += new Button {
+      val btn = this
+      action = Action("Project \u25BC") {
+        projMenu.show(btn, 0, btn.bounds.height)
+      }
+    }
+    contents += new Button(Action("Database...") {
+      val d = new DatabaseDialog(mainP.topWin, sm)
+      d.open()
+    })
+    contents += new Button(Action("Resources...") {
+      val d = new ResourcesDialog(mainP.topWin, sm)
+      d.open()
+    })
+  }
+  
+  val sidePane = 
+    new SplitPane(Orientation.Horizontal, tileSelector, mapSelector)
+  
+  layout(mapView)  = BorderPanel.Position.Center
+  layout(sidePane) = BorderPanel.Position.West
+  layout(topBar)   = BorderPanel.Position.North
   
   // select most recent or first map if not empty
   selectMap({
