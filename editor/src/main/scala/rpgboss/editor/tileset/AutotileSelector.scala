@@ -26,4 +26,5 @@ class AutotileSelector(
         Array(RpgMap.autotileByte, xTile, 0.asInstanceOf[Byte])
     }))
   )
+  
 }

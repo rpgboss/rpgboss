@@ -48,8 +48,17 @@ extends ScrollPane
   val imageSlices = ceilIntDiv(img.getWidth / tilesizeX, xTilesVisible)
   val yTilesInSlice = img.getHeight / tilesizeY
   
-  peer.getViewport.setMinimumSize(
-    new Dimension(xTilesVisible*tilesizeX, 4*tilesizeY))
+  // Set the sizes on the viewport to account for the scrollbars
+  peer.getViewport().setPreferredSize( 
+    new Dimension(
+        xTilesVisible*tilesizeX, 
+        imageSlices*img.getHeight())
+  )
+  peer.getViewport().setMinimumSize( 
+    new Dimension(
+        xTilesVisible*tilesizeX, 
+        math.min(4*tilesizeY, imageSlices*img.getHeight()))
+  )
   
   var xRngInSelectorSpace = 0 to 0
   var yRngInSelectorSpace = 0 to 0

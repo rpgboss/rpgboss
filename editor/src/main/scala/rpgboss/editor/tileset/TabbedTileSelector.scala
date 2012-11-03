@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 
 class TabbedTileSelector(sm: StateMaster)
 extends BoxPanel(Orientation.Horizontal) with SelectsMap
-{
+{ 
   val thisSidebar = this
   
   def defaultTileCodes = Array(Array(Array(

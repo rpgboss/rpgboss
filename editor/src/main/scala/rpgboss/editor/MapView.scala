@@ -17,7 +17,6 @@ import java.awt.geom.Line2D
 import java.awt.event.MouseEvent
 import rpgboss.model.event.RpgEvent
 import rpgboss.editor.dialog.EventDialog
-import com.google.common.cache._
 import java.awt.image.BufferedImage
 import scala.collection.mutable.Buffer
 
@@ -32,35 +31,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   var curTilesize = Tileset.tilesize
   
   //--- EVT IMG CACHE ---//
-  val evtImgCache = CacheBuilder.newBuilder()
-    .concurrencyLevel(1)
-    .softValues()
-    .maximumSize(50)
-    .expireAfterWrite(10, java.util.concurrent.TimeUnit.MINUTES)
-    .build(new CacheLoader[SpriteSpec, BufferedImage] {
-      def load(spriteSpec: SpriteSpec) = {
-        val spriteset = Spriteset.readFromDisk(sm.getProj, spriteSpec.spriteset)
-        val srcImg = spriteset.srcTileImg(spriteSpec)
-        
-        val dstSz = Tileset.tilesize-4-1
-        
-        val dstImg = new BufferedImage(
-            dstSz, dstSz, BufferedImage.TYPE_4BYTE_ABGR) 
-        
-        val g = dstImg.getGraphics()
-        
-        val sx1 = (srcImg.getWidth()-dstSz)/2
-        val sy1 = 10
-        g.drawImage(srcImg,
-            0, 0,
-            dstSz-1, dstSz-1,
-            sx1, sy1,
-            sx1+dstSz-1, sy1+dstSz-1,
-            null)
-        
-        dstImg
-      }
-    })
+  val evtImgCache = new EventImageCache(sm)
   
   //--- CONVENIENCE DEFS ---//
   def selectedLayer = MapLayers.selected
@@ -199,6 +170,9 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
     }
   }
   
+  /**
+   * A scroll pane that knows how to store and restore center coords
+   */
   val scrollPane = new ScrollPane(canvasPanel) {
     horizontalScrollBarPolicy = ScrollPane.BarPolicy.Always
     verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
