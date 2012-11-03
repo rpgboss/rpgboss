@@ -19,6 +19,7 @@ import rpgboss.model.event.RpgEvent
 import rpgboss.editor.dialog.EventDialog
 import java.awt.image.BufferedImage
 import scala.collection.mutable.Buffer
+import javax.swing.event._
 
 class MapView(
     projectPanel: ProjectPanel, 
@@ -193,7 +194,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       }
       
       val newMetadata = vs.mapMeta.copy(viewCenterX = cx, viewCenterY = cy)
-      logger.info("Stored centers as (%f, %f)".format(cx, cy))
+      //logger.debug("Stored centers as (%f, %f)".format(cx, cy))
       sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
     }
     
@@ -210,7 +211,14 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       viewport.setViewPosition(new Point(viewOrigX.toInt, viewOrigY.toInt))
     }
     
+    // Add code to saveCenters upon adjustment
+    val viewportChangeListener = new ChangeListener() {  
+      override def stateChanged(e: ChangeEvent) {
+        storeCenters()
+      }
+    }
     
+    peer.getViewport().addChangeListener(viewportChangeListener)
   }
   
   //--- ADDING WIDGETS ---//
@@ -234,9 +242,6 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   }
   
   def selectMap(mapOpt: Option[RpgMap]) = {
-    // Store centers upon switching away from a map
-    scrollPane.storeCenters()
-    
     viewStateOpt = mapOpt map { mapMeta =>
       new MapViewState(sm, mapMeta.name)
     }
