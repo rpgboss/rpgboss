@@ -199,12 +199,49 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
     }
   }
   
-  //--- ADDING WIDGETS ---//
-  contents += toolbar
-  contents += new ScrollPane(canvasPanel) {
+  val scrollPane = new ScrollPane(canvasPanel) {
     horizontalScrollBarPolicy = ScrollPane.BarPolicy.Always
     verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
+    
+    def storeCenters() = viewStateOpt.map { vs =>
+      val viewRect = peer.getViewport().getViewRect()
+      
+      val cx = if(viewRect.width > vs.mapMeta.xSize*curTilesize) {
+        vs.mapMeta.xSize/2.0f
+      } else {
+        viewRect.getCenterX().toFloat/curTilesize
+      }
+      
+      val cy = if(viewRect.height > vs.mapMeta.ySize*curTilesize) {
+        vs.mapMeta.ySize/2.0f
+      } else {
+        viewRect.getCenterY().toFloat/curTilesize
+      }
+      
+      val newMetadata = vs.mapMeta.copy(viewCenterX = cx, viewCenterY = cy)
+      logger.info("Stored centers as (%f, %f)".format(cx, cy))
+      sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
+    }
+    
+    def restoreCenters() = viewStateOpt.map { vs =>
+      val viewport = peer.getViewport()
+      val viewportSize = viewport.getExtentSize()
+      val viewportW = viewportSize.getWidth().toFloat
+      val viewportH = viewportSize.getHeight().toFloat
+      
+      // Calculate new origins based on the stored desired centers
+      val viewOrigX = max(0f, vs.mapMeta.viewCenterX*curTilesize - viewportW/2)
+      val viewOrigY = max(0f, vs.mapMeta.viewCenterY*curTilesize - viewportH/2)
+      
+      viewport.setViewPosition(new Point(viewOrigX.toInt, viewOrigY.toInt))
+    }
+    
+    
   }
+  
+  //--- ADDING WIDGETS ---//
+  contents += toolbar
+  contents += scrollPane
   
   //--- MISC FUNCTIONS ---//
   def toTileCoords(p: Point) = 
@@ -223,11 +260,17 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   }
   
   def selectMap(mapOpt: Option[RpgMap]) = {
+    // Store centers upon switching away from a map
+    scrollPane.storeCenters()
+    
     viewStateOpt = mapOpt map { mapMeta =>
       new MapViewState(sm, mapMeta.name)
     }
       
     resizeRevalidateRepaint()
+    
+    // Restore centers upon loading a new map
+    scrollPane.restoreCenters()
   }
   
   // Updates cursor square, and queues up any appropriate repaints
