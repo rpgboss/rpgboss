@@ -1,4 +1,4 @@
-package rpgboss.cache
+package rpgboss.editor.cache
 
 import rpgboss.model._
 import rpgboss.model.resource._
@@ -6,10 +6,25 @@ import rpgboss.model.resource._
 import java.awt.image._
 import com.google.common.cache._
 
-class TileCache(proj: Project, 
-                map: RpgMap, cacheMaxSize: Int = 5000) {
-  val tilesets  = map.metadata.tilesets.map(Tileset.readFromDisk(proj, _))
-  val autotiles = map.metadata.autotiles.map(Autotile.readFromDisk(proj, _))
+/**
+ * A tile cache applicable to only one map.
+ */
+class MapTileCache(
+    assetCache: AssetCache, 
+    map: RpgMap, 
+    cacheMaxSize: Int = 5000) 
+{
+  val tilesets = map.metadata.tilesets.map(assetCache.tilesetMap.get(_).get) 
+  val autotiles = map.metadata.autotiles.map(assetCache.autotileMap.get(_).get)
+  
+  val cache = CacheBuilder.newBuilder()
+    .concurrencyLevel(1)
+    .softValues()
+    .maximumSize(cacheMaxSize)
+    .expireAfterWrite(10, java.util.concurrent.TimeUnit.MINUTES)
+    .build(new CacheLoader[(Byte, Byte, Byte, Byte), BufferedImage] {
+      def load(tileTuple: (Byte, Byte, Byte, Byte)) = loadTile(tileTuple)
+    })  
   
   def loadTile(tileTuple: (Byte, Byte, Byte, Byte)) = {
     val (tilesetIdx, secondByte, thirdByte, frame) = tileTuple
@@ -36,16 +51,6 @@ class TileCache(proj: Project,
       } else ImageResource.errorTile
     } else ImageResource.errorTile
   }
-  
-  val cache = CacheBuilder.newBuilder()
-    .concurrencyLevel(1)
-    .softValues()
-    .maximumSize(cacheMaxSize)
-    .expireAfterWrite(10, java.util.concurrent.TimeUnit.MINUTES)
-    .build(new CacheLoader[(Byte, Byte, Byte, Byte), BufferedImage] {
-      def load(tileTuple: (Byte, Byte, Byte, Byte)) = loadTile(tileTuple)
-    })
-    
   
   // frame here means the animation frame
   def getTileImage(

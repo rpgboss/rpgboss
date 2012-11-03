@@ -17,6 +17,16 @@ case class RpgMapMetadata(parent: String,
                           autotiles: Array[String]) {
 }
 
+/**
+ * @param   name  This is the "id" of the map, and should never be changed
+ *                once assigned. Otherwise, we get into these messy issues:
+ *                 * Need to rename data file and metadata file
+ *                 * Need to update the "parent" field of all its children
+ *                 * Need to update all the events.
+ *                 
+ *                Instead, we should use the "title" field of the metadata
+ *                for all cases where we need to refer to the title.
+ */
 case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
   extends Resource[RpgMap, RpgMapMetadata]
 {
@@ -27,6 +37,11 @@ case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
   
   def readMapData() : Option[RpgMapData] = 
     RpgMapData.readFromDisk(proj, name) 
+  
+  def id = name.split("\\.").head
+  def displayId = "%s [%s]".format(metadata.title, id)
+  def displayName = 
+    if(metadata.title.isEmpty()) "[%s]".format(id) else metadata.title
 }
 
 /*
@@ -55,6 +70,12 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   def mapExt = "mapdata.json"
   def keyExts = Array(mapExt)
   
+  val minXSize = 20
+  val minYSize = 15
+  
+  val maxXSize = 500
+  val maxYSize = 500
+  
   val initXSize = 40
   val initYSize = 30
   
@@ -62,6 +83,16 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   
   val autotileByte : Byte = -2
   val emptyTileByte : Byte = -1
+  
+  def autotileSeed  = Array[Byte](autotileByte, 0, 0)
+  def emptyTileSeed = Array[Byte](emptyTileByte, 0, 0)
+  
+  /**
+   * Generates an array made the seed bytes, repeated 
+   */
+  def makeRowArray(nTiles: Int, seed: Array[Byte]) = {
+    Array.tabulate[Byte](nTiles*bytesPerTile)(i => seed(i%bytesPerTile))
+  }
 
   def generateName(id: Int) = 
     "Map%06d.%s".formatLocal(java.util.Locale.US, id, mapExt)
@@ -79,17 +110,14 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   
   def emptyMapData(xSize: Int, ySize: Int) = {
     val autoLayer  = {
-      // Generate a 3-byte tile
-      val a = Array[Byte](autotileByte,0,0)
-      // Make a whole row of that
-      val row = Array.tabulate[Byte](xSize*bytesPerTile)(i => a(i%a.length))
+      // Make a whole row of that autotile triples
+      val row = makeRowArray(xSize, autotileSeed)
       // Make multiple rows
-      Array.tabulate[Array[Byte]](ySize)(i => row.clone())
+      Array.fill(ySize)(row.clone())
     }
     val emptyLayer = { 
-      val a = Array[Byte](emptyTileByte,0,0)
-      val row = Array.tabulate[Byte](xSize*bytesPerTile)(i => a(i%a.length))
-      Array.tabulate[Array[Byte]](ySize)(i => row.clone())
+      val row = makeRowArray(xSize, emptyTileSeed)
+      Array.fill(ySize)(row.clone())
     }
     
     RpgMapData(autoLayer, emptyLayer, emptyLayer, Array.empty)

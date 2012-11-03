@@ -14,7 +14,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   with SelectsMap
 {  
   val tileSelector = new TabbedTileSelector(sm)
-  val mapSelector = new MapSelector(sm, this)
+  val mapSelector = new ProjectPanelMapSelector(sm, this)
   val mapView = new MapView(this, sm, tileSelector)
   
   val projMenu = new PopupMenu {
@@ -54,7 +54,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   layout(topBar)   = BorderPanel.Position.North
   
   // select most recent or first map if not empty
-  selectMap({
+  val initialMap = {
     val mapStates = sm.getMapStates
     if(!mapStates.isEmpty) {
       val idToLoad =
@@ -66,7 +66,11 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
       mapStates.get(idToLoad).map(_.map)
     }
     else None
-  })
+  }
+  
+  // This calls the selectMapFunction
+  selectMap(initialMap)
+  initialMap.map(m => mapSelector.highlightWithoutEvent(m.name))
   
   mainP.revalidate()
 }

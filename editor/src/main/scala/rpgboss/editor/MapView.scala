@@ -2,7 +2,6 @@ package rpgboss.editor
 
 import rpgboss.lib._
 import rpgboss.editor.lib.SwingUtils._
-import rpgboss.cache._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.tileset._
@@ -112,8 +111,8 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
               g.getClipBounds(), tilesize, tilesize, 
               vs.mapMeta.xSize, vs.mapMeta.ySize)
         
-        logger.info("Paint Tiles: x: [%d,%d], y: [%d,%d]".format(
-          minXTile, maxXTile, minYTile, maxYTile))
+        //logger.info("Paint Tiles: x: [%d,%d], y: [%d,%d]".format(
+        //  minXTile, maxXTile, minYTile, maxYTile))
           
         // draw tiles
         import MapLayers._
@@ -128,7 +127,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
             for(xTile <- minXTile to maxXTile; yTile <- minYTile to maxYTile) {
               if(layerAry(yTile)(xTile*RpgMap.bytesPerTile) != -1) {
                 val tileImg = 
-                  vs.tilecache.getTileImage(layerAry, xTile, yTile, 0)
+                  vs.tileCache.getTileImage(layerAry, xTile, yTile, 0)
                 
                 g.drawImage(tileImg, 
                             xTile*tilesize, yTile*tilesize,
@@ -225,8 +224,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   
   def selectMap(mapOpt: Option[RpgMap]) = {
     viewStateOpt = mapOpt map { mapMeta =>
-      val tc = new TileCache(sm.getProj, mapMeta)
-      new MapViewState(sm, mapMeta.name, tc)
+      new MapViewState(sm, mapMeta.name)
     }
       
     resizeRevalidateRepaint()

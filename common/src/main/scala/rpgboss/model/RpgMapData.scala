@@ -13,6 +13,8 @@ import net.liftweb.json.ShortTypeHints
  * This class has mutable members.
  * 
  * See RpgMap object for an explanation of the data format.
+ * 
+ * botLayer, midLayer, and topLayer must always be of size at least 1 x 1
  */
 case class RpgMapData(botLayer: Array[Array[Byte]],
                       midLayer: Array[Array[Byte]],
@@ -34,6 +36,34 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
       implicit val formats = RpgMapData.formats
       Serialization.writePretty(this.toIntermediate, writer) != null
     } getOrElse false
+  
+  def resized(newXSize: Int, newYSize: Int) = {
+    import RpgMap._
+    
+    val newLayers = List(botLayer, midLayer, topLayer) map { layerAry =>
+      // Expand or contract all the existing rows
+      val newRowsSameYDim = layerAry.map { row =>
+        if(row.size > newXSize)
+          row.take(newXSize*bytesPerTile)
+        else
+          row ++ makeRowArray(newXSize-row.size, RpgMap.emptyTileSeed)
+      }
+      
+      // Generate or destroy new rows
+      if(newYSize < layerAry.size) {
+        newRowsSameYDim.take(newYSize)
+      } else {
+        newRowsSameYDim ++ Array.fill(newYSize-layerAry.size)({
+          makeRowArray(newXSize, RpgMap.emptyTileSeed)
+        })
+      }
+    }
+    
+    copy(
+        botLayer = newLayers(0), 
+        midLayer = newLayers(1), 
+        topLayer = newLayers(2))
+  }
 }
 
 // Actually jsonable case class

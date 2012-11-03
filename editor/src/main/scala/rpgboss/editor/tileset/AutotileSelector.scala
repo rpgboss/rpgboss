@@ -9,12 +9,13 @@ import java.awt.image.BufferedImage
 import rpgboss.editor.StateMaster
 
 class AutotileSelector( 
-    proj: Project,
+    sm: StateMaster,
     map: RpgMap,
     tileSelector: TabbedTileSelector) 
   extends BoxPanel(Orientation.Vertical) {
   
-  val autotiles = map.metadata.autotiles.map(Autotile.readFromDisk(proj, _))
+  val autotiles = 
+    map.metadata.autotiles.map(sm.assetCache.autotileMap.get(_).get)
   val collageImage = TileUtils.getAutotileCollageImg(autotiles)
   
   // x coordiate corresponds to tileset number,

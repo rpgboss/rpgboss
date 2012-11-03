@@ -35,7 +35,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       val p = Project.startingProject(gameTitleField.text,
                                       new File(rootChooser.getRoot, shortname))
       
-      val mapName = RpgMap.generateName(0)
+      val mapName = RpgMap.generateName(p.data.lastCreatedMapId)
       RpgMap.defaultMapData.writeToFile(p, mapName)
       
       val allSavedOkay = 

@@ -3,7 +3,7 @@ import rpgboss.model.resource.RpgMap
                  
 case class ProjectData(title: String, 
                        recentMapName: String = "",
-                       lastCreatedMapId: Int = 0,
+                       lastCreatedMapId: Int = 1, // Start at 1
                        startingLoc: MapLoc = 
                          MapLoc(RpgMap.generateName(0), 5.5f, 5.5f),
                        

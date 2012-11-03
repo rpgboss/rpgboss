@@ -1,12 +1,12 @@
 package rpgboss.editor
 
 import rpgboss.lib.Utils._
-import rpgboss.cache._
 import rpgboss.model._
 import rpgboss.model.resource._
 
 import rpgboss.editor.tileset._
 import rpgboss.editor.lib._
+import rpgboss.editor.cache._
 
 import scala.math._
 
@@ -42,13 +42,14 @@ object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
  *  
  *  This class also provides a stack of old states for an undo mechanism.
  */
-class MapViewState(val sm: StateMaster, val mapName: String, 
-                   val tilecache: TileCache) 
+class MapViewState(val sm: StateMaster, val mapName: String) 
 {
   var prevStates: List[RpgMapData] = List()
   
   def map = sm.getMap(mapName)
   def mapMeta = map.metadata
+  
+  val tileCache = new MapTileCache(sm.assetCache, map)
   
   // Map data in editing, for example while mouse is down.
   // Need to be able to get the previous map data from the undo stack

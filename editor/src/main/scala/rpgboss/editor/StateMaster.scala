@@ -2,6 +2,7 @@ package rpgboss.editor
 
 import rpgboss.editor.lib._
 import rpgboss.editor.tileset._
+import rpgboss.editor.cache._
 
 import rpgboss.model._
 import rpgboss.model.resource._
@@ -37,15 +38,16 @@ class StateMaster(private var proj: Project)
 {
   import Dirtiness._
   
+  val assetCache = new AssetCache(proj)
+  
   private var projDirty = Dirtiness.Clean
   
-  private var mapStates: Map[String, MapState] = null
+  private val mapStates = collection.mutable.Map[String, MapState]()
   
   def loadProjectData() = {
-    val states = RpgMap.list(proj).map(RpgMap.readFromDisk(proj, _)).map(
-      rpgMap => rpgMap.name->MapState(rpgMap, Dirtiness.Clean, None))
-    
-    mapStates = Map(states : _*)
+    RpgMap.list(proj).map(RpgMap.readFromDisk(proj, _)).foreach(map => {
+      addMap(map, None, Dirtiness.Clean)
+    })
   }
   
   loadProjectData()
@@ -90,6 +92,13 @@ class StateMaster(private var proj: Project)
     projDirty = Dirty
   }
   
+  def addMap(
+      map: RpgMap, 
+      mapDataOpt: Option[RpgMapData], 
+      dirty: Dirtiness.Value) = {
+    mapStates.put(map.name, MapState(map, dirty, mapDataOpt))
+  }
+  
   def getMapStates = mapStates
   
   def getMapMetas = mapStates.values.map(_.map).toSeq
@@ -99,7 +108,7 @@ class StateMaster(private var proj: Project)
     mapStates.get(mapName).get.map
   
   def setMap(mapName: String, map: RpgMap) =
-    mapStates = mapStates.updated(mapName,
+    mapStates.update(mapName,
       mapStates.get(mapName).get.copy(map = map, dirty = Dirtiness.Dirty)) 
   
   def getMapData(mapName: String) = {
@@ -113,7 +122,7 @@ class StateMaster(private var proj: Project)
                             mapState.map.metadata.ySize)
       }
         
-      mapStates = mapStates.updated(mapName, 
+      mapStates.update(mapName, 
         mapState.copy(mapDataOpt = Some(mapData)))
       
       mapData
@@ -121,7 +130,7 @@ class StateMaster(private var proj: Project)
   }
   
   def setMapData(mapName: String, mapData: RpgMapData) = {
-    mapStates = mapStates.updated(mapName,
+    mapStates.update(mapName,
       mapStates.get(mapName).get.copy(
         mapDataOpt = Some(mapData), dirty = Dirtiness.Dirty))
   }
