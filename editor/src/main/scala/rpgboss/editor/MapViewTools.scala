@@ -26,10 +26,6 @@ trait MapViewTool {
 
 object MapViewTools extends ListedEnum[MapViewTool] {
   
-  def withinBounds(mapMeta: RpgMapMetadata, x: Int, y: Int) = {
-    x < mapMeta.xSize && y < mapMeta.ySize && x >= 0 && y >= 0 
-  }
-  
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
                        layerAry: Array[Array[Byte]],  
                        x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = 
@@ -53,7 +49,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
     val initialSeqOfTiles =
       for(x <- x0-1 to x1+1;
           y <- y0-1 to y1+1;
-          if withinBounds(mapMeta, x, y) && isAutotile(x,y)) yield (x, y)
+          if mapMeta.withinBounds(x, y) && isAutotile(x,y)) yield (x, y)
           
     // assume all tiles in set are within bounds
     @tailrec def setFirstTile(tilesRemainingToSet: Seq[(Int, Int)],
@@ -66,9 +62,9 @@ object MapViewTools extends ListedEnum[MapViewTool] {
         def sameType(x: Int, y: Int) =
           isAutotile(x, y) && getAutotileNum(x, y) == autotileNum
         def diffTypeOutsideSame(v: IntVec) =
-          withinBounds(mapMeta, v.x, v.y) && !sameType(v.x, v.y)
+          mapMeta.withinBounds(v.x, v.y) && !sameType(v.x, v.y)
         def diffTypeOutsideDiff(v: IntVec) =
-          !withinBounds(mapMeta, v.x, v.y) || !sameType(v.x, v.y)
+          !mapMeta.withinBounds(v.x, v.y) || !sameType(v.x, v.y)
         
         // MUTABLE
         def mask(xToSet: Int, yToSet: Int, maskInt: Int) =
@@ -117,7 +113,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
             // where y elem [wallNorth, wallSouth] are same type autotile
             def allSameType(xTest: Int) = {
               // all same for out of bounds
-              !withinBounds(mapMeta, xTest, wallNorth) || 
+              !mapMeta.withinBounds(xTest, wallNorth) || 
               wallYBounds.map(y => (xTest, y)).forall(
                 t => sameType(t._1, t._2))
             }
@@ -168,7 +164,7 @@ object MapViewTools extends ListedEnum[MapViewTool] {
           val x = x1+xi
           val y = y1+yi
           
-          if(withinBounds(vs.mapMeta, x, y)) {
+          if(vs.mapMeta.withinBounds(x, y)) {
             println("Modified tile: (%d, %d)".format(x, y))
             for(j <- 0 until bytesPerTile) 
               layerAry(y).update(x*bytesPerTile+j, tCode(j)) 

@@ -231,8 +231,12 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   }
   
   // Updates cursor square, and queues up any appropriate repaints
-  def updateCursorSq(visible: Boolean, x: Int = 0, y: Int = 0) = 
+  def updateCursorSq(visibleArg: Boolean, x: Int = 0, y: Int = 0) = 
   {
+    def inBounds = 
+      viewStateOpt.map(_.mapMeta.withinBounds(x, y)).getOrElse(false) 
+    val visible = visibleArg && inBounds
+    
     val oldSq = canvasPanel.cursorSquare
     canvasPanel.cursorSquare = if(visible) {
       val tCodes = tileSelector.selectedTileCodes 
@@ -349,7 +353,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
         val tCodes = tileSelector.selectedTileCodes
         val tool = MapViewTools.selected
         val (x1, y1) = toTileCoords(point)
-                
+        
         updateCursorSq(tool.selectionSqOnDrag, x1, y1)
         repaintRegion(MapViewTools.selected.onMousePressed(vs, tCodes, x1, y1))
         
@@ -386,63 +390,65 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
       viewStateOpt map { vs => 
         val (x1, y1) = toTileCoords(e.point)
         
-        val oldEvtCursor = canvasPanel.eventCursor
-        canvasPanel.eventCursor = TileRect(x1, y1)
-        
-        // Updated the selected event idx
-        val existingEventIdx = 
-          vs.nextMapData.events.indexWhere(e => 
-            e.x.toInt == canvasPanel.eventCursor.x1 && 
-            e.y.toInt == canvasPanel.eventCursor.y1)
-      
-        if(existingEventIdx == -1) {
-          canvasPanel.selectedEvtIdx = None
-        } else {
-          canvasPanel.selectedEvtIdx = Some(existingEventIdx)
-        }
-        
-        repaintRegion(oldEvtCursor)
-        repaintRegion(canvasPanel.eventCursor)
-        
-        e.peer.getButton() match {
-          // Popup menu
-          case MouseEvent.BUTTON3 =>
-            evtPopupMenu().map { _.show(canvasPanel, e.point.x, e.point.y) }
+        if(vs.mapMeta.withinBounds(x1, y1)) {
+          val oldEvtCursor = canvasPanel.eventCursor
+          canvasPanel.eventCursor = TileRect(x1, y1)
           
-          // Code for the drag moving of events
-          case MouseEvent.BUTTON1 if canvasPanel.selectedEvtIdx.isDefined =>
-            val evtIdx = canvasPanel.selectedEvtIdx.get
-            var (xLastDrag, yLastDrag) = (-1, -1) // init to impossible value
+          // Updated the selected event idx
+          val existingEventIdx = 
+            vs.nextMapData.events.indexWhere(e => 
+              e.x.toInt == canvasPanel.eventCursor.x1 && 
+              e.y.toInt == canvasPanel.eventCursor.y1)
+        
+          if(existingEventIdx == -1) {
+            canvasPanel.selectedEvtIdx = None
+          } else {
+            canvasPanel.selectedEvtIdx = Some(existingEventIdx)
+          }
+          
+          repaintRegion(oldEvtCursor)
+          repaintRegion(canvasPanel.eventCursor)
+          
+          e.peer.getButton() match {
+            // Popup menu
+            case MouseEvent.BUTTON3 =>
+              evtPopupMenu().map { _.show(canvasPanel, e.point.x, e.point.y) }
             
-            vs.begin()
-            
-            lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
-              case MouseDragged(`canvasPanel`, point, _) => {
-                val (x2, y2) = toTileCoords(point)
-                
-                // only redo action if dragged to a different square
-                if( (x2, y2) != (xLastDrag, yLastDrag) ) {
-                  val oldCursor = canvasPanel.eventCursor
-                  canvasPanel.eventCursor = TileRect(x2, y2)
-                  repaintRegion(oldCursor)
-                  repaintRegion(canvasPanel.eventCursor)
-                  val evt = vs.nextMapData.events(evtIdx)
-                  vs.nextMapData.events.update(evtIdx, 
-                      evt.copy(x = x2+0.5f, y = y2+0.5f))
-                                    
-                  xLastDrag = x2
-                  yLastDrag = y2
+            // Code for the drag moving of events
+            case MouseEvent.BUTTON1 if canvasPanel.selectedEvtIdx.isDefined =>
+              val evtIdx = canvasPanel.selectedEvtIdx.get
+              var (xLastDrag, yLastDrag) = (-1, -1) // init to impossible value
+              
+              vs.begin()
+              
+              lazy val temporaryReactions : PartialFunction[Event, Unit] = { 
+                case MouseDragged(`canvasPanel`, point, _) => {
+                  val (x2, y2) = toTileCoords(point)
+                  
+                  // only redo action if dragged to a different square
+                  if( (x2, y2) != (xLastDrag, yLastDrag) ) {
+                    val oldCursor = canvasPanel.eventCursor
+                    canvasPanel.eventCursor = TileRect(x2, y2)
+                    repaintRegion(oldCursor)
+                    repaintRegion(canvasPanel.eventCursor)
+                    val evt = vs.nextMapData.events(evtIdx)
+                    vs.nextMapData.events.update(evtIdx, 
+                        evt.copy(x = x2+0.5f, y = y2+0.5f))
+                                      
+                    xLastDrag = x2
+                    yLastDrag = y2
+                  }
+                }
+                case MouseReleased(`canvasPanel`, point, _, _, _) => {
+                  val (x2, y2) = toTileCoords(point)
+                  vs.commit()
+                  reactions -= temporaryReactions
                 }
               }
-              case MouseReleased(`canvasPanel`, point, _, _, _) => {
-                val (x2, y2) = toTileCoords(point)
-                vs.commit()
-                reactions -= temporaryReactions
-              }
-            }
-            
-            reactions += temporaryReactions
-          case _ => None
+              
+              reactions += temporaryReactions
+            case _ => None
+          }
         }
       }
     case e: MouseClicked if e.source == canvasPanel && selectedLayer == Evt =>

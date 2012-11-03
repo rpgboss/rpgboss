@@ -15,6 +15,9 @@ case class RpgMapMetadata(parent: String,
                           ySize: Int,
                           tilesets: Array[String],
                           autotiles: Array[String]) {
+  def withinBounds(x: Int, y: Int) = {
+    x < xSize && y < ySize && x >= 0 && y >= 0 
+  }
 }
 
 /**

@@ -51,6 +51,9 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
                 val newNode = Node(updatedMap, newParentNode.path)
                 tree.model.insertUnder(newParentNode.path, newNode, 0)
                 highlightWithoutEvent(newNode)
+                
+                // Select map again to refresh the map view and tileset selector
+                projPanel.selectMap(Some(updatedMap))
               }
           )
           d.open()
@@ -84,6 +87,9 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
               
               // Add to the state master. Don't actually write it ourselves
               sm.addMap(newMap, Some(newMapData), Dirtiness.Dirty)
+              
+              // select the new map
+              projPanel.selectMap(Some(newMap))
             }
         )
         d.open()
