@@ -32,4 +32,11 @@ object Constants {
     SW   ->(-1, 1),
     NW   ->(-1, -1)
   )
+  
+  object Transitions {
+    val NONE = 0
+    val FADE = 1
+    
+    val fadeLength = 500
+  }
 }

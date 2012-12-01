@@ -13,6 +13,7 @@ import rpgboss.model.SpriteSpec
 class EventDialog(
     owner: Window,
     project: Project,
+    val mapName: String,
     initialEvent: RpgEvent, 
     onOk: RpgEvent => Any,
     onCancel: RpgEvent => Any)
@@ -54,8 +55,9 @@ class EventDialog(
       }
       
       val commandBox = new CommandBox(
+          EventDialog.this,
           owner, 
-          project, 
+          project,
           curEvtState.cmds,
           newCmds => updateEvtState(curEvtState.copy(cmds = newCmds)))
       

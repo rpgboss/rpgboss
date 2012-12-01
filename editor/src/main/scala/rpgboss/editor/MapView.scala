@@ -298,6 +298,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
     val dialog = new EventDialog(
         projectPanel.mainP.topWin, 
         sm.getProj,
+        vs.mapName,
         event,
         onOk = { e: RpgEvent =>
           if(isNewEvent) 

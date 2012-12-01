@@ -6,22 +6,15 @@ import rpgboss.editor.lib.SwingUtils._
 import rpgboss.editor.dialog.StdDialog
 import rpgboss.editor.lib.DesignGridPanel
 
-class ShowTextCmdDialog(
+class TeleportCmdDialog(
     owner: Window, 
-    initial: ShowText, 
-    successF: (ShowText) => Any) 
-  extends StdDialog (owner, "Show text")
+    initial: Teleport, 
+    successF: (Teleport) => Any) 
+  extends StdDialog (owner, "Teleport Player")
 {
   
-  val textEdit = new TextArea(initial.lines.mkString("\n"))
-  
-  val textEditScroll = new ScrollPane {
-    contents = textEdit
-    preferredSize = new Dimension(300, 150)
-  }
-  
   def okFunc() = {
-    successF(ShowText(textEdit.text.split("\n")))
+    successF(initial)
     close()
   }
   
@@ -32,4 +25,10 @@ class ShowTextCmdDialog(
     addButtons(cancelBtn, okBtn)
   }
   
+}
+
+object MetadataMode extends Enumeration 
+{
+  type MetadataMode = Value
+  val Passability, Height = Value
 }

@@ -1,6 +1,7 @@
 package rpgboss.player
 import rpgboss.player.entity._
 import rpgboss.model._
+import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -142,7 +143,10 @@ class GameState(game: MyGame, project: Project) {
    * Things to do with the screen
    */
   
-  def setTransition(startAlpha: Float, endAlpha: Float, durationMs: Int) = syncRun {
+  def setTransition(
+      startAlpha: Float, 
+      endAlpha: Float, 
+      durationMs: Int) = syncRun {
     curTransition = Some(Transition(startAlpha, endAlpha, durationMs))
   }
   
@@ -214,6 +218,22 @@ class GameState(game: MyGame, project: Project) {
   }
   
   def showText(text: Array[String]) = showTextWithPosition(text)
+  
+  def teleport(mapName: String, x: Float, y: Float, transition: Int) {
+    if(transition == Transitions.FADE) {
+      setTransition(0, 1, Transitions.fadeLength)
+      sleep(Transitions.fadeLength)
+    }
+    
+    val loc = MapLoc(mapName, x, y)
+    
+    setPlayerLoc(loc)
+    setCameraLoc(loc)
+    
+    if(transition == Transitions.FADE) {
+      setTransition(1, 0, Transitions.fadeLength)
+    }
+  }
   
   val LEFT = Window.Left
   val CENTER = Window.Center

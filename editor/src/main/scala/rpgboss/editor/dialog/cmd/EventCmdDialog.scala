@@ -19,6 +19,6 @@ object EventCmdDialog {
   def dialogFor(owner: Window, evtCmd: EventCmd, successF: (EventCmd) => Any) = 
     evtCmd match {
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
-      
+      case e: Teleport => new TeleportCmdDialog(owner, e, successF)
     }
 }
