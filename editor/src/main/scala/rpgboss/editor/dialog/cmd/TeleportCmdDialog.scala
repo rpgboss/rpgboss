@@ -6,16 +6,20 @@ import rpgboss.model.Constants._
 import rpgboss.editor.lib.SwingUtils._
 import rpgboss.editor.dialog.StdDialog
 import rpgboss.editor.lib.DesignGridPanel
+import rpgboss.editor.lib.MapLocPanel
+import rpgboss.editor.StateMaster
 
 class TeleportCmdDialog(
     owner: Window, 
+    sm: StateMaster,
     initial: Teleport, 
     successF: (Teleport) => Any) 
   extends StdDialog (owner, "Teleport Player")
 {
   
   def okFunc() = {
-    successF(initial)
+    val cmd = Teleport(mapLocPanel.loc, transition)
+    successF(cmd)
     close()
   }
   
@@ -29,9 +33,13 @@ class TeleportCmdDialog(
     addBtnsAsGrp(contents, radioBtns)
   }
   
+  val mapLocPanel = new MapLocPanel(owner, sm, initial.loc)
+  
   contents = new DesignGridPanel {
     row().grid().add(leftLabel("Transition:"))
     row().grid().add(transitionRadios)
+    row().grid().add(leftLabel("Destination:"))
+    row().grid().add(mapLocPanel)
     addButtons(cancelBtn, okBtn)
   }
   

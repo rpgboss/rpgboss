@@ -5,6 +5,7 @@ import scala.swing.event._
 import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.editor.dialog.cmd._
+import rpgboss.editor.StateMaster
 
 /**
  * Holds and edits list of commands.
@@ -13,7 +14,7 @@ import rpgboss.editor.dialog.cmd._
 class CommandBox(
     evtDiag: EventDialog,
     owner: Window, 
-    project: Project, 
+    sm: StateMaster, 
     initialCmds: Array[EventCmd],
     onUpdate: (Array[EventCmd]) => Any) 
   extends ListView(initialCmds) {
@@ -21,14 +22,14 @@ class CommandBox(
   listenTo(mouse.clicks)
   
   def newCmdDialog() = {
-    val d = new NewEvtCmdBox(evtDiag, owner, this, selection.indices.head)
+    val d = new NewEvtCmdBox(evtDiag, sm, owner, this, selection.indices.head)
     d.open()
   }
   
   def editSelectedCmd() = {
     val selectedIdx = selection.indices.head
     val selectedCmd = selection.items.head
-    val d = EventCmdDialog.dialogFor(owner, selectedCmd, newEvt => {
+    val d = EventCmdDialog.dialogFor(owner, sm, selectedCmd, newEvt => {
       listData = listData.updated(selectedIdx, newEvt)
     })
     d.open()

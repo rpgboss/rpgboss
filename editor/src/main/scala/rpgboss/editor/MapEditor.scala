@@ -180,7 +180,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
     
     val dialog = new EventDialog(
         projectPanel.mainP.topWin, 
-        sm.getProj,
+        sm,
         vs.mapName,
         event,
         onOk = { e: RpgEvent =>

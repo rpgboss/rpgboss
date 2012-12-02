@@ -9,10 +9,11 @@ import scala.collection.mutable.ArrayBuffer
 import scala.swing.TabbedPane.Page
 import rpgboss.model.Project
 import rpgboss.model.SpriteSpec
+import rpgboss.editor.StateMaster
 
 class EventDialog(
     owner: Window,
-    project: Project,
+    sm: StateMaster,
     val mapName: String,
     initialEvent: RpgEvent, 
     onOk: RpgEvent => Any,
@@ -35,7 +36,7 @@ class EventDialog(
         }
         val spriteBox = new SpriteBox(
             owner, 
-            project, 
+            sm.getProj, 
             curEvtState.sprite, 
             (spriteSpec: Option[SpriteSpec]) =>
               updateEvtState(curEvtState.copy(sprite = spriteSpec)))
@@ -57,7 +58,7 @@ class EventDialog(
       val commandBox = new CommandBox(
           EventDialog.this,
           owner, 
-          project,
+          sm,
           curEvtState.cmds,
           newCmds => updateEvtState(curEvtState.copy(cmds = newCmds)))
       

@@ -25,8 +25,8 @@ object GraphicsUtils {
     g.drawRect(x1+2, y1+2, w-4-1, h-4-1)
   }
   
-  case class TileRect(x1: Int, y1: Int, 
-                      wTiles: Int = 1, hTiles: Int = 1) 
+  case class TileRect(x1: Float, y1: Float, 
+                      wTiles: Float = 1, hTiles: Float= 1) 
   {
     def x2 = x1+wTiles-1
     def y2 = y1+hTiles-1
@@ -42,8 +42,8 @@ object GraphicsUtils {
    
     def rect(xTilesize: Int, yTilesize: Int) =
       if(empty) new Rectangle(0, 0, -1, -1)
-      else new Rectangle(x1*xTilesize, y1*yTilesize, 
-                         wTiles*xTilesize, hTiles*yTilesize)
+      else new Rectangle((x1*xTilesize).toInt, (y1*yTilesize).toInt, 
+                         (wTiles*xTilesize).toInt, (hTiles*yTilesize).toInt)
     
     def optionallyDrawSelRect(g: Graphics2D, xTilesize: Int, yTilesize: Int) = 
       if(!empty) drawSelRect(g, rect(xTilesize, yTilesize))

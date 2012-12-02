@@ -7,10 +7,12 @@ import rpgboss.editor.dialog.cmd._
 import rpgboss.model.event._
 import rpgboss.model.Constants._
 import rpgboss.model._
+import rpgboss.editor.StateMaster
 
 
 class NewEvtCmdBox(
     evtDiag: EventDialog,
+    sm: StateMaster,
     owner: Window,
     cmdBox: CommandBox,
     idxToInsert: Int) 
@@ -24,12 +26,13 @@ class NewEvtCmdBox(
     new Button() {
       action = Action(title) {
         val d = EventCmdDialog.dialogFor(
-        owner,
-        e,
-        evtCmd => {
-          NewEvtCmdBox.this.close()
-          cmdBox.insertCmd(idxToInsert, evtCmd)
-        })
+            owner,
+            sm,
+            e,
+            evtCmd => {
+              NewEvtCmdBox.this.close()
+              cmdBox.insertCmd(idxToInsert, evtCmd)
+            })
         d.open()
       }
     }

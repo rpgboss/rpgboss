@@ -70,7 +70,8 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   
   // This calls the selectMapFunction
   selectMap(initialMap)
-  initialMap.map(m => mapSelector.highlightWithoutEvent(m.name))
+  initialMap.map(m => 
+    mapSelector.highlightWithoutEvent(mapSelector.getNode(m.name)))
   
   mainP.revalidate()
 }
