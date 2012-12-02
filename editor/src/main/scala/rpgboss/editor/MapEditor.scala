@@ -75,19 +75,10 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
       
       viewStateOpt.map(vs => {
         
-        val bounds = g.getClipBounds
-        
-        val (minX, minY, maxX, maxY, minXTile, minYTile, maxXTile, maxYTile) =
-          TileUtils.getTileBounds(
-              g.getClipBounds(), curTilesize, curTilesize, 
-              vs.mapMeta.xSize, vs.mapMeta.ySize)
-        
         drawWithAlpha(g, evtAlpha) {
           // draw start loc
           val startingLoc = sm.getProj.data.startingLoc
-          if(startingLoc.map == vs.mapName &&
-             startingLoc.x >= minXTile && startingLoc.x <= maxXTile &&
-             startingLoc.y >= minYTile && startingLoc.y <= maxYTile) {
+          if(startingLoc.map == vs.mapName) {
             import MapEditor.startLocTile
             g.drawImage(startLocTile,
               (startingLoc.x*curTilesize).toInt-curTilesize/2, 
