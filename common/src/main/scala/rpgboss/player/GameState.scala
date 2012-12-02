@@ -131,7 +131,7 @@ class GameState(game: MyGame, project: Project) {
     } else {
       mapAndAssetsOption.map(_.dispose())
       
-      val mapAndAssets = new MapAndAssets(project, cameraLoc.map)
+      val mapAndAssets = new MapAndAssets(project, loc.map)
       mapAndAssetsOption = Some(mapAndAssets)
       npcEvts = mapAndAssets.mapData.events.map {
         new NonplayerEvent(game, _)
@@ -221,7 +221,7 @@ class GameState(game: MyGame, project: Project) {
   
   def teleport(mapName: String, x: Float, y: Float, transition: Int) {
     if(Transitions(transition) == Transitions.FADE) {
-      setTransition(0, 1, Transitions.fadeLength)
+      setTransition(1, 0, Transitions.fadeLength)
       sleep(Transitions.fadeLength)
     }
     
@@ -231,7 +231,7 @@ class GameState(game: MyGame, project: Project) {
     setCameraLoc(loc)
     
     if(Transitions(transition) == Transitions.FADE) {
-      setTransition(1, 0, Transitions.fadeLength)
+      setTransition(0, 1, Transitions.fadeLength)
     }
   }
   
