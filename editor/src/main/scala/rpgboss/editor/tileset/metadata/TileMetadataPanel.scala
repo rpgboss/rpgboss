@@ -12,20 +12,14 @@ import rpgboss.editor.StateMaster
 import javax.imageio.ImageIO
 import java.awt.geom.Line2D
 import java.awt.AlphaComposite
-import rpgboss.editor.ListedEnum
 import java.awt.Font
 import java.awt.Color
 
-object MetadataMode
-  extends Enumeration 
-  with ListedEnum[Enumeration#Value]
+object MetadataMode extends RpgEnum
 {
-  type MetadataMode = Value
   val Passability, Height = Value
   
-  val valueList = List(Passability, Height)
-  
-  selected = Passability
+  def default = Passability
 }
 
 
@@ -42,6 +36,8 @@ trait TileMetadataPanelOwner {
    * User clicks this tile. Not required to do anything. 
    */
   def updateTileMeta(xTile: Int, yTile: Int, newMetadata: TileMetadata): Unit
+  
+  var metadataMode = MetadataMode.default
 }
 
 class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner) 
@@ -49,13 +45,15 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
 {  
   import MetadataMode._
   
+  def metadataMode = owner.metadataMode
+  
   // Returns the new tile metadata as a result of the click
   def updatedMetadata(xTile: Int, yTile: Int): Option[TileMetadata] = {
     owner.getTileMeta(xTile, yTile) map { metadata => 
       import Constants.DirectionMasks._
       
       val newMetadata = 
-        if(MetadataMode.selected == Passability) {
+        if(metadataMode == Passability) {
           val newBlockedDirs = 
             if(allBlocked(metadata.blockedDirs)) {
               NONE
@@ -63,7 +61,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
               ALLCARDINAL
             }
           metadata.copy(blockedDirs = newBlockedDirs.toByte)
-        } else if(MetadataMode.selected == Height) {
+        } else if(metadataMode == Height) {
           val newHeight = if(metadata.height == 5) 0 else metadata.height+1 
           metadata.copy(height = newHeight.toByte)
         } else {
@@ -135,14 +133,14 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
           val (xTileTS, yTileTS) = toTilesetSpace(xTile, yTile); 
           metadata <- owner.getTileMeta(xTileTS, yTileTS)) {
         
-        if(MetadataMode.selected == Passability) {
+        if(metadataMode == Passability) {
           if(allPassable(metadata.blockedDirs))
             draw22Icon(iconPass, xTile, yTile)
           else if(allBlocked(metadata.blockedDirs))
             draw22Icon(iconStop, xTile, yTile)
           else
             None
-        } else if(MetadataMode.selected == Height) {
+        } else if(metadataMode == Height) {
           draw32Icon(iconHeights(metadata.height), xTile, yTile)
         }
       }

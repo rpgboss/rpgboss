@@ -132,7 +132,12 @@ class TilesetsMetadataPanel(sm: StateMaster)
   contents += metadataPanelContainer
   
   contents += new DesignGridPanel {
-    val btns = enumButtons(MetadataMode, () => metadataPanelContainer.repaint())
+    val btns = enumButtons(MetadataMode)(
+        metadataMode,
+        newMode => {
+          metadataMode = newMode
+          metadataPanelContainer.repaint()
+        })
     
     new ButtonGroup(btns : _*)
     
