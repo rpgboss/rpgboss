@@ -10,25 +10,17 @@ import rpgboss.editor.cache._
 
 import scala.math._
 
-trait ListedEnum[T] {
-  def valueList : List[T]
-  private var selectedVar : T = null.asInstanceOf[T]
-  
-  def selected : T = selectedVar
-  def selected_=(x: T) = selectedVar = x 
-}
-
-object MapLayers extends Enumeration with ListedEnum[Enumeration#Value] {
+object MapLayers extends RpgEnum {
   val Bot, Mid, Top, Evt = Value
-  val valueList = List(Bot, Mid, Top, Evt)
   
-  def enumDrawOrder(mapData: RpgMapData) = 
-    List(Bot, Mid, Top) zip mapData.drawOrder
+  def drawOrderZip[T](list: List[T]) = 
+    List(Bot, Mid, Top) zip list
   
-  def mapOfArrays(mapData: RpgMapData) : Map[Enumeration#Value, Array[Array[Byte]]] = 
-    Map(enumDrawOrder(mapData) : _*)
+  def mapOfArrays(mapData: RpgMapData) : 
+      Map[Enumeration#Value, Array[Array[Byte]]] = 
+    Map(drawOrderZip(mapData.drawOrder) : _*)
   
-  selected = Bot
+  def default = Bot
 }
 
 /**

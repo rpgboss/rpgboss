@@ -41,7 +41,7 @@ class NewEvtCmdBox(
     row().grid().add(btnEvtCmd("Teleport player...", 
         Teleport(
             MapLoc(evtDiag.mapName, evtDiag.event.x, evtDiag.event.y), 
-            Transitions.FADE)))
+            Transitions.FADE.id)))
     
     addCancel(cancelBtn)
   }

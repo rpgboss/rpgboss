@@ -220,7 +220,7 @@ class GameState(game: MyGame, project: Project) {
   def showText(text: Array[String]) = showTextWithPosition(text)
   
   def teleport(mapName: String, x: Float, y: Float, transition: Int) {
-    if(transition == Transitions.FADE) {
+    if(Transitions(transition) == Transitions.FADE) {
       setTransition(0, 1, Transitions.fadeLength)
       sleep(Transitions.fadeLength)
     }
@@ -230,7 +230,7 @@ class GameState(game: MyGame, project: Project) {
     setPlayerLoc(loc)
     setCameraLoc(loc)
     
-    if(transition == Transitions.FADE) {
+    if(Transitions(transition) == Transitions.FADE) {
       setTransition(1, 0, Transitions.fadeLength)
     }
   }

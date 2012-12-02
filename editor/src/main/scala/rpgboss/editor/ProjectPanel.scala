@@ -15,7 +15,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 {  
   val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new ProjectPanelMapSelector(sm, this)
-  val mapView = new MapView(this, sm, tileSelector)
+  val mapView = new MapEditor(this, sm, tileSelector)
   
   val projMenu = new PopupMenu {
     contents += new MenuItem(mainP.actionNew)

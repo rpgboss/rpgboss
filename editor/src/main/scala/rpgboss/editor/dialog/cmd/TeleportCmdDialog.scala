@@ -2,6 +2,7 @@ package rpgboss.editor.dialog.cmd
 
 import scala.swing._
 import rpgboss.model.event._
+import rpgboss.model.Constants._
 import rpgboss.editor.lib.SwingUtils._
 import rpgboss.editor.dialog.StdDialog
 import rpgboss.editor.lib.DesignGridPanel
@@ -18,10 +19,20 @@ class TeleportCmdDialog(
     close()
   }
   
-  contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Text:"))
-    row().grid().add(textEditScroll)
+  var transition = initial.transition
+  
+  val transitionRadios = new BoxPanel(Orientation.Horizontal) {
+    val radioBtns = enumRadios(
+        Transitions,
+        Transitions(transition),
+        t => transition = t.id)
     
+    addBtnsAsGrp(contents, radioBtns)
+  }
+  
+  contents = new DesignGridPanel {
+    row().grid().add(leftLabel("Transition:"))
+    row().grid().add(transitionRadios)
     addButtons(cancelBtn, okBtn)
   }
   

@@ -15,16 +15,18 @@ import java.awt.Rectangle
 trait MapViewTool {
   def name: String
   override def toString = name
-  def onMousePressed(vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
+  def onMousePressed(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                     layer: MapLayers.Value,
                      x1: Int, y1: Int) : TileRect
   // x1, y1 are init press coords; x2, y2 are where mouse has been dragged 
   def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                     layer: MapLayers.Value,
                      x1: Int, y1: Int, x2: Int, y2: Int) : TileRect
   
   def selectionSqOnDrag: Boolean = true
 }
 
-object MapViewTools extends ListedEnum[MapViewTool] {
+object MapViewTools {
   
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
                        layerAry: Array[Array[Byte]],  
@@ -154,10 +156,11 @@ object MapViewTools extends ListedEnum[MapViewTool] {
     val name = "Pencil"
     def onMousePressed(
         vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
+        layer: MapLayers.Value,
         x1: Int, y1: Int) = {
       import MapLayers._
       
-      mapOfArrays(vs.nextMapData).get(MapLayers.selected).map { layerAry =>
+      mapOfArrays(vs.nextMapData).get(layer).map { layerAry =>
         for((tileRow, yi) <- tCodes.zipWithIndex;
             (tCode, xi) <- tileRow.zipWithIndex)
         {
@@ -184,11 +187,24 @@ object MapViewTools extends ListedEnum[MapViewTool] {
       }
     }
     def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
-                     x1: Int, y1: Int, x2: Int, y2: Int) = {
-      onMousePressed(vs, tCodes, x2, y2) // no difference
+                       layer: MapLayers.Value,
+                       x1: Int, y1: Int, x2: Int, y2: Int) = {
+      onMousePressed(vs, tCodes, layer, x2, y2) // no difference
     }
   }
+}
+
+object MapViewToolsEnum extends RpgEnum {
+  val Pencil = Value
   
+  val toolMap = Map(
+      Pencil->MapViewTools.Pencil
+  )
+  
+  def getTool(value: Value) = {
+    toolMap.get(value).get
+  }
   val valueList = List(Pencil)
-  selected = Pencil
+  
+  def default = Pencil
 }

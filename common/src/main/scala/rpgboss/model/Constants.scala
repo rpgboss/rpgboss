@@ -1,5 +1,12 @@
 package rpgboss.model
 
+trait RpgEnum extends Enumeration {
+  def findOrDefault(s: String) = {
+    values.find(_.toString == s).getOrElse(default)
+  }
+  def default: Value
+}
+
 object Constants {
 
   object DirectionMasks {
@@ -33,10 +40,12 @@ object Constants {
     NW   ->(-1, -1)
   )
   
-  object Transitions {
-    val NONE = 0
-    val FADE = 1
+  object Transitions extends RpgEnum {
+    val NONE = Value(0, "None")
+    val FADE = Value(1, "Fade out")
+    
+    def default = FADE
     
     val fadeLength = 500
   }
-}
+}     

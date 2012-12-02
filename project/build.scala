@@ -8,6 +8,7 @@ object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     version := "0.1",
     scalaVersion := "2.9.2",
+    scalacOptions ++= List("-deprecation", "-unchecked", "-Ydependent-method-types"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % "10.0",
@@ -59,7 +60,7 @@ object Settings {
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
     ),
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
-    scalacOptions ++= List("-deprecation", "-unchecked"),
+    scalacOptions ++= List("-deprecation", "-unchecked", "-Ydependent-method-types"),
     TaskKey[Unit]("generateEnum") := {  
       SysProcess("python GenerateFileEnum.py", new File("editor/src/main/resources")).run()
       println("Generated file enumeration")
