@@ -1,4 +1,5 @@
-lib/
+common/lib/
+player-desktop/lib
 libs/
 target/
 src_managed/
