@@ -34,12 +34,13 @@ class MapLayer(game: MyGame) {
   tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
   
   def updateCameraLoc() = {
-    cameraL = state.cameraLoc.x - screenW/2
-    cameraR = state.cameraLoc.x + screenW/2
-    cameraT = state.cameraLoc.y - screenH/2
-    cameraB = state.cameraLoc.y + screenH/2
-    tileCamera.position.x = state.cameraLoc.x
-    tileCamera.position.y = state.cameraLoc.y
+    def cameraLoc = state.persistent.cameraLoc
+    cameraL = cameraLoc.x - screenW/2
+    cameraR = cameraLoc.x + screenW/2
+    cameraT = cameraLoc.y - screenH/2
+    cameraB = cameraLoc.y + screenH/2
+    tileCamera.position.x = cameraLoc.x
+    tileCamera.position.y = cameraLoc.y
     tileCamera.update()
     
     // Set the projection matrix to the combined camera matrices

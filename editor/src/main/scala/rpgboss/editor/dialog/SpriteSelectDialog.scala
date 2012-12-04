@@ -24,7 +24,11 @@ class SpriteSelectDialog(
     close()
   }
   
-  val spritesetList = new ListView(spritesets)
+  val spritesetList = new ListView(List(None) ++ spritesets.map(Some(_))) {
+    renderer = ListView.Renderer({ opt =>
+      opt getOrElse "<None>"
+    })
+  }
   
   val spriteSelectorContainer = new BoxPanel(Orientation.Vertical) {
     def s = new Dimension(384, 384) // hardcoded to rpgmaker xp spriteset dim
@@ -88,6 +92,10 @@ class SpriteSelectDialog(
       }
     case ListSelectionChanged(`spritesetList`, _, _) =>
       logger.info("Selected a different sprite")
-      updateSelection(Some(SpriteSpec(spritesetList.selection.items.head, 0)))
+      val newSpriteSpecOpt = spritesetList.selection.items.head.map {
+        SpriteSpec(_, 0)
+      }
+      
+      updateSelection(newSpriteSpecOpt)
   }
 }

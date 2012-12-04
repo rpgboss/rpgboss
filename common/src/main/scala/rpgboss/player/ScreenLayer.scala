@@ -55,7 +55,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
     batch.begin()
     
     // Render pictures
-    for(pic <- state.pictures) {
+    for(pic <- state.persistent.pictures) {
       if(pic != null) {
         pic.render(batch)
       }

@@ -24,34 +24,45 @@ class EventDialog(
   
   override def cancelFunc() = onCancel(event)
   
-  def paneForEvtState(idx: Int) = {
+  def makePaneForEvtState(idx: Int) = {
     def curEvtState = event.states(idx)
     def updateEvtState(evtState: RpgEventState) =
       event.states.update(idx, evtState)
     
     new BoxPanel(Orientation.Horizontal) {
       contents += new DesignGridPanel {
-        val triggerBox = new ComboBox(EventTrigger.choices) {
-          selection.index = curEvtState.trigger
+        val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
+          selection.item = EventTrigger(curEvtState.trigger)
+        }
+        val heightBox = new ComboBox(EventHeight.values.toSeq) {
+          selection.item = EventHeight(curEvtState.height)
         }
         val spriteBox = new SpriteBox(
             owner, 
             sm.getProj, 
             curEvtState.sprite, 
-            (spriteSpec: Option[SpriteSpec]) =>
-              updateEvtState(curEvtState.copy(sprite = spriteSpec)))
+            (spriteSpec: Option[SpriteSpec]) => {
+              // If the sprite's "existence" has changed...
+              if(curEvtState.sprite.isDefined != spriteSpec.isDefined) {
+                heightBox.selection.item = if(spriteSpec.isDefined) 
+                  EventHeight.SAME else EventHeight.UNDER
+              }
+              updateEvtState(curEvtState.copy(sprite = spriteSpec))
+            })
         
         row().grid().add(leftLabel("Trigger:"))
         row().grid().add(triggerBox)
+        row().grid().add(leftLabel("Height:"))
+        row().grid().add(heightBox)
         row().grid().add(leftLabel("Sprite:"))
         row().grid().add(spriteBox)
         
         reactions += {
           case SelectionChanged(`triggerBox`) =>
-            val selectedIdx = 
-              EventTrigger.choices.indexOf(triggerBox.selection.item)
             updateEvtState(
-                curEvtState.copy(trigger = selectedIdx))
+                curEvtState.copy(
+                    trigger = triggerBox.selection.item.id,
+                    height = heightBox.selection.item.id))
         }
       }
       
@@ -73,6 +84,12 @@ class EventDialog(
   }
   
   def okFunc() = {
+    event = event.copy(name = nameField.text)
+    
+    tabPane.pages.foreach { page =>
+      page.content 
+    }
+    
     onOk(event)
     close()
   }
@@ -108,12 +125,5 @@ class EventDialog(
       
       addButtons(cancelBtn, okBtn)
     }
-  }
-
-  listenTo(nameField)
-  reactions += {
-    case EditDone(`nameField`) =>
-      event = event.copy(name = nameField.text)
-      peer.setTitle("Event: " + event.name)
   }
 }

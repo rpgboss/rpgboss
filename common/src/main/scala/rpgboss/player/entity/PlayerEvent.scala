@@ -1,9 +1,9 @@
 package rpgboss.player.entity
 
 import rpgboss.model._
+import rpgboss.model.event._
 import rpgboss.player._
-import rpgboss.player.entity.EventEntity
-
+import rpgboss.player.entity._
 import MyKeys.Down
 import MyKeys.Left
 import MyKeys.Right
@@ -50,26 +50,37 @@ class PlayerEvent(game: MyGame)
     // Do the basic event update stuff, including the actual moving
     super.update(delta)
     
-    // Handle interaction
+    // Get the direction unit vector
+    val (ux, uy) = dir match {
+      case SpriteSpec.Directions.NORTH => ( 0f, -1f)
+      case SpriteSpec.Directions.SOUTH => ( 0f,  1f)
+      case SpriteSpec.Directions.EAST  => ( 1f,  0f)
+      case SpriteSpec.Directions.WEST  => (-1f,  0f)
+    }
+    
+    // Handle BUTTON interaction
     if(isActive(OK)) {
-      // Get the direction unit vector
-      val (ux, uy) = dir match {
-        case SpriteSpec.Directions.NORTH => ( 0f, -1f)
-        case SpriteSpec.Directions.SOUTH => ( 0f,  1f)
-        case SpriteSpec.Directions.EAST  => ( 1f,  0f)
-        case SpriteSpec.Directions.WEST  => (-1f,  0f)
-      }
-      
       val checkDist = 0.3f // Distance to check for a collision
-      val collideEvts = getAllEventCollisions(ux*checkDist, uy*checkDist)
+      val activatedEvts = 
+        getAllEventTouches(ux*checkDist, uy*checkDist)
+            .filter(_.evtState.trigger == EventTrigger.BUTTON.id)
       
-      if(!collideEvts.isEmpty) {
+      if(!activatedEvts.isEmpty) {
         val closestEvt = 
-          collideEvts.minBy(e => math.abs(e.x-x) + math.abs(e.y-y))
+          activatedEvts.minBy(e => math.abs(e.x-x) + math.abs(e.y-y))
         
         closestEvt.activate(dir)
       }
     }
+  }
+  
+  def eventTouchCallback(touchedNpcs: List[NonplayerEvent]) = {
+    val activatedEvts = 
+      touchedNpcs.filter( e =>
+          e.evtState.trigger == EventTrigger.PLAYERTOUCH.id ||
+          e.evtState.trigger == EventTrigger.ANYTOUCH.id)
+    
+    activatedEvts.foreach(_.activate(dir))
   }
   
   // NOTE: this is never called... which may or may not be okay haha

@@ -6,17 +6,23 @@ import rpgboss.player.entity.EventEntity
 import rpgboss.player.ScriptThread
 import rpgboss.model.SpriteSpec
 
-class NonplayerEvent(game: MyGame, mapEvent: RpgEvent) 
+class NonplayerEvent(game: MyGame, val mapEvent: RpgEvent) 
   extends EventEntity(
       game, 
       mapEvent.x, 
       mapEvent.y) 
 {
-  setSprite(mapEvent.states.head.sprite)
-  
   var curThread: ScriptThread = null
   
-  var evtState = 0
+  var evtStateIdx = 0
+  
+  def evtState = mapEvent.states(evtStateIdx)
+  
+  def updateState() = {
+    evtStateIdx = game.state.persistent.getEvtState(mapEvent.name)
+    setSprite(evtState.sprite)
+  }
+  updateState()
   
   def activate(activatorsDirection: Int) = {
     if(curThread == null || curThread.isFinished) {
@@ -31,11 +37,20 @@ class NonplayerEvent(game: MyGame, mapEvent: RpgEvent)
       
       curThread = ScriptThread.fromEvent(
           game, 
-          mapEvent, evtState, 
+          mapEvent, evtStateIdx, 
           onFinishSyncCallback = Some(() => {
             dir = origDir
           }))
       curThread.run()
     }
+  }
+  
+  def eventTouchCallback(touchedNpcs: List[NonplayerEvent]) = {
+    val activatedEvts = 
+      touchedNpcs.filter( e =>
+          e.evtState.trigger == EventTrigger.EVENTTOUCH.id ||
+          e.evtState.trigger == EventTrigger.ANYTOUCH.id)
+    
+    activatedEvts.foreach(_.activate(dir))
   }
 }

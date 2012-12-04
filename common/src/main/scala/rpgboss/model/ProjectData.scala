@@ -5,7 +5,7 @@ case class ProjectData(title: String,
                        recentMapName: String = "",
                        lastCreatedMapId: Int = 1, // Start at 1
                        startingLoc: MapLoc = 
-                         MapLoc(RpgMap.generateName(0), 5.5f, 5.5f),
+                         MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
                        
                        characters: Array[Character] = 
                          ProjectData.defaultCharacters,

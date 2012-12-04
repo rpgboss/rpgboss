@@ -28,18 +28,17 @@ class GameState(game: MyGame, project: Project) {
   val windows = new collection.mutable.ArrayBuffer[Window] 
       with collection.mutable.SynchronizedBuffer[Window]
   
-  // Should only be accessed on the Gdx thread, so no synchronization needed
-  val pictures = new Array[PictureInfo](32)
-  
   // Should only be modified on the Gdx thread
   var curTransition: Option[Transition] = None
   
   // current map
   var mapAndAssetsOption : Option[MapAndAssets] = None
   
-  // protagonist and camera position. Modify all these things on the Gdx thread
-  val cameraLoc = new MutableMapLoc()
+  // protagonist. Modify all these things on the Gdx thread
   var playerEvt: PlayerEvent = new PlayerEvent(game)
+  setPlayerSprite(game.project.data.characters.head.sprite)
+  
+  val persistent = new PersistentState()
   
   // All the events on the current map, including the player event
   var npcEvts = List[NonplayerEvent]()
@@ -67,8 +66,8 @@ class GameState(game: MyGame, project: Project) {
     
     // Update camera location
     if(playerEvt.isMoving) {
-      cameraLoc.x = playerEvt.x
-      cameraLoc.y = playerEvt.y
+      persistent.cameraLoc.x = playerEvt.x
+      persistent.cameraLoc.y = playerEvt.y
     }
   }
   
@@ -121,10 +120,10 @@ class GameState(game: MyGame, project: Project) {
   }
   
   def setCameraLoc(loc: MapLoc) = syncRun {
-    cameraLoc.set(loc)
+    persistent.cameraLoc.set(loc)
     
     // Update internal resources for the map
-    if(cameraLoc.map.isEmpty()) {
+    if(persistent.cameraLoc.map.isEmpty()) {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None
       npcEvts = List()
@@ -152,12 +151,12 @@ class GameState(game: MyGame, project: Project) {
   
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =  
     syncRun {
-      pictures(slot) = PictureInfo(project, name, x, y, w, h)
+      persistent.pictures(slot) = PictureInfo(project, name, x, y, w, h)
     }
   
   def hidePicture(slot: Int) = syncRun {
-    pictures(slot).dispose()
-    pictures(slot) = null
+    persistent.pictures(slot).dispose()
+    persistent.pictures(slot) = null
   }
   
   /*

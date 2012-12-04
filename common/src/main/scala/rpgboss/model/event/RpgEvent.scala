@@ -2,12 +2,22 @@ package rpgboss.model.event
 
 import rpgboss.model._
 
-object EventTrigger {
-  val NoTrigger = 0
-  val Button    = 1
-  val Touch     = 2 
+object EventTrigger extends RpgEnum {
+  val NONE        = Value(0, "None")
+  val BUTTON      = Value(1, "Button")
+  val PLAYERTOUCH = Value(2, "Player Touch")
+  val EVENTTOUCH  = Value(3, "Event Touch")
+  val ANYTOUCH    = Value(4, "Any Touch")
   
-  val choices = Array("None", "Button", "Touch")
+  def default = BUTTON
+}
+
+object EventHeight extends RpgEnum {
+  val UNDER = Value(0, "Under player")
+  val SAME  = Value(1, "Same level as player")
+  val OVER  = Value(2, "Always on top of player")
+  
+  def default = UNDER
 }
 
 import EventTrigger._
@@ -31,7 +41,8 @@ object RpgEvent {
  */
 case class RpgEventState(
     sprite: Option[SpriteSpec] = None, 
-    trigger: Int = Button,
+    trigger: Int = EventTrigger.BUTTON.id,
+    height: Int = EventHeight.UNDER.id,
     cmds: Array[EventCmd] = RpgEventState.defaultCmds)
 
 object RpgEventState {
