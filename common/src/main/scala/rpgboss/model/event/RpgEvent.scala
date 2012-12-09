@@ -40,6 +40,7 @@ object RpgEvent {
  * cmds guaranteed to be of at least length 1 and end with an EndOfScript()
  */
 case class RpgEventState(
+    deleted: Boolean = false,
     sprite: Option[SpriteSpec] = None, 
     trigger: Int = EventTrigger.BUTTON.id,
     height: Int = EventHeight.UNDER.id,

@@ -24,70 +24,68 @@ class EventDialog(
   
   override def cancelFunc() = onCancel(event)
   
-  def makePaneForEvtState(idx: Int) = {
+  class EventStatePane(val idx: Int) extends BoxPanel(Orientation.Horizontal) {
     def curEvtState = event.states(idx)
-    def updateEvtState(evtState: RpgEventState) =
-      event.states.update(idx, evtState)
     
-    new BoxPanel(Orientation.Horizontal) {
-      contents += new DesignGridPanel {
-        val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
-          selection.item = EventTrigger(curEvtState.trigger)
-        }
-        val heightBox = new ComboBox(EventHeight.values.toSeq) {
-          selection.item = EventHeight(curEvtState.height)
-        }
-        val spriteBox = new SpriteBox(
-            owner, 
-            sm.getProj, 
-            curEvtState.sprite, 
-            (spriteSpec: Option[SpriteSpec]) => {
-              // If the sprite's "existence" has changed...
-              if(curEvtState.sprite.isDefined != spriteSpec.isDefined) {
-                heightBox.selection.item = if(spriteSpec.isDefined) 
-                  EventHeight.SAME else EventHeight.UNDER
-              }
-              updateEvtState(curEvtState.copy(sprite = spriteSpec))
-            })
-        
-        row().grid().add(leftLabel("Trigger:"))
-        row().grid().add(triggerBox)
-        row().grid().add(leftLabel("Height:"))
-        row().grid().add(heightBox)
-        row().grid().add(leftLabel("Sprite:"))
-        row().grid().add(spriteBox)
-        
-        reactions += {
-          case SelectionChanged(`triggerBox`) =>
-            updateEvtState(
-                curEvtState.copy(
-                    trigger = triggerBox.selection.item.id,
-                    height = heightBox.selection.item.id))
-        }
-      }
-      
-      val commandBox = new CommandBox(
-          EventDialog.this,
-          owner, 
-          sm,
-          curEvtState.cmds,
-          newCmds => updateEvtState(curEvtState.copy(cmds = newCmds)))
-      
-      contents += new DesignGridPanel {
-        row.grid.add(leftLabel("Commands:"))
-        row.grid.add(new ScrollPane {
-          preferredSize = new Dimension(400, 400)
-          contents = commandBox
+    val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
+      selection.item = EventTrigger(curEvtState.trigger)
+    }
+    val heightBox = new ComboBox(EventHeight.values.toSeq) {
+      selection.item = EventHeight(curEvtState.height)
+    }
+    val spriteBox = new SpriteBox(
+        owner, 
+        sm.getProj, 
+        curEvtState.sprite, 
+        (spriteSpec: Option[SpriteSpec]) => {
+          // If the sprite's "existence" has changed...
+          if(curEvtState.sprite.isDefined != spriteSpec.isDefined) {
+            heightBox.selection.item = if(spriteSpec.isDefined) 
+              EventHeight.SAME else EventHeight.UNDER
+          }
         })
-      }
-    } 
+    
+    contents += new DesignGridPanel {
+      row().grid().add(leftLabel("Trigger:"))
+      row().grid().add(triggerBox)
+      row().grid().add(leftLabel("Height:"))
+      row().grid().add(heightBox)
+      row().grid().add(leftLabel("Sprite:"))
+      row().grid().add(spriteBox)
+    }
+    
+    val commandBox = new CommandBox(
+        EventDialog.this,
+        owner, 
+        sm,
+        curEvtState.cmds)
+    
+    contents += new DesignGridPanel {
+      row.grid.add(leftLabel("Commands:"))
+      row.grid.add(new ScrollPane {
+        preferredSize = new Dimension(400, 400)
+        contents = commandBox
+      })
+    }
+    
+    def formToModel() = {
+      val origState = event.states(idx)
+      val newState = origState.copy(
+          sprite = spriteBox.spriteSpecOpt,
+          trigger = triggerBox.selection.item.id,
+          height = heightBox.selection.item.id,
+          cmds = commandBox.listData.toArray
+      )
+      event.states.update(idx, newState)
+    }
   }
   
   def okFunc() = {
     event = event.copy(name = nameField.text)
     
     tabPane.pages.foreach { page =>
-      page.content 
+      val pane = page.content.asInstanceOf[EventStatePane]
+      pane.formToModel()
     }
     
     onOk(event)
@@ -100,9 +98,15 @@ class EventDialog(
   }
   
   val tabPane = new TabbedPane() {
-    for(i <- 0 until event.states.length)
-      pages += new Page("State %d".format(i+1), paneForEvtState(i))
+    for(i <- 0 until event.states.length) {
+      val state = event.states(i)
+      if(state.deleted == false) {
+        pages += new Page("State %d".format(i+1), new EventStatePane(i))
+      }
+    }
   }
+  
+  def curPane = tabPane.selection.page.content.asInstanceOf[EventStatePane]
   
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new DesignGridPanel {
@@ -110,16 +114,35 @@ class EventDialog(
         .add(leftLabel("Name:")).add(nameField)
         .add(
             new Button(Action("Add state") {
+              // Save the current pane
+              curPane.formToModel()
+              
               // Add to list of states
-              val newState = event.states.last.copy(
+              val newState = event.states(curPane.idx).copy(
                   cmds = RpgEventState.defaultCmds)
               event = event.copy(states = event.states ++ Array(newState))
               // Add tabpane for it
               tabPane.pages += new Page(
                   "State %d".format(event.states.length), 
-                  paneForEvtState(event.states.length-1))
+                  new EventStatePane(event.states.length-1))
               tabPane.selection.page = tabPane.pages.last
-            }))          
+            }))
+        .add(
+            new Button(Action("Delete state") {
+              // final save of the current state of the event.
+              curPane.formToModel()
+              
+              val stateIdx = curPane.idx
+              
+              // Set state to deleted
+              event.states.update(
+                  stateIdx, 
+                  event.states(stateIdx).copy(deleted = true))
+              
+              // Remove deleted page from tab pane
+              tabPane.pages -= tabPane.selection.page
+            })
+        )
       
       row.grid().add(tabPane)
       

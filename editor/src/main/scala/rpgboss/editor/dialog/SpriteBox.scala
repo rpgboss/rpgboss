@@ -15,7 +15,7 @@ class SpriteBox(
   extends Component {
   import Tileset.tilesize
   
-  private var spriteSpecOpt: Option[SpriteSpec] = None
+  var spriteSpecOpt: Option[SpriteSpec] = None
   private var spriteImg: Option[BufferedImage] = None
   
   /**

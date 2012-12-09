@@ -15,8 +15,7 @@ class CommandBox(
     evtDiag: EventDialog,
     owner: Window, 
     sm: StateMaster, 
-    initialCmds: Array[EventCmd],
-    onUpdate: (Array[EventCmd]) => Any) 
+    initialCmds: Array[EventCmd]) 
   extends ListView(initialCmds) {
   
   listenTo(mouse.clicks)
@@ -51,7 +50,5 @@ class CommandBox(
       listData.take(idx) ++ Seq(cmd) ++ listData.takeRight(listData.length-idx)
     
     listData = newList
-    
-    onUpdate(listData.toArray)
   }
 }
