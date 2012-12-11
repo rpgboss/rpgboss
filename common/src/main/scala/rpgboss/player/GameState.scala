@@ -234,6 +234,10 @@ class GameState(game: MyGame, project: Project) {
     }
   }
   
+  def getEvtState(evtName: String) = persistent.getEvtState(evtName)
+  def setEvtState(evtName: String, newState: Int) = 
+    persistent.setEvtState(evtName, newState)
+  
   val LEFT = Window.Left
   val CENTER = Window.Center
   val RIGHT = Window.Right

@@ -41,3 +41,13 @@ case class Teleport(loc: MapLoc, transition: Int) extends EventCmd {
   def toJs() = List("""game.teleport("%s", %f, %f, %d);""".format(
       loc.map, loc.x, loc.y, transition))
 }
+
+// A "None" in the evtName means for the current event
+case class SetEvtState(
+    evtNameOpt: Option[String], 
+    newState: Int) extends EventCmd {
+  def toJs() = {
+    val evtName = evtNameOpt.map("\"%s\"".format(_)).getOrElse("event.name()")
+    List("""game.setEvtState(%s, %d);""".format(evtName, newState))
+  }
+}
