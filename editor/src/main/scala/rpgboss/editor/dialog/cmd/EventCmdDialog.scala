@@ -25,5 +25,6 @@ object EventCmdDialog {
     evtCmd match {
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
+      case e: SetEvtState => new SetEvtStateDialog(owner, e, successF)
     }
 }

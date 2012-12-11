@@ -18,13 +18,13 @@ class PersistentState {
     
   // Gets the event state for the current map.
   // Returns zero if none is saved.
-  def getEvtState(evtName: String) = {
-    evtStates.get(cameraLoc.map).map { stateMapForCurMap =>
+  def getEvtState(mapName: String, evtName: String) = {
+    evtStates.get(mapName).map { stateMapForCurMap =>
       stateMapForCurMap.get(evtName) getOrElse 0
     } getOrElse 0
   }
   
-  def setEvtState(evtName: String, newState: Int) = {
+  def setEvtState(mapName: String, evtName: String, newState: Int) = {
     // Initialize a submap if one doesn't exist
     val evtStatesForCurMap = evtStates.getOrElse(cameraLoc.map, Map())
     

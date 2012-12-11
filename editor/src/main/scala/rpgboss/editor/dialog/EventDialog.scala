@@ -101,7 +101,7 @@ class EventDialog(
     for(i <- 0 until event.states.length) {
       val state = event.states(i)
       if(state.deleted == false) {
-        pages += new Page("State %d".format(i+1), new EventStatePane(i))
+        pages += new Page("State %d".format(i), new EventStatePane(i))
       }
     }
   }

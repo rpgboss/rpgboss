@@ -19,7 +19,7 @@ class NonplayerEvent(game: MyGame, val mapEvent: RpgEvent)
   def evtState = mapEvent.states(evtStateIdx)
   
   def updateState() = {
-    evtStateIdx = game.state.persistent.getEvtState(mapEvent.name)
+    evtStateIdx = game.state.getEvtState(mapEvent.name)
     setSprite(evtState.sprite)
   }
   updateState()

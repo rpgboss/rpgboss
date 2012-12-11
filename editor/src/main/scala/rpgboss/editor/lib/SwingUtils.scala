@@ -10,10 +10,12 @@ object SwingUtils {
   }
   
   def addBtnsAsGrp(contents: Buffer[Component], btns: List[AbstractButton]) = {
+    val firstSelected = btns.find(_.selected)
     val grp = new ButtonGroup(btns : _*)
-    grp.select(btns.head)
     
     contents ++= btns
+    
+    firstSelected.map { btn => grp.select(btn)}
   }
   
   def enumButtons[T <: Enumeration]

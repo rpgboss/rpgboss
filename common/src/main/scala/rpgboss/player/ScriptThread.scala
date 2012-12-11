@@ -20,31 +20,36 @@ import rpgboss.model.event.RpgEvent
 class ScriptThread(
     game: MyGame, 
     scriptName: String, 
-    scriptBody: String, 
+    scriptBody: String,
     fnToRun: String = "",
     onFinishSyncCallback: Option[() => Any] = None) 
   extends UncaughtExceptionHandler
 {
+  def initScope(jsScope: ScriptableObject): Any = {
+    val jsInterface = game.state
+    
+    ScriptableObject.putProperty(jsScope, "game", 
+        Context.javaToJS(jsInterface, jsScope))
+    ScriptableObject.putProperty(jsScope, "project", 
+        Context.javaToJS(game.project, jsScope))
+        
+    ScriptableObject.putProperty(jsScope, "out", 
+        Context.javaToJS(System.out, jsScope))
+        
+    // Some models to be imported
+    ScriptableObject.putProperty(jsScope, "MapLoc", 
+        Context.javaToJS(MapLoc, jsScope))
+  }
+  
   val runnable = new Runnable() {
     override def run() = {
       Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
       
-      val jsInterface = game.state
       
       val jsContext = Context.enter()
       val jsScope = jsContext.initStandardObjects()
       
-      ScriptableObject.putProperty(jsScope, "game", 
-          Context.javaToJS(jsInterface, jsScope))
-      ScriptableObject.putProperty(jsScope, "project", 
-          Context.javaToJS(game.project, jsScope))
-          
-      ScriptableObject.putProperty(jsScope, "out", 
-          Context.javaToJS(System.out, jsScope))
-          
-      // Some models to be imported
-      ScriptableObject.putProperty(jsScope, "MapLoc", 
-          Context.javaToJS(MapLoc, jsScope))
+      initScope(jsScope)
       
       jsContext.evaluateString(
           jsScope, 
@@ -116,7 +121,15 @@ object ScriptThread {
         game, 
         scriptName, 
         scriptBody, 
-        onFinishSyncCallback = onFinishSyncCallback)
+        onFinishSyncCallback = onFinishSyncCallback) 
+    {
+      override def initScope(jsScope: ScriptableObject) = {
+        super.initScope(jsScope)
+        
+        ScriptableObject.putProperty(jsScope, "event", 
+            Context.javaToJS(event, jsScope))
+      }
+    }
   }
   
 }

@@ -8,6 +8,8 @@ case class MapLoc(
     map: String, 
     var x: Float, 
     var y: Float)
+    
+case class EvtPath(mapName: String, evtName: String)
 
 case class SpriteSpec(
     spriteset: String, 
