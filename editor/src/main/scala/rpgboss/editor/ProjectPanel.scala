@@ -44,6 +44,14 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
       val d = new ResourcesDialog(mainP.topWin, sm)
       d.open()
     })
+    contents += new Button(Action("Play...") {
+      if(sm.askSaveUnchanged(this)) {
+        concurrent.ops.spawn({
+          val projPath = sm.getProj.dir.getCanonicalPath()
+          rpgboss.player.Main.main(Array(projPath))
+        })
+      }
+    })
   }
   
   val sidePane = 

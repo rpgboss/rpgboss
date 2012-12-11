@@ -112,7 +112,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
       
       val newMetadata = vs.mapMeta.copy(viewCenterX = cx, viewCenterY = cy)
       //logger.debug("Stored centers as (%f, %f)".format(cx, cy))
-      sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
+      sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata), false)
     }
     
     // Add code to saveCenters upon adjustment

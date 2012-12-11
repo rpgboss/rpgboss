@@ -66,7 +66,7 @@ abstract class EventEntity(
     val movingDuration = System.currentTimeMillis() - movingSince
     val timeInCycle = (movingDuration % (msPerStep * TOTALSTEPS)).toInt
 
-    val stepNumber = (timeInCycle / msPerStep)
+    val stepNumber = (timeInCycle / msPerStep) + 1 // start on a step
 
     (stillStep + stepNumber) % TOTALSTEPS
   } else {
@@ -236,7 +236,7 @@ abstract class EventEntity(
             dxThisLoop += dx
             x += dx
             dxTravelled += dx
-          } else if (totalDy == 0) {
+          } else if (totalDy == 0 && !evtBlocking) {
             // Conventional movement blocked. Try sliding perpendicularly
             if (!xBlockedYPos) {
               totalDy += abs(totalDx)
@@ -261,7 +261,7 @@ abstract class EventEntity(
             dyThisLoop += dy
             y += dy
             dyTravelled += dy
-          } else if (totalDx == 0 && !slidSuccessfully) {
+          } else if (totalDx == 0 && !slidSuccessfully && !evtBlocking) {
             // Conventional movement blocked. Try sliding perpendicularly
             if (!yBlockedXPos) {
               totalDx += abs(totalDy)
@@ -274,7 +274,6 @@ abstract class EventEntity(
         }
 
         // Was able to move conventionally
-        // Implement moves into actual position, then check for travel done
         if (dxThisLoop != 0 || dyThisLoop != 0) {
           // Check if we are done travelling by distance measure
           if ((totalDx != 0 && abs(dxTravelled) >= abs(totalDx)) ||
@@ -285,6 +284,7 @@ abstract class EventEntity(
           // Man, we can't even slide. Let's quit
           if (!slidSuccessfully) {
             travelDone = true
+            isMoving = false
           }
         }
       }

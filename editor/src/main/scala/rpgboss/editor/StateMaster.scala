@@ -107,9 +107,11 @@ class StateMaster(private var proj: Project)
   def getMap(mapName: String) =
     mapStates.get(mapName).get.map
   
-  def setMap(mapName: String, map: RpgMap) =
-    mapStates.update(mapName,
-      mapStates.get(mapName).get.copy(map = map, dirty = Dirtiness.Dirty)) 
+  def setMap(mapName: String, map: RpgMap, markDirty: Boolean = true) = {
+    val curState = mapStates.get(mapName).get
+    val newDirty = if(markDirty) Dirtiness.Dirty else curState.dirty 
+    mapStates.update(mapName, curState.copy(map = map, dirty = newDirty))
+  }
   
   def getMapData(mapName: String) = {
     assert(mapStates.contains(mapName), "map %d doesn't exist".format(mapName))
