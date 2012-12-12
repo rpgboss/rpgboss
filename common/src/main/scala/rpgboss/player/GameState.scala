@@ -247,7 +247,7 @@ class GameState(game: MyGame, project: Project) {
       npcEvts.filter(_.mapEvent.name == evtName).foreach(_.updateState())
     }
   }
-  
+
   val LEFT = Window.Left
   val CENTER = Window.Center
   val RIGHT = Window.Right
