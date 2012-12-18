@@ -25,8 +25,8 @@ case class ProjectData(title: String,
                          CharState.defaultStates,
                        damageTypes: Array[String] = 
                          ProjectData.defaultDamageTypes,
-                       itemTypes: Array[String] =
-                         Item.defaultItemTypes,
+                       equipTypes: Array[String] =
+                         Item.defaultEquipTypes,
                        items: Array[Item] =
                          Item.defaultItems
                        )

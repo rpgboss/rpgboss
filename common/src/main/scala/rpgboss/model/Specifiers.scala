@@ -1,5 +1,7 @@
 package rpgboss.model
 
+import Constants._
+
 /**
  * These locations are given with the top-left of the map being at (0, 0).
  * This means that the center of the tiles are actually at 0.5 intervals. 
@@ -23,8 +25,7 @@ case class Character(defaultName: String, sprite: SpriteSpec)
 
 object CharState {
   val defaultStates = Array(
-      CharState("Dead", 
-          Map(NoAction->1)),
+      CharState("Dead",      Map("NoAction"->1)),
       CharState("Stunned",   Map("NoAction"->1),     1, 100),
       CharState("Berserk",   Map("AutoAtkEnemy"->1,
                                  "AtkMul"-> 75),     8, 25),
@@ -50,9 +51,7 @@ case class CharState(
     maxStacks: Int = 1)
 
 object Item {
-  def defaultItemTypes = Array(
-    "Consumable",
-    "Quest Item",
+  def defaultEquipTypes = Array(
     "Weapon-Light",
     "Weapon-Medium",
     "Weapon-Heavy",
@@ -66,11 +65,26 @@ object Item {
     "Accessory"
   )
   
-  def defaultItems = Array(
-      Item("Potion",        "Restores 30% of HP", 0, Map("HpResMul"->30)),
-      Item("Big Potion",    "Restores 60% of HP", 0, Map("HpResMul"->60)),
-      Item("Master Potion", "Restores 100% of HP", 0, Map("HpResMul"->100)),
-      )
+  def defaultItems: Array[Item] = Array(
+      Item("Potion", "Restores 30% of HP", Map("HpResMul"->30), 50),
+      Item("Big Potion", "Restores 60% of HP", Map("HpResMul"->60), 150),
+      Item("Full Potion", "Restores 100% of HP", Map("HpResMul"->100), 500),
+      Item("Magic Dust", "Restore 30% of MP", Map("MpResMul"->30), 100), 
+      Item("Magic Crystal", "Restore 60% of MP", Map("MpResMul"->60), 300),
+      Item("Elixir", "Restore 30% of HP and MP",
+          Map("HpResMul"->30, "MpResMul"->30), 500),
+      Item("Mega Elixir", "Restore 60% of HP and MP",
+          Map("HpResMul"->60, "MpResMul"->60), 1500),
+      Item("Dispel Orb", "Dispels all status effects",
+          Map("Dispel_All"->1), 100),
+      Item("Unicorn blood", "Revives to life with 30% HP",
+          Map("Dispel_0"->1, "HpResMul"->30), 500),
+      Item("Phoenix feather", "Revives to life with 60% HP",
+          Map("Dispel_0"->1, "HpResMul"->30), 1500),
+      
+      Item("Magic flute", "Wakes party up", 
+          Map("Dispel_6"->1), itemType = ItemType.Rare.id)
+      
   )
 }
     
@@ -78,11 +92,14 @@ case class Item(
     name: String,
     desc: String,
     
-    itemType: Int,
-    price: Int = -1,
-    
     effects: Map[String, Int],
     
+    itemType: Int = ItemType.Consumable.id,
+    
+    equipType: Int = 0,
+    
+    price: Int = -1,
+    scopeId: Int = ItemScope.default.id,
     icon: Option[IconSpec] = None)
 
 object SpriteSpec {
