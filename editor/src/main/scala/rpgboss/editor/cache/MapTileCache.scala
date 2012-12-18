@@ -14,8 +14,8 @@ class MapTileCache(
     map: RpgMap, 
     cacheMaxSize: Int = 5000) 
 {
-  val tilesets = map.metadata.tilesets.map(assetCache.tilesetMap.get(_).get) 
-  val autotiles = map.metadata.autotiles.map(assetCache.autotileMap.get(_).get)
+  val tilesets = map.metadata.tilesets.map(assetCache.getTileset(_)) 
+  val autotiles = map.metadata.autotiles.map(assetCache.getAutotile(_))
   
   val cache = CacheBuilder.newBuilder()
     .concurrencyLevel(1)

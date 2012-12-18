@@ -21,10 +21,15 @@ case class SpriteSpec(
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 
-case class Character(defaultName: String, sprite: SpriteSpec)
+case class Character(
+    defaultName: String, 
+    sprite: SpriteSpec)
+
+case class Skill()
 
 object CharState {
-  val defaultStates = Array(
+  val defaultStates = Array()
+  /*
       CharState("Dead",      Map("NoAction"->1)),
       CharState("Stunned",   Map("NoAction"->1),     1, 100),
       CharState("Berserk",   Map("AutoAtkEnemy"->1,
@@ -38,7 +43,7 @@ object CharState {
       CharState("Weakened",  Map("AtkMul"-> -30),    4, 100, 0,  3),
       CharState("Hasted",    Map("DexMul"-> 50),     4, 100, 0,  2),
       CharState("Slowed",    Map("DexMul"-> -50),    4, 100, 0,  2)
-  )
+  )*/
   
 }
 
@@ -51,55 +56,18 @@ case class CharState(
     maxStacks: Int = 1)
 
 object Item {
-  def defaultEquipTypes = Array(
-    "Weapon-Light",
-    "Weapon-Medium",
-    "Weapon-Heavy",
-    "Weapon-Ranged",
-    "Shield",
-    "Offhand-Misc",
-    "Armor-Light",  
-    "Armor-Medium",
-    "Armor-Heavy",
-    "Helm",
-    "Accessory"
-  )
-  
-  def defaultItems: Array[Item] = Array(
-      Item("Potion", "Restores 30% of HP", Map("HpResMul"->30), 50),
-      Item("Big Potion", "Restores 60% of HP", Map("HpResMul"->60), 150),
-      Item("Full Potion", "Restores 100% of HP", Map("HpResMul"->100), 500),
-      Item("Magic Dust", "Restore 30% of MP", Map("MpResMul"->30), 100), 
-      Item("Magic Crystal", "Restore 60% of MP", Map("MpResMul"->60), 300),
-      Item("Elixir", "Restore 30% of HP and MP",
-          Map("HpResMul"->30, "MpResMul"->30), 500),
-      Item("Mega Elixir", "Restore 60% of HP and MP",
-          Map("HpResMul"->60, "MpResMul"->60), 1500),
-      Item("Dispel Orb", "Dispels all status effects",
-          Map("Dispel_All"->1), 100),
-      Item("Unicorn blood", "Revives to life with 30% HP",
-          Map("Dispel_0"->1, "HpResMul"->30), 500),
-      Item("Phoenix feather", "Revives to life with 60% HP",
-          Map("Dispel_0"->1, "HpResMul"->30), 1500),
-      
-      Item("Magic flute", "Wakes party up", 
-          Map("Dispel_6"->1), itemType = ItemType.Rare.id)
-      
-  )
 }
     
 case class Item(
-    name: String,
-    desc: String,
-    
-    effects: Map[String, Int],
+    name: String = "",
+    desc: String = "",
+    effects: Map[String, Int] = Map(),
+    price: Int = -1,
     
     itemType: Int = ItemType.Consumable.id,
     
-    equipType: Int = 0,
-    
-    price: Int = -1,
-    scopeId: Int = ItemScope.default.id,
+    slot: Int = EquipSlot.default.id,
+    scopeId: Int = Scope.default.id,
     icon: Option[IconSpec] = None)
 
 object SpriteSpec {

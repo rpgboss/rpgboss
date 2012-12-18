@@ -5,6 +5,7 @@ import scala.collection.mutable.Buffer
 import rpgboss.model._
 
 object SwingUtils {
+  def lbl(s: String) = new Label(s)
   def leftLabel(s: String) = new Label(s) {
     xAlignment = Alignment.Left
   }

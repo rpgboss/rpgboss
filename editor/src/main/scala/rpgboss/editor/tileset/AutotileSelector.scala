@@ -15,7 +15,7 @@ class AutotileSelector(
   extends BoxPanel(Orientation.Vertical) {
   
   val autotiles = 
-    map.metadata.autotiles.map(sm.assetCache.autotileMap.get(_).get)
+    map.metadata.autotiles.map(sm.assetCache.getAutotile(_))
   val collageImage = TileUtils.getAutotileCollageImg(autotiles)
   
   // x coordiate corresponds to tileset number,
@@ -23,7 +23,7 @@ class AutotileSelector(
   contents += new ImageTileSelector(collageImage, tXYArray => 
     tileSelector.selectedTileCodes = tXYArray.map(_.map({
       case (xTile, yTile) => 
-        Array(RpgMap.autotileByte, xTile, 0.asInstanceOf[Byte])
+        Array(RpgMap.autotileByte, xTile.toByte, 0.toByte)
     }))
   )
   

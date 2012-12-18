@@ -11,23 +11,30 @@ import rpgboss.model.SpriteSpec
  */
 class SpriteSelector(
     spriteset: Spriteset, 
+    initialSpec: SpriteSpec,
     selectFunction: SpriteSpec => Any)
   extends BoxPanel(Orientation.Vertical) {
   
-  def selectTileF(twoDAry: Array[Array[(Byte, Byte)]]) = {
+  import Spriteset._
+  def selectTileF(twoDAry: Array[Array[(Int, Int)]]) = {
     // Since we are selecting only one, we only care about first element
     val (x1, y1) = twoDAry.head.head
     
     // Compute the sprite index from the selected tile 
-    val spriteIdxX = x1/spriteset.spriteXTiles
-    val spriteIdxY = y1/spriteset.spriteYTiles
+    val spriteIdxX = x1/spriteXTiles
+    val spriteIdxY = y1/spriteYTiles
     val spriteIdx  = spriteIdxY*spriteset.xSprites+spriteIdxX
     
-    val direction = y1 % spriteset.spriteYTiles
-    val step      = x1 % spriteset.spriteXTiles
+    val direction = y1 % spriteYTiles
+    val step      = x1 % spriteXTiles
     
     selectFunction(SpriteSpec(spriteset.name, spriteIdx, direction, step))
   }
+  
+  def initialX = 
+    (initialSpec.spriteIndex % nSpritesInSetX)*spriteXTiles + initialSpec.step
+  def initialY = 
+    (initialSpec.spriteIndex / nSpritesInSetX)*spriteYTiles + initialSpec.dir
   
   // Set up image selector contents
   contents += new ImageTileSelector(
@@ -35,7 +42,8 @@ class SpriteSelector(
       selectTileF = selectTileF _,
       tilesizeX = spriteset.tileW,
       tilesizeY = spriteset.tileH,
-      xTilesVisible = 3*4,
-      allowMultiselect = false
+      xTilesVisible = spriteXTiles*nSpritesInSetX,
+      allowMultiselect = false,
+      initialSingleSelTilesetSpace = Some((initialX, initialY))
   )
 }

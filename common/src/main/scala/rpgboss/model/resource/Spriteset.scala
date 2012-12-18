@@ -31,10 +31,7 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
 {
   def meta = Spriteset
   
-  // How many tiles are in X and Y
-  val spriteXTiles = 3
-  val spriteYTiles = 4
-  
+  import Spriteset._
   /**
    * Gets the size of the sprites as well as the numerosity
    */
@@ -42,11 +39,11 @@ extends TiledImageResource[Spriteset, SpritesetMetadata]
     val oneSprite = name(0) == '$'
     
     if(oneSprite) {
-      (img.getHeight()/4, img.getWidth()/3, 1, 1)
+      (img.getHeight()/spriteYTiles, img.getWidth()/spriteXTiles, 1, 1)
     } else {
-      val tileH = img.getHeight() / (4*2)
-      val tileW = img.getWidth()  / (3*4)
-      (tileH, tileW, 4, 2)
+      val tileH = img.getHeight() / (spriteYTiles*nSpritesInSetY)
+      val tileW = img.getWidth()  / (spriteXTiles*nSpritesInSetX)
+      (tileH, tileW, nSpritesInSetX, nSpritesInSetY)
     }
   }
   
@@ -100,5 +97,11 @@ object Spriteset extends MetaResource[Spriteset, SpritesetMetadata] {
   
   def defaultInstance(proj: Project, name: String) = 
     Spriteset(proj, name, SpritesetMetadata())
+  
+  // How many tiles are in X and Y
+  def spriteXTiles = 3
+  def spriteYTiles = 4
+  def nSpritesInSetX = 4
+  def nSpritesInSetY = 2
 }
 

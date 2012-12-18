@@ -21,14 +21,13 @@ case class ProjectData(title: String,
                        soundCancel: String = "MenuCancel.wav",
                        soundCannot: String = "MenuCannot.wav",
                        
-                       charStates: Array[CharState] = 
-                         CharState.defaultStates,
+                       charStates: Array[CharState] = Array(),
                        damageTypes: Array[String] = 
                          ProjectData.defaultDamageTypes,
-                       equipTypes: Array[String] =
-                         Item.defaultEquipTypes,
-                       items: Array[Item] =
-                         Item.defaultItems
+                       
+                       consumables: Array[Item] = Array(),
+                       rareItems: Array[Item] = Array(),
+                       equipment: Array[Item] = Array()
                        )
 
 object ProjectData {

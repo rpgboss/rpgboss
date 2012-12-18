@@ -7,95 +7,50 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.tileset.SpriteSelector
 import com.weiglewilczek.slf4s.Logging
+import java.awt.Dimension
+import rpgboss.editor.StateMaster
 
 class SpriteSelectDialog(
     owner: Window, 
-    project: Project,
+    sm: StateMaster,
     initialSelectionOpt: Option[SpriteSpec],
     onSuccess: (Option[SpriteSpec]) => Any)
-  extends StdDialog(owner, "Select a Sprite") with Logging {
+  extends ResourceSelectDialog[SpriteSpec, Spriteset, SpritesetMetadata](
+      owner, 
+      sm.getProj, 
+      initialSelectionOpt, 
+      onSuccess,
+      true,
+      Spriteset) 
+  with Logging 
+{
+  import Spriteset._
   
-  val spritesets = Spriteset.list(project)
-  
-  var selection : Option[SpriteSpec] = None
-  
-  def okFunc(): Unit = { 
-    onSuccess(selection)
-    close()
-  }
-  
-  val spritesetList = new ListView(List(None) ++ spritesets.map(Some(_))) {
-    renderer = ListView.Renderer({ opt =>
-      opt getOrElse "<None>"
-    })
-  }
-  
-  val spriteSelectorContainer = new BoxPanel(Orientation.Vertical) {
-    def s = new Dimension(384, 384) // hardcoded to rpgmaker xp spriteset dim
-    preferredSize = s
-    maximumSize = s
-    minimumSize = s
-  }
-  
-  // Must call with valid arguments.
-  // Call this only when updating both the spriteset and the spriteIndex
-  def updateSelection(spriteSpecOpt: Option[SpriteSpec]) = {
-    selection = spriteSpecOpt
+  def specToResourceName(spec: SpriteSpec): String = spec.spriteset
+  def newRcNameToSpec(name: String, prevSpec: Option[SpriteSpec]) = {
+    val (dir, step) = prevSpec.map { spec =>
+      (spec.dir, spec.step)
+    } getOrElse((SpriteSpec.Directions.SOUTH, SpriteSpec.Steps.STILL))
     
-    // Update the sprite index selection panel
-    spriteSpecOpt.map { spriteSpec =>
-      val spriteset = Spriteset.readFromDisk(project, spriteSpec.spriteset)
+    val idx = prevSpec.map { spec =>
+      val newSpriteset = sm.assetCache.getSpriteset(name)
+      val prevIdx = spec.spriteIndex
       
-      spriteSelectorContainer.contents.clear()
-      spriteSelectorContainer.contents += new SpriteSelector(
-          spriteset,
-          (spriteSpec: SpriteSpec) => {
-            selection = Some(spriteSpec)
-          }
-      )
-      
-    } getOrElse {
-      spriteSelectorContainer.contents.clear()
-      spriteSelectorContainer.contents += new Label("No spriteset selected")
-    }
+      // ensure that the prevIdx is applicable to the new spriteset
+      if(prevIdx < newSpriteset.nSprites) prevIdx else 0
+    } getOrElse(0)
     
-    spriteSelectorContainer.revalidate()
+    SpriteSpec(name, idx, dir, step)
   }
   
-  // Initialize the selection, but first check to make sure it's valid
-  updateSelection(initialSelectionOpt.flatMap { initSel =>
-    if(spritesets.exists(initSel.spriteset == _)) {
-      Some(initSel)
-    } else {
-      None
-    }
-  })
-
-  contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Spritesets"), leftLabel("Sprites"))
-    row().grid().add(spritesetList, spriteSelectorContainer)
-    addButtons(cancelBtn, okBtn)
-  }
+  override def rightPaneDim = new Dimension(
+      384, 384) 
   
-  val thiss = this
-  
-  listenTo(spritesetList.selection)
-  reactions += {
-    case WindowOpened(`thiss`) => 
-      if(spritesets.isEmpty) {
-        Dialog.showMessage(
-          contents.head, // parent component is the panel. does this make sense?
-          "No spritesets available.", 
-          "Error",
-          Dialog.Message.Error)
-        close()
-      }
-    case ListSelectionChanged(`spritesetList`, _, _) =>
-      logger.info("Selected a different sprite")
-      val newSpriteSpecOpt = spritesetList.selection.items.head.map {
-        SpriteSpec(_, 0)
-      }
-      
-      updateSelection(newSpriteSpecOpt)
+  def rightPaneFor(
+      selection: SpriteSpec,
+      updateSelectionF: SpriteSpec => Unit) = {
+    val spriteset = sm.assetCache.getSpriteset(selection.spriteset)
+    
+    new SpriteSelector(spriteset, selection, updateSelectionF)
   }
 }

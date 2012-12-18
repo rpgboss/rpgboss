@@ -32,11 +32,11 @@ extends BoxPanel(Orientation.Horizontal) with SelectsMap
       
       map.metadata.tilesets.zipWithIndex.map({
         case (tsName, i) => 
-          val tileset = sm.assetCache.tilesetMap(tsName)
+          val tileset = sm.assetCache.getTileset(tsName)
           val tabComponent = new ImageTileSelector(tileset.img, tXYArray =>
             selectedTileCodes = tXYArray.map(_.map({
               case (xTile, yTile) => 
-                Array(i.asInstanceOf[Byte], xTile, yTile)
+                Array(i.asInstanceOf[Byte], xTile.toByte, yTile.toByte)
             })))
           
           pages += new TabbedPane.Page("T%d".format(i), tabComponent)

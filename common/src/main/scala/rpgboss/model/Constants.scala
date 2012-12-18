@@ -49,7 +49,7 @@ object Constants {
     val fadeLength = 500
   }
   
-  object ItemScope extends RpgEnum {
+  object Scope extends RpgEnum {
     val None = Value
     val OneEnemy, AllEnemies = Value
     val OneAlly, AllAllies = Value
@@ -63,5 +63,10 @@ object Constants {
     val Consumable, Rare, Equipment = Value
     
     def default = Consumable
+  }
+  
+  object EquipSlot extends RpgEnum {
+    val None, Weapon, Offhand, Armor, Head, Accessory = Value
+    def default = None
   }
 }

@@ -6,10 +6,13 @@ import java.awt.Color
 import rpgboss.model._
 import rpgboss.model.resource._
 import java.awt.image.BufferedImage
+import rpgboss.editor.StateMaster
+import java.awt.Dimension
+import java.awt.Graphics2D
 
 class SpriteBox(
     owner: Window, 
-    project: Project, 
+    sm: StateMaster, 
     initialSpriteSpecOpt: Option[SpriteSpec],
     onUpdate: (Option[SpriteSpec]) => Any) 
   extends Component {
@@ -24,7 +27,7 @@ class SpriteBox(
   def updateSpriteSpec(s: Option[SpriteSpec]) = {
     spriteSpecOpt = s
     spriteImg = spriteSpecOpt.map { spriteSpec =>
-      val spriteset = Spriteset.readFromDisk(project, spriteSpec.spriteset)
+      val spriteset = Spriteset.readFromDisk(sm.getProj, spriteSpec.spriteset)
       spriteset.srcTileImg(spriteSpec)
     }
     
@@ -58,7 +61,7 @@ class SpriteBox(
     case e: MouseClicked =>
       val diag = new SpriteSelectDialog(
           owner,
-          project,
+          sm,
           initialSelectionOpt = spriteSpecOpt,
           onSuccess = updateSpriteSpec(_))
       diag.open()

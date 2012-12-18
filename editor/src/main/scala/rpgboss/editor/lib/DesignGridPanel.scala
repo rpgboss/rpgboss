@@ -10,10 +10,14 @@ class DesignGridPanel extends Panel {
 
   def row() = layout.row()
   
-  def addButtons(cancelBtn: Button, okBtn: Button) = 
-    row().bar()
-      .add(cancelBtn, Tag.CANCEL)
-      .add(okBtn, Tag.OK)
+  def addButtons(
+      cancelBtn: Button, 
+      okBtn: Button, 
+      applyBtn: Option[Button] = None) = {
+    val rowBar = row().bar()
+    rowBar.add(cancelBtn, Tag.CANCEL).add(okBtn, Tag.OK)
+    applyBtn.map { b => rowBar.add(b, Tag.APPLY) }
+  }
   
   def addCancel(cancelBtn: Button) = 
     row().bar()

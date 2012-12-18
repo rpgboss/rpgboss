@@ -29,12 +29,13 @@ import java.awt.AlphaComposite
  * @param   allowMultiselect    Allow user to select multiple tiles.
  */
 class ImageTileSelector(srcImg: BufferedImage,
-                        selectTileF: Array[Array[(Byte, Byte)]] => Unit,
+                        selectTileF: Array[Array[(Int, Int)]] => Unit,
                         val tilesizeX : Int = 32,
                         val tilesizeY : Int = 32,
                         val xTilesVisible : Int = 8,
                         allowMultiselect: Boolean = true,
-                        drawSelectionSq: Boolean = true)
+                        drawSelectionSq: Boolean = true,
+                        initialSingleSelTilesetSpace: Option[(Int, Int)] = None)
 extends ScrollPane
 { 
   horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
@@ -62,6 +63,14 @@ extends ScrollPane
   
   var xRngInSelectorSpace = 0 to 0
   var yRngInSelectorSpace = 0 to 0
+  
+  initialSingleSelTilesetSpace map { sel =>
+    val (xTS, yTS) = sel
+    val xSS = xTS % xTilesVisible
+    val ySS = yTS + xTS/xTilesVisible*yTilesInSlice
+    xRngInSelectorSpace = xSS to xSS
+    yRngInSelectorSpace = ySS to ySS
+  }
   
   // Defined out here so that subclasses can override it
   def canvasPanelPaintComponent(g: Graphics2D) = {
@@ -103,7 +112,7 @@ extends ScrollPane
   def toTilesetSpace(selTileX: Int, selTileY: Int) = {
     val tileX = selTileX + selTileY/yTilesInSlice*xTilesVisible
     val tileY = selTileY % yTilesInSlice
-    (tileX.asInstanceOf[Byte], tileY.asInstanceOf[Byte])
+    (tileX, tileY)
   }
   
   def triggerSelectTileF() = {

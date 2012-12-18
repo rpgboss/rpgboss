@@ -10,6 +10,7 @@ import scala.swing.TabbedPane.Page
 import rpgboss.model.Project
 import rpgboss.model.SpriteSpec
 import rpgboss.editor.StateMaster
+import java.awt.Dimension
 
 class EventDialog(
     owner: Window,
@@ -35,7 +36,7 @@ class EventDialog(
     }
     val spriteBox = new SpriteBox(
         owner, 
-        sm.getProj, 
+        sm, 
         curEvtState.sprite, 
         (spriteSpec: Option[SpriteSpec]) => {
           // If the sprite's "existence" has changed...
