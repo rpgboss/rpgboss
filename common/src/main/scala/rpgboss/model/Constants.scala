@@ -48,4 +48,4 @@ object Constants {
     
     val fadeLength = 500
   }
-}     
+}

@@ -21,6 +21,11 @@ h3. Autotiles, Spritesets, Tilesets
 http://www.tekepon.net/fsm/
 http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
 
+h3. Iconsets
+
+420__Pixel_Art__Icons_for_RPG_by_Ails.png:
+http://ails.deviantart.com/art/420-Pixel-Art-Icons-for-RPG-129892453
+
 h3. Faces
 
 h3. Window Skin
@@ -42,6 +47,7 @@ h2. Material Rules
 Autotiles are individual files in Rpg Maker VX format.
 Spritesets are in Rpg Maker VX format.
 Tilesets only constrained to be comprised of 32x32 square tiles.
+Iconsets can be any size, but you will need to specify the tile-size when you import it.
 
 Windowskins are in the Rpg Maker XP format.
 
