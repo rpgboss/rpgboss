@@ -1,17 +1,22 @@
-package rpgboss.editor.dialog
+package rpgboss.editor.lib
+
 import scala.swing._
 import rpgboss.editor.lib.SwingUtils._
 import scala.swing.event._
 import rpgboss.editor.lib.DesignGridPanel
 import rpgboss.model._
 import rpgboss.model.resource._
-import rpgboss.editor.tileset.SpriteSelector
 import com.weiglewilczek.slf4s.Logging
 import java.awt.Dimension
+import rpgboss.editor.StateMaster
+import rpgboss.editor.lib.ImagePanel
+import rpgboss.editor.dialog.StdDialog
+import scala.Array.canBuildFrom
+import javax.swing.border.LineBorder
 
 abstract class ResourceSelectDialog[SpecType, T, MT](
     owner: Window, 
-    project: Project,
+    sm: StateMaster,
     initialSelectionOpt: Option[SpecType],
     onSuccess: (Option[SpecType]) => Any,
     allowNone: Boolean,
@@ -27,7 +32,7 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
       selection: SpecType,
       updateSelectionF: SpecType => Unit): Component
   
-  val allResources = metaResource.list(project)
+  val allResources = metaResource.list(sm.getProj)
   
   var curSelection : Option[SpecType] = None
   
@@ -77,9 +82,9 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
   
   contents = new DesignGridPanel {
     row().grid().add(new BoxPanel(Orientation.Horizontal) {
-      contents += new BoxPanel(Orientation.Vertical) {
-        contents += leftLabel("Select " + metaResource.rcType + ":")
-        contents += rcList
+      contents += new DesignGridPanel {
+        row.grid().add(leftLabel("Select " + metaResource.rcType + ":"))
+        row.grid().add(rcList)
       }
       contents += rightPaneContainer
     })

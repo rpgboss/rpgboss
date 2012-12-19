@@ -19,6 +19,7 @@ object Paths {
         text = Settings.get("project.directory") getOrElse 
           rootChooser.peer.getFileSystemView.getDefaultDirectory.getPath
         editable = false
+        enabled = true
       }
       
       def showDirBrowser() = {

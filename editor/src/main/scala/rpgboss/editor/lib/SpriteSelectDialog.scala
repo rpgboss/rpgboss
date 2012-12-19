@@ -1,8 +1,7 @@
-package rpgboss.editor.dialog
+package rpgboss.editor.lib
 import scala.swing._
 import rpgboss.editor.lib.SwingUtils._
 import scala.swing.event._
-import rpgboss.editor.lib.DesignGridPanel
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.tileset.SpriteSelector
@@ -17,7 +16,7 @@ class SpriteSelectDialog(
     onSuccess: (Option[SpriteSpec]) => Any)
   extends ResourceSelectDialog[SpriteSpec, Spriteset, SpritesetMetadata](
       owner, 
-      sm.getProj, 
+      sm, 
       initialSelectionOpt, 
       onSuccess,
       true,
