@@ -67,7 +67,7 @@ class StateMaster(private var proj: Project)
   }
   
   def stateDirty =
-    projDirty == Clean && mapStates.values.exists(_.dirty != Clean)
+    projDirty != Clean || mapStates.values.exists(_.dirty != Clean)
   
   def askSaveUnchanged(diagParent: Component) = {
     if(stateDirty) {

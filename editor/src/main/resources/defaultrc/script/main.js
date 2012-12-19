@@ -1,6 +1,6 @@
 function main() {
   game.setTransition(0, 1, 600);
-  game.showPicture(0, "LordSpirit.jpg", 0, 0, 640, 480);
+  game.showPicture(0, project.data().titlePic(), 0, 0, 640, 480);
   var winW = 200;
   choiceIdx = game.showChoices(
     ["New Game", "Load Game", "Quit"],

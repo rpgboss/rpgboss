@@ -45,7 +45,7 @@ class SpriteSelectDialog(
   override def rightPaneDim = new Dimension(
       384, 384) 
   
-  def rightPaneFor(
+  override def rightPaneFor(
       selection: SpriteSpec,
       updateSelectionF: SpriteSpec => Unit) = {
     val spriteset = sm.assetCache.getSpriteset(selection.spriteset)

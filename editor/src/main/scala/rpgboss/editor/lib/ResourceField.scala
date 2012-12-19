@@ -6,12 +6,49 @@ import rpgboss.model.resource._
 import rpgboss.model._
 import scala.swing.event.MouseClicked
 
+class StringSpecSelectDialog[M, MT](    
+    owner: Window, 
+    sm: StateMaster,
+    initialSelectionOpt: Option[String],
+    onSuccess: (Option[String]) => Any,
+    allowNone: Boolean,
+    metaResource: MetaResource[M, MT])
+  extends ResourceSelectDialog(
+      owner,
+      sm,
+      initialSelectionOpt,
+      onSuccess,
+      allowNone,
+      metaResource) {
+  def specToResourceName(spec: String) = spec
+  def newRcNameToSpec(name: String, prevSpec: Option[String]) = name
+}
+
+class PictureSelectDialog(
+    owner: Window, 
+    sm: StateMaster,
+    initialSelectionOpt: Option[String],
+    onSuccess: (Option[String]) => Any)
+  extends StringSpecSelectDialog(
+      owner,
+      sm,
+      initialSelectionOpt,
+      onSuccess,
+      false,
+      Picture)
+{
+  override def rightPaneFor(selection: String, unused: String => Unit) = {
+    val img = Picture.readFromDisk(sm.getProj, selection)
+    new ImagePanel(img.img)
+  }
+}
+
 class WindowskinSelectDialog(
     owner: Window, 
     sm: StateMaster,
     initialSelectionOpt: Option[String],
     onSuccess: (Option[String]) => Any)
-  extends ResourceSelectDialog(
+  extends StringSpecSelectDialog(
       owner,
       sm,
       initialSelectionOpt,
@@ -19,20 +56,18 @@ class WindowskinSelectDialog(
       false,
       Windowskin)
 {
-  def specToResourceName(spec: String) = spec
-  def newRcNameToSpec(name: String, prevSpec: Option[String]) = name
-  
-  def rightPaneFor(selection: String, unused: String => Unit) = {
+  override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Windowskin.readFromDisk(sm.getProj, selection)
     new ImagePanel(img.img)
   }
 }
 
-class WindowskinField(
+abstract class StringBrowseField(
     owner: Window, 
-    sm: StateMaster,
+    sm: StateMaster, 
     initial: String) 
-  extends BoxPanel(Orientation.Horizontal) {
+  extends BoxPanel(Orientation.Horizontal) 
+{
   
   val fieldName = new TextField {
     text = initial
@@ -42,12 +77,10 @@ class WindowskinField(
   
   def initialOpt = if(initial.isEmpty()) None else Some(initial)
   
+  def doBrowse()
+  
   val browseBtn = new Button(Action("...") {
-    val diag = new WindowskinSelectDialog(
-        owner, sm, Some(fieldName.text), 
-        newOpt => fieldName.text = newOpt.getOrElse("")
-    )
-    diag.open()
+    doBrowse()
   })
   
   listenTo(fieldName.mouse.clicks)
@@ -61,4 +94,52 @@ class WindowskinField(
   
   contents += fieldName
   contents += browseBtn
+}
+
+class WindowskinField(owner: Window, sm: StateMaster, initial: String) 
+  extends StringBrowseField(owner, sm, initial) 
+{
+  def doBrowse() = {
+    val diag = new WindowskinSelectDialog(
+        owner, sm, Some(fieldName.text), 
+        newOpt => fieldName.text = newOpt.getOrElse("")
+    )
+    diag.open()
+  }
+}
+
+class PictureField(owner: Window, sm: StateMaster, initial: String) 
+  extends StringBrowseField(owner, sm, initial) 
+{
+  def doBrowse() = {
+    val diag = new PictureSelectDialog(
+        owner, sm, Some(fieldName.text), 
+        newOpt => fieldName.text = newOpt.getOrElse("")
+    )
+    diag.open()
+  }
+}
+
+class MsgfontField(owner: Window, sm: StateMaster, initial: String) 
+  extends StringBrowseField(owner, sm, initial) 
+{
+  def doBrowse() = {
+    val diag = new StringSpecSelectDialog(
+        owner, sm, Some(fieldName.text), 
+        newOpt => fieldName.text = newOpt.getOrElse(""),
+        false, Msgfont)
+    diag.open()
+  }
+}
+
+class SoundField(owner: Window, sm: StateMaster, initial: String) 
+  extends StringBrowseField(owner, sm, initial) 
+{
+  def doBrowse() = {
+    val diag = new StringSpecSelectDialog(
+        owner, sm, Some(fieldName.text), 
+        newOpt => fieldName.text = newOpt.getOrElse(""),
+        true, Sound)
+    diag.open()
+  }
 }
