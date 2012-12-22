@@ -15,9 +15,19 @@ import net.java.dev.designgridlayout._
 class DatabaseDialog(owner: Window, sm: StateMaster) 
   extends StdDialog(owner, "Database")
 {
+  val sysPane  = new SystemPanel(owner, sm, sm.getProj.data)
+  val enumPane = new EnumerationsPanel(owner, sm, sm.getProj.data) 
+  val charPane = new CharactersPanel(owner, sm, sm.getProj.data)
+  
+  val panels = List(charPane, sysPane, enumPane)
+  
   def applyFunc() = {
-    val newData = 
-      sysPane.updated(sm.getProj.data)
+    
+    // Apply every panel's updates to the project data using fold.
+    // If anyone ever picks up this code, they will hate me.
+    val newData = panels.foldLeft(sm.getProj.data) {
+      (data, curPanel) => curPanel.updated(data)
+    }
     
     val newProj = sm.getProj.copy(data = newData)
     
@@ -27,14 +37,14 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   def okFunc() = {
     applyFunc()
     close()
-  }
-  
-  val sysPane = new SystemPanel(owner, sm, sm.getProj.data)
+  }  
   
   val tabPane = new TabbedPane() {
     import TabbedPane._
-    pages += new Page("Party", new BoxPanel(Orientation.Vertical))
-    pages += new Page("System", sysPane)
+    
+    panels.foreach { panel =>
+      pages += new Page(panel.panelName, panel)
+    }
   }
   
   lazy val applyBtn = new Button(new Action("Apply") {

@@ -22,12 +22,14 @@ case class ProjectData(title: String,
                        soundCannot: String = "MenuCannot.wav",
                        
                        charStates: Array[CharState] = Array(),
-                       damageTypes: Array[String] = 
-                         ProjectData.defaultDamageTypes,
                        
                        consumables: Array[Item] = Array(),
                        rareItems: Array[Item] = Array(),
-                       equipment: Array[Item] = Array()
+                       equipment: Array[Item] = Array(),
+                       
+                       damageTypes: Array[String] = 
+                         ProjectData.defaultDamageTypes,
+                       skillTypes: Array[String] = Array()
                        )
 
 object ProjectData {

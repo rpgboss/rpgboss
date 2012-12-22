@@ -21,9 +21,55 @@ case class SpriteSpec(
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 
+case class Curve(a: Int, b: Int, c: Int)
+
+object Curve {
+  def Linear(slope: Int, intercept: Int) =
+    Curve(0, slope, intercept)
+}
+
+import Curve.Linear
+case class CharProgressions(
+    exp: Curve = Curve(10, 10, 0),
+    hp:  Curve = Linear(25, 50),
+    sp:  Curve = Linear(5, 20),
+    str: Curve = Linear(3, 10),
+    dex: Curve = Linear(3, 10),
+    con: Curve = Linear(3, 10),
+    int: Curve = Linear(3, 10),
+    wis: Curve = Linear(3, 10),
+    cha: Curve = Linear(3, 10)
+)
+
+case class EquipSet(
+    weapon: Int,
+    offhand: Int,
+    armor: Int,
+    helmet: Int,
+    acc1: Int,
+    acc2: Int
+)
+
+object EquipSet {
+  def empty = EquipSet(-1, -1, -1, -1, -1, -1)
+  def zeroes = EquipSet(0, 0, 0, 0, 0, 0)
+}
+
+/**
+ * @param startingEquipment   Denotes the item ids of starting equipment.
+ *                            A value of -1 means it's an empty slot.
+ *                            
+ * @param equipFixed          A value of 0 in this slot means the player can
+ *                            modify what's in this slot. Any other value means 
+ *                            the means the player cannot.
+ */
 case class Character(
     defaultName: String, 
-    sprite: SpriteSpec)
+    sprite: SpriteSpec,
+    initLevel: Int = 1, maxLevel: Int = 50,
+    progressions: CharProgressions = CharProgressions(),
+    startingEquipment: EquipSet = EquipSet.empty,
+    equipFixed: EquipSet = EquipSet.zeroes)
 
 case class Skill()
 

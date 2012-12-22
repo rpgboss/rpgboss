@@ -11,14 +11,14 @@ import rpgboss.model.resource._
 
 import net.java.dev.designgridlayout._
 
-class SystemPanel(
+class CharactersPanel(
     owner: Window, 
     sm: StateMaster, 
     initial: ProjectData) 
   extends DesignGridPanel 
   with DatabasePanel
 {
-  def panelName = "Startup"
+  def panelName = "Characters"
   layout.labelAlignment(LabelAlignment.RIGHT)
   
   val fGameTitle = new TextField() {
