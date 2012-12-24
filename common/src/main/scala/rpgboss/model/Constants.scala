@@ -8,6 +8,9 @@ trait RpgEnum extends Enumeration {
 }
 
 object Constants {
+  
+  val MINLEVEL = 1
+  val MAXLEVEL = 9000
 
   object DirectionMasks {
     val NORTH = 1 << 0

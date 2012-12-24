@@ -6,6 +6,7 @@ import rpgboss.editor.lib.SwingUtils._
 import rpgboss.editor.dialog._
 import javax.swing.BorderFactory
 import com.weiglewilczek.slf4s.Logging
+import java.awt.{Font, Color}
 
 object ArrayEditingPanel {
   import ListView._
@@ -29,7 +30,7 @@ abstract class ArrayEditingPanel[T](
     initialAry: Array[T],
     minElems: Int = 1,
     maxElems: Int = 1024)(implicit m: Manifest[T]) 
-  extends DesignGridPanel 
+  extends DesignGridPanel
   with Logging
 {
   def newDefaultInstance(): T
@@ -163,8 +164,6 @@ class StringArrayEditingPanel(
     new TextField {
       text = item
       
-      listenTo(this)
-      
       reactions += {
         case ValueChanged(_) =>
           updatePreserveSelection(idx, text)
@@ -181,4 +180,36 @@ class StringArrayEditingPanel(
   row().grid().add(editPaneContainer)
   row().grid().add(listView)
   row().grid().add(btnSetListSize)
+}
+
+abstract class RightPaneArrayEditingPanel[T](
+    owner: Window,
+    label: String,
+    initialAry: Array[T],
+    minElems: Int = 1,
+    maxElems: Int = 1024)(implicit m: Manifest[T]) 
+  extends ArrayEditingPanel[T](owner, label, initialAry, minElems, maxElems)(m)
+{
+  def editPaneEmpty = new BoxPanel(Orientation.Vertical)
+  
+  val bigLbl = new Label {
+    text = label
+    font = new Font("Arial", Font.BOLD, 14)
+    horizontalAlignment = Alignment.Center
+    background = Color.BLACK
+    opaque = true
+    foreground = Color.WHITE
+  } 
+  
+  row().grid().add(new BoxPanel(Orientation.Horizontal) {
+    contents += new DesignGridPanel {
+      row().grid().add(bigLbl)
+      row().grid().add(listView)
+      row().grid().add(btnSetListSize)
+    }
+    
+    contents += (editPaneContainer)
+  })
+  
+  listView.selectIndices(0)
 }

@@ -34,11 +34,11 @@ case class ProjectData(title: String,
 
 object ProjectData {
   def defaultCharacters = Array(
-    Character("Pando", SpriteSpec("vx_chara01_a.png", 4)),  
-    Character("Estine", SpriteSpec("vx_chara01_a.png", 1)),
-    Character("Leoge", SpriteSpec("vx_chara01_a.png", 3)),
-    Character("Graven", SpriteSpec("vx_chara01_a.png", 2)),
-    Character("Carona", SpriteSpec("vx_chara01_a.png", 6))
+    Character("Pando",  sprite = Some(SpriteSpec("vx_chara01_a.png", 4))),  
+    Character("Estine", sprite = Some(SpriteSpec("vx_chara01_a.png", 1))),
+    Character("Leoge",  sprite = Some(SpriteSpec("vx_chara01_a.png", 3))),
+    Character("Graven", sprite = Some(SpriteSpec("vx_chara01_a.png", 2))),
+    Character("Carona", sprite = Some(SpriteSpec("vx_chara01_a.png", 6)))
   )
   
   def defaultDamageTypes = Array(

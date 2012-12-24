@@ -21,7 +21,11 @@ case class SpriteSpec(
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 
-case class Curve(a: Int, b: Int, c: Int)
+case class Curve(a: Int, b: Int, c: Int) {
+  def apply(x: Int) = {
+    a*x*x + b*x + c
+  }
+}
 
 object Curve {
   def Linear(slope: Int, intercept: Int) =
@@ -64,8 +68,10 @@ object EquipSet {
  *                            the means the player cannot.
  */
 case class Character(
-    defaultName: String, 
-    sprite: SpriteSpec,
+    defaultName: String = "", 
+    subtitle:    String = "",
+    description: String = "",
+    sprite: Option[SpriteSpec] = None,
     initLevel: Int = 1, maxLevel: Int = 50,
     progressions: CharProgressions = CharProgressions(),
     startingEquipment: EquipSet = EquipSet.empty,

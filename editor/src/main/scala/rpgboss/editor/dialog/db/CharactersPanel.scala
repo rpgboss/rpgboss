@@ -6,7 +6,10 @@ import rpgboss.editor.lib.SwingUtils._
 import scala.swing._
 import scala.swing.event._
 
+import rpgboss.editor.dialog._
+
 import rpgboss.model._
+import rpgboss.model.Constants._
 import rpgboss.model.resource._
 
 import net.java.dev.designgridlayout._
@@ -15,49 +18,101 @@ class CharactersPanel(
     owner: Window, 
     sm: StateMaster, 
     initial: ProjectData) 
-  extends DesignGridPanel 
+  extends RightPaneArrayEditingPanel(owner, "Characters", initial.characters)
   with DatabasePanel
 {
   def panelName = "Characters"
-  layout.labelAlignment(LabelAlignment.RIGHT)
+  def newDefaultInstance() = new Character()
+  def label(character: Character) = character.defaultName
   
-  val fGameTitle = new TextField() {
-    text = initial.title
+  def editPaneForItem(idx: Int, initial: Character) = {
+    var model = initial
+      
+    def updateModel(newModel: Character) = {
+      model = newModel
+      updatePreserveSelection(idx, model)
+    }
+    
+    val leftPane = new DesignGridPanel {
+      val fName = new TextField {
+        text = model.defaultName
+        
+        reactions += {
+          case ValueChanged(_) =>
+            updateModel(model.copy(defaultName = text))
+        }
+      }
+      
+      val fSubtitle = new TextField {
+        text = model.subtitle
+        reactions += {
+          case ValueChanged(_) =>
+            updateModel(model.copy(subtitle = text))
+        }
+      }
+      
+      val fDescription = new TextField {
+        text = model.description
+        reactions += {
+          case ValueChanged(_) =>
+            updateModel(model.copy(description = text))
+        }
+      }
+      
+      val fSprite = new SpriteBox(
+          owner,
+          sm,
+          model.sprite,
+          (newSprite) => {
+            updateModel(model.copy(sprite = newSprite))
+          })
+      
+      def numParamEdit(
+          initial: Int, 
+          mutateF: (Int) => Unit, 
+          min: Int = 0, 
+          max: Int = 100) = {
+        new NumberSpinner(initial, 0, 100, onChange = mutateF)
+      }
+      
+      val fInitLevel = numParamEdit(
+          model.initLevel, 
+          v => updateModel(model.copy(initLevel = v)),
+          MINLEVEL,
+          MAXLEVEL)
+        
+      val fMaxLevel = numParamEdit(
+          model.maxLevel, 
+          v => updateModel(model.copy(maxLevel = v)),
+          MINLEVEL,
+          MAXLEVEL)
+      
+      row().grid(leftLabel("Default name:")).add(fName)
+      
+      row().grid(leftLabel("Subtitle:")).add(fSubtitle)
+      
+      row().grid(leftLabel("Description:")).add(fDescription)
+      
+      row().grid(leftLabel("Sprite:")).add(fSprite)
+      
+      row()
+        .grid(leftLabel("Initial level:")).add(fInitLevel)
+        .grid(leftLabel("Max level:")).add(fMaxLevel)
+    }
+    
+    val rightPane = new CharProgressionPanel(model.progressions, p => {
+      updateModel(model.copy(progressions = p))
+    })
+    
+    new BoxPanel(Orientation.Horizontal) {
+      contents += leftPane
+      contents += rightPane
+    }
   }
-  row().grid(lbl("Game title:")).add(fGameTitle)
-  
-  val fTitlepic = new PictureField(owner, sm, initial.titlePic)
-  row().grid(lbl("Title picture:")).add(fTitlepic)
-  
-  val fWindowskin = new WindowskinField(owner, sm, initial.windowskin)
-  row().grid(lbl("Windowskin:")).add(fWindowskin)
-  
-  val fMsgfont = new MsgfontField(owner, sm, initial.msgfont)
-  row().grid(lbl("Message font:")).add(fMsgfont)
-  
-  val fFontsize = new NumberSpinner(initial.fontsize, 12, 48, 1)
-  row().grid(lbl("Font size:")).add(fFontsize)
-  
-  val fSoundCursor = new SoundField(owner, sm, initial.soundCursor)
-  val fSoundSelect = new SoundField(owner, sm, initial.soundSelect)
-  val fSoundCancel = new SoundField(owner, sm, initial.soundCancel)
-  val fSoundCannot = new SoundField(owner, sm, initial.soundCannot)
-  row().grid(lbl("Cursor sound:")).add(fSoundCursor)
-  row().grid(lbl("Select sound:")).add(fSoundSelect)
-  row().grid(lbl("Cancel sound:")).add(fSoundCancel)
-  row().grid(lbl("Cannot sound:")).add(fSoundCannot)
   
   def updated(data: ProjectData) = {
     data.copy(
-        title = fGameTitle.text,
-        titlePic = fTitlepic.text,
-        windowskin = fWindowskin.text,
-        msgfont = fMsgfont.text,
-        fontsize = fFontsize.getValue,
-        soundCursor = fSoundCursor.text,
-        soundSelect = fSoundSelect.text,
-        soundCancel = fSoundCancel.text,
-        soundCannot = fSoundCannot.text
+        characters = array
     )
   }
 }

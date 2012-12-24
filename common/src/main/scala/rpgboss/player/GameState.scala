@@ -110,8 +110,8 @@ class GameState(game: MyGame, project: Project) {
    * Things to do with the player's location and camera
    */
   
-  def setPlayerSprite(spritespec: SpriteSpec) = syncRun {
-    playerEvt.setSprite(Some(spritespec))
+  def setPlayerSprite(spritespec: Option[SpriteSpec]) = syncRun {
+    playerEvt.setSprite(spritespec)
   }
   
   def setPlayerLoc(loc: MapLoc) = syncRun {

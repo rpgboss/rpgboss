@@ -27,7 +27,7 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   }
   
   def getTileImage(ti: Int, tj: Int) = {
-    if(ti < img.getWidth()/tileH && tj < img.getHeight()/tileH) {
+    if(ti < img.getWidth()/tileW && tj < img.getHeight()/tileH) {
       img.getSubimage(ti*tileW, tj*tileH, tileW, tileH)
     } else {
       throw ResourceException("Requested tile out of bounds. " +
