@@ -15,21 +15,18 @@ import net.java.dev.designgridlayout._
 class DatabaseDialog(owner: Window, sm: StateMaster) 
   extends StdDialog(owner, "Database")
 {
-  val sysPane  = new SystemPanel(owner, sm, sm.getProj.data)
-  val enumPane = new EnumerationsPanel(owner, sm, sm.getProj.data) 
-  val charPane = new CharactersPanel(owner, sm, sm.getProj.data)
+  var model = sm.getProj.data
   
-  val panels = List(charPane, sysPane, enumPane)
+  val charPane  = new CharactersPanel(owner, sm, this)
+  val itemsPane = new ItemsPanel(owner, sm, this)
+  val equipPane = new EquipmentPanel(owner, sm, this)
+  val sysPane   = new SystemPanel(owner, sm, this)
+  val enumPane  = new EnumerationsPanel(owner, sm, this) 
+  
+  val panels = List(charPane, itemsPane, equipPane, sysPane, enumPane)
   
   def applyFunc() = {
-    
-    // Apply every panel's updates to the project data using fold.
-    // If anyone ever picks up this code, they will hate me.
-    val newData = panels.foldLeft(sm.getProj.data) {
-      (data, curPanel) => curPanel.updated(data)
-    }
-    
-    val newProj = sm.getProj.copy(data = newData)
+    val newProj = sm.getProj.copy(data = model)
     
     sm.setProj(newProj)
   }

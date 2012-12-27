@@ -11,7 +11,7 @@ class NumberSpinner(
     min: Int, 
     max: Int, 
     step: Int = 1,
-    onChange: ((Int) => Unit) = (v) => {}) 
+    onUpdate: ((Int) => Unit) = (v) => {}) 
   extends BoxPanel(Orientation.Horizontal)
 {
   val model = new SpinnerNumberModel(initial, min, max, step)
@@ -20,7 +20,7 @@ class NumberSpinner(
   
   spinner.addChangeListener(new ChangeListener() {
     override def stateChanged(e: ChangeEvent) {
-      onChange(getValue)
+      onUpdate(getValue)
     }
   })
   contents += Component.wrap(spinner)

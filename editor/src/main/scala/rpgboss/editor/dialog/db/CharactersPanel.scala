@@ -17,8 +17,11 @@ import net.java.dev.designgridlayout._
 class CharactersPanel(
     owner: Window, 
     sm: StateMaster, 
-    initial: ProjectData) 
-  extends RightPaneArrayEditingPanel(owner, "Characters", initial.characters)
+    val dbDiag: DatabaseDialog) 
+  extends RightPaneArrayEditingPanel(
+      owner, 
+      "Characters", 
+      dbDiag.model.characters)
   with DatabasePanel
 {
   def panelName = "Characters"
@@ -34,30 +37,15 @@ class CharactersPanel(
     }
     
     val leftPane = new DesignGridPanel {
-      val fName = new TextField {
-        text = model.defaultName
-        
-        reactions += {
-          case ValueChanged(_) =>
-            updateModel(model.copy(defaultName = text))
-        }
-      }
-      
-      val fSubtitle = new TextField {
-        text = model.subtitle
-        reactions += {
-          case ValueChanged(_) =>
-            updateModel(model.copy(subtitle = text))
-        }
-      }
-      
-      val fDescription = new TextField {
-        text = model.description
-        reactions += {
-          case ValueChanged(_) =>
-            updateModel(model.copy(description = text))
-        }
-      }
+      val fName = textField(
+          model.defaultName, 
+          v => updateModel(model.copy(defaultName = v)))
+      val fSubtitle = textField(
+          model.subtitle, 
+          v => updateModel(model.copy(subtitle = v)))
+      val fDescription = textField(
+          model.description, 
+          v => updateModel(model.copy(description = v)))
       
       val fSprite = new SpriteBox(
           owner,
@@ -72,7 +60,7 @@ class CharactersPanel(
           mutateF: (Int) => Unit, 
           min: Int = 0, 
           max: Int = 100) = {
-        new NumberSpinner(initial, 0, 100, onChange = mutateF)
+        new NumberSpinner(initial, 0, 100, onUpdate = mutateF)
       }
       
       val fInitLevel = numParamEdit(
@@ -110,8 +98,9 @@ class CharactersPanel(
     }
   }
   
-  def updated(data: ProjectData) = {
-    data.copy(
+  override def onListDataUpdate() = {
+    logger.info("Characters data updated")
+    dbDiag.model = dbDiag.model.copy(
         characters = array
     )
   }

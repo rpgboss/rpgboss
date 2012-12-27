@@ -3,11 +3,36 @@ package rpgboss.editor.lib
 import scala.swing._
 import scala.collection.mutable.Buffer
 import rpgboss.model._
+import scala.swing.event._
 
 object SwingUtils {
   def lbl(s: String) = new Label(s)
   def leftLabel(s: String) = new Label(s) {
     xAlignment = Alignment.Left
+  }
+  
+  def textField(initial: String, onUpdate: String => Unit) = 
+    new TextField {
+      text = initial
+      
+      reactions += {
+        case ValueChanged(_) => onUpdate(text)
+      }
+    }
+  
+  def enumCombo[T <: Enumeration](enum: T)(
+      initialId: Int, 
+      onUpdate: enum.Value => Any,
+      choices: Seq[enum.Value] = Seq()) = {
+    
+    val actualChoices = if(choices.isEmpty) enum.values.toSeq else choices
+    
+    new ComboBox(actualChoices) {
+      selection.item = enum(initialId)
+      reactions += {
+        case SelectionChanged(_) => onUpdate(selection.item)
+      }
+    }
   }
   
   def addBtnsAsGrp(contents: Buffer[Component], btns: List[AbstractButton]) = {

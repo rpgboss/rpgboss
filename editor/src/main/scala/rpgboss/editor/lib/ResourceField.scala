@@ -5,6 +5,7 @@ import rpgboss.editor._
 import rpgboss.model.resource._
 import rpgboss.model._
 import scala.swing.event.MouseClicked
+import scala.swing.event.EditDone
 
 class StringSpecSelectDialog[M, MT](    
     owner: Window, 
@@ -65,7 +66,8 @@ class WindowskinSelectDialog(
 abstract class StringBrowseField(
     owner: Window, 
     sm: StateMaster, 
-    initial: String) 
+    initial: String,
+    onUpdate: String => Unit) 
   extends BoxPanel(Orientation.Horizontal) 
 {
   
@@ -83,21 +85,27 @@ abstract class StringBrowseField(
     doBrowse()
   })
   
+  listenTo(fieldName)
   listenTo(fieldName.mouse.clicks)
       
   reactions += {
     case MouseClicked(`fieldName`, _, _, _, _) => 
       browseBtn.action.apply()
+    case EditDone(`fieldName`) =>
+      onUpdate(fieldName.text)
   }
-  
-  def text = fieldName.text
   
   contents += fieldName
   contents += browseBtn
 }
 
-class WindowskinField(owner: Window, sm: StateMaster, initial: String) 
-  extends StringBrowseField(owner, sm, initial) 
+class WindowskinField(
+    owner: Window, 
+    sm: StateMaster, 
+    initial: String,
+    onUpdate: String => Unit
+    ) 
+  extends StringBrowseField(owner, sm, initial, onUpdate) 
 {
   def doBrowse() = {
     val diag = new WindowskinSelectDialog(
@@ -108,8 +116,12 @@ class WindowskinField(owner: Window, sm: StateMaster, initial: String)
   }
 }
 
-class PictureField(owner: Window, sm: StateMaster, initial: String) 
-  extends StringBrowseField(owner, sm, initial) 
+class PictureField(
+    owner: Window, 
+    sm: StateMaster, 
+    initial: String,
+    onUpdate: String => Unit) 
+  extends StringBrowseField(owner, sm, initial, onUpdate) 
 {
   def doBrowse() = {
     val diag = new PictureSelectDialog(
@@ -120,8 +132,12 @@ class PictureField(owner: Window, sm: StateMaster, initial: String)
   }
 }
 
-class MsgfontField(owner: Window, sm: StateMaster, initial: String) 
-  extends StringBrowseField(owner, sm, initial) 
+class MsgfontField(
+    owner: Window, 
+    sm: StateMaster, 
+    initial: String,
+    onUpdate: String => Unit) 
+  extends StringBrowseField(owner, sm, initial, onUpdate) 
 {
   def doBrowse() = {
     val diag = new StringSpecSelectDialog(
@@ -132,8 +148,12 @@ class MsgfontField(owner: Window, sm: StateMaster, initial: String)
   }
 }
 
-class SoundField(owner: Window, sm: StateMaster, initial: String) 
-  extends StringBrowseField(owner, sm, initial) 
+class SoundField(
+    owner: Window, 
+    sm: StateMaster, 
+    initial: String,
+    onUpdate: String => Unit) 
+  extends StringBrowseField(owner, sm, initial, onUpdate) 
 {
   def doBrowse() = {
     val diag = new StringSpecSelectDialog(

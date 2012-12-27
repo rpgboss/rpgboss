@@ -12,6 +12,9 @@ object Constants {
   val MINLEVEL = 1
   val MAXLEVEL = 9000
 
+  val MINPRICE = 0
+  val MAXPRICE = 999999
+  
   object DirectionMasks {
     val NORTH = 1 << 0
     val EAST  = 1 << 1
@@ -54,10 +57,13 @@ object Constants {
   
   object Scope extends RpgEnum {
     val None = Value
-    val OneEnemy, AllEnemies = Value
-    val OneAlly, AllAllies = Value
-    val OneAllyDead, AllAlliesDead = Value
-    val SelfOnly = Value
+    val SelfOnly = Value("User only")
+    val OneEnemy = Value("One enemy") 
+    val AllEnemies = Value("All enemies")
+    val OneAlly = Value("One ally")
+    val AllAllies = Value("All allies")
+    val OneAllyDead = Value("One dead ally")
+    val AllAlliesDead = Value("All dead allies")
     
     def default = OneAlly
   }
@@ -66,6 +72,15 @@ object Constants {
     val Consumable, Rare, Equipment = Value
     
     def default = Consumable
+  }
+  
+  object ItemAccessibility extends RpgEnum {
+    val Always = Value
+    val MenuOnly = Value("Menu only")
+    val BattleOnly = Value("Battle only")
+    val Never = Value
+    
+    def default = Always
   }
   
   object EquipSlot extends RpgEnum {

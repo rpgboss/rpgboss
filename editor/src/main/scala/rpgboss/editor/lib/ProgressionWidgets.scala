@@ -40,7 +40,7 @@ class CharProgressionPanel(
     }
     
     def numSpinner(initial: Int, mutateF: (Int) => Unit) = {
-      new NumberSpinner(initial, 0, 100, onChange = { v =>
+      new NumberSpinner(initial, 0, 100, onUpdate = { v =>
         mutateF(v)
         onUpdate(model)
         

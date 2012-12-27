@@ -5,16 +5,15 @@ import rpgboss.editor.lib._
 import rpgboss.editor.lib.SwingUtils._
 import scala.swing._
 import scala.swing.event._
-
 import rpgboss.model._
 import rpgboss.model.resource._
-
 import net.java.dev.designgridlayout._
+import rpgboss.editor.dialog.DatabaseDialog
 
 class EnumerationsPanel(
     owner: Window, 
     sm: StateMaster, 
-    initial: ProjectData) 
+    val dbDiag: DatabaseDialog) 
   extends DesignGridPanel 
   with DatabasePanel
 {
@@ -25,20 +24,28 @@ class EnumerationsPanel(
     new StringArrayEditingPanel(
         owner,
         "Damage types",
-        initial.damageTypes)
+        dbDiag.model.damageTypes) {
+    
+    override def onListDataUpdate() = {
+      logger.info("Damage types updated")
+      dbDiag.model = dbDiag.model.copy(
+          damageTypes = array
+      )
+    }
+  }
   
   val fSkillTypes = 
     new StringArrayEditingPanel(
         owner,
         "Skill types",
-        initial.skillTypes)
+        dbDiag.model.skillTypes) {
+    override def onListDataUpdate() = {
+      logger.info("Skill types updated")
+      dbDiag.model = dbDiag.model.copy(
+          skillTypes = array
+      )
+    }
+  }
   
   row.grid().add(fDamageTypes).add(fSkillTypes)
-  
-  def updated(data: ProjectData) = {
-    data.copy(
-        damageTypes = fDamageTypes.array,
-        skillTypes  = fSkillTypes.array
-    )
-  }
 }

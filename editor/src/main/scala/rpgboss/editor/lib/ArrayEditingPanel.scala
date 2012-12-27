@@ -69,6 +69,8 @@ abstract class ArrayEditingPanel[T](
     listenTo(listView.selection)
   }
   
+  def onListDataUpdate() = {}
+  
   def normalizedInitialAry = 
     if(initialAry.size > maxElems)
       resized(initialAry, maxElems).toArray
@@ -122,6 +124,8 @@ abstract class ArrayEditingPanel[T](
       
       editPaneContainer.revalidate()
       editPaneContainer.repaint()
+    case ListChanged(`listView`) =>
+      onListDataUpdate()
   }
   
   editPaneContainer.contents += editPaneEmpty

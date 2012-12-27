@@ -54,18 +54,24 @@ case class EquipSet(
     acc2: Int
 )
 
+case class EquipSetBool(
+    weapon: Boolean = false,
+    offhand: Boolean = false,
+    armor: Boolean = false,
+    helmet: Boolean = false,
+    acc1: Boolean = false,
+    acc2: Boolean = false
+)
+
 object EquipSet {
   def empty = EquipSet(-1, -1, -1, -1, -1, -1)
-  def zeroes = EquipSet(0, 0, 0, 0, 0, 0)
 }
 
 /**
  * @param startingEquipment   Denotes the item ids of starting equipment.
  *                            A value of -1 means it's an empty slot.
  *                            
- * @param equipFixed          A value of 0 in this slot means the player can
- *                            modify what's in this slot. Any other value means 
- *                            the means the player cannot.
+ * @param equipFixed          "true" means the player cannot modify this slot.
  */
 case class Character(
     defaultName: String = "", 
@@ -75,7 +81,7 @@ case class Character(
     initLevel: Int = 1, maxLevel: Int = 50,
     progressions: CharProgressions = CharProgressions(),
     startingEquipment: EquipSet = EquipSet.empty,
-    equipFixed: EquipSet = EquipSet.zeroes)
+    equipFixed: EquipSetBool = EquipSetBool())
 
 case class Skill()
 
@@ -99,9 +105,11 @@ object CharState {
   
 }
 
+case class Effect(key: String, v: Int)
+
 case class CharState(
     name: String, 
-    effects: Map[String, Int],
+    effects: Array[Effect],
     releaseTime: Int = -1,
     releaseChance: Int = 0,
     releaseDmgChance: Int = 0,
@@ -113,13 +121,16 @@ object Item {
 case class Item(
     name: String = "",
     desc: String = "",
-    effects: Map[String, Int] = Map(),
-    price: Int = -1,
+    effects: Array[Effect] = Array(),
+    price: Int = 100,
     
     itemType: Int = ItemType.Consumable.id,
     
-    slot: Int = EquipSlot.default.id,
     scopeId: Int = Scope.default.id,
+    accessId: Int = ItemAccessibility.default.id,
+    
+    slot: Int = EquipSlot.default.id,
+    
     icon: Option[IconSpec] = None)
 
 object SpriteSpec {

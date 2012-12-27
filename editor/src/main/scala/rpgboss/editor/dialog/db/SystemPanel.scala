@@ -5,59 +5,72 @@ import rpgboss.editor.lib._
 import rpgboss.editor.lib.SwingUtils._
 import scala.swing._
 import scala.swing.event._
-
 import rpgboss.model._
 import rpgboss.model.resource._
-
 import net.java.dev.designgridlayout._
+import rpgboss.editor.dialog.DatabaseDialog
+import com.weiglewilczek.slf4s.Logging
 
 class SystemPanel(
     owner: Window, 
     sm: StateMaster, 
-    initial: ProjectData) 
+    val dbDiag: DatabaseDialog) 
   extends DesignGridPanel 
   with DatabasePanel
+  with Logging
 {
   def panelName = "Startup"
   layout.labelAlignment(LabelAlignment.RIGHT)
   
-  val fGameTitle = new TextField() {
-    text = initial.title
+  def model = dbDiag.model
+  
+  def updateModel(m: ProjectData) = {
+    dbDiag.model = m
   }
+  
+  val fGameTitle = new TextField() {
+    text = model.title
+    reactions += {
+      case EditDone(_) => updateModel(model.copy(title = text))
+    }
+  }
+  
+  val fTitlepic = new PictureField(owner, sm, model.titlePic, v => {
+    updateModel(model.copy(titlePic = v))
+  })
+  val fWindowskin = new WindowskinField(owner, sm, model.windowskin, v => {
+    updateModel(model.copy(windowskin = v))
+  })
+  
+  val fMsgfont = new MsgfontField(owner, sm, model.msgfont, v => {
+    updateModel(model.copy(msgfont = v))
+  })
+  
+  val fFontsize = new NumberSpinner(model.fontsize, 12, 48, 1, onUpdate = { v =>
+    updateModel(model.copy(fontsize = v))
+  })
+  
+  val fSoundCursor = new SoundField(owner, sm, model.soundCursor, v => {
+    updateModel(model.copy(soundCursor = v))
+  })
+  val fSoundSelect = new SoundField(owner, sm, model.soundSelect, v => {
+    updateModel(model.copy(soundSelect = v))
+  })
+  val fSoundCancel = new SoundField(owner, sm, model.soundCancel, v => {
+    updateModel(model.copy(soundCancel = v))
+  })
+  val fSoundCannot = new SoundField(owner, sm, model.soundCannot, v => {
+    updateModel(model.copy(soundCannot = v))
+  })
+  
   row().grid(lbl("Game title:")).add(fGameTitle)
-  
-  val fTitlepic = new PictureField(owner, sm, initial.titlePic)
   row().grid(lbl("Title picture:")).add(fTitlepic)
-  
-  val fWindowskin = new WindowskinField(owner, sm, initial.windowskin)
   row().grid(lbl("Windowskin:")).add(fWindowskin)
-  
-  val fMsgfont = new MsgfontField(owner, sm, initial.msgfont)
   row().grid(lbl("Message font:")).add(fMsgfont)
-  
-  val fFontsize = new NumberSpinner(initial.fontsize, 12, 48, 1)
   row().grid(lbl("Font size:")).add(fFontsize)
   
-  val fSoundCursor = new SoundField(owner, sm, initial.soundCursor)
-  val fSoundSelect = new SoundField(owner, sm, initial.soundSelect)
-  val fSoundCancel = new SoundField(owner, sm, initial.soundCancel)
-  val fSoundCannot = new SoundField(owner, sm, initial.soundCannot)
   row().grid(lbl("Cursor sound:")).add(fSoundCursor)
   row().grid(lbl("Select sound:")).add(fSoundSelect)
   row().grid(lbl("Cancel sound:")).add(fSoundCancel)
   row().grid(lbl("Cannot sound:")).add(fSoundCannot)
-  
-  def updated(data: ProjectData) = {
-    data.copy(
-        title = fGameTitle.text,
-        titlePic = fTitlepic.text,
-        windowskin = fWindowskin.text,
-        msgfont = fMsgfont.text,
-        fontsize = fFontsize.getValue,
-        soundCursor = fSoundCursor.text,
-        soundSelect = fSoundSelect.text,
-        soundCancel = fSoundCancel.text,
-        soundCannot = fSoundCannot.text
-    )
-  }
 }

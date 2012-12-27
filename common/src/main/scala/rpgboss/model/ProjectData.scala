@@ -23,8 +23,7 @@ case class ProjectData(title: String,
                        
                        charStates: Array[CharState] = Array(),
                        
-                       consumables: Array[Item] = Array(),
-                       rareItems: Array[Item] = Array(),
+                       items: Array[Item] = Array(),
                        equipment: Array[Item] = Array(),
                        
                        damageTypes: Array[String] = 
