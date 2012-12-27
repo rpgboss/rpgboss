@@ -20,6 +20,20 @@ object SwingUtils {
       }
     }
   
+  def indexedCombo[T](choices: Seq[T], initial: Int, onUpdate: Int => Unit) = {
+    new ComboBox(choices) {
+      selection.index = initial
+      
+      renderer = ArrayEditingPanel.idxRenderer({ case (a, idx) =>
+        "%d: %s".format(idx, a.toString)
+      })
+      
+      reactions += {
+        case SelectionChanged(_) => onUpdate(selection.index)
+      }
+    }
+  }
+  
   def enumCombo[T <: Enumeration](enum: T)(
       initialId: Int, 
       onUpdate: enum.Value => Any,
@@ -35,7 +49,7 @@ object SwingUtils {
     }
   }
   
-  def addBtnsAsGrp(contents: Buffer[Component], btns: List[AbstractButton]) = {
+  def addBtnsAsGrp(contents: Buffer[Component], btns: Seq[AbstractButton]) = {
     val firstSelected = btns.find(_.selected)
     val grp = new ButtonGroup(btns : _*)
     
@@ -58,10 +72,13 @@ object SwingUtils {
     }
   }
   
-  def enumRadios[T <: Enumeration]
-      (enum: T)(initial: enum.Value, selectF: enum.Value => Any) = 
+  def enumRadios[T <: Enumeration](enum: T)(
+      initial: enum.Value, 
+      selectF: enum.Value => Any,
+      choices: Seq[enum.Value] = Seq()) = 
   {
-    enum.values.toList.map { eVal =>
+    val actualChoices = if(choices.isEmpty) enum.values.toSeq else choices
+    actualChoices.map { eVal =>
       new RadioButton() {
         action = Action(eVal.toString) { 
           selectF(eVal)

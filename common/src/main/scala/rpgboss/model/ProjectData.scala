@@ -21,10 +21,12 @@ case class ProjectData(title: String,
                        soundCancel: String = "MenuCancel.wav",
                        soundCannot: String = "MenuCannot.wav",
                        
-                       charStates: Array[CharState] = Array(),
+                       statusEffects: Array[StatusEffect] = Array(),
                        
                        items: Array[Item] = Array(),
                        equipment: Array[Item] = Array(),
+                       
+                       skills: Array[Skill] = Array(),
                        
                        damageTypes: Array[String] = 
                          ProjectData.defaultDamageTypes,

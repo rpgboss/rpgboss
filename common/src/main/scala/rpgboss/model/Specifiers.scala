@@ -35,8 +35,8 @@ object Curve {
 import Curve.Linear
 case class CharProgressions(
     exp: Curve = Curve(10, 10, 0),
-    hp:  Curve = Linear(25, 50),
-    sp:  Curve = Linear(5, 20),
+    mhp: Curve = Linear(25, 50),
+    mmp: Curve = Linear(5, 20),
     str: Curve = Linear(3, 10),
     dex: Curve = Linear(3, 10),
     con: Curve = Linear(3, 10),
@@ -107,7 +107,7 @@ object CharState {
 
 case class Effect(key: String, v: Int)
 
-case class CharState(
+case class StatusEffect(
     name: String, 
     effects: Array[Effect],
     releaseTime: Int = -1,

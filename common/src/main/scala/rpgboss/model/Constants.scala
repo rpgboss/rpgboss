@@ -15,6 +15,9 @@ object Constants {
   val MINPRICE = 0
   val MAXPRICE = 999999
   
+  val MINEFFECTARG = -9999
+  val MAXEFFECTARG = 9999
+  
   object DirectionMasks {
     val NORTH = 1 << 0
     val EAST  = 1 << 1

@@ -71,10 +71,10 @@ class CharProgressionPanel(
   
   val fExp = progressionEditor(
       "Exp", model.exp, p => updateModel(model.copy(exp = p)))
-  val fHp = progressionEditor(
-      "HP",  model.hp,  p => updateModel(model.copy(hp  = p)))
-  val fSp = progressionEditor(
-      "SP",  model.sp,  p => updateModel(model.copy(sp  = p)))
+  val fMhp = progressionEditor(
+      "Max HP", model.mhp, p => updateModel(model.copy(mhp = p)))
+  val fMmp = progressionEditor(
+      "Max MP", model.mmp, p => updateModel(model.copy(mmp = p)))
   val fStr = progressionEditor(
       "Str", model.str, p => updateModel(model.copy(str = p)))
   val fDex = progressionEditor(
@@ -88,7 +88,7 @@ class CharProgressionPanel(
   val fCha = progressionEditor(
       "Cha", model.cha, p => updateModel(model.copy(cha = p)))
   
-  row().grid().add(fExp, fHp,  fSp)
+  row().grid().add(fExp, fMhp, fMmp)
   row().grid().add(fStr, fDex, fCon)
   row().grid().add(fInt, fWis, fCha)
   row().grid().add(new Label("y = a*x^2 + b*x + c"), 3)

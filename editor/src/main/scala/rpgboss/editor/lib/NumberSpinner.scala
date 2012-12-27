@@ -26,4 +26,5 @@ class NumberSpinner(
   contents += Component.wrap(spinner)
 
   def getValue = model.getNumber().intValue()
+  def setValue(v: Int) = model.setValue(v)
 }

@@ -264,6 +264,8 @@ tileset/Refmap-TileC.png
 tileset/Refmap-TileE.png.metadata.json
 tileset/Refmap-TileD.png.metadata.json
 tileset/Refmap-TileD.png
+iconset/420__Pixel_Art__Icons_for_RPG_by_Ails.png
+iconset/420__Pixel_Art__Icons_for_RPG_by_Ails.png.metadata.json
 spriteset/vx_chara02_b.png
 spriteset/vx_chara07_b.png
 spriteset/$vx_chara09_e.png
