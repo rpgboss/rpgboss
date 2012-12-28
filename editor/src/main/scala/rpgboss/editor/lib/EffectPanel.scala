@@ -48,6 +48,18 @@ class EffectPanel(
     
     selection.elementMode = Table.ElementMode.Row
     selection.intervalMode = Table.IntervalMode.Single
+    
+    listenTo(mouse.clicks)
+    reactions += {
+      case MouseClicked(_, _, _, 2, _) => {
+        val row = selection.rows.head
+        if(row < effects.size) {
+          
+        } else {
+          addEffectDiag()
+        }
+      }
+    }
   }
   
   def addEffectDiag() = {
@@ -88,7 +100,7 @@ class EffectDialog(
       eControls.widgets.enabled = false
     }
     
-    selectedControls = effectsMap.get(key).get 
+    selectedControls = effectsMap.get(key.toString).get 
     
     selectedControls.widgets.enabled = true
     
@@ -188,19 +200,29 @@ class EffectDialog(
   )
   
   val effectsAll = effectsStatus ++ effectsStats ++ effectsOther
-  val effectsMap = Map(effectsAll.map(x => x.key->x) : _*)
+  val effectsMap = Map(effectsAll.map(x => x.key.toString->x) : _*)
+  
+  val btnGroup = new ButtonGroup(effectsAll.map(_.btn) : _*)
+  
+  // Does initialization of dialog
+  {
+    effectsMap.get(initial.key) map { ctrlGrp =>
+      ctrlGrp.setVal(initial.v)
+      selectKey(ctrlGrp.key)
+    }
+  }
   
   class ControlPage(label: String, val controls: Seq[EffectControls])
   {
     val panel = new DesignGridPanel {
       controls.foreach { eControls =>
-        row().grid().add(eControls.btn).add(eControls.widgets)
+        row().grid().add(eControls.btn).grid().add(eControls.widgets)
       }
     }
     val tabPage = new TabbedPane.Page(label, panel)
   }
   
-  val pages = Array(
+  val ctlPages = Array(
       new ControlPage("Status", effectsStatus),
       new ControlPage("Stats",  effectsStats),
       new ControlPage("Other",  effectsOther)
@@ -208,7 +230,7 @@ class EffectDialog(
   
   contents = new DesignGridPanel {
     val tabPane = new TabbedPane {
-      pages ++= pages
+      pages ++= ctlPages.map(_.tabPage)
     } 
     
     row().grid().add(tabPane)

@@ -2,6 +2,11 @@ package rpgboss.model
 
 import Constants._
 
+trait HasName {
+  def name: String
+  override def toString = name
+}
+
 /**
  * These locations are given with the top-left of the map being at (0, 0).
  * This means that the center of the tiles are actually at 0.5 intervals. 
@@ -74,16 +79,16 @@ object EquipSet {
  * @param equipFixed          "true" means the player cannot modify this slot.
  */
 case class Character(
-    defaultName: String = "", 
+    name: String = "", 
     subtitle:    String = "",
     description: String = "",
     sprite: Option[SpriteSpec] = None,
     initLevel: Int = 1, maxLevel: Int = 50,
     progressions: CharProgressions = CharProgressions(),
     startingEquipment: EquipSet = EquipSet.empty,
-    equipFixed: EquipSetBool = EquipSetBool())
+    equipFixed: EquipSetBool = EquipSetBool()) extends HasName
 
-case class Skill()
+case class Skill(name: String = "") extends HasName
 
 object CharState {
   val defaultStates = Array()
@@ -108,12 +113,12 @@ object CharState {
 case class Effect(key: String, v: Int)
 
 case class StatusEffect(
-    name: String, 
-    effects: Array[Effect],
+    name: String = "", 
+    effects: Array[Effect] = Array(),
     releaseTime: Int = -1,
     releaseChance: Int = 0,
     releaseDmgChance: Int = 0,
-    maxStacks: Int = 1)
+    maxStacks: Int = 1) extends HasName
 
 object Item {
 }
@@ -131,7 +136,7 @@ case class Item(
     
     slot: Int = EquipSlot.default.id,
     
-    icon: Option[IconSpec] = None)
+    icon: Option[IconSpec] = None) extends HasName
 
 object SpriteSpec {
   object Directions {

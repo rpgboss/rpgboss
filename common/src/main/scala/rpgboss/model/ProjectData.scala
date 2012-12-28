@@ -21,16 +21,16 @@ case class ProjectData(title: String,
                        soundCancel: String = "MenuCancel.wav",
                        soundCannot: String = "MenuCannot.wav",
                        
-                       statusEffects: Array[StatusEffect] = Array(),
+                       statusEffects: Array[StatusEffect] = 
+                         Array(StatusEffect()),
                        
-                       items: Array[Item] = Array(),
-                       equipment: Array[Item] = Array(),
+                       items: Array[Item] = Array(Item()),
+                       equipment: Array[Item] = Array(Item()),
                        
-                       skills: Array[Skill] = Array(),
+                       skills: Array[Skill] = Array(Skill()),
                        
-                       damageTypes: Array[String] = 
-                         ProjectData.defaultDamageTypes,
-                       skillTypes: Array[String] = Array()
+                       damageTypes: Array[String] = Array(""),
+                       skillTypes: Array[String] = Array("")
                        )
 
 object ProjectData {
@@ -42,6 +42,7 @@ object ProjectData {
     Character("Carona", sprite = Some(SpriteSpec("vx_chara01_a.png", 6)))
   )
   
+  /*
   def defaultDamageTypes = Array(
     "Untyped",
     
@@ -58,5 +59,5 @@ object ProjectData {
     "Death",
     "Order",
     "Chaos"
-  )
+  )*/
 }

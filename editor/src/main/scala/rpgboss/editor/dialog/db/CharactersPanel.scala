@@ -26,7 +26,7 @@ class CharactersPanel(
 {
   def panelName = "Characters"
   def newDefaultInstance() = new Character()
-  def label(character: Character) = character.defaultName
+  def label(character: Character) = character.name
   
   def editPaneForItem(idx: Int, initial: Character) = {
     var model = initial
@@ -38,8 +38,8 @@ class CharactersPanel(
     
     val leftPane = new DesignGridPanel {
       val fName = textField(
-          model.defaultName, 
-          v => updateModel(model.copy(defaultName = v)))
+          model.name, 
+          v => updateModel(model.copy(name = v)))
       val fSubtitle = textField(
           model.subtitle, 
           v => updateModel(model.copy(subtitle = v)))
