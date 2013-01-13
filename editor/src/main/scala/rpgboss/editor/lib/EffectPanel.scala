@@ -87,7 +87,7 @@ class EffectDialog(
   case class EffectControls(
       key: EffectKey.Val, 
       btn: AbstractButton, 
-      widgets: Component,
+      control: Component,
       getVal: () => Int,
       setVal: (Int) => Unit)
   
@@ -96,18 +96,20 @@ class EffectDialog(
   var selectedControls: EffectControls = null
   
   def selectKey(key: EffectKey.Val) = {
+    selectedControls = effectsMap.get(key.toString).get
+    
+    btnGroup.select(selectedControls.btn)
+    
     effectsAll.foreach { eControls =>
-      eControls.widgets.enabled = false
+      eControls.control.enabled = false
     }
     
-    selectedControls = effectsMap.get(key.toString).get 
-    
-    selectedControls.widgets.enabled = true
+    selectedControls.control.enabled = true
     
     model = model.copy(key = key.toString, v = selectedControls.getVal())
   }
   
-  def radioForKey(key: EffectKey.Val) = new RadioButton() {
+  private def newRadioForKey(key: EffectKey.Val) = new RadioButton() {
     action = Action(key.desc) { 
       selectKey(key)
     }
@@ -120,7 +122,7 @@ class EffectDialog(
   def nilEffect(key: EffectKey.Val): EffectControls = {
     EffectControls(
         key, 
-        radioForKey(key), 
+        newRadioForKey(key), 
         new BoxPanel(Orientation.Vertical),
         () => 0,
         v => Unit)
@@ -133,10 +135,22 @@ class EffectDialog(
         MAXEFFECTARG,
         onUpdate = v => onCurControlChange())
     
+    val control = new BoxPanel(Orientation.Horizontal) {
+      contents += spinner
+      contents += new Label("p") {
+        preferredSize = new Dimension(15, 15)
+      }
+      
+      override def enabled_=(b: Boolean) = {
+        super.enabled_=(b)
+        spinner.enabled = b
+      }
+    }
+    
     EffectControls(
         key, 
-        radioForKey(key), 
-        spinner,
+        newRadioForKey(key), 
+        control,
         () => spinner.getValue,
         v => spinner.setValue(v))
   }
@@ -147,14 +161,22 @@ class EffectDialog(
         -100, 
         100,
         onUpdate = v => onCurControlChange())
+    
     val control = new BoxPanel(Orientation.Horizontal) {
       contents += spinner
-      contents += new Label("%")
+      contents += new Label("%") {
+        preferredSize = new Dimension(15, 15)
+      }
+      
+      override def enabled_=(b: Boolean) = {
+        super.enabled_=(b)
+        spinner.enabled = b
+      }
     }
     
     EffectControls(
         key, 
-        radioForKey(key), 
+        newRadioForKey(key), 
         control,
         () => spinner.getValue,
         v => spinner.setValue(v))
@@ -165,7 +187,7 @@ class EffectDialog(
     
     EffectControls(
         key, 
-        radioForKey(key), 
+        newRadioForKey(key), 
         combo,
         () => combo.selection.index,
         combo.selection.index = _)
@@ -216,7 +238,9 @@ class EffectDialog(
   {
     val panel = new DesignGridPanel {
       controls.foreach { eControls =>
-        row().grid().add(eControls.btn).grid().add(eControls.widgets)
+        row()
+          .grid().add(eControls.btn)
+          .grid().add(eControls.control)
       }
     }
     val tabPage = new TabbedPane.Page(label, panel)

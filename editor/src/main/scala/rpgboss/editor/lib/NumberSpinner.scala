@@ -27,4 +27,9 @@ class NumberSpinner(
 
   def getValue = model.getNumber().intValue()
   def setValue(v: Int) = model.setValue(v)
+  
+  override def enabled_=(b: Boolean) = {
+    super.enabled_=(b)
+    spinner.setEnabled(b)
+  }
 }
