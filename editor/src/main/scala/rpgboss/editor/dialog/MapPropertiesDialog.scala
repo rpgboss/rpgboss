@@ -45,11 +45,11 @@ class MapPropertiesDialog(
  
   val fieldWidth = new NumberSpinner(
       initialMap.metadata.xSize, 
-      RpgMap.minXSize, RpgMap.maxXSize, 1)
+      RpgMap.minXSize, RpgMap.maxXSize)
   
   val fieldHeight = new NumberSpinner(
       initialMap.metadata.ySize, 
-      RpgMap.minYSize, RpgMap.maxYSize, 1)
+      RpgMap.minYSize, RpgMap.maxYSize)
   
   contents = new DesignGridPanel {
     row().grid().add(leftLabel("Map ID:"), 2)

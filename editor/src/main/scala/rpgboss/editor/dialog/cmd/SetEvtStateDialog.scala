@@ -50,7 +50,7 @@ class SetEvtStateDialog(
     new ToggledTextField(OTHERMAPEVENT, "This map", _.mapName)
   
   // Important: This dialog is one-based, whereas the actual program is 0-based
-  val fieldNewState = new NumberSpinner(initial.state, 0, 127, 1)
+  val fieldNewState = new NumberSpinner(initial.state, 0, 127)
   
   def updateFieldsState() = {
     listOfToggleFields.foreach(_.toggle())

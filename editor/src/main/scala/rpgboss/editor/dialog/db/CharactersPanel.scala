@@ -55,25 +55,17 @@ class CharactersPanel(
             updateModel(model.copy(sprite = newSprite))
           })
       
-      def numParamEdit(
-          initial: Int, 
-          mutateF: (Int) => Unit, 
-          min: Int = 0, 
-          max: Int = 100) = {
-        new NumberSpinner(initial, 0, 100, onUpdate = mutateF)
-      }
-      
-      val fInitLevel = numParamEdit(
-          model.initLevel, 
-          v => updateModel(model.copy(initLevel = v)),
+      val fInitLevel = new NumberSpinner(
+          model.initLevel,
           MINLEVEL,
-          MAXLEVEL)
+          MAXLEVEL,
+          v => updateModel(model.copy(initLevel = v)))
         
-      val fMaxLevel = numParamEdit(
+      val fMaxLevel = new NumberSpinner(
           model.maxLevel, 
-          v => updateModel(model.copy(maxLevel = v)),
           MINLEVEL,
-          MAXLEVEL)
+          MAXLEVEL,
+          v => updateModel(model.copy(maxLevel = v)))
       
       row().grid(leftLabel("Default name:")).add(fName)
       

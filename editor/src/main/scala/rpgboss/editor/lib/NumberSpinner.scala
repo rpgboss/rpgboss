@@ -10,8 +10,8 @@ class NumberSpinner(
     initial: Int, 
     min: Int, 
     max: Int, 
-    step: Int = 1,
-    onUpdate: ((Int) => Unit) = (v) => {}) 
+    onUpdate: ((Int) => Unit) = (v) => {},
+    step: Int = 1) 
   extends BoxPanel(Orientation.Horizontal)
 {
   val model = new SpinnerNumberModel(initial, min, max, step)

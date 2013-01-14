@@ -115,7 +115,8 @@ case class Effect(key: String, v: Int)
 case class StatusEffect(
     name: String = "", 
     effects: Array[Effect] = Array(),
-    releaseTime: Int = -1,
+    releaseOnBattleEnd: Boolean = false,
+    releaseTime: Int = 0,
     releaseChance: Int = 0,
     releaseDmgChance: Int = 0,
     maxStacks: Int = 1) extends HasName

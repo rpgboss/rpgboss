@@ -46,7 +46,7 @@ class SystemPanel(
     updateModel(model.copy(msgfont = v))
   })
   
-  val fFontsize = new NumberSpinner(model.fontsize, 12, 48, 1, onUpdate = { v =>
+  val fFontsize = new NumberSpinner(model.fontsize, 12, 48, onUpdate = { v =>
     updateModel(model.copy(fontsize = v))
   })
   

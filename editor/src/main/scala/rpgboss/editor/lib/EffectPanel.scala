@@ -21,9 +21,9 @@ class EffectPanel(
 {
   border = BorderFactory.createTitledBorder("Effects")
   
-  val effects = initial
+  var effects = initial
   val table = new Table() {
-    model = new AbstractTableModel() {
+    val tableModel = new AbstractTableModel() {
       val colNames = Array("Description", "Key", "Value")
       
       def getRowCount() = effects.size + 1 // last element blank for adding
@@ -34,7 +34,7 @@ class EffectPanel(
         if(row < effects.size) {
           val eff = effects(row)
           col match {
-            case 0 => ""
+            case 0 => EffectKey.withName(eff.key).desc
             case 1 => eff.key
             case 2 => eff.v.toString
           }
@@ -46,6 +46,8 @@ class EffectPanel(
       override def isCellEditable(r: Int, c: Int) = false
     }
     
+    model = tableModel 
+    
     selection.elementMode = Table.ElementMode.Row
     selection.intervalMode = Table.IntervalMode.Single
     
@@ -54,22 +56,36 @@ class EffectPanel(
       case MouseClicked(_, _, _, 2, _) => {
         val row = selection.rows.head
         if(row < effects.size) {
+          val initialE = effects(row)
+          
+          val diag = new EffectDialog(
+              owner,
+              dbDiag,
+              initialE,
+              e => {
+                effects.update(row, e)
+                onUpdate(effects)
+                tableModel.fireTableRowsUpdated(row, row)
+              }
+          )
+          diag.open()
           
         } else {
-          addEffectDiag()
+          val diag = new EffectDialog(
+              owner,
+              dbDiag,
+              EffectKey.defaultEffect,
+              e => {
+                effects = effects ++ Array(e) 
+                onUpdate(effects)
+                tableModel.fireTableRowsUpdated(row, row)
+                tableModel.fireTableRowsInserted(row+1, row+1)
+              }
+          )
+          diag.open()
         }
       }
     }
-  }
-  
-  def addEffectDiag() = {
-    val diag = new EffectDialog(
-        owner,
-        dbDiag,
-        EffectKey.defaultEffect,
-        e => Unit
-    )
-    diag.open()
   }
   
   contents += new ScrollPane {
@@ -229,8 +245,8 @@ class EffectDialog(
   // Does initialization of dialog
   {
     effectsMap.get(initial.key) map { ctrlGrp =>
-      ctrlGrp.setVal(initial.v)
       selectKey(ctrlGrp.key)
+      ctrlGrp.setVal(initial.v)
     }
   }
   
@@ -271,7 +287,7 @@ class EffectDialog(
 object EffectKey extends RpgEnum {
   case class Val(desc: String) extends super.Val
   
-  implicit def valueToVal(x: Value) = x.asInstanceOf[Val]
+  implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
   
   val RecoverHpAdd = Val("Recover HP")
   val RecoverHpMul = Val("Recover percentage of HP")

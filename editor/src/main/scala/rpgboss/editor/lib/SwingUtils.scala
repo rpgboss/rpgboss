@@ -11,6 +11,15 @@ object SwingUtils {
     xAlignment = Alignment.Left
   }
   
+  def boolField(initial: Boolean, onUpdate: Boolean => Unit, text: String = "") =
+    new CheckBox(text) {
+      selected = initial
+      
+      reactions += {
+        case ButtonClicked(_) => onUpdate(selected)
+      }
+    }
+  
   def textField(initial: String, onUpdate: String => Unit) = 
     new TextField {
       text = initial
@@ -24,8 +33,9 @@ object SwingUtils {
     new ComboBox(choices) {
       selection.index = initial
       
-      renderer = ArrayEditingPanel.idxRenderer({ case (a, idx) =>
-        "%d: %s".format(idx, a.toString)
+      renderer = ListView.Renderer(choice => {
+        val idx = choices.indexOf(choice)
+        "%d: %s".format(idx, choice.toString())
       })
       
       reactions += {

@@ -54,7 +54,7 @@ abstract class ArrayEditingPanel[T](
   }
   
   def updatePreserveSelection(idx: Int, newVal: T) = {
-    deafTo(listView.selection)
+    listView.deafTo(listView.selection)
     
     val newData = listView.listData.updated(idx, newVal)
     
@@ -66,10 +66,13 @@ abstract class ArrayEditingPanel[T](
       listView.selectIndices(oldSelection)
     }
     
-    listenTo(listView.selection)
+    listView.listenTo(listView.selection)
+    onListDataUpdate()
   }
   
-  def onListDataUpdate() = {}
+  def onListDataUpdate() = {
+    logger.info("Empty list update call")
+  }
   
   def normalizedInitialAry = 
     if(initialAry.size > maxElems)
@@ -83,6 +86,25 @@ abstract class ArrayEditingPanel[T](
     renderer = ArrayEditingPanel.idxRenderer({ case (a, idx) =>
       "%d: %s".format(idx, label(a))
     })
+    
+    listenTo(selection)
+    reactions += {
+      case ListSelectionChanged(_, _, _) =>
+        editPaneContainer.contents.clear()
+        
+        if(selection.indices.isEmpty) {
+          editPaneContainer.contents += editPaneEmpty
+        } else {
+          val editPane = editPaneForItem(
+              selection.indices.head,
+              selection.items.head)
+          
+          editPaneContainer.contents += editPane
+        }
+        
+        editPaneContainer.revalidate()
+        editPaneContainer.repaint()
+    }
   }
   
   val btnSetListSize = new Button(Action("Set array size...") {
@@ -103,30 +125,10 @@ abstract class ArrayEditingPanel[T](
               // If selection was bigger than the size, select the last one
               listView.selectIndices(math.min(oldSelection, newSize-1))
             }
+            onListDataUpdate()
           })
     diag.open()
   })
-  
-  listenTo(listView.selection)
-  reactions += {
-    case ListSelectionChanged(`listView`, _, _) =>
-      editPaneContainer.contents.clear()
-      
-      if(listView.selection.indices.isEmpty) {
-        editPaneContainer.contents += editPaneEmpty
-      } else {
-        val editPane = editPaneForItem(
-            listView.selection.indices.head,
-            listView.selection.items.head)
-        
-        editPaneContainer.contents += editPane
-      }
-      
-      editPaneContainer.revalidate()
-      editPaneContainer.repaint()
-    case ListChanged(`listView`) =>
-      onListDataUpdate()
-  }
   
   editPaneContainer.contents += editPaneEmpty
 }
