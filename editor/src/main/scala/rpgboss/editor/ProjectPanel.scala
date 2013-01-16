@@ -1,13 +1,14 @@
 package rpgboss.editor
 
 import rpgboss.editor.lib._
+import scala.collection.JavaConversions._
 import rpgboss.editor.tileset._
-
 import scala.swing._
 import scala.swing.event._
-
 import rpgboss.model._
 import rpgboss.model.resource._
+import com.badlogic.gdx.LifecycleListener
+import org.lwjgl.opengl.Display
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -46,10 +47,33 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     })
     contents += new Button(Action("Play...") {
       if(sm.askSaveUnchanged(this)) {
-        concurrent.ops.spawn({
-          val projPath = sm.getProj.dir.getCanonicalPath()
-          rpgboss.player.Main.main(Array(projPath))
-        })
+        val separator = System.getProperty("file.separator")
+        
+        val classpath = 
+          List("java.class.path", "java.boot.class.path", "sun.boot.class.path")
+            .map(s => System.getProperty(s, "")).mkString(":")
+        
+        println(classpath)
+        
+        val javaPath = 
+          System.getProperty("java.home") + 
+          separator + 
+          "bin" + 
+          separator + 
+          "java";
+        
+        val projPath = sm.getProj.dir.getCanonicalPath()
+        
+        val processBuilder = 
+                      new ProcessBuilder(javaPath, "-cp", 
+                      classpath,
+                      "rpgboss.player.PlayerDesktop",
+                      projPath)
+        
+        println(processBuilder.command().mkString(" "))
+        val process = processBuilder.start();
+        process.waitFor();
+        
       }
     })
   }
