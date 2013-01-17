@@ -128,14 +128,16 @@ case class Item(
     name: String = "",
     desc: String = "",
     effects: Array[Effect] = Array(),
+    
+    sellable: Boolean = true,
     price: Int = 100,
     
-    itemType: Int = ItemType.Consumable.id,
-    
-    scopeId: Int = Scope.default.id,
-    accessId: Int = ItemAccessibility.default.id,
+    itemType: Int = ItemType.default.id,
     
     slot: Int = EquipSlot.default.id,
+    
+    accessId: Int = ItemAccessibility.default.id,
+    scopeId: Int = Scope.default.id,
     
     icon: Option[IconSpec] = None) extends HasName
 

@@ -25,7 +25,6 @@ case class ProjectData(title: String,
                          Array(StatusEffect()),
                        
                        items: Array[Item] = Array(Item()),
-                       equipment: Array[Item] = Array(Item()),
                        
                        skills: Array[Skill] = Array(Skill()),
                        

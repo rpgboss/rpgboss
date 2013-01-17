@@ -19,12 +19,11 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   
   val charPane   = new CharactersPanel(owner, sm, this)
   val itemsPane  = new ItemsPanel(owner, sm, this)
-  val equipPane  = new EquipmentPanel(owner, sm, this)
   val statusPane = new StatusPanel(owner, sm, this)
   val sysPane    = new SystemPanel(owner, sm, this)
   val enumPane   = new EnumerationsPanel(owner, sm, this) 
   
-  val panels = List(charPane, itemsPane, equipPane, statusPane, sysPane, enumPane)
+  val panels = List(charPane, itemsPane, statusPane, sysPane, enumPane)
   
   def applyFunc() = {
     val newProj = sm.getProj.copy(data = model)

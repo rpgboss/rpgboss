@@ -21,7 +21,7 @@ class ItemsPanel(
   extends RightPaneArrayEditingPanel(owner, "Items", dbDiag.model.items)
   with DatabasePanel
 {
-  def panelName = "Items"
+  def panelName = "Items/Equipment"
   def newDefaultInstance() = new Item()
   def label(item: Item) = item.name
   
@@ -41,6 +41,12 @@ class ItemsPanel(
         val fDesc =
           textField(model.desc, v => updateModel(model.copy(desc = v)))
         
+        val fSellable: CheckBox = 
+          boolField(model.sellable, v => {
+            updateModel(model.copy(sellable = v))
+            setEnabledFields()
+          })
+        
         val fPrice = new NumberSpinner(
             model.price, 
             MINPRICE, 
@@ -49,8 +55,14 @@ class ItemsPanel(
         
         val fItemType = enumCombo(ItemType)(
             model.itemType,
-            v => updateModel(model.copy(itemType = v.id)),
-            Array(ItemType.Consumable, ItemType.Rare)) 
+            v => {
+              updateModel(model.copy(itemType = v.id))
+              setEnabledFields()
+            })
+        
+        val fEquipSlot = enumCombo(EquipSlot)(
+            model.slot,
+            v => updateModel(model.copy(slot = v.id)))
         
         val fScope = enumCombo(Scope)(
             model.scopeId,
@@ -60,11 +72,25 @@ class ItemsPanel(
             model.accessId,
             v => updateModel(model.copy(accessId = v.id)))
         
+        def setEnabledFields() = {
+          fPrice.enabled = fSellable.selected
+          
+          fEquipSlot.enabled = model.itemType == ItemType.Equipment.id
+          fScope.enabled     = model.itemType != ItemType.Equipment.id
+          fAccess.enabled    = model.itemType != ItemType.Equipment.id
+        }
+        
+        setEnabledFields()
+            
         row().grid(lbl("Name:")).add(fName)
         row().grid(lbl("Description:")).add(fDesc)
         row()
+          .grid(lbl("Sellable:")).add(fSellable)
           .grid(lbl("Price:")).add(fPrice)
+        
+        row()
           .grid(lbl("Item type:")).add(fItemType)
+          .grid(lbl("Equip slot:")).add(fEquipSlot)
         
         row()
           .grid(lbl("Effect scope:")).add(fScope)

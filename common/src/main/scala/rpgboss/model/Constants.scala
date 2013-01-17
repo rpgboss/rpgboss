@@ -72,7 +72,8 @@ object Constants {
   }
   
   object ItemType extends RpgEnum {
-    val Consumable, Rare, Equipment = Value
+    val Consumable, Reusable, Equipment = Value
+    val KeyItem = Value("Key item")
     
     def default = Consumable
   }

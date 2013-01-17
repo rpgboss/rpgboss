@@ -53,6 +53,7 @@ object SwingUtils {
     
     new ComboBox(actualChoices) {
       selection.item = enum(initialId)
+      listenTo(selection)
       reactions += {
         case SelectionChanged(_) => onUpdate(selection.item)
       }
