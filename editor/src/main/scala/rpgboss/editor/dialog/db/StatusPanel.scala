@@ -18,7 +18,7 @@ class StatusPanel(
     owner: Window, 
     sm: StateMaster, 
     val dbDiag: DatabaseDialog) 
-  extends RightPaneArrayEditingPanel(
+  extends RightPaneArrayDatabasePanel(
       owner, 
       "Status Effects", 
       dbDiag.model.statusEffects)

@@ -10,6 +10,8 @@ case class ProjectData(title: String,
                        characters: Array[Character] = 
                          ProjectData.defaultCharacters,
                        
+                       classes: Array[CharClass] = Array(CharClass()),
+                       
                        titlePic: String = "LordSpirit.jpg",
                        startingParty: Array[Int] = Array(0),
                        
@@ -28,8 +30,8 @@ case class ProjectData(title: String,
                        
                        skills: Array[Skill] = Array(Skill()),
                        
-                       damageTypes: Array[String] = Array(""),
-                       skillTypes: Array[String] = Array("")
+                       elements: Array[String] = Array(""),
+                       equipSubtypes: Array[String] = Array("")
                        )
 
 object ProjectData {

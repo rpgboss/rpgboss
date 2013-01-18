@@ -79,14 +79,20 @@ object EquipSet {
  * @param equipFixed          "true" means the player cannot modify this slot.
  */
 case class Character(
-    name: String = "", 
-    subtitle:    String = "",
-    description: String = "",
-    sprite: Option[SpriteSpec] = None,
-    initLevel: Int = 1, maxLevel: Int = 50,
-    progressions: CharProgressions = CharProgressions(),
-    startingEquipment: EquipSet = EquipSet.empty,
-    equipFixed: EquipSetBool = EquipSetBool()) extends HasName
+    var name: String = "", 
+    var subtitle:    String = "",
+    var description: String = "",
+    var sprite: Option[SpriteSpec] = None,
+    var initLevel: Int = 1, var maxLevel: Int = 50,
+    var charClass: Int = 0,
+    var progressions: CharProgressions = CharProgressions(),
+    var startingEquipment: EquipSet = EquipSet.empty,
+    var equipFixed: EquipSetBool = EquipSetBool()) extends HasName
+    
+case class CharClass(
+    var name: String = "",
+    var canUseEquipSubtypes: Array[Int] = Array(),
+    var effects: Array[Effect] = Array()) extends HasName
 
 case class Skill(name: String = "") extends HasName
 
@@ -135,6 +141,7 @@ case class Item(
     itemType: Int = ItemType.default.id,
     
     slot: Int = EquipSlot.default.id,
+    equipSubtype: Int = 0,
     
     accessId: Int = ItemAccessibility.default.id,
     scopeId: Int = Scope.default.id,

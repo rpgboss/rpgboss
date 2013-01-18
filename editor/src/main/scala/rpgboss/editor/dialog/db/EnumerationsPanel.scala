@@ -20,32 +20,32 @@ class EnumerationsPanel(
   def panelName = "Enumerations"
   layout.labelAlignment(LabelAlignment.RIGHT)
   
-  val fDamageTypes =
+  val fElements =
     new StringArrayEditingPanel(
         owner,
-        "Damage types",
-        dbDiag.model.damageTypes) {
+        "Elements",
+        dbDiag.model.elements) {
     
     override def onListDataUpdate() = {
-      logger.info("Damage types updated")
+      logger.info("Elements updated")
       dbDiag.model = dbDiag.model.copy(
-          damageTypes = array
+          elements = array
       )
     }
   }
   
-  val fSkillTypes = 
+  val fEquipSubtypes = 
     new StringArrayEditingPanel(
         owner,
-        "Skill types",
-        dbDiag.model.skillTypes) {
+        "Equipment subtypes",
+        dbDiag.model.equipSubtypes) {
     override def onListDataUpdate() = {
       logger.info("Skill types updated")
       dbDiag.model = dbDiag.model.copy(
-          skillTypes = array
+          equipSubtypes = array
       )
     }
   }
   
-  row.grid().add(fDamageTypes).add(fSkillTypes)
+  row.grid().add(fElements).add(fEquipSubtypes)
 }

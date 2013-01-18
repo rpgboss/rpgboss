@@ -18,54 +18,52 @@ class CharactersPanel(
     owner: Window, 
     sm: StateMaster, 
     val dbDiag: DatabaseDialog) 
-  extends RightPaneArrayEditingPanel(
+  extends RightPaneArrayDatabasePanel(
       owner, 
       "Characters", 
       dbDiag.model.characters)
-  with DatabasePanel
 {
   def panelName = "Characters"
   def newDefaultInstance() = new Character()
   def label(character: Character) = character.name
   
-  def editPaneForItem(idx: Int, initial: Character) = {
-    var model = initial
-      
-    def updateModel(newModel: Character) = {
-      model = newModel
-      updatePreserveSelection(idx, model)
-    }
-    
-    val leftPane = new DesignGridPanel {
+  def editPaneForItem(idx: Int, model: Character) = {
+    val bioFields = new DesignGridPanel {
       val fName = textField(
           model.name, 
-          v => updateModel(model.copy(name = v)))
+          v => {
+            model.name = v
+            refreshModel()
+          })
       val fSubtitle = textField(
           model.subtitle, 
-          v => updateModel(model.copy(subtitle = v)))
+          model.subtitle = _)
       val fDescription = textField(
           model.description, 
-          v => updateModel(model.copy(description = v)))
+          model.description = _)
       
       val fSprite = new SpriteBox(
           owner,
           sm,
           model.sprite,
-          (newSprite) => {
-            updateModel(model.copy(sprite = newSprite))
-          })
+          model.sprite = _)
+      
+      val fClass = indexedCombo(
+          dbDiag.model.classes, 
+          model.charClass,
+          model.charClass = _)
       
       val fInitLevel = new NumberSpinner(
           model.initLevel,
           MINLEVEL,
           MAXLEVEL,
-          v => updateModel(model.copy(initLevel = v)))
+          model.initLevel = _)
         
       val fMaxLevel = new NumberSpinner(
           model.maxLevel, 
           MINLEVEL,
           MAXLEVEL,
-          v => updateModel(model.copy(maxLevel = v)))
+          model.maxLevel = _)
       
       row().grid(leftLabel("Default name:")).add(fName)
       
@@ -76,17 +74,19 @@ class CharactersPanel(
       row().grid(leftLabel("Sprite:")).add(fSprite)
       
       row()
+        .grid(leftLabel("Class:")).add(fClass)
+      
+      row()
         .grid(leftLabel("Initial level:")).add(fInitLevel)
         .grid(leftLabel("Max level:")).add(fMaxLevel)
     }
     
-    val rightPane = new CharProgressionPanel(model.progressions, p => {
-      updateModel(model.copy(progressions = p))
-    })
+    val progressionFields = 
+      new CharProgressionPanel(model.progressions, model.progressions = _)
     
     new BoxPanel(Orientation.Horizontal) {
-      contents += leftPane
-      contents += rightPane
+      contents += bioFields
+      contents += progressionFields
     }
   }
   

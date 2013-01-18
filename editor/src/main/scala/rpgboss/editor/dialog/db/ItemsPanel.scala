@@ -18,7 +18,7 @@ class ItemsPanel(
     owner: Window, 
     sm: StateMaster, 
     val dbDiag: DatabaseDialog) 
-  extends RightPaneArrayEditingPanel(owner, "Items", dbDiag.model.items)
+  extends RightPaneArrayDatabasePanel(owner, "Items", dbDiag.model.items)
   with DatabasePanel
 {
   def panelName = "Items/Equipment"
@@ -64,6 +64,11 @@ class ItemsPanel(
             model.slot,
             v => updateModel(model.copy(slot = v.id)))
         
+        val fEquipSubtype = indexedCombo(
+            dbDiag.model.equipSubtypes, 
+            model.equipSubtype,
+            v => updateModel(model.copy(equipSubtype = v)))
+        
         val fScope = enumCombo(Scope)(
             model.scopeId,
             v => updateModel(model.copy(scopeId = v.id)))
@@ -75,9 +80,10 @@ class ItemsPanel(
         def setEnabledFields() = {
           fPrice.enabled = fSellable.selected
           
-          fEquipSlot.enabled = model.itemType == ItemType.Equipment.id
-          fScope.enabled     = model.itemType != ItemType.Equipment.id
-          fAccess.enabled    = model.itemType != ItemType.Equipment.id
+          fEquipSlot.enabled    = model.itemType == ItemType.Equipment.id
+          fEquipSubtype.enabled = model.itemType == ItemType.Equipment.id
+          fScope.enabled        = model.itemType != ItemType.Equipment.id
+          fAccess.enabled       = model.itemType != ItemType.Equipment.id
         }
         
         setEnabledFields()
@@ -90,7 +96,10 @@ class ItemsPanel(
         
         row()
           .grid(lbl("Item type:")).add(fItemType)
+          
+        row()
           .grid(lbl("Equip slot:")).add(fEquipSlot)
+          .grid(lbl("Equip subtype:")).add(fEquipSubtype)
         
         row()
           .grid(lbl("Effect scope:")).add(fScope)

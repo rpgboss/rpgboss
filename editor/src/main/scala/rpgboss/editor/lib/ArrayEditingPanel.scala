@@ -7,8 +7,9 @@ import rpgboss.editor.dialog._
 import javax.swing.BorderFactory
 import com.weiglewilczek.slf4s.Logging
 import java.awt.{Font, Color}
+import javax.swing.AbstractListModel
 
-object ArrayEditingPanel {
+object ArrayUtils {
   import ListView._
   
   // Renders the item with the index passed in
@@ -22,6 +23,32 @@ object ArrayEditingPanel {
 	      index: Int): Component =
         renderer.componentFor(list, isSelected, focused, f(a, index), index)
     }
+  
+  def resized[T](
+      a: Seq[T], 
+      newSize: Int, 
+      newDefaultInstance: () => T)(implicit m: Manifest[T]) = {
+    val oldSize = a.size
+    
+    if(newSize > oldSize) {
+      val padder = Array.fill(newSize-oldSize){ newDefaultInstance() }
+      a ++ padder
+    } else if(newSize < oldSize){
+      a.take(newSize)
+    } else a
+  }
+  
+  def normalizedAry[T](
+      a: Array[T], 
+      minElems: Int, 
+      maxElems: Int,
+      newDefaultInstance: () => T)(implicit m: Manifest[T]) = 
+    if(a.size > maxElems)
+      resized(a, maxElems, newDefaultInstance).toArray
+    else if(a.size < minElems)
+      resized(a, minElems, newDefaultInstance).toArray
+    else
+      a
 }
 
 abstract class ArrayEditingPanel[T](
@@ -42,21 +69,14 @@ abstract class ArrayEditingPanel[T](
   
   def array = listView.listData.toArray
   
-  def resized(a: Seq[T], newSize: Int) = {
-    val oldSize = a.size
-    
-    if(newSize > oldSize) {
-      val padder = Array.fill(newSize-oldSize){ newDefaultInstance() }
-      a ++ padder
-    } else if(newSize < oldSize){
-      a.take(newSize)
-    } else a
-  }
+  // Just refresh the label of the item on the list
+  def refreshModel() = updatePreserveSelection(listView.listData)
   
-  def updatePreserveSelection(idx: Int, newVal: T) = {
+  def updatePreserveSelection(idx: Int, newVal: T): Unit =
+    updatePreserveSelection(listView.listData.updated(idx, newVal))
+  
+  def updatePreserveSelection(newData: Seq[T]) = {
     listView.deafTo(listView.selection)
-    
-    val newData = listView.listData.updated(idx, newVal)
     
     if(listView.selection.indices.isEmpty) {
       listView.listData = newData
@@ -74,16 +94,15 @@ abstract class ArrayEditingPanel[T](
     logger.info("Empty list update call")
   }
   
+  def resized(a: Seq[T], newSize: Int) = 
+    ArrayUtils.resized(a, newSize, newDefaultInstance _)
+  
   def normalizedInitialAry = 
-    if(initialAry.size > maxElems)
-      resized(initialAry, maxElems).toArray
-    else if(initialAry.size < minElems)
-      resized(initialAry, minElems).toArray
-    else
-      initialAry
+    ArrayUtils.normalizedAry(
+        initialAry, minElems, maxElems, newDefaultInstance _)
   
   val listView = new ListView(normalizedInitialAry) {
-    renderer = ArrayEditingPanel.idxRenderer({ case (a, idx) =>
+    renderer = ArrayUtils.idxRenderer({ case (a, idx) =>
       "%d: %s".format(idx, label(a))
     })
     
@@ -181,10 +200,14 @@ class StringArrayEditingPanel(
     text = "Select an item to edit"
   }
   
+  val scrollPane = new ScrollPane {
+    contents = listView
+  }
+  
   border = BorderFactory.createTitledBorder(label)
   
   row().grid().add(editPaneContainer)
-  row().grid().add(listView)
+  row().grid().add(scrollPane)
   row().grid().add(btnSetListSize)
 }
 
@@ -207,10 +230,14 @@ abstract class RightPaneArrayEditingPanel[T](
     foreground = Color.WHITE
   } 
   
+  val scrollPane = new ScrollPane {
+    contents = listView
+  }
+  
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
       row().grid().add(bigLbl)
-      row().grid().add(listView)
+      row().grid().add(scrollPane)
       row().grid().add(btnSetListSize)
     }
     
