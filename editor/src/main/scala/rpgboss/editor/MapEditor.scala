@@ -281,17 +281,24 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
       val tool = MapViewToolsEnum.getTool(selectedTool)
       
       setTilePaintSq(tool.selectionSqOnDrag, x0, y0)
-      repaintRegion(
-          tool.onMousePressed(vs, tCodes, selectedLayer, x0.toInt, y0.toInt))
+      val changedRegion =
+        tool.onMouseDown(vs, tCodes, selectedLayer, x0.toInt, y0.toInt)
+      repaintRegion(changedRegion)
       
       def onDrag(x1: Float, y1: Float, vs: MapViewState) = {
         setTilePaintSq(tool.selectionSqOnDrag, x1, y1)
-        repaintRegion(
-            tool.onMouseDragged(vs, tCodes, selectedLayer, 
-                x0.toInt, y0.toInt, x1.toInt, y1.toInt))
+        val changedRegion =
+          tool.onMouseDragged(vs, tCodes, selectedLayer, 
+                x0.toInt, y0.toInt, x1.toInt, y1.toInt)
+        repaintRegion(changedRegion)
       }
       
       def onDragStop(x2: Float, y2: Float, vs: MapViewState) = {
+        val changedRegion =
+          tool.onMouseUp(vs, tCodes, selectedLayer, 
+                x0.toInt, y0.toInt, x2.toInt, y2.toInt)
+        repaintRegion(changedRegion)
+        
         vs.commit()
             
         setTilePaintSq(true, x2, y2)

@@ -64,6 +64,15 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
         midLayer = newLayers(1), 
         topLayer = newLayers(2))
   }
+    
+  def deepcopy() = {
+    copy(
+        botLayer = botLayer.map(_.clone()),
+        midLayer = midLayer.map(_.clone()),
+        topLayer = midLayer.map(_.clone()),
+        events = events.clone()
+    )
+  }
 }
 
 // Actually jsonable case class

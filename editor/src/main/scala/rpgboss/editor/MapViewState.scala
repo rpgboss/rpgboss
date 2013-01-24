@@ -44,14 +44,14 @@ class MapViewState(val sm: StateMaster, val mapName: String)
   val tileCache = new MapTileCache(sm.assetCache, map)
   
   // Map data in editing, for example while mouse is down.
-  // Need to be able to get the previous map data from the undo stack
   // Think of this as the working copy
-  var nextMapData = sm.getMapData(mapName)
+  // We can undo to a previous state
+  var nextMapData = sm.getMapData(mapName).deepcopy()
   
   var inTransaction = false
   
   // Initialize the prevStates list with the initial state
-  prevStates = List(nextMapData)
+  prevStates = List(nextMapData.deepcopy())
   
   def begin() = {
     if(inTransaction) {
@@ -70,6 +70,7 @@ class MapViewState(val sm: StateMaster, val mapName: String)
   def commit() = {
     if(inTransaction) {
       prevStates = (nextMapData :: prevStates).take(10)
+      nextMapData = nextMapData.deepcopy()
       sm.setMapData(mapName, nextMapData)
       inTransaction = false
     } else {

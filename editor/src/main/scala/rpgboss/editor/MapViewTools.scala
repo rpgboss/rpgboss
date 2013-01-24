@@ -15,13 +15,17 @@ import java.awt.Rectangle
 trait MapViewTool {
   def name: String
   override def toString = name
-  def onMousePressed(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
-                     layer: MapLayers.Value,
-                     x1: Int, y1: Int) : TileRect
+  def onMouseDown(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                  layer: MapLayers.Value,
+                  x1: Int, y1: Int) : TileRect
   // x1, y1 are init press coords; x2, y2 are where mouse has been dragged 
   def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
                      layer: MapLayers.Value,
                      x1: Int, y1: Int, x2: Int, y2: Int) : TileRect
+   
+  def onMouseUp(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                layer: MapLayers.Value,
+                x1: Int, y1: Int, x2: Int, y2: Int): TileRect = TileRect.empty
   
   def selectionSqOnDrag: Boolean = true
 }
@@ -154,7 +158,7 @@ object MapViewTools {
   
   case object Pencil extends MapViewTool {
     val name = "Pencil"
-    def onMousePressed(
+    def onMouseDown(
         vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
         layer: MapLayers.Value,
         x1: Int, y1: Int) = {
@@ -189,22 +193,109 @@ object MapViewTools {
     def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
                        layer: MapLayers.Value,
                        x1: Int, y1: Int, x2: Int, y2: Int) = {
-      onMousePressed(vs, tCodes, layer, x2, y2) // no difference
+      onMouseDown(vs, tCodes, layer, x2, y2) // no difference
+    }
+  }
+  
+  trait RectLikeTool extends MapViewTool {
+    var origLayerBuf : Array[Array[Byte]] = null
+    
+    def doPaint(
+        vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
+        layerAry: Array[Array[Byte]],
+        x1: Int, y1: Int, x2: Int, y2: Int): TileRect
+    
+    def onMouseDown(
+        vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
+        layer: MapLayers.Value,
+        x1: Int, y1: Int) = {
+      import MapLayers._
+      
+      mapOfArrays(vs.nextMapData).get(layer).map { layerAry =>
+        // Stash the original tile layer
+        origLayerBuf = layerAry.map(_.clone())
+        
+        doPaint(vs, tCodes, layerAry, x1, y1, x1, y1)
+      } getOrElse {
+        TileRect.empty
+      }
+    }
+    
+    def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                       layer: MapLayers.Value,
+                       x1: Int, y1: Int, x2: Int, y2: Int) = {
+      import MapLayers._
+      
+      mapOfArrays(vs.nextMapData).get(layer).map { layerAry =>
+        // restore original layer to nextMapData
+        for(i <- 0 until layerAry.size) {
+          layerAry.update(i, origLayerBuf(i).clone())
+        }
+        
+        doPaint(vs, tCodes, layerAry, x1, y1, x2, y2)
+      } getOrElse {
+        TileRect.empty
+      }
+    }
+  }
+  
+  case object Rectangle extends RectLikeTool {
+    val name = "Rectangle"
+    
+    def doPaint(
+        vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
+        layerAry: Array[Array[Byte]],
+        x1: Int, y1: Int, x2: Int, y2: Int): TileRect = 
+    {
+      println("Modified tiles: (%d, %d) to (%d, %d)".format(x1, y1, x2, y2))
+      
+      import math._
+      val xMin = min(x1, x2)
+      val xMax = max(x1, x2)
+      val yMin = min(y1, y2)
+      val yMax = max(y1, y2)
+      
+      val w = xMax - xMin + 1
+      val h = yMax - yMin + 1
+      
+      for(xi <- 0 until w; yi <- 0 until h) {
+        val x = xMin + xi
+        val y = yMin + yi
+        
+        val tCodeY = yi%tCodes.length
+        val tCodeX = xi%tCodes.head.length
+        
+        val tCode = tCodes(tCodeY)(tCodeX)
+        
+        for(j <- 0 until bytesPerTile) {
+          layerAry(y).update(x*bytesPerTile+j, tCode(j)) 
+        }
+      }
+      
+      val directlyEditedRect = 
+        TileRect(xMin, yMin, w, h)
+      
+      val autotileRect =
+        setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry, 
+                         xMin, yMin, xMax, yMax)
+      
+      directlyEditedRect|autotileRect
     }
   }
 }
 
 object MapViewToolsEnum extends RpgEnum {
-  val Pencil = Value
+  val Pencil, Rectangle = Value
   
   val toolMap = Map(
-      Pencil->MapViewTools.Pencil
+      Pencil->MapViewTools.Pencil,
+      Rectangle->MapViewTools.Rectangle
   )
   
   def getTool(value: Value) = {
     toolMap.get(value).get
   }
-  val valueList = List(Pencil)
+  val valueList = List(Pencil, Rectangle)
   
   def default = Pencil
 }
