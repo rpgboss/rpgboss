@@ -79,7 +79,10 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   }
   
   val sidePane = 
-    new SplitPane(Orientation.Horizontal, tileSelector, mapSelector)
+    new SplitPane(Orientation.Horizontal, tileSelector, mapSelector) 
+  {
+    resizeWeight = 1.0
+  }
   
   layout(mapView)  = BorderPanel.Position.Center
   layout(sidePane) = BorderPanel.Position.West

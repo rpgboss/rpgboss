@@ -21,6 +21,9 @@ import rpgboss.editor.dialog.EventDialog
 import java.awt.image.BufferedImage
 import scala.collection.mutable.Buffer
 import javax.swing.event._
+import javax.swing.KeyStroke
+import java.awt.event.KeyEvent
+import java.awt.event.InputEvent
 
 class MapEditor(
     projectPanel: ProjectPanel, 
@@ -64,6 +67,40 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
   //--- BUTTONS ---//
   val layersBtns = enumButtons(MapLayers)(selectedLayer, selectLayer _)
   val toolsBtns = enumButtons(MapViewToolsEnum)(selectedTool, selectedTool = _)
+  
+  val undoAction = new Action("Undo") {
+    enabled = false
+    
+    def refreshEnabled(vs: MapViewState) = {
+      enabled = vs.canUndo()
+    }
+    
+    def apply() = {
+      viewStateOpt.map(vs => {
+        logger.info("Undo called")
+        vs.undo()
+        refreshEnabled(vs)
+        repaintAll()
+      })
+    }
+  }
+  
+  // Defined so we know to update the state of the undo action
+  def commitVS(vs: MapViewState) = {
+    vs.commit()
+    undoAction.refreshEnabled(vs)
+  }
+  
+  toolbar.contents += new Button(undoAction) {   
+    val a = 
+      KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK)
+    
+    peer
+      .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+      .put(a, "UndoAction")
+    peer
+      .getActionMap.put("UndoAction", undoAction.peer)
+  }
   
   addBtnsAsGrp(toolbar.contents, layersBtns)
   addBtnsAsGrp(toolbar.contents, toolsBtns)
@@ -181,7 +218,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
           else
             vs.nextMapData.events.update(selectedEvtIdx.get, e)
           
-          vs.commit()
+          commitVS(vs)
           repaintRegion(TileRect(e.x.toInt, e.y.toInt))
         },
         onCancel = { e: RpgEvent =>
@@ -206,7 +243,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
         newEvents.update(i-1, oldEvents(i))
       }
       vs.nextMapData = vs.nextMapData.copy(events = newEvents)
-      vs.commit()
+      commitVS(vs)
 
       // Repaint deleted event region
       repaintRegion(canvasPanel.cursorSquare)
@@ -264,7 +301,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
             }
             
             def onDragStop(x2: Float, y2: Float, vs: MapViewState) = {
-              vs.commit()
+              commitVS(vs)
             }
             
             Some((true, onDrag _, onDragStop _))
@@ -299,7 +336,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
                 x0.toInt, y0.toInt, x2.toInt, y2.toInt)
         repaintRegion(changedRegion)
         
-        vs.commit()
+        commitVS(vs)
             
         setTilePaintSq(true, x2, y2)
       }

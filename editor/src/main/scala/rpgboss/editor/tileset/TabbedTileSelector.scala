@@ -50,6 +50,8 @@ extends BoxPanel(Orientation.Horizontal) with SelectsMap
   def setContent(cOpt: Option[Component]) = {
     contents.clear()
     cOpt map { contents += _ }
+    
+    preferredSize = new Dimension(preferredSize.getWidth().toInt, 500)
     revalidate()
   }
 }

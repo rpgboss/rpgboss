@@ -41,6 +41,8 @@ extends ScrollPane
   horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
   verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
   
+  peer.getVerticalScrollBar().setUnitIncrement(16)
+  
   // restrict to 256 by 256 tiles
   val img = srcImg.getSubimage(0, 0, 
                                min(255*tilesizeX, srcImg.getWidth),

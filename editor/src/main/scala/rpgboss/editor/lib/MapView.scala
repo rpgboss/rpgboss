@@ -245,6 +245,7 @@ extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging
   
   def repaintRegion(r1: TileRect) =
     canvasPanel.repaint(r1.rect(curTilesize, curTilesize))
+  def repaintAll() = canvasPanel.repaint()
   
   type MouseFunction = 
     (Float, Float, MapViewState) => Any

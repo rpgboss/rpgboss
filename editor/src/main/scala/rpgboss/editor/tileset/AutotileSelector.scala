@@ -18,13 +18,17 @@ class AutotileSelector(
     map.metadata.autotiles.map(sm.assetCache.getAutotile(_))
   val collageImage = TileUtils.getAutotileCollageImg(autotiles)
   
-  // x coordiate corresponds to tileset number,
-  // other two bytes we leave blank. 
-  contents += new ImageTileSelector(collageImage, tXYArray => 
+  val imgTileSelector = new ImageTileSelector(collageImage, tXYArray => 
     tileSelector.selectedTileCodes = tXYArray.map(_.map({
       case (xTile, yTile) => 
         Array(RpgMap.autotileByte, xTile.toByte, 0.toByte)
     }))
   )
+  
+  // x coordiate corresponds to tileset number,
+  // other two bytes we leave blank. 
+  contents += imgTileSelector 
+  
+  preferredSize = imgTileSelector.preferredSize
   
 }

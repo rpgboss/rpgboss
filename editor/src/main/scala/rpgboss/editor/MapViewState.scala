@@ -53,6 +53,15 @@ class MapViewState(val sm: StateMaster, val mapName: String)
   // Initialize the prevStates list with the initial state
   prevStates = List(nextMapData.deepcopy())
   
+  def undo() = {
+    prevStates = prevStates.tail
+    nextMapData = prevStates.head.deepcopy()
+  }
+  
+  def canUndo() = {
+    prevStates.size > 1
+  }
+  
   def begin() = {
     if(inTransaction) {
       throw new RuntimeException(
