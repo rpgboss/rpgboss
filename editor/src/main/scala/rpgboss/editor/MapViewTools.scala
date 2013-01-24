@@ -199,11 +199,51 @@ object MapViewTools {
   
   trait RectLikeTool extends MapViewTool {
     var origLayerBuf : Array[Array[Byte]] = null
+    var prevPaintedRegion = TileRect.empty
+    
+    def doesPaint(xi: Int, yi: Int, w: Int, h: Int): Boolean
     
     def doPaint(
         vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
         layerAry: Array[Array[Byte]],
-        x1: Int, y1: Int, x2: Int, y2: Int): TileRect
+        x1: Int, y1: Int, x2: Int, y2: Int): TileRect = 
+    {
+      println("Modified tiles: (%d, %d) to (%d, %d)".format(x1, y1, x2, y2))
+      
+      import math._
+      val xMin = min(x1, x2)
+      val xMax = max(x1, x2)
+      val yMin = min(y1, y2)
+      val yMax = max(y1, y2)
+      
+      val w = xMax - xMin + 1
+      val h = yMax - yMin + 1
+      
+      for(xi <- 0 until w; yi <- 0 until h) {
+        val x = xMin + xi
+        val y = yMin + yi
+        
+        if(vs.mapMeta.withinBounds(x, y) && doesPaint(xi, yi, w, h)) {
+          val tCodeY = yi%tCodes.length
+          val tCodeX = xi%tCodes.head.length
+          
+          val tCode = tCodes(tCodeY)(tCodeX)
+          
+          for(j <- 0 until bytesPerTile) {
+            layerAry(y).update(x*bytesPerTile+j, tCode(j)) 
+          }
+        }
+      }
+      
+      val directlyEditedRect = 
+        TileRect(xMin, yMin, w, h)
+      
+      val autotileRect =
+        setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry, 
+                         xMin, yMin, xMax, yMax)
+      
+      directlyEditedRect|autotileRect
+    }
     
     def onMouseDown(
         vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
@@ -232,7 +272,12 @@ object MapViewTools {
           layerAry.update(i, origLayerBuf(i).clone())
         }
         
-        doPaint(vs, tCodes, layerAry, x1, y1, x2, y2)
+        val newRegion = doPaint(vs, tCodes, layerAry, x1, y1, x2, y2)
+        val totalNeedToRepaint = newRegion|prevPaintedRegion
+        
+        prevPaintedRegion = newRegion
+        
+        totalNeedToRepaint
       } getOrElse {
         TileRect.empty
       }
@@ -242,60 +287,41 @@ object MapViewTools {
   case object Rectangle extends RectLikeTool {
     val name = "Rectangle"
     
-    def doPaint(
-        vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
-        layerAry: Array[Array[Byte]],
-        x1: Int, y1: Int, x2: Int, y2: Int): TileRect = 
-    {
-      println("Modified tiles: (%d, %d) to (%d, %d)".format(x1, y1, x2, y2))
+    def doesPaint(xi: Int, yi: Int, w: Int, h: Int) = true
+  }
+  
+  
+  case object Ellipse extends RectLikeTool {
+    val name = "Ellipse"
+    
+    def doesPaint(xi: Int, yi: Int, w: Int, h: Int) = {
+      // Calculate whether or not to paint this tile given the above params
+      val a = w.toDouble/2
+      val b = h.toDouble/2
       
       import math._
-      val xMin = min(x1, x2)
-      val xMax = max(x1, x2)
-      val yMin = min(y1, y2)
-      val yMax = max(y1, y2)
       
-      val w = xMax - xMin + 1
-      val h = yMax - yMin + 1
+      // fudge a bit to make smaller elipses less rectangle
+      val factor = if(w > 7 && h > 7) 1.0 else 0.88
       
-      for(xi <- 0 until w; yi <- 0 until h) {
-        val x = xMin + xi
-        val y = yMin + yi
-        
-        val tCodeY = yi%tCodes.length
-        val tCodeX = xi%tCodes.head.length
-        
-        val tCode = tCodes(tCodeY)(tCodeX)
-        
-        for(j <- 0 until bytesPerTile) {
-          layerAry(y).update(x*bytesPerTile+j, tCode(j)) 
-        }
-      }
-      
-      val directlyEditedRect = 
-        TileRect(xMin, yMin, w, h)
-      
-      val autotileRect =
-        setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry, 
-                         xMin, yMin, xMax, yMax)
-      
-      directlyEditedRect|autotileRect
+      pow((xi+0.5-a)/a, 2) + pow((yi+0.5-b)/b, 2) < factor
     }
-  }
+  } 
 }
 
 object MapViewToolsEnum extends RpgEnum {
-  val Pencil, Rectangle = Value
+  val Pencil, Rectangle, Ellipse = Value
   
   val toolMap = Map(
       Pencil->MapViewTools.Pencil,
-      Rectangle->MapViewTools.Rectangle
+      Rectangle->MapViewTools.Rectangle,
+      Ellipse->MapViewTools.Ellipse
   )
   
   def getTool(value: Value) = {
     toolMap.get(value).get
   }
-  val valueList = List(Pencil, Rectangle)
+  val valueList = List(Pencil, Rectangle, Ellipse)
   
   def default = Pencil
 }
