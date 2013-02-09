@@ -23,16 +23,12 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     columns = 12
   }
   
-  val gameTitleField = new TextField() {
-    columns = 20
-  }
-  
   def okFunc() = {
     if(shortnameField.text.isEmpty)
       Dialog.showMessage(shortnameField, "Need a short name.")
     else {    
       val shortname = shortnameField.text
-      val p = Project.startingProject(gameTitleField.text,
+      val p = Project.startingProject(shortname,
                                       new File(rootChooser.getRoot, shortname))
       
       val mapName = RpgMap.generateName(p.data.lastCreatedMapId)
@@ -89,9 +85,6 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     
     row().grid().add(leftLabel("Project shortname (ex. 'chronotrigger'):"))
     row().grid().add(shortnameField)
-    
-    row().grid().add(leftLabel("Game title (ex: 'Chrono Trigger'):"))
-    row().grid().add(gameTitleField)
     
     addButtons(cancelBtn, okBtn)
     

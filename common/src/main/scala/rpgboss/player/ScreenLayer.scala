@@ -71,10 +71,10 @@ class ScreenLayer(game: MyGame, state: GameState) {
       
       // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL10.GL_BLEND)
-      shapeRenderer.begin(ShapeRenderer.ShapeType.FilledRectangle)
+      shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
       
       shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
-      shapeRenderer.filledRect(0, 0, 640, 480)
+      shapeRenderer.rect(0, 0, 640, 480)
       shapeRenderer.end()
     }
   }
