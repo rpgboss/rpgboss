@@ -80,6 +80,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
   
   contents = new DesignGridPanel {
     
+    
     row().grid().add(leftLabel("Directory for all projects:"))
     row().grid().add(rootChooser)
     

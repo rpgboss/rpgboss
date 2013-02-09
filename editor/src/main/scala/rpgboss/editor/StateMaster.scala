@@ -34,7 +34,7 @@ case class MapState(map: RpgMap,
 /**
  * This class manages the dirtiness and saving of all the open maps.
  */
-class StateMaster(private var proj: Project)
+class StateMaster(mainPanel: MainPanel, private var proj: Project)
 {
   import Dirtiness._
   
@@ -90,6 +90,7 @@ class StateMaster(private var proj: Project)
   def setProj(newProj: Project) = {
     proj = newProj
     projDirty = Dirty
+    mainPanel.updateDirty(this)
   }
   
   def addMap(
@@ -111,6 +112,7 @@ class StateMaster(private var proj: Project)
     val curState = mapStates.get(mapName).get
     val newDirty = if(markDirty) Dirtiness.Dirty else curState.dirty 
     mapStates.update(mapName, curState.copy(map = map, dirty = newDirty))
+    mainPanel.updateDirty(this)
   }
   
   def getMapData(mapName: String) = {
@@ -135,6 +137,7 @@ class StateMaster(private var proj: Project)
     mapStates.update(mapName,
       mapStates.get(mapName).get.copy(
         mapDataOpt = Some(mapData), dirty = Dirtiness.Dirty))
+    mainPanel.updateDirty(this)
   }
 }
 
