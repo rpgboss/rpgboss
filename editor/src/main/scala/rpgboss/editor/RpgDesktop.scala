@@ -13,7 +13,19 @@ object RpgDesktop
   def top() = new MainFrame {
     minimumSize = new Dimension(800, 600)
     title = "rpgboss beta"
-    contents = new MainPanel(this)
+    
+    import javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE
+    peer.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE)
+      
+    val mainPanel = new MainPanel(this)
+    
+    contents = mainPanel
+    
+    override def closeOperation() = {
+      if(mainPanel.askSaveUnchanged()) {
+        super.closeOperation()
+      }
+    }
   }
  
   def uncaughtException(thread: Thread, ex: Throwable) = {

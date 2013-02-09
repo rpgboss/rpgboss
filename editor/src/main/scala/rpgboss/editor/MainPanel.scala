@@ -6,7 +6,7 @@ import rpgboss.model.resource._
 import rpgboss.editor.dialog._
 import java.io.File
 
-class MainPanel(val topWin: MainFrame)
+class MainPanel(val topWin: Frame)
 extends BoxPanel(Orientation.Vertical) 
 {
   var smOpt : Option[StateMaster] = None
@@ -14,17 +14,21 @@ extends BoxPanel(Orientation.Vertical)
   minimumSize = new Dimension(800, 600)
   
   val actionNew = Action("New Project") {
-    if(smOpt.map(_.askSaveUnchanged(this)).getOrElse(true)) {
+    if(askSaveUnchanged()) {
       val d = new NewProjectDialog(topWin, p => setProject(p))
       d.open()
     }
   }
   
   val actionOpen = Action("Load Project") {
-    if(smOpt.map(_.askSaveUnchanged(this)).getOrElse(true)) {
+    if(askSaveUnchanged()) {
       val d = new LoadProjectDialog(topWin, p => setProject(p))
       d.open()
     }
+  }
+  
+  def askSaveUnchanged() = {
+    smOpt.map(_.askSaveUnchanged(this)).getOrElse(true)
   }
   
   val actionSave = Action("Save Project") {
