@@ -1,5 +1,6 @@
 package rpgboss.editor
 
+import rpgboss.lib.Utils._
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
 import rpgboss.model._
@@ -32,9 +33,29 @@ trait MapViewTool {
 
 object MapViewTools {
   
+  /**
+   * 
+   */
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
                        layerAry: Array[Array[Byte]],  
-                       x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = 
+                       x0: Int, y0: Int, x1: Int, y1: Int) : TileRect = {
+    
+    // Only need to adjust autotiles in this rect
+    val initialSeqOfTiles =
+      for(x <- x0 to x1;
+          y <- y0 to y1) yield (x, y)
+    
+    setAutotileFlags(mapMeta, autotiles, layerAry, initialSeqOfTiles)
+  }
+  
+  /**
+   * Frankly I don't have a damn clue how this works. I wish I commented it.
+   * Well. This algorithm isn't even really correct for walls. It seems to mess
+   * up in some cases.
+   */
+  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
+                       layerAry: Array[Array[Byte]],  
+                       tilesToSet: Seq[(Int, Int)]) : TileRect = 
   {
     import RpgMap.bytesPerTile
     // some utility functions
@@ -51,109 +72,110 @@ object MapViewTools {
       testTile(begin)
     }
     
-    // Only need to adjust autotiles in this rect
-    val initialSeqOfTiles =
-      for(x <- x0-1 to x1+1;
-          y <- y0-1 to y1+1;
-          if mapMeta.withinBounds(x, y) && isAutotile(x,y)) yield (x, y)
+    val visited = new collection.mutable.HashSet[(Int, Int)]()
+    val queue = new collection.mutable.Queue[(Int, Int)]()
+    var modifiedRect = TileRect.empty
+    
+    queue.enqueue(tilesToSet : _*)
+    
+    while(!queue.isEmpty) {
+      val curTile = queue.dequeue()
+      if(!visited.contains(curTile)) {
+        visited.add(curTile)
+        val (xToSet, yToSet) = curTile
+        
+        if(mapMeta.withinBounds(xToSet, yToSet) && isAutotile(xToSet, yToSet)) {
           
-    // assume all tiles in set are within bounds
-    @tailrec def setFirstTile(tilesRemainingToSet: Seq[(Int, Int)],
-                              accumRect: TileRect) : TileRect = 
-    {
-      if(tilesRemainingToSet.isEmpty) accumRect else {
-        val (xToSet, yToSet) = tilesRemainingToSet.head
-        
-        val autotileNum = getAutotileNum(xToSet, yToSet)
-        def sameType(x: Int, y: Int) =
-          isAutotile(x, y) && getAutotileNum(x, y) == autotileNum
-        def diffTypeOutsideSame(v: IntVec) =
-          mapMeta.withinBounds(v.x, v.y) && !sameType(v.x, v.y)
-        def diffTypeOutsideDiff(v: IntVec) =
-          !mapMeta.withinBounds(v.x, v.y) || !sameType(v.x, v.y)
-        
-        // MUTABLE
-        def mask(xToSet: Int, yToSet: Int, maskInt: Int) =
-          layerAry(yToSet).update(
-              xToSet*bytesPerTile+2, maskInt.asInstanceOf[Byte])
-        
-        if(autotiles.length > autotileNum) {
-          val autotile = autotiles(autotileNum)
+          val autotileNum = getAutotileNum(xToSet, yToSet)
+          def sameType(x: Int, y: Int) =
+            isAutotile(x, y) && getAutotileNum(x, y) == autotileNum
+          def diffTypeOutsideSame(v: IntVec) =
+            mapMeta.withinBounds(v.x, v.y) && !sameType(v.x, v.y)
+          def diffTypeOutsideDiff(v: IntVec) =
+            !mapMeta.withinBounds(v.x, v.y) || !sameType(v.x, v.y)
           
-          if(autotile.terrainMode) {
-            // NOTE: In terrain mode, an out-of-bound tile counts as the 
-            // same type tile.
+          // MUTABLE
+          def mask(xToSet: Int, yToSet: Int, maskInt: Int) =
+            layerAry(yToSet).update(
+                xToSet*bytesPerTile+2, maskInt.asInstanceOf[Byte])
+          
+          if(autotiles.length > autotileNum) {
+            val autotile = autotiles(autotileNum)
             
-            // This is easy. Just iterate through directions, setting flags
-            // Mutable is more readable in this case
-            var newConfig = 0
-            for((mask, (dx, dy)) <- DirectionOffsets;
-                if diffTypeOutsideSame(xToSet+dx, yToSet+dy))
-              newConfig = newConfig | mask
-            
-            mask(xToSet, yToSet, newConfig)
-            setFirstTile(tilesRemainingToSet.tail, 
-                         accumRect|TileRect(xToSet, yToSet))
-          } else {
-            val findVertBounds = findLast(
-              diffTypeOutsideDiff, (xToSet,yToSet), _: Int)
-            
-            val wallNorth = findVertBounds(NORTH).y
-            val wallSouth = findVertBounds(SOUTH).y
-            
-            // either find different tile, or run into larger wall
-            def wallBoundary(tileVec: IntVec) = 
-              diffTypeOutsideDiff(tileVec) || 
-              !diffTypeOutsideDiff(tileVec+DirectionOffsets(NORTH))
-            
-            val findWallBoundary = 
-              findLast(wallBoundary, (xToSet, wallNorth), _: Int)
-            
-            val wallWest  = findWallBoundary(WEST).x
-            val wallEast  = findWallBoundary(EAST).x
-            
-            val wallXBounds = wallWest to wallEast
-            val wallYBounds = wallNorth to wallSouth
-            
-            // determine if all tiles (xTest, y) 
-            // where y elem [wallNorth, wallSouth] are same type autotile
-            def allSameType(xTest: Int) = {
-              // all same for out of bounds
-              !mapMeta.withinBounds(xTest, wallNorth) || 
-              wallYBounds.map(y => (xTest, y)).forall(
-                t => sameType(t._1, t._2))
-            }
-            val inferiorWest = allSameType(wallWest-1)
-            val inferiorEast = allSameType(wallEast+1)
-            
-            for(xInWall <- wallXBounds; yInWall <- wallYBounds;
-                if sameType(xInWall, yInWall)) 
-            {
+            if(autotile.terrainMode) {
+              // NOTE: In terrain mode, an out-of-bound tile counts as the 
+              // same type tile.
+              
+              // This is easy. Just iterate through directions, setting flags
+              // Mutable is more readable in this case
               var newConfig = 0
-              if(!inferiorWest && xInWall == wallWest)  newConfig |= WEST
-              if(!inferiorEast && xInWall == wallEast)  newConfig |= EAST
-              if(yInWall == wallNorth) newConfig |= NORTH
-              if(yInWall == wallSouth) newConfig |= SOUTH
-              mask(xInWall, yInWall, newConfig)
+              for((mask, (dx, dy)) <- DirectionOffsets;
+                  if diffTypeOutsideSame(xToSet+dx, yToSet+dy))
+                newConfig = newConfig | mask
+              
+              mask(xToSet, yToSet, newConfig)
+              
+              modifiedRect = modifiedRect | TileRect(xToSet, yToSet)
+            } else {
+              val findVertBounds = findLast(
+                diffTypeOutsideDiff, (xToSet,yToSet), _: Int)
+              
+              val wallNorth = findVertBounds(NORTH).y
+              val wallSouth = findVertBounds(SOUTH).y
+              
+              // either find different tile, or run into larger wall
+              def wallBoundary(tileVec: IntVec) = 
+                diffTypeOutsideDiff(tileVec) || 
+                !diffTypeOutsideDiff(tileVec+DirectionOffsets(NORTH))
+              
+              val findWallBoundary = 
+                findLast(wallBoundary, (xToSet, wallNorth), _: Int)
+              
+              val wallWest  = findWallBoundary(WEST).x
+              val wallEast  = findWallBoundary(EAST).x
+              
+              val wallXBounds = wallWest to wallEast
+              val wallYBounds = wallNorth to wallSouth
+              
+              // determine if all tiles (xTest, y) 
+              // where y elem [wallNorth, wallSouth] are same type autotile
+              def allSameType(xTest: Int) = {
+                // all same for out of bounds
+                !mapMeta.withinBounds(xTest, wallNorth) || 
+                wallYBounds.map(y => (xTest, y)).forall(
+                  t => sameType(t._1, t._2))
+              }
+              val inferiorWest = allSameType(wallWest-1)
+              val inferiorEast = allSameType(wallEast+1)
+              
+              for(xInWall <- wallXBounds; yInWall <- wallYBounds;
+                  if sameType(xInWall, yInWall)) 
+              {
+                var newConfig = 0
+                if(!inferiorWest && xInWall == wallWest)  newConfig |= WEST
+                if(!inferiorEast && xInWall == wallEast)  newConfig |= EAST
+                if(yInWall == wallNorth) newConfig |= NORTH
+                if(yInWall == wallSouth) newConfig |= SOUTH
+                mask(xInWall, yInWall, newConfig)
+              }
+              
+              // Remove tiles from queue that are in the wall we just calculated
+              queue.dequeueAll({
+                case (xRem, yRem) => 
+                  wallXBounds.contains(xRem) && wallYBounds.contains(yRem)
+              })
+              
+              val wallRect = TileRect(
+                wallEast, wallNorth, wallXBounds.size, wallYBounds.size)
+              
+              modifiedRect = modifiedRect|wallRect
             }
-            
-            // only choose tiles that are not in the wall we just calculated
-            val remaining = tilesRemainingToSet.tail.filterNot {
-              case (xRem, yRem) => 
-                wallXBounds.contains(xRem) && wallYBounds.contains(yRem)
-            }
-            
-            val wallRect = TileRect(
-              wallEast, wallNorth, wallXBounds.size, wallYBounds.size)
-            
-            setFirstTile(remaining, accumRect|wallRect)
           }
-          
-        } else setFirstTile(tilesRemainingToSet.tail, accumRect) // do nothing
+        }
       }
     }
     
-    setFirstTile(initialSeqOfTiles, TileRect.empty)
+    modifiedRect
   }
   
   case object Pencil extends MapViewTool {
@@ -183,7 +205,7 @@ object MapViewTools {
         
         val autotileRect =
           setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry, 
-                           x1, y1, x1+tCodes(0).length-1, y1+tCodes.length-1)
+                           x1-1, y1-1, x1+tCodes(0).length, y1+tCodes.length)
         
         directlyEditedRect|autotileRect
       } getOrElse {
@@ -240,7 +262,7 @@ object MapViewTools {
       
       val autotileRect =
         setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry, 
-                         xMin, yMin, xMax, yMax)
+                         xMin-1, yMin-1, xMax+1, yMax+1)
       
       directlyEditedRect|autotileRect
     }
@@ -306,22 +328,147 @@ object MapViewTools {
       
       pow((xi+0.5-a)/a, 2) + pow((yi+0.5-b)/b, 2) < factor
     }
-  } 
+  }
+  
+  /**
+   * Defines a flood fill bucket filler
+   */
+  case object Bucket extends MapViewTool {
+    val name = "Bucket"
+    def onMouseDown(
+        vs: MapViewState, tCodes: Array[Array[Array[Byte]]], 
+        layer: MapLayers.Value,
+        x1: Int, y1: Int) = {
+      import MapLayers._
+      
+      val visited = new collection.mutable.HashSet[(Int, Int)]()
+      val needAutotileFlagsSet = new collection.mutable.HashSet[(Int, Int)]()
+      
+      val queue = new collection.mutable.Queue[(Int, Int)]()
+      queue.enqueue((x1, y1))
+      
+      // Running set of variables defining bounds of modified tiles
+      var minX, maxX = x1
+      var minY, maxY = y1
+      
+      mapOfArrays(vs.nextMapData).get(layer).map { layerAry =>
+        
+        /*
+         * Defines the matching condition we use for tiles we walk to.
+         * For autotiles, only match first two bytes, since the last byte is
+         * used for the boundary configuration.
+         * For blank tiles, match any.
+         */
+        val matchesSeedF: (Byte, Byte, Byte) => Boolean = {
+          import RpgMap._
+          
+          val b1Orig = layerAry(y1)(x1*bytesPerTile)
+          val b2Orig = layerAry(y1)(x1*bytesPerTile+1)
+          val b3Orig = layerAry(y1)(x1*bytesPerTile+2)
+          
+          def match1(b1: Byte, b2: Byte, b3: Byte) = 
+            (b1 == b1Orig)
+          def match2(b1: Byte, b2: Byte, b3: Byte) =
+            (b1 == b1Orig) && (b2 == b2Orig)
+          def match3(b1: Byte, b2: Byte, b3: Byte) =
+            (b1 == b1Orig) && (b2 == b2Orig) && (b3 == b3Orig)
+          
+          b1Orig match {
+            // Empty tile. Second two bytes are ignored
+            case `emptyTileByte` => match1 _
+            case `autotileByte` => match2 _
+            case _ => match3 _ 
+          }
+        }
+        
+        // Iterate through the queue, doing a breadth first graph search
+        while(!queue.isEmpty) {
+          val curTile = queue.dequeue()
+          
+          // Make sure we haven't visited this tile already
+          if(!visited.contains(curTile)) {
+            visited.add(curTile)
+            
+            val (curX, curY) = curTile
+            
+            // Only process if it's within the bounds
+            if(vs.mapMeta.withinBounds(curX, curY)) {
+              
+              val b1 = layerAry(curY)(curX*bytesPerTile)
+              val b2 = layerAry(curY)(curX*bytesPerTile+1)
+              val b3 = layerAry(curY)(curX*bytesPerTile+2)
+              
+              if(matchesSeedF(b1, b2, b3)) {
+                // Gets the appropriate tile to fill in based on user selection
+                val tCodeY = pmod(curX-x1, tCodes.length)
+                val tCodeX = pmod(curY-y1, tCodes.head.length)
+                val tCode = tCodes(tCodeY)(tCodeX)
+                
+                // Fill in the tile
+                tCode.copyToArray(
+                    layerAry(curY), curX*bytesPerTile, bytesPerTile)
+                
+                // Update the running variables of min/max of edited tiles
+                import math._
+                minX = min(minX, curX)
+                minY = min(minY, curY)
+                maxX = max(maxX, curX)
+                maxY = max(maxY, curY)
+                
+                // Add to set of autotiles that may need updating
+                needAutotileFlagsSet.add(curTile)
+                needAutotileFlagsSet.add((curX-1, curY))
+                needAutotileFlagsSet.add((curX+1, curY))
+                needAutotileFlagsSet.add((curX, curY-1))
+                needAutotileFlagsSet.add((curX, curY+1))
+                
+                // Visit the neighboring tiles next
+                queue.enqueue((curX-1, curY))
+                queue.enqueue((curX+1, curY))
+                queue.enqueue((curX, curY-1))
+                queue.enqueue((curX, curY+1))
+              }
+            }
+          }
+        }
+        
+        // A rectangle with the min and max bounds defined
+        val directlyEditedRect = 
+          TileRect(minX, minY, maxX-minX+1, maxY-minY+1)
+        
+        // A probably larger rect with the tiles with updated autotile flags
+        val autotileRect =
+          setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry, 
+                           needAutotileFlagsSet.toSeq)
+        
+        directlyEditedRect|autotileRect
+      } getOrElse {
+        TileRect.empty
+      }
+    }
+    def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                       layer: MapLayers.Value,
+                       x1: Int, y1: Int, x2: Int, y2: Int) = {
+      // Do nothing actually
+      TileRect.empty
+    }
+  }
 }
 
 object MapViewToolsEnum extends RpgEnum {
-  val Pencil, Rectangle, Ellipse = Value
+  val Pencil, Rectangle, Ellipse, Bucket = Value
   
   val toolMap = Map(
       Pencil->MapViewTools.Pencil,
       Rectangle->MapViewTools.Rectangle,
-      Ellipse->MapViewTools.Ellipse
+      Ellipse->MapViewTools.Ellipse,
+      Bucket->MapViewTools.Bucket
   )
   
   def getTool(value: Value) = {
     toolMap.get(value).get
   }
-  val valueList = List(Pencil, Rectangle, Ellipse)
+  val valueList = List(Pencil, Rectangle, Ellipse, Bucket)
   
   def default = Pencil
 }
