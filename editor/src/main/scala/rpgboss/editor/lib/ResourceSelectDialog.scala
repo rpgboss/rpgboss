@@ -105,9 +105,10 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
   initialSelectionOpt.map { initSel =>
     val rcName = specToResourceName(initSel)
     if(allResources.contains(rcName)) {
+      curSelection = initialSelectionOpt
       val idx = rcList.listData.indexOf(Some(rcName))
       rcList.selectIndices(idx)
-    }else if(allowNone) {
+    } else if(allowNone) {
       val idx = rcList.listData.indexOf(None)
       rcList.selectIndices(idx)
     }
