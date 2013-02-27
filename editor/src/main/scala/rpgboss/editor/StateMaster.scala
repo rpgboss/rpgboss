@@ -64,6 +64,8 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project)
     mapStates.values.map(_.save(proj)) // save all the maps
     
     loadProjectData() // refresh stale shit
+    
+    mainPanel.updateDirty(this)
   }
   
   def stateDirty =
