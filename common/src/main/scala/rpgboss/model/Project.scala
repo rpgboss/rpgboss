@@ -23,7 +23,9 @@ object Project {
   
   def startingProject(title: String, 
                       dir: File) =
-    Project(dir, ProjectData(title = title))
+    Project(dir, ProjectData(
+        uuid = java.util.UUID.randomUUID().toString(), 
+        title = title))
   
   def filename(dir: File) = new File(dir, "rpgproject.json")
   

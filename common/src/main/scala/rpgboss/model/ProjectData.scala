@@ -1,7 +1,8 @@
 package rpgboss.model
 import rpgboss.model.resource.RpgMap
                  
-case class ProjectData(title: String, 
+case class ProjectData(uuid: String,
+                       title: String, 
                        recentMapName: String = "",
                        lastCreatedMapId: Int = 1, // Start at 1
                        startingLoc: MapLoc = 
