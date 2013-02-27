@@ -416,11 +416,18 @@ object MapViewTools {
                 maxY = max(maxY, curY)
                 
                 // Add to set of autotiles that may need updating
+                // self
                 needAutotileFlagsSet.add(curTile)
+                // NSEW
                 needAutotileFlagsSet.add((curX-1, curY))
                 needAutotileFlagsSet.add((curX+1, curY))
                 needAutotileFlagsSet.add((curX, curY-1))
                 needAutotileFlagsSet.add((curX, curY+1))
+                // diagonal directions
+                needAutotileFlagsSet.add((curX-1, curY-1))
+                needAutotileFlagsSet.add((curX+1, curY-1))
+                needAutotileFlagsSet.add((curX-1, curY+1))
+                needAutotileFlagsSet.add((curX+1, curY+1))
                 
                 // Visit the neighboring tiles next
                 queue.enqueue((curX-1, curY))
