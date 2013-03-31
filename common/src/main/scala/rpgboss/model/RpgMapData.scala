@@ -69,7 +69,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
     copy(
         botLayer = botLayer.map(_.clone()),
         midLayer = midLayer.map(_.clone()),
-        topLayer = midLayer.map(_.clone()),
+        topLayer = topLayer.map(_.clone()),
         events = events.clone()
     )
   }
