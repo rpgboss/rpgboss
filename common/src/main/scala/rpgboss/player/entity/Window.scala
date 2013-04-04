@@ -161,9 +161,6 @@ case class Window(assets: RpgAssetManager,
       } else {
         changeState(Window.Closing)
       }
-      true
-    } else {
-      false
     }
   }
   

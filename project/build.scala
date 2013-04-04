@@ -7,16 +7,16 @@ import scala.sys.process.{Process => SysProcess}
 object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     version := "0.1",
-    scalaVersion := "2.9.2",
-    scalacOptions ++= List("-deprecation", "-unchecked", "-Ydependent-method-types"),
+    scalaVersion := "2.10.1",
+    scalacOptions ++= List("-deprecation", "-unchecked"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % "10.0",
-      "net.liftweb" % "lift-json_2.9.1" % "2.4",
-      "com.weiglewilczek.slf4s" % "slf4s_2.9.1" % "1.0.7",
+      "org.json4s" % "json4s-native_2.10" % "3.2.3",
+      "com.typesafe" % "scalalogging-slf4j_2.10" % "1.0.1",
       "com.typesafe.akka" % "akka-actor" % "2.0.3",
       "rhino" % "js" % "1.7R2",
-      "org.scalatest" %% "scalatest" % "1.6.1" % "test"
+      "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")

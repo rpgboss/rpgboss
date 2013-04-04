@@ -2,11 +2,12 @@ package rpgboss.model.resource
 
 import rpgboss.lib._
 import rpgboss.lib.FileHelper._
-import net.liftweb.json._
+import org.json4s._
+import org.json4s.native.Serialization
 import scala.collection.JavaConversions._
 import java.io._
 import rpgboss.model.Project
-import com.weiglewilczek.slf4s.Logging
+import com.typesafe.scalalogging.slf4j.Logging
 
 trait Resource[T, MT <: AnyRef] extends Logging {
   def name: String

@@ -5,7 +5,7 @@ import scala.swing.event._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.tileset.SpriteSelector
-import com.weiglewilczek.slf4s.Logging
+import com.typesafe.scalalogging.slf4j.Logging
 import java.awt.Dimension
 import rpgboss.editor.StateMaster
 

@@ -4,7 +4,7 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.lib.FileHelper._
 
-import net.liftweb.json.Serialization
+import org.json4s.native.Serialization
 
 import scala.collection.JavaConversions._
 

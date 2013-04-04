@@ -4,10 +4,10 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.lib.FileHelper._
-import net.liftweb.json.Serialization
+import org.json4s.native.Serialization
 import java.io._
 import rpgboss.model.resource.RpgMap
-import net.liftweb.json.ShortTypeHints
+import org.json4s.ShortTypeHints
 
 /*
  * This class has mutable members.

@@ -97,8 +97,9 @@ case class CharClass(
 case class Skill(name: String = "") extends HasName
 
 object CharState {
-  val defaultStates = Array()
+  
   /*
+   * val defaultStates = 
       CharState("Dead",      Map("NoAction"->1)),
       CharState("Stunned",   Map("NoAction"->1),     1, 100),
       CharState("Berserk",   Map("AutoAtkEnemy"->1,

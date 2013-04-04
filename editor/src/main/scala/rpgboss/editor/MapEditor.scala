@@ -8,7 +8,7 @@ import rpgboss.model.resource._
 import rpgboss.editor.tileset._
 import rpgboss.editor.lib._
 import rpgboss.editor.lib.GraphicsUtils._
-import com.weiglewilczek.slf4s.Logging
+import com.typesafe.scalalogging.slf4j.Logging
 import scala.math._
 import scala.swing._
 import scala.swing.event._

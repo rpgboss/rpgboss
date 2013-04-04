@@ -5,7 +5,7 @@ import scala.swing.event._
 import rpgboss.editor.lib.SwingUtils._
 import rpgboss.editor.dialog._
 import javax.swing.BorderFactory
-import com.weiglewilczek.slf4s.Logging
+import com.typesafe.scalalogging.slf4j.Logging
 import java.awt.{Font, Color}
 import scala.swing.ListView.Renderer
 import javax.swing.DefaultListSelectionModel

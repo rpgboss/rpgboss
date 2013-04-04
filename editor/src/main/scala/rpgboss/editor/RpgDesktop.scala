@@ -2,7 +2,7 @@ package rpgboss.editor
 
 import scala.swing._
 import scala.swing.event._
-import com.weiglewilczek.slf4s.Logging
+import com.typesafe.scalalogging.slf4j.Logging
 import java.lang.Thread.UncaughtExceptionHandler
 
 object RpgDesktop 

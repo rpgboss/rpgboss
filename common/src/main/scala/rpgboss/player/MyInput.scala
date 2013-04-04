@@ -36,12 +36,10 @@ trait MoveInputHandler extends InputHandler {
   
   override def keyDown(key: Int) = {
     isActiveMap(key) = true
-    true
   }
   
   override def keyUp(key: Int) = {
     isActiveMap(key) = false
-    true
   }
   
   override def keyCapturedByOther(key: Int) = {
@@ -78,13 +76,11 @@ trait ChoiceInputHandler extends InputHandler {
     
     // Schedule a task to be repeated 
     Timer.schedule(activateTasks(key), keyDelay, keyInterval)
-    true
   }
   
   override def keyUp(key: Int) = {
     // Cancel task
     activateTasks(key).cancel()
-    true
   }
   
   def keyActivate(key: Int)

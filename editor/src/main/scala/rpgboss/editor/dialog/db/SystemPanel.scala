@@ -9,7 +9,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.dialog.DatabaseDialog
-import com.weiglewilczek.slf4s.Logging
+import com.typesafe.scalalogging.slf4j.Logging
 
 class SystemPanel(
     owner: Window, 

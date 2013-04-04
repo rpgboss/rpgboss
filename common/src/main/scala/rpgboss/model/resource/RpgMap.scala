@@ -3,11 +3,11 @@ package rpgboss.model.resource
 import rpgboss.model._
 import rpgboss.lib._
 import rpgboss.lib.FileHelper._
-import net.liftweb.json.Serialization
+import org.json4s.native.Serialization
 import scala.collection.JavaConversions._
 import java.io._
 import java.util.Arrays
-import net.liftweb.json.DefaultFormats
+import org.json4s.DefaultFormats
 
 case class RpgMapMetadata(parent: String,
                           title: String,
