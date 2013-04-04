@@ -84,9 +84,9 @@ object SwingUtils {
   }
   
   def enumRadios[T <: Enumeration](enum: T)(
-      initial: enum.Value, 
-      selectF: enum.Value => Any,
-      choices: Seq[enum.Value] = Seq()) = 
+      initial: T#Value, 
+      selectF: T#Value => Any,
+      choices: Seq[T#Value] = Seq()) = 
   {
     val actualChoices = if(choices.isEmpty) enum.values.toSeq else choices
     actualChoices.map { eVal =>

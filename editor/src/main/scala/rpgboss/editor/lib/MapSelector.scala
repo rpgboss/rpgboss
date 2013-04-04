@@ -3,8 +3,9 @@ package rpgboss.editor.lib
 import rpgboss.editor._
 import scala.swing._
 import scala.swing.event._
-import scala.swing.tree._
-import scala.swing.tree.Tree._
+import scalaswingcontrib.tree._
+import scalaswingcontrib.event._
+import scalaswingcontrib.tree.Tree._
 import rpgboss.model._
 import rpgboss.model.resource._
 

@@ -5,8 +5,9 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.tileset._
-import scala.swing.tree._
-import scala.swing.tree.Tree._
+import scalaswingcontrib.event._
+import scalaswingcontrib.tree._
+import scalaswingcontrib.tree.Tree._
 import scala.swing.event._
 import rpgboss.editor.lib._
 import rpgboss.editor.dialog.MapPropertiesDialog

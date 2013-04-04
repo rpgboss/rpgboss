@@ -3,13 +3,11 @@ package rpgboss.editor.lib
 import scala.swing._
 import rpgboss.editor.lib.SwingUtils._
 import scala.swing.event._
-import rpgboss.editor.lib.DesignGridPanel
 import rpgboss.model._
 import rpgboss.model.resource._
 import com.typesafe.scalalogging.slf4j.Logging
 import java.awt.Dimension
 import rpgboss.editor.StateMaster
-import rpgboss.editor.lib.ImagePanel
 import rpgboss.editor.dialog.StdDialog
 import scala.Array.canBuildFrom
 import javax.swing.border.LineBorder
