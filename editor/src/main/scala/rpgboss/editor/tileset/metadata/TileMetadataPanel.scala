@@ -42,7 +42,7 @@ case class TileMetadata(blockedDirs: Byte, height: Byte) {
       copy(blockedDirs = NONE.toByte)
     } else {
       copy(height = ((height - 1) % 6).toByte,
-           blockedDirs = if(height == 0) ALLCARDINAL.toByte else NONE.toByte)
+           blockedDirs = if(height == 1) ALLCARDINAL.toByte else NONE.toByte)
     }
   }
 }
