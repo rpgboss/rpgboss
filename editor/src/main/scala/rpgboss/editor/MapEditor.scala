@@ -176,7 +176,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
     val visible = visibleArg && inBounds
     
     val newCursorSquare = if(visible) {
-      val tCodes = tileSelector.selectedTileCodes 
+      val tCodes = tileSelector.selectionBytes 
       assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
       TileRect(xInt, yInt, tCodes(0).length, tCodes.length)
     } else TileRect.empty
@@ -314,7 +314,7 @@ extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1)
     } else {
       vs.begin()
         
-      val tCodes = tileSelector.selectedTileCodes
+      val tCodes = tileSelector.selectionBytes
       val tool = MapViewToolsEnum.getTool(selectedTool)
       
       setTilePaintSq(tool.selectionSqOnDrag, x0, y0)

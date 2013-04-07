@@ -12,6 +12,30 @@ import java.awt.image.BufferedImage
 import java.awt.{Point, Color}
 import java.awt.AlphaComposite
 
+class TilesetTileSelector(
+    tilesetIndex: Byte,
+    tileset: Tileset,
+    selectBytesF: Array[Array[Array[Byte]]] => Unit)
+    extends BoxPanel(Orientation.Vertical) with TileBytesSelector {
+  
+  val imgTileSelector = new ImageTileSelector(
+      tileset.img,
+      _ => selectBytesF(selectionBytes),
+      Tileset.tilesize,
+      Tileset.tilesize,
+      8,
+      true,
+      true,
+      None)
+  
+  contents += imgTileSelector
+  
+  def selectionBytes = imgTileSelector.selection.map(_.map({
+    case (xTile, yTile) => 
+      Array(tilesetIndex, xTile.toByte, yTile.toByte)
+  }))
+}
+
 /**
  * @param   selectTileF         Function called when user selects a new group
  *                              of tiles.
@@ -117,12 +141,11 @@ extends ScrollPane
     (tileX, tileY)
   }
   
-  def triggerSelectTileF() = {
-    val selectedTiles = yRngInSelectorSpace.map(yTile => 
+  def selection = yRngInSelectorSpace.map(yTile => 
       xRngInSelectorSpace.map(xTile => toTilesetSpace(xTile, yTile)).toArray)
       .toArray
-    selectTileF(selectedTiles)
-  }
+  
+  def triggerSelectTileF() = selectTileF(selection)
   
   // If xTile and yTile are within the bounds of the image in selector space
   def inBounds(xTile: Int, yTile: Int) =

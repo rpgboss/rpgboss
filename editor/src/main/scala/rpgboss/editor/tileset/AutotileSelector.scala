@@ -11,19 +11,21 @@ import rpgboss.editor.StateMaster
 class AutotileSelector( 
     sm: StateMaster,
     map: RpgMap,
-    tileSelector: TabbedTileSelector) 
-  extends BoxPanel(Orientation.Vertical) {
+    selectBytesF: Array[Array[Array[Byte]]] => Unit) 
+  extends BoxPanel(Orientation.Vertical) with TileBytesSelector {
   
   val autotiles = 
     map.metadata.autotiles.map(sm.assetCache.getAutotile(_))
   val collageImage = TileUtils.getAutotileCollageImg(autotiles)
   
   val imgTileSelector = new ImageTileSelector(collageImage, tXYArray => 
-    tileSelector.selectedTileCodes = tXYArray.map(_.map({
-      case (xTile, yTile) => 
-        Array(RpgMap.autotileByte, xTile.toByte, 0.toByte)
-    }))
+    selectBytesF(selectionBytes)
   )
+  
+  def selectionBytes = imgTileSelector.selection.map(_.map({
+    case (xTile, yTile) => 
+      Array(RpgMap.autotileByte, xTile.toByte, 0.toByte)
+  }))
   
   // x coordiate corresponds to tileset number,
   // other two bytes we leave blank. 
