@@ -11,6 +11,7 @@ import scalaswingcontrib.tree.Tree._
 import scala.swing.event._
 import rpgboss.editor.lib._
 import rpgboss.editor.dialog.MapPropertiesDialog
+import java.awt.event.MouseEvent
 
 class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
   extends MapSelector(sm)
@@ -108,7 +109,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
     case e: MouseClicked if e.source == tree => {
       val (x0, y0) = (e.point.getX().toInt, e.point.getY().toInt)
       
-      if(e.peer.getButton() == 3) {
+      if(e.peer.getButton() == MouseEvent.BUTTON3) {
         val clickRow = tree.getRowForLocation(x0, y0)
         
         if(clickRow != -1) {

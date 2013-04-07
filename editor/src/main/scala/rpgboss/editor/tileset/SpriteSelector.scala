@@ -16,7 +16,7 @@ class SpriteSelector(
   extends BoxPanel(Orientation.Vertical) {
   
   import Spriteset._
-  def selectTileF(twoDAry: Array[Array[(Int, Int)]]) = {
+  def selectTileF(button: Int, twoDAry: Array[Array[(Int, Int)]]) = {
     // Since we are selecting only one, we only care about first element
     val (x1, y1) = twoDAry.head.head
     

@@ -18,22 +18,16 @@ class TilesetTileSelector(
     selectBytesF: Array[Array[Array[Byte]]] => Unit)
     extends BoxPanel(Orientation.Vertical) with TileBytesSelector {
   
-  val imgTileSelector = new ImageTileSelector(
-      tileset.img,
-      _ => selectBytesF(selectionBytes),
-      Tileset.tilesize,
-      Tileset.tilesize,
-      8,
-      true,
-      true,
-      None)
-  
-  contents += imgTileSelector
+  val imgTileSelector = new ImageTileSelector(tileset.img, 
+      (_, _) => selectBytesF(selectionBytes),
+      Tileset.tilesize, Tileset.tilesize, 8, true, true, None)
   
   def selectionBytes = imgTileSelector.selection.map(_.map({
     case (xTile, yTile) => 
       Array(tilesetIndex, xTile.toByte, yTile.toByte)
   }))
+  
+  contents += imgTileSelector
 }
 
 /**
@@ -53,7 +47,7 @@ class TilesetTileSelector(
  * @param   allowMultiselect    Allow user to select multiple tiles.
  */
 class ImageTileSelector(srcImg: BufferedImage,
-                        selectTileF: Array[Array[(Int, Int)]] => Unit,
+                        selectTileF: (Int, Array[Array[(Int, Int)]]) => Unit,
                         val tilesizeX : Int = 32,
                         val tilesizeY : Int = 32,
                         val xTilesVisible : Int = 8,
@@ -145,15 +139,13 @@ extends ScrollPane
       xRngInSelectorSpace.map(xTile => toTilesetSpace(xTile, yTile)).toArray)
       .toArray
   
-  def triggerSelectTileF() = selectTileF(selection)
-  
   // If xTile and yTile are within the bounds of the image in selector space
   def inBounds(xTile: Int, yTile: Int) =
     xTile < xTilesVisible && yTile < imageSlices*yTilesInSlice
   
   reactions += {
-    
-    case MousePressed(`canvasPanel`, point, _, _, _) => {
+    case e: MousePressed if e.source == canvasPanel => {
+      val point = e.point
       val (x1, y1) = toSelTiles(point)
       if(inBounds(x1, y1)) {
         xRngInSelectorSpace = x1 to x1
@@ -174,14 +166,14 @@ extends ScrollPane
               }
             }
             case MouseReleased(`canvasPanel`, point, _, _, _) => {
-              triggerSelectTileF()
+              selectTileF(e.peer.getButton, selection)
               reactions -= temporaryReactions
             }
           }
           
           reactions += temporaryReactions
         } else {
-          triggerSelectTileF()
+          selectTileF(e.peer.getButton, selection)
         }
       }
     }
