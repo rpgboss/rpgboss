@@ -26,7 +26,7 @@ trait Resource[T, MT <: AnyRef] extends Logging {
   def writeMetadata() : Boolean =
     meta.metadataFile(proj, name).useWriter { writer =>
       implicit val formats = DefaultFormats
-      Serialization.writePretty(metadata, writer) != null
+      Serialization.writePrettyOld(metadata, writer) != null
     } getOrElse false
 }
 
