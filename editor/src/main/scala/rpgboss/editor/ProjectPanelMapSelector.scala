@@ -117,14 +117,16 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
           deafTo(tree.selection)
           deafTo(tree.mouse.clicks)
           
-          val origPath = tree.selection.paths.head
+          // The previously selected path
+          val origPaths = tree.selection.paths
           
           tree.selectRows(clickRow)
           val clickNode = tree.selection.paths.head.last
           
           val menu = popupMenuFor(clickNode)
           menu.show(tree, x0, y0, hideCallback = () => {
-            tree.selectPaths(origPath)
+            if(!origPaths.isEmpty)
+              tree.selectPaths(origPaths.head)
             
             // Renable all eventns
             listenTo(tree.selection)

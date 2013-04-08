@@ -72,7 +72,7 @@ case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
  */
 object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   def rcType = "rpgmap"
-  def mapExt = "mapdata.json"
+  def mapExt = "rpgmap"
   def keyExts = Array(mapExt)
   
   val minXSize = 20

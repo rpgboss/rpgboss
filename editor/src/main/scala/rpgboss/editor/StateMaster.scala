@@ -26,7 +26,10 @@ case class MapState(map: RpgMap,
     } else if(dirty == Deleted) {
       // Effect deletion
       RpgMap.metadataFile(p, map.name).delete()
-      RpgMapData.dataFile(p, map.name).delete()
+      val (mapFile, botFile, midFile, topFile, evtFile) = 
+        RpgMapData.datafiles(p, map.name)
+      mapFile.delete()
+      // The other files stick around. No real reason to delete them.
     }
   }
 }

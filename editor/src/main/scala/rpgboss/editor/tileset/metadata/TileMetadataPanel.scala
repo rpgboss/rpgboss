@@ -145,7 +145,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
       for (
         yTile <- minYTile to maxYTile;
         xTile <- minXTile to maxXTile;
-        val (xTileTS, yTileTS) = toTilesetSpace(xTile, yTile);
+        (xTileTS, yTileTS) = toTilesetSpace(xTile, yTile);
         metadata <- owner.getTileMeta(xTileTS, yTileTS)
       ) {
 

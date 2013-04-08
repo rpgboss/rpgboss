@@ -16,6 +16,7 @@ object Settings {
       "com.typesafe" % "scalalogging-slf4j_2.10" % "1.0.1",
       "com.typesafe.akka" % "akka-actor" % "2.0.3",
       "rhino" % "js" % "1.7R2",
+      "net.sf.opencsv" % "opencsv" % "2.0",
       "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>

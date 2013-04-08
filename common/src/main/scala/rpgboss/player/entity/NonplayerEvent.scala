@@ -2,7 +2,6 @@ package rpgboss.player.entity
 
 import rpgboss.model.event._
 import rpgboss.player.MyGame
-import rpgboss.player.entity.EventEntity
 import rpgboss.player.ScriptThread
 import rpgboss.model.SpriteSpec
 
