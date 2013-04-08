@@ -112,27 +112,30 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
       if(e.peer.getButton() == MouseEvent.BUTTON3) {
         val clickRow = tree.getRowForLocation(x0, y0)
         
-        if(clickRow != -1) {
-          // Temporarily disable selection events while popup in action
-          deafTo(tree.selection)
-          deafTo(tree.mouse.clicks)
-          
-          // The previously selected path
-          val origPaths = tree.selection.paths
-          
+        // Temporarily disable selection events while popup in action
+        deafTo(tree.selection)
+        deafTo(tree.mouse.clicks)
+        
+        // The previously selected path
+        val origRow = tree.selection.rows.headOption
+        
+        if(clickRow != -1)
           tree.selectRows(clickRow)
-          val clickNode = tree.selection.paths.head.last
-          
-          val menu = popupMenuFor(clickNode)
-          menu.show(tree, x0, y0, hideCallback = () => {
-            if(!origPaths.isEmpty)
-              tree.selectPaths(origPaths.head)
+        
+        val clickNode = 
+          if(clickRow == -1)
+            projectRoot
+          else
+            tree.selection.paths.head.last
             
-            // Renable all eventns
-            listenTo(tree.selection)
-            listenTo(tree.mouse.clicks)
-          })
-        }
+        val menu = popupMenuFor(clickNode)
+        menu.show(tree, x0, y0, hideCallback = () => {
+          origRow.map(p => tree.selectRows(p))
+          
+          // Renable all eventns
+          listenTo(tree.selection)
+          listenTo(tree.mouse.clicks)
+        })
       }
     }
   }
