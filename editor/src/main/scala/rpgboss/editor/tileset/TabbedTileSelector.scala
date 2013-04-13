@@ -64,6 +64,7 @@ class TabbedTileSelector(sm: StateMaster)
 
     preferredSize = new Dimension(preferredSize.getWidth().toInt, 500)
     revalidate()
+    repaint()
   }
 }
 
