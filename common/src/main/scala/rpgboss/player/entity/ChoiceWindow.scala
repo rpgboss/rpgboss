@@ -4,8 +4,7 @@ import rpgboss.model.resource._
 import rpgboss.model.Project
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import akka.dispatch.Promise
-import rpgboss.player.Global._
+import scala.concurrent.Promise
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import rpgboss.player.ChoiceInputHandler
 import rpgboss.player.MyKeys

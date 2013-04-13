@@ -11,7 +11,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import akka.dispatch.{ ExecutionContext }
 import java.util.concurrent.Executors
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.FileHandleResolver
@@ -35,12 +34,6 @@ case class MutableMapLoc(
     this.x = other.x
     this.y = other.y
   }
-}
-
-object Global {
-  val pool = Executors.newCachedThreadPool()
-
-  implicit val ec = ExecutionContext.fromExecutorService(pool)
 }
 
 class MyGame(gamepath: File)

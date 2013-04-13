@@ -14,7 +14,6 @@ object Settings {
       "com.google.guava" % "guava" % "10.0",
       "org.json4s" % "json4s-native_2.10" % "3.2.3",
       "com.typesafe" % "scalalogging-slf4j_2.10" % "1.0.1",
-      "com.typesafe.akka" % "akka-actor" % "2.0.3",
       "rhino" % "js" % "1.7R2",
       "net.sf.opencsv" % "opencsv" % "2.0",
       "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"

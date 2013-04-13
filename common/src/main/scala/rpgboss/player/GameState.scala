@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.Gdx
 import java.util.concurrent.FutureTask
 import java.util.concurrent.Callable
-import akka.dispatch.Await
-import akka.util.Duration
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 import rpgboss.player.entity.PlayerEvent
 import rpgboss.player.entity.NonplayerEvent
 import rpgboss.player.entity.EventEntity
