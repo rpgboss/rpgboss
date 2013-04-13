@@ -11,41 +11,38 @@ import net.java.dev.designgridlayout._
 import rpgboss.editor.dialog.DatabaseDialog
 
 class EnumerationsPanel(
-    owner: Window, 
-    sm: StateMaster, 
-    val dbDiag: DatabaseDialog) 
-  extends DesignGridPanel 
-  with DatabasePanel
-{
+  owner: Window,
+  sm: StateMaster,
+  val dbDiag: DatabaseDialog)
+  extends DesignGridPanel
+  with DatabasePanel {
   def panelName = "Enumerations"
   layout.labelAlignment(LabelAlignment.RIGHT)
-  
+
   val fElements =
     new StringArrayEditingPanel(
-        owner,
-        "Elements",
-        dbDiag.model.elements) {
-    
-    override def onListDataUpdate() = {
-      logger.info("Elements updated")
-      dbDiag.model = dbDiag.model.copy(
-          elements = array
-      )
+      owner,
+      "Elements",
+      dbDiag.model.elements) {
+
+      override def onListDataUpdate() = {
+        logger.info("Elements updated")
+        dbDiag.model = dbDiag.model.copy(
+          elements = array)
+      }
     }
-  }
-  
-  val fEquipSubtypes = 
+
+  val fEquipSubtypes =
     new StringArrayEditingPanel(
-        owner,
-        "Equipment subtypes",
-        dbDiag.model.equipSubtypes) {
-    override def onListDataUpdate() = {
-      logger.info("Skill types updated")
-      dbDiag.model = dbDiag.model.copy(
-          equipSubtypes = array
-      )
+      owner,
+      "Equipment subtypes",
+      dbDiag.model.equipSubtypes) {
+      override def onListDataUpdate() = {
+        logger.info("Skill types updated")
+        dbDiag.model = dbDiag.model.copy(
+          equipSubtypes = array)
+      }
     }
-  }
-  
+
   row.grid().add(fElements).add(fEquipSubtypes)
 }

@@ -24,25 +24,25 @@ object MetadataMode extends RpgEnum {
 
 case class TileMetadata(blockedDirs: Byte, height: Byte) {
   import Constants.DirectionMasks._
-  
+
   def passabilityHeightIncremented() = {
-    if(allPassable(blockedDirs) && height == 0) {
+    if (allPassable(blockedDirs) && height == 0) {
       copy(blockedDirs = ALLCARDINAL.toByte)
-    } else if(allBlocked(blockedDirs)) {
+    } else if (allBlocked(blockedDirs)) {
       copy(blockedDirs = NONE.toByte, height = 1)
     } else {
       copy(height = ((height + 1) % 6).toByte)
     }
   }
-  
+
   def passabilityHeightDecremented() = {
-    if(allPassable(blockedDirs) && height == 0) {
+    if (allPassable(blockedDirs) && height == 0) {
       copy(height = 5)
-    } else if(allBlocked(blockedDirs)) {
+    } else if (allBlocked(blockedDirs)) {
       copy(blockedDirs = NONE.toByte)
     } else {
       copy(height = ((height - 1) % 6).toByte,
-           blockedDirs = if(height == 1) ALLCARDINAL.toByte else NONE.toByte)
+        blockedDirs = if (height == 1) ALLCARDINAL.toByte else NONE.toByte)
     }
   }
 }
@@ -63,7 +63,7 @@ trait TileMetadataPanelOwner {
 }
 
 class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
-    extends BoxPanel(Orientation.Horizontal) {
+  extends BoxPanel(Orientation.Horizontal) {
   import MetadataMode._
 
   def metadataMode = owner.metadataMode
@@ -73,7 +73,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
                       yTile: Int): Option[TileMetadata] = {
     owner.getTileMeta(xTile, yTile) map { metadata =>
       import Constants.DirectionMasks._
-      
+
       if (metadataMode == PassabilityHeight) {
         if (button == MouseEvent.BUTTON1) {
           metadata.passabilityHeightIncremented()

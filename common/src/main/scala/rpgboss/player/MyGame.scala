@@ -11,7 +11,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import akka.dispatch.{ExecutionContext}
+import akka.dispatch.{ ExecutionContext }
 import java.util.concurrent.Executors
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.FileHandleResolver
@@ -19,17 +19,17 @@ import rpgboss.model.resource.RpgAssetManager
 import java.lang.Thread.UncaughtExceptionHandler
 
 case class MutableMapLoc(
-    var map: String = "", 
-    var x: Float = 0, 
-    var y: Float = 0) {
+  var map: String = "",
+  var x: Float = 0,
+  var y: Float = 0) {
   def this(other: MapLoc) = this(other.map, other.x, other.y)
-  
+
   def set(other: MapLoc) = {
     this.map = other.map
     this.x = other.x
     this.y = other.y
   }
-  
+
   def set(other: MutableMapLoc) = {
     this.map = other.map
     this.x = other.x
@@ -43,18 +43,17 @@ object Global {
   implicit val ec = ExecutionContext.fromExecutorService(pool)
 }
 
-class MyGame(gamepath: File) 
-  extends ApplicationListener   
-{
+class MyGame(gamepath: File)
+  extends ApplicationListener {
   val project = Project.readFromDisk(gamepath).get
-  
+
   val logger = new Logger("Game", Logger.INFO)
-  val fps = new FPSLogger() 
-  
+  val fps = new FPSLogger()
+
   var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
   val inputs = new MyInputMultiplexer()
-  
+
   /*
    * SpriteBatch manages its own matrices. By default, it sets its modelview
    * matrix to the identity, and the projection matrix to an orthographic
@@ -66,55 +65,54 @@ class MyGame(gamepath: File)
    * If you'd like to specify your objects in some other space, simply
    * change the projection and modelview (transform) matrices.
    */
-  
+
   var state: GameState = null
-  
+
   val assets = new RpgAssetManager(project)
-  
+
   def create() = {
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
-    
+
     state = new GameState(this, project)
     mapLayer = new MapLayer(this)
     screenLayer = new ScreenLayer(this, state)
-    
+
     ScriptThread.fromFile(this, "main.js", "main()").run()
   }
-  
+
   override def dispose() {
     state.dispose()
     mapLayer.dispose()
     screenLayer.dispose()
   }
-  
+
   override def pause() {}
-  
+
   override def render() {
     import Tileset._
-    
+
     val delta = Gdx.graphics.getDeltaTime()
-    
+
     // Log fps
     fps.log()
-    
+
     // update state
     state.update(delta)
-    
+
     mapLayer.update(delta)
     screenLayer.update(delta)
-    
+
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL10.GL_BLEND)
-    
+
     // Render the two layers
     mapLayer.render()
     screenLayer.render()
   }
-  
-  
+
   override def resize(x: Int, y: Int) {}
   override def resume() {}
 }

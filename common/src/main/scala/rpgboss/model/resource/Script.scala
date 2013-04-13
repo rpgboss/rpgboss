@@ -11,10 +11,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 
 case class ScriptMetadata()
 
-case class Script(proj: Project, name: String, 
+case class Script(proj: Project, name: String,
                   metadata: ScriptMetadata)
-extends Resource[Script, ScriptMetadata]
-{
+  extends Resource[Script, ScriptMetadata] {
   def meta = Script
   def getAsString = dataFile.readAsString.getOrElse("")
 }
@@ -22,7 +21,7 @@ extends Resource[Script, ScriptMetadata]
 object Script extends MetaResource[Script, ScriptMetadata] {
   def rcType = "script"
   def keyExts = Array("js")
-  
-  def defaultInstance(proj: Project, name: String) = 
+
+  def defaultInstance(proj: Project, name: String) =
     Script(proj, name, ScriptMetadata())
 }

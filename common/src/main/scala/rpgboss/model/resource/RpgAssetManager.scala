@@ -9,7 +9,7 @@ class AbsoluteFileHandleResolver extends FileHandleResolver {
   def resolve(filename: String) = Gdx.files.absolute(filename)
 }
 
-class RpgAssetManager(proj: Project) 
+class RpgAssetManager(proj: Project)
   extends AssetManager(new AbsoluteFileHandleResolver()) {
-  
+
 }

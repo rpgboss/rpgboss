@@ -7,17 +7,16 @@ import scala.swing._
 trait DatabasePanel {
   def panelName: String
   def dbDiag: DatabaseDialog
-  
+
   def activate(): Unit = {}
 }
 
 abstract class RightPaneArrayDatabasePanel[T](
-    owner: Window,
-    label: String,
-    initialAry: Array[T])(implicit m: Manifest[T])
+  owner: Window,
+  label: String,
+  initialAry: Array[T])(implicit m: Manifest[T])
   extends RightPaneArrayEditingPanel[T](owner, label, initialAry)(m)
-  with DatabasePanel 
-{
+  with DatabasePanel {
   override def activate(): Unit = {
     listView.selectIndices(listView.selection.indices.head)
   }

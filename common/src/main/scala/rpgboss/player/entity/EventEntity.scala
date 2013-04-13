@@ -43,7 +43,7 @@ abstract class EventEntity(
   var graphicHTiles: Float = 0f
   var boundBoxTiles: Float = 1.0f
   var stillStep = SpriteSpec.Steps.STILL
-  
+
   def collisionDeltas = 0.05f
 
   def setMoving(moving: Boolean, vxArg: Float = 0f, vyArg: Float = 0f) = {
@@ -170,7 +170,7 @@ abstract class EventEntity(
    * movement.
    */
   def eventTouchCallback(touchedNpcs: List[NonplayerEvent])
-  
+
   /**
    * @return Returns 3 items: (posBlocked, negBlocked)
    */
@@ -185,7 +185,7 @@ abstract class EventEntity(
           boundBoxTiles,
           mapAndAssets.mapCollisionPoint _)
       } getOrElse (true, true)
-      
+
       mapCollision
     }
   }
@@ -226,10 +226,10 @@ abstract class EventEntity(
           // Determine collisions in x direction on the y-positive corner
           // and the y negative corner of the bounding box
           val (xBlockedYPos, xBlockedYNeg) = getMapCollisions(dx, 0)
-          
+
           val evtsTouched = getAllEventTouches(dx, 0)
           eventTouchCallback(evtsTouched)
-          val evtBlocking = 
+          val evtBlocking =
             evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
 
           // Conventional movement if it succeeeds
@@ -255,9 +255,9 @@ abstract class EventEntity(
 
           val evtsTouched = getAllEventTouches(0, dy)
           eventTouchCallback(evtsTouched)
-          val evtBlocking = 
+          val evtBlocking =
             evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
-          
+
           if (!evtBlocking && !yBlockedXPos && !yBlockedXNeg) {
             dyThisLoop += dy
             y += dy

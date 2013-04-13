@@ -2,7 +2,7 @@ package rpgboss.model
 
 import java.io._
 
-import au.com.bytecode.opencsv.{CSVReader, CSVWriter}
+import au.com.bytecode.opencsv.{ CSVReader, CSVWriter }
 import org.json4s.native.Serialization
 import org.json4s.ShortTypeHints
 
@@ -28,12 +28,12 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
   def drawOrder = List(botLayer, midLayer, topLayer)
 
   def writeCsv(file: File, data: Array[Array[Byte]]) = {
-    val writer = 
+    val writer =
       new CSVWriter(new FileWriter(file), '\t', CSVWriter.NO_QUOTE_CHARACTER)
-    
-    data.foreach(row => 
+
+    data.foreach(row =>
       writer.writeNext(row.map(b => (b & 0xff).toString)))
-    
+
     writer.close()
     true
   }
@@ -42,16 +42,16 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
     val (mapFile, botFile, midFile, topFile, evtFile) = datafiles(p, name)
 
     val mapFileWritten = mapFile.isFile() || mapFile.createNewFile()
-    
+
     val layersWritten = writeCsv(botFile, botLayer) &&
-                        writeCsv(midFile, midLayer) &&
-                        writeCsv(topFile, topLayer)
+      writeCsv(midFile, midLayer) &&
+      writeCsv(topFile, topLayer)
 
     val eventsWritten = evtFile.useWriter { writer =>
       implicit val formats = RpgMapData.formats
       Serialization.writePretty(RpgMapDataEvents(events), writer) != null
     } getOrElse false
-    
+
     layersWritten && eventsWritten
   }
 
@@ -97,41 +97,41 @@ case class RpgMapDataEvents(events: Array[RpgEvent])
 case object RpgMapData {
   val formats = Serialization.formats(ShortTypeHints(
     EventCmd.types))
-    
+
   def datafiles(p: Project, name: String) = {
     val mapFile = new File(RpgMap.rcDir(p), name)
     val botFile = new File(RpgMap.rcDir(p), name + ".bot.csv")
     val midFile = new File(RpgMap.rcDir(p), name + ".mid.csv")
     val topFile = new File(RpgMap.rcDir(p), name + ".top.csv")
     val evtFile = new File(RpgMap.rcDir(p), name + ".evt.json")
-    
+
     (mapFile, botFile, midFile, topFile, evtFile)
   }
 
   def readCsvArray(file: File) = {
     val reader = new CSVReader(new FileReader(file), '\t')
-    
+
     val buffer = new scala.collection.mutable.ArrayBuffer[Array[Byte]]()
-    
-    val data = 
+
+    val data =
       Iterator.continually(reader.readNext()).takeWhile(_ != null).map { row =>
         row.map(_.toInt.toByte)
       }.toArray
-    
+
     reader.close()
-    
+
     data
   }
-  
+
   def readFromDisk(p: Project, name: String): Option[RpgMapData] = {
     val (_, botFile, midFile, topFile, evtFile) = datafiles(p, name)
-    
+
     val botAry = readCsvArray(botFile)
     val midAry = readCsvArray(midFile)
     val topAry = readCsvArray(topFile)
-    
+
     implicit val formats = RpgMapData.formats
-    
+
     evtFile.getReader().map { reader =>
       val intermediate = Serialization.read[RpgMapDataEvents](reader)
       RpgMapData(botAry, topAry, midAry, intermediate.events)

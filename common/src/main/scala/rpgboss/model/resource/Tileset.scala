@@ -18,9 +18,9 @@ import java.awt.image._
  *                        but lift-json doesn't support that. Fuck it.
  */
 case class TilesetMetadata(
-    blockedDirsAry: Array[Array[Int]],
-    heightAry: Array[Array[Int]]) {
-  
+  blockedDirsAry: Array[Array[Int]],
+  heightAry: Array[Array[Int]]) {
+
   // Constructor to port legacy data
   def this(blockedDirsAry: Array[Array[Int]]) = {
     this(blockedDirsAry, blockedDirsAry.map(a => new Array[Int](a.length)))
@@ -28,41 +28,39 @@ case class TilesetMetadata(
 }
 
 case class Tileset(proj: Project,
-                   name: String, 
-                   metadata: TilesetMetadata) 
-extends TiledImageResource[Tileset, TilesetMetadata]
-{
+                   name: String,
+                   metadata: TilesetMetadata)
+  extends TiledImageResource[Tileset, TilesetMetadata] {
   import Tileset.tilesize
   def meta = Tileset
-  
+
   def tileH = tilesize
   def tileW = tilesize
-  val xTiles = img.getWidth()/tileW
-  val yTiles = img.getHeight()/tileH
+  val xTiles = img.getWidth() / tileW
+  val yTiles = img.getHeight() / tileH
 }
 
 object Tileset extends MetaResource[Tileset, TilesetMetadata] {
   def rcType = "tileset"
   def keyExts = Array("png")
-  
+
   def tilesize = 32
-  def halftile = tilesize/2
-  
+  def halftile = tilesize / 2
+
   def defaultInstance(proj: Project, name: String) = {
-    val tilesetWOMetadata = Tileset(proj, name, 
-        new TilesetMetadata(Array.empty))
-    
+    val tilesetWOMetadata = Tileset(proj, name,
+      new TilesetMetadata(Array.empty))
+
     import Constants.DirectionMasks._
-    
+
     // Generate blockedDirs array
     val x = tilesetWOMetadata.xTiles
     val y = tilesetWOMetadata.yTiles
     val blockedDirsAry = Array.fill(x, y)(NONE)
-    val heightAry      = Array.fill(x, y)(0)
-    
-    
-    tilesetWOMetadata.copy(metadata = 
-      TilesetMetadata(blockedDirsAry, heightAry))    
+    val heightAry = Array.fill(x, y)(0)
+
+    tilesetWOMetadata.copy(metadata =
+      TilesetMetadata(blockedDirsAry, heightAry))
   }
 }
 

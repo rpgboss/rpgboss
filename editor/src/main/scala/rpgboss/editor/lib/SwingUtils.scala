@@ -10,47 +10,47 @@ object SwingUtils {
   def leftLabel(s: String) = new Label(s) {
     xAlignment = Alignment.Left
   }
-  
+
   def boolField(initial: Boolean, onUpdate: Boolean => Unit, text: String = "") =
     new CheckBox(text) {
       selected = initial
-      
+
       reactions += {
         case ButtonClicked(_) => onUpdate(selected)
       }
     }
-  
-  def textField(initial: String, onUpdate: String => Unit) = 
+
+  def textField(initial: String, onUpdate: String => Unit) =
     new TextField {
       text = initial
-      
+
       reactions += {
         case ValueChanged(_) => onUpdate(text)
       }
     }
-  
+
   def indexedCombo[T](choices: Seq[T], initial: Int, onUpdate: Int => Unit) = {
     new ComboBox(choices) {
       selection.index = initial
-      
+
       renderer = ListView.Renderer(choice => {
         val idx = choices.indexOf(choice)
         "%d: %s".format(idx, choice.toString())
       })
-      
+
       reactions += {
         case SelectionChanged(_) => onUpdate(selection.index)
       }
     }
   }
-  
+
   def enumCombo[T <: Enumeration](enum: T)(
-      initialId: Int, 
-      onUpdate: enum.Value => Any,
-      choices: Seq[enum.Value] = Seq()) = {
-    
-    val actualChoices = if(choices.isEmpty) enum.values.toSeq else choices
-    
+    initialId: Int,
+    onUpdate: enum.Value => Any,
+    choices: Seq[enum.Value] = Seq()) = {
+
+    val actualChoices = if (choices.isEmpty) enum.values.toSeq else choices
+
     new ComboBox(actualChoices) {
       selection.item = enum(initialId)
       listenTo(selection)
@@ -59,45 +59,44 @@ object SwingUtils {
       }
     }
   }
-  
+
   def addBtnsAsGrp(contents: Buffer[Component], btns: Seq[AbstractButton]) = {
     val firstSelected = btns.find(_.selected)
-    val grp = new ButtonGroup(btns : _*)
-    
+    val grp = new ButtonGroup(btns: _*)
+
     contents ++= btns
-    
-    firstSelected.map { btn => grp.select(btn)}
+
+    firstSelected.map { btn => grp.select(btn) }
   }
-  
-  def enumButtons[T <: Enumeration]
-      (enum: T)(initial: enum.Value, selectF: enum.Value => Any) = 
-  {
-    enum.values.toList.map { eVal =>
-      new ToggleButton() {
-        action = Action(eVal.toString) { 
-          selectF(eVal)
+
+  def enumButtons[T <: Enumeration](enum: T)(initial: enum.Value, selectF: enum.Value => Any) =
+    {
+      enum.values.toList.map { eVal =>
+        new ToggleButton() {
+          action = Action(eVal.toString) {
+            selectF(eVal)
+          }
+
+          selected = eVal == initial
         }
-        
-        selected = eVal == initial
       }
     }
-  }
-  
+
   def enumRadios[T <: Enumeration](enum: T)(
-      initial: T#Value, 
-      selectF: T#Value => Any,
-      choices: Seq[T#Value] = Seq()) = 
-  {
-    val actualChoices = if(choices.isEmpty) enum.values.toSeq else choices
-    actualChoices.map { eVal =>
-      new RadioButton() {
-        action = Action(eVal.toString) { 
-          selectF(eVal)
+    initial: T#Value,
+    selectF: T#Value => Any,
+    choices: Seq[T#Value] = Seq()) =
+    {
+      val actualChoices = if (choices.isEmpty) enum.values.toSeq else choices
+      actualChoices.map { eVal =>
+        new RadioButton() {
+          action = Action(eVal.toString) {
+            selectF(eVal)
+          }
+
+          selected = eVal == initial
         }
-        
-        selected = eVal == initial
       }
     }
-  }
-  
+
 }

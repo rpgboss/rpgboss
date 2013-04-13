@@ -7,29 +7,28 @@ import rpgboss.editor.dialog.StdDialog
 import rpgboss.editor.lib.DesignGridPanel
 
 class ShowTextCmdDialog(
-    owner: Window, 
-    initial: ShowText, 
-    successF: (ShowText) => Any) 
-  extends StdDialog (owner, "Show text")
-{
-  
+  owner: Window,
+  initial: ShowText,
+  successF: (ShowText) => Any)
+  extends StdDialog(owner, "Show text") {
+
   val textEdit = new TextArea(initial.lines.mkString("\n"))
-  
+
   val textEditScroll = new ScrollPane {
     contents = textEdit
     preferredSize = new Dimension(300, 150)
   }
-  
+
   def okFunc() = {
     successF(ShowText(textEdit.text.split("\n")))
     close()
   }
-  
+
   contents = new DesignGridPanel {
     row().grid().add(leftLabel("Text:"))
     row().grid().add(textEditScroll)
-    
+
     addButtons(cancelBtn, okBtn)
   }
-  
+
 }

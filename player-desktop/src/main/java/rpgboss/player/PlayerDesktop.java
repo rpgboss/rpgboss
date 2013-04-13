@@ -11,24 +11,24 @@ import rpgboss.player.MyGame;
 public class PlayerDesktop {
 
   public static LwjglApplication launch(String gamePath, boolean forceExit) {
-    MyGame game = new MyGame(new File(gamePath)); 
-    
+    MyGame game = new MyGame(new File(gamePath));
+
     LwjglApplicationConfiguration conf = new LwjglApplicationConfiguration();
     conf.title = game.project().data().title();
-    conf.width = 32*20*2;
-    conf.height = 32*15*2;
+    conf.width = 32 * 20 * 2;
+    conf.height = 32 * 15 * 2;
     conf.useGL20 = true;
     conf.forceExit = forceExit;
-    
+
     return new LwjglApplication(game, conf);
   }
-  
+
   /**
    * @param args
    */
   public static void main(String[] args) {
-    if(args.length < 1) { 
-      
+    if (args.length < 1) {
+
     } else {
       launch(args[0], true);
     }

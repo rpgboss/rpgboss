@@ -9,22 +9,22 @@ import rpgboss.editor.StateMaster
 
 /**
  * Holds and edits list of commands.
- * Current state is held in listData member. 
+ * Current state is held in listData member.
  */
 class CommandBox(
-    evtDiag: EventDialog,
-    owner: Window, 
-    sm: StateMaster, 
-    initialCmds: Array[EventCmd]) 
+  evtDiag: EventDialog,
+  owner: Window,
+  sm: StateMaster,
+  initialCmds: Array[EventCmd])
   extends ListView(initialCmds) {
-  
+
   listenTo(mouse.clicks)
-  
+
   def newCmdDialog() = {
     val d = new NewEvtCmdBox(evtDiag, sm, owner, this, selection.indices.head)
     d.open()
   }
-  
+
   def editSelectedCmd() = {
     val selectedIdx = selection.indices.head
     val selectedCmd = selection.items.head
@@ -33,22 +33,22 @@ class CommandBox(
     })
     d.open()
   }
-  
+
   val cmdBox = this
   reactions += {
     case MouseClicked(`cmdBox`, pt, _, clicks, _) =>
-      if(clicks == 2) {
+      if (clicks == 2) {
         selection.items.head match {
           case c: EndOfScript => newCmdDialog()
           case _ => editSelectedCmd()
         }
       }
   }
-  
+
   def insertCmd(idx: Int, cmd: EventCmd) = {
-    val newList = 
-      listData.take(idx) ++ Seq(cmd) ++ listData.takeRight(listData.length-idx)
-    
+    val newList =
+      listData.take(idx) ++ Seq(cmd) ++ listData.takeRight(listData.length - idx)
+
     listData = newList
   }
 }

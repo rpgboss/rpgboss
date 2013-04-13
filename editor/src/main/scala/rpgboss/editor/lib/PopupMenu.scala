@@ -12,14 +12,14 @@ object PopupMenu {
 
 class PopupMenu extends Component with Wrapper {
 
-  override lazy val peer: JPopupMenu = 
+  override lazy val peer: JPopupMenu =
     new JPopupMenu with PopupMenu.JPopupMenuMixin with SuperMixin {
       def popupMenuWrapper = PopupMenu.this
     }
-  
-  def show(invoker: Component, x: Int, y: Int): Unit = 
+
+  def show(invoker: Component, x: Int, y: Int): Unit =
     peer.show(invoker.peer, x, y)
-    
+
   def show(invoker: Component, x: Int, y: Int, hideCallback: () => Any) = {
     val listener = new PopupMenuListener {
       def popupMenuWillBecomeVisible(e: PopupMenuEvent) = {
@@ -31,7 +31,7 @@ class PopupMenu extends Component with Wrapper {
       def popupMenuCanceled(e: PopupMenuEvent) = {
       }
     }
-    
+
     peer.addPopupMenuListener(listener)
     peer.show(invoker.peer, x, y)
   }

@@ -18,7 +18,7 @@ case class RpgMapMetadata(parent: String,
                           viewCenterX: Float = 0f,
                           viewCenterY: Float = 0f) {
   def withinBounds(x: Int, y: Int) = {
-    x < xSize && y < ySize && x >= 0 && y >= 0 
+    x < xSize && y < ySize && x >= 0 && y >= 0
   }
 }
 
@@ -28,25 +28,24 @@ case class RpgMapMetadata(parent: String,
  *                 * Need to rename data file and metadata file
  *                 * Need to update the "parent" field of all its children
  *                 * Need to update all the events.
- *                 
+ *
  *                Instead, we should use the "title" field of the metadata
  *                for all cases where we need to refer to the title.
  */
 case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
-  extends Resource[RpgMap, RpgMapMetadata]
-{
+  extends Resource[RpgMap, RpgMapMetadata] {
   def meta = RpgMap
-  
+
   def saveMapData(d: RpgMapData) =
     d.writeToFile(proj, name)
-  
-  def readMapData() : Option[RpgMapData] = 
-    RpgMapData.readFromDisk(proj, name) 
-  
+
+  def readMapData(): Option[RpgMapData] =
+    RpgMapData.readFromDisk(proj, name)
+
   def id = name.split("\\.").head
   def displayId = "%s [%s]".format(metadata.title, id)
-  def displayName = 
-    if(metadata.title.isEmpty()) "[%s]".format(id) else metadata.title
+  def displayName =
+    if (metadata.title.isEmpty()) "[%s]".format(id) else metadata.title
 }
 
 /*
@@ -74,69 +73,69 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   def rcType = "rpgmap"
   def mapExt = "rpgmap"
   def keyExts = Array(mapExt)
-  
+
   val minXSize = 20
   val minYSize = 15
-  
+
   val maxXSize = 500
   val maxYSize = 500
-  
+
   val initXSize = 40
   val initYSize = 30
-  
+
   val bytesPerTile = 3
-  
-  val autotileByte : Byte = -2
-  val emptyTileByte : Byte = -1
-  
-  def autotileSeed  = Array[Byte](autotileByte, 0, 0)
+
+  val autotileByte: Byte = -2
+  val emptyTileByte: Byte = -1
+
+  def autotileSeed = Array[Byte](autotileByte, 0, 0)
   def emptyTileSeed = Array[Byte](emptyTileByte, 0, 0)
-  
+
   /**
-   * Generates an array made the seed bytes, repeated 
+   * Generates an array made the seed bytes, repeated
    */
   def makeRowArray(nTiles: Int, seed: Array[Byte]) = {
-    Array.tabulate[Byte](nTiles*bytesPerTile)(i => seed(i%bytesPerTile))
+    Array.tabulate[Byte](nTiles * bytesPerTile)(i => seed(i % bytesPerTile))
   }
 
-  def generateName(id: Int) = 
+  def generateName(id: Int) =
     "Map%06d.%s".formatLocal(java.util.Locale.US, id, mapExt)
-  
+
   def defaultInstance(proj: Project, name: String) = {
     val idxOfDot = name.indexOf(".")
-    val title = if(idxOfDot > 0) name.substring(0, idxOfDot) else name
+    val title = if (idxOfDot > 0) name.substring(0, idxOfDot) else name
     val m = RpgMapMetadata(
-        "", title, 
-        initXSize, initYSize, 
-        defaultTilesets,
-        defaultAutotiles)
+      "", title,
+      initXSize, initYSize,
+      defaultTilesets,
+      defaultAutotiles)
     apply(proj, name, m)
   }
-  
+
   def emptyMapData(xSize: Int, ySize: Int) = {
-    val autoLayer  = {
+    val autoLayer = {
       // Make a whole row of that autotile triples
       val row = makeRowArray(xSize, autotileSeed)
       // Make multiple rows
       Array.fill(ySize)(row.clone())
     }
-    val emptyLayer = { 
+    val emptyLayer = {
       val row = makeRowArray(xSize, emptyTileSeed)
       Array.fill(ySize)(row.clone())
     }
-    
+
     RpgMapData(autoLayer, emptyLayer, emptyLayer, Array.empty)
   }
-  
+
   def defaultMapData = emptyMapData(initXSize, initYSize)
-  
+
   def defaultTilesets = Array(
     "Refmap-TileA5.png",
     "Refmap-TileB.png",
     "Refmap-TileC.png",
     "Refmap-TileD.png",
     "Refmap-TileE.png")
-  
+
   def defaultAutotiles = Array(
     "Refmap-A1-0-0-A.png",
     "Refmap-A1-0-0-B.png",
@@ -265,7 +264,6 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     "Refmap-A4-5-4.png",
     "Refmap-A4-5-5.png",
     "Refmap-A4-5-6.png",
-    "Refmap-A4-5-7.png"
-  )
+    "Refmap-A4-5-7.png")
 
 }

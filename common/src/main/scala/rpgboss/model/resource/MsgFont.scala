@@ -11,23 +11,22 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 
 case class MsgfontMetadata()
 
-case class Msgfont(proj: Project, name: String, 
+case class Msgfont(proj: Project, name: String,
                    metadata: MsgfontMetadata)
-extends Resource[Msgfont, MsgfontMetadata]
-{
+  extends Resource[Msgfont, MsgfontMetadata] {
   def meta = Msgfont
-  
-  def getBitmapFont() : BitmapFont = {
+
+  def getBitmapFont(): BitmapFont = {
     val generator = new FreeTypeFontGenerator(
-        Gdx.files.absolute(dataFile.getAbsolutePath()))
-    
+      Gdx.files.absolute(dataFile.getAbsolutePath()))
+
     val result = generator.generateFont(
-        proj.data.fontsize,
-        FreeTypeFontGenerator.DEFAULT_CHARS,
-        true)
-    
+      proj.data.fontsize,
+      FreeTypeFontGenerator.DEFAULT_CHARS,
+      true)
+
     generator.dispose()
-        
+
     result
   }
 }
@@ -35,7 +34,7 @@ extends Resource[Msgfont, MsgfontMetadata]
 object Msgfont extends MetaResource[Msgfont, MsgfontMetadata] {
   def rcType = "msgfont"
   def keyExts = Array("ttf")
-  
-  def defaultInstance(proj: Project, name: String) = 
+
+  def defaultInstance(proj: Project, name: String) =
     Msgfont(proj, name, MsgfontMetadata())
 }
