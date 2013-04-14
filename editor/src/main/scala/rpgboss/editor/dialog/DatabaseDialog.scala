@@ -27,9 +27,7 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
     List(charPane, classesPane, itemsPane, statusPane, sysPane, enumPane)
 
   def applyFunc() = {
-    val newProj = sm.getProj.copy(data = model)
-
-    sm.setProj(newProj)
+    sm.setProjData(model)
   }
 
   def okFunc() = {

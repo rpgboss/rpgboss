@@ -33,6 +33,7 @@ class MapEditor(
   private var selectedLayer = MapLayers.default
   private var selectedTool = MapViewToolsEnum.default
   private var selectedEvtIdx: Option[Int] = None
+  private var popupMenuOpen = false
 
   def selectLayer(layer: MapLayers.Value) = {
     selectedLayer = layer
@@ -113,10 +114,10 @@ class MapEditor(
 
           drawWithAlpha(g, evtAlpha) {
             // draw start loc
-            val startingLoc = sm.getProj.data.startingLoc
+            val startingLoc = sm.getProjData.startingLoc
             if (startingLoc.map == vs.mapName) {
-              import MapEditor.startLocTile
-              g.drawImage(startLocTile,
+              import MapEditor.startingLocIcon
+              g.drawImage(startingLocIcon,
                 (startingLoc.x * curTilesize).toInt - curTilesize / 2,
                 (startingLoc.y * curTilesize).toInt - curTilesize / 2,
                 curTilesize, curTilesize,
@@ -251,111 +252,141 @@ class MapEditor(
     }
   }
 
-  def evtPopupMenu(): Option[PopupMenu] = viewStateOpt map { vs =>
-    val isNewEvent = selectedEvtIdx.isEmpty
-    val newEditText = if (isNewEvent) "New event" else "Edit event"
+  def showEventPopupMenu(px: Int, py: Int, xTile: Float, yTile: Float) = {
+    viewStateOpt map { vs =>
+      val evtSelected = selectedEvtIdx.isDefined
+      val newEditText = if (evtSelected) "Edit event..." else "New event..."
 
-    val menu = new PopupMenu {
-      contents += new MenuItem(Action(newEditText) { editEvent() })
-      contents += new MenuItem(Action("Delete") { deleteEvent() })
+      val menu = new PopupMenu {
+        contents += new MenuItem(Action(newEditText) { editEvent() })
+
+        if (evtSelected)
+          contents += new MenuItem(Action("Delete") { deleteEvent() })
+
+        contents += new Separator
+
+        contents += new MenuItem(Action("Set start location") {
+          def repaintMapLoc(l: MapLoc) =
+            repaintRegion(TileRect(l.x - 0.5f, l.y - 0.5f, 1, 1))
+
+          val oldStartingLoc = sm.getProjData.startingLoc
+          val newStartingLoc =
+            MapLoc(vs.mapName, xTile.toInt + 0.5f, yTile.toInt + 0.5f)
+
+          sm.setProjData(sm.getProjData.copy(startingLoc = newStartingLoc))
+
+          repaintMapLoc(oldStartingLoc)
+          repaintMapLoc(newStartingLoc)
+        })
+      }
+
+      popupMenuOpen = true
+      menu.showWithCallback(canvasPanel, px, py, () => popupMenuOpen = false)
     }
-
-    menu
   }
 
   override def mousePressed(
     e: MousePressed,
-    x0: Float,
-    y0: Float,
+    xTile0: Float,
+    yTile0: Float,
     vs: MapViewState): Option[(Boolean, MouseFunction, MouseFunction)] = {
 
+    if (!vs.mapMeta.withinBounds(xTile0, yTile0))
+      return None
+
+    // Updated the selected event idx
+    val existingEventIdx = vs.nextMapData.events.indexWhere(
+      e => e.x.toInt == xTile0.toInt && e.y.toInt == yTile0.toInt)
+
+    if (existingEventIdx == -1) {
+      selectedEvtIdx = None
+    } else {
+      selectedEvtIdx = Some(existingEventIdx)
+    }
+
+    val button = e.peer.getButton()
+
     if (selectedLayer == Evt) {
-      if (vs.mapMeta.withinBounds(x0.toInt, y0.toInt)) {
-        updateCursorSq(TileRect(x0.toInt, y0.toInt))
+      updateCursorSq(TileRect(xTile0.toInt, yTile0.toInt))
 
-        // Updated the selected event idx
-        val existingEventIdx =
-          vs.nextMapData.events.indexWhere(e =>
-            e.x.toInt == x0.toInt && e.y.toInt == y0.toInt)
+      if (button == MouseEvent.BUTTON1) {
+        if (selectedEvtIdx.isDefined) {
+          val evtIdx = selectedEvtIdx.get
 
-        if (existingEventIdx == -1) {
-          selectedEvtIdx = None
-        } else {
-          selectedEvtIdx = Some(existingEventIdx)
-        }
+          vs.begin()
 
-        val button = e.peer.getButton()
-        if (button == MouseEvent.BUTTON1) {
-          if (selectedEvtIdx.isDefined) {
-            val evtIdx = selectedEvtIdx.get
+          def onDrag(xTile1: Float, yTile1: Float, vs: MapViewState) = {
+            val evt = vs.nextMapData.events(evtIdx)
+            vs.nextMapData.events.update(evtIdx,
+              evt.copy(x = xTile1.toInt + 0.5f, y = yTile1.toInt + 0.5f))
 
-            vs.begin()
+            updateCursorSq(TileRect(xTile1, yTile1))
+          }
 
-            def onDrag(x1: Float, y1: Float, vs: MapViewState) = {
-              val evt = vs.nextMapData.events(evtIdx)
-              vs.nextMapData.events.update(evtIdx,
-                evt.copy(x = x1.toInt + 0.5f, y = y1.toInt + 0.5f))
+          def onDragStop(xTile2: Float, yTile2: Float, vs: MapViewState) = {
+            commitVS(vs)
+          }
 
-              updateCursorSq(TileRect(x1.toInt, y1.toInt))
-            }
-
-            def onDragStop(x2: Float, y2: Float, vs: MapViewState) = {
-              commitVS(vs)
-            }
-
-            Some((true, onDrag _, onDragStop _))
-          } else None
-        } else if (button == MouseEvent.BUTTON3) {
-          evtPopupMenu().map { _.show(canvasPanel, e.point.x, e.point.y) }
-          None
+          Some((true, onDrag _, onDragStop _))
         } else None
+      } else if (button == MouseEvent.BUTTON3) {
+        showEventPopupMenu(e.point.x, e.point.y, xTile0.toInt, yTile0.toInt)
+        None
       } else None
     } else {
-      vs.begin()
+      if (button == MouseEvent.BUTTON1) {
+        vs.begin()
 
-      val tCodes = tileSelector.selectionBytes
-      val tool = MapViewToolsEnum.getTool(selectedTool)
+        val tCodes = tileSelector.selectionBytes
+        val tool = MapViewToolsEnum.getTool(selectedTool)
 
-      setTilePaintSq(tool.selectionSqOnDrag, x0, y0)
-      val changedRegion =
-        tool.onMouseDown(vs, tCodes, selectedLayer, x0.toInt, y0.toInt)
-      repaintRegion(changedRegion)
-
-      def onDrag(x1: Float, y1: Float, vs: MapViewState) = {
-        setTilePaintSq(tool.selectionSqOnDrag, x1, y1)
+        setTilePaintSq(tool.selectionSqOnDrag, xTile0, yTile0)
         val changedRegion =
-          tool.onMouseDragged(vs, tCodes, selectedLayer,
-            x0.toInt, y0.toInt, x1.toInt, y1.toInt)
-        repaintRegion(changedRegion)
-      }
-
-      def onDragStop(x2: Float, y2: Float, vs: MapViewState) = {
-        val changedRegion =
-          tool.onMouseUp(vs, tCodes, selectedLayer,
-            x0.toInt, y0.toInt, x2.toInt, y2.toInt)
+          tool.onMouseDown(vs, tCodes, selectedLayer, xTile0.toInt, yTile0.toInt)
         repaintRegion(changedRegion)
 
-        commitVS(vs)
+        def onDrag(xTile1: Float, yTile1: Float, vs: MapViewState) = {
+          setTilePaintSq(tool.selectionSqOnDrag, xTile1, yTile1)
+          val changedRegion =
+            tool.onMouseDragged(vs, tCodes, selectedLayer,
+              xTile0.toInt, yTile0.toInt, xTile1.toInt, yTile1.toInt)
+          repaintRegion(changedRegion)
+        }
 
-        setTilePaintSq(true, x2, y2)
-      }
+        def onDragStop(xTile2: Float, yTile2: Float, vs: MapViewState) = {
+          val changedRegion =
+            tool.onMouseUp(vs, tCodes, selectedLayer,
+              xTile0.toInt, yTile0.toInt, xTile2.toInt, yTile2.toInt)
+          repaintRegion(changedRegion)
 
-      Some((true, onDrag _, onDragStop _))
+          commitVS(vs)
+
+          setTilePaintSq(true, xTile2, yTile2)
+        }
+
+        Some((true, onDrag _, onDragStop _))
+      } else if (button == MouseEvent.BUTTON3) {
+        updateCursorSq(TileRect(xTile0.toInt, yTile0.toInt))
+        showEventPopupMenu(e.point.x, e.point.y, xTile0, yTile0)
+        None
+      } else None
     }
   }
 
   //--- REACTIONS ---//
   listenTo(canvasPanel.mouse.clicks, canvasPanel.mouse.moves)
 
+  def cursorFollowsMouse = selectedLayer != Evt && !popupMenuOpen
+
   reactions += {
     /**
      * Three reactions in the case that the selectedLayer is not the Evt layer
      */
-    case MouseMoved(`canvasPanel`, p, _) if selectedLayer != Evt => {
+    case MouseMoved(`canvasPanel`, p, _) if cursorFollowsMouse => {
       val (tileX, tileY) = toTileCoords(p)
       setTilePaintSq(true, tileX.toInt, tileY.toInt)
     }
-    case MouseExited(`canvasPanel`, _, _) if selectedLayer != Evt =>
+    case MouseExited(`canvasPanel`, _, _) if cursorFollowsMouse =>
       setTilePaintSq(false)
     case e: MouseClicked if e.source == canvasPanel && selectedLayer == Evt =>
       logger.info("MouseClicked on EvtLayer")
@@ -366,6 +397,6 @@ class MapEditor(
 }
 
 object MapEditor {
-  lazy val startLocTile = ImageIO.read(
+  lazy val startingLocIcon = ImageIO.read(
     getClass.getClassLoader.getResourceAsStream("player_play.png"))
 }

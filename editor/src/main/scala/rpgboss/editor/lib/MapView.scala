@@ -197,6 +197,10 @@ class MapView(
   //--- MISC FUNCTIONS ---//
   def toTileCoords(p: Point): (Float, Float) =
     (p.getX.toFloat / curTilesize, p.getY.toFloat / curTilesize)
+  def toTileCoordsInt(p: Point): (Int, Int) = {
+    val (xTileFloat, yTileFloat) = toTileCoords(p)
+    (xTileFloat.toInt, yTileFloat.toInt)
+  }
 
   def resizeRevalidateRepaint() = {
     canvasPanel.preferredSize = viewStateOpt.map { vs =>
@@ -256,10 +260,10 @@ class MapView(
    */
   def mousePressed(
     e: MousePressed,
-    x0: Float,
-    y0: Float,
+    xTile: Float,
+    yTile: Float,
     vs: MapViewState): Option[(Boolean, MouseFunction, MouseFunction)] = {
-    updateCursorSq(TileRect(x0 - 0.5f, y0 - 0.5f, 1, 1))
+    updateCursorSq(TileRect(xTile - 0.5f, yTile - 0.5f, 1, 1))
 
     // Treat drags and drag stops as also mousePressed
     Some((true, mousePressed(e, _, _, _), mousePressed(e, _, _, _)))
@@ -268,10 +272,9 @@ class MapView(
   reactions += {
     case e: MousePressed if e.source == canvasPanel =>
       viewStateOpt map { vs =>
-        val (x0, y0) = toTileCoords(e.point)
+        val (xTile0, yTile0) = toTileCoordsInt(e.point)
 
-        val dragAndDragStopActionsOpt =
-          mousePressed(e, x0, y0, vs)
+        val dragAndDragStopActionsOpt = mousePressed(e, xTile0, yTile0, vs)
 
         if (dragAndDragStopActionsOpt.isDefined) {
           val (onlyCallOnTileChange, dragAction, dragStopAction) =
@@ -282,23 +285,21 @@ class MapView(
 
           lazy val temporaryReactions: PartialFunction[Event, Unit] = {
             case e: MouseDragged if e.source == canvasPanel => {
-              val (x1, y1) = toTileCoords(e.point)
-              val x1Tile = x1.toInt
-              val y1Tile = y1.toInt
+              val (xTile1, yTile1) = toTileCoordsInt(e.point)
 
               // only redo action if dragged to a different square
               if (!onlyCallOnTileChange ||
-                (x1Tile, y1Tile) != (xLastDragTile, yLastDragTile)) {
-                dragAction(x1, y1, vs)
+                (xTile1, yTile1) != (xLastDragTile, yLastDragTile)) {
+                dragAction(xTile1, yTile1, vs)
 
-                xLastDragTile = x1Tile
-                yLastDragTile = y1Tile
+                xLastDragTile = xTile1
+                yLastDragTile = yTile1
               }
             }
             case e: MouseReleased if e.source == canvasPanel => {
-              val (x2, y2) = toTileCoords(e.point)
+              val (xTile2, yTile2) = toTileCoords(e.point)
 
-              dragStopAction(x2, y2, vs)
+              dragStopAction(xTile2, yTile2, vs)
               reactions -= temporaryReactions
             }
           }

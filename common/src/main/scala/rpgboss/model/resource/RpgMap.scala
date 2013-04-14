@@ -17,6 +17,9 @@ case class RpgMapMetadata(parent: String,
                           autotiles: Array[String],
                           viewCenterX: Float = 0f,
                           viewCenterY: Float = 0f) {
+  def withinBounds(x: Float, y: Float) = {
+    x < xSize && y < ySize && x >= 0 && y >= 0
+  }
   def withinBounds(x: Int, y: Int) = {
     x < xSize && y < ySize && x >= 0 && y >= 0
   }

@@ -51,9 +51,8 @@ class TabbedTileSelector(sm: StateMaster)
       listenTo(selection)
 
       reactions += {
-        case SelectionChanged(pane) =>
-          selectedTileCodes =
-            selection.page.content.asInstanceOf[TileBytesSelector].selectionBytes
+        case SelectionChanged(pane) => selectedTileCodes =
+          selection.page.content.asInstanceOf[TileBytesSelector].selectionBytes
       }
     }
   })

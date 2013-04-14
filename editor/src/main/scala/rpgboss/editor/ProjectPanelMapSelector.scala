@@ -73,10 +73,8 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
           RpgMap.defaultMapData,
           (newMap, newMapData) => {
             val p = sm.getProj
-            // XXX: Kinda gross way to increment the lastCreatedMapId...
-            sm.setProj(
-              p.copy(data = p.data.copy(
-                lastCreatedMapId = p.data.lastCreatedMapId + 1)))
+            sm.setProjData(p.data.copy(
+              lastCreatedMapId = p.data.lastCreatedMapId + 1))
 
             val parentNode = allNodes.get(newMap.metadata.parent).get
             val newNode = Node(newMap, parentNode.path)
@@ -125,7 +123,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
             tree.selection.paths.head.last
 
         val menu = popupMenuFor(clickNode)
-        menu.show(tree, x0, y0, hideCallback = () => {
+        menu.showWithCallback(tree, x0, y0, onHide = () => {
           origRow.map(p => tree.selectRows(p))
 
           // Renable all eventns

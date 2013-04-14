@@ -20,20 +20,18 @@ class PopupMenu extends Component with Wrapper {
   def show(invoker: Component, x: Int, y: Int): Unit =
     peer.show(invoker.peer, x, y)
 
-  def show(invoker: Component, x: Int, y: Int, hideCallback: () => Any) = {
+  def showWithCallback(invoker: Component, x: Int, y: Int, onHide: () => Unit) = {
     val listener = new PopupMenuListener {
-      def popupMenuWillBecomeVisible(e: PopupMenuEvent) = {
-      }
+      def popupMenuWillBecomeVisible(e: PopupMenuEvent) = {}
       def popupMenuWillBecomeInvisible(e: PopupMenuEvent) = {
-        hideCallback()
+        onHide()
         peer.removePopupMenuListener(this)
       }
-      def popupMenuCanceled(e: PopupMenuEvent) = {
-      }
+      def popupMenuCanceled(e: PopupMenuEvent) = {}
     }
 
     peer.addPopupMenuListener(listener)
-    peer.show(invoker.peer, x, y)
+    show(invoker, x, y)
   }
 
   /* Create any other peer methods here */

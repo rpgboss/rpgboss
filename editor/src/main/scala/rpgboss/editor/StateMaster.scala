@@ -89,8 +89,9 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project) {
   }
 
   def getProj = proj
-  def setProj(newProj: Project) = {
-    proj = newProj
+  def getProjData = proj.data
+  def setProjData(newData: ProjectData) = {
+    proj = proj.copy(data = newData)
     projDirty = Dirty
     mainPanel.updateDirty(this)
   }
