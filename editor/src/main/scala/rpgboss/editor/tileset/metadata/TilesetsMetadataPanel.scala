@@ -57,7 +57,7 @@ class TilesetsMetadataPanel(sm: StateMaster)
       val tileset = tilesets(tilesetIdx)
       val blockedDir = tileset.metadata.blockedDirsAry(y)(x)
       val height = tileset.metadata.heightAry(y)(x)
-      Some(TileMetadata(blockedDir.toByte, height.toByte))
+      Some(TileMetadata(blockedDir, height))
     }
   }
 

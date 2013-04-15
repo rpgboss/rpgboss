@@ -14,18 +14,15 @@ import java.io._
 import java.awt.image._
 
 /**
- * @param blockedDirsAry  Array of blocked directions. Should be a Byte,
- *                        but lift-json doesn't support that. Fuck it.
+ * @param blockedDirsAry  Array of blocked directions. Array should be accessed
+ *                        as blockedDirsAry[yTile][xTile]. We do this so that
+ *                        the array layout is the same as the image layout --
+ *                        and it so it matches the layer arrays in RpgMapData.
+ *
  */
 case class TilesetMetadata(
-  blockedDirsAry: Array[Array[Int]],
-  heightAry: Array[Array[Int]]) {
-
-  // Constructor to port legacy data
-  def this(blockedDirsAry: Array[Array[Int]]) = {
-    this(blockedDirsAry, blockedDirsAry.map(a => new Array[Int](a.length)))
-  }
-}
+  blockedDirsAry: Array[Array[Byte]],
+  heightAry: Array[Array[Byte]])
 
 case class Tileset(proj: Project,
                    name: String,
@@ -49,15 +46,15 @@ object Tileset extends MetaResource[Tileset, TilesetMetadata] {
 
   def defaultInstance(proj: Project, name: String) = {
     val tilesetWOMetadata = Tileset(proj, name,
-      new TilesetMetadata(Array.empty))
+      new TilesetMetadata(Array.empty, Array.empty))
 
     import Constants.DirectionMasks._
 
     // Generate blockedDirs array
     val x = tilesetWOMetadata.xTiles
     val y = tilesetWOMetadata.yTiles
-    val blockedDirsAry = Array.fill(x, y)(NONE)
-    val heightAry = Array.fill(x, y)(0)
+    val blockedDirsAry = Array.fill(y, x)(NONE.toByte)
+    val heightAry = Array.fill(y, x)(0.toByte)
 
     tilesetWOMetadata.copy(metadata =
       TilesetMetadata(blockedDirsAry, heightAry))

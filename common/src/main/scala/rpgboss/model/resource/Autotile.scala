@@ -21,9 +21,7 @@ import javax.imageio.ImageIO
  *                      The the four "biggest" bits are undefined.
  *
  */
-case class AutotileMetadata(blockedDirs: Byte = 0, height: Byte = 0) {
-  def this(blockedDirs: Byte) = this(blockedDirs, 0)
-}
+case class AutotileMetadata(blockedDirs: Byte = 0, height: Byte = 0)
 
 case class Autotile(proj: Project,
                     name: String,

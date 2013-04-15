@@ -54,6 +54,8 @@ class MapAndAssets(project: Project, mapName: String) {
     import Constants.DirectionMasks._
     val xIdx = xTile * bytesPerTile
 
+    var blockedDirs: Int = NONE
+
     // Test top layer first, as if the top layer provides an answer, there is
     // no need to test subsequent layers
     for (layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer)) {
@@ -65,17 +67,22 @@ class MapAndAssets(project: Project, mapName: String) {
       if (byte1 < 0) {
         // Empty tile or autotile
         if (byte1 == autotileByte) {
-          return autotiles(byte2).metadata.blockedDirs
+          val tiledata = autotiles(byte2).metadata
+
+          if (tiledata.height == 0)
+            blockedDirs |= tiledata.blockedDirs
         } else {
-          // Do nothing... just continue with next layer
+          // Empty tile: Do nothing... just continue with next layer
         }
       } else { // tileset tile
-        return tilesets(byte1).metadata.blockedDirsAry(yTile)(xTile).toByte
+        val tiledata = tilesets(byte1).metadata
+
+        if (tiledata.heightAry(byte3)(byte2) == 0)
+          blockedDirs |= tiledata.blockedDirsAry(byte3)(byte2).toByte
       }
     }
 
-    // It seems that all layers had an empty tile. Default to not blocked
-    return NONE.toByte
+    return blockedDirs.toByte
   }
 
   /**
