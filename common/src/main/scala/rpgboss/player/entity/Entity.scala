@@ -24,7 +24,7 @@ import rpgboss.model.event.EventHeight
  * 
  * Bottom edge length is boundBoxTiles
  */
-abstract class EventEntity(
+abstract class Entity(
   game: MyGame,
   var x: Float = 0f,
   var y: Float = 0f,
@@ -169,7 +169,7 @@ abstract class EventEntity(
    * This method is called when event collides against another event during
    * movement.
    */
-  def eventTouchCallback(touchedNpcs: List[NonplayerEvent])
+  def eventTouchCallback(touchedNpcs: List[NonplayerEntity])
 
   /**
    * @return Returns 3 items: (posBlocked, negBlocked)

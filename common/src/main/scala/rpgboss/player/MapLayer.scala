@@ -179,7 +179,7 @@ class MapLayer(game: MyGame) {
     }
 
     // Render the player event
-    val allEvts: List[EventEntity] = state.playerEvt :: state.npcEvts
+    val allEvts: List[Entity] = state.playerEvt :: state.npcEvts
     allEvts.sortBy(_.y).foreach(_.render(batch, atlasSprites))
 
     batch.end()

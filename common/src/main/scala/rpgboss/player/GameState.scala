@@ -10,9 +10,9 @@ import java.util.concurrent.FutureTask
 import java.util.concurrent.Callable
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import rpgboss.player.entity.PlayerEvent
-import rpgboss.player.entity.NonplayerEvent
-import rpgboss.player.entity.EventEntity
+import rpgboss.player.entity.PlayerEntity
+import rpgboss.player.entity.NonplayerEntity
+import rpgboss.player.entity.Entity
 
 /**
  * This class contains all the state information about the game.
@@ -34,13 +34,13 @@ class GameState(game: MyGame, project: Project) {
   var mapAndAssetsOption: Option[MapAndAssets] = None
 
   // protagonist. Modify all these things on the Gdx thread
-  var playerEvt: PlayerEvent = new PlayerEvent(game)
+  var playerEvt: PlayerEntity = new PlayerEntity(game)
   setPlayerSprite(game.project.data.characters.head.sprite)
 
   val persistent = new PersistentState()
 
   // All the events on the current map, including the player event
-  var npcEvts = List[NonplayerEvent]()
+  var npcEvts = List[NonplayerEntity]()
 
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
@@ -132,7 +132,7 @@ class GameState(game: MyGame, project: Project) {
       val mapAndAssets = new MapAndAssets(project, loc.map)
       mapAndAssetsOption = Some(mapAndAssets)
       npcEvts = mapAndAssets.mapData.events.map {
-        new NonplayerEvent(game, _)
+        new NonplayerEntity(game, _)
       }.toList
     }
   }

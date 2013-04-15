@@ -5,8 +5,8 @@ import rpgboss.player.MyGame
 import rpgboss.player.ScriptThread
 import rpgboss.model.SpriteSpec
 
-class NonplayerEvent(game: MyGame, val mapEvent: RpgEvent)
-  extends EventEntity(
+class NonplayerEntity(game: MyGame, val mapEvent: RpgEvent)
+  extends Entity(
     game,
     mapEvent.x,
     mapEvent.y) {
@@ -43,7 +43,7 @@ class NonplayerEvent(game: MyGame, val mapEvent: RpgEvent)
     }
   }
 
-  def eventTouchCallback(touchedNpcs: List[NonplayerEvent]) = {
+  def eventTouchCallback(touchedNpcs: List[NonplayerEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.EVENTTOUCH.id ||

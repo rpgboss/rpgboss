@@ -9,11 +9,11 @@ import MyKeys.Left
 import MyKeys.Right
 import MyKeys.Up
 
-class PlayerEvent(game: MyGame)
-  extends EventEntity(game: MyGame)
+class PlayerEntity(game: MyGame)
+  extends Entity(game: MyGame)
   with MoveInputHandler {
   // Add input handling
-  game.inputs.prepend(this)
+  game.inputs.prepend(PlayerEntity.this)
 
   override def update(delta: Float) = {
     import MyKeys._
@@ -73,7 +73,7 @@ class PlayerEvent(game: MyGame)
     }
   }
 
-  def eventTouchCallback(touchedNpcs: List[NonplayerEvent]) = {
+  def eventTouchCallback(touchedNpcs: List[NonplayerEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.PLAYERTOUCH.id ||
@@ -84,7 +84,7 @@ class PlayerEvent(game: MyGame)
 
   // NOTE: this is never called... which may or may not be okay haha
   def dispose() = {
-    game.inputs.remove(this)
+    game.inputs.remove(PlayerEntity.this)
   }
 
 }
