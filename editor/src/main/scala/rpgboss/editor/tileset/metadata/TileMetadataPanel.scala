@@ -11,9 +11,7 @@ import java.awt.image.BufferedImage
 import rpgboss.editor.StateMaster
 import javax.imageio.ImageIO
 import java.awt.geom.Line2D
-import java.awt.AlphaComposite
-import java.awt.Font
-import java.awt.Color
+import java.awt.{ AlphaComposite, Font, Color }
 import java.awt.event.MouseEvent
 
 object MetadataMode extends RpgEnum {
@@ -105,8 +103,14 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
 
     val iconPass = loadIcon("tilesetMetadataIcons/all-pass.png")
     val iconStop = loadIcon("tilesetMetadataIcons/all-blocked.png")
-    val iconArrow = loadIcon("tilesetMetadataIcons/all-blocked.png")
-    val iconDirBlock = loadIcon("tilesetMetadataIcons/all-blocked.png")
+    val iconNorthPass = loadIcon("tilesetMetadataIcons/north-pass.png")
+    val iconNorthStop = loadIcon("tilesetMetadataIcons/north-stop.png")
+    val iconSouthPass = loadIcon("tilesetMetadataIcons/south-pass.png")
+    val iconSouthStop = loadIcon("tilesetMetadataIcons/south-stop.png")
+    val iconEastPass = loadIcon("tilesetMetadataIcons/east-pass.png")
+    val iconEastStop = loadIcon("tilesetMetadataIcons/east-stop.png")
+    val iconWestPass = loadIcon("tilesetMetadataIcons/west-pass.png")
+    val iconWestStop = loadIcon("tilesetMetadataIcons/west-stop.png")
 
     val iconHeights = for (i <- 0 to 5)
       yield loadIcon("tilesetMetadataIcons/height%d.png".format(i))
@@ -141,6 +145,29 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
         g.drawImage(icon, x1, y1, null)
       }
 
+      def drawDirectionalPassability(blockedDirs: Byte, xTile: Int,
+                                     yTile: Int) = {
+        if ((blockedDirs & NORTH) == NORTH)
+          draw32Icon(iconNorthStop, xTile, yTile)
+        else
+          draw32Icon(iconNorthPass, xTile, yTile)
+
+        if ((blockedDirs & WEST) == WEST)
+          draw32Icon(iconWestStop, xTile, yTile)
+        else
+          draw32Icon(iconWestPass, xTile, yTile)
+
+        if ((blockedDirs & SOUTH) == SOUTH)
+          draw32Icon(iconSouthStop, xTile, yTile)
+        else
+          draw32Icon(iconSouthPass, xTile, yTile)
+
+        if ((blockedDirs & EAST) == EAST)
+          draw32Icon(iconEastStop, xTile, yTile)
+        else
+          draw32Icon(iconEastPass, xTile, yTile)
+      }
+
       /*
        * xTile and yTile are in selector space
        * xTileTS and yTileTS are in tileset space
@@ -154,14 +181,17 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
 
         if (metadataMode == PassabilityHeight) {
           if (!allBlocked(metadata.blockedDirs)) {
-            if (metadata.height == 0)
-              draw22Icon(iconPass, xTile, yTile)
-            else
+            if (metadata.height == 0) {
+              if ((metadata.blockedDirs & ALLCARDINAL) == 0)
+                draw22Icon(iconPass, xTile, yTile)
+              else
+                drawDirectionalPassability(metadata.blockedDirs, xTile, yTile)
+            } else
               draw32Icon(iconHeights(metadata.height), xTile, yTile)
-          } else if (allBlocked(metadata.blockedDirs))
+          } else
             draw22Icon(iconStop, xTile, yTile)
-          else
-            None
+        } else if (metadataMode == DirectionalPassability) {
+          drawDirectionalPassability(metadata.blockedDirs, xTile, yTile)
         }
       }
     }
