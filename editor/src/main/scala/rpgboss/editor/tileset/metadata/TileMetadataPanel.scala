@@ -103,8 +103,10 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
 
     def loadIcon(path: String) = ImageIO.read(cl.getResourceAsStream(path))
 
-    val iconPass = loadIcon("oxygen/22x22/actions/dialog-ok-apply_mod.png")
-    val iconStop = loadIcon("oxygen/22x22/actions/edit-delete_mod.png")
+    val iconPass = loadIcon("tilesetMetadataIcons/all-pass.png")
+    val iconStop = loadIcon("tilesetMetadataIcons/all-blocked.png")
+    val iconArrow = loadIcon("tilesetMetadataIcons/all-blocked.png")
+    val iconDirBlock = loadIcon("tilesetMetadataIcons/all-blocked.png")
 
     val iconHeights = for (i <- 0 to 5)
       yield loadIcon("tilesetMetadataIcons/height%d.png".format(i))
