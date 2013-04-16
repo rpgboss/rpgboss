@@ -31,9 +31,7 @@ object Constants {
     val ALLCARDINAL = NORTH | EAST | SOUTH | WEST
     val NONE = 0
 
-    def allPassable(b: Byte) = (b & ALLCARDINAL) == 0
     def allBlocked(b: Byte) = (b & ALLCARDINAL) == ALLCARDINAL
-    def someBlocked(b: Byte) = (b & ALLCARDINAL) > 0
   }
 
   import DirectionMasks._

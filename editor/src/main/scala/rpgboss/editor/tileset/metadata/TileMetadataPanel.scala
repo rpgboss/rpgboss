@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent
 
 object MetadataMode extends RpgEnum {
   val PassabilityHeight = Value("Passability/Height")
+  val DirectionalPassability = Value("Directional Passability")
 
   def default = PassabilityHeight
 }
@@ -26,7 +27,7 @@ case class TileMetadata(blockedDirs: Byte, height: Byte) {
   import Constants.DirectionMasks._
 
   def passabilityHeightIncremented() = {
-    if (allPassable(blockedDirs) && height == 0) {
+    if (!allBlocked(blockedDirs) && height == 0) {
       copy(blockedDirs = ALLCARDINAL.toByte)
     } else if (allBlocked(blockedDirs)) {
       copy(blockedDirs = NONE.toByte, height = 1)
@@ -36,7 +37,7 @@ case class TileMetadata(blockedDirs: Byte, height: Byte) {
   }
 
   def passabilityHeightDecremented() = {
-    if (allPassable(blockedDirs) && height == 0) {
+    if (!allBlocked(blockedDirs) && height == 0) {
       copy(height = 5)
     } else if (allBlocked(blockedDirs)) {
       copy(blockedDirs = NONE.toByte)
@@ -150,7 +151,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
       ) {
 
         if (metadataMode == PassabilityHeight) {
-          if (allPassable(metadata.blockedDirs)) {
+          if (!allBlocked(metadata.blockedDirs)) {
             if (metadata.height == 0)
               draw22Icon(iconPass, xTile, yTile)
             else

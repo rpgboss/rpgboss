@@ -31,7 +31,7 @@ class TabbedTileSelector(sm: StateMaster)
 
   def selectMap(mapOpt: Option[RpgMap]) = setContent(mapOpt map { map =>
     new TabbedPane() {
-      tabPlacement(Alignment.Bottom)
+      tabPlacement = Alignment.Bottom
 
       pages += new TabbedPane.Page("A",
         new AutotileSelector(sm, map, selectedTileCodes = _))

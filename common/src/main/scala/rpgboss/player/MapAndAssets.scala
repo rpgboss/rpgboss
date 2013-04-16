@@ -54,8 +54,6 @@ class MapAndAssets(project: Project, mapName: String) {
     import Constants.DirectionMasks._
     val xIdx = xTile * bytesPerTile
 
-    var blockedDirs: Int = NONE
-
     // Test top layer first, as if the top layer provides an answer, there is
     // no need to test subsequent layers
     for (layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer)) {
@@ -70,7 +68,7 @@ class MapAndAssets(project: Project, mapName: String) {
           val tiledata = autotiles(byte2).metadata
 
           if (tiledata.height == 0)
-            blockedDirs |= tiledata.blockedDirs
+            return tiledata.blockedDirs
         } else {
           // Empty tile: Do nothing... just continue with next layer
         }
@@ -78,11 +76,11 @@ class MapAndAssets(project: Project, mapName: String) {
         val tiledata = tilesets(byte1).metadata
 
         if (tiledata.heightAry(byte3)(byte2) == 0)
-          blockedDirs |= tiledata.blockedDirsAry(byte3)(byte2).toByte
+          return tiledata.blockedDirsAry(byte3)(byte2).toByte
       }
     }
 
-    return blockedDirs.toByte
+    return NONE.toByte
   }
 
   /**
