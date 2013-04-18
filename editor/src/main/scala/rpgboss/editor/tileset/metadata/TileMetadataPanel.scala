@@ -44,6 +44,21 @@ case class TileMetadata(blockedDirs: Byte, height: Byte) {
         blockedDirs = if (height == 1) ALLCARDINAL.toByte else NONE.toByte)
     }
   }
+
+  def directionalPassabilityToggled(xInTile: Int, yInTile: Int,
+                                    tilesizeX: Int, tilesizeY: Int) = {
+    val xInTileCenterOrigin = xInTile - tilesizeX / 2;
+    val yInTileCenterOrigin = yInTile - tilesizeY / 2;
+
+    val direction =
+      if (yInTileCenterOrigin > xInTileCenterOrigin) {
+        if (yInTileCenterOrigin > -xInTileCenterOrigin) NORTH else WEST
+      } else {
+        if (yInTileCenterOrigin > -xInTileCenterOrigin) EAST else SOUTH
+      }
+
+    copy(blockedDirs = (blockedDirs ^ direction).toByte) // Flip direction bit.
+  }
 }
 
 trait TileMetadataPanelOwner {
@@ -67,10 +82,15 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
 
   def metadataMode = owner.metadataMode
 
-  // Returns the new tile metadata as a result of the click
-  def updatedMetadata(button: Int, xTile: Int,
-                      yTile: Int): Option[TileMetadata] = {
-    owner.getTileMeta(xTile, yTile) map { metadata =>
+  val tileClicker: ImageTileSelector = new ImageTileSelector(
+    srcImg = srcImg,
+    allowMultiselect = false,
+    drawSelectionSq = false) {
+
+    // Returns the new tile metadata as a result of the click
+    def updatedMetadata(button: Int, xTile: Int, yTile: Int,
+                        xInTile: Int, yInTile: Int): TileMetadata = {
+      val metadata = owner.getTileMeta(xTile, yTile).get
       import Constants.DirectionMasks._
 
       if (metadataMode == PassabilityHeight) {
@@ -79,23 +99,21 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
         } else {
           metadata.passabilityHeightDecremented()
         }
+      } else if (metadataMode == DirectionalPassability) {
+        metadata.directionalPassabilityToggled(
+          xInTile, yInTile, tilesizeX, tilesizeY)
       } else {
         metadata
       }
     }
-  }
 
-  val tileClicker = new ImageTileSelector(
-    srcImg = srcImg,
-    selectTileF = { (button, tXYArray) =>
-      val xTile = tXYArray.head.head._1
-      val yTile = tXYArray.head.head._2
-      updatedMetadata(button, xTile, yTile) map { newMetadata =>
-        owner.updateTileMeta(xTile, yTile, newMetadata)
-      }
-    },
-    allowMultiselect = false,
-    drawSelectionSq = false) {
+    def selectTileF(button: Int, selectedTiles: Array[Array[(Int, Int)]]) = {}
+
+    override def mousePressed(button: Int, xTile: Int, yTile: Int, xInTile: Int,
+                              yInTile: Int) = {
+      val newMetadata = updatedMetadata(button, xTile, yTile, xInTile, yInTile)
+      owner.updateTileMeta(xTile, yTile, newMetadata)
+    }
 
     val cl = getClass.getClassLoader
 

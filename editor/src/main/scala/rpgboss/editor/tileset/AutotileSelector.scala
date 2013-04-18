@@ -18,8 +18,10 @@ class AutotileSelector(
     map.metadata.autotiles.map(sm.assetCache.getAutotile(_))
   val collageImage = TileUtils.getAutotileCollageImg(autotiles)
 
-  val imgTileSelector: ImageTileSelector =
-    new ImageTileSelector(collageImage, (_, _) => selectBytesF(selectionBytes))
+  val imgTileSelector: ImageTileSelector = new ImageTileSelector(collageImage) {
+    def selectTileF(button: Int, selectedTiles: Array[Array[(Int, Int)]]) =
+      selectBytesF(selectionBytes)
+  }
 
   def selectionBytes = imgTileSelector.selection.map(_.map({
     case (xTile, yTile) =>

@@ -18,9 +18,12 @@ class TilesetTileSelector(
   selectBytesF: Array[Array[Array[Byte]]] => Unit)
   extends BoxPanel(Orientation.Vertical) with TileBytesSelector {
 
-  val imgTileSelector = new ImageTileSelector(tileset.img,
-    (_, _) => selectBytesF(selectionBytes),
-    Tileset.tilesize, Tileset.tilesize, 8, true, true, None)
+  val imgTileSelector: ImageTileSelector = new ImageTileSelector(tileset.img,
+    Tileset.tilesize, Tileset.tilesize, 8, true, true, None) {
+    def selectTileF(button: Int, tiles: Array[Array[(Int, Int)]]) = {
+      selectBytesF(selectionBytes)
+    }
+  }
 
   def selectionBytes = imgTileSelector.selection.map(_.map({
     case (xTile, yTile) =>
@@ -45,15 +48,15 @@ class TilesetTileSelector(
  *                              Same deal with y1 and y2.
  *
  * @param   allowMultiselect    Allow user to select multiple tiles.
+ * @param   initialSelection    Defined in tileset space.
  */
-class ImageTileSelector(srcImg: BufferedImage,
-                        selectTileF: (Int, Array[Array[(Int, Int)]]) => Unit,
-                        val tilesizeX: Int = 32,
-                        val tilesizeY: Int = 32,
-                        val xTilesVisible: Int = 8,
-                        allowMultiselect: Boolean = true,
-                        drawSelectionSq: Boolean = true,
-                        initialSingleSelTilesetSpace: Option[(Int, Int)] = None)
+abstract class ImageTileSelector(srcImg: BufferedImage,
+                                 val tilesizeX: Int = 32,
+                                 val tilesizeY: Int = 32,
+                                 val xTilesVisible: Int = 8,
+                                 allowMultiselect: Boolean = true,
+                                 drawSelectionSq: Boolean = true,
+                                 initialSelection: Option[(Int, Int)] = None)
   extends ScrollPane {
   horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
   verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
@@ -81,7 +84,7 @@ class ImageTileSelector(srcImg: BufferedImage,
   var xRngInSelectorSpace = 0 to 0
   var yRngInSelectorSpace = 0 to 0
 
-  initialSingleSelTilesetSpace map { sel =>
+  initialSelection map { sel =>
     val (xTS, yTS) = sel
     val xSS = xTS % xTilesVisible
     val ySS = yTS + xTS / xTilesVisible * yTilesInSlice
@@ -132,6 +135,11 @@ class ImageTileSelector(srcImg: BufferedImage,
     (tileX, tileY)
   }
 
+  def selectTileF(button: Int, selectedTiles: Array[Array[(Int, Int)]])
+
+  def mousePressed(button: Int, xTile: Int, yTile: Int, xInTile: Int,
+                   yInTile: Int) = {}
+
   def selection = yRngInSelectorSpace.map(yTile =>
     xRngInSelectorSpace.map(xTile => toTilesetSpace(xTile, yTile)).toArray)
     .toArray
@@ -148,6 +156,10 @@ class ImageTileSelector(srcImg: BufferedImage,
         xRngInSelectorSpace = x1 to x1
         yRngInSelectorSpace = y1 to y1
         canvasPanel.repaint()
+
+        val (xTileTS, yTileTS) = toTilesetSpace(x1, y1)
+        mousePressed(e.peer.getButton, xTileTS, yTileTS, e.point.x % tilesizeX,
+          e.point.y % tilesizeY)
 
         // If allowed to drag to select multiple ones
         if (allowMultiselect) {
