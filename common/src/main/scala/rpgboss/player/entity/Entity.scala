@@ -4,6 +4,8 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.collision.BoundingBox
+import com.badlogic.gdx.math.Vector3
 import rpgboss.model.SpriteSpec.Steps.TOTALSTEPS
 import rpgboss.player.MyGame
 import scala.math.abs
@@ -30,8 +32,9 @@ abstract class Entity(
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) {
-  var vx: Float = 0f
-  var vy: Float = 0f
+
+  private var vx: Float = 0f
+  private var vy: Float = 0f
   var movingSince: Long = 0
   var isMoving: Boolean = false
   var previouslyMoving: Boolean = false
@@ -41,8 +44,20 @@ abstract class Entity(
   var spriteIdx: Int = -1
   var graphicWTiles: Float = 0f
   var graphicHTiles: Float = 0f
-  var boundBoxTiles: Float = 1.0f
+
   var stillStep = SpriteSpec.Steps.STILL
+  var boundingBoxHalfsize = 0.5f
+
+  val boundingBox = new BoundingBox()
+
+  def setBoundingBoxHalfsize(halfsize: Float) = {
+    boundingBoxHalfsize = halfsize
+    val minVector = new Vector3(x - halfsize, y - halfsize, 0)
+    val maxVector = new Vector3(x + halfsize, y + halfsize, 0)
+    boundingBox.set(minVector, maxVector)
+  }
+
+  setBoundingBoxHalfsize(0.5f)
 
   def collisionDeltas = 0.05f
 
@@ -79,28 +94,13 @@ abstract class Entity(
     spriteIdx = s.spriteIndex
     graphicWTiles = spriteset.tileW.toFloat / Tileset.tilesize.toFloat
     graphicHTiles = spriteset.tileH.toFloat / Tileset.tilesize.toFloat
-    // Multiplier to allow sprites to fit into other tiles
-    boundBoxTiles = graphicWTiles * 0.8f
+    // Minus the delta to allow events to fit into tiles easily
+    setBoundingBoxHalfsize((graphicWTiles - collisionDeltas) * 0.5f)
     dir = s.dir
     stillStep = s.step
   } getOrElse {
     spriteset = null
-    boundBoxTiles = 1.0f * 0.8f
-  }
-
-  /**
-   * Given the position we want to sprite to be. Give the origin and size of
-   * the sprite reasonably. If we specify the sprite with a size of 1.0 to be
-   * at (2.5, 7.5), the sprite's bottom should be at 8.0
-   *
-   * Note that the destination's "origin" is the top-left of the sprite, since
-   * we have flipped the y-axis in libgdx.
-   */
-  def dstPosition(posX: Float, posY: Float): (Float, Float, Float, Float) = {
-    val dstOriginX = posX - graphicWTiles / 2.0f
-    val dstOriginY = posY - graphicHTiles + boundBoxTiles / 2
-
-    (dstOriginX, dstOriginY, graphicWTiles, graphicHTiles)
+    setBoundingBoxHalfsize((1.0f - collisionDeltas) * 0.5f)
   }
 
   /**
@@ -124,29 +124,26 @@ abstract class Entity(
     collisionPointF: (Float, Float, Float, Float) => Boolean): (Boolean, Boolean) =
     {
       import math._
-      val halfsize = size / 2
 
       if (dy == 0f) {
-        val edgeX = x + signum(dx) * halfsize
+        val edgeX = x + signum(dx) * boundingBoxHalfsize
         (
-          collisionPointF(edgeX, y + halfsize, dx, dy),
-          collisionPointF(edgeX, y - halfsize, dx, dy))
+          collisionPointF(edgeX, y + boundingBoxHalfsize, dx, dy),
+          collisionPointF(edgeX, y - boundingBoxHalfsize, dx, dy))
       } else if (dx == 0f) {
-        val edgeY = y + signum(dy) * halfsize
+        val edgeY = y + signum(dy) * boundingBoxHalfsize
         (
-          collisionPointF(x + halfsize, edgeY, dx, dy),
-          collisionPointF(x - halfsize, edgeY, dx, dy))
+          collisionPointF(x + boundingBoxHalfsize, edgeY, dx, dy),
+          collisionPointF(x - boundingBoxHalfsize, edgeY, dx, dy))
       } else {
         (true, true) // Not sure why trying to move diagonal. Disallow this.
       }
     }
 
   def pointInSelf(xArg: Float, yArg: Float) = {
-    val halfLength = boundBoxTiles / 2
-
     (
-      xArg < x + halfLength && xArg > x - halfLength &&
-      yArg < y + halfLength && yArg > y - halfLength)
+      xArg < x + boundingBoxHalfsize && xArg > x - boundingBoxHalfsize &&
+      yArg < y + boundingBoxHalfsize && yArg > y - boundingBoxHalfsize)
   }
 
   def collisionTestPoint(x0: Float, y0: Float, dx: Float, dy: Float) = {
@@ -157,11 +154,12 @@ abstract class Entity(
    * Finds all events with which this dxArg and dyArg touches
    */
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
+
     game.state.npcEvts.filter(otherEvt =>
       collisionBox(
         dxArg,
         dyArg,
-        boundBoxTiles,
+        boundingBoxHalfsize,
         otherEvt.collisionTestPoint _) != (false, false))
   }
 
@@ -182,7 +180,7 @@ abstract class Entity(
         collisionBox(
           dxArg,
           dyArg,
-          boundBoxTiles,
+          boundingBoxHalfsize,
           mapAndAssets.mapCollisionPoint _)
       } getOrElse (true, true)
 
@@ -298,7 +296,14 @@ abstract class Entity(
       val step = currentStep()
       val (srcX, srcY) = spriteset.srcTexels(spriteIdx, dir, step)
 
-      val (dstOriginX, dstOriginY, dstWTiles, dstHTiles) = dstPosition(x, y)
+      /*
+       * Given the definition of the position (see beginning of the file),
+       * calculate the top-left corner of the graphic we draw.
+       * We use top-left because we have flipped the y-axis in libgdx to match
+       * the map coordinates we use.
+       */
+      val dstOriginX: Float = x - graphicWTiles / 2.0f
+      val dstOriginY: Float = y - graphicHTiles + graphicWTiles / 2
 
       val srcXInRegion = region.getRegionX() + srcX
       val srcYInRegion = region.getRegionY() + srcY
@@ -308,7 +313,7 @@ abstract class Entity(
         region.getTexture(),
         dstOriginX.toFloat,
         dstOriginY.toFloat,
-        dstWTiles, dstHTiles,
+        graphicWTiles, graphicHTiles,
         srcXInRegion,
         srcYInRegion,
         spriteset.tileW,
