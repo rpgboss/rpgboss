@@ -111,64 +111,92 @@ class MapAndAssets(project: Project, mapName: String) {
     val changeVector = new Vector3(dx, dy, 0)
 
     val boundingBox = entity.getBoundingBox()
-    val minX = (boundingBox.getMin().x + dx).toInt
-    val minY = (boundingBox.getMin().y + dy).toInt
-    val maxX = (boundingBox.getMax().x + dx).toInt
-    val maxY = (boundingBox.getMax().y + dy).toInt
+    val newX = x + dx
+    val newY = y + dy
+    val minX = (boundingBox.getMin().x + dx)
+    val minY = (boundingBox.getMin().y + dy)
+    val maxX = (boundingBox.getMax().x + dx)
+    val maxY = (boundingBox.getMax().y + dy)
+    boundingBox.set(new Vector3(minX, minY, 0), new Vector3(maxX, maxY, 0))
+
+    val minXTile = minX.toInt
+    val minYTile = minY.toInt
+    val maxXTile = maxX.toInt
+    val maxYTile = maxY.toInt
 
     // 1. Test for going off map edge
-    if (!map.metadata.withinBounds(minX, minY) ||
-      !map.metadata.withinBounds(maxX, maxY))
+    if (!map.metadata.withinBounds(minXTile, minYTile) ||
+      !map.metadata.withinBounds(maxXTile, maxYTile))
       return (true, 0)
 
     var blocked = false
     // Being blocked in the positive direction adds -1.
     // Being blocked in the negative direction adds  1.
-    var reroute = 0
+    var reroute = 0f
 
-    if (math.abs(dx) > math.abs(dy)) {
-      if (dx >= 0) {
-        if (flagged(getBlockedDirsOf(maxX, minY), WEST)) {
-          blocked = true
-          reroute += 1
-        }
-        if (flagged(getBlockedDirsOf(maxX, maxY), WEST)) {
-          blocked = true
-          reroute -= 1
-        }
-      } else {
-        if (flagged(getBlockedDirsOf(minX, minY), EAST)) {
-          blocked = true
-          reroute += 1
-        }
-        if (flagged(getBlockedDirsOf(minX, maxY), EAST)) {
-          blocked = true
-          reroute -= 1
-        }
+    def processTile(xTile: Int, yTile: Int, dir: Int,
+                    rerouteSign: Int): Unit = {
+      val blockedDirs = getBlockedDirsOf(xTile, yTile)
+
+      if (blockedDirs == NONE)
+        return
+
+      if (flagged(blockedDirs, dir)) {
+        blocked = true
+        reroute += rerouteSign
+        return
       }
-    } else {
-      if (dy >= 0) {
-        if (flagged(getBlockedDirsOf(minX, maxY), NORTH)) {
+
+      // Finally, check for blocking due to walls running parallel to direction
+      // of movement.
+      if ((dir & (EAST | WEST)) > 0) {
+        val northWallBlock = flagged(blockedDirs, NORTH) &&
+          (boundingBox.contains(new Vector3(xTile, yTile, 0)) ||
+            boundingBox.contains(new Vector3(xTile + 1, yTile, 0)))
+        val southWallBlock = flagged(blockedDirs, SOUTH) &&
+          (boundingBox.contains(new Vector3(xTile, yTile + 1, 0)) ||
+            boundingBox.contains(new Vector3(xTile + 1, yTile + 1, 0)))
+
+        if (northWallBlock) {
           blocked = true
-          reroute += 1
+          reroute += newY - yTile
         }
-        if (flagged(getBlockedDirsOf(maxX, maxY), NORTH)) {
+        if (southWallBlock) {
           blocked = true
-          reroute -= 1
+          reroute += newY - (yTile + 1)
         }
       } else {
-        if (flagged(getBlockedDirsOf(minX, minY), SOUTH)) {
+        val eastWallBlock = flagged(blockedDirs, EAST) &&
+          (boundingBox.contains(new Vector3(xTile + 1, yTile, 0)) ||
+            boundingBox.contains(new Vector3(xTile + 1, yTile + 1, 0)))
+        val westWallBlock = flagged(blockedDirs, WEST) &&
+          (boundingBox.contains(new Vector3(xTile, yTile, 0)) ||
+            boundingBox.contains(new Vector3(xTile, yTile + 1, 0)))
+
+        if (eastWallBlock) {
           blocked = true
-          reroute += 1
+          reroute += newX - (xTile + 1)
         }
-        if (flagged(getBlockedDirsOf(maxX, minY), SOUTH)) {
+        if (westWallBlock) {
           blocked = true
-          reroute -= 1
+          reroute += newX - xTile
         }
       }
     }
 
-    return (blocked, reroute)
+    if (math.abs(dx) > math.abs(dy)) {
+      processTile(maxXTile, minYTile, WEST, 1)
+      processTile(maxXTile, maxYTile, WEST, -1)
+      processTile(minXTile, minYTile, EAST, 1)
+      processTile(minXTile, maxYTile, EAST, -1)
+    } else {
+      processTile(minXTile, maxYTile, NORTH, 1)
+      processTile(maxXTile, maxYTile, NORTH, -1)
+      processTile(minXTile, minYTile, SOUTH, 1)
+      processTile(maxXTile, minYTile, SOUTH, -1)
+    }
+
+    return (blocked, math.signum(reroute).toInt)
   }
 
   //info("Packed tilesets and autotiles into %d pages".format(
