@@ -48,13 +48,25 @@ abstract class Entity(
   var stillStep = SpriteSpec.Steps.STILL
   var boundingBoxHalfsize = 0.5f
 
-  val boundingBox = new BoundingBox()
+  def setBoundingBoxHalfsize(halfsizeArg: Float) = {
+    // Normalize to prevent bounding boxes too large to be used on tile map
+    val halfsize = math.min((2.0f - collisionDeltas) / 2.0f, halfsizeArg)
 
-  def setBoundingBoxHalfsize(halfsize: Float) = {
     boundingBoxHalfsize = halfsize
-    val minVector = new Vector3(x - halfsize, y - halfsize, 0)
-    val maxVector = new Vector3(x + halfsize, y + halfsize, 0)
-    boundingBox.set(minVector, maxVector)
+  }
+
+  def getBoundingBox() = {
+    val minVector =
+      new Vector3(x - boundingBoxHalfsize, y - boundingBoxHalfsize, 0)
+    val maxVector =
+      new Vector3(x + boundingBoxHalfsize, y + boundingBoxHalfsize, 0)
+    new BoundingBox(minVector, maxVector)
+  }
+
+  def getMapCollisions(dxArg: Float, dyArg: Float) = {
+    game.state.mapAndAssetsOption map { mapAndAssets =>
+      mapAndAssets.getCollisions(this, x, y, dxArg, dyArg)
+    } getOrElse (true, 0)
   }
 
   setBoundingBoxHalfsize(0.5f)
@@ -104,63 +116,12 @@ abstract class Entity(
   }
 
   /**
-   * Tests if there is a collision of a box moving from (x, y) to
-   * (x+dx, x+dy).
-   *
-   * Important restriction - only one of dx or dy may be nonzero.
-   * Implement diagonal movement as small alternating movements in dx and dy.
-   *
-   * Will make optimizations to only test for points along the leading
-   *
-   * @return  Returning a tuple allows us to implement sliding around corners.
-   *          Essentially, if dx != 0, then tuple represents collisions in
-   *          the tests of:
-   *          ((xEdge+dx, y+boundingBox/2), (xEdge+dx, y-boundingBox/2))
-   */
-  def collisionBox(
-    dx: Float,
-    dy: Float,
-    size: Float,
-    collisionPointF: (Float, Float, Float, Float) => Boolean): (Boolean, Boolean) =
-    {
-      import math._
-
-      if (dy == 0f) {
-        val edgeX = x + signum(dx) * boundingBoxHalfsize
-        (
-          collisionPointF(edgeX, y + boundingBoxHalfsize, dx, dy),
-          collisionPointF(edgeX, y - boundingBoxHalfsize, dx, dy))
-      } else if (dx == 0f) {
-        val edgeY = y + signum(dy) * boundingBoxHalfsize
-        (
-          collisionPointF(x + boundingBoxHalfsize, edgeY, dx, dy),
-          collisionPointF(x - boundingBoxHalfsize, edgeY, dx, dy))
-      } else {
-        (true, true) // Not sure why trying to move diagonal. Disallow this.
-      }
-    }
-
-  def pointInSelf(xArg: Float, yArg: Float) = {
-    (
-      xArg < x + boundingBoxHalfsize && xArg > x - boundingBoxHalfsize &&
-      yArg < y + boundingBoxHalfsize && yArg > y - boundingBoxHalfsize)
-  }
-
-  def collisionTestPoint(x0: Float, y0: Float, dx: Float, dy: Float) = {
-    pointInSelf(x0 + dx, y0 + dy)
-  }
-
-  /**
    * Finds all events with which this dxArg and dyArg touches
    */
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
-
+    val boundingBox = getBoundingBox()
     game.state.npcEvts.filter(otherEvt =>
-      collisionBox(
-        dxArg,
-        dyArg,
-        boundingBoxHalfsize,
-        otherEvt.collisionTestPoint _) != (false, false))
+      boundingBox.contains(otherEvt.getBoundingBox()))
   }
 
   /**
@@ -168,25 +129,6 @@ abstract class Entity(
    * movement.
    */
   def eventTouchCallback(touchedNpcs: List[NonplayerEntity])
-
-  /**
-   * @return Returns 3 items: (posBlocked, negBlocked)
-   */
-  def getMapCollisions(dxArg: Float, dyArg: Float) = {
-    if (dxArg == 0 && dyArg == 0) {
-      (false, false)
-    } else {
-      val mapCollision = game.state.mapAndAssetsOption map { mapAndAssets =>
-        collisionBox(
-          dxArg,
-          dyArg,
-          boundingBoxHalfsize,
-          mapAndAssets.mapCollisionPoint _)
-      } getOrElse (true, true)
-
-      mapCollision
-    }
-  }
 
   def update(delta: Float) = {
     // Handle moving
@@ -217,57 +159,49 @@ abstract class Entity(
         var dxThisLoop = 0f
         var dyThisLoop = 0f
 
-        var slidSuccessfully = false
+        var isSliding = false
 
-        // Try conventional movement along x first
-        if (totalDx != 0) {
+        val evtsTouched = getAllEventTouches(dx, dy)
+        //eventTouchCallback(evtsTouched)
+        val evtBlocking =
+          evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
+
+        // Move along x
+        if (!evtBlocking && totalDx != 0) {
           // Determine collisions in x direction on the y-positive corner
           // and the y negative corner of the bounding box
-          val (xBlockedYPos, xBlockedYNeg) = getMapCollisions(dx, 0)
-
-          val evtsTouched = getAllEventTouches(dx, 0)
-          eventTouchCallback(evtsTouched)
-          val evtBlocking =
-            evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
+          val (mapBlocked, mapReroute) = getMapCollisions(dx, 0)
 
           // Conventional movement if it succeeeds
-          if (!evtBlocking && !xBlockedYPos && !xBlockedYNeg) {
+          if (!mapBlocked) {
             dxThisLoop += dx
             x += dx
             dxTravelled += dx
-          } else if (totalDy == 0 && !evtBlocking) {
+          } else if (totalDy == 0) {
             // Conventional movement blocked. Try sliding perpendicularly
-            if (!xBlockedYPos) {
-              totalDy += abs(totalDx)
-              slidSuccessfully = true
-            } else if (!xBlockedYNeg) {
-              totalDy -= abs(totalDx)
-              slidSuccessfully = true
+            if (mapReroute != 0) {
+              totalDy += mapReroute * abs(totalDx)
+              isSliding = true
             }
           }
         }
 
-        // Then try conventional movement along y
-        if (totalDy != 0) {
-          val (yBlockedXPos, yBlockedXNeg) = getMapCollisions(0, dy)
+        // Move along y
+        if (!evtBlocking && totalDy != 0) {
+          // Determine collisions in x direction on the y-positive corner
+          // and the y negative corner of the bounding box
+          val (mapBlocked, mapReroute) = getMapCollisions(0, dy)
 
-          val evtsTouched = getAllEventTouches(0, dy)
-          eventTouchCallback(evtsTouched)
-          val evtBlocking =
-            evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
-
-          if (!evtBlocking && !yBlockedXPos && !yBlockedXNeg) {
+          // Conventional movement if it succeeeds
+          if (!mapBlocked) {
             dyThisLoop += dy
             y += dy
             dyTravelled += dy
-          } else if (totalDx == 0 && !slidSuccessfully && !evtBlocking) {
+          } else if (totalDx == 0) {
             // Conventional movement blocked. Try sliding perpendicularly
-            if (!yBlockedXPos) {
-              totalDx += abs(totalDy)
-              slidSuccessfully = true
-            } else if (!yBlockedXNeg) {
-              totalDx -= abs(totalDy)
-              slidSuccessfully = true
+            if (mapReroute != 0) {
+              totalDx += mapReroute * abs(totalDy)
+              isSliding = true
             }
           }
         }
@@ -281,7 +215,7 @@ abstract class Entity(
           }
         } else {
           // Man, we can't even slide. Let's quit
-          if (!slidSuccessfully) {
+          if (!isSliding) {
             travelDone = true
             isMoving = false
           }

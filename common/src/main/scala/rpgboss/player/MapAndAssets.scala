@@ -1,10 +1,14 @@
 package rpgboss.player
 import rpgboss.model._
+import rpgboss.model.Constants.DirectionMasks._
 import rpgboss.model.resource._
+import rpgboss.player.entity.Entity
 import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.math.collision.BoundingBox
+import com.badlogic.gdx.math.Vector3
 
 /**
  * This class wraps a map and its assets. It should only be instantiated
@@ -84,64 +88,88 @@ class MapAndAssets(project: Project, mapName: String) {
   }
 
   /**
-   * Test if there is a collision of a POINT moving from positions from
-   * (x0, y0) to (x0+dx, x0+dy).
+   * Test if there is a collision of a box with movement defined by |dx| and
+   * |dy|. The re-route result will be for the bigger axis of |dx| and |dy|.
+   * If they are equal, it will be for the |dx| axis.
    *
-   * However, this is only accurate if only one of dx or dy is nonzero.
-   * This is because diagonal movement is implemented as small alternating
-   * movements along x and y axis.
-   *
-   * Generally speaking one will want to test the Collission of the four
-   * corners of a bounding box, so use mapCollisionBox
-   *
-   * @return  true if there is a collision, false if it's a pass
+   * @return  (collision, reroute)  |collision| is true if there is a collision.
+   *                                |reroute| returns which way the entity is
+   *                                recommended to go if it wants to continue
+   *                                along its path. For instance, for an entity
+   *                                traveling in x-axis, a +1 reroute suggests
+   *                                that it is blocked (probably by a corner)
+   *                                but could continue by going in the
+   *                                y-positive direction. Negative means going
+   *                                in the y-negative direction, and a 0 means
+   *                                there is no suggested rerouting.
    */
-  def mapCollisionPoint(x0: Float, y0: Float, dx: Float, dy: Float): Boolean =
-    {
-      import RpgMap._
-      import Constants.DirectionMasks._
+  def getCollisions(entity: Entity, x: Float, y: Float, dx: Float,
+                    dy: Float): (Boolean, Int) = {
+    if (dx == 0 && dy == 0)
+      return (false, 0)
 
-      val xTile0 = x0.toInt
-      val yTile0 = y0.toInt
-      val xTile1 = (x0 + dx).toInt
-      val yTile1 = (y0 + dy).toInt
+    val changeVector = new Vector3(dx, dy, 0)
 
-      // Check if destination tile is within map. If not, it's a collision
-      if (xTile1 < 0 || xTile1 >= map.metadata.xSize ||
-        yTile1 < 0 || yTile1 >= map.metadata.ySize) {
-        return true
-      }
+    val boundingBox = entity.getBoundingBox()
+    val minX = (boundingBox.getMin().x + dx).toInt
+    val minY = (boundingBox.getMin().y + dy).toInt
+    val maxX = (boundingBox.getMax().x + dx).toInt
+    val maxY = (boundingBox.getMax().y + dy).toInt
 
-      // If the point doesn't even change which tile it's in, allow a pass.
-      val changeTileX = xTile0 != xTile1
-      val changeTileY = yTile0 != yTile1
+    // 1. Test for going off map edge
+    if (!map.metadata.withinBounds(minX, minY) ||
+      !map.metadata.withinBounds(maxX, maxY))
+      return (true, 0)
 
-      if (!changeTileX && !changeTileY) {
-        return false
+    var blocked = false
+    // Being blocked in the positive direction adds -1.
+    // Being blocked in the negative direction adds  1.
+    var reroute = 0
+
+    if (math.abs(dx) > math.abs(dy)) {
+      if (dx >= 0) {
+        if (flagged(getBlockedDirsOf(maxX, minY), WEST)) {
+          blocked = true
+          reroute += 1
+        }
+        if (flagged(getBlockedDirsOf(maxX, maxY), WEST)) {
+          blocked = true
+          reroute -= 1
+        }
       } else {
-        val blockedDirs0 = getBlockedDirsOf(xTile0, yTile0)
-        val blockedDirs1 = getBlockedDirsOf(xTile1, yTile1)
-
-        def isBlocked(blockMask: Byte, dir: Int) = (blockMask & dir) == dir
-
-        if (changeTileX) {
-          // Test x direction collision first
-          if (dx > 0) {
-            return isBlocked(blockedDirs0, EAST) || isBlocked(blockedDirs1, WEST)
-          } else {
-            return isBlocked(blockedDirs0, WEST) || isBlocked(blockedDirs1, EAST)
-          }
-        } else {
-          // Test y direction collision next. 
-          // (We've established that tile changes in at least one direction.)
-          if (dy > 0) {
-            return isBlocked(blockedDirs0, SOUTH) || isBlocked(blockedDirs1, NORTH)
-          } else {
-            return isBlocked(blockedDirs0, NORTH) || isBlocked(blockedDirs1, SOUTH)
-          }
+        if (flagged(getBlockedDirsOf(minX, minY), EAST)) {
+          blocked = true
+          reroute += 1
+        }
+        if (flagged(getBlockedDirsOf(minX, maxY), EAST)) {
+          blocked = true
+          reroute -= 1
+        }
+      }
+    } else {
+      if (dy >= 0) {
+        if (flagged(getBlockedDirsOf(minX, maxY), NORTH)) {
+          blocked = true
+          reroute += 1
+        }
+        if (flagged(getBlockedDirsOf(maxX, maxY), NORTH)) {
+          blocked = true
+          reroute -= 1
+        }
+      } else {
+        if (flagged(getBlockedDirsOf(minX, minY), SOUTH)) {
+          blocked = true
+          reroute += 1
+        }
+        if (flagged(getBlockedDirsOf(maxX, minY), SOUTH)) {
+          blocked = true
+          reroute -= 1
         }
       }
     }
+
+    return (blocked, reroute)
+  }
 
   //info("Packed tilesets and autotiles into %d pages".format(
   //    packerTiles.getPages().size))

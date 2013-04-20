@@ -32,6 +32,7 @@ object Constants {
     val NONE = 0
 
     def allBlocked(b: Byte) = (b & ALLCARDINAL) == ALLCARDINAL
+    def flagged(b: Byte, dir: Int) = (b & dir) == dir
   }
 
   import DirectionMasks._
