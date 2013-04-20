@@ -2,13 +2,11 @@ package rpgboss.player
 import rpgboss.model._
 import rpgboss.model.Constants.DirectionMasks._
 import rpgboss.model.resource._
-import rpgboss.player.entity.Entity
+import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import com.badlogic.gdx.math.collision.BoundingBox
-import com.badlogic.gdx.math.Vector3
 
 /**
  * This class wraps a map and its assets. It should only be instantiated
@@ -108,16 +106,10 @@ class MapAndAssets(project: Project, mapName: String) {
     if (dx == 0 && dy == 0)
       return (false, 0)
 
-    val changeVector = new Vector3(dx, dy, 0)
-
-    val boundingBox = entity.getBoundingBox()
+    val box = entity.getBoundingBox().offseted(dx, dy)
     val newX = x + dx
     val newY = y + dy
-    val minX = (boundingBox.getMin().x + dx)
-    val minY = (boundingBox.getMin().y + dy)
-    val maxX = (boundingBox.getMax().x + dx)
-    val maxY = (boundingBox.getMax().y + dy)
-    boundingBox.set(new Vector3(minX, minY, 0), new Vector3(maxX, maxY, 0))
+    val (minX, minY, maxX, maxY) = (box.minX, box.minY, box.maxX, box.maxY)
 
     val minXTile = minX.toInt
     val minYTile = minY.toInt
@@ -151,11 +143,9 @@ class MapAndAssets(project: Project, mapName: String) {
       // of movement.
       if ((dir & (EAST | WEST)) > 0) {
         val northWallBlock = flagged(blockedDirs, NORTH) &&
-          (boundingBox.contains(new Vector3(xTile, yTile, 0)) ||
-            boundingBox.contains(new Vector3(xTile + 1, yTile, 0)))
+          box.contains(BoundingBox(xTile, yTile, xTile + 1, yTile))
         val southWallBlock = flagged(blockedDirs, SOUTH) &&
-          (boundingBox.contains(new Vector3(xTile, yTile + 1, 0)) ||
-            boundingBox.contains(new Vector3(xTile + 1, yTile + 1, 0)))
+          box.contains(BoundingBox(xTile, yTile + 1, xTile + 1, yTile + 1))
 
         if (northWallBlock) {
           blocked = true
@@ -167,11 +157,9 @@ class MapAndAssets(project: Project, mapName: String) {
         }
       } else {
         val eastWallBlock = flagged(blockedDirs, EAST) &&
-          (boundingBox.contains(new Vector3(xTile + 1, yTile, 0)) ||
-            boundingBox.contains(new Vector3(xTile + 1, yTile + 1, 0)))
+          box.contains(BoundingBox(xTile + 1, yTile, xTile + 1, yTile + 1))
         val westWallBlock = flagged(blockedDirs, WEST) &&
-          (boundingBox.contains(new Vector3(xTile, yTile, 0)) ||
-            boundingBox.contains(new Vector3(xTile, yTile + 1, 0)))
+          box.contains(BoundingBox(xTile, yTile, xTile, yTile + 1))
 
         if (eastWallBlock) {
           blocked = true

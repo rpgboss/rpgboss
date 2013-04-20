@@ -4,7 +4,6 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.math.Vector3
 import rpgboss.model.SpriteSpec.Steps.TOTALSTEPS
 import rpgboss.player.MyGame
@@ -56,11 +55,8 @@ abstract class Entity(
   }
 
   def getBoundingBox() = {
-    val minVector =
-      new Vector3(x - boundingBoxHalfsize, y - boundingBoxHalfsize, 0)
-    val maxVector =
-      new Vector3(x + boundingBoxHalfsize, y + boundingBoxHalfsize, 0)
-    new BoundingBox(minVector, maxVector)
+    BoundingBox(x - boundingBoxHalfsize, y - boundingBoxHalfsize,
+      x + boundingBoxHalfsize, y + boundingBoxHalfsize)
   }
 
   def getMapCollisions(dxArg: Float, dyArg: Float) = {
@@ -120,8 +116,10 @@ abstract class Entity(
    */
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox()
-    game.state.npcEvts.filter(otherEvt =>
-      boundingBox.contains(otherEvt.getBoundingBox()))
+    game.state.npcEvts.filter(npc => {
+      val npcBoundingBox = npc.getBoundingBox()
+      boundingBox.contains(npcBoundingBox)
+    })
   }
 
   /**
@@ -162,7 +160,7 @@ abstract class Entity(
         var isSliding = false
 
         val evtsTouched = getAllEventTouches(dx, dy)
-        //eventTouchCallback(evtsTouched)
+        eventTouchCallback(evtsTouched)
         val evtBlocking =
           evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
 
@@ -255,4 +253,12 @@ abstract class Entity(
         false, true)
     }
   }
+}
+
+case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
+  def contains(o: BoundingBox) =
+    o.maxX >= minX && o.minX <= maxX && o.maxY >= minY && o.minY <= maxY
+
+  def offseted(dx: Float, dy: Float) =
+    copy(minX + dx, minY + dy, maxX + dx, maxY + dy)
 }
