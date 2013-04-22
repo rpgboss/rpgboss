@@ -29,7 +29,7 @@ case class RpgEvent(
   name: String,
   x: Float,
   y: Float,
-  states: Array[RpgEventState] = Array(RpgEventState()))
+  states: Array[RpgEventState])
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
@@ -37,10 +37,11 @@ object RpgEvent {
 }
 
 /**
- * cmds guaranteed to be of at least length 1 and end with an EndOfScript()
+ * @param   cmds    Guaranteed to be of at least length 1 and end with an
+ *                  EndOfScript()
  */
 case class RpgEventState(
-  deleted: Boolean = false,
+  switchCondition: Option[EventCondition] = None,
   sprite: Option[SpriteSpec] = None,
   trigger: Int = EventTrigger.BUTTON.id,
   height: Int = EventHeight.UNDER.id,
@@ -49,3 +50,12 @@ case class RpgEventState(
 object RpgEventState {
   def defaultCmds: Array[EventCmd] = Array(EndOfScript())
 }
+
+case class EventCondition(
+  globalVariableConditions: List[EventGlobalVariableCondition],
+  itemCondition: Option[EventItemCondition],
+  partyMemberCondition: Option[EventPartyMemberCondition])
+
+case class EventGlobalVariableCondition(globalName: String, value: Int)
+case class EventItemCondition(item: Int)
+case class EventPartyMemberCondition(partyMember: Int)

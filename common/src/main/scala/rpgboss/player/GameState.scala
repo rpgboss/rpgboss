@@ -236,11 +236,11 @@ class GameState(game: MyGame, project: Project) {
   def getEvtState(evtName: String): Int =
     getEvtState(persistent.cameraLoc.map, evtName)
   def getEvtState(mapName: String, evtName: String) =
-    persistent.getEvtState(mapName, evtName)
+    persistent.getEventState(mapName, evtName)
   def setEvtState(evtName: String, newState: Int): Unit =
     setEvtState(persistent.cameraLoc.map, evtName, newState)
   def setEvtState(mapName: String, evtName: String, newState: Int) = {
-    persistent.setEvtState(mapName, evtName, newState)
+    persistent.setEventState(mapName, evtName, newState)
 
     if (mapName == persistent.cameraLoc.map) {
       npcEvts.filter(_.mapEvent.name == evtName).foreach(_.updateState())

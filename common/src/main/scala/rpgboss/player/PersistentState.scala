@@ -11,26 +11,24 @@ class PersistentState {
   val pictures = new Array[PictureInfo](32)
 
   // Should only be accessed on gdx thread
-  // mapName->(evtName->stateIdx)
-  private var evtStates = Map[String, Map[String, Int]]()
+  private val globalVariables = collection.mutable.Map[String, Int]()
+
+  // mapName->evtName->variableName
+  private val eventStates =
+    collection.mutable.Map[String, collection.mutable.Map[String, Int]]()
 
   // TODO: save player location
 
   // Gets the event state for the current map.
   // Returns zero if none is saved.
-  def getEvtState(mapName: String, evtName: String) = {
-    evtStates.get(mapName).map { stateMapForCurMap =>
+  def getEventState(mapName: String, evtName: String) = {
+    eventStates.get(mapName).map { stateMapForCurMap =>
       stateMapForCurMap.get(evtName) getOrElse 0
     } getOrElse 0
   }
 
-  def setEvtState(mapName: String, evtName: String, newState: Int) = {
-    // Initialize a submap if one doesn't exist
-    val evtStatesForCurMap = evtStates.getOrElse(cameraLoc.map, Map())
-
-    val updatedEvtStatesForCurMap =
-      evtStatesForCurMap.updated(evtName, newState)
-
-    evtStates = evtStates.updated(cameraLoc.map, updatedEvtStatesForCurMap)
+  def setEventState(mapName: String, eventName: String, newState: Int) = {
+    eventStates.getOrElseUpdate(mapName, collection.mutable.Map[String, Int]())
+      .update(eventName, newState)
   }
 }

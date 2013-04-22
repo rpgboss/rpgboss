@@ -10,7 +10,7 @@ class NonplayerEntity(game: MyGame, val mapEvent: RpgEvent)
     game,
     mapEvent.x,
     mapEvent.y) {
-  var curThread: ScriptThread = null
+  private var curThread: ScriptThread = null
 
   var evtStateIdx = 0
 

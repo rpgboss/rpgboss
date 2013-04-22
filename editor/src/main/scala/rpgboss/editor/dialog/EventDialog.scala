@@ -26,7 +26,7 @@ class EventDialog(
   override def cancelFunc() = onCancel(event)
 
   class EventStatePane(val idx: Int) extends BoxPanel(Orientation.Horizontal) {
-    def curEvtState = event.states(idx)
+    private def curEvtState = event.states(idx)
 
     val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
       selection.item = EventTrigger(curEvtState.trigger)
@@ -83,10 +83,7 @@ class EventDialog(
   def okFunc() = {
     event = event.copy(name = nameField.text)
 
-    tabPane.pages.foreach { page =>
-      val pane = page.content.asInstanceOf[EventStatePane]
-      pane.formToModel()
-    }
+    tabPane.savePanesToModel()
 
     onOk(event)
     close()
@@ -98,49 +95,83 @@ class EventDialog(
   }
 
   val tabPane = new TabbedPane() {
-    for (i <- 0 until event.states.length) {
-      val state = event.states(i)
-      if (state.deleted == false) {
+    def loadPanesFromModel() = {
+      pages.clear()
+      for (i <- 0 until event.states.length) {
+        val state = event.states(i)
         pages += new Page("State %d".format(i), new EventStatePane(i))
       }
     }
+
+    def savePanesToModel() = {
+      pages.foreach { page =>
+        val pane = page.content.asInstanceOf[EventStatePane]
+        pane.formToModel()
+      }
+    }
+
+    def curPane = selection.page.content.asInstanceOf[EventStatePane]
+
+    loadPanesFromModel()
   }
 
-  def curPane = tabPane.selection.page.content.asInstanceOf[EventStatePane]
+  def newState(copyCurrent: Boolean) = {
+    // Save the current pane statuses
+    tabPane.savePanesToModel()
+
+    // Add to list of states
+    val newPaneIdx = tabPane.curPane.idx + 1
+    val newState =
+      if (copyCurrent)
+        event.states(tabPane.curPane.idx).copy()
+      else
+        RpgEventState()
+    val newStates =
+      event.states.take(newPaneIdx) ++ Array(newState) ++
+        event.states.takeRight(event.states.size - newPaneIdx)
+
+    event = event.copy(states = newStates)
+
+    tabPane.loadPanesFromModel()
+    tabPane.selection.index = newPaneIdx
+  }
+
+  def deleteState() = {
+    if (event.states.size == 1) {
+      Dialog.showMessage(tabPane, "Cannot delete the last state", "Error",
+        Dialog.Message.Error)
+    } else {
+      // Save the current pane statuses
+      tabPane.savePanesToModel()
+
+      val deletedIdx = tabPane.curPane.idx
+
+      val newStates =
+        event.states.take(deletedIdx) ++
+          event.states.takeRight(event.states.size - deletedIdx - 1)
+
+      event = event.copy(states = newStates)
+
+      tabPane.loadPanesFromModel()
+      tabPane.selection.index = math.min(deletedIdx, event.states.size - 1)
+    }
+  }
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new DesignGridPanel {
       row().grid()
         .add(leftLabel("Name:")).add(nameField)
         .add(
-          new Button(Action("Add state") {
-            // Save the current pane
-            curPane.formToModel()
-
-            // Add to list of states
-            val newState = event.states(curPane.idx).copy(
-              cmds = RpgEventState.defaultCmds)
-            event = event.copy(states = event.states ++ Array(newState))
-            // Add tabpane for it
-            tabPane.pages += new Page(
-              "State %d".format(event.states.length),
-              new EventStatePane(event.states.length - 1))
-            tabPane.selection.page = tabPane.pages.last
+          new Button(Action("New state") {
+            newState(false)
+          }))
+        .add(
+          new Button(Action("Copy state") {
+            newState(true)
           }))
         .add(
           new Button(Action("Delete state") {
-            // final save of the current state of the event.
-            curPane.formToModel()
-
-            val stateIdx = curPane.idx
-
-            // Set state to deleted
-            event.states.update(
-              stateIdx,
-              event.states(stateIdx).copy(deleted = true))
-
-            // Remove deleted page from tab pane
-            tabPane.pages -= tabPane.selection.page
+            deleteState()
           }))
 
       row.grid().add(tabPane)

@@ -114,11 +114,16 @@ abstract class Entity(
   /**
    * Finds all events with which this dxArg and dyArg touches
    */
+  def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
+    game.state.npcEvts.filter(npc => {
+      npc.getBoundingBox().contains(x, y)
+    })
+  }
+
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox()
     game.state.npcEvts.filter(npc => {
-      val npcBoundingBox = npc.getBoundingBox()
-      boundingBox.contains(npcBoundingBox)
+      npc.getBoundingBox().contains(boundingBox)
     })
   }
 
@@ -159,7 +164,7 @@ abstract class Entity(
 
         var isSliding = false
 
-        val evtsTouched = getAllEventTouches(dx, dy)
+        val evtsTouched = getAllEventCenterTouches(dx, dy)
         eventTouchCallback(evtsTouched)
         val evtBlocking =
           evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
@@ -258,6 +263,9 @@ abstract class Entity(
 case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
   def contains(o: BoundingBox) =
     o.maxX >= minX && o.minX <= maxX && o.maxY >= minY && o.minY <= maxY
+
+  def contains(x: Float, y: Float) =
+    minX <= x && x <= maxX && minY <= y && y <= maxY
 
   def offseted(dx: Float, dy: Float) =
     copy(minX + dx, minY + dy, maxX + dx, maxY + dy)
