@@ -9,19 +9,14 @@ import com.typesafe.scalalogging.slf4j.Logging
 import java.awt.Dimension
 import rpgboss.editor.StateMaster
 
-class SpriteSelectDialog(
-  owner: Window,
+class SpriteSelectPanel(
   sm: StateMaster,
-  initialSelectionOpt: Option[SpriteSpec],
-  onSuccess: (Option[SpriteSpec]) => Any)
-  extends ResourceSelectDialog[SpriteSpec, Spriteset, SpritesetMetadata](
-    owner,
+  initialSelectionOpt: Option[SpriteSpec])
+  extends ResourceSelectPanel[SpriteSpec, Spriteset, SpritesetMetadata](
     sm,
     initialSelectionOpt,
-    onSuccess,
     true,
-    Spriteset)
-  with Logging {
+    Spriteset) {
   import Spriteset._
 
   def specToResourceName(spec: SpriteSpec): String = spec.spriteset

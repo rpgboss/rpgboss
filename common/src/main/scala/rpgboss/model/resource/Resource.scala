@@ -36,19 +36,44 @@ trait MetaResource[T, MT] {
 
   def rcDir(proj: Project) = new File(proj.rcDir, rcType)
 
-  // in alphabetical order
+  /**
+   * Lists files matching the extension filter in the resource directory, as
+   * well as direct child subdirectories.
+   */
   def list(proj: Project) = {
-    val listsByType = keyExts.map { keyExt =>
-      rcDir(proj).listFiles.map(_.getName)
-        .filter(_.endsWith(keyExt))
+    val items = collection.mutable.Buffer[String]()
+    
+    def extensionFilter(file: File): Boolean = {
+      for(ext <- keyExts) {
+        if(file.getName.endsWith(ext))
+          return true
+      }
+      return false
     }
-
-    Array.concat(listsByType: _*).sortWith(_ < _)
+    
+    for(rootFile <- rcDir(proj).listFiles()) {
+      if(rootFile.isFile() && extensionFilter(rootFile)) {
+        items.append(rootFile.getName())
+      } else if(rootFile.isDirectory()) {
+        for(subFile <- rootFile.listFiles()) {
+          if(subFile.isFile() && extensionFilter(subFile)) {
+            items.append(rootFile.getName() + "/" + subFile.getName())
+          }
+        }
+      }
+    }
+    
+    items.sortWith(_ < _).toArray
   }
 
-  def metadataFile(proj: Project, name: String) =
-    new File(rcDir(proj), "%s.metadata.json".format(name))
-
+  def metadataFile(proj: Project, name: String) = {
+    val resourceFile = new File(rcDir(proj), name)
+    val resourceFilename = resourceFile.getName()
+    val resourceDir = resourceFile.getParentFile()
+    
+    new File(resourceDir, "%s.metadata.json".format(resourceFilename))
+  }
+  
   // Create a new instance with the default metadata
   def defaultInstance(proj: Project, name: String): T
 

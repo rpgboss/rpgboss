@@ -25,7 +25,7 @@ class SpriteBox(
   /**
    * Updates the cached sprite image used for drawing the component
    */
-  def updateSpriteSpec(s: Option[SpriteSpec]) = {
+  def updateSpriteSpec(s: Option[SpriteSpec]): Unit = {
     spriteSpecOpt = s
     spriteImg = spriteSpecOpt.map { spriteSpec =>
       val spriteset = Spriteset.readFromDisk(sm.getProj, spriteSpec.spriteset)
@@ -60,11 +60,9 @@ class SpriteBox(
   listenTo(this.mouse.clicks)
   reactions += {
     case e: MouseClicked =>
-      val diag = new SpriteSelectDialog(
-        owner,
-        sm,
-        initialSelectionOpt = spriteSpecOpt,
-        onSuccess = updateSpriteSpec(_))
+      val selector = new SpriteSelectPanel(sm, spriteSpecOpt)
+      val diag = new ResourceSelectDialog(
+        owner, selector, onSuccess = updateSpriteSpec _)
       diag.open()
   }
 }
