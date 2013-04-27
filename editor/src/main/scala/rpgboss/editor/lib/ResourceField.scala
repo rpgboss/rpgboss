@@ -13,7 +13,7 @@ class StringSpecSelectDialog[M, MT](
   initialSelectionOpt: Option[String],
   allowNone: Boolean,
   metaResource: MetaResource[M, MT],
-  onSuccess: (Option[String]) => Unit)
+  onSuccessF: (Option[String]) => Unit)
   extends ResourceSelectDialog(
     owner,
     sm,
@@ -23,20 +23,22 @@ class StringSpecSelectDialog[M, MT](
   override def specToResourceName(spec: String): String = spec
   override def newRcNameToSpec(name: String, prevSpec: Option[String]): String =
     name
+    
+  override def onSuccess(result: Option[String]) = onSuccessF(result)
 }
 
 class PictureSelectDialog(
   owner: Window,
   sm: StateMaster,
   initialSelectionOpt: Option[String],
-  onSuccess: (Option[String]) => Unit)
+  onSuccessF: (Option[String]) => Unit)
   extends StringSpecSelectDialog(
     owner,
     sm,
     initialSelectionOpt,
     false,
     Picture,
-    onSuccess) {
+    onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Picture.readFromDisk(sm.getProj, selection)
     new ImagePanel(img.img)
@@ -47,14 +49,14 @@ class WindowskinSelectDialog(
   owner: Window,
   sm: StateMaster,
   initialSelectionOpt: Option[String],
-  onSuccess: (Option[String]) => Unit)
+  onSuccessF: (Option[String]) => Unit)
   extends StringSpecSelectDialog(
     owner,
     sm,
     initialSelectionOpt,
     false,
     Windowskin,
-    onSuccess) {
+    onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Windowskin.readFromDisk(sm.getProj, selection)
     new ImagePanel(img.img)

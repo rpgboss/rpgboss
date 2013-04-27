@@ -62,7 +62,7 @@ class SpriteBox(
     case e: MouseClicked =>
       val selector = new SpriteSelectPanel(sm, spriteSpecOpt)
       val diag = new CustomResourceSelectDialog(
-        owner, selector, onSuccess = updateSpriteSpec _)
+        owner, selector, updateSpriteSpec _)
       diag.open()
   }
 }

@@ -40,7 +40,7 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
   initialSelectionOpt: Option[SpecType],
   allowNone: Boolean,
   metaResource: MetaResource[T, MT]) 
-  extends ResourceSelectDialogBase(owner, metaResource) {
+  extends ResourceSelectDialogBase[SpecType, T, MT](owner, metaResource) {
 
   def specToResourceName(spec: SpecType): String
   def newRcNameToSpec(name: String, prevSpec: Option[SpecType]): SpecType
@@ -49,7 +49,7 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
     selection: SpecType,
     updateSelectionF: SpecType => Unit): Component
   
-  val resourceSelector = new ResourceSelectPanel[SpecType, T, MT](
+  override val resourceSelector = new ResourceSelectPanel[SpecType, T, MT](
     sm,
     initialSelectionOpt,
     allowNone,
@@ -60,7 +60,7 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
     def newRcNameToSpec(name: String, prevSpec: Option[SpecType]): SpecType =
       ResourceSelectDialog.this.newRcNameToSpec(name, prevSpec)
       
-    def rightPaneFor(
+    override def rightPaneFor(
       selection: SpecType,
       updateSelectionF: SpecType => Unit): Component = {
       ResourceSelectDialog.this.rightPaneFor(selection, updateSelectionF)
@@ -70,8 +70,12 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
 
 class CustomResourceSelectDialog[SpecType, T, MT](
   owner: Window, 
-  resourceSelector: ResourceSelectPanel[SpecType, T, MT],
-  onSuccess: Option[SpecType] => Unit)
-  extends ResourceSelectDialogBase(owner, resourceSelector.metaResource) {
+  val resourceSelector: ResourceSelectPanel[SpecType, T, MT],
+  onSuccessF: Option[SpecType] => Unit)
+  extends ResourceSelectDialogBase[SpecType, T, MT](
+    owner, 
+    resourceSelector.metaResource) {
+  
+  override def onSuccess(result: Option[SpecType]) = onSuccessF(result)
   
 }
