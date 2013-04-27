@@ -11,32 +11,32 @@ class StringSpecSelectDialog[M, MT](
   owner: Window,
   sm: StateMaster,
   initialSelectionOpt: Option[String],
-  onSuccess: (Option[String]) => Any,
   allowNone: Boolean,
-  metaResource: MetaResource[M, MT])
+  metaResource: MetaResource[M, MT],
+  onSuccess: (Option[String]) => Unit)
   extends ResourceSelectDialog(
     owner,
     sm,
     initialSelectionOpt,
-    onSuccess,
     allowNone,
     metaResource) {
-  def specToResourceName(spec: String) = spec
-  def newRcNameToSpec(name: String, prevSpec: Option[String]) = name
+  override def specToResourceName(spec: String): String = spec
+  override def newRcNameToSpec(name: String, prevSpec: Option[String]): String =
+    name
 }
 
 class PictureSelectDialog(
   owner: Window,
   sm: StateMaster,
   initialSelectionOpt: Option[String],
-  onSuccess: (Option[String]) => Any)
+  onSuccess: (Option[String]) => Unit)
   extends StringSpecSelectDialog(
     owner,
     sm,
     initialSelectionOpt,
-    onSuccess,
     false,
-    Picture) {
+    Picture,
+    onSuccess) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Picture.readFromDisk(sm.getProj, selection)
     new ImagePanel(img.img)
@@ -47,14 +47,14 @@ class WindowskinSelectDialog(
   owner: Window,
   sm: StateMaster,
   initialSelectionOpt: Option[String],
-  onSuccess: (Option[String]) => Any)
+  onSuccess: (Option[String]) => Unit)
   extends StringSpecSelectDialog(
     owner,
     sm,
     initialSelectionOpt,
-    onSuccess,
     false,
-    Windowskin) {
+    Windowskin,
+    onSuccess) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Windowskin.readFromDisk(sm.getProj, selection)
     new ImagePanel(img.img)
@@ -133,8 +133,8 @@ class MsgfontField(
   def doBrowse() = {
     val diag = new StringSpecSelectDialog(
       owner, sm, Some(fieldName.text),
-      newOpt => fieldName.text = newOpt.getOrElse(""),
-      false, Msgfont)
+      false, Msgfont,
+      newOpt => fieldName.text = newOpt.getOrElse(""))
     diag.open()
   }
 }
@@ -148,8 +148,8 @@ class SoundField(
   def doBrowse() = {
     val diag = new StringSpecSelectDialog(
       owner, sm, Some(fieldName.text),
-      newOpt => fieldName.text = newOpt.getOrElse(""),
-      true, Sound)
+      true, Sound,
+      newOpt => fieldName.text = newOpt.getOrElse(""))
     diag.open()
   }
 }

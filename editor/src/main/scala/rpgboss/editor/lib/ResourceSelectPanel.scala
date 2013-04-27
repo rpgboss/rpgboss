@@ -19,8 +19,7 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
 
   def rightPaneFor(
     selection: SpecType,
-    updateSelectionF: SpecType => Unit): Component =
-    new BoxPanel(Orientation.Vertical)
+    updateSelectionF: SpecType => Unit): Component
 
   val allResources = metaResource.list(sm.getProj)
 
