@@ -47,7 +47,8 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
   
   def rightPaneFor(
     selection: SpecType,
-    updateSelectionF: SpecType => Unit): Component
+    updateSelectionF: SpecType => Unit): Component =
+      new BoxPanel(Orientation.Vertical)
   
   override val resourceSelector = new ResourceSelectPanel[SpecType, T, MT](
     sm,
