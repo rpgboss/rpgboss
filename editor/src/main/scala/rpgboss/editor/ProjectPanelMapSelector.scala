@@ -4,12 +4,13 @@ import scala.swing._
 import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
-import rpgboss.editor.tileset._
+import rpgboss.editor.imageset.selector._
+import rpgboss.editor.misc._
 import scalaswingcontrib.event._
 import scalaswingcontrib.tree._
 import scalaswingcontrib.tree.Tree._
 import scala.swing.event._
-import rpgboss.editor.lib._
+import rpgboss.editor.uibase._
 import rpgboss.editor.dialog.MapPropertiesDialog
 import java.awt.event.MouseEvent
 

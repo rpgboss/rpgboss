@@ -1,6 +1,6 @@
 package rpgboss.editor.dialog
 
-import rpgboss.editor.lib._
+import rpgboss.editor.uibase._
 import scala.swing._
 import scala.swing.event._
 /*

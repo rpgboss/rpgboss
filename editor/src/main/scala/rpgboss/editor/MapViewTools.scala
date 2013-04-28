@@ -1,8 +1,8 @@
 package rpgboss.editor
 
 import rpgboss.lib.Utils._
-import rpgboss.editor.lib._
-import rpgboss.editor.lib.GraphicsUtils._
+import rpgboss.editor.uibase._
+import rpgboss.editor.misc.GraphicsUtils._
 import rpgboss.model._
 import rpgboss.model.Constants.DirectionMasks._
 import rpgboss.model.Constants._

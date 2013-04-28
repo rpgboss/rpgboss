@@ -56,7 +56,7 @@ object Settings {
   lazy val editor = Settings.playerDesktop ++ Seq(
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-swing" % "2.10.1",
-      "com.github.benhutchison" % "scalaswingcontrib" % "1.4", 
+      "com.github.benhutchison" % "scalaswingcontrib" % "1.5", 
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
     ),

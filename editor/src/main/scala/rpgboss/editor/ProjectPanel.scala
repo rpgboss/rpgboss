@@ -1,8 +1,9 @@
 package rpgboss.editor
 
-import rpgboss.editor.lib._
+import rpgboss.editor.uibase._
 import scala.collection.JavaConversions._
-import rpgboss.editor.tileset._
+import rpgboss.editor.imageset.selector._
+import rpgboss.editor.misc._
 import scala.swing._
 import scala.swing.event._
 import rpgboss.model._

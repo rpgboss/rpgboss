@@ -1,16 +1,18 @@
 package rpgboss.editor.dialog
 
 import scala.swing._
-import rpgboss.editor.lib.SwingUtils._
+import rpgboss.editor.misc.SwingUtils._
 import scala.swing.event._
 import rpgboss.model.event._
-import rpgboss.editor.lib.DesignGridPanel
+import rpgboss.editor.uibase._
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.TabbedPane.Page
 import rpgboss.model.Project
 import rpgboss.model.SpriteSpec
 import rpgboss.editor.StateMaster
 import java.awt.Dimension
+import rpgboss.editor.uibase.StdDialog
+import rpgboss.editor.resourceselector.SpriteBox
 
 class EventDialog(
   owner: Window,

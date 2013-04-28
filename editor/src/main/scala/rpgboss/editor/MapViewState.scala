@@ -4,8 +4,8 @@ import rpgboss.lib.Utils._
 import rpgboss.model._
 import rpgboss.model.resource._
 
-import rpgboss.editor.tileset._
-import rpgboss.editor.lib._
+import rpgboss.editor.imageset._
+import rpgboss.editor.uibase._
 import rpgboss.editor.cache._
 
 import scala.math._

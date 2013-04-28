@@ -1,7 +1,7 @@
 package rpgboss.editor.dialog.db
 import rpgboss.model.ProjectData
 import rpgboss.editor.dialog.DatabaseDialog
-import rpgboss.editor.lib.RightPaneArrayEditingPanel
+import rpgboss.editor.uibase.RightPaneArrayEditingPanel
 import scala.swing._
 
 trait DatabasePanel {

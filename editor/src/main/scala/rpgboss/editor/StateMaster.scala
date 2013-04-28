@@ -1,7 +1,6 @@
 package rpgboss.editor
 
-import rpgboss.editor.lib._
-import rpgboss.editor.tileset._
+import rpgboss.editor.uibase._
 import rpgboss.editor.cache._
 
 import rpgboss.model._

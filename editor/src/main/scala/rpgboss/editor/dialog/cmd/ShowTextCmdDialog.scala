@@ -2,9 +2,8 @@ package rpgboss.editor.dialog.cmd
 
 import scala.swing._
 import rpgboss.model.event._
-import rpgboss.editor.lib.SwingUtils._
-import rpgboss.editor.dialog.StdDialog
-import rpgboss.editor.lib.DesignGridPanel
+import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase._
 
 class ShowTextCmdDialog(
   owner: Window,

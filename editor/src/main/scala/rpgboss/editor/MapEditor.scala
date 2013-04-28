@@ -1,13 +1,14 @@
 package rpgboss.editor
 
 import rpgboss.lib._
-import rpgboss.editor.lib.SwingUtils._
+import rpgboss.editor.misc.SwingUtils._
 import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
-import rpgboss.editor.tileset._
-import rpgboss.editor.lib._
-import rpgboss.editor.lib.GraphicsUtils._
+import rpgboss.editor.resourceselector._
+import rpgboss.editor.uibase._
+import rpgboss.editor.misc._
+import rpgboss.editor.misc.GraphicsUtils._
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.math._
 import scala.swing._
@@ -24,6 +25,7 @@ import javax.swing.event._
 import javax.swing.KeyStroke
 import java.awt.event.KeyEvent
 import java.awt.event.InputEvent
+import rpgboss.editor.imageset.selector.TabbedTileSelector
 
 class MapEditor(
   projectPanel: ProjectPanel,

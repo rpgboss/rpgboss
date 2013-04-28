@@ -6,6 +6,7 @@ import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.editor.dialog.cmd._
 import rpgboss.editor.StateMaster
+import rpgboss.editor.dialog.cmd.NewEvtCmdBox
 
 /**
  * Holds and edits list of commands.

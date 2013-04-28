@@ -2,15 +2,14 @@ package rpgboss.editor.dialog
 
 import rpgboss.editor.dialog.db._
 import rpgboss.editor._
-import rpgboss.editor.lib._
-import rpgboss.editor.lib.SwingUtils._
+import rpgboss.editor.uibase._
+import rpgboss.editor.misc.SwingUtils._
 import scala.swing._
 import scala.swing.event._
-
 import rpgboss.model._
 import rpgboss.model.resource._
-
 import net.java.dev.designgridlayout._
+import rpgboss.editor.uibase.StdDialog
 
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Database") {

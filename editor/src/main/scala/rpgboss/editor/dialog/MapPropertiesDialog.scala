@@ -3,9 +3,8 @@ package rpgboss.editor.dialog
 import rpgboss.model._
 import rpgboss.model.resource._
 import scala.swing._
-import rpgboss.editor.lib.DesignGridPanel
-import rpgboss.editor.lib.SwingUtils._
-import rpgboss.editor.lib.NumberSpinner
+import rpgboss.editor.uibase._
+import rpgboss.editor.misc.SwingUtils._
 
 class MapPropertiesDialog(
   owner: Window,

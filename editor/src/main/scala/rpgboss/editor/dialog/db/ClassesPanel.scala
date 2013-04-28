@@ -1,8 +1,9 @@
 package rpgboss.editor.dialog.db
 
 import rpgboss.editor._
-import rpgboss.editor.lib._
-import rpgboss.editor.lib.SwingUtils._
+import rpgboss.editor.uibase._
+import rpgboss.editor.dialog.db.components._
+import rpgboss.editor.misc.SwingUtils._
 import scala.swing._
 import scala.swing.event._
 
