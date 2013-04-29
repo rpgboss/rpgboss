@@ -13,10 +13,10 @@ import java.awt.Dimension
 import java.awt.Graphics2D
 import rpgboss.model.resource.Tileset.tilesize
 
-class SpriteBox(
-  owner: Window,
-  sm: StateMaster,
-  initialSpriteSpecOpt: Option[SpriteSpec],
+class SpriteField(
+  owner: Window, 
+  sm: StateMaster, 
+  initialSpriteSpecOpt: Option[SpriteSpec], 
   onUpdate: (Option[SpriteSpec]) => Any)
   extends Component {
   import Tileset.tilesize
@@ -36,7 +36,7 @@ class SpriteBox(
 
     onUpdate(spriteSpecOpt)
 
-    this.repaint()
+    SpriteField.this.repaint()
   }
 
   updateSpriteSpec(initialSpriteSpecOpt)
@@ -59,10 +59,58 @@ class SpriteBox(
     }
   }
 
-  listenTo(this.mouse.clicks)
+  listenTo(SpriteField.this.mouse.clicks)
   reactions += {
     case e: MouseClicked =>
       val diag = new SpriteSelectDialog(owner, sm, spriteSpecOpt)
       diag.open()
+  }
+}
+
+class SpriteSelectDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[SpriteSpec])
+extends ResourceSelectDialogBase(owner, Spriteset) {
+  override val resourceSelector =
+    new SpriteSelectPanel(sm, initial)
+}
+
+class SpriteSelectPanel(
+  sm: StateMaster,
+  initialSelectionOpt: Option[SpriteSpec])
+  extends ResourceSelectPanel[SpriteSpec, Spriteset, SpritesetMetadata](
+    sm,
+    initialSelectionOpt,
+    true,
+    Spriteset) {
+  import Spriteset._
+
+  def specToResourceName(spec: SpriteSpec): String = spec.spriteset
+  def newRcNameToSpec(name: String, prevSpec: Option[SpriteSpec]) = {
+    val (dir, step) = prevSpec.map { spec =>
+      (spec.dir, spec.step)
+    } getOrElse ((SpriteSpec.Directions.SOUTH, SpriteSpec.Steps.STILL))
+
+    val idx = prevSpec.map { spec =>
+      val newSpriteset = sm.assetCache.getSpriteset(name)
+      val prevIdx = spec.spriteIndex
+
+      // ensure that the prevIdx is applicable to the new spriteset
+      if (prevIdx < newSpriteset.nSprites) prevIdx else 0
+    } getOrElse (0)
+
+    SpriteSpec(name, idx, dir, step)
+  }
+
+  override def rightPaneDim = new Dimension(
+    384, 384)
+
+  override def rightPaneFor(
+    selection: SpriteSpec,
+    updateSelectionF: SpriteSpec => Unit) = {
+    val spriteset = sm.assetCache.getSpriteset(selection.spriteset)
+
+    new SpriteSelector(spriteset, selection, updateSelectionF)
   }
 }

@@ -11,7 +11,7 @@ import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
-import rpgboss.editor.resourceselector.SpriteBox
+import rpgboss.editor.resourceselector.SpriteField
 
 class CharactersPanel(
   owner: Window,
@@ -40,7 +40,7 @@ class CharactersPanel(
         model.description,
         model.description = _)
 
-      val fSprite = new SpriteBox(
+      val fSprite = new SpriteField(
         owner,
         sm,
         model.sprite,

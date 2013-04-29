@@ -12,7 +12,7 @@ import rpgboss.model.SpriteSpec
 import rpgboss.editor.StateMaster
 import java.awt.Dimension
 import rpgboss.editor.uibase.StdDialog
-import rpgboss.editor.resourceselector.SpriteBox
+import rpgboss.editor.resourceselector.SpriteField
 
 class EventDialog(
   owner: Window,
@@ -36,7 +36,7 @@ class EventDialog(
     val heightBox = new ComboBox(EventHeight.values.toSeq) {
       selection.item = EventHeight(curEvtState.height)
     }
-    val spriteBox = new SpriteBox(
+    val spriteBox = new SpriteField(
       owner,
       sm,
       curEvtState.sprite,
