@@ -21,7 +21,7 @@ class SpriteBox(
   extends Component {
   import Tileset.tilesize
 
-  var spriteSpecOpt: Option[SpriteSpec] = None
+  private var spriteSpecOpt: Option[SpriteSpec] = None
   private var spriteImg: Option[BufferedImage] = None
 
   /**
@@ -62,9 +62,7 @@ class SpriteBox(
   listenTo(this.mouse.clicks)
   reactions += {
     case e: MouseClicked =>
-      val selector = new SpriteSelectPanel(sm, spriteSpecOpt)
-      val diag = new CustomResourceSelectDialog(
-        owner, selector, updateSpriteSpec _)
+      val diag = new SpriteSelectDialog(owner, sm, spriteSpecOpt)
       diag.open()
   }
 }

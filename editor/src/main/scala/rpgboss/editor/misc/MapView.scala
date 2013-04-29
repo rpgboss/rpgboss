@@ -20,6 +20,7 @@ import rpgboss.editor.dialog.EventDialog
 import java.awt.image.BufferedImage
 import scala.collection.mutable.Buffer
 import javax.swing.event._
+import rpgboss.editor.cache.EventImageCache
 
 object MapScales extends RpgEnum {
   val scale1 = Value(1, "1/1")

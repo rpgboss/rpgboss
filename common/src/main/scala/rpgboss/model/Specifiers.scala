@@ -23,6 +23,12 @@ case class SpriteSpec(
   spriteIndex: Int,
   dir: Int = SpriteSpec.Directions.SOUTH,
   step: Int = SpriteSpec.Steps.STILL)
+  
+case class SoundSpec(
+  name: String,
+  volume: Float = 1.0f,
+  pan: Float = 1.0f,
+  pitch: Float = 1.0f)
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 

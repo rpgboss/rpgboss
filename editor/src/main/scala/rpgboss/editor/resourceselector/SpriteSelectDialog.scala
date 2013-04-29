@@ -10,6 +10,15 @@ import rpgboss.editor.imageset.selector.SpriteSelector
 import java.awt.Dimension
 import rpgboss.editor.StateMaster
 
+class SpriteSelectDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[SpriteSpec])
+extends ResourceSelectDialogBase(owner, Spriteset) {
+  override val resourceSelector =
+    new SpriteSelectPanel(sm, initial)
+}
+
 class SpriteSelectPanel(
   sm: StateMaster,
   initialSelectionOpt: Option[SpriteSpec])

@@ -1,4 +1,4 @@
-package rpgboss.editor.misc
+package rpgboss.editor.uibase
 
 import swing._
 import java.awt.image.BufferedImage

@@ -64,19 +64,3 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
     addButtons(cancelBtn, okBtn)
   }
 }
-
-class CustomResourceSelectDialog[SpecType, T, MT](
-  owner: Window, 
-  val resourceSelector: ResourceSelectPanel[SpecType, T, MT],
-  onSuccessF: Option[SpecType] => Unit)
-  extends ResourceSelectDialogBase[SpecType, T, MT](
-    owner, 
-    resourceSelector.metaResource) {
-  
-  override def onSuccess(result: Option[SpecType]) = onSuccessF(result)
-
-  contents = new DesignGridPanel {
-    row().grid().add(resourceSelector)
-    addButtons(cancelBtn, okBtn)
-  }
-}

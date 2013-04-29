@@ -7,7 +7,7 @@ import rpgboss.model._
 import scala.swing.event.MouseClicked
 import scala.swing.event.EditDone
 import com.typesafe.scalalogging.slf4j.Logging
-import rpgboss.editor.misc.ImagePanel
+import rpgboss.editor.uibase.ImagePanel
 
 class StringSpecSelectDialog[M, MT](
   owner: Window,
@@ -65,43 +65,50 @@ class WindowskinSelectDialog(
   }
 }
 
-abstract class StringBrowseField(
+abstract class BrowseField[SpecType](
   owner: Window,
   sm: StateMaster,
-  initial: String,
-  onUpdate: String => Unit)
+  initial: Option[SpecType],
+  onUpdate: Option[SpecType] => Unit)
   extends BoxPanel(Orientation.Horizontal) with Logging {
-
-  val fieldName = new TextField {
-    text = initial
+  
+  var model = initial
+  
+  val textField = new TextField {
+    text = model.map(_.toString).getOrElse("<None>")
     editable = false
     enabled = true
   }
-
-  def initialOpt = if (initial.isEmpty()) None else Some(initial)
-
+  
   def doBrowse()
 
   val browseBtn = new Button(Action("...") {
     doBrowse()
     logger.debug("Post-browse button onUpdate")
-    onUpdate(fieldName.text)
+    onUpdate(model)
   })
-
-  listenTo(fieldName)
-  listenTo(fieldName.mouse.clicks)
+  
+  listenTo(textField.mouse.clicks)
 
   reactions += {
-    case MouseClicked(`fieldName`, _, _, _, _) =>
+    case MouseClicked(`textField`, _, _, _, _) =>
       browseBtn.action.apply()
-    case EditDone(`fieldName`) =>
-      logger.debug("EditDone event onUpdate")
-      onUpdate(fieldName.text)
   }
 
-  contents += fieldName
+  contents += textField
   contents += browseBtn
 }
+
+abstract class StringBrowseField(
+  owner: Window,
+  sm: StateMaster,
+  initial: String,
+  onUpdate: String => Unit)
+  extends BrowseField[String](
+    owner,
+    sm,
+    if(initial.isEmpty()) None else Some(initial),
+    result => onUpdate(result.getOrElse("")))
 
 class WindowskinField(
   owner: Window,
@@ -109,10 +116,9 @@ class WindowskinField(
   initial: String,
   onUpdate: String => Unit)
   extends StringBrowseField(owner, sm, initial, onUpdate) {
-  def doBrowse() = {
+  override def doBrowse() = {
     val diag = new WindowskinSelectDialog(
-      owner, sm, Some(fieldName.text),
-      newOpt => fieldName.text = newOpt.getOrElse(""))
+      owner, sm, model, model = _)
     diag.open()
   }
 }
@@ -123,10 +129,9 @@ class PictureField(
   initial: String,
   onUpdate: String => Unit)
   extends StringBrowseField(owner, sm, initial, onUpdate) {
-  def doBrowse() = {
+  override def doBrowse() = {
     val diag = new PictureSelectDialog(
-      owner, sm, Some(fieldName.text),
-      newOpt => fieldName.text = newOpt.getOrElse(""))
+      owner, sm, model, model = _)
     diag.open()
   }
 }
@@ -139,24 +144,9 @@ class MsgfontField(
   extends StringBrowseField(owner, sm, initial, onUpdate) {
   def doBrowse() = {
     val diag = new StringSpecSelectDialog(
-      owner, sm, Some(fieldName.text),
+      owner, sm, model,
       false, Msgfont,
-      newOpt => fieldName.text = newOpt.getOrElse(""))
-    diag.open()
-  }
-}
-
-class SoundField(
-  owner: Window,
-  sm: StateMaster,
-  initial: String,
-  onUpdate: String => Unit)
-  extends StringBrowseField(owner, sm, initial, onUpdate) {
-  def doBrowse() = {
-    val diag = new StringSpecSelectDialog(
-      owner, sm, Some(fieldName.text),
-      true, Sound,
-      newOpt => fieldName.text = newOpt.getOrElse(""))
+      model = _)
     diag.open()
   }
 }

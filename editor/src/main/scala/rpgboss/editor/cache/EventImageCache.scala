@@ -1,4 +1,4 @@
-package rpgboss.editor.misc
+package rpgboss.editor.cache
 
 import rpgboss.editor.StateMaster
 import com.google.common.cache._

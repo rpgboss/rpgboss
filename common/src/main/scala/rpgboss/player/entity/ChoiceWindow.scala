@@ -35,10 +35,10 @@ class ChoiceWindow(
 
   var curChoice = defaultChoice
 
-  val soundCursor = Sound.readFromDisk(proj, proj.data.soundCursor)
-  val soundSelect = Sound.readFromDisk(proj, proj.data.soundSelect)
-  val soundCancel = Sound.readFromDisk(proj, proj.data.soundCancel)
-  val soundCannot = Sound.readFromDisk(proj, proj.data.soundCannot)
+  val soundCursor = Sound.readFromDisk(proj, proj.data.soundCursor.name)
+  val soundSelect = Sound.readFromDisk(proj, proj.data.soundSelect.name)
+  val soundCancel = Sound.readFromDisk(proj, proj.data.soundCancel.name)
+  val soundCannot = Sound.readFromDisk(proj, proj.data.soundCannot.name)
   soundCursor.loadAsset(assets)
   soundSelect.loadAsset(assets)
   soundCancel.loadAsset(assets)
