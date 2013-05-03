@@ -12,6 +12,7 @@ import rpgboss.editor.resourceselector._
 import java.awt.Dimension
 import java.awt.Graphics2D
 import rpgboss.model.resource.Tileset.tilesize
+import rpgboss.editor.imageset.selector.SpriteSelector
 
 class SpriteField(
   owner: Window, 

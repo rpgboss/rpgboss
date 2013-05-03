@@ -17,10 +17,14 @@ case class ProjectData(uuid: String,
                        windowskin: String = "LastPhantasmScanlines.png",
                        msgfont: String = "Vera.ttf",
                        fontsize: Int = 24,
-                       soundCursor: SoundSpec = SoundSpec("MenuCursor.wav"),
-                       soundSelect: SoundSpec = SoundSpec("MenuSelect.wav"),
-                       soundCancel: SoundSpec = SoundSpec("MenuCancel.wav"),
-                       soundCannot: SoundSpec = SoundSpec("MenuCannot.wav"),
+                       soundCursor: Option[SoundSpec] = 
+                         Some(SoundSpec("MenuCursor.wav")),
+                       soundSelect: Option[SoundSpec] = 
+                         Some(SoundSpec("MenuSelect.wav")),
+                       soundCancel: Option[SoundSpec] = 
+                         Some(SoundSpec("MenuCancel.wav")),
+                       soundCannot: Option[SoundSpec] = 
+                         Some(SoundSpec("MenuCannot.wav")),
 
                        statusEffects: Array[StatusEffect] = Array(StatusEffect()),
 

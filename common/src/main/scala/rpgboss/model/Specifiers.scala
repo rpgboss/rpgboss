@@ -25,9 +25,8 @@ case class SpriteSpec(
   step: Int = SpriteSpec.Steps.STILL)
   
 case class SoundSpec(
-  name: String,
+  sound: String,
   volume: Float = 1.0f,
-  pan: Float = 1.0f,
   pitch: Float = 1.0f)
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)

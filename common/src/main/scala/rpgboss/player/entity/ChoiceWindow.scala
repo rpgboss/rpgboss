@@ -1,7 +1,7 @@
 package rpgboss.player.entity
 
+import rpgboss.model._
 import rpgboss.model.resource._
-import rpgboss.model.Project
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import scala.concurrent.Promise
@@ -34,16 +34,18 @@ class ChoiceWindow(
   override def drawAwaitingArrow = false
 
   var curChoice = defaultChoice
-
-  val soundCursor = Sound.readFromDisk(proj, proj.data.soundCursor.name)
-  val soundSelect = Sound.readFromDisk(proj, proj.data.soundSelect.name)
-  val soundCancel = Sound.readFromDisk(proj, proj.data.soundCancel.name)
-  val soundCannot = Sound.readFromDisk(proj, proj.data.soundCannot.name)
-  soundCursor.loadAsset(assets)
-  soundSelect.loadAsset(assets)
-  soundCancel.loadAsset(assets)
-  soundCannot.loadAsset(assets)
-
+  
+  def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
+    val snd = spec.map(s => Sound.readFromDisk(proj, s.sound))
+    snd.map(_.loadAsset(assets))
+    snd
+  }
+  
+  val soundCursor = optionallyReadAndLoad(proj.data.soundCursor)
+  val soundSelect = optionallyReadAndLoad(proj.data.soundSelect)
+  val soundCancel = optionallyReadAndLoad(proj.data.soundCancel)
+  val soundCannot = optionallyReadAndLoad(proj.data.soundCannot)
+  
   def keyActivate(key: Int) = {
     // Need to finish loading all assets before accepting key input
     assets.finishLoading()
@@ -55,17 +57,17 @@ class ChoiceWindow(
           choices.length - 1
         else
           curChoice - 1
-      soundCursor.getAsset(assets).play()
+      soundCursor.map(_.getAsset(assets).play())
     } else if (key == Down) {
       curChoice += 1
       if (curChoice == choices.length)
         curChoice = 0
-      soundCursor.getAsset(assets).play()
+      soundCursor.map(_.getAsset(assets).play())
     }
 
     if (key == OK && !result.isCompleted) {
       changeState(Window.Closing)
-      soundSelect.getAsset(assets).play()
+      soundSelect.map(_.getAsset(assets).play())
     }
   }
 
