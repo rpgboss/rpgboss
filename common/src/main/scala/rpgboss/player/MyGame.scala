@@ -89,21 +89,25 @@ class MyGame(gamepath: File)
 
     // Log fps
     fps.log()
-
-    // update state
-    state.update(delta)
-
-    mapLayer.update(delta)
-    screenLayer.update(delta)
-
+    
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL10.GL_BLEND)
 
-    // Render the two layers
-    mapLayer.render()
-    screenLayer.render()
+    if(assets.update()) {
+      // update state
+      state.update(delta)
+  
+      mapLayer.update(delta)
+      screenLayer.update(delta)
+      
+      // Render the two layers
+      mapLayer.render()
+      screenLayer.render()
+    } else {
+      // TODO: loading screen
+    }
   }
 
   override def resize(x: Int, y: Int) {}
