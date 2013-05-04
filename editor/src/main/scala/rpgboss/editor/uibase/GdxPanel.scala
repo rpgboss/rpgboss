@@ -12,7 +12,7 @@ class GdxPanel extends Component with Logging {
     
   }
   
-  private val gdxCanvas = new LwjglCanvas(gdxListener, true) {
+  private val gdxCanvas = new LwjglCanvas(gdxListener, false) {
     override def start() = {
       logger.debug("LwjglCanvas start")
       super.start()
