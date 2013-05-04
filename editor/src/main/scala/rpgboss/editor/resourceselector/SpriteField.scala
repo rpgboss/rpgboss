@@ -25,6 +25,8 @@ class SpriteField(
   private var spriteSpecOpt: Option[SpriteSpec] = None
   private var spriteImg: Option[BufferedImage] = None
 
+  def getSpriteSpec = spriteSpecOpt
+  
   /**
    * Updates the cached sprite image used for drawing the component
    */
@@ -63,28 +65,19 @@ class SpriteField(
   listenTo(SpriteField.this.mouse.clicks)
   reactions += {
     case e: MouseClicked =>
-      val diag = new SpriteSelectDialog(owner, sm, spriteSpecOpt)
+      val diag = new SpriteSelectDialog(owner, sm, spriteSpecOpt) {
+        def onSuccess(result: Option[SpriteSpec]) =
+          updateSpriteSpec(result)
+      }
       diag.open()
   }
 }
 
-class SpriteSelectDialog(
+abstract class SpriteSelectDialog(
   owner: Window,
   sm: StateMaster,
   initial: Option[SpriteSpec])
-extends ResourceSelectDialogBase(owner, Spriteset) {
-  override val resourceSelector =
-    new SpriteSelectPanel(sm, initial)
-}
-
-class SpriteSelectPanel(
-  sm: StateMaster,
-  initialSelectionOpt: Option[SpriteSpec])
-  extends ResourceSelectPanel[SpriteSpec, Spriteset, SpritesetMetadata](
-    sm,
-    initialSelectionOpt,
-    true,
-    Spriteset) {
+extends ResourceSelectDialog(owner, sm, initial, true, Spriteset) {
   import Spriteset._
 
   def specToResourceName(spec: SpriteSpec): String = spec.spriteset
@@ -104,8 +97,7 @@ class SpriteSelectPanel(
     SpriteSpec(name, idx, dir, step)
   }
 
-  override def rightPaneDim = new Dimension(
-    384, 384)
+  def rightPaneDim = new Dimension(384, 384)
 
   override def rightPaneFor(
     selection: SpriteSpec,

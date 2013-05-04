@@ -8,31 +8,21 @@ import rpgboss.model.resource._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.uibase._
 
-abstract class ResourceSelectDialogBase[SpecType, T, MT](
-  owner: Window,
-  metaResource: MetaResource[T, MT])
-  extends StdDialog(
-    owner,
-    "Select " + metaResource.rcType.capitalize) {
-  
-  def onSuccess(result: Option[SpecType]): Unit
-  
-  def resourceSelector: ResourceSelectPanel[SpecType, T, MT]
-
-  def okFunc(): Unit = {
-    onSuccess(resourceSelector.curSelection)
-    close()
-  }
-}
-
 abstract class ResourceSelectDialog[SpecType, T, MT](
   owner: Window, 
   sm: StateMaster,
   initialSelectionOpt: Option[SpecType],
   allowNone: Boolean,
   metaResource: MetaResource[T, MT]) 
-  extends ResourceSelectDialogBase[SpecType, T, MT](owner, metaResource) {
+  extends StdDialog(owner, "Select" + metaResource.rcType.capitalize) {
 
+  def onSuccess(result: Option[SpecType]): Unit
+ 
+  def okFunc(): Unit = {
+    onSuccess(resourceSelector.curSelection)
+    close()
+  }
+  
   def specToResourceName(spec: SpecType): String
   def newRcNameToSpec(name: String, prevSpec: Option[SpecType]): SpecType
   
@@ -41,7 +31,7 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
     updateSelectionF: SpecType => Unit): Component =
       new BoxPanel(Orientation.Vertical)
   
-  override val resourceSelector = new ResourceSelectPanel[SpecType, T, MT](
+  val resourceSelector = new ResourceSelectPanel[SpecType, T, MT](
     sm,
     initialSelectionOpt,
     allowNone,

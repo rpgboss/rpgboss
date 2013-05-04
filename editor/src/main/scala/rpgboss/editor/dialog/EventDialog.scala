@@ -7,8 +7,7 @@ import rpgboss.model.event._
 import rpgboss.editor.uibase._
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.TabbedPane.Page
-import rpgboss.model.Project
-import rpgboss.model.SpriteSpec
+import rpgboss.model._
 import rpgboss.editor.StateMaster
 import java.awt.Dimension
 import rpgboss.editor.uibase.StdDialog
@@ -74,7 +73,7 @@ class EventDialog(
     def formToModel() = {
       val origState = event.states(idx)
       val newState = origState.copy(
-        sprite = spriteBox.spriteSpecOpt,
+        sprite = spriteBox.getSpriteSpec,
         trigger = triggerBox.selection.item.id,
         height = heightBox.selection.item.id,
         cmds = commandBox.listData.toArray)

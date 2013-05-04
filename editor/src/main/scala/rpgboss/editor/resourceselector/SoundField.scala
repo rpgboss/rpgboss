@@ -13,8 +13,10 @@ class SoundFieldBase(
   isMusic: Boolean)
   extends BrowseField[SoundSpec](owner, sm, initial, onUpdate) {
   def doBrowse() = {
-    val diag = new SoundSelectDialog(
-      owner, sm, initial, model = _, isMusic)
+    val diag = new SoundSelectDialog(owner, sm, initial, isMusic) {
+      def onSuccess(result: Option[SoundSpec]) = 
+        model = result
+    }
     diag.open()
   }
 }
@@ -33,24 +35,16 @@ class MusicField(
   onUpdate: Option[SoundSpec] => Unit)
   extends SoundFieldBase(owner, sm, initial, onUpdate, true)
 
-class SoundSelectDialog(
+abstract class SoundSelectDialog(
   owner: Window,
   sm: StateMaster,
   initial: Option[SoundSpec],
-  override val onSuccess: Option[SoundSpec] => Unit,
   isMusic: Boolean)
-  extends ResourceSelectDialogBase(owner, Sound) {
-
-  override val resourceSelector = new ResourceSelectPanel(
-    sm,
-    initial,
-    true,
-    Sound) {
+  extends ResourceSelectDialog(owner, sm, initial, true, Sound) {
     
-    override def specToResourceName(spec: SoundSpec): String = spec.sound
+  override def specToResourceName(spec: SoundSpec): String = spec.sound
 
-    override def newRcNameToSpec(name: String,
-                                 prevSpec: Option[SoundSpec]): SoundSpec =
-      prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
-  }
+  override def newRcNameToSpec(name: String,
+                               prevSpec: Option[SoundSpec]): SoundSpec =
+    prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
 }
