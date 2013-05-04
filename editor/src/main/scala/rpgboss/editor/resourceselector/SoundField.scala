@@ -48,30 +48,24 @@ abstract class SoundSelectDialog(
   override def newRcNameToSpec(name: String,
                                prevSpec: Option[SoundSpec]): SoundSpec =
     prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
-  
-  val playerPanel = new DesignGridPanel {
-    val gdxPanel = new GdxPanel()
-    
-    var currentSound: Option[GdxSound] = None
-    
-    def loadSound(selection: SoundSpec) = {
-      currentSound.map(_.dispose())
-      
-      val resource = Sound.readFromDisk(sm.getProj, selection.sound)
-        
-      currentSound = Some(gdxPanel.getAudio.newSound(resource.getHandle()))
-    }
-    
-    row().grid().add(new Button(Action("Play") {
-      currentSound.map(_.play())
-    }))
-    row().grid().add(gdxPanel)
-  }
     
   override def rightPaneFor(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit): Component = {
-    playerPanel.loadSound(selection)
-    playerPanel
+    new DesignGridPanel {
+      background = java.awt.Color.BLUE
+      
+      val gdxPanel = new GdxPanel()
+          
+      val resource = Sound.readFromDisk(sm.getProj, selection.sound)
+          
+      val currentSound = Some(gdxPanel.getAudio.newSound(resource.getHandle()))
+      
+      row().grid().add(new Button(Action("Play") {
+        currentSound.map(_.play())
+      }))
+      
+      row().grid().add(gdxPanel)
+    }
   }
 }

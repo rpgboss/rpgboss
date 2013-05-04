@@ -85,6 +85,7 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
       rcList.selectIndices(idx)
     }
   }
+  updateSelection(curSelection)
 
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
