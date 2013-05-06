@@ -31,7 +31,7 @@ class MusicField(
   onUpdate: Option[SoundSpec] => Unit)
   extends BrowseField[SoundSpec](owner, sm, initial, onUpdate) {
   def doBrowse() = {
-    val diag = new SoundSelectDialog(owner, sm, initial) {
+    val diag = new MusicSelectDialog(owner, sm, initial) {
       def onSuccess(result: Option[SoundSpec]) =
         model = result
     }
@@ -86,11 +86,58 @@ abstract class SoundSelectDialog(
           pitchSlider.floatValue, 0f))
       }))
 
-      row().grid().add(gdxPanel)
-
       row().grid(new Label("Volume:")).add(volumeSlider)
       row().grid(new Label("Pitch:")).add(pitchSlider)
-      listenTo(this)
+      row().grid().add(gdxPanel)
+    }
+  }
+}
+
+abstract class MusicSelectDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[SoundSpec])
+  extends ResourceSelectDialog(owner, sm, initial, true, Music)
+  with Logging {
+
+  override def specToResourceName(spec: SoundSpec): String = spec.sound
+
+  override def newRcNameToSpec(name: String,
+                               prevSpec: Option[SoundSpec]): SoundSpec =
+    prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
+
+  override def rightPaneFor(
+    selection: SoundSpec,
+    updateSelectionF: SoundSpec => Unit): Component = {
+    new DesignGridPanel {
+      import rpgboss.editor.misc.SwingUtils._
+
+      val volumeSlider = floatSlider(
+        selection.volume, 0f, 1f, 100, 5, 25,
+        v => updateSelectionF(
+          selection.copy(volume = v)))
+
+      val gdxPanel = new GdxPanel() {
+        val resource = Music.readFromDisk(sm.getProj, selection.sound)
+
+        val currentMusic =
+          Some(getAudio.newMusic(resource.getHandle()))
+
+        override def cleanup() = {
+          logger.debug("cleanup()")
+          currentMusic.map(_.dispose())
+          super.cleanup()
+        }
+      }
+
+      row().grid().add(new Button(Action("Play") {
+        //gdxPanel.currentMusic.map(_.stop())
+        //gdxPanel.currentMusic.map(_.setVolume(volumeSlider.floatValue))
+        gdxPanel.currentMusic.map(_.play())
+      }))
+
+      row().grid(new Label("Volume:")).add(volumeSlider)
+      row().grid().add(gdxPanel)
     }
   }
 }

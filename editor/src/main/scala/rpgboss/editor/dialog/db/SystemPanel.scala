@@ -38,6 +38,11 @@ class SystemPanel(
   val fTitlepic = new PictureField(owner, sm, model.titlePic, v => {
     updateModel(model.copy(titlePic = v))
   })
+  
+  val fTitleMusic = new MusicField(owner, sm, model.titleMusic, v => {
+    updateModel(model.copy(titleMusic = v))
+  })
+  
   val fWindowskin = new WindowskinField(owner, sm, model.windowskin, v => {
     updateModel(model.copy(windowskin = v))
   })
@@ -65,6 +70,7 @@ class SystemPanel(
 
   row().grid(lbl("Game title:")).add(fGameTitle)
   row().grid(lbl("Title picture:")).add(fTitlepic)
+  row().grid(lbl("Title music:")).add(fTitleMusic)
   row().grid(lbl("Windowskin:")).add(fWindowskin)
   row().grid(lbl("Message font:")).add(fMsgfont)
   row().grid(lbl("Font size:")).add(fFontsize)

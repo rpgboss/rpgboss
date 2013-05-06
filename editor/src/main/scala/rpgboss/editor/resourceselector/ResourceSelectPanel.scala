@@ -97,7 +97,7 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
 
   listenTo(rcList.selection)
   reactions += {
-    case ListSelectionChanged(`rcList`, _, _) =>
+    case ListSelectionChanged(`rcList`, _, false) =>
       val newSpecOpt =
         rcList.selection.items.head.map(newRcNameToSpec(_, curSelection))
 

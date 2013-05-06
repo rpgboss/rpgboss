@@ -3,6 +3,7 @@ import rpgboss.player.entity._
 import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
+import com.badlogic.gdx.audio.{ Music => GdxMusic }
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.Gdx
@@ -26,6 +27,8 @@ import rpgboss.player.entity.Entity
 class GameState(game: MyGame, project: Project) {
   // No need for syncronization, since it's a synchronized collection
   val windows = new collection.mutable.ArrayBuffer[Window] with collection.mutable.SynchronizedBuffer[Window]
+
+  val musics = Array.fill[Option[GdxMusic]](8)(None)
 
   // Should only be modified on the Gdx thread
   var curTransition: Option[Transition] = None
@@ -150,12 +153,35 @@ class GameState(game: MyGame, project: Project) {
 
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =
     syncRun {
-      persistent.pictures(slot) = PictureInfo(project, name, x, y, w, h)
+      persistent.pictures(slot).map(_.dispose())
+      persistent.pictures(slot) = Some(PictureInfo(project, name, x, y, w, h))
     }
 
   def hidePicture(slot: Int) = syncRun {
-    persistent.pictures(slot).dispose()
-    persistent.pictures(slot) = null
+    persistent.pictures(slot).map(_.dispose())
+    persistent.pictures(slot) = None
+  }
+
+  def playMusic(slot: Int, specOpt: Option[SoundSpec],
+                loop: Boolean) = syncRun {
+    musics(slot).map(_.dispose())
+
+    musics(slot) = specOpt.map { spec =>
+      val resource = Music.readFromDisk(project, spec.sound)
+      resource.loadAsset(game.assets)
+      // TODO: fix this blocking call
+      game.assets.finishLoading()
+      val newMusic = resource.getAsset(game.assets)
+      newMusic.setVolume(spec.volume)
+      newMusic.setLooping(loop)
+      newMusic.play()
+      newMusic
+    }
+  }
+
+  def stopMusic(slot: Int) = syncRun {
+    musics(slot).map(_.dispose())
+    musics(slot) = None
   }
 
   /*

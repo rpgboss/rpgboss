@@ -12,6 +12,8 @@ case class ProjectData(uuid: String,
                        classes: Array[CharClass] = Array(CharClass()),
 
                        titlePic: String = "LordSpirit.jpg",
+                       titleMusic: Option[SoundSpec] = None,
+                       
                        startingParty: Array[Int] = Array(0),
 
                        windowskin: String = "LastPhantasmScanlines.png",

@@ -56,9 +56,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
 
     // Render pictures
     for (pic <- state.persistent.pictures) {
-      if (pic != null) {
-        pic.render(batch)
-      }
+      pic.map(_.render(batch))
     }
 
     // Render all windows

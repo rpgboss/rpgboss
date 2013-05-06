@@ -24,7 +24,21 @@ class GdxPanel extends Component with Logging {
   }
   
   val gdxListener = new ApplicationAdapter {
-    
+    override def create() = {
+      logger.debug("create()")
+    }
+    override def dispose() = {
+      logger.debug("dispose()")
+    }
+    override def pause() = {
+      logger.debug("pause()")
+    }
+    override def render() = {
+      logger.debug("render()")
+    }
+    override def resume() = {
+      logger.debug("resume()")
+    }
   }
   
   private val gdxCanvas = new LwjglAWTCanvas(gdxListener, false)

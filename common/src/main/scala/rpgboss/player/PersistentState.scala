@@ -8,7 +8,7 @@ class PersistentState {
   val cameraLoc = new MutableMapLoc()
 
   // Should only be accessed on the Gdx thread, so no synchronization needed
-  val pictures = new Array[PictureInfo](32)
+  val pictures = Array.fill[Option[PictureInfo]](32)(None)
 
   // Should only be accessed on gdx thread
   private val globalVariables = collection.mutable.Map[String, Int]()
