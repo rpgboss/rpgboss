@@ -2,10 +2,12 @@ package rpgboss.editor.resourceselector
 
 import rpgboss.editor.StateMaster
 import scala.swing._
+import scala.swing.event._
 import rpgboss.model.resource._
 import rpgboss.model._
 import rpgboss.editor.uibase._
-import com.badlogic.gdx.audio.{Sound => GdxSound}
+import com.badlogic.gdx.audio.{ Sound => GdxSound }
+import com.typesafe.scalalogging.slf4j.Logging
 
 class SoundField(
   owner: Window,
@@ -15,7 +17,7 @@ class SoundField(
   extends BrowseField[SoundSpec](owner, sm, initial, onUpdate) {
   def doBrowse() = {
     val diag = new SoundSelectDialog(owner, sm, initial) {
-      def onSuccess(result: Option[SoundSpec]) = 
+      def onSuccess(result: Option[SoundSpec]) =
         model = result
     }
     diag.open()
@@ -30,7 +32,7 @@ class MusicField(
   extends BrowseField[SoundSpec](owner, sm, initial, onUpdate) {
   def doBrowse() = {
     val diag = new SoundSelectDialog(owner, sm, initial) {
-      def onSuccess(result: Option[SoundSpec]) = 
+      def onSuccess(result: Option[SoundSpec]) =
         model = result
     }
     diag.open()
@@ -41,31 +43,54 @@ abstract class SoundSelectDialog(
   owner: Window,
   sm: StateMaster,
   initial: Option[SoundSpec])
-  extends ResourceSelectDialog(owner, sm, initial, true, Sound) {
-    
+  extends ResourceSelectDialog(owner, sm, initial, true, Sound)
+  with Logging {
+
   override def specToResourceName(spec: SoundSpec): String = spec.sound
 
   override def newRcNameToSpec(name: String,
                                prevSpec: Option[SoundSpec]): SoundSpec =
     prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
-    
+
   override def rightPaneFor(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit): Component = {
     new DesignGridPanel {
-      background = java.awt.Color.BLUE
-      
-      val gdxPanel = new GdxPanel()
-          
-      val resource = Sound.readFromDisk(sm.getProj, selection.sound)
-          
-      val currentSound = Some(gdxPanel.getAudio.newSound(resource.getHandle()))
-      
+      import rpgboss.editor.misc.SwingUtils._
+
+      val volumeSlider = floatSlider(
+        selection.volume, 0f, 1f, 100, 5, 25,
+        v => updateSelectionF(
+          selection.copy(volume = v)))
+
+      val pitchSlider = floatSlider(
+        selection.pitch, 0.5f, 1.5f, 100, 5, 25,
+        v => updateSelectionF(
+          selection.copy(pitch = v)))
+
+      val gdxPanel = new GdxPanel() {
+        val resource = Sound.readFromDisk(sm.getProj, selection.sound)
+
+        val currentSound =
+          Some(getAudio.newSound(resource.getHandle()))
+
+        override def cleanup() = {
+          currentSound.map(_.dispose())
+          super.cleanup()
+        }
+      }
+
       row().grid().add(new Button(Action("Play") {
-        currentSound.map(_.play())
+        gdxPanel.currentSound.map(_.play(
+          volumeSlider.floatValue,
+          pitchSlider.floatValue, 0f))
       }))
-      
+
       row().grid().add(gdxPanel)
+
+      row().grid(new Label("Volume:")).add(volumeSlider)
+      row().grid(new Label("Pitch:")).add(pitchSlider)
+      listenTo(this)
     }
   }
 }

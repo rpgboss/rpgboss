@@ -14,7 +14,7 @@ object SwingUtils {
   def boolField(initial: Boolean, onUpdate: Boolean => Unit, text: String = "") =
     new CheckBox(text) {
       selected = initial
-
+      listenTo(this)
       reactions += {
         case ButtonClicked(_) => onUpdate(selected)
       }
@@ -23,11 +23,57 @@ object SwingUtils {
   def textField(initial: String, onUpdate: String => Unit) =
     new TextField {
       text = initial
-
+      listenTo(this)
       reactions += {
         case ValueChanged(_) => onUpdate(text)
       }
     }
+  
+  trait FloatSlider {
+    def stepsPerOne: Int
+    def value: Int
+    def floatValue: Float = value.toFloat / stepsPerOne
+  }
+  
+  def floatSlider(initial: Float, minArg: Float, maxArg: Float,
+                  stepsPerOneArg: Int, minorStepArg: Int, majorStepArg: Int,  
+                  onUpdate: Float => Unit) = {
+    new Slider with FloatSlider {
+      def stepsPerOne = stepsPerOneArg
+      
+      min = (minArg * stepsPerOne).toInt
+      max = (maxArg * stepsPerOne).toInt
+      minorTickSpacing = minorStepArg
+      majorTickSpacing = majorStepArg
+      snapToTicks = true
+      paintLabels = true
+      value = (initial * stepsPerOne).toInt
+      
+      listenTo(this)
+      reactions += {
+        case ValueChanged(_) => onUpdate(floatValue)
+      }
+    }
+  }
+  
+  def slider(initial: Int, minArg: Int, maxArg: Int, 
+             minorStepArg: Int, majorStepArg: Int,  
+             onUpdate: Int => Unit) = {
+    new Slider {
+      min = minArg
+      max = maxArg
+      minorTickSpacing = minorStepArg
+      majorTickSpacing = majorStepArg
+      snapToTicks = true
+      paintLabels = true
+      value = initial
+      
+      listenTo(this)
+      reactions += {
+        case ValueChanged(_) => onUpdate(value)
+      }
+    }
+  }
 
   def indexedCombo[T](choices: Seq[T], initial: Int, onUpdate: Int => Unit) = {
     new ComboBox(choices) {
