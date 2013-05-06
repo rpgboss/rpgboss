@@ -10,6 +10,8 @@ class GdxPanel extends Component with Logging {
   override lazy val peer = new javax.swing.JComponent with SuperMixin {
     override def addNotify() = {
       logger.debug("GdxPanel addNotify")
+      gdxCanvas.getCanvas().setSize(10, 10)
+      add(gdxCanvas.getCanvas())
     }
     
     override def removeNotify() = {
@@ -23,7 +25,7 @@ class GdxPanel extends Component with Logging {
     
   }
   
-  val gdxListener = new ApplicationAdapter {
+  val gdxListener = new ApplicationAdapter with Logging {
     override def create() = {
       logger.debug("create()")
     }
@@ -36,14 +38,15 @@ class GdxPanel extends Component with Logging {
     override def render() = {
       logger.debug("render()")
     }
+    override def resize(w: Int, h: Int) = {
+      logger.debug("resize(%d, %d)".format(w, h))
+    }
     override def resume() = {
       logger.debug("resume()")
     }
   }
   
-  private val gdxCanvas = new LwjglAWTCanvas(gdxListener, false)
+  val gdxCanvas = new LwjglAWTCanvas(gdxListener, true)
   
   def getAudio() = gdxCanvas.getAudio()
-  
-  peer.add(gdxCanvas.getCanvas())
 }

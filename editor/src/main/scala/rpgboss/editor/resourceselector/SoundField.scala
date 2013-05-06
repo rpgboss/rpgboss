@@ -131,8 +131,11 @@ abstract class MusicSelectDialog(
       }
 
       row().grid().add(new Button(Action("Play") {
+        gdxPanel.currentMusic.map(x => logger.debug(x.isPlaying().toString))
+        gdxPanel.currentMusic.map(x => logger.debug(x.getPosition().toString))
         //gdxPanel.currentMusic.map(_.stop())
-        //gdxPanel.currentMusic.map(_.setVolume(volumeSlider.floatValue))
+        gdxPanel.currentMusic.map(_.setVolume(volumeSlider.floatValue))
+        gdxPanel.currentMusic.map(_.setLooping(true))
         gdxPanel.currentMusic.map(_.play())
       }))
 
