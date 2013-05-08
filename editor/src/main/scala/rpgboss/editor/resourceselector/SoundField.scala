@@ -6,7 +6,7 @@ import scala.swing.event._
 import rpgboss.model.resource._
 import rpgboss.model._
 import rpgboss.editor.uibase._
-import com.badlogic.gdx.audio.{ Sound => GdxSound }
+import com.badlogic.gdx.audio.{ Sound => GdxSound, Music => GdxMusic }
 import com.typesafe.scalalogging.slf4j.Logging
 
 class SoundField(
@@ -16,7 +16,7 @@ class SoundField(
   onUpdate: Option[SoundSpec] => Unit)
   extends BrowseField[SoundSpec](owner, sm, initial, onUpdate) {
   def doBrowse() = {
-    val diag = new SoundSelectDialog(owner, sm, initial) {
+    val diag = new SoundSelectDialog(owner, sm, model) {
       def onSuccess(result: Option[SoundSpec]) =
         model = result
     }
@@ -31,7 +31,7 @@ class MusicField(
   onUpdate: Option[SoundSpec] => Unit)
   extends BrowseField[SoundSpec](owner, sm, initial, onUpdate) {
   def doBrowse() = {
-    val diag = new MusicSelectDialog(owner, sm, initial) {
+    val diag = new MusicSelectDialog(owner, sm, model) {
       def onSuccess(result: Option[SoundSpec]) =
         model = result
     }
@@ -52,6 +52,10 @@ abstract class SoundSelectDialog(
                                prevSpec: Option[SoundSpec]): SoundSpec =
     prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
 
+  object rightPane {
+    
+  }
+    
   override def rightPaneFor(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit): Component = {
@@ -74,9 +78,9 @@ abstract class SoundSelectDialog(
         val currentSound =
           Some(getAudio.newSound(resource.getHandle()))
 
-        override def cleanup() = {
+        override def dispose() = {
           currentSound.map(_.dispose())
-          super.cleanup()
+          super.dispose()
         }
       }
 
@@ -116,27 +120,26 @@ abstract class MusicSelectDialog(
         selection.volume, 0f, 1f, 100, 5, 25,
         v => updateSelectionF(
           selection.copy(volume = v)))
-
+          
       val gdxPanel = new GdxPanel() {
-        val resource = Music.readFromDisk(sm.getProj, selection.sound)
-
-        val currentMusic =
-          Some(getAudio.newMusic(resource.getHandle()))
-
-        override def cleanup() = {
+        override def dispose() = {
           logger.debug("cleanup()")
           currentMusic.map(_.dispose())
-          super.cleanup()
+          super.dispose()
         }
       }
+      
+      val resource = Music.readFromDisk(sm.getProj, selection.sound)
+      
+      val currentMusic: Option[GdxMusic] =
+        Some(gdxPanel.getAudio.newMusic(resource.getHandle()))
 
       row().grid().add(new Button(Action("Play") {
-        gdxPanel.currentMusic.map(x => logger.debug(x.isPlaying().toString))
-        gdxPanel.currentMusic.map(x => logger.debug(x.getPosition().toString))
-        //gdxPanel.currentMusic.map(_.stop())
-        gdxPanel.currentMusic.map(_.setVolume(volumeSlider.floatValue))
-        gdxPanel.currentMusic.map(_.setLooping(true))
-        gdxPanel.currentMusic.map(_.play())
+        currentMusic.map(x => logger.debug(x.isPlaying().toString))
+        currentMusic.map(x => logger.debug(x.getPosition().toString))
+        currentMusic.map(_.stop())
+        currentMusic.map(_.setVolume(volumeSlider.floatValue))
+        currentMusic.map(_.play())
       }))
 
       row().grid(new Label("Volume:")).add(volumeSlider)

@@ -75,16 +75,21 @@ abstract class BrowseField[SpecType](
   var model = initial
   
   val textField = new TextField {
-    text = model.map(_.toString).getOrElse("<None>")
     editable = false
     enabled = true
   }
+  
+  def updateWidgets() =
+    textField.text = model.map(_.toString).getOrElse("<None>")
+  
+  updateWidgets()
   
   def doBrowse()
 
   val browseBtn = new Button(Action("...") {
     doBrowse()
     logger.debug("Post-browse button onUpdate")
+    updateWidgets()
     onUpdate(model)
   })
   

@@ -93,7 +93,8 @@ object Settings {
     val commonDest = file("common/lib")
     val commonFilter = new ExactFilter("gdx.jar") |
 	new ExactFilter("extensions/gdx-freetype.jar") |
-	new ExactFilter("extensions/gdx-audio.jar")
+	new ExactFilter("extensions/gdx-audio.jar") |
+  new ExactFilter("sources/gdx-sources.jar")
     IO.unzip(zipFile, commonDest, commonFilter)
 
     val desktopDest = file("player-desktop/lib")
@@ -102,7 +103,9 @@ object Settings {
     new ExactFilter("gdx-backend-lwjgl-natives.jar") |
     new ExactFilter("gdx-tools.jar") |
     new ExactFilter("extensions/gdx-freetype-natives.jar") |
-    new ExactFilter("extensions/gdx-audio-natives.jar")
+    new ExactFilter("extensions/gdx-audio-natives.jar") |
+    new ExactFilter("sources/gdx-backend-lwjgl-sources.jar") |
+    new ExactFilter("sources/gdx-openal-sources.jar")
     IO.unzip(zipFile, desktopDest, desktopFilter)
 
     val androidDest = file("player-android/src/main/libs")
