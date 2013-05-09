@@ -6,6 +6,7 @@ import scala.swing._
 import scala.swing.event._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.backends.openal.OpenALAudio
 
 class GdxPanel(canvasW: Int = 10, canvasH: Int = 10) 
   extends Component 
@@ -57,6 +58,8 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
   
   def dispose() = {
     gdxCanvas.stop()
+    Gdx.audio.asInstanceOf[OpenALAudio].dispose()
+    Gdx.audio = null
   }
   
   def getAudio() = gdxCanvas.getAudio()
