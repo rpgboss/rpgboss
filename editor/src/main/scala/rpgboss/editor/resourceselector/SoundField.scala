@@ -51,17 +51,21 @@ abstract class SoundSelectDialog(
   override def newRcNameToSpec(name: String,
                                prevSpec: Option[SoundSpec]): SoundSpec =
     prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
-
-  object rightPane {
-    
-  }
     
   override def rightPaneFor(
     selection: SoundSpec,
-    updateSelectionF: SoundSpec => Unit): Component = {
-    new DesignGridPanel {
+    updateSelectionF: SoundSpec => Unit) = {
+    new DesignGridPanel with ResourceRightPane {
       import rpgboss.editor.misc.SwingUtils._
-
+      
+      override def dispose() = {
+        gdxPanel.dispose()
+        currentSound.dispose()
+        super.dispose()
+      }
+      
+      val gdxPanel = new GdxPanel()
+      
       val volumeSlider = floatSlider(
         selection.volume, 0f, 1f, 100, 5, 25,
         v => updateSelectionF(
@@ -72,22 +76,12 @@ abstract class SoundSelectDialog(
         v => updateSelectionF(
           selection.copy(pitch = v)))
 
-      val gdxPanel = new GdxPanel() {
-        val resource = Sound.readFromDisk(sm.getProj, selection.sound)
+      val resource = Sound.readFromDisk(sm.getProj, selection.sound)
 
-        val currentSound =
-          Some(getAudio.newSound(resource.getHandle()))
-
-        override def dispose() = {
-          currentSound.map(_.dispose())
-          super.dispose()
-        }
-      }
+      val currentSound = gdxPanel.getAudio.newSound(resource.getHandle())
 
       row().grid().add(new Button(Action("Play") {
-        gdxPanel.currentSound.map(_.play(
-          volumeSlider.floatValue,
-          pitchSlider.floatValue, 0f))
+        currentSound.play(volumeSlider.floatValue, pitchSlider.floatValue, 0f)
       }))
 
       row().grid(new Label("Volume:")).add(volumeSlider)
@@ -112,22 +106,22 @@ abstract class MusicSelectDialog(
 
   override def rightPaneFor(
     selection: SoundSpec,
-    updateSelectionF: SoundSpec => Unit): Component = {
-    new DesignGridPanel {
+    updateSelectionF: SoundSpec => Unit) = {
+    new DesignGridPanel with ResourceRightPane {
       import rpgboss.editor.misc.SwingUtils._
 
+      override def dispose() = {
+        currentMusic.map(_.dispose())
+        gdxPanel.dispose()
+        super.dispose()
+      }
+      
       val volumeSlider = floatSlider(
         selection.volume, 0f, 1f, 100, 5, 25,
         v => updateSelectionF(
           selection.copy(volume = v)))
           
-      val gdxPanel = new GdxPanel() {
-        override def dispose() = {
-          logger.debug("cleanup()")
-          currentMusic.map(_.dispose())
-          super.dispose()
-        }
-      }
+      val gdxPanel = new GdxPanel()
       
       val resource = Music.readFromDisk(sm.getProj, selection.sound)
       

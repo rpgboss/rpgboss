@@ -77,7 +77,7 @@ abstract class SpriteSelectDialog(
   owner: Window,
   sm: StateMaster,
   initial: Option[SpriteSpec])
-extends ResourceSelectDialog(owner, sm, initial, true, Spriteset) {
+  extends ResourceSelectDialog(owner, sm, initial, true, Spriteset) {
   import Spriteset._
 
   def specToResourceName(spec: SpriteSpec): String = spec.spriteset

@@ -43,7 +43,7 @@ class PictureSelectDialog(
     onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Picture.readFromDisk(sm.getProj, selection)
-    new ImagePanel(img.img)
+    new ImagePanel(img.img) with ResourceRightPane
   }
 }
 
@@ -61,7 +61,7 @@ class WindowskinSelectDialog(
     onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Windowskin.readFromDisk(sm.getProj, selection)
-    new ImagePanel(img.img)
+    new ImagePanel(img.img) with ResourceRightPane
   }
 }
 

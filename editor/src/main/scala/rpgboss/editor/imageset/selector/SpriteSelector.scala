@@ -5,6 +5,7 @@ import scala.swing.event._
 import rpgboss.model.resource._
 import java.awt.image.BufferedImage
 import rpgboss.model.SpriteSpec
+import rpgboss.editor.resourceselector.ResourceRightPane
 
 /**
  * *
@@ -14,7 +15,7 @@ class SpriteSelector(
   spriteset: Spriteset,
   initialSpec: SpriteSpec,
   selectFunction: SpriteSpec => Any)
-  extends BoxPanel(Orientation.Vertical) {
+  extends BoxPanel(Orientation.Vertical) with ResourceRightPane {
 
   import Spriteset._
 
@@ -22,7 +23,7 @@ class SpriteSelector(
     (initialSpec.spriteIndex % nSpritesInSetX) * spriteXTiles + initialSpec.step
   def initialY =
     (initialSpec.spriteIndex / nSpritesInSetX) * spriteYTiles + initialSpec.dir
-
+    
   // Set up image selector contents
   contents += new ImageTileSelector(
     spriteset.img,

@@ -7,23 +7,32 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import scala.swing._
 import scala.swing.event.ListSelectionChanged
+import com.badlogic.gdx.utils.Disposable
+
+trait ResourceRightPane extends Component {
+  def dispose() = {}
+}
 
 abstract class ResourceSelectPanel[SpecType, T, MT](
   sm: StateMaster,
   initialSelectionOpt: Option[SpecType],
   allowNone: Boolean,
   val metaResource: MetaResource[T, MT])
-  extends DesignGridPanel with Logging {
+  extends DesignGridPanel with Logging with Disposable {
   
   layout.margins(0)
 
   def specToResourceName(spec: SpecType): String
   def newRcNameToSpec(name: String, prevSpec: Option[SpecType]): SpecType
 
+  var currentRightPane: Option[ResourceRightPane] = None
+  
+  def dispose() = currentRightPane.map(_.dispose())
+  
   def rightPaneFor(
     selection: SpecType,
-    updateSelectionF: SpecType => Unit): Component = 
-      new BoxPanel(Orientation.Vertical)
+    updateSelectionF: SpecType => Unit): ResourceRightPane = 
+      new BoxPanel(Orientation.Vertical) with ResourceRightPane
 
   val allResources = metaResource.list(sm.getProj)
 
@@ -39,12 +48,13 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
   }
 
   def rightPaneDim = new Dimension(384, 384)
+  
   val rightPaneContainer = new BoxPanel(Orientation.Vertical) {
     preferredSize = rightPaneDim
     maximumSize = rightPaneDim
     minimumSize = rightPaneDim
   }
-
+  
   // Must call with valid arguments.
   // Call this only when updating both the spriteset and the spriteIndex
   def updateSelection(specOpt: Option[SpecType]) = {
@@ -54,16 +64,17 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
     curSelection = specOpt
 
     // Update the sprite index selection panel
+    currentRightPane.map(_.dispose())
+    rightPaneContainer.contents.clear()
     curSelection.map { spriteSpec =>
-      rightPaneContainer.contents.clear()
-      rightPaneContainer.contents +=
-        rightPaneFor(spriteSpec, x => curSelection = Some(x))
-
+      val newPane = rightPaneFor(spriteSpec, x => curSelection = Some(x))
+      rightPaneContainer.contents += newPane
+      currentRightPane = Some(newPane)
     } getOrElse {
-      rightPaneContainer.contents.clear()
       rightPaneContainer.contents += new Label("None")
+      currentRightPane = None
     }
-
+    
     rightPaneContainer.revalidate()
     rightPaneContainer.repaint()
   }

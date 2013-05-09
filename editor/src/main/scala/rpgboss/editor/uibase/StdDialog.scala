@@ -27,12 +27,23 @@ abstract class StdDialog(owner: Window, titleArg: String)
       okFunc()
     }
   })
+  
+  override def close() = {
+    onClose()
+    super.close()
+  }
 
+  // closeOperation() is only triggered when one presses the "X", not otherwise
+  def onClose(): Unit = {}
+  
   /**
    * Treat closing the dialog without pressing OK as a Cancel.
    */
   val me = this
   reactions += {
-    case WindowClosing(`me`) if (!okPressed) => cancelFunc()
+    case WindowClosing(`me`) => {
+      onClose()
+      if (!okPressed) cancelFunc()
+    }
   }
 }

@@ -22,18 +22,18 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
     override def dispose() = {
       logger.debug("dispose()")
     }
-//    override def pause() = {
-//      logger.debug("pause()")
-//    }
-//    override def render() = {
+    override def pause() = {
+      logger.debug("pause()")
+    }
+    override def render() = {
 //      logger.debug("render() %d".format(this.hashCode()))
-//    }
-//    override def resize(w: Int, h: Int) = {
-//      logger.debug("resize(%d, %d)".format(w, h))
-//    }
-//    override def resume() = {
-//      logger.debug("resume()")
-//    }
+    }
+    override def resize(w: Int, h: Int) = {
+      logger.debug("resize(%d, %d)".format(w, h))
+    }
+    override def resume() = {
+      logger.debug("resume()")
+    }
   }
   
   lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener, false) with Logging{
