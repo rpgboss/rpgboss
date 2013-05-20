@@ -29,12 +29,14 @@ abstract class StdDialog(owner: Window, titleArg: String)
   })
   
   override def close() = {
-    onClose()
     super.close()
+    onClose()
   }
 
   // closeOperation() is only triggered when one presses the "X", not otherwise
-  def onClose(): Unit = {}
+  def onClose(): Unit = {
+    dispose()
+  }
   
   /**
    * Treat closing the dialog without pressing OK as a Cancel.

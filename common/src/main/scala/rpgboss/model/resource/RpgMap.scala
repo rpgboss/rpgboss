@@ -9,14 +9,16 @@ import java.io._
 import java.util.Arrays
 import org.json4s.DefaultFormats
 
-case class RpgMapMetadata(parent: String,
-                          title: String,
-                          xSize: Int,
-                          ySize: Int,
-                          tilesets: Array[String],
-                          autotiles: Array[String],
-                          viewCenterX: Float = 0f,
-                          viewCenterY: Float = 0f) {
+case class RpgMapMetadata(var parent: String,
+                          var title: String,
+                          var xSize: Int,
+                          var ySize: Int,
+                          var tilesets: Array[String],
+                          var autotiles: Array[String],
+                          var changeMusicOnEnter: Boolean = false,
+                          var music: Option[SoundSpec] = None,
+                          var editorCenterX: Float = 0f,
+                          var editorCenterY: Float = 0f) {
   def withinBounds(x: Float, y: Float) = {
     x < xSize && y < ySize && x >= 0 && y >= 0
   }

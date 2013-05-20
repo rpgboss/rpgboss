@@ -185,7 +185,7 @@ class MapView(
     }
 
     def restoreCenters() = viewStateOpt.map { vs =>
-      center(vs.mapMeta.viewCenterX, vs.mapMeta.viewCenterY)
+      center(vs.mapMeta.editorCenterX, vs.mapMeta.editorCenterY)
     }
   }
 

@@ -8,6 +8,7 @@ import rpgboss.model._
 import rpgboss.editor.uibase._
 import com.badlogic.gdx.audio.{ Sound => GdxSound, Music => GdxMusic }
 import com.typesafe.scalalogging.slf4j.Logging
+import com.badlogic.gdx.Gdx
 
 class SoundField(
   owner: Window,
@@ -120,7 +121,7 @@ abstract class MusicSelectDialog(
         selection.volume, 0f, 1f, 100, 5, 25,
         v => updateSelectionF(
           selection.copy(volume = v)))
-          
+      
       val gdxPanel = new GdxPanel()
       
       val resource = Music.readFromDisk(sm.getProj, selection.sound)

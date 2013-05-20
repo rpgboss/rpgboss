@@ -27,7 +27,8 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
       logger.debug("pause()")
     }
     override def render() = {
-//      logger.debug("render() %d".format(this.hashCode()))
+      //logger.debug("render() %d".format(this.hashCode()))
+      //logger.debug("gdx audio hash code %d".format(Gdx.audio.hashCode()))
     }
     override def resize(w: Int, h: Int) = {
       logger.debug("resize(%d, %d)".format(w, h))
@@ -37,7 +38,10 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
     }
   }
   
-  lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener, false) with Logging{
+  lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener, false) with Logging {
+    
+    logger.info("Gdx Canvas constructor")
+    
     override def start() = {
       logger.debug("start()")
       super.start()
@@ -54,12 +58,26 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
     }
     
     getCanvas().setSize(canvasW, canvasH)
+    
+    override def makeCurrent() = {
+      super.makeCurrent()
+      logger.debug("makeCurrent()")
+    }
+    
+    override def stop() = {
+      logger.debug("stop()")
+      super.stop()
+    }
   }
   
   def dispose() = {
+    logger.debug("Destroying GdxPanel")
     gdxCanvas.stop()
-    Gdx.audio.asInstanceOf[OpenALAudio].dispose()
-    Gdx.audio = null
+    if (Gdx.audio != null) {
+      Gdx.audio.asInstanceOf[OpenALAudio].dispose()
+      Gdx.audio = null
+      logger.debug("Destroying gdx audio from GdxPanel")
+    }
   }
   
   def getAudio() = gdxCanvas.getAudio()

@@ -29,6 +29,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
 
           val d = new MapPropertiesDialog(
             projPanel.mainP.topWin,
+            sm,
             "New Map",
             origMap,
             origMapData,
@@ -69,6 +70,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
 
         val d = new MapPropertiesDialog(
           projPanel.mainP.topWin,
+          sm,
           "New Map",
           defaultNewMap,
           RpgMap.defaultMapData,

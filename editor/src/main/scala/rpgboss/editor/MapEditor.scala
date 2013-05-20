@@ -149,7 +149,7 @@ class MapEditor(
         viewRect.getCenterY().toFloat / curTilesize
       }
 
-      val newMetadata = vs.mapMeta.copy(viewCenterX = cx, viewCenterY = cy)
+      val newMetadata = vs.mapMeta.copy(editorCenterX = cx, editorCenterY = cy)
       //logger.debug("Stored centers as (%f, %f)".format(cx, cy))
       sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata), false)
     }
