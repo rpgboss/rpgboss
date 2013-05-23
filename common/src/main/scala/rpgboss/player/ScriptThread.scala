@@ -6,6 +6,7 @@ import scala.concurrent.ops.spawn
 import rpgboss.model.MapLoc
 import java.lang.Thread.UncaughtExceptionHandler
 import rpgboss.model.event.RpgEvent
+import rpgboss.model.Constants._
 
 /**
  * Thread used to run a javascript script...
@@ -38,6 +39,8 @@ class ScriptThread(
     // Some models to be imported
     ScriptableObject.putProperty(jsScope, "MapLoc",
       Context.javaToJS(MapLoc, jsScope))
+    ScriptableObject.putProperty(jsScope, "Transitions",
+      Context.javaToJS(Transitions, jsScope))
   }
 
   val runnable = new Runnable() {
@@ -49,6 +52,14 @@ class ScriptThread(
 
       initScope(jsScope)
 
+      val globalScript = Script.readFromDisk(game.project, "globals.js")
+      
+      jsContext.evaluateString(
+        jsScope,
+        globalScript.getAsString,
+        globalScript.name,
+        1, null)
+      
       jsContext.evaluateString(
         jsScope,
         scriptBody,
@@ -86,7 +97,7 @@ class ScriptThread(
     ex match {
       case e: org.mozilla.javascript.EcmaError => {
         System.err.println(e.getErrorMessage())
-        System.err.println(scriptBody)
+        System.err.println("%s:%d".format(e.getSourceName(), e.getLineNumber()))
       }
       case e => e.printStackTrace()
     }

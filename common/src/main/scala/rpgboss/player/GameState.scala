@@ -243,22 +243,6 @@ class GameState(game: MyGame, project: Project) {
 
   def showText(text: Array[String]) = showTextWithPosition(text)
 
-  def teleport(mapName: String, x: Float, y: Float, transition: Int) {
-    if (Transitions(transition) == Transitions.FADE) {
-      setTransition(1, 0, Transitions.fadeLength)
-      sleep(Transitions.fadeLength)
-    }
-
-    val loc = MapLoc(mapName, x, y)
-
-    setPlayerLoc(loc)
-    setCameraLoc(loc)
-
-    if (Transitions(transition) == Transitions.FADE) {
-      setTransition(0, 1, Transitions.fadeLength)
-    }
-  }
-
   def getEvtState(evtName: String): Int =
     getEvtState(persistent.cameraLoc.map, evtName)
   def getEvtState(mapName: String, evtName: String) =

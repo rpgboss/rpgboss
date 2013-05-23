@@ -12,17 +12,18 @@ object Settings {
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % "10.0",
-      "org.json4s" % "json4s-native_2.10" % "3.2.3",
       "com.typesafe" % "scalalogging-slf4j_2.10" % "1.0.1",
-      "rhino" % "js" % "1.7R2",
       "net.sf.opencsv" % "opencsv" % "2.0",
-      "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
+      "org.json4s" % "json4s-native_2.10" % "3.2.3",
+      "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",
+      "rhino" % "js" % "1.7R2"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
       var jars = baseDirectories ** "*.jar"
       jars.classpath
     },
+    updateLibsTask,
     updateLibgdxTask
    )
 
@@ -119,12 +120,28 @@ object Settings {
     new ExactFilter("armeabi-v7a/libgdx-freetype.so") |
     new ExactFilter("armeabi-v7a/libgdx-audio.so")
     
-    commonFilter
     IO.unzip(zipFile, androidDest, androidFilter)
 
     // Destroy the file.
     zipFile.delete
     s.log.info("Complete")
+  }
+
+  val updateLibs = TaskKey[Unit]("update-lib", "Updates libs")
+  
+  val updateLibsTask = updateLibs <<= streams map { (s: TaskStreams) =>
+    import Process._
+    import java.io._
+    import java.net.URL
+
+    val zipName = "tween-engine-api-6.3.3.zip"
+    val zipFile = new File(zipName)
+    val url = new URL("https://java-universal-tween-engine.googlecode.com/" + 
+                      "files/" + zipName)
+    IO.download(url, zipFile)
+    IO.unzip(zipFile, file("common/lib"))
+
+    zipFile.delete
   }
 }
 

@@ -1,6 +1,8 @@
 package rpgboss.model
 
 trait RpgEnum extends Enumeration {
+  def get(v: Int) = apply(v)
+  
   def findOrDefault(s: String) = {
     values.find(_.toString == s).getOrElse(default)
   }

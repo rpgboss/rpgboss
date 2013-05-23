@@ -2,6 +2,8 @@ package rpgboss.model
 
 import Constants._
 
+import Curve.Linear
+
 trait HasName {
   def name: String
   override def toString = name
@@ -41,8 +43,6 @@ object Curve {
   def Linear(slope: Int, intercept: Int) =
     Curve(0, slope, intercept)
 }
-
-import Curve.Linear
 case class CharProgressions(
   exp: Curve = Curve(10, 10, 0),
   mhp: Curve = Linear(25, 50),

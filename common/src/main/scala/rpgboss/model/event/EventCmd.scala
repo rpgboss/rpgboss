@@ -46,7 +46,7 @@ case class ShowText(lines: Array[String] = Array()) extends EventCmd {
 }
 
 case class Teleport(loc: MapLoc, transition: Int) extends EventCmd {
-  def toJs() = List("""game.teleport("%s", %f, %f, %d);""".format(
+  def toJs() = List("""teleport("%s", %f, %f, %d);""".format(
     loc.map, loc.x, loc.y, transition))
 }
 
