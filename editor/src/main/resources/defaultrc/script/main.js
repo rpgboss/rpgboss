@@ -1,5 +1,6 @@
 function main() {
   game.setTransition(0, 1, 600);
+	game.playMusic(0, project.data().titleMusic(), true, 2000);
   game.showPicture(0, project.data().titlePic(), 0, 0, 640, 480);
   var winW = 200;
   choiceIdx = game.showChoices(

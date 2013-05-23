@@ -71,6 +71,9 @@ class MyGame(gamepath: File)
     mapLayer = new MapLayer(this)
     screenLayer = new ScreenLayer(this, state)
 
+    // Register accessors
+    TweenAccessors.registerAccessors()
+    
     ScriptThread.fromFile(this, "main.js", "main()").run()
   }
 

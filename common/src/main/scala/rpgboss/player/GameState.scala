@@ -14,6 +14,7 @@ import scala.concurrent.duration.Duration
 import rpgboss.player.entity.PlayerEntity
 import rpgboss.player.entity.NonplayerEntity
 import rpgboss.player.entity.Entity
+import aurelienribon.tweenengine._
 
 /**
  * This class contains all the state information about the game.
@@ -25,6 +26,8 @@ import rpgboss.player.entity.Entity
  * This object must post those operations to that thread via postRunnable
  */
 class GameState(game: MyGame, project: Project) {
+  val tweenManager = new TweenManager()
+
   // No need for syncronization, since it's a synchronized collection
   val windows = new collection.mutable.ArrayBuffer[Window] with collection.mutable.SynchronizedBuffer[Window]
 
@@ -47,6 +50,9 @@ class GameState(game: MyGame, project: Project) {
 
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
+    // Update tweens
+    tweenManager.update(delta)
+
     // Update events, including player event
     npcEvts.foreach(_.update(delta))
     playerEvt.update(delta)
@@ -74,7 +80,7 @@ class GameState(game: MyGame, project: Project) {
   }
 
   /**
-   * Run the following on the GUI thread synchronously...
+   * Run the following on the GUI thread
    */
   def syncRun(op: => Any) = {
     val runnable = new Runnable() {
@@ -84,7 +90,7 @@ class GameState(game: MyGame, project: Project) {
   }
 
   /**
-   * Calls the following on the GUI thread. Takes a frame's worth of time.
+   * Calls the following on the GUI thread. Takes at least a frame.
    */
   def syncCall[T](op: => T): T = {
     val callable = new Callable[T]() {
@@ -163,7 +169,7 @@ class GameState(game: MyGame, project: Project) {
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
-                loop: Boolean) = syncRun {
+                loop: Boolean, fadeDurationMs: Int) = syncRun {
     musics(slot).map(_.dispose())
 
     musics(slot) = specOpt.map { spec =>
@@ -172,14 +178,22 @@ class GameState(game: MyGame, project: Project) {
       // TODO: fix this blocking call
       game.assets.finishLoading()
       val newMusic = resource.getAsset(game.assets)
-      newMusic.setVolume(spec.volume)
+
+      // Start at zero volume and fade to desired volume
+      newMusic.setVolume(0f)
       newMusic.setLooping(loop)
       newMusic.play()
+
+      // Setup volume tween
+      val tweenableMusic = new GdxMusicTweenable(newMusic)
+      Tween.to(tweenableMusic, GdxMusicAccessor.VOLUME, fadeDurationMs/1000f)
+        .target(spec.volume).start(tweenManager)
+
       newMusic
     }
   }
 
-  def stopMusic(slot: Int) = syncRun {
+  def stopMusic(slot: Int, fadeDurationMs: Int) = syncRun {
     musics(slot).map(_.dispose())
     musics(slot) = None
   }
