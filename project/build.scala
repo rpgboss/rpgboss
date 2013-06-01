@@ -92,33 +92,36 @@ object Settings {
 
     // Extract jars into their respective lib folders.
     val commonDest = file("common/lib")
-    val commonFilter = new ExactFilter("gdx.jar") |
-	new ExactFilter("extensions/gdx-freetype.jar") |
-	new ExactFilter("extensions/gdx-audio.jar") |
-  new ExactFilter("sources/gdx-sources.jar")
+    val commonFilter = 
+      new ExactFilter("gdx.jar") |
+      new ExactFilter("extensions/gdx-freetype/gdx-freetype.jar") |
+      new ExactFilter("extensions/gdx-audio/gdx-audio.jar") |
+      new ExactFilter("sources/gdx-sources.jar")
     IO.unzip(zipFile, commonDest, commonFilter)
 
     val desktopDest = file("player-desktop/lib")
-    val desktopFilter = new ExactFilter("gdx-natives.jar") |
-    new ExactFilter("gdx-backend-lwjgl.jar") |
-    new ExactFilter("gdx-backend-lwjgl-natives.jar") |
-    new ExactFilter("gdx-tools.jar") |
-    new ExactFilter("extensions/gdx-freetype-natives.jar") |
-    new ExactFilter("extensions/gdx-audio-natives.jar") |
-    new ExactFilter("sources/gdx-backend-lwjgl-sources.jar") |
-    new ExactFilter("sources/gdx-openal-sources.jar")
+    val desktopFilter = 
+      new ExactFilter("gdx-natives.jar") |
+      new ExactFilter("gdx-backend-lwjgl.jar") |
+      new ExactFilter("gdx-backend-lwjgl-natives.jar") |
+      new ExactFilter("gdx-tools.jar") |
+      new ExactFilter("extensions/gdx-freetype/gdx-freetype-natives.jar") |
+      new ExactFilter("extensions/gdx-audio/gdx-audio-natives.jar") |
+      new ExactFilter("sources/gdx-backend-lwjgl-sources.jar") |
+      new ExactFilter("sources/gdx-openal-sources.jar")
     IO.unzip(zipFile, desktopDest, desktopFilter)
 
     val androidDest = file("player-android/src/main/libs")
-    val androidFilter = new ExactFilter("gdx-backend-android.jar") |
-    new ExactFilter("armeabi/libgdx.so") |
-    new ExactFilter("armeabi/libandroidgl20.so") |
-    new ExactFilter("armeabi/libgdx-freetype.so") |
-    new ExactFilter("armeabi/libgdx-audio.so") |
-    new ExactFilter("armeabi-v7a/libgdx.so") |
-    new ExactFilter("armeabi-v7a/libandroidgl20.so") |
-    new ExactFilter("armeabi-v7a/libgdx-freetype.so") |
-    new ExactFilter("armeabi-v7a/libgdx-audio.so")
+    val androidFilter = 
+      new ExactFilter("gdx-backend-android.jar") |
+      new ExactFilter("armeabi/libandroidgl20.so") |
+      new ExactFilter("armeabi/libgdx.so") |
+      new ExactFilter("extensions/gtx-audio/armeabi/libgdx-audio.so") |
+      new ExactFilter("extensions/gdx-freetype/armeabi/libgdx-freetype.so") |
+      new ExactFilter("armeabi-v7a/libgdx.so") |
+      new ExactFilter("armeabi-v7a/libandroidgl20.so") |
+      new ExactFilter("extensions/gdx-audio/armeabi-v7a/libgdx-audio.so") |
+      new ExactFilter("extensions/gdx-freetype/armeabi-v7a/libgdx-freetype.so")
     
     IO.unzip(zipFile, androidDest, androidFilter)
 

@@ -25,16 +25,17 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       Dialog.showMessage(shortnameField, "Need a short name.")
     else {
       val shortname = shortnameField.text
-      val p = Project.startingProject(shortname,
-        new File(rootChooser.getRoot, shortname))
-
+      val projectDirectory = new File(rootChooser.getRoot, shortname)
+      val p = Project.startingProject(shortname, projectDirectory)
       val mapName = RpgMap.generateName(p.data.lastCreatedMapId)
-      RpgMap.defaultMapData.writeToFile(p, mapName)
 
+      projectDirectory.mkdir()
+      RpgMap.rcDir(p).mkdir()
+      
       val allSavedOkay =
         p.writeMetadata() &&
-          RpgMap.defaultMapData.writeToFile(p, mapName) &&
-          RpgMap.defaultInstance(p, mapName).writeMetadata()
+      	RpgMap.defaultMapData.writeToFile(p, mapName) &&
+	    RpgMap.defaultInstance(p, mapName).writeMetadata()
 
       val cl = getClass.getClassLoader
 
