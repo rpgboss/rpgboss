@@ -41,6 +41,9 @@ class ScriptThread(
       Context.javaToJS(MapLoc, jsScope))
     ScriptableObject.putProperty(jsScope, "Transitions",
       Context.javaToJS(Transitions, jsScope))
+    
+    ScriptableObject.putProperty(jsScope, "None",
+      Context.javaToJS(None, jsScope))    
   }
 
   val runnable = new Runnable() {
@@ -97,7 +100,7 @@ class ScriptThread(
     ex match {
       case e: org.mozilla.javascript.EcmaError => {
         System.err.println(e.getErrorMessage())
-        System.err.println("%s:%d".format(e.getSourceName(), e.getLineNumber()))
+        System.err.println("%s:%d".format(e.sourceName(), e.lineNumber()))
       }
       case e => e.printStackTrace()
     }

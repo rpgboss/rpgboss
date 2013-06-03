@@ -113,6 +113,12 @@ class GameState(game: MyGame, project: Project) {
   /*
    * The below functions are all called from the script threads only.
    */
+  
+  /*
+   * Accessors to various game data
+   */
+  def getMap(loc: MapLoc) =
+    RpgMap.readFromDisk(project, loc.map)
 
   /*
    * Things to do with the player's location and camera
@@ -125,6 +131,7 @@ class GameState(game: MyGame, project: Project) {
   def setPlayerLoc(loc: MapLoc) = syncRun {
     playerEvt.x = loc.x
     playerEvt.y = loc.y
+    setCameraLoc(loc)
   }
 
   def setCameraLoc(loc: MapLoc) = syncRun {
@@ -167,10 +174,22 @@ class GameState(game: MyGame, project: Project) {
     persistent.pictures(slot).map(_.dispose())
     persistent.pictures(slot) = None
   }
-
+  
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
                 loop: Boolean, fadeDurationMs: Int) = syncRun {
-    musics(slot).map(_.dispose())
+    
+    musics(slot).map({ oldMusic =>
+      val tweenMusic = new GdxMusicTweenable(oldMusic)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs/1000f)
+      	.target(0f)
+      	.setCallback(new TweenCallback {
+      	  override def onEvent(typeArg: Int, x: BaseTween[_]) = {
+      	    if (typeArg == TweenCallback.COMPLETE) {
+      	      oldMusic.stop()
+      	    }
+      	  }
+      	}).start(tweenManager)
+    })
 
     musics(slot) = specOpt.map { spec =>
       val resource = Music.readFromDisk(project, spec.sound)
@@ -180,22 +199,18 @@ class GameState(game: MyGame, project: Project) {
       val newMusic = resource.getAsset(game.assets)
 
       // Start at zero volume and fade to desired volume
+      newMusic.stop()
       newMusic.setVolume(0f)
       newMusic.setLooping(loop)
       newMusic.play()
 
       // Setup volume tween
-      val tweenableMusic = new GdxMusicTweenable(newMusic)
-      Tween.to(tweenableMusic, GdxMusicAccessor.VOLUME, fadeDurationMs/1000f)
+      val tweenMusic = new GdxMusicTweenable(newMusic)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs/1000f)
         .target(spec.volume).start(tweenManager)
 
       newMusic
     }
-  }
-
-  def stopMusic(slot: Int, fadeDurationMs: Int) = syncRun {
-    musics(slot).map(_.dispose())
-    musics(slot) = None
   }
 
   /*

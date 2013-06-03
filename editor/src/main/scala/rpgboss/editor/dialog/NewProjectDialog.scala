@@ -11,6 +11,7 @@ import net.java.dev.designgridlayout._
 import java.io._
 import rpgboss.lib.FileHelper._
 import rpgboss.editor.uibase.StdDialog
+import rpgboss.model.resource.Resource
 
 class NewProjectDialog(owner: Window, onSuccess: Project => Any)
   extends StdDialog(owner, "New Project") {
@@ -30,7 +31,9 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
       val mapName = RpgMap.generateName(p.data.lastCreatedMapId)
 
       projectDirectory.mkdir()
-      RpgMap.rcDir(p).mkdir()
+      Resource.resourceTypes.foreach {
+        _.rcDir(p).mkdir()
+      }
       
       val allSavedOkay =
         p.writeMetadata() &&
