@@ -2,6 +2,7 @@ import sbt._
 
 import Keys._
 import AndroidKeys._
+import WebStartPlugin._
 import scala.sys.process.{Process => SysProcess}
 
 object Settings {
@@ -53,8 +54,10 @@ object Settings {
         jars.classpath
       }
     )
+    
+  lazy val editor = Settings.playerDesktop ++ editorLibs ++ editorWebstart
   
-  lazy val editor = Settings.playerDesktop ++ Seq(
+  lazy val editorLibs = Seq(
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-swing" % "2.10.1",
       "com.github.benhutchison" % "scalaswingcontrib" % "1.5", 
@@ -68,7 +71,41 @@ object Settings {
       println("Generated file enumeration")
       Unit
     },
-    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum")
+    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum"))
+  
+  lazy val editorWebstart = webstartSettings ++ Seq(
+    webstartGenConfig := GenConfig(
+        dname       = "CN=Snake Oil, OU=An Anonymous Hacker, O=Bad Guys Inc., L=Bielefeld, ST=33641, C=DE",
+        validity    = 365
+    ),
+    webstartKeyConfig := KeyConfig(
+        keyStore    = file("key/keyStore"),
+        storePass   = "password",
+        alias       = "alias",
+        keyPass     = "password"
+    ),
+    webstartJnlpConfigs := Seq(JnlpConfig(
+        fileName    = "rpgboss.jnlp",
+        descriptor  = (fileName:String, assets:Seq[JnlpAsset]) => {
+            <jnlp spec="1.5+" codebase="http://rpgboss.com/webstart/" href={fileName}>
+                <information>
+                    <title>rpgboss</title>
+                    <vendor>rpgboss</vendor>
+                    <description>rpgboss game editor and player</description>
+                    <icon href="my_icon.png"/>
+                    <icon href="my_splash.png" kind="splash"/>
+                </information>
+                <security>
+                    <all-permissions/>
+                </security> 
+                <resources>
+                    <j2se version="1.6+" max-heap-size="192m"/>
+                    { assets map { _.toElem } }
+                </resources>
+                <application-desc main-class="rpgboss.editor.RpgDesktop"/>
+            </jnlp>
+        }
+    ))
   )
 
   val updateLibgdx = TaskKey[Unit]("update-gdx", "Updates libgdx")
