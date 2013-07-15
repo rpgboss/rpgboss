@@ -23,12 +23,11 @@ class EnumerationsPanel(
     new StringArrayEditingPanel(
       owner,
       "Elements",
-      dbDiag.model.elements) {
+      dbDiag.model.enums.elements) {
 
       override def onListDataUpdate() = {
         logger.info("Elements updated")
-        dbDiag.model = dbDiag.model.copy(
-          elements = array)
+        dbDiag.model.enums.elements = array
       }
     }
 
@@ -36,11 +35,10 @@ class EnumerationsPanel(
     new StringArrayEditingPanel(
       owner,
       "Equipment subtypes",
-      dbDiag.model.equipSubtypes) {
+      dbDiag.model.enums.equipSubtypes) {
       override def onListDataUpdate() = {
         logger.info("Skill types updated")
-        dbDiag.model = dbDiag.model.copy(
-          equipSubtypes = array)
+        dbDiag.model.enums.equipSubtypes = array
       }
     }
 

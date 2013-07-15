@@ -116,7 +116,7 @@ class MapEditor(
 
           drawWithAlpha(g, evtAlpha) {
             // draw start loc
-            val startingLoc = sm.getProjData.startingLoc
+            val startingLoc = sm.getProjData.startup.startingLoc
             if (startingLoc.map == vs.mapName) {
               import MapEditor.startingLocIcon
               g.drawImage(startingLocIcon,
@@ -271,11 +271,13 @@ class MapEditor(
           def repaintMapLoc(l: MapLoc) =
             repaintRegion(TileRect(l.x - 0.5f, l.y - 0.5f, 1, 1))
 
-          val oldStartingLoc = sm.getProjData.startingLoc
+          val projData = sm.getProjData
+          val oldStartingLoc = sm.getProjData.startup.startingLoc
           val newStartingLoc =
             MapLoc(vs.mapName, xTile.toInt + 0.5f, yTile.toInt + 0.5f)
 
-          sm.setProjData(sm.getProjData.copy(startingLoc = newStartingLoc))
+          projData.startup.startingLoc = newStartingLoc
+          sm.setProjData(projData)
 
           repaintMapLoc(oldStartingLoc)
           repaintMapLoc(newStartingLoc)

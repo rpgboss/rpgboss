@@ -22,12 +22,13 @@ class ScreenLayer(game: MyGame, state: GameState) {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
 
-  val windowskin = Windowskin.readFromDisk(project, project.data.windowskin)
+  val windowskin = 
+    Windowskin.readFromDisk(project, project.data.startup.windowskin)
   val windowskinTexture =
     new Texture(Gdx.files.absolute(windowskin.dataFile.getAbsolutePath()))
   val windowskinRegion = new TextureRegion(windowskinTexture)
 
-  val font = Msgfont.readFromDisk(project, project.data.msgfont)
+  val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
   var fontbmp: BitmapFont = font.getBitmapFont()
 
   val screenCamera: OrthographicCamera = new OrthographicCamera()

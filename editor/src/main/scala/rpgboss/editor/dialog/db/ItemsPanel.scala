@@ -19,7 +19,7 @@ class ItemsPanel(
   owner: Window,
   sm: StateMaster,
   val dbDiag: DatabaseDialog)
-  extends RightPaneArrayDatabasePanel(owner, "Items", dbDiag.model.items)
+  extends RightPaneArrayDatabasePanel(owner, "Items", dbDiag.model.enums.items)
   with DatabasePanel {
   def panelName = "Items/Equipment"
   def newDefaultInstance() = new Item()
@@ -65,7 +65,7 @@ class ItemsPanel(
           v => updateModel(model.copy(slot = v.id)))
 
         val fEquipSubtype = indexedCombo(
-          dbDiag.model.equipSubtypes,
+          dbDiag.model.enums.equipSubtypes,
           model.equipSubtype,
           v => updateModel(model.copy(equipSubtype = v)))
 
@@ -117,7 +117,6 @@ class ItemsPanel(
 
   override def onListDataUpdate() = {
     logger.info("Items data updated")
-    dbDiag.model = dbDiag.model.copy(
-      items = array)
+    dbDiag.model.enums.items = array
   }
 }

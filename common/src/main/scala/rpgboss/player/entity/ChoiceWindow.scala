@@ -41,10 +41,10 @@ class ChoiceWindow(
     snd
   }
   
-  val soundCursor = optionallyReadAndLoad(proj.data.soundCursor)
-  val soundSelect = optionallyReadAndLoad(proj.data.soundSelect)
-  val soundCancel = optionallyReadAndLoad(proj.data.soundCancel)
-  val soundCannot = optionallyReadAndLoad(proj.data.soundCannot)
+  val soundCursor = optionallyReadAndLoad(proj.data.startup.soundCursor)
+  val soundSelect = optionallyReadAndLoad(proj.data.startup.soundSelect)
+  val soundCancel = optionallyReadAndLoad(proj.data.startup.soundCancel)
+  val soundCannot = optionallyReadAndLoad(proj.data.startup.soundCannot)
   
   def keyActivate(key: Int) = {
     // Need to finish loading all assets before accepting key input

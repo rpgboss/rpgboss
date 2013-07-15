@@ -232,8 +232,8 @@ class EffectDialog(
     percentEffect(RecoverHpMul),
     intEffect(RecoverMpAdd),
     percentEffect(RecoverMpMul),
-    choiceEffect(AddStatusEffect, dbDiag.model.statusEffects),
-    choiceEffect(RemoveStatusEffect, dbDiag.model.statusEffects))
+    choiceEffect(AddStatusEffect, dbDiag.model.enums.statusEffects),
+    choiceEffect(RemoveStatusEffect, dbDiag.model.enums.statusEffects))
 
   val effectsStats = Array(
     intEffect(MhpAdd),
@@ -247,8 +247,8 @@ class EffectDialog(
 
   val effectsOther = Array(
     nilEffect(EscapeBattle),
-    choiceEffect(UseSkill, dbDiag.model.skills),
-    choiceEffect(LearnSkill, dbDiag.model.skills))
+    choiceEffect(UseSkill, dbDiag.model.enums.skills),
+    choiceEffect(LearnSkill, dbDiag.model.enums.skills))
 
   val effectsAll = effectsStatus ++ effectsStats ++ effectsOther
   val effectsMap = Map(effectsAll.map(x => x.key.toString -> x): _*)

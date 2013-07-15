@@ -1,41 +1,43 @@
 package rpgboss.model
 import rpgboss.model.resource.RpgMap
 
-case class ProjectData(uuid: String,
-                       title: String,
-                       recentMapName: String = "",
-                       lastCreatedMapId: Int = 1, // Start at 1
-                       startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
+case class ProjectDataStartup(
+    var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
+    var startingParty: Array[Int] = Array(0),
+    
+    var titlePic: String = "LordSpirit.jpg",
+    var titleMusic: Option[SoundSpec] = None,
 
-                       characters: Array[Character] = ProjectData.defaultCharacters,
+    var windowskin: String = "LastPhantasmScanlines.png",
+    var msgfont: String = "Vera.ttf",
+    var fontsize: Int = 24,
+    
+    var soundCursor: Option[SoundSpec] = Some(SoundSpec("MenuCursor.wav")),
+    var soundSelect: Option[SoundSpec] = Some(SoundSpec("MenuSelect.wav")),
+    var soundCancel: Option[SoundSpec] = Some(SoundSpec("MenuCancel.wav")),
+    var soundCannot: Option[SoundSpec] = Some(SoundSpec("MenuCannot.wav")))
+    
+case class ProjectDataEnums(
+	var characters: Array[Character] = ProjectData.defaultCharacters,
+	
+	var classes: Array[CharClass] = Array(CharClass()),
+	
+	var statusEffects: Array[StatusEffect] = Array(StatusEffect()),
+	
+	var items: Array[Item] = Array(Item()),
+	
+	var skills: Array[Skill] = Array(Skill()),
+	
+	var elements: Array[String] = Array(""),
+	var equipSubtypes: Array[String] = Array(""))
 
-                       classes: Array[CharClass] = Array(CharClass()),
-
-                       titlePic: String = "LordSpirit.jpg",
-                       titleMusic: Option[SoundSpec] = None,
-                       
-                       startingParty: Array[Int] = Array(0),
-
-                       windowskin: String = "LastPhantasmScanlines.png",
-                       msgfont: String = "Vera.ttf",
-                       fontsize: Int = 24,
-                       soundCursor: Option[SoundSpec] = 
-                         Some(SoundSpec("MenuCursor.wav")),
-                       soundSelect: Option[SoundSpec] = 
-                         Some(SoundSpec("MenuSelect.wav")),
-                       soundCancel: Option[SoundSpec] = 
-                         Some(SoundSpec("MenuCancel.wav")),
-                       soundCannot: Option[SoundSpec] = 
-                         Some(SoundSpec("MenuCannot.wav")),
-
-                       statusEffects: Array[StatusEffect] = Array(StatusEffect()),
-
-                       items: Array[Item] = Array(Item()),
-
-                       skills: Array[Skill] = Array(Skill()),
-
-                       elements: Array[String] = Array(""),
-                       equipSubtypes: Array[String] = Array(""))
+case class ProjectData(
+	var uuid: String,
+	var title: String,
+	var recentMapName: String = "",
+	var lastCreatedMapId: Int = 1, // Start at 1)
+	var startup: ProjectDataStartup = ProjectDataStartup(),
+	var enums: ProjectDataEnums = ProjectDataEnums())
 
 object ProjectData {
   def defaultCharacters = Array(

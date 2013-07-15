@@ -22,7 +22,7 @@ class ClassesPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     "Classes",
-    dbDiag.model.classes)
+    dbDiag.model.enums.classes)
   with DatabasePanel {
   def panelName = "Classes"
   def newDefaultInstance() = new CharClass()
@@ -42,7 +42,7 @@ class ClassesPanel(
     val fCanEquip = new StringArrayMultiselectPanel(
       owner,
       "Can equip",
-      dbDiag.model.equipSubtypes,
+      dbDiag.model.enums.equipSubtypes,
       model.canUseEquipSubtypes,
       model.canUseEquipSubtypes = _)
 
@@ -61,7 +61,6 @@ class ClassesPanel(
 
   override def onListDataUpdate() = {
     logger.info("Classes updated")
-    dbDiag.model = dbDiag.model.copy(
-      classes = array)
+    dbDiag.model.enums.classes = array
   }
 }

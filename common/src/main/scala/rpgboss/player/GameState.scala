@@ -41,7 +41,7 @@ class GameState(game: MyGame, project: Project) {
 
   // protagonist. Modify all these things on the Gdx thread
   var playerEvt: PlayerEntity = new PlayerEntity(game)
-  setPlayerSprite(game.project.data.characters.head.sprite)
+  setPlayerSprite(game.project.data.enums.characters.head.sprite)
 
   val persistent = new PersistentState()
 

@@ -13,7 +13,7 @@ import rpgboss.editor.uibase.StdDialog
 
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Database") {
-  var model = sm.getProj.data
+  val model = sm.getProjData
 
   val charPane = new CharactersPanel(owner, sm, this)
   val classesPane = new ClassesPanel(owner, sm, this)

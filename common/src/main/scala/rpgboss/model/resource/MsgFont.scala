@@ -21,7 +21,7 @@ case class Msgfont(proj: Project, name: String,
       Gdx.files.absolute(dataFile.getAbsolutePath()))
 
     val result = generator.generateFont(
-      proj.data.fontsize,
+      proj.data.startup.fontsize,
       FreeTypeFontGenerator.DEFAULT_CHARS,
       true)
 

@@ -22,7 +22,7 @@ class StatusPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     "Status Effects",
-    dbDiag.model.statusEffects)
+    dbDiag.model.enums.statusEffects)
   with DatabasePanel {
   def panelName = "Status Effects"
   def newDefaultInstance() = new StatusEffect()
@@ -91,7 +91,6 @@ class StatusPanel(
 
   override def onListDataUpdate() = {
     logger.info("Status effect data updated")
-    dbDiag.model = dbDiag.model.copy(
-      statusEffects = array)
+    dbDiag.model.enums.statusEffects = array
   }
 }

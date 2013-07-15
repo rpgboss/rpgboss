@@ -24,49 +24,36 @@ class SystemPanel(
 
   def model = dbDiag.model
 
-  def updateModel(m: ProjectData) = {
-    dbDiag.model = m
-  }
-
   val fGameTitle = new TextField() {
     text = model.title
     reactions += {
-      case EditDone(_) => updateModel(model.copy(title = text))
+      case EditDone(_) => model.title = text
     }
   }
 
-  val fTitlepic = new PictureField(owner, sm, model.titlePic, v => {
-    updateModel(model.copy(titlePic = v))
-  })
+  val fTitlepic = new PictureField(owner, sm, model.startup.titlePic, 
+      model.startup.titlePic = _)
   
-  val fTitleMusic = new MusicField(owner, sm, model.titleMusic, v => {
-    updateModel(model.copy(titleMusic = v))
-  })
+  val fTitleMusic = new MusicField(owner, sm, model.startup.titleMusic, 
+	  model.startup.titleMusic = _)
   
-  val fWindowskin = new WindowskinField(owner, sm, model.windowskin, v => {
-    updateModel(model.copy(windowskin = v))
-  })
+  val fWindowskin = new WindowskinField(owner, sm, model.startup.windowskin, 
+      model.startup.windowskin = _)
 
-  val fMsgfont = new MsgfontField(owner, sm, model.msgfont, v => {
-    updateModel(model.copy(msgfont = v))
-  })
+  val fMsgfont = new MsgfontField(owner, sm, model.startup.msgfont,
+      model.startup.msgfont = _)
 
-  val fFontsize = new NumberSpinner(model.fontsize, 12, 48, onUpdate = { v =>
-    updateModel(model.copy(fontsize = v))
-  })
+  val fFontsize = new NumberSpinner(model.startup.fontsize, 12, 48, 
+      model.startup.fontsize = _)
 
-  val fSoundCursor = new SoundField(owner, sm, model.soundCursor, v => {
-    updateModel(model.copy(soundCursor = v))
-  })
-  val fSoundSelect = new SoundField(owner, sm, model.soundSelect, v => {
-    updateModel(model.copy(soundSelect = v))
-  })
-  val fSoundCancel = new SoundField(owner, sm, model.soundCancel, v => {
-    updateModel(model.copy(soundCancel = v))
-  })
-  val fSoundCannot = new SoundField(owner, sm, model.soundCannot, v => {
-    updateModel(model.copy(soundCannot = v))
-  })
+  val fSoundCursor = new SoundField(owner, sm, model.startup.soundCursor, 
+      model.startup.soundCursor = _)
+  val fSoundSelect = new SoundField(owner, sm, model.startup.soundSelect, 
+	  model.startup.soundSelect = _)
+  val fSoundCancel = new SoundField(owner, sm, model.startup.soundCancel, 
+      model.startup.soundCancel = _)
+  val fSoundCannot = new SoundField(owner, sm, model.startup.soundCannot, 
+      model.startup.soundCannot = _)
 
   row().grid(lbl("Game title:")).add(fGameTitle)
   row().grid(lbl("Title picture:")).add(fTitlepic)

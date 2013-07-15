@@ -20,7 +20,7 @@ class CharactersPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     "Characters",
-    dbDiag.model.characters) {
+    dbDiag.model.enums.characters) {
   def panelName = "Characters"
   def newDefaultInstance() = new Character()
   def label(character: Character) = character.name
@@ -47,7 +47,7 @@ class CharactersPanel(
         model.sprite = _)
 
       val fClass = indexedCombo(
-        dbDiag.model.classes,
+        dbDiag.model.enums.classes,
         model.charClass,
         model.charClass = _)
 
@@ -90,7 +90,6 @@ class CharactersPanel(
 
   override def onListDataUpdate() = {
     logger.info("Characters data updated")
-    dbDiag.model = dbDiag.model.copy(
-      characters = array)
+    dbDiag.model.enums.characters = array
   }
 }
