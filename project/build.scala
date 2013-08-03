@@ -167,7 +167,7 @@ object Settings {
     s.log.info("Complete")
   }
 
-  val updateLibs = TaskKey[Unit]("update-lib", "Updates libs")
+  val updateLibs = TaskKey[Unit]("update-libs", "Updates libs")
   
   val updateLibsTask = updateLibs <<= streams map { (s: TaskStreams) =>
     import Process._
