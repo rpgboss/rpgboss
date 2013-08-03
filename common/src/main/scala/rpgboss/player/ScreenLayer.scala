@@ -16,6 +16,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
  *
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
+ * 
+ * This class should only be accessed on the gdx thread
  */
 class ScreenLayer(game: MyGame, state: GameState) {
   def project = game.project
@@ -30,6 +32,10 @@ class ScreenLayer(game: MyGame, state: GameState) {
 
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
   var fontbmp: BitmapFont = font.getBitmapFont()
+  
+  val windows = new collection.mutable.ArrayBuffer[Window] 
+      with collection.mutable.SynchronizedBuffer[Window]
+
 
   val screenCamera: OrthographicCamera = new OrthographicCamera()
   screenCamera.setToOrtho(true, 640, 480) // y points down
@@ -41,6 +47,12 @@ class ScreenLayer(game: MyGame, state: GameState) {
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
   def update(delta: Float) = {
+    // Update windows
+    if (!windows.isEmpty)
+      windows.head.update(delta, true)
+    if (windows.length > 1)
+      windows.tail.foreach(_.update(delta, false))
+
   }
 
   def render() = {
@@ -61,7 +73,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
     }
 
     // Render all windows
-    state.windows.foreach(_.render(batch))
+    windows.foreach(_.render(batch))
 
     batch.end()
 

@@ -70,6 +70,8 @@ class PlayerEntity(game: MyGame)
 
         closestEvt.activate(dir)
       }
+    } else if (isActive(Cancel)) {
+      ScriptThread.fromFile(game, "menu.js", "menu()").run()
     }
   }
 

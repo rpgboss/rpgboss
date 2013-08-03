@@ -14,7 +14,7 @@ trait InputHandler {
   def keyCapturedByOther(key: Int) = {}
 
   // Defines list of keys swallowed by this event handler
-  val capturedKeys = Set(Up, Down, Left, Right, OK)
+  val capturedKeys = Set(Up, Down, Left, Right, OK, Cancel)
 }
 
 object MyKeys {
@@ -58,9 +58,6 @@ trait ChoiceInputHandler extends InputHandler {
   import MyKeys._
   def keyDelay: Float = 0.5f
   def keyInterval: Float = 0.1f
-
-  // Defines list of keys swallowed by this event handler
-  override val capturedKeys = Set(Up, Down, Left, Right, OK)
 
   private val activateTasks = (0 until MyKeys.totalNumber) map { key =>
     new Timer.Task() {

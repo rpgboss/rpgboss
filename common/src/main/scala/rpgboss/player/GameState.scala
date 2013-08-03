@@ -28,9 +28,6 @@ import aurelienribon.tweenengine._
 class GameState(game: MyGame, project: Project) {
   val tweenManager = new TweenManager()
 
-  // No need for syncronization, since it's a synchronized collection
-  val windows = new collection.mutable.ArrayBuffer[Window] with collection.mutable.SynchronizedBuffer[Window]
-
   val musics = Array.fill[Option[GdxMusic]](8)(None)
 
   // Should only be modified on the Gdx thread
@@ -56,12 +53,6 @@ class GameState(game: MyGame, project: Project) {
     // Update events, including player event
     npcEvts.foreach(_.update(delta))
     playerEvt.update(delta)
-
-    // Update windows
-    if (!windows.isEmpty)
-      windows.head.update(delta, true)
-    if (windows.length > 1)
-      windows.tail.foreach(_.update(delta, false))
 
     // Update current transition
     curTransition.synchronized {
@@ -236,14 +227,14 @@ class GameState(game: MyGame, project: Project) {
       msPerChar = 0,
       justification = justification)
 
-    windows.prepend(window)
+    game.screenLayer.windows.prepend(window)
     game.inputs.prepend(window)
 
     // Return the choice... eventually...
     val choice = Await.result(window.result.future, Duration.Inf)
 
     game.inputs.remove(window)
-    windows -= window
+    game.screenLayer.windows -= window
 
     choice
   }
@@ -261,13 +252,13 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.fontbmp,
       initialState = Window.Opening)
 
-    windows.prepend(window)
+    game.screenLayer.windows.prepend(window)
     game.inputs.prepend(window)
 
     Await.result(window.result.future, Duration.Inf)
 
     game.inputs.remove(window)
-    windows -= window
+    game.screenLayer.windows -= window
   }
 
   def showText(text: Array[String]) = showTextWithPosition(text)
