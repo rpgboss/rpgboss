@@ -116,7 +116,7 @@ abstract class Entity(
    */
   def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
     game.state.npcEvts.filter(npc => {
-      npc.getBoundingBox().contains(x, y)
+      npc.getBoundingBox().contains(x + dxArg, y + dyArg)
     })
   }
 
