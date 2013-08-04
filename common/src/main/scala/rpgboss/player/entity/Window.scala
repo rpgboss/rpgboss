@@ -18,6 +18,7 @@ object Window {
   val Opening = 0
   val Open = 1
   val Closing = 2
+  val Closed = 3
 
   val Left = 0
   val Center = 1
@@ -32,7 +33,7 @@ object Window {
 
 // stateAge starts at 0 and goes up as window opens or closes
 class Window(
-  id: Long,
+  val id: Long,
   assets: RpgAssetManager,
   proj: Project,
   val x: Int, val y: Int, val w: Int, val h: Int,
@@ -58,7 +59,10 @@ class Window(
       state match {
         case Window.Opening => changeState(Window.Open)
         case Window.Open =>
-        case Window.Closing => postClose()
+        case Window.Closing => {
+          postClose() 
+          changeState(Window.Closed)
+        }
         case _ => Unit
       }
     }
@@ -80,6 +84,7 @@ class Window(
 
       skin.draw(b, skinRegion, x, y, w, hVisible)
     }
+    case _ => Unit
   }
 
   def postClose() = {
@@ -133,7 +138,7 @@ class TextWindow(
       case Window.Opening => {
         textImage.render(b)
       }
-      case Window.Closing => {
+      case _ => {
       }
     }
   }

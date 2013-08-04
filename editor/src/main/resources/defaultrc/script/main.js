@@ -3,10 +3,13 @@ function main() {
   game.playMusic(0, project.data().startup().titleMusic(), true, 2000);
   game.showPicture(0, project.data().startup().titlePic(), 0, 0, 640, 480);
   var winW = 200;
-  choiceIdx = game.showChoices(
+  var choiceWin = game.newChoiceWindow(
     ["New Game", "Load Game", "Quit"],
     320-winW/2, 280, winW, 130,
-    game.CENTER())
+    game.CENTER());
+  
+  var choiceIdx = choiceWin.getChoice();
+  game.destroyWindow(choiceWin.id());
   
   game.setTransition(1, 0, 400);
   game.sleep(400);

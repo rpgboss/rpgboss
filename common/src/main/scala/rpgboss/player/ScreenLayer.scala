@@ -35,8 +35,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
   
   private var lastWindowId: Long = 0
   
-  val windows = new collection.mutable.ArrayBuffer[Window] 
-      with collection.mutable.SynchronizedBuffer[Window]
+  val windows = new collection.mutable.ArrayBuffer[Window]
   
   def getWindowId() : Long = {
     lastWindowId += 1

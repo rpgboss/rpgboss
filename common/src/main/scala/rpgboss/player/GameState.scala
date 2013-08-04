@@ -210,11 +210,11 @@ class GameState(game: MyGame, project: Project) {
   def sleep(durationMs: Int) = {
     Thread.sleep(durationMs)
   }
-
-  def showChoices(
+  
+  def newChoiceWindow(
     choices: Array[String],
     x: Int, y: Int, w: Int, h: Int,
-    justification: Int): Int = {
+    justification: Int): ChoiceWindow = {
     val window = new ChoiceWindow(
       game.screenLayer.getWindowId(),
       game.assets,
@@ -226,19 +226,22 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.fontbmp,
       initialState = Window.Opening,
       justification = justification)
-
-    game.screenLayer.windows.prepend(window)
-    game.inputs.prepend(window)
-
-    // Return the choice... eventually...
-    val choice = Await.result(window.result.future, Duration.Inf)
-
-    game.inputs.remove(window)
-    game.screenLayer.windows -= window
-
-    choice
+    
+    syncRun {
+      game.screenLayer.windows.prepend(window)
+      game.inputs.prepend(window)
+    }
+    
+    window
   }
-
+  
+  def destroyWindow(windowId: Int) = syncRun {
+    game.screenLayer.windows.find(_.id == windowId).map { window =>
+      game.inputs.remove(window)
+      game.screenLayer.windows -= window
+    }
+  }
+  
   def showTextWithPosition(
     text: Array[String],
     x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {

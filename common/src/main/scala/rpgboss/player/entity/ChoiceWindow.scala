@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import rpgboss.player.ChoiceInputHandler
 import rpgboss.player.MyKeys
 import com.badlogic.gdx.assets.AssetManager
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 class ChoiceText(
   assets: RpgAssetManager,
@@ -97,6 +99,7 @@ class ChoiceWindow(
 
   override def postClose() = {
     // Fulfill the promise and close after animation complete
+    println("postClose ChoiceWindow")
     result.success(textImage.curChoice)
   }
 
@@ -115,4 +118,7 @@ class ChoiceWindow(
         32f, 32f)
     }
   }
+
+  // This method is safe to call on multiple threads
+  def getChoice() = Await.result(result.future, Duration.Inf)
 }
