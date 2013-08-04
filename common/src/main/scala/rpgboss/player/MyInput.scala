@@ -30,7 +30,7 @@ object MyKeys {
 
 trait MoveInputHandler extends InputHandler {
   // Initialized to all false
-  private val isActiveMap = new Array[Boolean](5)
+  private val isActiveMap = new Array[Boolean](MyKeys.totalNumber)
 
   def isActive(key: Int) = isActiveMap(key)
 
@@ -96,6 +96,7 @@ class MyInputMultiplexer extends InputAdapter {
     case Keys.LEFT => Some(MyKeys.Left)
     case Keys.RIGHT => Some(MyKeys.Right)
     case Keys.SPACE => Some(MyKeys.OK)
+    case Keys.M => Some(MyKeys.Cancel)
     case _ => None
   }
 

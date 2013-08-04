@@ -10,30 +10,19 @@ import rpgboss.player.ChoiceInputHandler
 import rpgboss.player.MyKeys
 import com.badlogic.gdx.assets.AssetManager
 
-class ChoiceWindow(
+class ChoiceText(
   assets: RpgAssetManager,
   proj: Project,
-  choices: Array[String] = Array(),
+  choices: Array[String],
+  initialChoice: Int,
   x: Int, y: Int, w: Int, h: Int,
-  skin: Windowskin,
-  skinRegion: TextureRegion,
   fontbmp: BitmapFont,
-  initialState: Int = Window.Opening,
-  openCloseMs: Int = 250,
-  msPerChar: Int = 0,
-  linesPerBlock: Int = 4,
-  justification: Int = Window.Left,
-  defaultChoice: Int = 0,
-  allowCancel: Boolean = false)
-  extends Window(
-    assets, proj, text = choices, x, y, w, h, skin, skinRegion, fontbmp,
-    initialState, openCloseMs, msPerChar, linesPerBlock,
-    justification)
+  justification: Int = Window.Left) 
+  extends WindowText(
+    choices, x, y, w, h, fontbmp, justification)
   with ChoiceInputHandler {
-
-  override def drawAwaitingArrow = false
-
-  var curChoice = defaultChoice
+  
+  var curChoice = initialChoice
   
   def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
     val snd = spec.map(s => Sound.readFromDisk(proj, s.sound))
@@ -42,9 +31,6 @@ class ChoiceWindow(
   }
   
   val soundCursor = optionallyReadAndLoad(proj.data.startup.soundCursor)
-  val soundSelect = optionallyReadAndLoad(proj.data.startup.soundSelect)
-  val soundCancel = optionallyReadAndLoad(proj.data.startup.soundCancel)
-  val soundCannot = optionallyReadAndLoad(proj.data.startup.soundCannot)
   
   def keyActivate(key: Int) = {
     // Need to finish loading all assets before accepting key input
@@ -64,6 +50,44 @@ class ChoiceWindow(
         curChoice = 0
       soundCursor.map(_.getAsset(assets).play())
     }
+  }
+}
+
+class ChoiceWindow(
+  id: Long,
+  assets: RpgAssetManager,
+  proj: Project,
+  choices: Array[String] = Array(),
+  x: Int, y: Int, w: Int, h: Int,
+  skin: Windowskin,
+  skinRegion: TextureRegion,
+  fontbmp: BitmapFont,
+  initialState: Int = Window.Opening,
+  openCloseMs: Int = 250,
+  justification: Int = Window.Left,
+  defaultChoice: Int = 0)
+  extends TextWindow(
+      id, assets, proj, choices, x, y, w, h, skin, skinRegion, fontbmp,
+      initialState, openCloseMs)
+  with ChoiceInputHandler {
+  
+  override val capturedKeys = Set(MyKeys.Up, MyKeys.Down, MyKeys.OK)
+  
+  def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
+    val snd = spec.map(s => Sound.readFromDisk(proj, s.sound))
+    snd.map(_.loadAsset(assets))
+    snd
+  }
+  
+  override val textImage = 
+    new ChoiceText(assets, proj, choices, defaultChoice, x, y, w, h, fontbmp, 
+        justification)
+  
+  val soundSelect = optionallyReadAndLoad(proj.data.startup.soundSelect)
+  
+  def keyActivate(key: Int) = {
+    import MyKeys._
+    textImage.keyActivate(key)
 
     if (key == OK && !result.isCompleted) {
       changeState(Window.Closing)
@@ -73,7 +97,7 @@ class ChoiceWindow(
 
   override def postClose() = {
     // Fulfill the promise and close after animation complete
-    result.success(curChoice)
+    result.success(textImage.curChoice)
   }
 
   override def render(b: SpriteBatch) = {
@@ -87,7 +111,7 @@ class ChoiceWindow(
 
       skin.drawCursor(b, skinRegion,
         textStartX - 32,
-        y + textImage.ypad + textImage.lineHeight * curChoice - 8,
+        y + textImage.ypad + textImage.lineHeight * textImage.curChoice - 8,
         32f, 32f)
     }
   }

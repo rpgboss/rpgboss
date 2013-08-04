@@ -33,9 +33,15 @@ class ScreenLayer(game: MyGame, state: GameState) {
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
   var fontbmp: BitmapFont = font.getBitmapFont()
   
+  private var lastWindowId: Long = 0
+  
   val windows = new collection.mutable.ArrayBuffer[Window] 
       with collection.mutable.SynchronizedBuffer[Window]
-
+  
+  def getWindowId() : Long = {
+    lastWindowId += 1
+    lastWindowId
+  }
 
   val screenCamera: OrthographicCamera = new OrthographicCamera()
   screenCamera.setToOrtho(true, 640, 480) // y points down

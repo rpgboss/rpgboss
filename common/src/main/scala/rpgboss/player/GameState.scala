@@ -216,6 +216,7 @@ class GameState(game: MyGame, project: Project) {
     x: Int, y: Int, w: Int, h: Int,
     justification: Int): Int = {
     val window = new ChoiceWindow(
+      game.screenLayer.getWindowId(),
       game.assets,
       project,
       choices,
@@ -224,7 +225,6 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.windowskinRegion,
       game.screenLayer.fontbmp,
       initialState = Window.Opening,
-      msPerChar = 0,
       justification = justification)
 
     game.screenLayer.windows.prepend(window)
@@ -242,7 +242,8 @@ class GameState(game: MyGame, project: Project) {
   def showTextWithPosition(
     text: Array[String],
     x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {
-    val window = new Window(
+    val window = new PrintingTextWindow(
+      game.screenLayer.getWindowId(),
       game.assets,
       project,
       text,
