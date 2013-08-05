@@ -235,14 +235,7 @@ class GameState(game: MyGame, project: Project) {
     window
   }
   
-  def destroyWindow(windowId: Int) = syncRun {
-    game.screenLayer.windows.find(_.id == windowId).map { window =>
-      game.inputs.remove(window)
-      game.screenLayer.windows -= window
-    }
-  }
-  
-  def showTextWithPosition(
+  def newTextWindow(
     text: Array[String],
     x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {
     val window = new PrintingTextWindow(
@@ -255,17 +248,27 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.windowskinRegion,
       game.screenLayer.fontbmp,
       initialState = Window.Opening)
-
-    game.screenLayer.windows.prepend(window)
-    game.inputs.prepend(window)
-
-    Await.result(window.result.future, Duration.Inf)
-
-    game.inputs.remove(window)
-    game.screenLayer.windows -= window
+    
+    syncRun {
+      game.screenLayer.windows.prepend(window)
+      game.inputs.prepend(window)
+    }
+    
+    window
   }
-
-  def showText(text: Array[String]) = showTextWithPosition(text)
+  
+  def destroyWindow(windowId: Long) = syncRun {
+    game.screenLayer.windows.find(_.id == windowId).map { window =>
+      game.inputs.remove(window)
+      game.screenLayer.windows -= window
+    }
+  }
+  
+  def showText(text: Array[String]) = {
+    val window = newTextWindow(text)
+    Await.result(window.result.future, Duration.Inf)
+    destroyWindow(window.id)
+  }
 
   def getEvtState(evtName: String): Int =
     getEvtState(persistent.cameraLoc.map, evtName)
