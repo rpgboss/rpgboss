@@ -214,7 +214,9 @@ class GameState(game: MyGame, project: Project) {
   def newChoiceWindow(
     choices: Array[String],
     x: Int, y: Int, w: Int, h: Int,
-    justification: Int): ChoiceWindow = {
+    justification: Int,
+    closeOnSelect: Boolean,
+    allowCancel: Boolean): ChoiceWindow = {
     val window = new ChoiceWindow(
       game.screenLayer.getWindowId(),
       game.assets,
@@ -225,7 +227,9 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.windowskinRegion,
       game.screenLayer.fontbmp,
       initialState = Window.Opening,
-      justification = justification)
+      justification = justification,
+      closeOnSelect = closeOnSelect,
+      allowCancel = allowCancel)
     
     syncRun {
       game.screenLayer.windows.prepend(window)
@@ -234,6 +238,14 @@ class GameState(game: MyGame, project: Project) {
     
     window
   }
+  
+  def newChoiceWindow(
+    choices: Array[String],
+    x: Int, y: Int, w: Int, h: Int) : ChoiceWindow =
+      newChoiceWindow(choices, x, y, w, h,
+                      Window.Left,
+                      true /* closeOnSelect */,
+                      false /* allowCancel */)
   
   def newTextWindow(
     text: Array[String],
@@ -266,7 +278,7 @@ class GameState(game: MyGame, project: Project) {
   
   def showText(text: Array[String]) = {
     val window = newTextWindow(text)
-    Await.result(window.result.future, Duration.Inf)
+    window.awaitClose()
     destroyWindow(window.id)
   }
 

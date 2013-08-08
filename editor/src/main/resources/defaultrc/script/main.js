@@ -6,9 +6,12 @@ function main() {
   var choiceWin = game.newChoiceWindow(
     ["New Game", "Load Game", "Quit"],
     320-winW/2, 280, winW, 130,
-    game.CENTER());
+    game.CENTER(),
+    true /* closeOnSelect */,
+    false /* allowCancel */);
   
   var choiceIdx = choiceWin.getChoice();
+  choiceWin.awaitClose();
   game.destroyWindow(choiceWin.id());
   
   game.setTransition(1, 0, 400);

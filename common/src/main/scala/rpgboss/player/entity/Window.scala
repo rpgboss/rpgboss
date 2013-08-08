@@ -13,6 +13,8 @@ import com.badlogic.gdx.assets.AssetManager
 import scala.concurrent.Promise
 import rpgboss.player.InputHandler
 import rpgboss.player.MyKeys
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 object Window {
   val Opening = 0
@@ -88,12 +90,16 @@ class Window(
   }
 
   def postClose() = {
-    result.success(0)
+    closePromise.success(0)
+  }
+  
+  def awaitClose() = {
+    Await.result(closePromise.future, Duration.Inf)
   }
 
   // This is used to either convey a choice, or simply that the window
   // has been closed
-  val result = Promise[Int]()
+  private val closePromise = Promise[Int]()
 }
 
 class TextWindow(
