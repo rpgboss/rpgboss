@@ -81,20 +81,6 @@ class GameState(game: MyGame, project: Project) {
   }
 
   /**
-   * Calls the following on the GUI thread. Takes at least a frame.
-   */
-  def syncCall[T](op: => T): T = {
-    val callable = new Callable[T]() {
-      def call() = op
-    }
-    val future = new FutureTask(callable)
-
-    Gdx.app.postRunnable(future)
-
-    future.get
-  }
-
-  /**
    * Dispose of any disposable resources
    */
   def dispose() = {
@@ -294,6 +280,12 @@ class GameState(game: MyGame, project: Project) {
     if (mapName == persistent.cameraLoc.map) {
       npcEvts.filter(_.mapEvent.name == evtName).foreach(_.updateState())
     }
+  }
+  
+  def getGlobal(key: String) = persistent.getGlobal(key)
+  def setGlobal(key: String, value: Int) = {
+    persistent.setGlobal(key, value)
+    npcEvts.foreach(_.updateState())
   }
 
   val LEFT = Window.Left

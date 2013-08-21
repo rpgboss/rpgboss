@@ -15,6 +15,8 @@ class PlayerEntity(game: MyGame)
   // Add input handling
   game.inputs.prepend(PlayerEntity.this)
 
+  var menuActive = false
+
   override def update(delta: Float) = {
     import MyKeys._
 
@@ -71,7 +73,14 @@ class PlayerEntity(game: MyGame)
         closestEvt.activate(dir)
       }
     } else if (isActive(Cancel)) {
-      ScriptThread.fromFile(game, "menu.js", "menu()").run()
+      if (!menuActive) {
+        menuActive = true
+        ScriptThread.fromFile(
+          game,
+          "menu.js",
+          "menu()",
+          Some(() => menuActive = false)).run()
+      }
     }
   }
 

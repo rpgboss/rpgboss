@@ -62,7 +62,7 @@ class Window(
         case Window.Opening => changeState(Window.Open)
         case Window.Open =>
         case Window.Closing => {
-          postClose() 
+          postClose()
           changeState(Window.Closed)
         }
         case _ => Unit
@@ -92,7 +92,7 @@ class Window(
   def postClose() = {
     closePromise.success(0)
   }
-  
+
   def awaitClose() = {
     Await.result(closePromise.future, Duration.Inf)
   }
@@ -100,54 +100,6 @@ class Window(
   // This is used to either convey a choice, or simply that the window
   // has been closed
   private val closePromise = Promise[Int]()
-}
-
-class TextWindow(
-  id: Long,
-  assets: RpgAssetManager,
-  proj: Project,
-  text: Array[String] = Array(),
-  x: Int, y: Int, w: Int, h: Int,
-  skin: Windowskin,
-  skinRegion: TextureRegion,
-  fontbmp: BitmapFont,
-  initialState: Int = Window.Opening,
-  openCloseMs: Int = 250,
-  linesPerBlock: Int = 4,
-  justification: Int = Window.Left)
-  extends Window(
-      id, assets, proj, x, y, w, h, skin, skinRegion, fontbmp,
-      initialState, openCloseMs) {
-  
-  override val capturedKeys = Set(MyKeys.OK)
-  
-  val textImage = new WindowText(text, x, y, w, h, fontbmp, justification)
-
-  override def keyDown(key: Int) = {
-    import MyKeys._
-    if (key == OK) {
-      changeState(Window.Closing)
-    }
-  }
-  
-  override def update(delta: Float, acceptInput: Boolean) = {
-    super.update(delta, acceptInput)
-    textImage.update()
-  }
-  
-  override def render(b: SpriteBatch) = {
-    super.render(b)
-    state match {
-      case Window.Open => {
-        textImage.render(b)
-      }
-      case Window.Opening => {
-        textImage.render(b)
-      }
-      case _ => {
-      }
-    }
-  }
 }
 
 class PrintingTextWindow(
@@ -164,12 +116,24 @@ class PrintingTextWindow(
   msPerChar: Int = 50,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends TextWindow(
-      id, assets, proj, text, x, y, w, h, skin, skinRegion, fontbmp,
-      initialState, openCloseMs, linesPerBlock, justification) 
-  {
-  override val textImage = new PrintingWindowText(text, x, y, w, h, skin, 
-      skinRegion, fontbmp, msPerChar, linesPerBlock, justification)
+  extends Window(
+    id, assets, proj, x, y, w, h, skin, skinRegion, fontbmp, initialState,
+    openCloseMs) {
+  val xpad = 24
+  val ypad = 24
+  
+  val textImage = new PrintingWindowText(
+    text,
+    x + xpad, 
+    y + ypad, 
+    w - 2*xpad, 
+    h - 2*ypad, 
+    skin,
+    skinRegion, 
+    fontbmp, 
+    msPerChar, 
+    linesPerBlock, 
+    justification)
 
   override def keyDown(key: Int) = {
     import MyKeys._
@@ -184,6 +148,25 @@ class PrintingTextWindow(
       }
     }
   }
+
+  override def update(delta: Float, acceptInput: Boolean) = {
+    super.update(delta, acceptInput)
+    textImage.update()
+  }
+
+  override def render(b: SpriteBatch) = {
+    super.render(b)
+    state match {
+      case Window.Open => {
+        textImage.render(b)
+      }
+      case Window.Opening => {
+        textImage.render(b)
+      }
+      case _ => {
+      }
+    }
+  }
 }
 
 class WindowText(
@@ -191,12 +174,8 @@ class WindowText(
   x: Int, y: Int, w: Int, h: Int,
   fontbmp: BitmapFont,
   justification: Int = Window.Left) {
-  val xpad = 24f
-  val ypad = 24f
-  val textW = w - 2 * xpad
-  val textH = h - 2 * ypad
   val lineHeight = 32f
-
+  
   val fontAlign = justification match {
     case Window.Left => HAlignment.LEFT
     case Window.Center => HAlignment.CENTER
@@ -209,23 +188,24 @@ class WindowText(
     // Draw shadow
     fontbmp.setColor(Color.BLACK)
     fontbmp.drawMultiLine(b, text,
-      x + xpad + xOffset + 2,
-      y + ypad + yOffset + 2,
-      textW, fontAlign)
+      x + xOffset + 2,
+      y + yOffset + 2,
+      w, fontAlign)
 
     fontbmp.setColor(Color.WHITE)
     fontbmp.drawMultiLine(b, text,
-      x + xpad + xOffset,
-      y + ypad + yOffset,
-      textW, fontAlign)
+      x + xOffset,
+      y + yOffset,
+      w, fontAlign)
   }
 
   def update() = {}
 
-  def render(b: SpriteBatch) = {
+  def render(b: SpriteBatch, startLine: Int, linesToDraw: Int) = {
     // Draw all complete lines in current block
-    for (i <- 0 until text.length) {
-      drawText(b, text(i), 0, i * lineHeight)
+    for (lineI <- startLine until linesToDraw) {
+      val offset = lineI - startLine
+      drawText(b, text(lineI), 0, offset * lineHeight)
     }
   }
 }
@@ -240,9 +220,9 @@ class PrintingWindowText(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends WindowText(text, x, y, w, h, fontbmp, justification) {
-  
+
   def drawAwaitingArrow = true
-  
+
   // If display instantly...
   var lineI = if (msPerChar == 0) text.length else 0
   var charI = 0
@@ -251,7 +231,7 @@ class PrintingWindowText(
   // Get age of text image in milliseconds
   var lastCharPrintTime = System.currentTimeMillis()
   def timeSinceLastChar = System.currentTimeMillis() - lastCharPrintTime
-  
+
   def lineInCurrentBlock = lineI < (blockI + 1) * linesPerBlock
   def allTextPrinted = !(lineI < text.length)
   def awaitingInput = allTextPrinted || !lineInCurrentBlock
@@ -279,8 +259,8 @@ class PrintingWindowText(
       }
     }
   }
-  
-  override def render(b: SpriteBatch) = {
+
+  def render(b: SpriteBatch) = {
     // Draw all complete lines in current block
     for (i <- blockI * linesPerBlock to (lineI - 1)) {
       val idxInBlock = i % linesPerBlock
