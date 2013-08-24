@@ -78,7 +78,7 @@ class ScriptThread(
       }
 
       onFinishSyncCallback.map { f =>
-        game.state.syncRun {
+        game.syncRun {
           f()
         }
       }

@@ -11,9 +11,11 @@ import rpgboss.player.MyKeys
 import com.badlogic.gdx.assets.AssetManager
 import scala.concurrent._
 import scala.concurrent.duration.Duration
+import rpgboss.player.MyGame
 
 class ChoiceWindow(
   id: Long,
+  game: MyGame,
   assets: RpgAssetManager,
   proj: Project,
   choices: Array[String] = Array(),
@@ -29,10 +31,9 @@ class ChoiceWindow(
   columns: Int = 1,
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
-  closeOnSelect: Boolean,
   allowCancel: Boolean)
   extends Window(
-      id, assets, proj, x, y, w, h, skin, skinRegion, fontbmp,
+      id, game, assets, proj, x, y, w, h, skin, skinRegion, fontbmp,
       initialState, openCloseMs)
   with ChoiceInputHandler {
   val xpad = 24
@@ -128,31 +129,45 @@ class ChoiceWindow(
           curChoice -= (columns - 1)
         else
           curChoice += 1
+        
+        soundCursor.map(_.getAsset(assets).play())
       } else if (key == Left) {
         // Go back to right if all the way on left
         if (curChoice % columns == 0)
           curChoice += (columns - 1)
         else
           curChoice -= 1
+        
+        soundCursor.map(_.getAsset(assets).play())
       }
-      soundCursor.map(_.getAsset(assets).play())
     }
  
     if (key == OK) {
-      if (closeOnSelect)
-        changeState(Window.Closing)
+      println("key OK")
       soundSelect.map(_.getAsset(assets).play())
       choiceChannel.write(curChoice)
     }
     
     if (key == Cancel && allowCancel) {
-      curChoice = -1
-      changeState(Window.Closing)
+      println("key Cancel")
       soundCancel.map(_.getAsset(assets).play())
       choiceChannel.write(-1)
     }
   }
 
+  def hasFocus = game.inputs.hasFocus(this)
+  
+  def takeFocus() = game.syncRun {
+    println("takeFocus %d".format(id))
+      
+    game.screenLayer.windows.find(_.id == id).map { window =>
+      game.inputs.remove(window)
+      game.screenLayer.windows -= window
+      game.inputs.prepend(window)
+      game.screenLayer.windows.prepend(window)
+    }
+  }
+  
   override def render(b: SpriteBatch) = {
     // Draw the window and text
     super.render(b)
@@ -163,12 +178,11 @@ class ChoiceWindow(
       textImages.foreach(_.render(b, scrollXPosition, renderedLines))
 
       // Now draw the cursor if not completed
-      if (state == Window.Open) {
+      if (state == Window.Open && hasFocus) {
         val cursorX =
           x + xpad + (curChoice % columns)*textColW - 32
         val cursorY =
           y + ypad + (curChoice / columns)*textImages(0).lineHeight - 8
-  
         skin.drawCursor(b, skinRegion, cursorX, cursorY, 32f, 32f)
       }
     }

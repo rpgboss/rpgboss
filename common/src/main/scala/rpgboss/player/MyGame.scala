@@ -46,6 +46,16 @@ class MyGame(gamepath: File)
   var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
   val inputs = new MyInputMultiplexer()
+  
+  /**
+   * Run the following on the GUI thread
+   */
+  def syncRun(op: => Any) = {
+    val runnable = new Runnable() {
+      def run() = op
+    }
+    Gdx.app.postRunnable(runnable)
+  }
 
   /*
    * SpriteBatch manages its own matrices. By default, it sets its modelview

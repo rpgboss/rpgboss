@@ -9,12 +9,10 @@ function main() {
     game.CENTER(),
     1 /* columns */,
     0 /* displayedLines */,
-    true /* closeOnSelect */,
     false /* allowCancel */);
   
   var choiceIdx = choiceWin.getChoice();
-  choiceWin.awaitClose();
-  game.destroyWindow(choiceWin.id());
+  choiceWin.closeAndDestroy();
   
   game.setTransition(1, 0, 400);
   game.sleep(400);

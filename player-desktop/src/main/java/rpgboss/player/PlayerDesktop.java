@@ -15,8 +15,8 @@ public class PlayerDesktop {
 
     LwjglApplicationConfiguration conf = new LwjglApplicationConfiguration();
     conf.title = game.project().data().title();
-    conf.width = 32 * 20 * 2;
-    conf.height = 32 * 15 * 2;
+    conf.width = 32 * 20;
+    conf.height = 32 * 15;
     conf.useGL20 = true;
     conf.forceExit = forceExit;
 

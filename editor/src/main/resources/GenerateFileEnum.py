@@ -13,4 +13,4 @@ for root, subFolders, files in os.walk(rootdir):
 
 with open(os.path.join(rootdir, enumFn), 'wb') as f:
   for file in fileList:
-    f.write("%s\n" % file)
+    f.write((u"%s\n" % file).encode('utf-8'))

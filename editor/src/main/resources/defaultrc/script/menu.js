@@ -31,7 +31,6 @@ function itemsMenu() {
         game.LEFT(),
         1 /* columns */,
         kItemsDisplayedItems /* displayedLines */,
-        false /* closeOnSelect */,
         true /* allowCancel */);
   }
   
@@ -39,26 +38,26 @@ function itemsMenu() {
   }
   
   function enterItemsWindow(itemsTopWin, itemsMainWin) {
-    game.focusWindow(itemsMainWin.id());
+    itemsMainWin.takeFocus();
     
+    var choiceIdx;
     while (true) {
-      choiceIdx = itemsTopWin.getChoice();
+      choiceIdx = itemsMainWin.getChoice();
       
       if (choiceIdx == -1)
         break;
     }
     
-    
+    itemsTopWin.takeFocus();
   }
 
-  val itemsMainWin = generateItemsWin();
-  val itemsTopWin = game.newChoiceWindow(
+  var itemsMainWin = generateItemsWin();
+  var itemsTopWin = game.newChoiceWindow(
       ["Use", "Organize"],
-      0, 0, leftPaneWidth, kItemsTopBarHeight,
+      0, 0, kLeftPaneWidth, kItemsTopBarHeight,
       game.CENTER(),
       2 /* columns */,
       0 /* displayedLines */,
-      false /* closeOnSelect */,
       true /* allowCancel */);
   
   var choiceIdx = 0;
@@ -67,8 +66,10 @@ function itemsMenu() {
     switch (choiceIdx) {
       case 0:
         enterItemsWindow(itemsTopWin, itemsMainWin);
+        break;
       case 1:
         organizeItems(itemsMainWin);
+        break;
     }
     
     choiceIdx = itemsTopWin.getChoice();
@@ -76,6 +77,11 @@ function itemsMenu() {
     if (choiceIdx == -1)
       break;
   }
+  
+  itemsMainWin.close();
+  itemsTopWin.close();
+  itemsMainWin.closeAndDestroy();
+  itemsTopWin.closeAndDestroy();
 }
 
 function menu() {
@@ -85,7 +91,6 @@ function menu() {
       game.CENTER(),
       1 /* columns */,
       0 /* displayedLines */,
-      false /* closeOnSelect */,
       true /* allowCancel */);
   
   while (true) {
@@ -101,6 +106,5 @@ function menu() {
       break;
   }
   
-  mainMenuWin.awaitClose();
-  game.destroyWindow(mainMenuWin.id());
+  mainMenuWin.closeAndDestroy();
 }

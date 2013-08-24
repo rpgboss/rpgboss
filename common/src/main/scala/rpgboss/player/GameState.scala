@@ -70,15 +70,7 @@ class GameState(game: MyGame, project: Project) {
     }
   }
 
-  /**
-   * Run the following on the GUI thread
-   */
-  def syncRun(op: => Any) = {
-    val runnable = new Runnable() {
-      def run() = op
-    }
-    Gdx.app.postRunnable(runnable)
-  }
+  import game.syncRun
 
   /**
    * Dispose of any disposable resources
@@ -203,10 +195,10 @@ class GameState(game: MyGame, project: Project) {
     justification: Int,
     columns: Int,
     displayedLines: Int,
-    closeOnSelect: Boolean,
     allowCancel: Boolean): ChoiceWindow = {
     val window = new ChoiceWindow(
       game.screenLayer.getWindowId(),
+      game,
       game.assets,
       project,
       choices,
@@ -218,7 +210,6 @@ class GameState(game: MyGame, project: Project) {
       justification = justification,
       columns = columns,
       displayedLines = displayedLines,
-      closeOnSelect = closeOnSelect,
       allowCancel = allowCancel)
 
     syncRun {
@@ -236,7 +227,6 @@ class GameState(game: MyGame, project: Project) {
       Window.Left,
       1 /* columns */ ,
       0 /* displayedChoices */ ,
-      true /* closeOnSelect */ ,
       false /* allowCancel */ )
 
   def newTextWindow(
@@ -244,6 +234,7 @@ class GameState(game: MyGame, project: Project) {
     x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {
     val window = new PrintingTextWindow(
       game.screenLayer.getWindowId(),
+      game,
       game.assets,
       project,
       text,
@@ -261,26 +252,10 @@ class GameState(game: MyGame, project: Project) {
     window
   }
 
-  def destroyWindow(windowId: Long) = syncRun {
-    game.screenLayer.windows.find(_.id == windowId).map { window =>
-      game.inputs.remove(window)
-      game.screenLayer.windows -= window
-    }
-  }
-  
-  def focusWindow(windowId: Long) = syncRun {
-    game.screenLayer.windows.find(_.id == windowId).map { window =>
-      game.inputs.remove(window)
-      game.screenLayer.windows -= window
-      game.inputs.prepend(window)
-      game.screenLayer.windows.prepend(window)
-    }
-  }
-
   def showText(text: Array[String]) = {
     val window = newTextWindow(text)
     window.awaitClose()
-    destroyWindow(window.id)
+    window.closeAndDestroy()
   }
 
   def getEvtState(evtName: String): Int =

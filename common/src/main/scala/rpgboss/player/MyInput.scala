@@ -79,6 +79,10 @@ trait ChoiceInputHandler extends InputHandler {
     // Cancel task
     activateTasks(key).cancel()
   }
+  
+  override def keyCapturedByOther(key: Int) = {
+    activateTasks(key).cancel()
+  }
 
   def keyActivate(key: Int)
 }
@@ -89,6 +93,9 @@ trait ChoiceInputHandler extends InputHandler {
 class MyInputMultiplexer extends InputAdapter {
   val inputProcessors = new scala.collection.mutable.ListBuffer[InputHandler]()
 
+  def hasFocus(handler: InputHandler) = 
+    !inputProcessors.isEmpty && inputProcessors.head == handler
+  
   // Maps 
   def mapKey(keycode: Int): Option[Int] = keycode match {
     case Keys.UP => Some(MyKeys.Up)

@@ -15,6 +15,7 @@ import rpgboss.player.InputHandler
 import rpgboss.player.MyKeys
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import rpgboss.player.MyGame
 
 object Window {
   val Opening = 0
@@ -36,6 +37,7 @@ object Window {
 // stateAge starts at 0 and goes up as window opens or closes
 class Window(
   val id: Long,
+  game: MyGame,
   assets: RpgAssetManager,
   proj: Project,
   val x: Int, val y: Int, val w: Int, val h: Int,
@@ -89,12 +91,28 @@ class Window(
     case _ => Unit
   }
 
+  def close() = {
+    if (state != Window.Closing && state != Window.Closed)
+      changeState(Window.Closing)
+  }
+  
   def postClose() = {
     closePromise.success(0)
   }
-
+  
   def awaitClose() = {
     Await.result(closePromise.future, Duration.Inf)
+  }
+  
+  def closeAndDestroy() = {
+    close()
+    
+    awaitClose()
+    
+    game.screenLayer.windows.find(_.id == id).map { window =>
+      game.inputs.remove(window)
+      game.screenLayer.windows -= window
+    }
   }
 
   // This is used to either convey a choice, or simply that the window
@@ -104,6 +122,7 @@ class Window(
 
 class PrintingTextWindow(
   id: Long,
+  game: MyGame,
   assets: RpgAssetManager,
   proj: Project,
   text: Array[String] = Array(),
@@ -117,7 +136,7 @@ class PrintingTextWindow(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends Window(
-    id, assets, proj, x, y, w, h, skin, skinRegion, fontbmp, initialState,
+    id, game, assets, proj, x, y, w, h, skin, skinRegion, fontbmp, initialState,
     openCloseMs) {
   val xpad = 24
   val ypad = 24
@@ -203,7 +222,8 @@ class WindowText(
 
   def render(b: SpriteBatch, startLine: Int, linesToDraw: Int) = {
     // Draw all complete lines in current block
-    for (lineI <- startLine until linesToDraw) {
+    val endLine = math.min(text.length, startLine + linesToDraw)
+    for (lineI <- startLine until endLine) {
       val offset = lineI - startLine
       drawText(b, text(lineI), 0, offset * lineHeight)
     }
