@@ -134,6 +134,7 @@ class MyInputMultiplexer extends InputAdapter {
   }
 
   def remove(handler: InputHandler) = {
+    handler.capturedKeys.foreach(handler.keyCapturedByOther(_))
     inputProcessors -= handler
   }
 }
