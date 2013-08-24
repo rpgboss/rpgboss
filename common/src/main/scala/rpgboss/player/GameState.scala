@@ -90,7 +90,7 @@ class GameState(game: MyGame, project: Project) {
   /*
    * The below functions are all called from the script threads only.
    */
-  
+
   /*
    * Accessors to various game data
    */
@@ -151,21 +151,21 @@ class GameState(game: MyGame, project: Project) {
     persistent.pictures(slot).map(_.dispose())
     persistent.pictures(slot) = None
   }
-  
+
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
-                loop: Boolean, fadeDurationMs: Int) = syncRun {
-    
+    loop: Boolean, fadeDurationMs: Int) = syncRun {
+
     musics(slot).map({ oldMusic =>
       val tweenMusic = new GdxMusicTweenable(oldMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs/1000f)
-      	.target(0f)
-      	.setCallback(new TweenCallback {
-      	  override def onEvent(typeArg: Int, x: BaseTween[_]) = {
-      	    if (typeArg == TweenCallback.COMPLETE) {
-      	      oldMusic.stop()
-      	    }
-      	  }
-      	}).start(tweenManager)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
+        .target(0f)
+        .setCallback(new TweenCallback {
+          override def onEvent(typeArg: Int, x: BaseTween[_]) = {
+            if (typeArg == TweenCallback.COMPLETE) {
+              oldMusic.stop()
+            }
+          }
+        }).start(tweenManager)
     })
 
     musics(slot) = specOpt.map { spec =>
@@ -183,7 +183,7 @@ class GameState(game: MyGame, project: Project) {
 
       // Setup volume tween
       val tweenMusic = new GdxMusicTweenable(newMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs/1000f)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
         .target(spec.volume).start(tweenManager)
 
       newMusic
@@ -196,11 +196,13 @@ class GameState(game: MyGame, project: Project) {
   def sleep(durationMs: Int) = {
     Thread.sleep(durationMs)
   }
-  
+
   def newChoiceWindow(
     choices: Array[String],
     x: Int, y: Int, w: Int, h: Int,
     justification: Int,
+    columns: Int,
+    displayedLines: Int,
     closeOnSelect: Boolean,
     allowCancel: Boolean): ChoiceWindow = {
     val window = new ChoiceWindow(
@@ -214,25 +216,29 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.fontbmp,
       initialState = Window.Opening,
       justification = justification,
+      columns = columns,
+      displayedLines = displayedLines,
       closeOnSelect = closeOnSelect,
       allowCancel = allowCancel)
-    
+
     syncRun {
       game.screenLayer.windows.prepend(window)
       game.inputs.prepend(window)
     }
-    
+
     window
   }
-  
+
   def newChoiceWindow(
     choices: Array[String],
-    x: Int, y: Int, w: Int, h: Int) : ChoiceWindow =
-      newChoiceWindow(choices, x, y, w, h,
-                      Window.Left,
-                      true /* closeOnSelect */,
-                      false /* allowCancel */)
-  
+    x: Int, y: Int, w: Int, h: Int): ChoiceWindow =
+    newChoiceWindow(choices, x, y, w, h,
+      Window.Left,
+      1 /* columns */ ,
+      0 /* displayedChoices */ ,
+      true /* closeOnSelect */ ,
+      false /* allowCancel */ )
+
   def newTextWindow(
     text: Array[String],
     x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {
@@ -246,15 +252,15 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.windowskinRegion,
       game.screenLayer.fontbmp,
       initialState = Window.Opening)
-    
+
     syncRun {
       game.screenLayer.windows.prepend(window)
       game.inputs.prepend(window)
     }
-    
+
     window
   }
-  
+
   def destroyWindow(windowId: Long) = syncRun {
     game.screenLayer.windows.find(_.id == windowId).map { window =>
       game.inputs.remove(window)
@@ -262,6 +268,15 @@ class GameState(game: MyGame, project: Project) {
     }
   }
   
+  def focusWindow(windowId: Long) = syncRun {
+    game.screenLayer.windows.find(_.id == windowId).map { window =>
+      game.inputs.remove(window)
+      game.screenLayer.windows -= window
+      game.inputs.prepend(window)
+      game.screenLayer.windows.prepend(window)
+    }
+  }
+
   def showText(text: Array[String]) = {
     val window = newTextWindow(text)
     window.awaitClose()
@@ -281,12 +296,16 @@ class GameState(game: MyGame, project: Project) {
       npcEvts.filter(_.mapEvent.name == evtName).foreach(_.updateState())
     }
   }
-  
+
   def getGlobal(key: String) = persistent.getGlobal(key)
   def setGlobal(key: String, value: Int) = {
     persistent.setGlobal(key, value)
     npcEvts.foreach(_.updateState())
   }
+
+  def getGlobalArray(key: String) = persistent.getGlobal(key)
+  def setGlobalArray(key: String, value: Array[Int]) =
+    persistent.setArray(key, value)
 
   val LEFT = Window.Left
   val CENTER = Window.Center

@@ -7,6 +7,8 @@ function main() {
     ["New Game", "Load Game", "Quit"],
     320-winW/2, 280, winW, 130,
     game.CENTER(),
+    1 /* columns */,
+    0 /* displayedLines */,
     true /* closeOnSelect */,
     false /* allowCancel */);
   

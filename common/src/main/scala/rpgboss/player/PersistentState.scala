@@ -12,13 +12,20 @@ class PersistentState {
   private val globals =
     new HashMap[String, Int]() with SynchronizedMap[String, Int]
 
+  private val globalArrays =
+    new HashMap[String, Array[Int]] with SynchronizedMap[String, Array[Int]]
+
   // mapName->evtName->variableName
   private val eventStates = new HashMap[String, Map[String, Int]]()
 
   // TODO: save player location
-  
+
   def setGlobal(key: String, value: Int) = globals.update(key, value)
-  def getGlobal(key: String) = globals.getOrElse(key, 0)
+  def getGlobal(key: String) = globals.getOrElseUpdate(key, 0)
+
+  def getArray(key: String) = 
+    globalArrays.getOrElseUpdate(key, new Array[Int](0))
+  def setArray(key: String, value: Array[Int]) = globalArrays.update(key, value)
   
   // Gets the event state for the current map.
   // Returns zero if none is saved.
