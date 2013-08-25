@@ -272,19 +272,29 @@ class GameState(game: MyGame, project: Project) {
     }
   }
 
-  def getGlobal(key: String) = persistent.getGlobal(key)
-  def setGlobal(key: String, value: Int) = {
-    persistent.setGlobal(key, value)
+  def getInt(key: String): Int = persistent.getInt(key)
+  def setInt(key: String, value: Int) = {
+    persistent.setInt(key, value)
     npcEvts.foreach(_.updateState())
   }
 
-  def getGlobalArray(key: String) = persistent.getGlobal(key)
-  def setGlobalArray(key: String, value: Array[Int]) =
-    persistent.setArray(key, value)
+  def getIntArray(key: String): Array[Int] = persistent.getIntArray(key)
+  def setIntArray(key: String, value: Array[Int]) =
+    persistent.setIntArray(key, value)
+
+  def getStringArray(key: String): Array[String] = 
+    persistent.getStringArray(key)
+  def setStringArray(key: String, value: Array[String]) =
+    persistent.setStringArray(key, value)
 
   val LEFT = Window.Left
   val CENTER = Window.Center
   val RIGHT = Window.Right
+
+  val PARTY = "party"
+  val INVENTORY_IDXS = "inventoryIdxs"
+  val INVENTORY_QTYS = "inventoryQtys"
+  val CHARACTER_NAMES = "characterNames"
 }
 
 /**

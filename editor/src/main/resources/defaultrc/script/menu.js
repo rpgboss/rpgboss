@@ -7,8 +7,8 @@ function itemsMenu() {
   var kItemsDisplayedItems = 10;
   
   function generateItemsWinChoices() {
-    var inventoryIdxs = game.getGlobalArray("inventoryIdxs");
-    var inventoryQtys = game.getGlobalArray("inventoryQtys");
+    var inventoryIdxs = game.getIntArray(game.INVENTORY_IDXS());
+    var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
     
     var choiceLines = [];
     var items = project.data().enums().items();
@@ -85,7 +85,21 @@ function itemsMenu() {
 }
 
 function menu() {
-  var mainMenuWin = game.newChoiceWindow(
+  function makeStatusWin() {
+    var lines = [];
+    var party = game.getIntArray(game.PARTY());
+    var characters = project.data().enums().characters();
+    var characterNames = game.getStringArray(game.CHARACTER_NAME());
+    
+    for (var i = 0; i < party.length; ++i) {
+      lines.append(characterNames[i]);
+    }
+    
+    var statusWin = game.newChoiceWindow()
+  }
+  
+  
+  var rootMenuWin = game.newChoiceWindow(
       ["Item", "Skills", "Equip", "Status", "Save"],
       640-kRootMenuWidth, 0, kRootMenuWidth, 480,
       game.CENTER(),
@@ -94,7 +108,7 @@ function menu() {
       true /* allowCancel */);
   
   while (true) {
-    var choiceIdx = mainMenuWin.getChoice();
+    var choiceIdx = rootMenuWin.getChoice();
     
     switch (choiceIdx) {
     case 0:
@@ -106,5 +120,5 @@ function menu() {
       break;
   }
   
-  mainMenuWin.closeAndDestroy();
+  rootMenuWin.closeAndDestroy();
 }

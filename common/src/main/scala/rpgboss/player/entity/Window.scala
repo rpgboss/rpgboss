@@ -27,11 +27,16 @@ object Window {
   val Center = 1
   val Right = 2
 
-  val nameCtrl = """\\N\[(\d+)\]""".r
-  var variableNameR = """[a-zA-Z_$][\w_$]*""".r
-  val variableCtrl = """\\V\[([a-zA-Z_$][\w_$]*)\]""".r
+  val colorCtrl = """\\[Cc]\[(\d+)\]""".r
+  val nameCtrl = """\\[Nn]\[(\d+)\]""".r
+  val variableCtrl = """\\[Vv]\[([a-zA-Z_$][\w_$]*)\]""".r
+  
   def nameReplace(raw: String, nameList: Array[String]) =
     nameCtrl.replaceAllIn(raw, rMatch => nameList(rMatch.group(1).toInt))
+  def variableReplace(raw: String, game: MyGame) = {
+    variableCtrl.replaceAllIn(raw, rMatch => 
+      game.state.getInt(rMatch.group(1)).toString)
+  }
 }
 
 // stateAge starts at 0 and goes up as window opens or closes
@@ -142,6 +147,7 @@ class PrintingTextWindow(
   val ypad = 24
   
   val textImage = new PrintingWindowText(
+    game,
     text,
     x + xpad, 
     y + ypad, 
@@ -189,33 +195,68 @@ class PrintingTextWindow(
 }
 
 class WindowText(
+  game: MyGame,
   text: Array[String],
   x: Int, y: Int, w: Int, h: Int,
   fontbmp: BitmapFont,
   justification: Int = Window.Left) {
   val lineHeight = 32f
-  
-  val fontAlign = justification match {
-    case Window.Left => HAlignment.LEFT
-    case Window.Center => HAlignment.CENTER
-    case Window.Right => HAlignment.RIGHT
-  }
 
   def drawText(
     b: SpriteBatch, text: String,
-    xOffset: Float, yOffset: Float): BitmapFont.TextBounds = {
+    xOffset: Float, yOffset: Float) = {
+    val namesProcessedText = Window.nameReplace(
+        text, 
+        game.state.getStringArray(game.state.CHARACTER_NAMES))
+    
+    val intProcessedText = Window.variableReplace(namesProcessedText, game)
+    
+    val processedText = intProcessedText
+    
+    val colorCodesExist = Window.colorCtrl.findFirstIn(processedText).isDefined
+    
+    // Make left-aligned if color codes exist
+    val fontAlign = if (colorCodesExist) {
+      HAlignment.LEFT
+    } else {
+      justification match {
+        case Window.Left => HAlignment.LEFT
+        case Window.Center => HAlignment.CENTER
+        case Window.Right => HAlignment.RIGHT
+      }
+    }
+    
     // Draw shadow
     fontbmp.setColor(Color.BLACK)
-    fontbmp.drawMultiLine(b, text,
+    fontbmp.drawMultiLine(b, processedText,
       x + xOffset + 2,
       y + yOffset + 2,
       w, fontAlign)
-
+      
     fontbmp.setColor(Color.WHITE)
-    fontbmp.drawMultiLine(b, text,
-      x + xOffset,
-      y + yOffset,
-      w, fontAlign)
+    
+    // Finds first color token, prints everything behind it, sets the color
+    // and then does it again with the remaining text.
+    @annotation.tailrec
+    def printUntilColorTokenOrEnd(remainingText: CharSequence, 
+                                  xStart: Float): Unit = {
+      if (remainingText.length() == 0)
+        return
+      
+      val rMatchOption = Window.colorCtrl.findFirstMatchIn(remainingText)
+      val textToPrintNow = rMatchOption.map(_.before).getOrElse(remainingText)
+      
+      val textBounds = 
+        fontbmp.drawMultiLine(b, textToPrintNow,
+          xStart,
+          y + yOffset,
+          w, fontAlign)
+      
+      printUntilColorTokenOrEnd(rMatchOption.map(_.after).getOrElse(""), 
+                                xStart + textBounds.width)
+    }
+    
+    printUntilColorTokenOrEnd(processedText, x + xOffset)
   }
 
   def update() = {}
@@ -231,6 +272,7 @@ class WindowText(
 }
 
 class PrintingWindowText(
+  game: MyGame,
   text: Array[String],
   x: Int, y: Int, w: Int, h: Int,
   skin: Windowskin,
@@ -239,7 +281,7 @@ class PrintingWindowText(
   msPerChar: Int = 50,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends WindowText(text, x, y, w, h, fontbmp, justification) {
+  extends WindowText(game, text, x, y, w, h, fontbmp, justification) {
 
   def drawAwaitingArrow = true
 

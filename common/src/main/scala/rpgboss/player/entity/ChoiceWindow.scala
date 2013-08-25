@@ -59,6 +59,7 @@ class ChoiceWindow(
     }
     
     val windowTexts = for (i <- 0 until columns) yield new WindowText(
+      game,
       columnChoicesAry(i).toArray,
       x + xpad + textColW*i,
       y + ypad,

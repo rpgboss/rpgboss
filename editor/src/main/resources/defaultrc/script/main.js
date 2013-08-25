@@ -22,4 +22,9 @@ function main() {
   
   game.setPlayerLoc(project.data().startup().startingLoc());
   game.setTransition(0, 1, 400);
+  
+  // Initialize data structures
+  game.setIntArray(game.PARTY(), project.data().startup().startingParty());
+  game.setStringArray(game.CHARACTER_NAMES(), 
+                      project.data().characterDefaultNames());
 }

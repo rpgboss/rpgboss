@@ -2,20 +2,20 @@ package rpgboss.model
 import rpgboss.model.resource.RpgMap
 
 case class ProjectDataStartup(
-    var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
-    var startingParty: Array[Int] = Array(0),
-    
-    var titlePic: String = "LordSpirit.jpg",
-    var titleMusic: Option[SoundSpec] = None,
+  var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
+  var startingParty: Array[Int] = Array(0),
+  
+  var titlePic: String = "LordSpirit.jpg",
+  var titleMusic: Option[SoundSpec] = None,
 
-    var windowskin: String = "LastPhantasmScanlines.png",
-    var msgfont: String = "Vera.ttf",
-    var fontsize: Int = 24,
-    
-    var soundCursor: Option[SoundSpec] = Some(SoundSpec("MenuCursor.wav")),
-    var soundSelect: Option[SoundSpec] = Some(SoundSpec("MenuSelect.wav")),
-    var soundCancel: Option[SoundSpec] = Some(SoundSpec("MenuCancel.wav")),
-    var soundCannot: Option[SoundSpec] = Some(SoundSpec("MenuCannot.wav")))
+  var windowskin: String = "LastPhantasmScanlines.png",
+  var msgfont: String = "Vera.ttf",
+  var fontsize: Int = 24,
+  
+  var soundCursor: Option[SoundSpec] = Some(SoundSpec("MenuCursor.wav")),
+  var soundSelect: Option[SoundSpec] = Some(SoundSpec("MenuSelect.wav")),
+  var soundCancel: Option[SoundSpec] = Some(SoundSpec("MenuCancel.wav")),
+  var soundCannot: Option[SoundSpec] = Some(SoundSpec("MenuCannot.wav")))
     
 case class ProjectDataEnums(
 	var characters: Array[Character] = ProjectData.defaultCharacters,
@@ -37,7 +37,9 @@ case class ProjectData(
 	var recentMapName: String = "",
 	var lastCreatedMapId: Int = 1, // Start at 1)
 	var startup: ProjectDataStartup = ProjectDataStartup(),
-	var enums: ProjectDataEnums = ProjectDataEnums())
+	var enums: ProjectDataEnums = ProjectDataEnums()) {
+  def characterDefaultNames = enums.characters.map(_.name)
+}
 
 object ProjectData {
   def defaultCharacters = Array(
