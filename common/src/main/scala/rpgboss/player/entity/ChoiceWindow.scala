@@ -18,7 +18,7 @@ class ChoiceWindow(
   game: MyGame,
   assets: RpgAssetManager,
   proj: Project,
-  choices: Array[String] = Array(),
+  lines: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
   skin: Windowskin,
   skinRegion: TextureRegion,
@@ -54,8 +54,8 @@ class ChoiceWindow(
   var textImages: Array[WindowText] = {
     val columnChoicesAry = 
       Array.fill(columns)(new collection.mutable.ArrayBuffer[String]())
-    for (i <- 0 until choices.length) {
-      columnChoicesAry(i % columns).append(choices(i))
+    for (i <- 0 until lines.length) {
+      columnChoicesAry(i % columns).append(lines(i))
     }
     
     val windowTexts = for (i <- 0 until columns) yield new WindowText(
@@ -101,7 +101,7 @@ class ChoiceWindow(
       curChoice -= columns
       if (curChoice < 0) {
         if (wrapChoices) {
-          curChoice += choices.length
+          curChoice += lines.length
           soundCursor.map(_.getAsset(assets).play())
         } else {
           curChoice += columns
@@ -112,9 +112,9 @@ class ChoiceWindow(
       }
     } else if (key == Down) {
       curChoice += columns
-      if (curChoice >= choices.length) {
+      if (curChoice >= lines.length) {
         if (wrapChoices) {
-          curChoice -= choices.length
+          curChoice -= lines.length
           soundCursor.map(_.getAsset(assets).play())
         } else {
           curChoice -= columns
@@ -175,7 +175,7 @@ class ChoiceWindow(
     
     if (state == Window.Open || state == Window.Opening) {
       val renderedLines = 
-        if (displayedLines == 0) choices.length else displayedLines
+        if (displayedLines == 0) lines.length else displayedLines
       textImages.foreach(_.render(b, scrollXPosition, renderedLines))
 
       // Now draw the cursor if not completed

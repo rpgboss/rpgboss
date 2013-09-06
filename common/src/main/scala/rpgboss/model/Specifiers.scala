@@ -89,7 +89,10 @@ case class Character(
   var charClass: Int = 0,
   var progressions: CharProgressions = CharProgressions(),
   var startingEquipment: EquipSet = EquipSet.empty,
-  var equipFixed: EquipSetBool = EquipSetBool()) extends HasName
+  var equipFixed: EquipSetBool = EquipSetBool()) extends HasName {
+  def initMhp = progressions.mhp(initLevel)
+  def initMmp = progressions.mmp(initLevel)
+}
 
 case class CharClass(
   var name: String = "",

@@ -190,7 +190,7 @@ class GameState(game: MyGame, project: Project) {
   }
 
   def newChoiceWindow(
-    choices: Array[String],
+    lines: Array[String],
     x: Int, y: Int, w: Int, h: Int,
     justification: Int,
     columns: Int,
@@ -201,7 +201,7 @@ class GameState(game: MyGame, project: Project) {
       game,
       game.assets,
       project,
-      choices,
+      lines,
       x, y, w, h,
       game.screenLayer.windowskin,
       game.screenLayer.windowskinRegion,
@@ -295,6 +295,11 @@ class GameState(game: MyGame, project: Project) {
   val INVENTORY_IDXS = "inventoryIdxs"
   val INVENTORY_QTYS = "inventoryQtys"
   val CHARACTER_NAMES = "characterNames"
+  val CHARACTER_LEVELS = "characterLevels"
+  val CHARACTER_HPS = "characterHps"
+  val CHARACTER_MPS = "characterMps"
+  val CHARACTER_MAX_HPS = "characterMaxHps"
+  val CHARACTER_MAX_MPS = "characterMaxMps"
 }
 
 /**

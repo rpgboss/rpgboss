@@ -21,3 +21,11 @@ function teleportLoc(loc, transition) {
 function teleport(mapName, x, y, transition) {
   return teleportLoc(MapLoc.apply(mapName, x, y), transition);
 }
+
+function leftPad(string, totalLen) {
+  return Array(totalLen + 1 - string.length).join(" ") + string;
+}
+
+function rightPad(string, totalLen) {
+  return string + Array(totalLen + 1 - string.length).join(" ");
+}

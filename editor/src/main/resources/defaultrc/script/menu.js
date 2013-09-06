@@ -84,28 +84,47 @@ function itemsMenu() {
   itemsTopWin.closeAndDestroy();
 }
 
-function menu() {
-  function makeStatusWin() {
-    var lines = [];
-    var party = game.getIntArray(game.PARTY());
-    var characters = project.data().enums().characters();
-    var characterNames = game.getStringArray(game.CHARACTER_NAME());
-    
-    for (var i = 0; i < party.length; ++i) {
-      lines.append(characterNames[i]);
-    }
-    
-    var statusWin = game.newChoiceWindow()
+function makeStatusWin() {
+  var lines = [];
+  var party = game.getIntArray(game.PARTY());
+  var characters = project.data().enums().characters();
+  var characterNames = game.getStringArray(game.CHARACTER_NAMES());
+  var characterLevels = game.getIntArray(game.CHARACTER_LEVELS());
+  var characterHps = game.getIntArray(game.CHARACTER_HPS());
+  var characterMps = game.getIntArray(game.CHARACTER_MPS());
+  var characterMaxHps = game.getIntArray(game.CHARACTER_MAX_HPS());
+  var characterMaxMps = game.getIntArray(game.CHARACTER_MAX_MPS());
+  
+  for (var i = 0; i < party.length; ++i) {
+    lines.push(characterNames[i]);
+    lines.push(characters[i].subtitle());
+    lines.push(" LVL " + leftPad(characterLevels[i].toString(), 4));
+    lines.push("  HP " + leftPad(characterHps[i].toString(), 4) +
+               " / " + leftPad(characterMaxHps[i].toString(), 4));
+    lines.push("  MP " + leftPad(characterMps[i].toString(), 4) +
+               " / " + leftPad(characterMaxMps[i].toString(), 4));
   }
   
+  var statusWin = game.newChoiceWindow(
+    lines,
+    0, 0, kLeftPaneWidth, 480,
+    game.LEFT(),
+    1 /* columns */,
+    0 /* displayedLines */,
+    true /* allowCancel */);
   
+  return statusWin;
+}
+
+function menu() {
+  var statusWin = makeStatusWin();
   var rootMenuWin = game.newChoiceWindow(
-      ["Item", "Skills", "Equip", "Status", "Save"],
-      640-kRootMenuWidth, 0, kRootMenuWidth, 480,
-      game.CENTER(),
-      1 /* columns */,
-      0 /* displayedLines */,
-      true /* allowCancel */);
+    ["Item", "Skills", "Equip", "Status", "Save"],
+    640-kRootMenuWidth, 0, kRootMenuWidth, 480,
+    game.CENTER(),
+    1 /* columns */,
+    0 /* displayedLines */,
+    true /* allowCancel */);
   
   while (true) {
     var choiceIdx = rootMenuWin.getChoice();
@@ -121,4 +140,5 @@ function menu() {
   }
   
   rootMenuWin.closeAndDestroy();
+  statusWin.closeAndDestroy();
 }
