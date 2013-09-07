@@ -195,8 +195,12 @@ class WindowText(
   text: Array[String],
   x: Int, y: Int, w: Int, h: Int,
   fontbmp: BitmapFont,
-  justification: Int = Window.Left) {
-  val lineHeight = 32f
+  justification: Int = Window.Left,
+  var lineHeight: Int = 32) {
+  
+  def setLineHeight(height: Int) = {
+    lineHeight = height
+  }
 
   def drawText(
     b: SpriteBatch, text: String,

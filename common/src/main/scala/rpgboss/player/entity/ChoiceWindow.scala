@@ -31,7 +31,7 @@ class ChoiceWindow(
   columns: Int = 1,
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
-  allowCancel: Boolean)
+  allowCancel: Boolean = true)
   extends Window(
       id, game, assets, proj, x, y, w, h, skin, skinRegion, fontbmp,
       initialState, openCloseMs)
@@ -51,7 +51,7 @@ class ChoiceWindow(
         MyKeys.OK, MyKeys.Cancel)
         
   var scrollXPosition = 0
-  var textImages: Array[WindowText] = {
+  val textImages: Array[WindowText] = {
     val columnChoicesAry = 
       Array.fill(columns)(new collection.mutable.ArrayBuffer[String]())
     for (i <- 0 until lines.length) {
@@ -71,6 +71,8 @@ class ChoiceWindow(
     
     windowTexts.toArray
   }
+  
+  def setLineHeight(height: Int) = textImages.foreach(_.setLineHeight(height))
   
   override def update(delta: Float, acceptInput: Boolean) = {
     super.update(delta, acceptInput)

@@ -96,8 +96,9 @@ function makeStatusWin() {
   var characterMaxMps = game.getIntArray(game.CHARACTER_MAX_MPS());
   
   for (var i = 0; i < party.length; ++i) {
-    lines.push(rightPad(characterNames[i], 10) + characters[i].subtitle());
-    lines.push(" LVL " + leftPad(characterLevels[i].toString(), 4));
+    lines.push(rightPad(characterNames[i], 10) + 
+               leftPad(characters[i].subtitle(), 20));
+    lines.push(" LVL " + leftPad(characterLevels[i].toString(), 3));
     lines.push("  HP " + leftPad(characterHps[i].toString(), 4) +
                " / " + leftPad(characterMaxHps[i].toString(), 4));
     lines.push("  MP " + leftPad(characterMps[i].toString(), 4) +
@@ -111,6 +112,8 @@ function makeStatusWin() {
     1 /* columns */,
     0 /* displayedLines */,
     true /* allowCancel */);
+  
+  statusWin.setLineHeight(27);
   
   return statusWin;
 }
