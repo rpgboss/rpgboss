@@ -105,14 +105,10 @@ class Window(
     closePromise.success(0)
   }
   
-  def awaitClose() = {
-    Await.result(closePromise.future, Duration.Inf)
-  }
-  
-  def closeAndDestroy() = {
+  def destroy() = {
     close()
     
-    awaitClose()
+    Await.result(closePromise.future, Duration.Inf)
     
     game.screenLayer.windows.find(_.id == id).map { window =>
       game.inputs.remove(window)

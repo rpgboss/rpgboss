@@ -80,8 +80,8 @@ function itemsMenu() {
   
   itemsMainWin.close();
   itemsTopWin.close();
-  itemsMainWin.closeAndDestroy();
-  itemsTopWin.closeAndDestroy();
+  itemsMainWin.destroy();
+  itemsTopWin.destroy();
 }
 
 function makeStatusWin() {
@@ -96,8 +96,7 @@ function makeStatusWin() {
   var characterMaxMps = game.getIntArray(game.CHARACTER_MAX_MPS());
   
   for (var i = 0; i < party.length; ++i) {
-    lines.push(characterNames[i]);
-    lines.push(characters[i].subtitle());
+    lines.push(rightPad(characterNames[i], 10) + characters[i].subtitle());
     lines.push(" LVL " + leftPad(characterLevels[i].toString(), 4));
     lines.push("  HP " + leftPad(characterHps[i].toString(), 4) +
                " / " + leftPad(characterMaxHps[i].toString(), 4));
@@ -138,7 +137,9 @@ function menu() {
     if (choiceIdx == -1)
       break;
   }
-  
-  rootMenuWin.closeAndDestroy();
-  statusWin.closeAndDestroy();
+
+  rootMenuWin.close();
+  statusWin.close();
+  rootMenuWin.destroy();
+  statusWin.destroy();
 }

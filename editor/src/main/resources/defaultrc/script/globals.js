@@ -22,10 +22,13 @@ function teleport(mapName, x, y, transition) {
   return teleportLoc(MapLoc.apply(mapName, x, y), transition);
 }
 
+// Casting to support both Javascript and Java strings.
 function leftPad(string, totalLen) {
-  return Array(totalLen + 1 - string.length).join(" ") + string;
+  var castedString = String(string);
+  return Array(totalLen - castedString.length).join(" ") + castedString;
 }
 
 function rightPad(string, totalLen) {
-  return string + Array(totalLen + 1 - string.length).join(" ");
+  var castedString = String(string);
+  return castedString + Array(totalLen - castedString.length).join(" ");
 }

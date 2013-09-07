@@ -9,7 +9,7 @@ case class ProjectDataStartup(
   var titleMusic: Option[SoundSpec] = None,
 
   var windowskin: String = "LastPhantasmScanlines.png",
-  var msgfont: String = "Vera.ttf",
+  var msgfont: String = "VeraMono.ttf",
   var fontsize: Int = 24,
   
   var soundCursor: Option[SoundSpec] = Some(SoundSpec("MenuCursor.wav")),

@@ -254,8 +254,7 @@ class GameState(game: MyGame, project: Project) {
 
   def showText(text: Array[String]) = {
     val window = newTextWindow(text)
-    window.awaitClose()
-    window.closeAndDestroy()
+    window.destroy()
   }
 
   def getEvtState(evtName: String): Int =
