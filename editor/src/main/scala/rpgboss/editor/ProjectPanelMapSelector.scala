@@ -20,7 +20,6 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
    * Popup actions
    */
   def popupMenuFor(node: Node) = {
-
     new PopupMenu {
       if (node != projectRoot) {
         contents += new MenuItem(Action("Map Properties...") {
@@ -59,6 +58,15 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
               projPanel.selectMap(Some(updatedMap))
             })
           d.open()
+        })
+        contents += new MenuItem(Action("Delete") {
+          val msg =
+            "Are you sure you want to delete map '%s'?".format(node.mapName)
+          val answer = Dialog.showConfirmation(this, msg, "Delete")
+          if (answer == Dialog.Result.Yes) {
+            removeNode(node)
+            sm.removeMap(node.mapName)
+          }
         })
         contents += new Separator
       }

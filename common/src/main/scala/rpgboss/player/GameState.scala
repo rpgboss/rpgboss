@@ -229,9 +229,8 @@ class GameState(game: MyGame, project: Project) {
       0 /* displayedChoices */ ,
       false /* allowCancel */ )
 
-  def newTextWindow(
-    text: Array[String],
-    x: Int = 0, y: Int = 320, w: Int = 640, h: Int = 160) = {
+  def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
+                    msPerChar: Int) = {
     val window = new PrintingTextWindow(
       game.screenLayer.getWindowId(),
       game,
@@ -242,7 +241,7 @@ class GameState(game: MyGame, project: Project) {
       game.screenLayer.windowskin,
       game.screenLayer.windowskinRegion,
       game.screenLayer.fontbmp,
-      initialState = Window.Opening)
+      msPerChar)
 
     syncRun {
       game.screenLayer.windows.prepend(window)
@@ -251,12 +250,7 @@ class GameState(game: MyGame, project: Project) {
 
     window
   }
-
-  def showText(text: Array[String]) = {
-    val window = newTextWindow(text)
-    window.destroy()
-  }
-
+  
   def getEvtState(evtName: String): Int =
     getEvtState(persistent.cameraLoc.map, evtName)
   def getEvtState(mapName: String, evtName: String) =

@@ -105,10 +105,14 @@ class Window(
     closePromise.success(0)
   }
   
+  def awaitClose() = {
+    Await.result(closePromise.future, Duration.Inf)
+  }
+  
   def destroy() = {
     close()
     
-    Await.result(closePromise.future, Duration.Inf)
+    awaitClose()
     
     game.screenLayer.windows.find(_.id == id).map { window =>
       game.inputs.remove(window)
@@ -131,9 +135,9 @@ class PrintingTextWindow(
   skin: Windowskin,
   skinRegion: TextureRegion,
   fontbmp: BitmapFont,
+  msPerChar: Int,
   initialState: Int = Window.Opening,
   openCloseMs: Int = 250,
-  msPerChar: Int = 50,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends Window(
@@ -338,7 +342,7 @@ class PrintingWindowText(
     // If waiting for user input to finish, draw the arrow
     if (drawAwaitingArrow && awaitingInput) {
       skin.drawArrow(b, skinRegion,
-        x + w / 2 - 8, y + h - 16, 16, 16)
+        x + w / 2 - 8, y + h, 16, 16)
     }
   }
 }
