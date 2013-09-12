@@ -47,11 +47,11 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
                 // Insert at end of list
                 tree.model.getChildrenOf(newParentNode.path).length
               }
-
+              
               removeNode(origNode)
 
               val newNode = Node(updatedMap, newParentNode.path)
-              tree.model.insertUnder(newParentNode.path, newNode, 0)
+              tree.model.insertUnder(newParentNode.path, newNode, newIdx)
               highlightWithoutEvent(newNode)
 
               // Select map again to refresh the map view and tileset selector
@@ -66,21 +66,29 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
           if (answer == Dialog.Result.Yes) {
             removeNode(node)
             sm.removeMap(node.mapName)
+            
+            val map = sm.getMap(node.mapName)
+            allNodes
+              .get(map.metadata.parent)
+              .map(selectNode(_))
+              .getOrElse(selectNode(projectRoot))
           }
         })
         contents += new Separator
       }
       contents += new MenuItem(Action("New Map...") {
         // Generate a new map with an incremented map id name
-        val defaultNewMap = RpgMap.defaultInstance(
+        val newMap = RpgMap.defaultInstance(
           sm.getProj,
           RpgMap.generateName(sm.getProj.data.lastCreatedMapId + 1))
+        
+        newMap.metadata.parent = node.mapName
 
         val d = new MapPropertiesDialog(
           projPanel.mainP.topWin,
           sm,
           "New Map",
-          defaultNewMap,
+          newMap,
           RpgMap.defaultMapData,
           (newMap, newMapData) => {
             val p = sm.getProj
