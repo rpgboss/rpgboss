@@ -28,23 +28,24 @@ object MyKeys {
   val totalNumber = 6
 }
 
-trait MoveInputHandler extends InputHandler {
+trait SimpleInputHandler extends InputHandler {
+  // Key is either lifted or captured by other
+  def keyCancelled(key: Int)
+  override def keyUp(key: Int) = keyCancelled(key)
+  override def keyCapturedByOther(key: Int) = keyCancelled(key)
+}
+
+trait MoveInputHandler extends SimpleInputHandler {
   // Initialized to all false
   private val isActiveMap = new Array[Boolean](MyKeys.totalNumber)
 
   def isActive(key: Int) = isActiveMap(key)
 
-  override def keyDown(key: Int) = {
+  override def keyDown(key: Int) = 
     isActiveMap(key) = true
-  }
 
-  override def keyUp(key: Int) = {
+  override def keyCancelled(key: Int) = 
     isActiveMap(key) = false
-  }
-
-  override def keyCapturedByOther(key: Int) = {
-    isActiveMap(key) = false
-  }
 }
 
 /**
@@ -54,7 +55,7 @@ trait MoveInputHandler extends InputHandler {
  *
  * This is useful for scrolling through menu items.
  */
-trait ChoiceInputHandler extends InputHandler {
+trait ChoiceInputHandler extends SimpleInputHandler {
   import MyKeys._
   def keyDelay: Float = 0.5f
   def keyInterval: Float = 0.1f
@@ -75,12 +76,7 @@ trait ChoiceInputHandler extends InputHandler {
     Timer.schedule(activateTasks(key), keyDelay, keyInterval)
   }
 
-  override def keyUp(key: Int) = {
-    // Cancel task
-    activateTasks(key).cancel()
-  }
-  
-  override def keyCapturedByOther(key: Int) = {
+  override def keyCancelled(key: Int) = {
     activateTasks(key).cancel()
   }
 

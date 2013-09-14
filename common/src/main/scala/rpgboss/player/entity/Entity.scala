@@ -4,13 +4,14 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.math.Vector2
 import rpgboss.model.SpriteSpec.Steps.TOTALSTEPS
 import rpgboss.player.MyGame
 import scala.math.abs
 import scala.math.min
 import scala.math.signum
 import rpgboss.model.event.EventHeight
+import scala.concurrent.Promise
 
 /*
  * Position is marked as such:
@@ -32,12 +33,12 @@ abstract class Entity(
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) {
 
-  private var vx: Float = 0f
-  private var vy: Float = 0f
-  var movingSince: Long = 0
-  var isMoving: Boolean = false
-  var previouslyMoving: Boolean = false
-  var msPerStep = 128
+  val moveQueue = new collection.mutable.SynchronizedQueue[EntityMoveTrait]
+
+  var speed: Float = 3.0f
+  private var isMovingVar = false
+  private var movingSince: Long = 0
+  private var msPerStep = 128
 
   var spriteset: Spriteset = null
   var spriteIdx: Int = -1
@@ -46,6 +47,8 @@ abstract class Entity(
 
   var stillStep = SpriteSpec.Steps.STILL
   var boundingBoxHalfsize = 0.5f
+  
+  def isMoving() = isMovingVar
 
   def setBoundingBoxHalfsize(halfsizeArg: Float) = {
     // Normalize to prevent bounding boxes too large to be used on tile map
@@ -69,22 +72,7 @@ abstract class Entity(
 
   def collisionDeltas = 0.05f
 
-  def setMoving(moving: Boolean, vxArg: Float = 0f, vyArg: Float = 0f) = {
-    isMoving = moving
-
-    if (moving) {
-      vx = vxArg
-      vy = vyArg
-      if (!previouslyMoving) {
-        movingSince = System.currentTimeMillis()
-        previouslyMoving = true
-      }
-    } else {
-      previouslyMoving = false
-    }
-  }
-
-  def currentStep() = if (isMoving) {
+  def currentStep() = if (isMovingVar) {
     import SpriteSpec.Steps._
 
     val movingDuration = System.currentTimeMillis() - movingSince
@@ -115,18 +103,23 @@ abstract class Entity(
    * Finds all events with which this dxArg and dyArg touches
    */
   def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
-    game.state.npcEvts.filter(npc => {
+    game.state.eventEntities.filter(npc => {
       npc.getBoundingBox().contains(x + dxArg, y + dyArg)
     })
   }
 
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox()
-    game.state.npcEvts.filter(npc => {
+    game.state.eventEntities.filter(npc => {
       npc.getBoundingBox().contains(boundingBox)
     })
   }
 
+  def enqueueMove(move: EntityMoveTrait) = {
+    game.logger.info("queue size: " + moveQueue.size.toString)
+    moveQueue.enqueue(move)
+  }
+  
   /**
    * This method is called when event collides against another event during
    * movement.
@@ -134,97 +127,22 @@ abstract class Entity(
   def eventTouchCallback(touchedNpcs: List[EventEntity])
 
   def update(delta: Float) = {
-    // Handle moving
-    if (isMoving) {
-      import math._
-
-      var totalDx = delta * vx
-      var totalDy = delta * vy
-
-      var dxTravelled = 0f
-      var dyTravelled = 0f
-
-      var travelDone = false
-      while (!travelDone) {
-        // Increment to travel and test collisions with
-        // This is so that the increments are along the travel line set by
-        // totalDx and totalDy
-        val (dx, dy) = if (abs(totalDx) > abs(totalDy)) {
-          val dx = min(abs(collisionDeltas), abs(totalDx)) * signum(totalDx)
-          val dy = totalDy / totalDx * dx
-          (dx, dy)
-        } else {
-          val dy = min(abs(collisionDeltas), abs(totalDy)) * signum(totalDy)
-          val dx = totalDx / totalDy * dy
-          (dx, dy)
-        }
-
-        var dxThisLoop = 0f
-        var dyThisLoop = 0f
-
-        var isSliding = false
-
-        val evtsTouched = getAllEventCenterTouches(dx, dy)
-        eventTouchCallback(evtsTouched)
-        val evtBlocking =
-          evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
-
-        // Move along x
-        if (!evtBlocking && totalDx != 0) {
-          // Determine collisions in x direction on the y-positive corner
-          // and the y negative corner of the bounding box
-          val (mapBlocked, mapReroute) = getMapCollisions(dx, 0)
-
-          // Conventional movement if it succeeeds
-          if (!mapBlocked) {
-            dxThisLoop += dx
-            x += dx
-            dxTravelled += dx
-          } else if (totalDy == 0) {
-            // Conventional movement blocked. Try sliding perpendicularly
-            if (mapReroute != 0) {
-              totalDy += mapReroute * abs(totalDx)
-              isSliding = true
-            }
-          }
-        }
-
-        // Move along y
-        if (!evtBlocking && totalDy != 0) {
-          // Determine collisions in x direction on the y-positive corner
-          // and the y negative corner of the bounding box
-          val (mapBlocked, mapReroute) = getMapCollisions(0, dy)
-
-          // Conventional movement if it succeeeds
-          if (!mapBlocked) {
-            dyThisLoop += dy
-            y += dy
-            dyTravelled += dy
-          } else if (totalDx == 0) {
-            // Conventional movement blocked. Try sliding perpendicularly
-            if (mapReroute != 0) {
-              totalDx += mapReroute * abs(totalDy)
-              isSliding = true
-            }
-          }
-        }
-
-        // Was able to move conventionally
-        if (dxThisLoop != 0 || dyThisLoop != 0) {
-          // Check if we are done travelling by distance measure
-          if ((totalDx != 0 && abs(dxTravelled) >= abs(totalDx)) ||
-            (totalDy != 0 && abs(dyTravelled) >= abs(totalDy))) {
-            travelDone = true
-          }
-        } else {
-          // Man, we can't even slide. Let's quit
-          if (!isSliding) {
-            travelDone = true
-            isMoving = false
-          }
-        }
+    var moveQueueUpdateDone = false
+    while (!moveQueueUpdateDone && !moveQueue.isEmpty) {
+      if (!isMovingVar) {
+        isMovingVar = true
+        movingSince = System.currentTimeMillis()
       }
+      moveQueue.head.update(delta)
+      
+      if (moveQueue.head.isDone())
+        moveQueue.dequeue()
+      else
+        moveQueueUpdateDone = true
     }
+    
+    if (moveQueue.isEmpty)
+      isMovingVar = false
   }
 
   def render(batch: SpriteBatch, atlasSprites: TextureAtlas) = {
@@ -269,4 +187,113 @@ case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
 
   def offseted(dx: Float, dy: Float) =
     copy(minX + dx, minY + dy, maxX + dx, maxY + dy)
+}
+
+trait EntityMoveTrait {
+  def update(delta: Float): Unit
+  
+  private val finishPromise = Promise[Int]()
+  
+  def isDone(): Boolean = finishPromise.isCompleted
+  def finish() = finishPromise.success(0)
+}
+
+case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
+  extends EntityMoveTrait {
+  val remainingTravel = new Vector2(totalDx, totalDy)
+  
+  def update(delta: Float) = {
+    import math._
+
+    val totalThisFrame = 
+      remainingTravel.cpy().nor().mul(min(entity.speed * delta, remainingTravel.len()))
+
+    var dxTravelledThisFrame = 0f
+    var dyTravelledThisFrame = 0f
+
+    var travelDoneThisFrame = totalThisFrame.len() > entity.collisionDeltas
+    while (!travelDoneThisFrame && !isDone()) {
+      val movementThisIteration = 
+        totalThisFrame.cpy().nor().mul(entity.collisionDeltas)
+      val dx = movementThisIteration.x
+      val dy = movementThisIteration.y
+
+      var dxThisLoop = 0f
+      var dyThisLoop = 0f
+
+      var isSliding = false
+
+      val evtsTouched = entity.getAllEventCenterTouches(dx, dy)
+      entity.eventTouchCallback(evtsTouched)
+      val evtBlocking =
+        evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
+
+      // Move along x
+      if (!evtBlocking && totalDx != 0) {
+        // Determine collisions in x direction on the y-positive corner
+        // and the y negative corner of the bounding box
+        val (mapBlocked, mapReroute) = entity.getMapCollisions(dx, 0)
+
+        // Conventional movement if it succeeeds
+        if (!mapBlocked) {
+          dxThisLoop += dx
+          entity.x += dx
+          dxTravelledThisFrame += dx
+        } else if (totalThisFrame.y == 0) {
+          // Conventional movement blocked. Try sliding perpendicularly
+          if (mapReroute != 0) {
+            totalThisFrame.y += mapReroute * entity.collisionDeltas
+            isSliding = true
+          }
+        }
+      }
+
+      // Move along y
+      if (!evtBlocking && totalDy != 0) {
+        // Determine collisions in x direction on the y-positive corner
+        // and the y negative corner of the bounding box
+        val (mapBlocked, mapReroute) = entity.getMapCollisions(0, dy)
+
+        // Conventional movement if it succeeeds
+        if (!mapBlocked) {
+          dyThisLoop += dy
+          entity.y += dy
+          dyTravelledThisFrame += dy
+        } else if (totalThisFrame.x == 0) {
+          // Conventional movement blocked. Try sliding perpendicularly
+          if (mapReroute != 0) {
+            totalThisFrame.x += mapReroute * entity.collisionDeltas
+            isSliding = true
+          }
+        }
+      }
+
+      // Was able to move conventionally
+      if (dxThisLoop != 0 || dyThisLoop != 0) {
+        // Check if we are done travelling by distance measure
+        if ((totalThisFrame.x != 0 && abs(dxTravelledThisFrame) >= abs(totalThisFrame.x)) ||
+          (totalThisFrame.y != 0 && abs(dyTravelledThisFrame) >= abs(totalThisFrame.y))) {
+          travelDoneThisFrame = true
+        }
+      } else {
+        // Man, we can't even slide. Let's quit
+        if (!isSliding) {
+          travelDoneThisFrame = true
+          finish()
+        }
+      }
+    }
+    
+    remainingTravel.sub(totalThisFrame)
+    
+    if (remainingTravel.len() < entity.collisionDeltas && !isDone())
+      finish()
+  }
+}
+
+case class EntityFace(entity: Entity, direction: Int) extends EntityMoveTrait {
+  def update(delta: Float) = {
+    entity.dir = direction
+    finish()
+  }
 }

@@ -37,13 +37,13 @@ class GameState(game: MyGame, project: Project) {
   var mapAndAssetsOption: Option[MapAndAssets] = None
 
   // protagonist. Modify all these things on the Gdx thread
-  var playerEvt: PlayerEntity = new PlayerEntity(game)
+  var playerEntity: PlayerEntity = new PlayerEntity(game)
   setPlayerSprite(game.project.data.enums.characters.head.sprite)
 
   val persistent = new PersistentState()
 
   // All the events on the current map, including the player event
-  var npcEvts = List[EventEntity]()
+  var eventEntities = List[EventEntity]()
 
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
@@ -51,8 +51,8 @@ class GameState(game: MyGame, project: Project) {
     tweenManager.update(delta)
 
     // Update events, including player event
-    npcEvts.foreach(_.update(delta))
-    playerEvt.update(delta)
+    eventEntities.foreach(_.update(delta))
+    playerEntity.update(delta)
 
     // Update current transition
     curTransition.synchronized {
@@ -64,9 +64,9 @@ class GameState(game: MyGame, project: Project) {
     }
 
     // Update camera location
-    if (playerEvt.isMoving) {
-      persistent.cameraLoc.x = playerEvt.x
-      persistent.cameraLoc.y = playerEvt.y
+    if (playerEntity.isMoving()) {
+      persistent.cameraLoc.x = playerEntity.x
+      persistent.cameraLoc.y = playerEntity.y
     }
   }
 
@@ -94,12 +94,12 @@ class GameState(game: MyGame, project: Project) {
    */
 
   def setPlayerSprite(spritespec: Option[SpriteSpec]) = syncRun {
-    playerEvt.setSprite(spritespec)
+    playerEntity.setSprite(spritespec)
   }
 
   def setPlayerLoc(loc: MapLoc) = syncRun {
-    playerEvt.x = loc.x
-    playerEvt.y = loc.y
+    playerEntity.x = loc.x
+    playerEntity.y = loc.y
     setCameraLoc(loc)
   }
 
@@ -110,13 +110,13 @@ class GameState(game: MyGame, project: Project) {
     if (persistent.cameraLoc.map.isEmpty()) {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None
-      npcEvts = List()
+      eventEntities = List()
     } else {
       mapAndAssetsOption.map(_.dispose())
 
       val mapAndAssets = new MapAndAssets(project, loc.map)
       mapAndAssetsOption = Some(mapAndAssets)
-      npcEvts = mapAndAssets.mapData.events.map {
+      eventEntities = mapAndAssets.mapData.events.map {
         new EventEntity(game, _)
       }.toList
     }
@@ -261,14 +261,14 @@ class GameState(game: MyGame, project: Project) {
     persistent.setEventState(mapName, evtName, newState)
 
     if (mapName == persistent.cameraLoc.map) {
-      npcEvts.filter(_.mapEvent.name == evtName).foreach(_.updateState())
+      eventEntities.filter(_.mapEvent.name == evtName).foreach(_.updateState())
     }
   }
 
   def getInt(key: String): Int = persistent.getInt(key)
   def setInt(key: String, value: Int) = {
     persistent.setInt(key, value)
-    npcEvts.foreach(_.updateState())
+    eventEntities.foreach(_.updateState())
   }
 
   def getIntArray(key: String): Array[Int] = persistent.getIntArray(key)

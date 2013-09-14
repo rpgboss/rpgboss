@@ -7,6 +7,7 @@ import rpgboss.model.MapLoc
 import java.lang.Thread.UncaughtExceptionHandler
 import rpgboss.model.event.RpgEvent
 import rpgboss.model.Constants._
+import rpgboss.player.entity.EventEntity
 
 /**
  * Thread used to run a javascript script...
@@ -122,9 +123,10 @@ object ScriptThread {
       onFinishSyncCallback)
   }
 
-  def fromEvent(
+  def fromEventEntity(
     game: MyGame,
     event: RpgEvent,
+    entity: EventEntity,
     state: Int,
     onFinishSyncCallback: Option[() => Any] = None) = {
     val scriptName = "%s/%d".format(event.name, state)
@@ -137,8 +139,9 @@ object ScriptThread {
       override def initScope(jsScope: ScriptableObject) = {
         super.initScope(jsScope)
 
+        // Bind 'event' to the EventEntity so that we can control its movement
         ScriptableObject.putProperty(jsScope, "event",
-          Context.javaToJS(event, jsScope))
+          Context.javaToJS(entity, jsScope))
       }
     }
   }

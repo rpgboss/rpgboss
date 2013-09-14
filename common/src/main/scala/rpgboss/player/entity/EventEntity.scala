@@ -33,9 +33,9 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
         case SOUTH => NORTH
       }
 
-      curThread = ScriptThread.fromEvent(
+      curThread = ScriptThread.fromEventEntity(
         game,
-        mapEvent, evtStateIdx,
+        mapEvent, this, evtStateIdx,
         onFinishSyncCallback = Some(() => {
           dir = origDir
         }))

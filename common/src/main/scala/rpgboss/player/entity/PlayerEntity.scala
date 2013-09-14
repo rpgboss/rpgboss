@@ -16,51 +16,55 @@ class PlayerEntity(game: MyGame)
   game.inputs.prepend(PlayerEntity.this)
 
   var menuActive = false
-
-  override def update(delta: Float) = {
-    import MyKeys._
-
-    var playerMoving = false
-    var vx = 0f
-    var vy = 0f
-
-    val speed = 3.0f // tiles per second
+  var currentMoveQueueItem: EntityMoveTrait = null
+  
+  // Set to a large number, as we expect to cancel this move when we lift button
+  val moveSize = 1000f
+  
+  def refreshPlayerMoveQueue() = {
+    if (currentMoveQueueItem != null && !currentMoveQueueItem.isDone())
+      currentMoveQueueItem.finish()
+    
+    var totalDx = 0f
+    var totalDy = 0f
+    
+    if (isActive(Left)) {
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.WEST))
+      totalDx -= moveSize
+    } else if (isActive(Right)) {
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.EAST))
+      totalDx += moveSize
+    }
 
     if (isActive(Up)) {
-      playerMoving = true
-      vy = -speed
-      dir = SpriteSpec.Directions.NORTH
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.NORTH))
+      totalDy -= moveSize
     } else if (isActive(Down)) {
-      playerMoving = true
-      vy = speed
-      dir = SpriteSpec.Directions.SOUTH
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.SOUTH))
+      totalDy += moveSize
     }
 
-    if (isActive(Left)) {
-      playerMoving = true
-      vx = -speed
-      dir = SpriteSpec.Directions.WEST
-    } else if (isActive(Right)) {
-      playerMoving = true
-      vx = speed
-      dir = SpriteSpec.Directions.EAST
+    if (totalDx != 0f || totalDy != 0f) {
+      val move = EntityMove(this, totalDx, totalDy)
+      enqueueMove(move)
+      currentMoveQueueItem = move
     }
-
-    setMoving(playerMoving, vx, vy)
-
-    // Do the basic event update stuff, including the actual moving
-    super.update(delta)
-
-    // Get the direction unit vector
-    val (ux, uy) = dir match {
-      case SpriteSpec.Directions.NORTH => (0f, -1f)
-      case SpriteSpec.Directions.SOUTH => (0f, 1f)
-      case SpriteSpec.Directions.EAST => (1f, 0f)
-      case SpriteSpec.Directions.WEST => (-1f, 0f)
-    }
-
+  }
+    
+  override def keyDown(key: Int) = {
+    super.keyDown(key)
+    
+    import MyKeys._
     // Handle BUTTON interaction
-    if (isActive(OK)) {
+    if (key == OK) {
+      // Get the direction unit vector
+      val (ux, uy) = dir match {
+        case SpriteSpec.Directions.NORTH => (0f, -1f)
+        case SpriteSpec.Directions.SOUTH => (0f, 1f)
+        case SpriteSpec.Directions.EAST => (1f, 0f)
+        case SpriteSpec.Directions.WEST => (-1f, 0f)
+      }
+      
       val checkDist = 0.3f // Distance to check for a collision
       val activatedEvts =
         getAllEventTouches(ux * checkDist, uy * checkDist)
@@ -72,7 +76,7 @@ class PlayerEntity(game: MyGame)
 
         closestEvt.activate(dir)
       }
-    } else if (isActive(Cancel)) {
+    } else if (key == Cancel) {
       if (!menuActive) {
         menuActive = true
         ScriptThread.fromFile(
@@ -80,8 +84,26 @@ class PlayerEntity(game: MyGame)
           "menu.js",
           "menu()",
           Some(() => menuActive = false)).run()
-      }
+      } 
+    } else {
+      refreshPlayerMoveQueue()
     }
+  }
+  
+  override def keyCancelled(key: Int) = {
+    super.keyCancelled(key)
+    
+    import MyKeys._
+    if (key == Left || key == Right || key == Up || key == Down)
+      refreshPlayerMoveQueue()
+  }
+  
+  override def update(delta: Float) = {
+
+    // Do the basic event update stuff, including the actual moving
+    super.update(delta)
+
+
   }
 
   def eventTouchCallback(touchedNpcs: List[EventEntity]) = {
