@@ -209,93 +209,83 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
   def update(delta: Float) = {
     import math._
 
-    val totalThisFrame = 
+    val desiredThisFrame = 
       remainingTravel.cpy().nor().mul(min(entity.speed * delta, remainingTravel.len()))
 
-    var dxTravelledThisFrame = 0f
-    var dyTravelledThisFrame = 0f
+    val travelledThisFrame = new Vector2()
 
     var travelDoneThisFrame = false
     while (!travelDoneThisFrame && !isDone()) {
       val movementThisIteration = 
-        totalThisFrame.cpy().nor().mul(min(entity.collisionDeltas, totalThisFrame.len()))
+        desiredThisFrame.cpy().nor().mul(min(entity.collisionDeltas, desiredThisFrame.len()))
       val dx = movementThisIteration.x
       val dy = movementThisIteration.y
 
-      var dxThisLoop = 0f
-      var dyThisLoop = 0f
-
-      var isSliding = false
-
+      var movedThisLoop = false
+      
       val evtsTouched = entity.getAllEventCenterTouches(dx, dy)
       entity.eventTouchCallback(evtsTouched)
       val evtBlocking =
         evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
 
       // Move along x
-      if (!evtBlocking && totalThisFrame.x != 0) {
+      if (!evtBlocking && desiredThisFrame.x != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(dx, 0)
 
         // Conventional movement if it succeeeds
         if (!mapBlocked) {
-          dxThisLoop += dx
+          movedThisLoop = true
+          travelledThisFrame.x += dx
           entity.x += dx
-          dxTravelledThisFrame += dx
-        } else if (totalThisFrame.y == 0) {
+        } else if (desiredThisFrame.y == 0) {
           // Conventional movement blocked. Try sliding perpendicularly
           if (mapReroute != 0) {
-            // Multiplied by perpendicular travel distance to make 45 degrees
-            totalThisFrame.y += mapReroute * totalThisFrame.x
-            isSliding = true
+            movedThisLoop = true
+            entity.y += mapReroute * dx
+            travelledThisFrame.y += mapReroute * dx
           }
         }
       }
 
       // Move along y
-      if (!evtBlocking && totalThisFrame.y != 0) {
+      if (!evtBlocking && desiredThisFrame.y != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(0, dy)
 
         // Conventional movement if it succeeeds
         if (!mapBlocked) {
-          dyThisLoop += dy
+          movedThisLoop = true
+          travelledThisFrame.y += dy
           entity.y += dy
-          dyTravelledThisFrame += dy
-        } else if (totalThisFrame.x == 0) {
+        } else if (desiredThisFrame.x == 0) {
           // Conventional movement blocked. Try sliding perpendicularly
           if (mapReroute != 0) {
-            // Multiplied by perpendicular travel distance to make 45 degrees
-            totalThisFrame.x += mapReroute * totalThisFrame.y
-            isSliding = true
+            movedThisLoop = true
+            entity.x += mapReroute * dy
+            travelledThisFrame.x += mapReroute * dy
           }
         }
       }
 
       // Was able to move conventionally
-      if (dxThisLoop != 0 || dyThisLoop != 0) {
+      if (movedThisLoop) {
         // Check if we are done travelling by distance measure
-        if ((totalThisFrame.x != 0 && abs(dxTravelledThisFrame) >= abs(totalThisFrame.x)) ||
-          (totalThisFrame.y != 0 && abs(dyTravelledThisFrame) >= abs(totalThisFrame.y))) {
+        if (travelledThisFrame.len() >= desiredThisFrame.len()) {
           travelDoneThisFrame = true
         }
       } else {
-        // Man, we can't even slide. Let's quit
-        if (!isSliding) {
-          travelDoneThisFrame = true
-          finish()
-        }
+        travelDoneThisFrame = true
+        finish()
       }
     }
     
-    entity.game.logger.info("This frame x: " + dxTravelledThisFrame.toString)
-    entity.game.logger.info("This frame y: " + dyTravelledThisFrame.toString)
-    entity.game.logger.info("This frame desired: " + totalThisFrame.toString())
+    entity.game.logger.info("This frame desired: " + desiredThisFrame.toString())
+    entity.game.logger.info("This frame travel : " + travelledThisFrame.toString())
     
-    
-    remainingTravel.sub(totalThisFrame)
+    remainingTravel.sub(desiredThisFrame)
     
     if (remainingTravel.len() < entity.collisionDeltas && !isDone())
       finish()
