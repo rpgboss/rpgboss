@@ -84,7 +84,7 @@ class PlayerEntity(game: MyGame)
     }
   }
 
-  def eventTouchCallback(touchedNpcs: List[NonplayerEntity]) = {
+  def eventTouchCallback(touchedNpcs: List[EventEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.PLAYERTOUCH.id ||

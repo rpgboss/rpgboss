@@ -131,7 +131,7 @@ abstract class Entity(
    * This method is called when event collides against another event during
    * movement.
    */
-  def eventTouchCallback(touchedNpcs: List[NonplayerEntity])
+  def eventTouchCallback(touchedNpcs: List[EventEntity])
 
   def update(delta: Float) = {
     // Handle moving

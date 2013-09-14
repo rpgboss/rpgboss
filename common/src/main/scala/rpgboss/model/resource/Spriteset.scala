@@ -36,7 +36,8 @@ case class Spriteset(proj: Project,
    * Gets the size of the sprites as well as the numerosity
    */
   val (tileH, tileW, xSprites, ySprites) = {
-    val oneSprite = name(0) == '$'
+    val oneSprite = name.size > 2 &&
+                    (name(0) == '$' || (name(0) == '!' && name(1) == '$'))
 
     if (oneSprite) {
       (img.getHeight() / spriteYTiles, img.getWidth() / spriteXTiles, 1, 1)

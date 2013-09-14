@@ -12,7 +12,7 @@ import java.util.concurrent.Callable
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.player.entity.PlayerEntity
-import rpgboss.player.entity.NonplayerEntity
+import rpgboss.player.entity.EventEntity
 import rpgboss.player.entity.Entity
 import aurelienribon.tweenengine._
 
@@ -43,7 +43,7 @@ class GameState(game: MyGame, project: Project) {
   val persistent = new PersistentState()
 
   // All the events on the current map, including the player event
-  var npcEvts = List[NonplayerEntity]()
+  var npcEvts = List[EventEntity]()
 
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
@@ -117,7 +117,7 @@ class GameState(game: MyGame, project: Project) {
       val mapAndAssets = new MapAndAssets(project, loc.map)
       mapAndAssetsOption = Some(mapAndAssets)
       npcEvts = mapAndAssets.mapData.events.map {
-        new NonplayerEntity(game, _)
+        new EventEntity(game, _)
       }.toList
     }
   }
