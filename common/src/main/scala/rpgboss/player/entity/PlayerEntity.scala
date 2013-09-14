@@ -11,9 +11,9 @@ import MyKeys.Up
 
 class PlayerEntity(game: MyGame)
   extends Entity(game: MyGame)
-  with MoveInputHandler {
+  with PlayerInputHandler {
   // Add input handling
-  game.inputs.prepend(PlayerEntity.this)
+  game.inputs.prepend(this)
 
   var menuActive = false
   var currentMoveQueueItem: EntityMoveTrait = null
@@ -22,38 +22,42 @@ class PlayerEntity(game: MyGame)
   val moveSize = 1000f
   
   def refreshPlayerMoveQueue() = {
-    if (currentMoveQueueItem != null && !currentMoveQueueItem.isDone())
-      currentMoveQueueItem.finish()
-    
-    var totalDx = 0f
-    var totalDy = 0f
-    
-    if (isActive(Left)) {
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.WEST))
-      totalDx -= moveSize
-    } else if (isActive(Right)) {
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.EAST))
-      totalDx += moveSize
+    if (currentMoveQueueItem != null) {
+      if (!currentMoveQueueItem.isDone())
+        currentMoveQueueItem.finish()
+      currentMoveQueueItem = null
     }
-
-    if (isActive(Up)) {
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.NORTH))
-      totalDy -= moveSize
-    } else if (isActive(Down)) {
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.SOUTH))
-      totalDy += moveSize
-    }
-
-    if (totalDx != 0f || totalDy != 0f) {
-      val move = EntityMove(this, totalDx, totalDy)
-      enqueueMove(move)
-      currentMoveQueueItem = move
+    
+    if (!menuActive) {
+      var totalDx = 0f
+      var totalDy = 0f
+      
+      if (keyIsActive(Left)) {
+        enqueueMove(EntityFace(this, SpriteSpec.Directions.WEST))
+        totalDx -= moveSize
+      } else if (keyIsActive(Right)) {
+        enqueueMove(EntityFace(this, SpriteSpec.Directions.EAST))
+        totalDx += moveSize
+      }
+  
+      if (keyIsActive(Up)) {
+        enqueueMove(EntityFace(this, SpriteSpec.Directions.NORTH))
+        totalDy -= moveSize
+      } else if (keyIsActive(Down)) {
+        enqueueMove(EntityFace(this, SpriteSpec.Directions.SOUTH))
+        totalDy += moveSize
+      }
+  
+      if (totalDx != 0f || totalDy != 0f) {
+        val move = EntityMove(this, totalDx, totalDy)
+        enqueueMove(move)
+        currentMoveQueueItem = move
+      }
     }
   }
     
-  override def keyDown(key: Int) = {
-    super.keyDown(key)
-    
+  override def keyActivated(key: Int) = {
+    game.logger.info("keyActivated: " + key.toString)
     import MyKeys._
     // Handle BUTTON interaction
     if (key == OK) {
@@ -83,19 +87,18 @@ class PlayerEntity(game: MyGame)
           game,
           "menu.js",
           "menu()",
-          Some(() => menuActive = false)).run()
-      } 
+          Some(() => {
+            menuActive = false
+            refreshPlayerMoveQueue()
+          })).run()
+      }
     } else {
       refreshPlayerMoveQueue()
     }
   }
   
-  override def keyCancelled(key: Int) = {
-    super.keyCancelled(key)
-    
-    import MyKeys._
-    if (key == Left || key == Right || key == Up || key == Down)
-      refreshPlayerMoveQueue()
+  override def keyDeactivated(key: Int) = {
+    refreshPlayerMoveQueue()
   }
   
   override def update(delta: Float) = {

@@ -101,7 +101,7 @@ class MyGame(gamepath: File)
     val delta = Gdx.graphics.getDeltaTime()
 
     // Log fps
-    fps.log()
+    //fps.log()
     
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)

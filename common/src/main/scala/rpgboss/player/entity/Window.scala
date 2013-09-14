@@ -114,10 +114,8 @@ class Window(
     
     awaitClose()
     
-    game.screenLayer.windows.find(_.id == id).map { window =>
-      game.inputs.remove(window)
-      game.screenLayer.windows -= window
-    }
+    game.inputs.remove(this)
+    game.screenLayer.windows -= this
   }
 
   // This is used to either convey a choice, or simply that the window

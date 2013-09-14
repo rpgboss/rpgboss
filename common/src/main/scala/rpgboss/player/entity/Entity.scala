@@ -27,7 +27,7 @@ import scala.concurrent.Promise
  * Bottom edge length is boundBoxTiles
  */
 abstract class Entity(
-  game: MyGame,
+  val game: MyGame,
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
@@ -116,8 +116,12 @@ abstract class Entity(
   }
 
   def enqueueMove(move: EntityMoveTrait) = {
-    game.logger.info("queue size: " + moveQueue.size.toString)
     moveQueue.enqueue(move)
+    game.logger.info("enqueueMove: size " + moveQueue.size.toString)
+  }
+  def dequeueMove() = {
+    moveQueue.dequeue()
+    game.logger.info("dequeueMove: size " + moveQueue.size.toString)
   }
   
   /**
@@ -136,7 +140,7 @@ abstract class Entity(
       moveQueue.head.update(delta)
       
       if (moveQueue.head.isDone())
-        moveQueue.dequeue()
+        dequeueMove()
       else
         moveQueueUpdateDone = true
     }
@@ -211,10 +215,10 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
     var dxTravelledThisFrame = 0f
     var dyTravelledThisFrame = 0f
 
-    var travelDoneThisFrame = totalThisFrame.len() > entity.collisionDeltas
+    var travelDoneThisFrame = false
     while (!travelDoneThisFrame && !isDone()) {
       val movementThisIteration = 
-        totalThisFrame.cpy().nor().mul(entity.collisionDeltas)
+        totalThisFrame.cpy().nor().mul(min(entity.collisionDeltas, totalThisFrame.len()))
       val dx = movementThisIteration.x
       val dy = movementThisIteration.y
 
@@ -229,7 +233,7 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
         evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)
 
       // Move along x
-      if (!evtBlocking && totalDx != 0) {
+      if (!evtBlocking && totalThisFrame.x != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(dx, 0)
@@ -242,14 +246,15 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
         } else if (totalThisFrame.y == 0) {
           // Conventional movement blocked. Try sliding perpendicularly
           if (mapReroute != 0) {
-            totalThisFrame.y += mapReroute * entity.collisionDeltas
+            // Multiplied by perpendicular travel distance to make 45 degrees
+            totalThisFrame.y += mapReroute * totalThisFrame.x
             isSliding = true
           }
         }
       }
 
       // Move along y
-      if (!evtBlocking && totalDy != 0) {
+      if (!evtBlocking && totalThisFrame.y != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(0, dy)
@@ -262,7 +267,8 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
         } else if (totalThisFrame.x == 0) {
           // Conventional movement blocked. Try sliding perpendicularly
           if (mapReroute != 0) {
-            totalThisFrame.x += mapReroute * entity.collisionDeltas
+            // Multiplied by perpendicular travel distance to make 45 degrees
+            totalThisFrame.x += mapReroute * totalThisFrame.y
             isSliding = true
           }
         }
@@ -283,6 +289,11 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
         }
       }
     }
+    
+    entity.game.logger.info("This frame x: " + dxTravelledThisFrame.toString)
+    entity.game.logger.info("This frame y: " + dyTravelledThisFrame.toString)
+    entity.game.logger.info("This frame desired: " + totalThisFrame.toString())
+    
     
     remainingTravel.sub(totalThisFrame)
     

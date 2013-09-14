@@ -146,13 +146,11 @@ class ChoiceWindow(
     }
  
     if (key == OK) {
-      println("key OK")
       soundSelect.map(_.getAsset(assets).play())
       choiceChannel.write(curChoice)
     }
     
     if (key == Cancel && allowCancel) {
-      println("key Cancel")
       soundCancel.map(_.getAsset(assets).play())
       choiceChannel.write(-1)
     }
