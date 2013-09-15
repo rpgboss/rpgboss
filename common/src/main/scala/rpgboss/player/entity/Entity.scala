@@ -62,7 +62,7 @@ abstract class Entity(
       x + boundingBoxHalfsize, y + boundingBoxHalfsize)
   }
 
-  def getMapCollisions(dxArg: Float, dyArg: Float) = {
+  def getMapCollisions(dxArg: Float, dyArg: Float) : (Boolean, Int) = {
     game.state.mapAndAssetsOption map { mapAndAssets =>
       mapAndAssets.getCollisions(this, x, y, dxArg, dyArg)
     } getOrElse (true, 0)
@@ -243,8 +243,9 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
           // Conventional movement blocked. Try sliding perpendicularly
           if (mapReroute != 0) {
             movedThisLoop = true
-            entity.y += mapReroute * dx
-            travelledThisFrame.y += mapReroute * dx
+            val yReroute = mapReroute * abs(dx)
+            entity.y += yReroute
+            travelledThisFrame.y += yReroute
           }
         }
       }
@@ -264,8 +265,9 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
           // Conventional movement blocked. Try sliding perpendicularly
           if (mapReroute != 0) {
             movedThisLoop = true
-            entity.x += mapReroute * dy
-            travelledThisFrame.x += mapReroute * dy
+            val xReroute = mapReroute * abs(dy)
+            entity.x += xReroute
+            travelledThisFrame.x += xReroute
           }
         }
       }
