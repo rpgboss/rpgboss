@@ -1,5 +1,6 @@
 package rpgboss.player.entity
 
+import com.badlogic.gdx.utils.{Timer => GdxTimer}
 import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.player._
@@ -22,7 +23,7 @@ class PlayerEntity(game: MyGame)
   // Set to a large number, as we expect to cancel this move when we lift button
   val moveSize = 1000f
   
-  def changeFace() = {
+  def changeFacingDirection() = {
     if (keyIsActive(Left))
       enqueueMove(EntityFace(this, SpriteSpec.Directions.WEST))
     else if (keyIsActive(Right))
@@ -100,13 +101,27 @@ class PlayerEntity(game: MyGame)
           })).run()
       }
     } else {
-      changeFace()
+      changeFacingDirection()
       refreshPlayerMoveQueue()
     }
   }
   
   override def keyDeactivated(key: Int) = {
     refreshPlayerMoveQueue()
+    
+    // When the user has two buttons depressed to move diagonally, and then 
+    // lifts both, we detect is as two separate events. This can cause the 
+    // player sprite to change direction right as it stops moving, looking bad.
+    // This delay to the direction change prevents that because 
+    // |changeFacingDirection()| does nothing when no keys are depressed.
+    GdxTimer.schedule(
+      new GdxTimer.Task {
+        def run() = {
+          changeFacingDirection()
+          refreshPlayerMoveQueue()
+        }
+      },
+      0.05f /* delaySeconds */)
   }
   
   override def update(delta: Float) = {

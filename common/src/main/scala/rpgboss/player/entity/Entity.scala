@@ -210,7 +210,7 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
     import math._
 
     val desiredThisFrame = 
-      remainingTravel.cpy().nor().mul(min(entity.speed * delta, remainingTravel.len()))
+      remainingTravel.cpy().nor().scl(min(entity.speed * delta, remainingTravel.len()))
 
     val travelledThisFrame = new Vector2()
 
@@ -220,7 +220,7 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
           entity.collisionDeltas, 
           desiredThisFrame.len() - travelledThisFrame.len())
       val movementThisIteration = 
-        desiredThisFrame.cpy().nor().mul(lengthThisIteration)
+        desiredThisFrame.cpy().nor().scl(lengthThisIteration)
       val dx = movementThisIteration.x
       val dy = movementThisIteration.y
 
