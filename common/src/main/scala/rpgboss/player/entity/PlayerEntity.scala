@@ -25,14 +25,13 @@ class PlayerEntity(game: MyGame)
   
   def changeFacingDirection() = {
     if (keyIsActive(Left))
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.WEST))
+      enqueueMove(EntityFaceDirection(SpriteSpec.Directions.WEST))
     else if (keyIsActive(Right))
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.EAST))
-  
-    if (keyIsActive(Up))
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.NORTH))
+      enqueueMove(EntityFaceDirection(SpriteSpec.Directions.EAST))
+    else if (keyIsActive(Up))
+      enqueueMove(EntityFaceDirection(SpriteSpec.Directions.NORTH))
     else if (keyIsActive(Down))
-      enqueueMove(EntityFace(this, SpriteSpec.Directions.SOUTH))
+      enqueueMove(EntityFaceDirection(SpriteSpec.Directions.SOUTH))
   }
   
   def refreshPlayerMoveQueue() = {
@@ -57,7 +56,7 @@ class PlayerEntity(game: MyGame)
         totalDy += moveSize
   
       if (totalDx != 0f || totalDy != 0f) {
-        val move = EntityMove(this, totalDx, totalDy)
+        val move = EntityMove(totalDx, totalDy)
         enqueueMove(move)
         currentMoveQueueItem = move
       }

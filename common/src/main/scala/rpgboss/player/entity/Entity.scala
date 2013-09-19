@@ -12,6 +12,8 @@ import scala.math.min
 import scala.math.signum
 import rpgboss.model.event.EventHeight
 import scala.concurrent.Promise
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /*
  * Position is marked as such:
@@ -137,7 +139,7 @@ abstract class Entity(
         isMovingVar = true
         movingSince = System.currentTimeMillis()
       }
-      moveQueue.head.update(delta)
+      moveQueue.head.update(this, delta)
       
       if (moveQueue.head.isDone())
         dequeueMove()
@@ -194,19 +196,20 @@ case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
 }
 
 trait EntityMoveTrait {
-  def update(delta: Float): Unit
+  def update(entity: Entity, delta: Float): Unit
   
   private val finishPromise = Promise[Int]()
   
   def isDone(): Boolean = finishPromise.isCompleted
   def finish() = finishPromise.success(0)
+  def awaitDone() = Await.result(finishPromise.future, Duration.Inf)
 }
 
-case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
+case class EntityMove(totalDx: Float, totalDy: Float)
   extends EntityMoveTrait {
   val remainingTravel = new Vector2(totalDx, totalDy)
   
-  def update(delta: Float) = {
+  def update(entity: Entity, delta: Float) = {
     import math._
 
     val desiredThisFrame = 
@@ -297,8 +300,8 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
   }
 }
 
-case class EntityFace(entity: Entity, direction: Int) extends EntityMoveTrait {
-  def update(delta: Float) = {
+case class EntityFaceDirection(direction: Int) extends EntityMoveTrait {
+  def update(entity: Entity, delta: Float) = {
     entity.dir = direction
     finish()
   }

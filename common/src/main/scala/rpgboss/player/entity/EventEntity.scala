@@ -10,6 +10,9 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
     game,
     mapEvent.x,
     mapEvent.y) {
+  // delegating methods to RpgEvent
+  def name = mapEvent.name
+  
   private var curThread: ScriptThread = null
 
   var evtStateIdx = 0
