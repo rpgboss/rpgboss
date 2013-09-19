@@ -216,8 +216,11 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
 
     var travelDoneThisFrame = false
     while (!travelDoneThisFrame && !isDone()) {
+      val lengthThisIteration = min(
+          entity.collisionDeltas, 
+          desiredThisFrame.len() - travelledThisFrame.len())
       val movementThisIteration = 
-        desiredThisFrame.cpy().nor().mul(min(entity.collisionDeltas, desiredThisFrame.len()))
+        desiredThisFrame.cpy().nor().mul(lengthThisIteration)
       val dx = movementThisIteration.x
       val dy = movementThisIteration.y
 
@@ -284,8 +287,8 @@ case class EntityMove(entity: Entity, totalDx: Float, totalDy: Float)
       }
     }
     
-    entity.game.logger.info("This frame desired: " + desiredThisFrame.toString())
-    entity.game.logger.info("This frame travel : " + travelledThisFrame.toString())
+//    entity.game.logger.info("desired / travel : " + desiredThisFrame.toString()
+//                            + " " + travelledThisFrame.toString())
     
     remainingTravel.sub(desiredThisFrame)
     

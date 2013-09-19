@@ -17,9 +17,22 @@ class PlayerEntity(game: MyGame)
 
   var menuActive = false
   var currentMoveQueueItem: EntityMoveTrait = null
+  speed = 4f // player should be faster
   
   // Set to a large number, as we expect to cancel this move when we lift button
   val moveSize = 1000f
+  
+  def changeFace() = {
+    if (keyIsActive(Left))
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.WEST))
+    else if (keyIsActive(Right))
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.EAST))
+  
+    if (keyIsActive(Up))
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.NORTH))
+    else if (keyIsActive(Down))
+      enqueueMove(EntityFace(this, SpriteSpec.Directions.SOUTH))
+  }
   
   def refreshPlayerMoveQueue() = {
     if (currentMoveQueueItem != null) {
@@ -32,21 +45,15 @@ class PlayerEntity(game: MyGame)
       var totalDx = 0f
       var totalDy = 0f
       
-      if (keyIsActive(Left)) {
-        enqueueMove(EntityFace(this, SpriteSpec.Directions.WEST))
+      if (keyIsActive(Left))
         totalDx -= moveSize
-      } else if (keyIsActive(Right)) {
-        enqueueMove(EntityFace(this, SpriteSpec.Directions.EAST))
+      else if (keyIsActive(Right))
         totalDx += moveSize
-      }
   
-      if (keyIsActive(Up)) {
-        enqueueMove(EntityFace(this, SpriteSpec.Directions.NORTH))
+      if (keyIsActive(Up))
         totalDy -= moveSize
-      } else if (keyIsActive(Down)) {
-        enqueueMove(EntityFace(this, SpriteSpec.Directions.SOUTH))
+      else if (keyIsActive(Down))
         totalDy += moveSize
-      }
   
       if (totalDx != 0f || totalDy != 0f) {
         val move = EntityMove(this, totalDx, totalDy)
@@ -93,6 +100,7 @@ class PlayerEntity(game: MyGame)
           })).run()
       }
     } else {
+      changeFace()
       refreshPlayerMoveQueue()
     }
   }
