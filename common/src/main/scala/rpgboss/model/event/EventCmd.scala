@@ -19,6 +19,7 @@ trait EventCmd {
 }
 
 object WhichEvent extends RpgEnum {
+  val PLAYER = Value("Player")
   val THISEVENT = Value("This event")
   val SAMEMAPEVENT = Value("Other event on same map")
   val OTHERMAPEVENT = Value("Other event on other map")
@@ -69,5 +70,31 @@ case class SetEvtState(
     }
 
     List(cmd)
+  }
+}
+
+case class MoveEvent(
+  whichEvtId: Int = WhichEvent.default.id,
+  evtPathOpt: Option[EvtPath] = None,
+  dx: Float,
+  dy: Float,
+  changeDirection: Boolean,
+  awaitDone: Boolean) extends EventCmd {
+  def toJs() = {
+    import WhichEvent._
+    val getEntityCmd = WhichEvent(whichEvtId) match {
+      case PLAYER =>
+        """var _entity = game.getPlayerEntity();"""
+      case THISEVENT =>
+        """var _entity = game.getEventEntity(%s);""".format("event.name()")
+      case SAMEMAPEVENT =>
+        """var _entity = game.getEventEntity(%s);""".format(
+          evtPathOpt.get.evtName)
+    }
+    
+    val moveCmd = """game.moveEntity(_entity, %f, %f, %b, %b);""".format(
+      dx, dy, changeDirection, awaitDone)
+
+    List(getEntityCmd, moveCmd)
   }
 }

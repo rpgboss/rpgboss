@@ -74,6 +74,8 @@ class MyGame(gamepath: File)
   val assets = new RpgAssetManager(project)
 
   def create() = {
+    com.badlogic.gdx.utils.Timer.instance().start()
+    
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
 

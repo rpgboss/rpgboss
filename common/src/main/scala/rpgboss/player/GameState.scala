@@ -264,6 +264,33 @@ class GameState(game: MyGame, project: Project) {
       eventEntities.filter(_.mapEvent.name == evtName).foreach(_.updateState())
     }
   }
+  
+  def getPlayerEntity() = playerEntity
+  def getEventEntity(evtName: String): EventEntity = {
+    eventEntities.find(_.mapEvent.name == evtName).getOrElse(null)
+  }
+  
+  def moveEntity(entity: Entity, dx: Float, dy: Float,
+                 changeDirection: Boolean, awaitDone: Boolean) {
+    import SpriteSpec.Directions._
+    if (dx == 0 && dy == 0)
+      return
+      
+    if (changeDirection) {
+      val direction = 
+        if (math.abs(dx) > math.abs(dy))
+          if (dx > 0) EAST else WEST
+        else
+          if (dy > 0) SOUTH else NORTH
+      entity.enqueueMove(EntityFaceDirection(direction))
+    }
+    
+    val move = EntityMove(dx, dy)
+    entity.enqueueMove(move)
+    
+    if (awaitDone)
+      move.awaitDone()
+  }
 
   def getInt(key: String): Int = persistent.getInt(key)
   def setInt(key: String, value: Int) = {
@@ -279,7 +306,7 @@ class GameState(game: MyGame, project: Project) {
     persistent.getStringArray(key)
   def setStringArray(key: String, value: Array[String]) =
     persistent.setStringArray(key, value)
-
+    
   val LEFT = Window.Left
   val CENTER = Window.Center
   val RIGHT = Window.Right
