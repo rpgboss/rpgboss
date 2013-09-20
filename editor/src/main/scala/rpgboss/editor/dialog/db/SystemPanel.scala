@@ -2,7 +2,7 @@ package rpgboss.editor.dialog.db
 
 import rpgboss.editor._
 import rpgboss.editor.uibase._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import scala.swing._
 import scala.swing.event._
 import rpgboss.model._

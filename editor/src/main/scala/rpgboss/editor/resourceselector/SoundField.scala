@@ -57,7 +57,7 @@ abstract class SoundSelectDialog(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit) = {
     new DesignGridPanel with ResourceRightPane {
-      import rpgboss.editor.misc.SwingUtils._
+      import rpgboss.editor.uibase.SwingUtils._
       
       override def dispose() = {
         gdxPanel.dispose()
@@ -109,7 +109,7 @@ abstract class MusicSelectDialog(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit) = {
     new DesignGridPanel with ResourceRightPane {
-      import rpgboss.editor.misc.SwingUtils._
+      import rpgboss.editor.uibase.SwingUtils._
 
       override def dispose() = {
         currentMusic.map(_.dispose())

@@ -4,7 +4,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import scala.swing._
 import rpgboss.editor.uibase._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.resourceselector.MusicField
 

@@ -1,7 +1,7 @@
 package rpgboss.editor
 
 import rpgboss.lib._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._

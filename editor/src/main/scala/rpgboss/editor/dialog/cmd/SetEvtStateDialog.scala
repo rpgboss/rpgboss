@@ -2,7 +2,7 @@ package rpgboss.editor.dialog.cmd
 
 import scala.swing._
 import rpgboss.model.event._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.model.RpgEnum
 import rpgboss.model.EvtPath

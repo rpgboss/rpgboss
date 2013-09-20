@@ -1,9 +1,10 @@
-package rpgboss.editor.misc
+package rpgboss.editor.uibase
 
 import scala.swing._
 import scala.collection.mutable.Buffer
 import rpgboss.model._
 import scala.swing.event._
+import scala.swing._
 
 object SwingUtils {
   def lbl(s: String) = new Label(s)

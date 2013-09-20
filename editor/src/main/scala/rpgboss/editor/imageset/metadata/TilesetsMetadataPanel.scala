@@ -1,7 +1,7 @@
 package rpgboss.editor.imageset.metadata
 
 import scala.swing._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.misc.TileUtils
 import scala.swing.event._
 import rpgboss.editor.uibase._

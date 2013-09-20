@@ -1,7 +1,7 @@
 package rpgboss.editor.misc
 
 import rpgboss.lib._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.imageset._
@@ -223,11 +223,13 @@ class MapView(
     viewStateOpt = mapOpt map { mapMeta =>
       new MapViewState(sm, mapMeta.name)
     }
-
-    resizeRevalidateRepaint()
+    
+    updateCursorSq(TileRect.empty)
 
     // Restore centers upon loading a new map
     scrollPane.restoreCenters()
+    
+    resizeRevalidateRepaint()
   }
 
   // Updates cursor square, and queues up any appropriate repaints

@@ -1,7 +1,7 @@
 package rpgboss.editor.resourceselector
 
 import scala.swing._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import scala.swing.event._
 import rpgboss.model._
 import rpgboss.model.resource._

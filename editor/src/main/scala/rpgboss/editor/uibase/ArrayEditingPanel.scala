@@ -2,7 +2,7 @@ package rpgboss.editor.uibase
 
 import scala.swing._
 import scala.swing.event._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.dialog._
 import javax.swing.BorderFactory
 import com.typesafe.scalalogging.slf4j.Logging

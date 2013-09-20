@@ -3,7 +3,7 @@ package rpgboss.editor.dialog.cmd
 import scala.swing._
 import rpgboss.model.event._
 import rpgboss.model.Constants._
-import rpgboss.editor.misc.SwingUtils._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.StateMaster
@@ -31,7 +31,7 @@ class TeleportCmdDialog(
     addBtnsAsGrp(contents, radioBtns)
   }
 
-  val mapLocPanel = new MapLocPanel(owner, sm, initial.loc)
+  val mapLocPanel = new MapLocPanel(owner, sm, initial.loc, false)
 
   contents = new DesignGridPanel {
     row().grid().add(leftLabel("Transition:"))
