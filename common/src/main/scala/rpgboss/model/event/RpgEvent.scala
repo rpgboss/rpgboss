@@ -29,11 +29,12 @@ case class RpgEvent(
   name: String,
   x: Float,
   y: Float,
-  states: Array[RpgEventState])
+  states: Array[RpgEventState],
+  deleted: Boolean = false)
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
-    RpgEvent("Event%05d".format(idFromMap), x, y, Array(RpgEventState()))
+    RpgEvent("Event%05d".format(idFromMap), x, y, Array(RpgEventState()), false)
 }
 
 /**

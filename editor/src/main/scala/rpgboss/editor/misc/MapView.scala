@@ -123,7 +123,7 @@ class MapView(
           drawWithAlpha(g, evtAlpha) {
 
             g.setStroke(new BasicStroke())
-            vs.nextMapData.events.foreach(rpgevt =>
+            vs.nextMapData.nonDeletedEvents.foreach(rpgevt =>
               // If within view frame
               if (rpgevt.x + 0.5 > minX && rpgevt.x - 0.5 < maxX &&
                 rpgevt.y + 0.5 > minY && rpgevt.y - 0.5 < maxY) {

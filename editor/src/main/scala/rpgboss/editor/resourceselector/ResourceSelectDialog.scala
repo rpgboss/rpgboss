@@ -26,7 +26,6 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
   }
   
   override def onClose() = {
-    logger.debug("onClose()")
     resourceSelector.dispose()
     super.onClose()
   }

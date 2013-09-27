@@ -116,7 +116,7 @@ class GameState(game: MyGame, project: Project) {
 
       val mapAndAssets = new MapAndAssets(project, loc.map)
       mapAndAssetsOption = Some(mapAndAssets)
-      eventEntities = mapAndAssets.mapData.events.map {
+      eventEntities = mapAndAssets.mapData.nonDeletedEvents.map {
         new EventEntity(game, _)
       }.toList
     }

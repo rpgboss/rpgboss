@@ -36,7 +36,7 @@ object MapLayers extends RpgEnum {
 class MapViewState(val sm: StateMaster, val mapName: String) {
   var prevStates: List[RpgMapData] = List()
 
-  def map = sm.getMap(mapName)
+  def map = sm.getMap(mapName).get
   def mapMeta = map.metadata
 
   val tileCache = new MapTileCache(sm.assetCache, map)

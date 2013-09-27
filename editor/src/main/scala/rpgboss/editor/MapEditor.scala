@@ -233,18 +233,8 @@ class MapEditor(
   def deleteEvent() = viewStateOpt map { vs =>
     selectedEvtIdx map { evtIdx =>
       vs.begin()
-      // Deletion of events is expensive, but hopefully, not too common
-      val oldEvents = vs.nextMapData.events
-      val deletedEvt = oldEvents(evtIdx)
-      val newEvents = new Array[RpgEvent](oldEvents.size - 1)
-      // Copy over every item except the deleted item
-      for (i <- 0 until evtIdx) {
-        newEvents.update(i, oldEvents(i))
-      }
-      for (i <- evtIdx + 1 until oldEvents.size) {
-        newEvents.update(i - 1, oldEvents(i))
-      }
-      vs.nextMapData = vs.nextMapData.copy(events = newEvents)
+      val oldEvent = vs.nextMapData.events(evtIdx)
+      vs.nextMapData.events.update(evtIdx, oldEvent.copy(deleted = true))
       commitVS(vs)
 
       // Repaint deleted event region
@@ -300,7 +290,7 @@ class MapEditor(
 
     // Updated the selected event idx
     val existingEventIdx = vs.nextMapData.events.indexWhere(
-      e => e.x.toInt == xTile0.toInt && e.y.toInt == yTile0.toInt)
+      e => !e.deleted && e.x.toInt == xTile0.toInt && e.y.toInt == yTile0.toInt)
 
     if (existingEventIdx == -1) {
       selectedEvtIdx = None

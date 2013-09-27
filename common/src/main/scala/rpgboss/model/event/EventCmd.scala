@@ -75,7 +75,7 @@ case class SetEvtState(
 
 case class MoveEvent(
   whichEvtId: Int = WhichEvent.default.id,
-  evtPathOpt: Option[EvtPath] = None,
+  eventName: String = "",
   dx: Float,
   dy: Float,
   changeDirection: Boolean,
@@ -88,8 +88,7 @@ case class MoveEvent(
       case THISEVENT =>
         """var _entity = game.getEventEntity(%s);""".format("event.name()")
       case SAMEMAPEVENT =>
-        """var _entity = game.getEventEntity(%s);""".format(
-          evtPathOpt.get.evtName)
+        """var _entity = game.getEventEntity(%s);""".format(eventName)
     }
     
     val moveCmd = """game.moveEntity(_entity, %f, %f, %b, %b);""".format(

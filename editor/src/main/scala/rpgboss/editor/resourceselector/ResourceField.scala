@@ -8,6 +8,9 @@ import scala.swing.event.MouseClicked
 import scala.swing.event.EditDone
 import com.typesafe.scalalogging.slf4j.Logging
 import rpgboss.editor.uibase.ImagePanel
+import rpgboss.editor.uibase.StdDialog
+import rpgboss.editor.misc.MapLocPanel
+import rpgboss.editor.uibase.DesignGridPanel
 
 class StringSpecSelectDialog[M, MT](
   owner: Window,
@@ -65,6 +68,28 @@ class WindowskinSelectDialog(
   }
 }
 
+class MapLocSelectDialog(
+  owner: Window,
+  sm: StateMaster,
+  selectMapOnly: Boolean,
+  initialLoc: MapLoc,
+  onSuccessF: MapLoc => Unit)
+  extends StdDialog(owner, "Select Map")
+  with Logging {
+  
+  val locPanel = new MapLocPanel(this, sm, initialLoc, selectMapOnly)
+  
+  def okFunc(): Unit = {
+    onSuccessF(locPanel.loc)
+    close()
+  }
+
+  contents = new DesignGridPanel {
+    row().grid().add(locPanel)
+    addButtons(cancelBtn, okBtn)
+  }
+}
+
 abstract class BrowseField[SpecType](
   owner: Window,
   sm: StateMaster,
@@ -79,8 +104,10 @@ abstract class BrowseField[SpecType](
     enabled = true
   }
   
+  def modelToString(m: SpecType): String = m.toString
+  
   def updateWidgets() =
-    textField.text = model.map(_.toString).getOrElse("<None>")
+    textField.text = model.map(modelToString).getOrElse("<None>")
   
   updateWidgets()
   
@@ -152,6 +179,26 @@ class MsgfontField(
       owner, sm, model,
       false, Msgfont,
       model = _)
+    diag.open()
+  }
+}
+
+class MapField(
+  owner: Window,
+  sm: StateMaster,
+  initial: String,
+  onUpdate: String => Unit)
+  extends StringBrowseField(owner, sm, initial, onUpdate) {
+  override def modelToString(m: String) = 
+    sm.getMap(m).map(_.displayId).getOrElse("<Missing map>")
+
+  def doBrowse() = {
+    val diag = new MapLocSelectDialog(
+      owner,
+      sm,
+      true /* selectMapOnly */,
+      model.map(mapName => MapLoc(mapName, -1, -1)).get,
+      loc => model = Some(loc.map))
     diag.open()
   }
 }

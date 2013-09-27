@@ -26,7 +26,9 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
                       lastGeneratedEventId: Int = 0) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
-
+  
+  def nonDeletedEvents = events.filter(!_.deleted)
+  
   def writeCsv(file: File, data: Array[Array[Byte]]) = {
     val writer =
       new CSVWriter(new FileWriter(file), '\t', CSVWriter.NO_QUOTE_CHARACTER)

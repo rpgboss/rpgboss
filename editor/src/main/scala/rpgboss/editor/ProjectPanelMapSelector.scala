@@ -23,7 +23,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
     new PopupMenu {
       if (node != projectRoot) {
         contents += new MenuItem(Action("Map Properties...") {
-          val origMap = sm.getMap(node.mapName)
+          val origMap = sm.getMap(node.mapName).get
           val origMapData = sm.getMapData(node.mapName)
 
           val d = new MapPropertiesDialog(
@@ -67,7 +67,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
             removeNode(node)
             sm.removeMap(node.mapName)
             
-            val map = sm.getMap(node.mapName)
+            val map = sm.getMap(node.mapName).get
             allNodes
               .get(map.metadata.parent)
               .map(selectNode(_))

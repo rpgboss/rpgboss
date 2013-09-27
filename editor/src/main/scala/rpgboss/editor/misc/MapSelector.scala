@@ -97,7 +97,7 @@ class MapSelector(sm: StateMaster)
         if (mapName.isEmpty()) {
           onSelectMap(None)
         } else {
-          val map = sm.getMap(mapName)
+          val map = sm.getMap(mapName).get
 
           onSelectMap(Some(map))
         }

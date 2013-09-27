@@ -114,7 +114,7 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project) {
 
   // Must be sure that mapId exists and map data loaded to call
   def getMap(mapName: String) =
-    mapStates.get(mapName).get.map
+    mapStates.get(mapName).map(_.map)
 
   def setMap(mapName: String, map: RpgMap, markDirty: Boolean = true) = {
     val curState = mapStates.get(mapName).get
