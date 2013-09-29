@@ -18,7 +18,18 @@ case class MapLoc(
   var x: Float,
   var y: Float)
 
-case class EvtPath(mapName: String, evtName: String)
+object WhichEntity extends RpgEnum {
+  val PLAYER = Value(0, "Player")
+  val THIS_EVENT = Value(1, "This event")
+  val OTHER_EVENT = Value(2, "Other event")
+  
+  def default = PLAYER
+}
+  
+// Specifies an entity: Either the player or an event on the current map.
+case class EntitySpec(
+  var whichEntityId: Int = WhichEntity.default.id,
+  var eventIdx: Int = -1)
 
 case class SpriteSpec(
   spriteset: String,

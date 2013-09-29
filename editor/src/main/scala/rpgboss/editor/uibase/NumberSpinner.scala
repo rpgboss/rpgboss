@@ -32,3 +32,30 @@ class NumberSpinner(
     spinner.setEnabled(b)
   }
 }
+
+class FloatSpinner(
+  initial: Float,
+  min: Float,
+  max: Float,
+  onUpdate: ((Float) => Unit) = (v) => {},
+  step: Float)
+  extends BoxPanel(Orientation.Horizontal) {
+  val model = new SpinnerNumberModel(initial, min, max, step)
+
+  val spinner = new JSpinner(model)
+
+  spinner.addChangeListener(new ChangeListener() {
+    override def stateChanged(e: ChangeEvent) {
+      onUpdate(getValue)
+    }
+  })
+  contents += Component.wrap(spinner)
+
+  def getValue = model.getNumber().floatValue()
+  def setValue(v: Float) = model.setValue(v)
+
+  override def enabled_=(b: Boolean) = {
+    super.enabled_=(b)
+    spinner.setEnabled(b)
+  }
+}

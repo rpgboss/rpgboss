@@ -20,11 +20,14 @@ object EventCmdDialog {
   def dialogFor(
     owner: Window,
     sm: StateMaster,
+    mapName: String,
     evtCmd: EventCmd,
     successF: (EventCmd) => Any) =
     evtCmd match {
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
       case e: SetEvtState => new SetEvtStateDialog(owner, e, successF)
+      case e: MoveEvent => 
+        new MoveEventCmdDialog(owner, sm, mapName, e, successF)
     }
 }

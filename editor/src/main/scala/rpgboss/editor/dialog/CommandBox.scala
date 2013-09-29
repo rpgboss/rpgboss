@@ -16,22 +16,25 @@ class CommandBox(
   evtDiag: EventDialog,
   owner: Window,
   sm: StateMaster,
+  mapName: String,
   initialCmds: Array[EventCmd])
   extends ListView(initialCmds) {
 
   listenTo(mouse.clicks)
 
   def newCmdDialog() = {
-    val d = new NewEvtCmdBox(evtDiag, sm, owner, this, selection.indices.head)
+    val d = new NewEvtCmdBox(evtDiag, sm, owner, mapName, this, 
+                             selection.indices.head)
     d.open()
   }
 
   def editSelectedCmd() = {
     val selectedIdx = selection.indices.head
     val selectedCmd = selection.items.head
-    val d = EventCmdDialog.dialogFor(owner, sm, selectedCmd, newEvt => {
-      listData = listData.updated(selectedIdx, newEvt)
-    })
+    val d = EventCmdDialog.dialogFor(owner, sm, mapName, selectedCmd, 
+      newEvt => {
+        listData = listData.updated(selectedIdx, newEvt)
+      })
     d.open()
   }
 

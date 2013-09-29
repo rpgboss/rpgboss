@@ -16,6 +16,7 @@ class NewEvtCmdBox(
   evtDiag: EventDialog,
   sm: StateMaster,
   owner: Window,
+  mapName: String,
   cmdBox: CommandBox,
   idxToInsert: Int)
   extends StdDialog(owner, "New command") {
@@ -29,6 +30,7 @@ class NewEvtCmdBox(
         val d = EventCmdDialog.dialogFor(
           owner,
           sm,
+          mapName,
           e,
           evtCmd => {
             NewEvtCmdBox.this.close()

@@ -60,6 +60,7 @@ class EventDialog(
       EventDialog.this,
       owner,
       sm,
+      mapName,
       curEvtState.cmds)
 
     contents += new DesignGridPanel {

@@ -18,15 +18,6 @@ trait EventCmd {
   }
 }
 
-object WhichEvent extends RpgEnum {
-  val PLAYER = Value("Player")
-  val THISEVENT = Value("This event")
-  val SAMEMAPEVENT = Value("Other event on same map")
-  val OTHERMAPEVENT = Value("Other event on other map")
-
-  def default = THISEVENT
-}
-
 object EventCmd {
   def types = List(
     classOf[EndOfScript],
@@ -51,44 +42,25 @@ case class Teleport(loc: MapLoc, transition: Int) extends EventCmd {
     loc.map, loc.x, loc.y, transition))
 }
 
-// A "None" in the evtName means for the current event
-case class SetEvtState(
-  whichEvtId: Int = WhichEvent.default.id,
-  evtPathOpt: Option[EvtPath] = None,
-  state: Int = 0) extends EventCmd {
-  def toJs() = {
-    import WhichEvent._
-    val cmd = WhichEvent(whichEvtId) match {
-      case THISEVENT =>
-        """game.setEvtState(%s, %d);""".format("event.name()", state)
-      case SAMEMAPEVENT =>
-        """game.setEvtState(event.mapName(), %s, %d);"""
-          .format(evtPathOpt.get.evtName, state)
-      case OTHERMAPEVENT =>
-        """game.setEvtState("%s", "%s", %d);"""
-          .format(evtPathOpt.get.mapName, evtPathOpt.get.evtName, state)
-    }
-
-    List(cmd)
-  }
+case class SetEvtState(state: Int = 0) extends EventCmd {
+  def toJs() =
+    List("""game.setEvtState(%s, %d);""".format("event.idx()", state))
 }
 
 case class MoveEvent(
-  whichEvtId: Int = WhichEvent.default.id,
-  eventName: String = "",
-  dx: Float,
-  dy: Float,
-  changeDirection: Boolean,
-  awaitDone: Boolean) extends EventCmd {
+  var entitySpec: EntitySpec,
+  var dx: Float,
+  var dy: Float,
+  var changeDirection: Boolean,
+  var awaitDone: Boolean) extends EventCmd {
   def toJs() = {
-    import WhichEvent._
-    val getEntityCmd = WhichEvent(whichEvtId) match {
-      case PLAYER =>
+    val getEntityCmd = entitySpec match {
+      case EntitySpec(WhichEntity.PLAYER, _) =>
         """var _entity = game.getPlayerEntity();"""
-      case THISEVENT =>
+      case EntitySpec(WhichEntity.THIS_EVENT, _) =>
         """var _entity = game.getEventEntity(%s);""".format("event.name()")
-      case SAMEMAPEVENT =>
-        """var _entity = game.getEventEntity(%s);""".format(eventName)
+      case EntitySpec(WhichEntity.OTHER_EVENT, eventIdx) =>
+        """var _entity = game.getEventEntity(%s);""".format(eventIdx)
     }
     
     val moveCmd = """game.moveEntity(_entity, %f, %f, %b, %b);""".format(

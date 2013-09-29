@@ -190,7 +190,7 @@ class MapField(
   onUpdate: String => Unit)
   extends StringBrowseField(owner, sm, initial, onUpdate) {
   override def modelToString(m: String) = 
-    sm.getMap(m).map(_.displayId).getOrElse("<Missing map>")
+    sm.getMap(m).map(_.displayId).getOrElse("[None]")
 
   def doBrowse() = {
     val diag = new MapLocSelectDialog(
