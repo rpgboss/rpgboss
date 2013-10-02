@@ -49,6 +49,7 @@ class NewEvtCmdBox(
         MapLoc(evtDiag.mapName, evtDiag.event.x, evtDiag.event.y),
         Transitions.FADE.id)))
     row().grid().add(btnEvtCmd("Change event state...", SetEvtState()))
+    row().grid().add(btnEvtCmd("Move event...", MoveEvent()))
 
     addCancel(cancelBtn)
   }

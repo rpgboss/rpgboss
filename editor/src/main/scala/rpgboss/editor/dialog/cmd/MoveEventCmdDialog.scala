@@ -25,10 +25,10 @@ class MoveEventCmdDialog(
   val fieldDx = new FloatSpinner(model.dx, -100, 100, model.dx = _, 0.1f)
   val fieldDy = new FloatSpinner(model.dy, -100, 100, model.dy = _, 0.1f)
   
-  val fieldChangeDirection = 
-    boolField(model.changeDirection, model.changeDirection = _)
-  val fieldAwaitDone = 
-    boolField(model.awaitDone, model.awaitDone = _)
+  val fieldAffixDirection = 
+    boolField(model.affixDirection, model.affixDirection = _)
+  val fieldAsync = 
+    boolField(model.async, model.async = _)
 
   def okFunc() = {
     successF(model)
@@ -39,8 +39,8 @@ class MoveEventCmdDialog(
     row().grid(lbl("Event:")).add(fieldWhichEvent)
     row().grid(lbl("X Movement:")).add(fieldDx)
     row().grid(lbl("Y Movement:")).add(fieldDy)
-    row().grid(lbl("Change direction:")).add(fieldChangeDirection)
-    row().grid(lbl("Await done:")).add(fieldAwaitDone)
+    row().grid(lbl("Affix direction:")).add(fieldAffixDirection)
+    row().grid(lbl("Async:")).add(fieldAsync)
     
     addButtons(cancelBtn, okBtn)
   }

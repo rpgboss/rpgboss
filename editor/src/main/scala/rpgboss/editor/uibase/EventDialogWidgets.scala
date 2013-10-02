@@ -65,8 +65,10 @@ class EntitySelectPanel(
   val (fieldEventIdx, found) = 
     EventArrayComboBox.fromMap(mapData, model.eventIdx, model.eventIdx = _)
   
-  row().grid(lbl("Which Event:")).add(new BoxPanel(Orientation.Vertical) {
+  row().grid().add(new BoxPanel(Orientation.Vertical) {
     addBtnsAsGrp(contents, btns)
   })
-  row().grid(lbl("Specified Event:")).add(fieldEventIdx)
+  row().grid().add(fieldEventIdx)
+  
+  updateFieldState();
 }

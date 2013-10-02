@@ -271,12 +271,12 @@ class GameState(game: MyGame, project: Project) {
   }
   
   def moveEntity(entity: Entity, dx: Float, dy: Float,
-                 changeDirection: Boolean, awaitDone: Boolean) {
+                 affixDirection: Boolean, async: Boolean) {
     import SpriteSpec.Directions._
     if (dx == 0 && dy == 0)
       return
       
-    if (changeDirection) {
+    if (!affixDirection) {
       val direction = 
         if (math.abs(dx) > math.abs(dy))
           if (dx > 0) EAST else WEST
@@ -288,7 +288,7 @@ class GameState(game: MyGame, project: Project) {
     val move = EntityMove(dx, dy)
     entity.enqueueMove(move)
     
-    if (awaitDone)
+    if (!async)
       move.awaitDone()
   }
 

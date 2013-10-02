@@ -48,23 +48,23 @@ case class SetEvtState(state: Int = 0) extends EventCmd {
 }
 
 case class MoveEvent(
-  var entitySpec: EntitySpec,
-  var dx: Float,
-  var dy: Float,
-  var changeDirection: Boolean,
-  var awaitDone: Boolean) extends EventCmd {
+  var entitySpec: EntitySpec = EntitySpec(),
+  var dx: Float = 0f,
+  var dy: Float = 0f,
+  var affixDirection: Boolean = false,
+  var async: Boolean = false) extends EventCmd {
   def toJs() = {
     val getEntityCmd = entitySpec match {
-      case EntitySpec(WhichEntity.PLAYER, _) =>
+      case EntitySpec(which, _) if which == WhichEntity.PLAYER.id =>
         """var _entity = game.getPlayerEntity();"""
-      case EntitySpec(WhichEntity.THIS_EVENT, _) =>
+      case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
         """var _entity = game.getEventEntity(%s);""".format("event.name()")
-      case EntitySpec(WhichEntity.OTHER_EVENT, eventIdx) =>
+      case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
         """var _entity = game.getEventEntity(%s);""".format(eventIdx)
     }
     
     val moveCmd = """game.moveEntity(_entity, %f, %f, %b, %b);""".format(
-      dx, dy, changeDirection, awaitDone)
+      dx, dy, affixDirection, async)
 
     List(getEntityCmd, moveCmd)
   }
