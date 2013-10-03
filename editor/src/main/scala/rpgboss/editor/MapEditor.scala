@@ -34,7 +34,7 @@ class MapEditor(
   extends MapView(projectPanel.mainP.topWin, sm, MapScales.scale1) {
   private var selectedLayer = MapLayers.default
   private var selectedTool = MapViewToolsEnum.default
-  private var selectedEvtIdx: Option[Int] = None
+  private var selectedEvtId: Option[Int] = None
   private var popupMenuOpen = false
 
   def selectLayer(layer: MapLayers.Value) = {
@@ -58,7 +58,7 @@ class MapEditor(
         topAlpha = 1.0f
         evtAlpha = 1.0f
         drawGrid = true
-        selectedEvtIdx = None
+        selectedEvtId = None
     }
 
     resizeRevalidateRepaint()
@@ -189,21 +189,19 @@ class MapEditor(
   //--- EVENT POPUP MENU ---//
   import MapLayers._
   def editEvent() = viewStateOpt map { vs =>
-    val isNewEvent = selectedEvtIdx.isEmpty
+    val isNewEvent = selectedEvtId.isEmpty
 
     /**
      * Brings up dialog to create new or edit event at the selected event tile
      */
     vs.begin()
 
-    val event = selectedEvtIdx.map { idx =>
-      vs.nextMapData.events(idx)
+    val event = selectedEvtId.map { id =>
+      vs.nextMapData.events(id)
     } getOrElse {
-      vs.nextMapData = vs.nextMapData.copy(
-        lastGeneratedEventId = vs.nextMapData.lastGeneratedEventId + 1)
       // Need the +0.5f to offset into center of selected tile 
       RpgEvent.blank(
-        vs.nextMapData.lastGeneratedEventId,
+        vs.nextMapData.lastGeneratedEventId + 1,
         canvasPanel.cursorSquare.x1 + 0.5f,
         canvasPanel.cursorSquare.y1 + 0.5f)
     }
@@ -214,12 +212,11 @@ class MapEditor(
       vs.mapName,
       event,
       onOk = { e: RpgEvent =>
-        if (isNewEvent)
-          vs.nextMapData = vs.nextMapData.copy(
-            events = vs.nextMapData.events ++ Array(e))
-        else
-          vs.nextMapData.events.update(selectedEvtIdx.get, e)
-
+        if (isNewEvent) 
+          vs.nextMapData.lastGeneratedEventId += 1
+        
+        vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
+        
         commitVS(vs)
         repaintRegion(TileRect(e.x.toInt, e.y.toInt))
       },
@@ -231,22 +228,21 @@ class MapEditor(
   }
 
   def deleteEvent() = viewStateOpt map { vs =>
-    selectedEvtIdx map { evtIdx =>
+    selectedEvtId map { id =>
       vs.begin()
-      val oldEvent = vs.nextMapData.events(evtIdx)
-      vs.nextMapData.events.update(evtIdx, oldEvent.copy(deleted = true))
+      vs.nextMapData.events = vs.nextMapData.events - id
       commitVS(vs)
 
       // Repaint deleted event region
       repaintRegion(canvasPanel.cursorSquare)
       // Delete the cached selected event id
-      selectedEvtIdx = None
+      selectedEvtId = None
     }
   }
 
   def showEventPopupMenu(px: Int, py: Int, xTile: Float, yTile: Float) = {
     viewStateOpt map { vs =>
-      val evtSelected = selectedEvtIdx.isDefined
+      val evtSelected = selectedEvtId.isDefined
       val newEditText = if (evtSelected) "Edit event..." else "New event..."
 
       val menu = new PopupMenu {
@@ -288,32 +284,25 @@ class MapEditor(
     if (!vs.mapMeta.withinBounds(xTile0, yTile0))
       return None
 
-    // Updated the selected event idx
-    val existingEventIdx = vs.nextMapData.events.indexWhere(
-      e => !e.deleted && e.x.toInt == xTile0.toInt && e.y.toInt == yTile0.toInt)
-
-    if (existingEventIdx == -1) {
-      selectedEvtIdx = None
-    } else {
-      selectedEvtIdx = Some(existingEventIdx)
-    }
-
+    // Updated the selected event id
+    selectedEvtId = vs.nextMapData.events.find {
+      case (id, event) =>
+        event.x.toInt == xTile0.toInt && event.y.toInt == yTile0.toInt
+    }.map(_._1)
+    
     val button = e.peer.getButton()
 
     if (selectedLayer == Evt) {
       updateCursorSq(TileRect(xTile0.toInt, yTile0.toInt))
 
       if (button == MouseEvent.BUTTON1) {
-        if (selectedEvtIdx.isDefined) {
-          val evtIdx = selectedEvtIdx.get
-
+        if (selectedEvtId.isDefined) {
           vs.begin()
 
           def onDrag(xTile1: Float, yTile1: Float, vs: MapViewState) = {
-            val evt = vs.nextMapData.events(evtIdx)
-            vs.nextMapData.events.update(evtIdx,
-              evt.copy(x = xTile1.toInt + 0.5f, y = yTile1.toInt + 0.5f))
-
+            val evt = vs.nextMapData.events(selectedEvtId.get) 
+            evt.x = xTile1.toInt + 0.5f 
+            evt.y = yTile1.toInt + 0.5f
             updateCursorSq(TileRect(xTile1, yTile1))
           }
 

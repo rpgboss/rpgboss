@@ -22,12 +22,10 @@ import rpgboss.model.resource.RpgMap
 case class RpgMapData(botLayer: Array[Array[Byte]],
                       midLayer: Array[Array[Byte]],
                       topLayer: Array[Array[Byte]],
-                      events: Array[RpgEvent],
-                      lastGeneratedEventId: Int = 0) {
+                      var events: Map[Int, RpgEvent],
+                      var lastGeneratedEventId: Int = 0) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
-  
-  def nonDeletedEvents = events.filter(!_.deleted)
   
   def writeCsv(file: File, data: Array[Array[Byte]]) = {
     val writer =
@@ -51,7 +49,8 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
 
     val eventsWritten = evtFile.useWriter { writer =>
       implicit val formats = RpgMapData.formats
-      Serialization.writePretty(RpgMapDataEvents(events), writer) != null
+      Serialization.writePretty(
+          RpgMapDataEventsIntermediate(events), writer) != null
     } getOrElse false
 
     layersWritten && eventsWritten
@@ -90,11 +89,15 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
       botLayer = botLayer.map(_.clone()),
       midLayer = midLayer.map(_.clone()),
       topLayer = topLayer.map(_.clone()),
-      events = events.clone())
+      events = events.mapValues(_.copy()))
   }
 }
 
-case class RpgMapDataEvents(events: Array[RpgEvent])
+case class RpgMapDataEventsIntermediate(events: Array[RpgEvent])
+object RpgMapDataEventsIntermediate {
+  def apply(events: Map[Int, RpgEvent]): RpgMapDataEventsIntermediate = 
+    apply(events.values.toArray)
+}
 
 case object RpgMapData {
   val formats = Serialization.formats(ShortTypeHints(
@@ -134,9 +137,11 @@ case object RpgMapData {
 
     implicit val formats = RpgMapData.formats
 
-    evtFile.getReader().map { reader =>
-      val intermediate = Serialization.read[RpgMapDataEvents](reader)
-      RpgMapData(botAry, topAry, midAry, intermediate.events)
+    evtFile.getReader().map { reader =>    
+      val intermediate = 
+        Serialization.read[RpgMapDataEventsIntermediate](reader)
+      val events = intermediate.events.map(event => event.id->event).toMap
+      RpgMapData(botAry, topAry, midAry, events)
     }
   }
 }

@@ -122,16 +122,8 @@ class PlayerEntity(game: MyGame)
       },
       0.05f /* delaySeconds */)
   }
-  
-  override def update(delta: Float) = {
 
-    // Do the basic event update stuff, including the actual moving
-    super.update(delta)
-
-
-  }
-
-  def eventTouchCallback(touchedNpcs: List[EventEntity]) = {
+  def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.PLAYERTOUCH.id ||

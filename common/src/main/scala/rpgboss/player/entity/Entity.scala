@@ -36,7 +36,8 @@ abstract class Entity(
   var initialSprite: Option[SpriteSpec] = None) {
 
   val moveQueue = new collection.mutable.SynchronizedQueue[EntityMoveTrait]
-
+  var movesEnqueued: Long = 0
+  
   var speed: Float = 3.0f
   private var isMovingVar = false
   private var movingSince: Long = 0
@@ -105,32 +106,31 @@ abstract class Entity(
    * Finds all events with which this dxArg and dyArg touches
    */
   def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
-    game.state.eventEntities.filter(npc => {
+    game.state.eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(x + dxArg, y + dyArg)
     })
   }
 
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox()
-    game.state.eventEntities.filter(npc => {
+    game.state.eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(boundingBox)
     })
   }
 
   def enqueueMove(move: EntityMoveTrait) = {
     moveQueue.enqueue(move)
-    game.logger.info("enqueueMove: size " + moveQueue.size.toString)
+    movesEnqueued += 1
   }
   def dequeueMove() = {
     moveQueue.dequeue()
-    game.logger.info("dequeueMove: size " + moveQueue.size.toString)
   }
   
   /**
    * This method is called when event collides against another event during
    * movement.
    */
-  def eventTouchCallback(touchedNpcs: List[EventEntity])
+  def eventTouchCallback(touchedNpcs: Iterable[EventEntity])
 
   def update(delta: Float) = {
     var moveQueueUpdateDone = false
@@ -229,7 +229,8 @@ case class EntityMove(totalDx: Float, totalDy: Float)
 
       var movedThisLoop = false
       
-      val evtsTouched = entity.getAllEventCenterTouches(dx, dy)
+      val evtsTouched = 
+        entity.getAllEventCenterTouches(dx, dy).filter(_ != entity)
       entity.eventTouchCallback(evtsTouched)
       val evtBlocking =
         evtsTouched.exists(_.evtState.height == EventHeight.SAME.id)

@@ -26,15 +26,16 @@ import EventTrigger._
  * Guaranteed to have at least one state
  */
 case class RpgEvent(
-  name: String,
-  x: Float,
-  y: Float,
-  states: Array[RpgEventState],
-  deleted: Boolean = false)
+  id: Int,
+  var name: String,
+  var x: Float,
+  var y: Float,
+  states: Array[RpgEventState])
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
-    RpgEvent("Event%05d".format(idFromMap), x, y, Array(RpgEventState()), false)
+    RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y, 
+             Array(RpgEventState()))
 }
 
 /**

@@ -13,25 +13,29 @@ import rpgboss.model.WhichEntity
 object EventArrayComboBox {
   // Returns a ComboBox, plus a boolean indicating whether or not 'initial' was
   // found and selected in the ComboBox
-  def fromMap(mapData: RpgMapData, initial: Int, onUpdate: Int => Unit) :
-    (ComboBox[(RpgEvent, Int)], Boolean) = {
-    val nonDeletedEventsWithIndices : Array[(RpgEvent, Int)] =
-      mapData.events.zipWithIndex.filter(!_._1.deleted)
+  def fromMap(mapData: RpgMapData, initialId: Int, onUpdate: Int => Unit) :
+    (ComboBox[RpgEvent], Boolean) = {
+    val events : Vector[RpgEvent] = mapData.events.values.toVector.sortBy(_.id)
+    val indexOfInitialInArray = events.indexWhere(_.id == initialId)
+    val found = indexOfInitialInArray != -1
     
-    val indexInFilteredList = 
-      nonDeletedEventsWithIndices.indexWhere(_._2 == initial)
-    
-    val found = indexInFilteredList != -1
-      
-    val comboBox = new ComboBox(nonDeletedEventsWithIndices) {
-      selection.index = if (found) indexInFilteredList else 0
-
-      renderer = ListView.Renderer(eventTuple => {
-        "%d: %s".format(eventTuple._2, eventTuple._1.name)
-      })
-
-      reactions += {
-        case SelectionChanged(_) => onUpdate(selection.item._2)
+    // If no events exist, both the selection and custom renderer won't work,
+    // so we provide a dummy disabled comboBox.
+    val comboBox = if (events.isEmpty) {
+      new ComboBox(Array[RpgEvent]()) {
+        enabled = false
+      }
+    } else {
+      new ComboBox[RpgEvent](events) {
+        selection.index = if (found) indexOfInitialInArray else 0
+  
+        renderer = ListView.Renderer(event => {
+          "%d: %s".format(event.id, event.name)
+        })
+  
+        reactions += {
+          case SelectionChanged(_) => onUpdate(selection.item.id)
+        }
       }
     }
     
@@ -51,7 +55,7 @@ class EntitySelectPanel(
   val model = initial
   
   def updateFieldState() = {
-    fieldEventIdx.enabled =
+    fieldEventId.enabled =
       WhichEntity(model.whichEntityId) == WhichEntity.OTHER_EVENT
   }
   
@@ -60,15 +64,17 @@ class EntitySelectPanel(
     v => {
       model.whichEntityId = v.id
       updateFieldState()
-    })
+    },
+    disabledSet = 
+      if (mapData.events.isEmpty) Set(WhichEntity.OTHER_EVENT) else Set.empty)
   
-  val (fieldEventIdx, found) = 
-    EventArrayComboBox.fromMap(mapData, model.eventIdx, model.eventIdx = _)
+  val (fieldEventId, found) = 
+    EventArrayComboBox.fromMap(mapData, model.eventId, model.eventId = _)
   
   row().grid().add(new BoxPanel(Orientation.Vertical) {
     addBtnsAsGrp(contents, btns)
   })
-  row().grid().add(fieldEventIdx)
+  row().grid().add(fieldEventId)
   
   updateFieldState();
 }

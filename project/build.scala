@@ -15,7 +15,9 @@ object Settings {
       "com.google.guava" % "guava" % "10.0",
       "com.typesafe" % "scalalogging-slf4j_2.10" % "1.0.1",
       "net.sf.opencsv" % "opencsv" % "2.0",
-      "org.json4s" % "json4s-native_2.10" % "3.2.3",
+      "org.json4s" % "json4s-ast_2.10" % "3.2.5" withSources(),
+      "org.json4s" % "json4s-core_2.10" % "3.2.5" withSources(),
+      "org.json4s" % "json4s-native_2.10" % "3.2.5" withSources(),
       "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",
       "rhino" % "js" % "1.7R2"
     ),

@@ -43,7 +43,7 @@ class GameState(game: MyGame, project: Project) {
   val persistent = new PersistentState()
 
   // All the events on the current map, including the player event
-  var eventEntities = List[EventEntity]()
+  var eventEntities = Map[Int, EventEntity]()
 
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
@@ -51,7 +51,7 @@ class GameState(game: MyGame, project: Project) {
     tweenManager.update(delta)
 
     // Update events, including player event
-    eventEntities.foreach(_.update(delta))
+    eventEntities.values.foreach(_.update(delta))
     playerEntity.update(delta)
 
     // Update current transition
@@ -110,15 +110,15 @@ class GameState(game: MyGame, project: Project) {
     if (persistent.cameraLoc.map.isEmpty()) {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None
-      eventEntities = List()
+      eventEntities = Map.empty
     } else {
       mapAndAssetsOption.map(_.dispose())
 
       val mapAndAssets = new MapAndAssets(project, loc.map)
       mapAndAssetsOption = Some(mapAndAssets)
-      eventEntities = mapAndAssets.mapData.nonDeletedEvents.map {
-        new EventEntity(game, _)
-      }.toList
+      eventEntities = mapAndAssets.mapData.events.map {
+        case (k, v) => (k, new EventEntity(game, v))
+      }
     }
   }
 
@@ -250,24 +250,16 @@ class GameState(game: MyGame, project: Project) {
 
     window
   }
-  
-  def getEvtState(evtName: String): Int =
-    getEvtState(persistent.cameraLoc.map, evtName)
-  def getEvtState(mapName: String, evtName: String) =
-    persistent.getEventState(mapName, evtName)
-  def setEvtState(evtName: String, newState: Int): Unit =
-    setEvtState(persistent.cameraLoc.map, evtName, newState)
-  def setEvtState(mapName: String, evtName: String, newState: Int) = {
-    persistent.setEventState(mapName, evtName, newState)
 
-    if (mapName == persistent.cameraLoc.map) {
-      eventEntities.filter(_.mapEvent.name == evtName).foreach(_.updateState())
-    }
-  }
+  def getEventState(eventId: Int): Int =
+    persistent.getEventState(persistent.cameraLoc.map, eventId)
+  def setEventState(eventId: Int, newState: Int): Unit =
+    persistent.setEventState(persistent.cameraLoc.map, eventId, newState)
   
   def getPlayerEntity() = playerEntity
-  def getEventEntity(evtName: String): EventEntity = {
-    eventEntities.find(_.mapEvent.name == evtName).getOrElse(null)
+  def getEventEntity(id: Int): EventEntity = {
+    val res = eventEntities.get(id).getOrElse(null)
+    res
   }
   
   def moveEntity(entity: Entity, dx: Float, dy: Float,
@@ -295,7 +287,7 @@ class GameState(game: MyGame, project: Project) {
   def getInt(key: String): Int = persistent.getInt(key)
   def setInt(key: String, value: Int) = {
     persistent.setInt(key, value)
-    eventEntities.foreach(_.updateState())
+    eventEntities.values.foreach(_.updateState())
   }
 
   def getIntArray(key: String): Array[Int] = persistent.getIntArray(key)

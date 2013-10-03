@@ -125,12 +125,12 @@ object ScriptThread {
 
   def fromEventEntity(
     game: MyGame,
-    event: RpgEvent,
     entity: EventEntity,
     state: Int,
     onFinishSyncCallback: Option[() => Any] = None) = {
-    val scriptName = "%s/%d".format(event.name, state)
-    val scriptBody = event.states(state).cmds.flatMap(_.toJs()).mkString("\n");
+    val scriptName = "%s/%d".format(entity.mapEvent.name, state)
+    val scriptBody = 
+      entity.mapEvent.states(state).cmds.flatMap(_.toJs()).mkString("\n");
     new ScriptThread(
       game,
       scriptName,

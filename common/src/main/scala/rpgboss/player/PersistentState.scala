@@ -19,8 +19,8 @@ class PersistentState {
     new HashMap[String, Array[String]] 
       with SynchronizedMap[String, Array[String]]
   
-  // mapName->evtName->variableName
-  private val eventStates = new HashMap[String, Map[String, Int]]()
+  // mapName->eventId->state
+  private val eventStates = new HashMap[String, Map[Int, Int]]()
 
   // TODO: save player location
 
@@ -39,15 +39,15 @@ class PersistentState {
     
   // Gets the event state for the current map.
   // Returns zero if none is saved.
-  def getEventState(mapName: String, evtName: String) = {
+  def getEventState(mapName: String, eventId: Int) = {
     eventStates.get(mapName).map { stateMapForCurMap =>
-      stateMapForCurMap.get(evtName) getOrElse 0
+      stateMapForCurMap.get(eventId) getOrElse 0
     } getOrElse 0
   }
 
-  def setEventState(mapName: String, eventName: String, newState: Int) = {
+  def setEventState(mapName: String, eventId: Int, newState: Int) = {
     eventStates.getOrElseUpdate(
-      mapName, new HashMap[String, Int] with SynchronizedMap[String, Int])
-      .update(eventName, newState)
+      mapName, new HashMap[Int, Int] with SynchronizedMap[Int, Int])
+      .update(eventId, newState)
   }
 }

@@ -132,7 +132,8 @@ object SwingUtils {
   def enumRadios[T <: Enumeration](enum: T)(
     initial: T#Value,
     selectF: T#Value => Any,
-    choices: Seq[T#Value] = Seq()) =
+    choices: Seq[T#Value] = Seq(),
+    disabledSet: Set[T#Value] = Set[T#Value]()) =
     {
       val actualChoices = if (choices.isEmpty) enum.values.toSeq else choices
       actualChoices.map { eVal =>
@@ -140,8 +141,9 @@ object SwingUtils {
           action = Action(eVal.toString) {
             selectF(eVal)
           }
-
-          selected = eVal == initial
+          
+          enabled = !disabledSet.contains(eVal)
+          selected = enabled && eVal == initial
         }
       }
     }

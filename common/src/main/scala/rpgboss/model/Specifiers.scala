@@ -29,7 +29,7 @@ object WhichEntity extends RpgEnum {
 // Specifies an entity: Either the player or an event on the current map.
 case class EntitySpec(
   var whichEntityId: Int = WhichEntity.default.id,
-  var eventIdx: Int = -1)
+  var eventId: Int = -1)
 
 case class SpriteSpec(
   spriteset: String,

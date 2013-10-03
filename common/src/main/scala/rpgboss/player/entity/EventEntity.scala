@@ -10,8 +10,8 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
     game,
     mapEvent.x,
     mapEvent.y) {
-  // delegating methods to RpgEvent
-  def name = mapEvent.name
+  
+  def id = mapEvent.id
   
   private var curThread: ScriptThread = null
 
@@ -20,7 +20,7 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
   def evtState = mapEvent.states(evtStateIdx)
 
   def updateState() = {
-    evtStateIdx = game.state.getEvtState(mapEvent.name)
+    evtStateIdx = game.state.getEventState(mapEvent.id)
     setSprite(evtState.sprite)
   }
   updateState()
@@ -28,6 +28,7 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
   def activate(activatorsDirection: Int) = {
     if (curThread == null || curThread.isFinished) {
       import SpriteSpec.Directions._
+      
       val origDir = dir
       dir = activatorsDirection match {
         case EAST => WEST
@@ -36,17 +37,21 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
         case SOUTH => NORTH
       }
 
+      val startingMovesEnqueued = movesEnqueued
+      
       curThread = ScriptThread.fromEventEntity(
         game,
-        mapEvent, this, evtStateIdx,
+        this, evtStateIdx,
         onFinishSyncCallback = Some(() => {
-          dir = origDir
+          val movedDuringScript = movesEnqueued != startingMovesEnqueued
+          if (!movedDuringScript)
+            dir = origDir
         }))
       curThread.run()
     }
   }
 
-  def eventTouchCallback(touchedNpcs: List[EventEntity]) = {
+  def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.EVENTTOUCH.id ||

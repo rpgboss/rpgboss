@@ -23,7 +23,8 @@ object EventCmd {
     classOf[EndOfScript],
     classOf[ShowText],
     classOf[Teleport],
-    classOf[SetEvtState])
+    classOf[SetEvtState],
+    classOf[MoveEvent])
 
   def aryToJs(a: Array[String]) = a.map(strToJs(_)).mkString("[", ", ", "]")
   def strToJs(s: String) = """"%s"""".format(s.replaceAll("\"", "\\\\\""))
@@ -58,7 +59,7 @@ case class MoveEvent(
       case EntitySpec(which, _) if which == WhichEntity.PLAYER.id =>
         """var _entity = game.getPlayerEntity();"""
       case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
-        """var _entity = game.getEventEntity(%s);""".format("event.name()")
+        """var _entity = game.getEventEntity(%s);""".format("event.id()")
       case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
         """var _entity = game.getEventEntity(%s);""".format(eventIdx)
     }

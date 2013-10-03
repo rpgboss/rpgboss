@@ -129,7 +129,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
       Array.fill(ySize)(row.clone())
     }
 
-    RpgMapData(autoLayer, emptyLayer, emptyLayer, Array.empty)
+    RpgMapData(autoLayer, emptyLayer, emptyLayer, Map())
   }
 
   def defaultMapData = emptyMapData(initXSize, initYSize)
