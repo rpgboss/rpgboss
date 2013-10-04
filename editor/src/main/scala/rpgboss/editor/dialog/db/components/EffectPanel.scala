@@ -31,12 +31,13 @@ import EffectKey.WisAdd
 import rpgboss.editor.uibase.NumberSpinner
 import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
+import scala.collection.mutable.ArrayBuffer
 
 class EffectPanel(
   owner: Window,
   dbDiag: DatabaseDialog,
-  initial: Array[Effect],
-  onUpdate: Array[Effect] => Unit)
+  initial: ArrayBuffer[Effect],
+  onUpdate: ArrayBuffer[Effect] => Unit)
   extends BoxPanel(Orientation.Vertical) {
   border = BorderFactory.createTitledBorder("Effects")
 

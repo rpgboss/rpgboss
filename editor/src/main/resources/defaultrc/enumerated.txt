@@ -37,6 +37,7 @@ spriteset/vx_chara03_c.png
 spriteset/vx_chara02_a.png
 spriteset/vx_chara03_f.png
 spriteset/vx_chara07_c.png
+spriteset/!$chest-opengameart-Blarumyrran.png
 spriteset/vx_chara02_d.png
 spriteset/vx_chara03_e.png
 spriteset/$vx_chara09_a.png

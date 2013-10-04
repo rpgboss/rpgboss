@@ -1,8 +1,8 @@
 package rpgboss.model
 
 import Constants._
-
 import Curve.Linear
+import scala.collection.mutable.ArrayBuffer
 
 trait HasName {
   def name: String
@@ -107,8 +107,8 @@ case class Character(
 
 case class CharClass(
   var name: String = "",
-  var canUseEquipSubtypes: Array[Int] = Array(),
-  var effects: Array[Effect] = Array()) extends HasName
+  var canUseEquipSubtypes: ArrayBuffer[Int] = ArrayBuffer(),
+  var effects: ArrayBuffer[Effect] = ArrayBuffer()) extends HasName
 
 case class Skill(name: String = "") extends HasName
 
@@ -137,7 +137,7 @@ case class Effect(key: String, v: Int)
 
 case class StatusEffect(
   name: String = "",
-  effects: Array[Effect] = Array(),
+  effects: ArrayBuffer[Effect] = ArrayBuffer(),
   releaseOnBattleEnd: Boolean = false,
   releaseTime: Int = 0,
   releaseChance: Int = 0,
@@ -150,7 +150,7 @@ object Item {
 case class Item(
   name: String = "",
   desc: String = "",
-  effects: Array[Effect] = Array(),
+  effects: ArrayBuffer[Effect] = ArrayBuffer(),
 
   sellable: Boolean = true,
   price: Int = 100,

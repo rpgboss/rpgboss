@@ -18,7 +18,7 @@ object Settings {
       "org.json4s" % "json4s-ast_2.10" % "3.2.5" withSources(),
       "org.json4s" % "json4s-core_2.10" % "3.2.5" withSources(),
       "org.json4s" % "json4s-native_2.10" % "3.2.5" withSources(),
-      "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",
+      "org.scalatest" % "scalatest_2.10" % "2.0.RC1" % "test",
       "rhino" % "js" % "1.7R2"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>

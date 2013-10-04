@@ -8,45 +8,34 @@ import javax.swing.BorderFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import java.awt.{ Font, Color }
 import scala.swing.ListView.Renderer
+import scala.collection.mutable.ArrayBuffer
 
 object ArrayUtils {
   import ListView._
 
-  // Renders the item with the index passed in
-  def idxRenderer[A, B](f: (A, Int) => B)(implicit renderer: Renderer[B]) =
-    new Renderer[A] {
-      def componentFor(
-        list: ListView[_],
-        isSelected: Boolean,
-        focused: Boolean,
-        a: A,
-        index: Int): Component =
-        renderer.componentFor(list, isSelected, focused, f(a, index), index)
-    }
-
   def resized[T](
     a: Seq[T],
     newSize: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) = {
+    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Seq[T] = {
     val oldSize = a.size
 
     if (newSize > oldSize) {
       val padder = Array.fill(newSize - oldSize) { newDefaultInstance() }
-      a ++ padder
+      (a ++ padder)
     } else if (newSize < oldSize) {
       a.take(newSize)
     } else a
   }
 
   def normalizedAry[T](
-    a: Array[T],
+    a: Seq[T],
     minElems: Int,
     maxElems: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) =
+    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Seq[T] =
     if (a.size > maxElems)
-      resized(a, maxElems, newDefaultInstance).toArray
+      resized(a, maxElems, newDefaultInstance)
     else if (a.size < minElems)
-      resized(a, minElems, newDefaultInstance).toArray
+      resized(a, minElems, newDefaultInstance)
     else
       a
 }
@@ -54,7 +43,7 @@ object ArrayUtils {
 abstract class ArrayEditingPanel[T](
   owner: Window,
   label: String,
-  initialAry: Array[T],
+  initialAry: Seq[T],
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends DesignGridPanel
@@ -66,7 +55,11 @@ abstract class ArrayEditingPanel[T](
   def editPaneForItem(idx: Int, item: T): Component
   def editPaneEmpty: Component
 
-  def array = listView.listData.toArray
+  def arrayBuffer : ArrayBuffer[T] = {
+    val b = new ArrayBuffer[T]
+    listView.listData.copyToBuffer(b)
+    b
+  }
 
   // Just refresh the label of the item on the list
   def refreshModel() = updatePreserveSelection(listView.listData)
@@ -92,16 +85,25 @@ abstract class ArrayEditingPanel[T](
   def onListDataUpdate() = {
     logger.info("Empty list update call")
   }
-
-  def resized(a: Seq[T], newSize: Int) =
-    ArrayUtils.resized(a, newSize, newDefaultInstance _)
-
+  
   def normalizedInitialAry =
     ArrayUtils.normalizedAry(
       initialAry, minElems, maxElems, newDefaultInstance _)
 
   val listView = new ListView(normalizedInitialAry) {
-    renderer = ArrayUtils.idxRenderer({
+    // Renders the item with the index passed in
+    def idxRenderer[A, B](f: (A, Int) => B)(implicit renderer: Renderer[B]) =
+      new Renderer[A] {
+        def componentFor(
+          list: ListView[_],
+          isSelected: Boolean,
+          focused: Boolean,
+          a: A,
+          index: Int): Component =
+          renderer.componentFor(list, isSelected, focused, f(a, index), index)
+      }
+    
+    renderer = idxRenderer({
       case (a, idx) =>
         "%d: %s".format(idx, label(a))
     })
@@ -135,11 +137,13 @@ abstract class ArrayEditingPanel[T](
         maxElems,
         (newSize) => {
           if (listView.selection.indices.isEmpty) {
-            listView.listData = resized(listView.listData, newSize)
+            listView.listData = ArrayUtils.resized(
+                listView.listData, newSize, newDefaultInstance _)
           } else {
             val oldSelection = listView.selection.indices.head
 
-            listView.listData = resized(listView.listData, newSize)
+            listView.listData = ArrayUtils.resized(
+                listView.listData, newSize, newDefaultInstance _)
 
             // If selection was bigger than the size, select the last one
             listView.selectIndices(math.min(oldSelection, newSize - 1))
@@ -176,7 +180,7 @@ class ArraySizeDiag(
 class StringArrayEditingPanel(
   owner: Window,
   label: String,
-  initialAry: Array[String],
+  initialAry: Seq[String],
   minElems: Int = 1,
   maxElems: Int = 1024)
   extends ArrayEditingPanel(owner, label, initialAry, minElems, maxElems) {
@@ -212,7 +216,7 @@ class StringArrayEditingPanel(
 abstract class RightPaneArrayEditingPanel[T](
   owner: Window,
   label: String,
-  initialAry: Array[T],
+  initialAry: Seq[T],
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends ArrayEditingPanel[T](owner, label, initialAry, minElems, maxElems)(m) {

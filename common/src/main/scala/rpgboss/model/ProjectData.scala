@@ -1,9 +1,10 @@
 package rpgboss.model
 import rpgboss.model.resource.RpgMap
+import scala.collection.mutable.ArrayBuffer
 
 case class ProjectDataStartup(
   var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
-  var startingParty: Array[Int] = Array(0),
+  var startingParty: ArrayBuffer[Int] = ArrayBuffer(0),
   
   var titlePic: String = "LordSpirit.jpg",
   var titleMusic: Option[SoundSpec] = None,
@@ -18,18 +19,18 @@ case class ProjectDataStartup(
   var soundCannot: Option[SoundSpec] = Some(SoundSpec("MenuCannot.wav")))
     
 case class ProjectDataEnums(
-	var characters: Array[Character] = ProjectData.defaultCharacters,
+	var characters: ArrayBuffer[Character] = ProjectData.defaultCharacters,
 	
-	var classes: Array[CharClass] = Array(CharClass()),
+	var classes: ArrayBuffer[CharClass] = ArrayBuffer(CharClass()),
 	
-	var statusEffects: Array[StatusEffect] = Array(StatusEffect()),
+	var statusEffects: ArrayBuffer[StatusEffect] = ArrayBuffer(StatusEffect()),
 	
-	var items: Array[Item] = Array(Item()),
+	var items: ArrayBuffer[Item] = ArrayBuffer(Item()),
 	
-	var skills: Array[Skill] = Array(Skill()),
+	var skills: ArrayBuffer[Skill] = ArrayBuffer(Skill()),
 	
-	var elements: Array[String] = Array(""),
-	var equipSubtypes: Array[String] = Array(""))
+	var elements: ArrayBuffer[String] = ArrayBuffer(""),
+	var equipSubtypes: ArrayBuffer[String] = ArrayBuffer(""))
 
 case class ProjectData(
 	var uuid: String,
@@ -42,7 +43,7 @@ case class ProjectData(
 }
 
 object ProjectData {
-  def defaultCharacters = Array(
+  def defaultCharacters = ArrayBuffer(
     Character("Pando", sprite = Some(SpriteSpec("vx_chara01_a.png", 4))),
     Character("Estine", sprite = Some(SpriteSpec("vx_chara01_a.png", 1))),
     Character("Leoge", sprite = Some(SpriteSpec("vx_chara01_a.png", 3))),
@@ -50,7 +51,7 @@ object ProjectData {
     Character("Carona", sprite = Some(SpriteSpec("vx_chara01_a.png", 6))))
 
   /*
-  def defaultDamageTypes = Array(
+  def defaultDamageTypes = ArrayBuffer(
     "Untyped",
     
     "Blunt",

@@ -6,14 +6,12 @@ import rpgboss.editor.dialog.db.components._
 import rpgboss.editor.uibase.SwingUtils._
 import scala.swing._
 import scala.swing.event._
-
 import rpgboss.editor.dialog._
-
 import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
-
 import net.java.dev.designgridlayout._
+import scala.collection.mutable.ArrayBuffer
 
 class ClassesPanel(
   owner: Window,
@@ -44,7 +42,7 @@ class ClassesPanel(
       "Can equip",
       dbDiag.model.enums.equipSubtypes,
       model.canUseEquipSubtypes,
-      model.canUseEquipSubtypes = _)
+      v => model.canUseEquipSubtypes = ArrayBuffer(v :_*))
 
     val mainFields = new DesignGridPanel {
 
@@ -61,6 +59,6 @@ class ClassesPanel(
 
   override def onListDataUpdate() = {
     logger.info("Classes updated")
-    dbDiag.model.enums.classes = array
+    dbDiag.model.enums.classes = arrayBuffer
   }
 }

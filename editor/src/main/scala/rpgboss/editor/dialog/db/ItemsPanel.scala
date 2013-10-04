@@ -19,7 +19,10 @@ class ItemsPanel(
   owner: Window,
   sm: StateMaster,
   val dbDiag: DatabaseDialog)
-  extends RightPaneArrayDatabasePanel(owner, "Items", dbDiag.model.enums.items)
+  extends RightPaneArrayDatabasePanel(
+    owner, 
+    "Items", 
+    dbDiag.model.enums.items)
   with DatabasePanel {
   def panelName = "Items/Equipment"
   def newDefaultInstance() = new Item()
@@ -117,6 +120,6 @@ class ItemsPanel(
 
   override def onListDataUpdate() = {
     logger.info("Items data updated")
-    dbDiag.model.enums.items = array
+    dbDiag.model.enums.items = arrayBuffer
   }
 }

@@ -11,13 +11,11 @@ import javax.swing.DefaultListSelectionModel
 class StringArrayMultiselectPanel(
   owner: Window,
   label: String,
-  choices: Array[String],
-  initialSelections: Array[Int],
-  onUpdate: Array[Int] => Unit)
+  choices: Seq[String],
+  initialSelections: Seq[Int],
+  onUpdate: Seq[Int] => Unit)
   extends DesignGridPanel
   with Logging {
-  def array = listView.listData.toArray
-
   val listView = new ListView(choices) {
     renderer = new Renderer[String] {
       def componentFor(
@@ -77,9 +75,9 @@ class StringArrayMultiselectPanel(
     peer.setSelectionModel(newSelectionModel)
 
     def updateModel() = {
-      val ary = selection.indices.toArray
+      val ary = selection.indices.toSeq
       onUpdate(ary)
-      logger.info("Updated ArrayMultiselect: %s".format(ary.deep))
+      logger.info("Updated ArrayMultiselect: %s".format(ary))
     }
 
     // Call on update at approriate time

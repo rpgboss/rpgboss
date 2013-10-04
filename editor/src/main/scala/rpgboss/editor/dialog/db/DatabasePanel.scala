@@ -14,7 +14,7 @@ trait DatabasePanel {
 abstract class RightPaneArrayDatabasePanel[T](
   owner: Window,
   label: String,
-  initialAry: Array[T])(implicit m: Manifest[T])
+  initialAry: Seq[T])(implicit m: Manifest[T])
   extends RightPaneArrayEditingPanel[T](owner, label, initialAry)(m)
   with DatabasePanel {
   override def activate(): Unit = {
