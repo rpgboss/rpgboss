@@ -4,6 +4,10 @@ import java.io.File
 import com.badlogic.gdx.backends.lwjgl._
 import com.badlogic.gdx._
 import rpgboss.model.MapLoc
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+import java.util.Date
 
 object TestPlayer {
   def launch(game: MyGame) = {
@@ -21,24 +25,29 @@ object TestPlayer {
 abstract class TestGame(gamepath: File) 
   extends MyGame(gamepath) {
   
-  val script = ScriptThread.fromFile(
-    this, 
-    "main.js", 
-    "initializeData()",
-    onFinish = Some(onInitFinish _),
-    onFinishOnScriptThread = true)
-  
-  override def beginGame() = {
-    script.run()
-  }
-  
-  def onInitFinish() = {
-    state.setPlayerLoc(project.data.startup.startingLoc);
-    runTest()
-    exit()
-  }
-  
+  private val finishPromise = Promise[Boolean]()
+  private var timeout = 10.0f // seconds
+
   def runTest()
   
-  def awaitFinish() = script.awaitFinish()
+  // Returns whether or not the test finished successfully
+  def awaitFinish() = Await.result(finishPromise.future, Duration.Inf)
+  
+  override def beginGame() = {
+    future {
+      runTest()
+      //Gdx.app.exit()
+      //finishPromise.success(true)
+    }
+  }
+  
+  override def render() = {
+    super.render()
+    
+    timeout -= Gdx.graphics.getDeltaTime()
+    if (timeout < 0) {
+      //Gdx.app.exit()
+      finishPromise.success(false)
+    }
+  }
 }

@@ -299,6 +299,20 @@ class GameState(game: MyGame, project: Project) {
   def setStringArray(key: String, value: Array[String]) =
     persistent.setStringArray(key, value)
     
+  def setNewGameVars() = {
+    // Initialize data structures
+    setIntArray(PARTY, project.data.startup.startingParty.toArray);
+    
+    var characters = project.data.enums.characters.toArray;
+    setStringArray(CHARACTER_NAMES, characters.map(_.name));
+    
+    setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
+    setIntArray(CHARACTER_HPS, characters.map(_.initMhp))
+    setIntArray(CHARACTER_MPS, characters.map(_.initMmp))
+    setIntArray(CHARACTER_MAX_HPS, characters.map(_.initMhp))
+    setIntArray(CHARACTER_MAX_MPS, characters.map(_.initMmp))
+  }
+    
   val LEFT = Window.Left
   val CENTER = Window.Center
   val RIGHT = Window.Right

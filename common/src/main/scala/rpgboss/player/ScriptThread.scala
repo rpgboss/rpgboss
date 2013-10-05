@@ -19,7 +19,7 @@ import scala.concurrent.duration.Duration
  * @param   scriptName            Name of script used for debugging and logging
  * @param   scriptBody            Body of script. Should be broken into lines.
  * @param   fnToRun               Javascript to run after scriptBody is done.
- * @param   onFinishSyncCallback  Function to run on gdx thread after script end
+ * @param   onFinish              Function to run on gdx thread after script end
  *
  */
 class ScriptThread(
@@ -27,8 +27,7 @@ class ScriptThread(
   scriptName: String,
   scriptBody: String,
   fnToRun: String = "",
-  onFinish: Option[() => Unit] = None,
-  onFinishOnScriptThread: Boolean = false)
+  onFinish: Option[() => Unit] = None)
   extends UncaughtExceptionHandler {
   def initScope(jsScope: ScriptableObject): Any = {
     val jsInterface = game.state
@@ -83,12 +82,8 @@ class ScriptThread(
       }
 
       onFinish.map { f =>
-        if (onFinishOnScriptThread) {
+        game.syncRun {
           f()
-        } else {
-          game.syncRun {
-            f()
-          }
         }
       }
       
@@ -125,24 +120,21 @@ object ScriptThread {
     game: MyGame,
     scriptName: String,
     fnToRun: String = "",
-    onFinish: Option[() => Unit] = None,
-    onFinishOnScriptThread: Boolean = false) = {
+    onFinish: Option[() => Unit] = None) = {
     val script = Script.readFromDisk(game.project, scriptName)
     new ScriptThread(
       game,
       script.name,
       script.getAsString,
       fnToRun,
-      onFinish,
-      onFinishOnScriptThread)
+      onFinish)
   }
 
   def fromEventEntity(
     game: MyGame,
     entity: EventEntity,
     state: Int,
-    onFinish: Option[() => Unit] = None,
-    onFinishOnScriptThread: Boolean = false) = {
+    onFinish: Option[() => Unit] = None) = {
     val scriptName = "%s/%d".format(entity.mapEvent.name, state)
     val scriptBody = 
       entity.mapEvent.states(state).cmds.flatMap(_.toJs()).mkString("\n");
@@ -151,8 +143,7 @@ object ScriptThread {
       scriptName,
       scriptBody,
       "",
-      onFinish,
-      onFinishOnScriptThread) {
+      onFinish) {
       override def initScope(jsScope: ScriptableObject) = {
         super.initScope(jsScope)
 

@@ -10,6 +10,7 @@ import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player._
+import rpgboss.player.entity.EntityMove
 
 class MoveSpec extends UnitSpec {
   def paint(array: Array[Array[Byte]], x: Int, y: Int, bytes: Array[Byte]) = {
@@ -21,7 +22,7 @@ class MoveSpec extends UnitSpec {
     y should be < array.length
     bytes.length should equal(RpgMap.bytesPerTile)
     
-    for (i <- 0 to RpgMap.bytesPerTile) {
+    for (i <- 0 until RpgMap.bytesPerTile) {
       array(y)(x * RpgMap.bytesPerTile + i) = bytes(i)
     }
   }
@@ -45,7 +46,13 @@ class MoveSpec extends UnitSpec {
     // Create a fake map
     val mapName = RpgMap.generateName(proj.data.lastCreatedMapId)
     val map = RpgMap.readFromDisk(proj, mapName)
-    val mapData = map.readMapData()
+    val mapData = map.readMapData().get
+    
+    for (x <- 0 to 20)
+      for (y <- 0 to 20)
+        paintPassable(mapData.botLayer, x, y)
+    
+    map.saveMapData(mapData) should equal(true)
     
     new {
       val projectDirectory = tempDir
@@ -58,12 +65,16 @@ class MoveSpec extends UnitSpec {
     
     val game = new TestGame(f.projectDirectory) {
       def runTest() = {
-        
+        state.setPlayerLoc(project.data.startup.startingLoc);
+        val player = state.getPlayerEntity()
+        val move = EntityMove(4.0f, 0)
+        player.enqueueMove(move)
+        move.awaitDone()
       }
     }
     
     TestPlayer.launch(game)
     
-    game.awaitFinish()
+    game.awaitFinish() should equal(true)
   }
 }
