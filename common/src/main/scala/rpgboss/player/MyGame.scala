@@ -86,6 +86,10 @@ class MyGame(gamepath: File)
     // Register accessors
     TweenAccessors.registerAccessors()
     
+    beginGame()
+  }
+  
+  def beginGame() = {
     ScriptThread.fromFile(this, "main.js", "main()").run()
   }
 

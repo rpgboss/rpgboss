@@ -1,47 +1,69 @@
 package rpgboss.player
 
 import com.google.common.io.Files
-import rpgboss._
-import rpgboss.model._
-import rpgboss.model.Constants._
-import rpgboss.model.resource._
 import java.awt._
 import java.awt.image._
 import java.io.File
 import javax.imageio.ImageIO
+import rpgboss._
+import rpgboss.model._
+import rpgboss.model.Constants._
+import rpgboss.model.resource._
+import rpgboss.player._
 
 class MoveSpec extends UnitSpec {
-  def fixture = {
+  def paint(array: Array[Array[Byte]], x: Int, y: Int, bytes: Array[Byte]) = {
+    array.length should be > (0)
+    array.head.length should be > (0)
+    x should be >= (0)
+    x should be < array.head.length
+    y should be >= (0)
+    y should be < array.length
+    bytes.length should equal(RpgMap.bytesPerTile)
+    
+    for (i <- 0 to RpgMap.bytesPerTile) {
+      array(y)(x * RpgMap.bytesPerTile + i) = bytes(i)
+    }
+  }
+  
+  def paintPassable(array: Array[Array[Byte]], x: Int, y: Int) = {
+    paint(array, x, y, Array(RpgMap.autotileByte, 16, 0))
+  }
+  
+  def fixture(startingX: Float, startingY: Float) = {
     val tempDir = Files.createTempDir()
-    val proj = Project.startingProject("TestProject", tempDir)
+    val projectOption = rpgboss.util.ProjectCreator.create("test", tempDir)
+    projectOption should be ('isDefined)
     
-    val projStartup = proj.data.startup
-    projStartup.soundCancel = None
-    projStartup.soundCannot = None
-    projStartup.soundCursor = None
-    projStartup.soundSelect = None
+    val proj = projectOption.get
     
-    // Create a fake tileset with one passable white tile, one unpassable black.
-    val image = new BufferedImage(64, 32, BufferedImage.TYPE_4BYTE_ABGR)
-    val g = image.getGraphics()
-    g.setColor(Color.WHITE)
-    g.fillRect(0, 0, 32, 32)
-    g.setColor(Color.BLACK)
-    g.fillRect(32, 0, 32, 32)
-
-    val tilesetName = "testTileset.png"
-    val tilesetImg = new File(Tileset.rcDir(proj), tilesetName)
-    ImageIO.write(image, "png", tilesetImg) should equal(true)
-    
-    val tileset = Tileset.readFromDisk(proj, tilesetName)
-    tileset.metadata.blockedDirsAry(0)(1) = DirectionMasks.ALLCARDINAL.toByte
-    tileset.writeMetadata() should equal(true)
+    // Set starting loc
+    proj.data.startup.startingLoc = 
+      MapLoc(RpgMap.generateName(1), startingX, startingY)
+    proj.writeMetadata() should be (true)
     
     // Create a fake map
-    val mapName = RpgMap.generateName(1)
-    val map = RpgMap.defaultInstance(proj, mapName)
-    val mapData = RpgMap.emptyMapData(map.metadata.xSize, map.metadata.ySize)
-    map.saveMapData(mapData) should equal(true)
-    map.writeMetadata() should equal(true)
+    val mapName = RpgMap.generateName(proj.data.lastCreatedMapId)
+    val map = RpgMap.readFromDisk(proj, mapName)
+    val mapData = map.readMapData()
+    
+    new {
+      val projectDirectory = tempDir
+      val project = proj
+    }
+  }
+  
+  "Move" should "should work in cardinal directions" in {
+    val f = fixture(5.5f, 5.5f)
+    
+    val game = new TestGame(f.projectDirectory) {
+      def runTest() = {
+        
+      }
+    }
+    
+    TestPlayer.launch(game)
+    
+    game.awaitFinish()
   }
 }

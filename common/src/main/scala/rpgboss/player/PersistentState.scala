@@ -1,5 +1,6 @@
 package rpgboss.player
-import collection.mutable._
+import collection.mutable.{HashMap => MutableHashMap}
+import collection.mutable.{SynchronizedMap => MutableSynchronizedMap}
 
 /**
  * The part of the game state that should persist through save and load cycles.
@@ -10,17 +11,20 @@ class PersistentState {
   val pictures = Array.fill[Option[PictureInfo]](32)(None)
 
   private val globalInts =
-    new HashMap[String, Int]() with SynchronizedMap[String, Int]
+    new MutableHashMap[String, Int]() 
+    with MutableSynchronizedMap[String, Int]
 
   private val intArrays =
-    new HashMap[String, Array[Int]] with SynchronizedMap[String, Array[Int]]
+    new MutableHashMap[String, Array[Int]] 
+    with MutableSynchronizedMap[String, Array[Int]]
 
   private val stringArrays =
-    new HashMap[String, Array[String]] 
-      with SynchronizedMap[String, Array[String]]
+    new MutableHashMap[String, Array[String]] 
+    with MutableSynchronizedMap[String, Array[String]]
   
   // mapName->eventId->state
-  private val eventStates = new HashMap[String, Map[Int, Int]]()
+  private val eventStates = 
+    new MutableHashMap[String, MutableHashMap[Int, Int]]()
 
   // TODO: save player location
 
@@ -29,13 +33,13 @@ class PersistentState {
 
   def getIntArray(key: String) = 
     intArrays.getOrElseUpdate(key, new Array[Int](0))
-  def setIntArray(key: String, value: Array[Int]) = 
-    intArrays.update(key, value)
+  def setIntArray(key: String, value: Seq[Int]) = 
+    intArrays.update(key, value.toArray)
   
   def getStringArray(key: String) = 
     stringArrays.getOrElseUpdate(key, new Array[String](0))
-  def setStringArray(key: String, value: Array[String]) = 
-    stringArrays.update(key, value)
+  def setStringArray(key: String, value: Seq[String]) = 
+    stringArrays.update(key, value.toArray)
     
   // Gets the event state for the current map.
   // Returns zero if none is saved.
@@ -47,7 +51,8 @@ class PersistentState {
 
   def setEventState(mapName: String, eventId: Int, newState: Int) = {
     eventStates.getOrElseUpdate(
-      mapName, new HashMap[Int, Int] with SynchronizedMap[Int, Int])
+      mapName, 
+      new MutableHashMap[Int, Int] with MutableSynchronizedMap[Int, Int])
       .update(eventId, newState)
   }
 }

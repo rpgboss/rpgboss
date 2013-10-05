@@ -27,7 +27,13 @@ object Settings {
       jars.classpath
     },
     updateLibsTask,
-    updateLibgdxTask
+    updateLibgdxTask,
+    TaskKey[Unit]("generateEnum") := {  
+      SysProcess("python GenerateFileEnum.py", new File("common/src/main/resources")).run()
+      println("Generated file enumeration")
+      Unit
+    },
+    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum")
    )
 
   lazy val playerDesktop = Settings.common ++ Seq (
@@ -67,13 +73,7 @@ object Settings {
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
     ),
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
-    scalacOptions ++= List("-deprecation", "-unchecked"),
-    TaskKey[Unit]("generateEnum") := {  
-      SysProcess("python GenerateFileEnum.py", new File("editor/src/main/resources")).run()
-      println("Generated file enumeration")
-      Unit
-    },
-    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum"))
+    scalacOptions ++= List("-deprecation", "-unchecked"))
   
   lazy val editorWebstart = webstartSettings ++ Seq(
     webstartGenConfig := GenConfig(

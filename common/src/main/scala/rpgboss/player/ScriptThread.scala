@@ -8,6 +8,9 @@ import java.lang.Thread.UncaughtExceptionHandler
 import rpgboss.model.event.RpgEvent
 import rpgboss.model.Constants._
 import rpgboss.player.entity.EventEntity
+import scala.concurrent.Promise
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /**
  * Thread used to run a javascript script...
@@ -24,7 +27,8 @@ class ScriptThread(
   scriptName: String,
   scriptBody: String,
   fnToRun: String = "",
-  onFinishSyncCallback: Option[() => Any] = None)
+  onFinish: Option[() => Unit] = None,
+  onFinishOnScriptThread: Boolean = false)
   extends UncaughtExceptionHandler {
   def initScope(jsScope: ScriptableObject): Any = {
     val jsInterface = game.state
@@ -78,24 +82,32 @@ class ScriptThread(
           1, null)
       }
 
-      onFinishSyncCallback.map { f =>
-        game.syncRun {
+      onFinish.map { f =>
+        if (onFinishOnScriptThread) {
           f()
+        } else {
+          game.syncRun {
+            f()
+          }
         }
       }
-
+      
+      finishPromise.success(0)
     }
   }
 
-  private var started = false
+  private val finishPromise = Promise[Int]()
   val thread = new Thread(runnable)
 
   def run() = {
-    started = true
     thread.start()
   }
 
-  def isFinished = started && !thread.isAlive()
+  def isFinished = finishPromise.isCompleted
+
+  def awaitFinish() = {
+    Await.result(finishPromise.future, Duration.Inf)
+  }
 
   def uncaughtException(thread: Thread, ex: Throwable) = {
     ex match {
@@ -113,21 +125,24 @@ object ScriptThread {
     game: MyGame,
     scriptName: String,
     fnToRun: String = "",
-    onFinishSyncCallback: Option[() => Any] = None) = {
+    onFinish: Option[() => Unit] = None,
+    onFinishOnScriptThread: Boolean = false) = {
     val script = Script.readFromDisk(game.project, scriptName)
     new ScriptThread(
       game,
       script.name,
       script.getAsString,
       fnToRun,
-      onFinishSyncCallback)
+      onFinish,
+      onFinishOnScriptThread)
   }
 
   def fromEventEntity(
     game: MyGame,
     entity: EventEntity,
     state: Int,
-    onFinishSyncCallback: Option[() => Any] = None) = {
+    onFinish: Option[() => Unit] = None,
+    onFinishOnScriptThread: Boolean = false) = {
     val scriptName = "%s/%d".format(entity.mapEvent.name, state)
     val scriptBody = 
       entity.mapEvent.states(state).cmds.flatMap(_.toJs()).mkString("\n");
@@ -135,7 +150,9 @@ object ScriptThread {
       game,
       scriptName,
       scriptBody,
-      onFinishSyncCallback = onFinishSyncCallback) {
+      "",
+      onFinish,
+      onFinishOnScriptThread) {
       override def initScope(jsScope: ScriptableObject) = {
         super.initScope(jsScope)
 

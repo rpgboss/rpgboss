@@ -42,7 +42,7 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
       curThread = ScriptThread.fromEventEntity(
         game,
         this, evtStateIdx,
-        onFinishSyncCallback = Some(() => {
+        onFinish = Some(() => {
           val movedDuringScript = movesEnqueued != startingMovesEnqueued
           if (!movedDuringScript)
             dir = origDir

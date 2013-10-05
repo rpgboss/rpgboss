@@ -52,7 +52,6 @@ object ProjectCreator {
     if (allSavedOkay && copiedAllResources) {
       Some(p)
     } else {
-      Files.deleteRecursively(projectDirectory)
       None
     }
   }

@@ -17,6 +17,7 @@ function initCharacterStats(characters) {
 }
 
 function initializeData() {
+/*
   // Initialize data structures
   game.setIntArray(game.PARTY(), project.data().startup().startingParty());
   
@@ -24,6 +25,7 @@ function initializeData() {
   game.setStringArray(game.CHARACTER_NAMES(), 
                       project.data().characterDefaultNames());
   initCharacterStats(characters);
+*/
 }
 
 function main() {
