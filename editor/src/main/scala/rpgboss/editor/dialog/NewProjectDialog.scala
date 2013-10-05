@@ -27,49 +27,12 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     else {
       val shortname = shortnameField.text
       val projectDirectory = new File(rootChooser.getRoot, shortname)
-      val p = Project.startingProject(shortname, projectDirectory)
-      val mapName = RpgMap.generateName(p.data.lastCreatedMapId)
 
-      projectDirectory.mkdir()
-      Resource.resourceTypes.foreach {
-        _.rcDir(p).mkdir()
-      }
+      val projectOption =
+        rpgboss.util.ProjectCreator.create(shortname, projectDirectory)
       
-      val allSavedOkay =
-        p.writeMetadata() &&
-      	RpgMap.defaultMapData.writeToFile(p, mapName) &&
-	    RpgMap.defaultInstance(p, mapName).writeMetadata()
-
-      val cl = getClass.getClassLoader
-
-      val copiedAllResources = {
-        val projRcDir = p.rcDir
-
-        val rcStream = cl.getResourceAsStream("defaultrc/enumerated.txt")
-        val resources = io.Source.fromInputStream(rcStream).getLines().toList
-
-        for (resourceName <- resources) {
-
-          val target = new File(projRcDir, resourceName)
-
-          target.getParentFile.mkdirs()
-
-          val fos = new FileOutputStream(target)
-
-          val buffer = new Array[Byte](1024 * 32)
-
-          val sourceStream =
-            cl.getResourceAsStream("defaultrc/%s".format(resourceName))
-
-          Iterator.continually(sourceStream.read(buffer))
-            .takeWhile(_ != -1).foreach(fos.write(buffer, 0, _))
-        }
-
-        true
-      }
-
-      if (allSavedOkay && copiedAllResources) {
-        onSuccess(p)
+      if (projectOption.isDefined) {
+        onSuccess(projectOption.get)
         close()
       } else
         Dialog.showMessage(okBtn, "File write error", "Error",

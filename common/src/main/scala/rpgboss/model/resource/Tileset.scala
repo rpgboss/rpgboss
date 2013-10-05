@@ -21,8 +21,8 @@ import java.awt.image._
  *
  */
 case class TilesetMetadata(
-  blockedDirsAry: Array[Array[Byte]],
-  heightAry: Array[Array[Byte]])
+  var blockedDirsAry: Array[Array[Byte]],
+  var heightAry: Array[Array[Byte]])
 
 case class Tileset(proj: Project,
                    name: String,

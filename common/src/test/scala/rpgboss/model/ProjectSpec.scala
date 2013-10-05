@@ -1,6 +1,7 @@
 package rpgboss.model
 
 import rpgboss._
+import com.google.common.io.Files
 
 class ProjectSpec extends UnitSpec {
   "ProjectDataStartup" should "be equal-comparable" in {
@@ -9,10 +10,8 @@ class ProjectSpec extends UnitSpec {
     s1 should equal (s2)
   }
   
-  
-  
   "Project" should "be serializable" in {
-    val fakeDirectory = java.io.File.createTempFile("rpgboss", "fakeproject")
+    val fakeDirectory = Files.createTempDir()
     
     val p = Project.startingProject("fakeproject", fakeDirectory)
     p.writeMetadata() should equal (true)

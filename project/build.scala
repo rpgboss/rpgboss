@@ -149,6 +149,8 @@ object Settings {
       new ExactFilter("sources/gdx-backend-lwjgl-sources.jar") |
       new ExactFilter("sources/gdx-openal-sources.jar")
     IO.unzip(zipFile, desktopDest, desktopFilter)
+    // Put desktop backend in common for testing purposes.
+    IO.unzip(zipFile, commonDest, desktopFilter)
 
     val androidDest = file("player-android/src/main/libs")
     val androidFilter = 
