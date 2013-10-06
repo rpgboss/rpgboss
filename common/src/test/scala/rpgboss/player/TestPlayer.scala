@@ -3,6 +3,7 @@ package rpgboss.player
 import java.io.File
 import com.badlogic.gdx.backends.lwjgl._
 import com.badlogic.gdx._
+import org.scalatest.concurrent.AsyncAssertions.Waiter
 import rpgboss.model.MapLoc
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -16,38 +17,37 @@ object TestPlayer {
     conf.width = 32 * 20;
     conf.height = 32 * 15;
     conf.useGL20 = true;
-    conf.forceExit = true;
+    conf.forceExit = false;
 
     new LwjglApplication(game, conf);
   }
 }
 
-abstract class TestGame(gamepath: File) 
+abstract class TestGame(gamepath: File, w: Waiter) 
   extends MyGame(gamepath) {
   
-  private val finishPromise = Promise[Boolean]()
-  private var timeout = 10.0f // seconds
-
+  private val exitPromise = Promise[Int]()
+  def setup()
   def runTest()
   
-  // Returns whether or not the test finished successfully
-  def awaitFinish() = Await.result(finishPromise.future, Duration.Inf)
+  def awaitExit() = Await.result(exitPromise.future, Duration.Inf)
   
   override def beginGame() = {
+    setup()
+    
     future {
       runTest()
-      //Gdx.app.exit()
-      //finishPromise.success(true)
+      Gdx.app.exit()
+      w.dismiss()
     }
+  }
+  
+  override def dispose() = {
+    super.dispose()
+    exitPromise.success(0)
   }
   
   override def render() = {
     super.render()
-    
-    timeout -= Gdx.graphics.getDeltaTime()
-    if (timeout < 0) {
-      //Gdx.app.exit()
-      finishPromise.success(false)
-    }
   }
 }

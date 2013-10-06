@@ -16,6 +16,9 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.FileHandleResolver
 import rpgboss.model.resource.RpgAssetManager
 import java.lang.Thread.UncaughtExceptionHandler
+import scala.concurrent.Promise
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 case class MutableMapLoc(
   var map: String = "",
@@ -51,10 +54,15 @@ class MyGame(gamepath: File)
    * Run the following on the GUI thread
    */
   def syncRun(op: => Any) = {
+    val promise = Promise[Boolean]
     val runnable = new Runnable() {
-      def run() = op
+      def run() = {
+        op
+        promise.success(true)
+      }
     }
     Gdx.app.postRunnable(runnable)
+    Await.result(promise.future, Duration.Inf)
   }
 
   /*
@@ -70,6 +78,7 @@ class MyGame(gamepath: File)
    */
 
   var state: GameState = null
+  var scriptInterface: ScriptInterface = null
 
   val assets = new RpgAssetManager(project)
 
@@ -80,6 +89,7 @@ class MyGame(gamepath: File)
     Gdx.input.setInputProcessor(inputs)
 
     state = new GameState(this, project)
+    scriptInterface = new ScriptInterface(this, state)
     mapLayer = new MapLayer(this)
     screenLayer = new ScreenLayer(this, state)
 

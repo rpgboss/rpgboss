@@ -16,14 +16,9 @@ import rpgboss.player.entity.EventEntity
 import rpgboss.player.entity.Entity
 import aurelienribon.tweenengine._
 
-/**
- * This class contains all the state information about the game.
- *
- * It must ensure that different threads can mutate the state of the game
- * without causing concurrency errors.
- *
- * Moreover, OpenGL operations may only occur on the GDX rendering thread.
- * This object must post those operations to that thread via postRunnable
+/** This class contains all the state information about the game.
+ *  
+ *  All these methods should be called on the Gdx thread only.
  */
 class GameState(game: MyGame, project: Project) {
   val tweenManager = new TweenManager()
@@ -38,13 +33,48 @@ class GameState(game: MyGame, project: Project) {
 
   // protagonist. Modify all these things on the Gdx thread
   var playerEntity: PlayerEntity = new PlayerEntity(game)
-  setPlayerSprite(game.project.data.enums.characters.head.sprite)
 
   val persistent = new PersistentState()
 
   // All the events on the current map, including the player event
   var eventEntities = Map[Int, EventEntity]()
+  
+  def updateMapAssets(mapName: Option[String]) = {
+    if (mapName.isDefined) {
+      mapAndAssetsOption.map(_.dispose())
 
+      val mapAndAssets = new MapAndAssets(project, mapName.get)
+      mapAndAssetsOption = Some(mapAndAssets)
+      eventEntities = mapAndAssets.mapData.events.map {
+        case (k, v) => (k, new EventEntity(game, v))
+      }
+    } else {
+      mapAndAssetsOption.map(_.dispose())
+      mapAndAssetsOption = None
+      eventEntities = Map.empty
+    }
+  }
+  
+  def getEventState(eventId: Int): Int =
+    persistent.getEventState(persistent.cameraLoc.map, eventId)
+  def setEventState(eventId: Int, newState: Int): Unit =
+    persistent.setEventState(persistent.cameraLoc.map, eventId, newState)
+    
+  def getInt(key: String): Int = persistent.getInt(key)
+  def setInt(key: String, value: Int) = {
+    persistent.setInt(key, value)
+    eventEntities.values.foreach(_.updateState())
+  }
+
+  def getIntArray(key: String): Array[Int] = persistent.getIntArray(key)
+  def setIntArray(key: String, value: Array[Int]) =
+    persistent.setIntArray(key, value)
+  
+  def getStringArray(key: String): Array[String] = 
+    persistent.getStringArray(key)
+  def setStringArray(key: String, value: Array[String]) =
+    persistent.setStringArray(key, value)
+    
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
     // Update tweens
@@ -70,262 +100,12 @@ class GameState(game: MyGame, project: Project) {
     }
   }
 
-  import game.syncRun
-
   /**
    * Dispose of any disposable resources
    */
   def dispose() = {
     mapAndAssetsOption.map(_.dispose())
   }
-
-  /*
-   * The below functions are all called from the script threads only.
-   */
-
-  /*
-   * Accessors to various game data
-   */
-  def getMap(loc: MapLoc) =
-    RpgMap.readFromDisk(project, loc.map)
-
-  /*
-   * Things to do with the player's location and camera
-   */
-
-  def setPlayerSprite(spritespec: Option[SpriteSpec]) = syncRun {
-    playerEntity.setSprite(spritespec)
-  }
-
-  def setPlayerLoc(loc: MapLoc) = syncRun {
-    playerEntity.x = loc.x
-    playerEntity.y = loc.y
-    setCameraLoc(loc)
-  }
-
-  def setCameraLoc(loc: MapLoc) = syncRun {
-    persistent.cameraLoc.set(loc)
-
-    // Update internal resources for the map
-    if (persistent.cameraLoc.map.isEmpty()) {
-      mapAndAssetsOption.map(_.dispose())
-      mapAndAssetsOption = None
-      eventEntities = Map.empty
-    } else {
-      mapAndAssetsOption.map(_.dispose())
-
-      val mapAndAssets = new MapAndAssets(project, loc.map)
-      mapAndAssetsOption = Some(mapAndAssets)
-      eventEntities = mapAndAssets.mapData.events.map {
-        case (k, v) => (k, new EventEntity(game, v))
-      }
-    }
-  }
-
-  /* 
-   * Things to do with the screen
-   */
-
-  def setTransition(
-    startAlpha: Float,
-    endAlpha: Float,
-    durationMs: Int) = syncRun {
-    curTransition = Some(Transition(startAlpha, endAlpha, durationMs))
-  }
-
-  def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =
-    syncRun {
-      persistent.pictures(slot).map(_.dispose())
-      persistent.pictures(slot) = Some(PictureInfo(project, name, x, y, w, h))
-    }
-
-  def hidePicture(slot: Int) = syncRun {
-    persistent.pictures(slot).map(_.dispose())
-    persistent.pictures(slot) = None
-  }
-
-  def playMusic(slot: Int, specOpt: Option[SoundSpec],
-    loop: Boolean, fadeDurationMs: Int) = syncRun {
-
-    musics(slot).map({ oldMusic =>
-      val tweenMusic = new GdxMusicTweenable(oldMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
-        .target(0f)
-        .setCallback(new TweenCallback {
-          override def onEvent(typeArg: Int, x: BaseTween[_]) = {
-            if (typeArg == TweenCallback.COMPLETE) {
-              oldMusic.stop()
-            }
-          }
-        }).start(tweenManager)
-    })
-
-    musics(slot) = specOpt.map { spec =>
-      val resource = Music.readFromDisk(project, spec.sound)
-      resource.loadAsset(game.assets)
-      // TODO: fix this blocking call
-      game.assets.finishLoading()
-      val newMusic = resource.getAsset(game.assets)
-
-      // Start at zero volume and fade to desired volume
-      newMusic.stop()
-      newMusic.setVolume(0f)
-      newMusic.setLooping(loop)
-      newMusic.play()
-
-      // Setup volume tween
-      val tweenMusic = new GdxMusicTweenable(newMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
-        .target(spec.volume).start(tweenManager)
-
-      newMusic
-    }
-  }
-
-  /*
-   * Things to do with user interaction
-   */
-  def sleep(durationMs: Int) = {
-    Thread.sleep(durationMs)
-  }
-
-  def newChoiceWindow(
-    lines: Array[String],
-    x: Int, y: Int, w: Int, h: Int,
-    justification: Int,
-    columns: Int,
-    displayedLines: Int,
-    allowCancel: Boolean): ChoiceWindow = {
-    val window = new ChoiceWindow(
-      game.screenLayer.getWindowId(),
-      game,
-      game.assets,
-      project,
-      lines,
-      x, y, w, h,
-      game.screenLayer.windowskin,
-      game.screenLayer.windowskinRegion,
-      game.screenLayer.fontbmp,
-      initialState = Window.Opening,
-      justification = justification,
-      columns = columns,
-      displayedLines = displayedLines,
-      allowCancel = allowCancel)
-
-    syncRun {
-      game.screenLayer.windows.prepend(window)
-      game.inputs.prepend(window)
-    }
-
-    window
-  }
-
-  def newChoiceWindow(
-    choices: Array[String],
-    x: Int, y: Int, w: Int, h: Int): ChoiceWindow =
-    newChoiceWindow(choices, x, y, w, h,
-      Window.Left,
-      1 /* columns */ ,
-      0 /* displayedChoices */ ,
-      false /* allowCancel */ )
-
-  def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
-                    msPerChar: Int) = {
-    val window = new PrintingTextWindow(
-      game.screenLayer.getWindowId(),
-      game,
-      game.assets,
-      project,
-      text,
-      x, y, w, h,
-      game.screenLayer.windowskin,
-      game.screenLayer.windowskinRegion,
-      game.screenLayer.fontbmp,
-      msPerChar)
-
-    syncRun {
-      game.screenLayer.windows.prepend(window)
-      game.inputs.prepend(window)
-    }
-
-    window
-  }
-
-  def getEventState(eventId: Int): Int =
-    persistent.getEventState(persistent.cameraLoc.map, eventId)
-  def setEventState(eventId: Int, newState: Int): Unit =
-    persistent.setEventState(persistent.cameraLoc.map, eventId, newState)
-  
-  def getPlayerEntity() = playerEntity
-  def getEventEntity(id: Int): EventEntity = {
-    val res = eventEntities.get(id).getOrElse(null)
-    res
-  }
-  
-  def moveEntity(entity: Entity, dx: Float, dy: Float,
-                 affixDirection: Boolean, async: Boolean) {
-    import SpriteSpec.Directions._
-    if (dx == 0 && dy == 0)
-      return
-      
-    if (!affixDirection) {
-      val direction = 
-        if (math.abs(dx) > math.abs(dy))
-          if (dx > 0) EAST else WEST
-        else
-          if (dy > 0) SOUTH else NORTH
-      entity.enqueueMove(EntityFaceDirection(direction))
-    }
-    
-    val move = EntityMove(dx, dy)
-    entity.enqueueMove(move)
-    
-    if (!async)
-      move.awaitDone()
-  }
-
-  def getInt(key: String): Int = persistent.getInt(key)
-  def setInt(key: String, value: Int) = {
-    persistent.setInt(key, value)
-    eventEntities.values.foreach(_.updateState())
-  }
-
-  def getIntArray(key: String): Array[Int] = persistent.getIntArray(key)
-  def setIntArray(key: String, value: Array[Int]) =
-    persistent.setIntArray(key, value)
-
-  def getStringArray(key: String): Array[String] = 
-    persistent.getStringArray(key)
-  def setStringArray(key: String, value: Array[String]) =
-    persistent.setStringArray(key, value)
-    
-  def setNewGameVars() = {
-    // Initialize data structures
-    setIntArray(PARTY, project.data.startup.startingParty.toArray);
-    
-    var characters = project.data.enums.characters.toArray;
-    setStringArray(CHARACTER_NAMES, characters.map(_.name));
-    
-    setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
-    setIntArray(CHARACTER_HPS, characters.map(_.initMhp))
-    setIntArray(CHARACTER_MPS, characters.map(_.initMmp))
-    setIntArray(CHARACTER_MAX_HPS, characters.map(_.initMhp))
-    setIntArray(CHARACTER_MAX_MPS, characters.map(_.initMmp))
-  }
-    
-  val LEFT = Window.Left
-  val CENTER = Window.Center
-  val RIGHT = Window.Right
-
-  val PARTY = "party"
-  val INVENTORY_IDXS = "inventoryIdxs"
-  val INVENTORY_QTYS = "inventoryQtys"
-  val CHARACTER_NAMES = "characterNames"
-  val CHARACTER_LEVELS = "characterLevels"
-  val CHARACTER_HPS = "characterHps"
-  val CHARACTER_MPS = "characterMps"
-  val CHARACTER_MAX_HPS = "characterMaxHps"
-  val CHARACTER_MAX_MPS = "characterMaxMps"
 }
 
 /**

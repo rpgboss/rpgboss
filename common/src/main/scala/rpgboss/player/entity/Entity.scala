@@ -121,11 +121,11 @@ abstract class Entity(
   def enqueueMove(move: EntityMoveTrait) = {
     moveQueue.enqueue(move)
     movesEnqueued += 1
-    game.logger.info("enqueueMove")
+    // game.logger.info("enqueueMove")
   }
   def dequeueMove() = {
     moveQueue.dequeue()
-    game.logger.info("dequeueMove")
+    // game.logger.info("dequeueMove")
   }
   
   /**
@@ -287,6 +287,7 @@ case class EntityMove(totalDx: Float, totalDy: Float)
         if (travelledThisFrame.len() >= desiredThisFrame.len()) {
           travelDoneThisFrame = true
         }
+        //entity.game.logger.info("Moved to %f, %f".format(entity.x, entity.y))
       } else {
         travelDoneThisFrame = true
         finish()

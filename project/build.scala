@@ -7,6 +7,7 @@ import scala.sys.process.{Process => SysProcess}
 
 object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
+    fork := true, // For natives loading.
     version := "0.1",
     scalaVersion := "2.10.1",
     scalacOptions ++= List("-deprecation", "-unchecked"),
@@ -37,7 +38,6 @@ object Settings {
    )
 
   lazy val playerDesktop = Settings.common ++ Seq (
-    fork in Compile := true,
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.0.6"
     ),

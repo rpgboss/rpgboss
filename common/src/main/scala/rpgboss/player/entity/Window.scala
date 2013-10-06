@@ -209,7 +209,7 @@ class WindowText(
     xOffset: Float, yOffset: Float) = {
     val namesProcessedText = Window.nameReplace(
         text, 
-        game.state.getStringArray(game.state.CHARACTER_NAMES))
+        game.state.getStringArray(game.scriptInterface.CHARACTER_NAMES))
     
     val intProcessedText = Window.variableReplace(namesProcessedText, game)
     

@@ -30,7 +30,7 @@ class ScriptThread(
   onFinish: Option[() => Unit] = None)
   extends UncaughtExceptionHandler {
   def initScope(jsScope: ScriptableObject): Any = {
-    val jsInterface = game.state
+    val jsInterface = game.scriptInterface
 
     ScriptableObject.putProperty(jsScope, "game",
       Context.javaToJS(jsInterface, jsScope))
