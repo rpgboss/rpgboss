@@ -57,16 +57,16 @@ case class MoveEvent(
   def toJs() = {
     val getEntityCmd = entitySpec match {
       case EntitySpec(which, _) if which == WhichEntity.PLAYER.id =>
-        """var _entity = game.getPlayerEntity();"""
+        """game.movePlayer(%f, %f, %b, %b);""".format(
+          dx, dy, affixDirection, async)
       case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
-        """var _entity = game.getEventEntity(%s);""".format("event.id()")
+        """game.moveEntity(%s, %f, %f, %b, %b);""".format(
+            "event.id()", dx, dy, affixDirection, async)
       case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
-        """var _entity = game.getEventEntity(%s);""".format(eventIdx)
+        """game.moveEntity(%d, %f, %f, %b, %b);""".format(
+            entitySpec.eventId, dx, dy, affixDirection, async)
     }
-    
-    val moveCmd = """game.moveEntity(_entity, %f, %f, %b, %b);""".format(
-      dx, dy, affixDirection, async)
 
-    List(getEntityCmd, moveCmd)
+    List(getEntityCmd)
   }
 }

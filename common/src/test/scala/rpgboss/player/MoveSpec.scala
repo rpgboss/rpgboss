@@ -8,78 +8,57 @@ import javax.imageio.ImageIO
 import rpgboss._
 import rpgboss.model._
 import rpgboss.model.Constants._
+import rpgboss.model.event._
 import rpgboss.model.resource._
 import rpgboss.player._
 import rpgboss.player.entity.EntityMove
-import org.scalatest.concurrent.AsyncAssertions.Waiter
-import org.scalatest.concurrent.PatienceConfiguration._
-import org.scalatest.time._
 
 class MoveSpec extends UnitSpec {
-  def paint(array: Array[Array[Byte]], x: Int, y: Int, bytes: Array[Byte]) = {
-    array.length should be > (0)
-    array.head.length should be > (0)
-    x should be >= (0)
-    x should be < array.head.length
-    y should be >= (0)
-    y should be < array.length
-    bytes.length should equal(RpgMap.bytesPerTile)
-    
-    for (i <- 0 until RpgMap.bytesPerTile) {
-      array(y)(x * RpgMap.bytesPerTile + i) = bytes(i)
-    }
-  }
-  
-  def paintPassable(array: Array[Array[Byte]], x: Int, y: Int) = {
-    paint(array, x, y, Array(RpgMap.autotileByte, 16, 0))
-  }
-  
-  def fixture() = {
-    val tempDir = Files.createTempDir()
-    val projectOption = rpgboss.util.ProjectCreator.create("test", tempDir)
-    projectOption should be ('isDefined)
-    
-    val proj = projectOption.get
-    
-    new {
-      val projectDirectory = tempDir
-      val project = proj
-      val mapName = RpgMap.generateName(proj.data.lastCreatedMapId)
-    }
-  }
-  
   "Move" should "move right simple" in {
-    val f = fixture()
-    val w = new Waiter
+    val test = new BasicTest {
+      def testScript() = {
+        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+        scriptInterface.movePlayer(1f, 0)
+        
+        waiter {
+          val epsilon = 0.05f
+          val playerEntity = oaoo
+          player.x should be (1.5f +- epsilon)
+          player.y should be (0.5f +- epsilon)
+        }
+      }
+    }
     
-    val game = new TestGame(f.projectDirectory, w) {
-      def setup() = {
-        val map = RpgMap.readFromDisk(project, f.mapName)
-        val mapData = map.readMapData().get
-        for (x <- 0 until 20; y <- 0 until 20)
-          paintPassable(mapData.botLayer, x, y)
-        map.saveMapData(mapData) should be (true)
+    test.runTest()
+  }
+  
+  "MoveEvent" should "work with player" in {
+    val test = new BasicTest {
+      override def setupMapData(mapData: RpgMapData) = {
+        super.setupMapData(mapData)
+        val sprite = SpriteSpec("vx_chara02_a.png", 0)
+        val cmds: Array[EventCmd] = Array(MoveEvent(
+          EntitySpec(WhichEntity.THIS_EVENT.id),
+          0f, 2f))
+        val states = Array(RpgEventState(sprite = Some(sprite), cmds = cmds))
+        mapData.events = Map(
+          1->RpgEvent(1, "Testevent", 2f, 2f, states)
+        )
       }
       
-      def runTest() = {
-        scriptInterface.setNewGameVars()
-        scriptInterface.setPlayerLoc(MapLoc(f.mapName, 5.5f, 5.5f));
-        val player = scriptInterface.getPlayerEntity()
-        scriptInterface.moveEntity(player, 4f, 0)
+      def testScript() = {
+        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+        val player = scriptInterface.getEventEntity(1)
         
-        w {
+        
+        waiter {
           val epsilon = 0.05f
-          player.x should be (9.5f +- epsilon)
-          player.y should be (5.5f +- epsilon)
+          player.x should be (1.5f +- epsilon)
+          player.y should be (0.5f +- epsilon)
         }
-        
-        w.dismiss()
       }
     }
     
-    val app = TestPlayer.launch(game)
-    w.await(Timeout(Span(10, Seconds)))
-    app.exit()
-    game.awaitExit()
+    test.runTest()
   }
 }

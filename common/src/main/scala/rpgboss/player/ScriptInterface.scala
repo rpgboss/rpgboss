@@ -175,9 +175,25 @@ class ScriptInterface(game: MyGame, state: GameState) {
   def getEventEntity(id: Int): EventEntity = 
     state.eventEntities.get(id).getOrElse(null)
   
-  def moveEntity(entity: Entity, dx: Float, dy: Float,
+  def movePlayer(dx: Float, dy: Float,
                  affixDirection: Boolean = false, 
                  async: Boolean = false) = {
+    moveEntity(getPlayerEntity(), dx, dy, affixDirection, async)
+  }
+  
+  def moveEvent(id: Int, dx: Float, dy: Float,
+                affixDirection: Boolean = false, 
+                async: Boolean = false) = {
+    val entityOpt = getEventEntity(id)
+    entityOpt.foreach { entity => 
+      moveEntity(entity, dx, dy, affixDirection, async)
+    }
+    entityOpt.isDefined
+  }
+    
+  private def moveEntity(entity: Entity, dx: Float, dy: Float,
+                         affixDirection: Boolean = false, 
+                         async: Boolean = false) = {
     import SpriteSpec.Directions._
     if (dx != 0 || dy != 0) {
       if (!affixDirection) {
