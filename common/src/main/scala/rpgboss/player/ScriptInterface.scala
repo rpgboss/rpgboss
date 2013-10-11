@@ -2,12 +2,15 @@ package rpgboss.player
 
 import rpgboss.model._
 import rpgboss.model.resource._
-import scala.concurrent.Promise
 import com.badlogic.gdx.Gdx
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 import aurelienribon.tweenengine._
 import rpgboss.player.entity._
+
+case class EntityInfo(x: Float, y: Float, dir: Int)
+
+object EntityInfo {
+  def apply(e: Entity): EntityInfo = apply(e.x, e.y, e.dir)
+}
 
 // These methods should be called only from scripting threads. Calling these 
 // methods on the Gdx threads will likely cause deadlocks.
@@ -171,20 +174,34 @@ class ScriptInterface(game: MyGame, state: GameState) {
     window
   }
   
-  def getPlayerEntity() = state.playerEntity
-  def getEventEntity(id: Int): EventEntity = 
-    state.eventEntities.get(id).getOrElse(null)
+  def getPlayerEntityInfo() = syncRun {
+    EntityInfo(state.playerEntity)
+  }
+  
+  def getEventEntityInfo(id: Int): Option[EntityInfo] = {
+    state.eventEntities.get(id).map(EntityInfo.apply)
+  }
   
   def movePlayer(dx: Float, dy: Float,
                  affixDirection: Boolean = false, 
                  async: Boolean = false) = {
-    moveEntity(getPlayerEntity(), dx, dy, affixDirection, async)
+    moveEntity(state.playerEntity, dx, dy, affixDirection, async)
+  }
+  
+  def activateEvent(id: Int, awaitFinish: Boolean) = {
+    val eventOpt = state.eventEntities.get(id)
+    val scriptOpt = eventOpt.flatMap(_.activate(SpriteSpec.Directions.NONE))
+    
+    if (awaitFinish)
+      scriptOpt.map(_.awaitFinish())
+    
+    scriptOpt.isDefined
   }
   
   def moveEvent(id: Int, dx: Float, dy: Float,
                 affixDirection: Boolean = false, 
                 async: Boolean = false) = {
-    val entityOpt = getEventEntity(id)
+    val entityOpt = state.eventEntities.get(id)
     entityOpt.foreach { entity => 
       moveEntity(entity, dx, dy, affixDirection, async)
     }

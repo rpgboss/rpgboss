@@ -20,9 +20,10 @@ class MoveSpec extends UnitSpec {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
         scriptInterface.movePlayer(1f, 0)
         
+        val player = scriptInterface.getPlayerEntityInfo()
+        
         waiter {
           val epsilon = 0.05f
-          val playerEntity = oaoo
           player.x should be (1.5f +- epsilon)
           player.y should be (0.5f +- epsilon)
         }
@@ -48,13 +49,19 @@ class MoveSpec extends UnitSpec {
       
       def testScript() = {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
-        val player = scriptInterface.getEventEntity(1)
+        scriptInterface.activateEvent(1, true)
         
+        val entityInfoOpt = scriptInterface.getEventEntityInfo(1)
         
         waiter {
           val epsilon = 0.05f
-          player.x should be (1.5f +- epsilon)
-          player.y should be (0.5f +- epsilon)
+          
+          entityInfoOpt.isDefined should equal (true)
+          
+          entityInfoOpt map { e =>
+            e.x should be (2f +- epsilon)
+            e.y should be (4f +- epsilon)
+          }
         }
       }
     }

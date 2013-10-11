@@ -70,3 +70,7 @@ case class MoveEvent(
     List(getEntityCmd)
   }
 }
+
+case class SetInt(key: String, value: Int) extends EventCmd {
+  def toJs() = List("""game.setInt(%s, %d);""".format(key, value))
+}

@@ -53,12 +53,11 @@ class MyGame(gamepath: File)
   /**
    * Run the following on the GUI thread
    */
-  def syncRun(op: => Any) = {
-    val promise = Promise[Boolean]
+  def syncRun[T](op: => T): T = {
+    val promise = Promise[T]
     val runnable = new Runnable() {
       def run() = {
-        op
-        promise.success(true)
+        promise.success(op)
       }
     }
     Gdx.app.postRunnable(runnable)

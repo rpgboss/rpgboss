@@ -167,10 +167,13 @@ case class Item(
 
 object SpriteSpec {
   object Directions {
-    val SOUTH = 0
-    val WEST = 1
-    val EAST = 2
-    val NORTH = 3
+    val NONE = 0
+    val NORTH = 1
+    val SOUTH = -1
+    val WEST = 2
+    val EAST = -2
+    
+    def opposite(dir: Int) = -dir
   }
 
   object Steps {

@@ -4,6 +4,7 @@ import rpgboss.model.event._
 import rpgboss.player.MyGame
 import rpgboss.player.ScriptThread
 import rpgboss.model.SpriteSpec
+import scala.concurrent.Promise
 
 class EventEntity(game: MyGame, val mapEvent: RpgEvent)
   extends Entity(
@@ -13,7 +14,7 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
   
   def id = mapEvent.id
   
-  private var curThread: ScriptThread = null
+  private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
 
@@ -24,31 +25,33 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
     setSprite(evtState.sprite)
   }
   updateState()
-
-  def activate(activatorsDirection: Int) = {
-    if (curThread == null || curThread.isFinished) {
-      import SpriteSpec.Directions._
+  
+  // Returns None if it's already running.
+  def activate(activatorsDirection: Int = 
+                   SpriteSpec.Directions.NONE): Option[ScriptThread] = {
+    import SpriteSpec._
+    
+    if (curThread.isDefined)
+      return None
       
-      val origDir = dir
-      dir = activatorsDirection match {
-        case EAST => WEST
-        case WEST => EAST
-        case NORTH => SOUTH
-        case SOUTH => NORTH
-      }
+    val origDir = dir
+    if (activatorsDirection != Directions.NONE)
+      dir = Directions.opposite(activatorsDirection)
 
-      val startingMovesEnqueued = movesEnqueued
-      
-      curThread = ScriptThread.fromEventEntity(
-        game,
-        this, evtStateIdx,
-        onFinish = Some(() => {
-          val movedDuringScript = movesEnqueued != startingMovesEnqueued
-          if (!movedDuringScript)
-            dir = origDir
-        }))
-      curThread.run()
-    }
+    val startingMovesEnqueued = movesEnqueued
+    
+    curThread = Some(ScriptThread.fromEventEntity(
+      game,
+      this, evtStateIdx,
+      onFinish = Some(() => {
+        val movedDuringScript = movesEnqueued != startingMovesEnqueued
+        if (activatorsDirection!= Directions.NONE && !movedDuringScript)
+          dir = origDir
+        curThread = None
+      })))
+    curThread.get.run()
+    
+    return curThread
   }
 
   def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
