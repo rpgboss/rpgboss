@@ -88,7 +88,7 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
   }
 }
 
-case class RpgMapDataEventsIntermediate(events: Array[RpgEvent])
+case class RpgMapDataEventsIntermediate(events: Seq[RpgEvent])
 object RpgMapDataEventsIntermediate {
   def apply(events: Map[Int, RpgEvent]): RpgMapDataEventsIntermediate = 
     apply(events.values.toArray)

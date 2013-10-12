@@ -25,7 +25,7 @@ class MapAndAssets(project: Project, mapName: String) {
 
   val packerTiles = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
 
-  val autotiles: ArrayBuffer[Autotile] = map.metadata.autotiles.map { name =>
+  val autotiles: Seq[Autotile] = map.metadata.autotiles.map { name =>
     Autotile.readFromDisk(project, name)
   }
 

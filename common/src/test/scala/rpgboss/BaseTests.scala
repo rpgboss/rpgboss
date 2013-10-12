@@ -82,6 +82,6 @@ abstract class GameTest extends ProjectTest {
   
   def runTest() = {
     val app = TestPlayer.launch(game)
-    waiter.await(Timeout(Span(10, Seconds)))
+    waiter.await(Timeout(Span(120, Seconds)))
   }
 }
