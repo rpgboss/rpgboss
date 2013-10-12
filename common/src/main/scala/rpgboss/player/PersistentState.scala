@@ -29,7 +29,7 @@ class PersistentState {
   // TODO: save player location
 
   def setInt(key: String, value: Int) = globalInts.update(key, value)
-  def getInt(key: String) = globalInts.getOrElseUpdate(key, 0)
+  def getInt(key: String) = globalInts.get(key).get
 
   def getIntArray(key: String) = 
     intArrays.getOrElseUpdate(key, new Array[Int](0))

@@ -24,7 +24,8 @@ object EventCmd {
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEvtState],
-    classOf[MoveEvent])
+    classOf[MoveEvent],
+    classOf[SetInt])
 
   def aryToJs(a: Array[String]) = a.map(strToJs(_)).mkString("[", ", ", "]")
   def strToJs(s: String) = """"%s"""".format(s.replaceAll("\"", "\\\\\""))
@@ -72,5 +73,5 @@ case class MoveEvent(
 }
 
 case class SetInt(key: String, value: Int) extends EventCmd {
-  def toJs() = List("""game.setInt(%s, %d);""".format(key, value))
+  def toJs() = List("""game.setInt("%s", %d);""".format(key, value))
 }

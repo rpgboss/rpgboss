@@ -230,7 +230,9 @@ class ScriptInterface(game: MyGame, state: GameState) {
     }
   }
 
-  def getInt(key: String): Int = state.persistent.getInt(key)
+  def getInt(key: String): Int = syncRun {
+    state.getInt(key)
+  }
   // This must be synchronized because this updates event states
   def setInt(key: String, value: Int) = syncRun {
     state.setInt(key, value)
