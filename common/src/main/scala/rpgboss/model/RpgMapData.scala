@@ -31,7 +31,7 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
       new CSVWriter(new FileWriter(file), '\t', CSVWriter.NO_QUOTE_CHARACTER)
 
     data.foreach(row =>
-      writer.writeNext(row.map(b => (b & 0xff).toString).toArray))
+      writer.writeNext(row.map(b => b.toString).toArray))
 
     writer.close()
     true
@@ -108,35 +108,39 @@ case object RpgMapData {
     (mapFile, botFile, midFile, topFile, evtFile)
   }
 
-  def readCsvArray(file: File) = {
+  def readCsvArray(file: File): Option[ArrayBuffer[ArrayBuffer[Byte]]]= {
     val reader = new CSVReader(new FileReader(file), '\t')
-
     val buffer = new ArrayBuffer[ArrayBuffer[Byte]]()
 
-    Iterator.continually(reader.readNext()).takeWhile(_ != null).map { row =>
-      buffer.append(ArrayBuffer(row.map(_.toInt.toByte) : _*))
-    }
+    val csvIt = Iterator.continually(reader.readNext()).takeWhile(_ != null)
 
+    for (row <- csvIt) {
+      buffer.append(ArrayBuffer(row.map(_.toInt.toByte): _*))
+    }
+    
     reader.close()
 
-    buffer
+    Some(buffer)
   }
 
   def readFromDisk(p: Project, name: String): Option[RpgMapData] = {
     val (_, botFile, midFile, topFile, evtFile) = datafiles(p, name)
 
-    val botAry = readCsvArray(botFile)
-    val midAry = readCsvArray(midFile)
-    val topAry = readCsvArray(topFile)
+    val botAryOpt = readCsvArray(botFile)
+    val midAryOpt = readCsvArray(midFile)
+    val topAryOpt = readCsvArray(topFile)
 
     implicit val formats = RpgMapData.formats
 
-    evtFile.getReader().map { reader =>    
+    val eventsOpt = evtFile.getReader().map { reader =>    
       val intermediate = 
         Serialization.read[RpgMapDataEventsIntermediate](reader)
-      val events = intermediate.events.map(event => event.id->event).toMap
-      RpgMapData(botAry, topAry, midAry, events)
+      intermediate.events.map(event => event.id->event).toMap
     }
+    
+    for (botAry <- botAryOpt; midAry <- midAryOpt; topAry <- topAryOpt;
+         events <- eventsOpt)
+      yield RpgMapData(botAry, topAry, midAry, events)
   }
 }
 
