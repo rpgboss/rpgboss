@@ -14,37 +14,33 @@ import rpgboss.player._
 import rpgboss.player.entity.EntityMove
 
 class MoveSpec extends UnitSpec {
-  "Move" should "move right simple" in {
-    val test = new BasicTest {
-      def testScript() = {
-        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
-        scriptInterface.movePlayer(1f, 0)
-        
-        val player = scriptInterface.getPlayerEntityInfo()
-        
-        waiter {
-          val epsilon = 0.05f
-          player.x should be (1.5f +- epsilon)
-          player.y should be (0.5f +- epsilon)
-        }
-      }
-    }
-    
-    test.runTest()
-  }
+//  "Move" should "move right simple" in {
+//    val test = new GameTest {
+//      def testScript() = {
+//        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+//        scriptInterface.movePlayer(1f, 0)
+//        
+//        val player = scriptInterface.getPlayerEntityInfo()
+//        
+//        waiter {
+//          val epsilon = 0.05f
+//          player.x should be (1.5f +- epsilon)
+//          player.y should be (0.5f +- epsilon)
+//        }
+//      }
+//    }
+//    
+//    test.runTest()
+//  }
   
-  "MoveEvent" should "work with player" in {
-    val test = new BasicTest {
+  "MoveEvent" should "work with THIS_EVENT" in {
+    val test = new GameTest {
       override def setupMapData(mapData: RpgMapData) = {
         super.setupMapData(mapData)
-        val sprite = SpriteSpec("vx_chara02_a.png", 0)
-        val cmds: Array[EventCmd] = Array(MoveEvent(
-          EntitySpec(WhichEntity.THIS_EVENT.id),
-          0f, 2f))
-        val states = Array(RpgEventState(sprite = Some(sprite), cmds = cmds))
-        mapData.events = Map(
-          1->RpgEvent(1, "Testevent", 2f, 2f, states)
-        )
+        mapData.events = singleTestEvent(
+          MoveEvent(EntitySpec(WhichEntity.THIS_EVENT.id), 0f, 2f),
+          2f,
+          2f)
       }
       
       def testScript() = {

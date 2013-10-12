@@ -14,6 +14,12 @@ class ProjectSpec extends UnitSpec {
     val fakeDirectory = Files.createTempDir()
     
     val p = Project.startingProject("fakeproject", fakeDirectory)
+    
+    // Mutate some values
+    p.data.uuid = "fakeuid"
+    p.data.startup.startingParty = Vector(4)
+    p.data.enums.characters.head.name = "New Test Name"
+    
     p.writeMetadata() should equal (true)
     
     val pRead = Project.readFromDisk(fakeDirectory)

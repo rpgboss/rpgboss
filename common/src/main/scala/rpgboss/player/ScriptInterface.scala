@@ -17,7 +17,7 @@ object EntityInfo {
 class ScriptInterface(game: MyGame, state: GameState) {
   private def persistent = state.persistent
   private def project = game.project
-  private def syncRun(op: => Any) = game.syncRun(op)
+  import game.syncRun
   
   /*
    * The below functions are all called from the script threads only.
@@ -174,7 +174,7 @@ class ScriptInterface(game: MyGame, state: GameState) {
     window
   }
   
-  def getPlayerEntityInfo() = syncRun {
+  def getPlayerEntityInfo(): EntityInfo = syncRun {
     EntityInfo(state.playerEntity)
   }
   

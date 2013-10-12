@@ -9,6 +9,7 @@ import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import java.util.Date
+import org.lwjgl.opengl.Display
 
 object TestPlayer {
   def launch(game: MyGame) = {
@@ -26,28 +27,23 @@ object TestPlayer {
 abstract class TestGame(gamepath: File, w: Waiter) 
   extends MyGame(gamepath) {
   
-  private val exitPromise = Promise[Int]()
   def setup()
   def runTest()
-  
-  def awaitExit() = Await.result(exitPromise.future, Duration.Inf)
   
   override def beginGame() = {
     setup()
     
     future {
       runTest()
-      Gdx.app.exit()
+      val app = Gdx.app.asInstanceOf[LwjglApplication]
+      app.stop()
+      Gdx.app = null
+      Gdx.graphics = null
+      Gdx.audio = null
+      Gdx.files = null
+      Gdx.net = null
+      Display.destroy()
       w.dismiss()
     }
-  }
-  
-  override def dispose() = {
-    super.dispose()
-    exitPromise.success(0)
-  }
-  
-  override def render() = {
-    super.render()
   }
 }

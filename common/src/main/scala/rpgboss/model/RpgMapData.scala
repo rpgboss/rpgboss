@@ -1,16 +1,15 @@
 package rpgboss.model
 
 import java.io._
-
 import au.com.bytecode.opencsv.{ CSVReader, CSVWriter }
 import org.json4s.native.Serialization
 import org.json4s.ShortTypeHints
-
 import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.lib.FileHelper._
 import rpgboss.model.resource.RpgMap
+import scala.collection.mutable.ArrayBuffer
 
 /*
  * This class has mutable members.
@@ -19,20 +18,20 @@ import rpgboss.model.resource.RpgMap
  * 
  * botLayer, midLayer, and topLayer must always be of size at least 1 x 1
  */
-case class RpgMapData(botLayer: Array[Array[Byte]],
-                      midLayer: Array[Array[Byte]],
-                      topLayer: Array[Array[Byte]],
+case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
+                      midLayer: ArrayBuffer[ArrayBuffer[Byte]],
+                      topLayer: ArrayBuffer[ArrayBuffer[Byte]],
                       var events: Map[Int, RpgEvent],
                       var lastGeneratedEventId: Int = 0) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
   
-  def writeCsv(file: File, data: Array[Array[Byte]]) = {
+  def writeCsv(file: File, data: Seq[Seq[Byte]]) = {
     val writer =
       new CSVWriter(new FileWriter(file), '\t', CSVWriter.NO_QUOTE_CHARACTER)
 
     data.foreach(row =>
-      writer.writeNext(row.map(b => (b & 0xff).toString)))
+      writer.writeNext(row.map(b => (b & 0xff).toString).toArray))
 
     writer.close()
     true
@@ -85,11 +84,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
   }
 
   def deepcopy() = {
-    copy(
-      botLayer = botLayer.map(_.clone()),
-      midLayer = midLayer.map(_.clone()),
-      topLayer = topLayer.map(_.clone()),
-      events = events.mapValues(_.copy()))
+    copy(events = events.mapValues(_.copy()))
   }
 }
 
@@ -116,16 +111,15 @@ case object RpgMapData {
   def readCsvArray(file: File) = {
     val reader = new CSVReader(new FileReader(file), '\t')
 
-    val buffer = new scala.collection.mutable.ArrayBuffer[Array[Byte]]()
+    val buffer = new ArrayBuffer[ArrayBuffer[Byte]]()
 
-    val data =
-      Iterator.continually(reader.readNext()).takeWhile(_ != null).map { row =>
-        row.map(_.toInt.toByte)
-      }.toArray
+    Iterator.continually(reader.readNext()).takeWhile(_ != null).map { row =>
+      buffer.append(ArrayBuffer(row.map(_.toInt.toByte) : _*))
+    }
 
     reader.close()
 
-    data
+    buffer
   }
 
   def readFromDisk(p: Project, name: String): Option[RpgMapData] = {

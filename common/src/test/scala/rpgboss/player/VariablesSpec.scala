@@ -4,7 +4,7 @@ import rpgboss._
 
 class VariablesSpec extends UnitSpec {
   "Integer variables" should "be set and get" in {
-    val test = new BasicTest {
+    val test = new GameTest {
       def testScript() = {
         scriptInterface.setInt("testInt1", 42)
         scriptInterface.setInt("testInt2", -5)
@@ -23,9 +23,9 @@ class VariablesSpec extends UnitSpec {
   }
   
   "Arrays of integers" should "be set and get" in {
-    val test = new BasicTest {
+    val test = new GameTest {
       def testScript() = {
-        val testCase1 = Array()
+        val testCase1 = Array[Int]()
         val testCase2 = Array(1, 2, 5)
         
         scriptInterface.setIntArray("testCase1", testCase1)
@@ -40,12 +40,14 @@ class VariablesSpec extends UnitSpec {
         }
       }
     }
+    
+    test.runTest()
   }
   
   "Arrays of strings" should "be set and get" in {
-    val test = new BasicTest {
+    val test = new GameTest {
       def testScript() = {
-        val testCase1 = Array()
+        val testCase1 = Array[String]()
         val testCase2 = Array("one", "two", "five")
         
         scriptInterface.setStringArray("testCase1", testCase1)
@@ -60,5 +62,7 @@ class VariablesSpec extends UnitSpec {
         }
       }
     }
+    
+    test.runTest()
   }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * This class wraps a map and its assets. It should only be instantiated
@@ -24,7 +25,7 @@ class MapAndAssets(project: Project, mapName: String) {
 
   val packerTiles = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
 
-  val autotiles: Array[Autotile] = map.metadata.autotiles.map { name =>
+  val autotiles: ArrayBuffer[Autotile] = map.metadata.autotiles.map { name =>
     Autotile.readFromDisk(project, name)
   }
 

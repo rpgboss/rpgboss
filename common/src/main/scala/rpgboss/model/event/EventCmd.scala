@@ -60,10 +60,10 @@ case class MoveEvent(
         """game.movePlayer(%f, %f, %b, %b);""".format(
           dx, dy, affixDirection, async)
       case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
-        """game.moveEntity(%s, %f, %f, %b, %b);""".format(
+        """game.moveEvent(%s, %f, %f, %b, %b);""".format(
             "event.id()", dx, dy, affixDirection, async)
       case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
-        """game.moveEntity(%d, %f, %f, %b, %b);""".format(
+        """game.moveEvent(%d, %f, %f, %b, %b);""".format(
             entitySpec.eventId, dx, dy, affixDirection, async)
     }
 
