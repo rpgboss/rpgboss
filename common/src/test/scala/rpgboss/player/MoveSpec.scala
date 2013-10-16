@@ -14,24 +14,24 @@ import rpgboss.player._
 import rpgboss.player.entity.EntityMove
 
 class MoveSpec extends UnitSpec {
-//  "Move" should "move right simple" in {
-//    val test = new GameTest {
-//      def testScript() = {
-//        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
-//        scriptInterface.movePlayer(1f, 0)
-//        
-//        val player = scriptInterface.getPlayerEntityInfo()
-//        
-//        waiter {
-//          val epsilon = 0.05f
-//          player.x should be (1.5f +- epsilon)
-//          player.y should be (0.5f +- epsilon)
-//        }
-//      }
-//    }
-//    
-//    test.runTest()
-//  }
+  "Move" should "move right simple" in {
+    val test = new GameTest {
+      def testScript() = {
+        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+        scriptInterface.movePlayer(1f, 0)
+        
+        val player = scriptInterface.getPlayerEntityInfo()
+        
+        waiter {
+          val epsilon = 0.05f
+          player.x should be (1.5f +- epsilon)
+          player.y should be (0.5f +- epsilon)
+        }
+      }
+    }
+    
+    test.runTest()
+  }
   
   "MoveEvent" should "work with THIS_EVENT" in {
     val test = new GameTest {

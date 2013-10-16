@@ -1,6 +1,9 @@
 package rpgboss
 
+import com.badlogic.gdx.backends.lwjgl._
+import com.badlogic.gdx._
 import com.google.common.io.Files
+import org.lwjgl.opengl.Display
 import org.scalatest.concurrent.AsyncAssertions.Waiter
 import org.scalatest.concurrent.PatienceConfiguration._
 import org.scalatest.time._
@@ -10,6 +13,9 @@ import rpgboss.model.event._
 import rpgboss.model.resource._
 import rpgboss.player._
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 class ProjectTest extends ShouldMatchers {
   def paint(array: ArrayBuffer[ArrayBuffer[Byte]], x: Int, y: Int, 
@@ -66,7 +72,16 @@ abstract class GameTest extends ProjectTest {
   
   def testScript()
   
-  val game = new TestGame(projectDirectory, waiter) {
+  val game = new MyGame(projectDirectory) {
+    override def beginGame() = {
+      setup()
+      
+      future {
+        runTest()
+        waiter.dismiss()
+      }
+    }
+    
     def setup() = GameTest.this.setup()
     
     def runTest() = {

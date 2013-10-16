@@ -5,13 +5,53 @@ import com.badlogic.gdx.backends.lwjgl._
 import com.badlogic.gdx._
 import org.scalatest.concurrent.AsyncAssertions.Waiter
 import rpgboss.model.MapLoc
-import scala.concurrent._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
 import java.util.Date
 import org.lwjgl.opengl.Display
 
+/** Can hold a delegate MyGame that can be replaced for running multiple tests.
+ */
+class TestGameContainer extends ApplicationListener {
+  var childGame: Option[MyGame] = None
+  
+  // Can be called on any thread, since it will post to the Gdx thread.
+  def replace(game: MyGame) = {
+    Gdx.app.postRunnable(new Runnable() {
+      def run() = {
+        childGame.map(_.pause())
+        childGame.map(_.dispose())
+        childGame = Some(game)
+        childGame.map(_.create())
+      }
+    })
+  }
+  
+  def create() = {}
+  
+  def dispose() = {
+    childGame.map(_.dispose())
+  }
+  
+  def pause() = {
+    childGame.map(_.pause())
+  }
+  
+  def render() = {
+    childGame.map(_.render())
+  }
+  
+  def resize(x: Int, y: Int) = {
+    childGame.map(_.resize(x, y))
+  }
+  
+  def resume() = {
+    childGame.map(_.resume())
+  }
+}
+
 object TestPlayer {
+  val container = new TestGameContainer
+  var app: LwjglApplication = null
+  
   def launch(game: MyGame) = {
     val conf = new LwjglApplicationConfiguration();
     conf.title = game.project.data.title;
@@ -20,30 +60,10 @@ object TestPlayer {
     conf.useGL20 = true;
     conf.forceExit = false;
 
-    new LwjglApplication(game, conf);
-  }
-}
-
-abstract class TestGame(gamepath: File, w: Waiter) 
-  extends MyGame(gamepath) {
-  
-  def setup()
-  def runTest()
-  
-  override def beginGame() = {
-    setup()
-    
-    future {
-      runTest()
-      val app = Gdx.app.asInstanceOf[LwjglApplication]
-      app.stop()
-      Gdx.app = null
-      Gdx.graphics = null
-      Gdx.audio = null
-      Gdx.files = null
-      Gdx.net = null
-      Display.destroy()
-      w.dismiss()
+    if (app == null) {
+      app = new LwjglApplication(container, conf)
     }
+    
+    container.replace(game)
   }
 }

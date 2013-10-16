@@ -64,7 +64,7 @@ case class Spriteset(proj: Project,
 
     // Account for the fact that 
     val normalizedStep = if (step == 3) 1 else step
-
+    
     val xTile = (xOffset + normalizedStep)
     val yTile = (yOffset + dir)
 
