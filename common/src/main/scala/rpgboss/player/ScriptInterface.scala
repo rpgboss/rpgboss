@@ -40,8 +40,8 @@ class ScriptInterface(game: MyGame, state: GameState) {
   def setPlayerLoc(loc: MapLoc) = syncRun {
     state.playerEntity.x = loc.x
     state.playerEntity.y = loc.y
+    state.playerEntity.mapName = Some(loc.map)
     
-    persistent.cameraLoc.set(loc)
     state.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map)) 
   }
 

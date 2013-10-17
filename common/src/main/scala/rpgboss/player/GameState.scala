@@ -34,6 +34,8 @@ class GameState(game: MyGame, project: Project) {
   // protagonist. Modify all these things on the Gdx thread
   var playerEntity: PlayerEntity = new PlayerEntity(game)
 
+  val camera = new Camera(game)
+  
   val persistent = new PersistentState()
 
   // All the events on the current map, including the player event
@@ -55,11 +57,17 @@ class GameState(game: MyGame, project: Project) {
     }
   }
   
-  def getEventState(eventId: Int): Int =
-    persistent.getEventState(persistent.cameraLoc.map, eventId)
-  def setEventState(eventId: Int, newState: Int): Unit =
-    persistent.setEventState(persistent.cameraLoc.map, eventId, newState)
-    
+  def getEventState(eventId: Int): Int = {
+    if (playerEntity.mapName.isDefined)
+      persistent.getEventState(playerEntity.mapName.get, eventId)
+    else
+      -1
+  }
+  def setEventState(eventId: Int, newState: Int): Unit = {
+    if (playerEntity.mapName.isDefined)
+      persistent.getEventState(playerEntity.mapName.get, eventId)
+  }
+      
   def getInt(key: String): Int = persistent.getInt(key)
   def setInt(key: String, value: Int) = {
     persistent.setInt(key, value)
@@ -93,11 +101,7 @@ class GameState(game: MyGame, project: Project) {
       }
     }
 
-    // Update camera location
-    if (playerEntity.isMoving()) {
-      persistent.cameraLoc.x = playerEntity.x
-      persistent.cameraLoc.y = playerEntity.y
-    }
+    camera.update(delta)
   }
 
   /**

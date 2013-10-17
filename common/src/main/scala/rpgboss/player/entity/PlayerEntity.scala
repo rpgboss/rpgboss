@@ -16,6 +16,7 @@ class PlayerEntity(game: MyGame)
   // Add input handling
   game.inputs.prepend(this)
 
+  var mapName: Option[String] = None
   var menuActive = false
   var currentMoveQueueItem: EntityMoveTrait = null
   speed = 4f // player should be faster

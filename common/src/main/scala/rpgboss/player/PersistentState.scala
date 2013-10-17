@@ -7,7 +7,6 @@ import collection.mutable.{SynchronizedMap => MutableSynchronizedMap}
  * This whole class should only be accessed on the Gdx thread.
  */
 class PersistentState {
-  val cameraLoc = new MutableMapLoc()
   val pictures = Array.fill[Option[PictureInfo]](32)(None)
 
   private val globalInts =
