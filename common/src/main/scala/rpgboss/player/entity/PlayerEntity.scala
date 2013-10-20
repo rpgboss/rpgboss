@@ -18,7 +18,7 @@ class PlayerEntity(game: MyGame)
 
   var mapName: Option[String] = None
   var menuActive = false
-  var currentMoveQueueItem: EntityMoveTrait = null
+  var currentMoveQueueItem: MutateQueueItem[Entity] = null
   speed = 4f // player should be faster
   
   // Set to a large number, as we expect to cancel this move when we lift button

@@ -18,23 +18,18 @@ class Camera(game: MyGame) {
   var x: Float = 0f
   var y: Float = 0f
   var speed: Float = 2f // tiles per second
-  val moveQueue = new collection.mutable.Queue[CameraMoveTrait]
+  val moveQueue = new MutateQueue(this)
   
   def state = game.state
   
-  def info = CameraInfo(x, y, speed, moveQueue.length)
+  def info = CameraInfo(x, y, speed, moveQueue.queue.length)
   
   def update(delta: Float) = {
     if (moveQueue.isEmpty) {
       x = game.state.playerEntity.x
       y = game.state.playerEntity.y
-    } else if (!moveQueue.isEmpty) {
-      val move = moveQueue.head
-
-      moveQueue.head.update(delta, this)
-      
-      if (moveQueue.head.isDone())
-        moveQueue.dequeue()
+    } else {
+      moveQueue.runQueueItem(delta)
     }
   }
   
@@ -45,17 +40,7 @@ class Camera(game: MyGame) {
   }
 }
 
-trait CameraMoveTrait {
-  private val finishPromise = Promise[Int]()
-  
-  def update(delta: Float, c: Camera)
-  
-  def isDone() = finishPromise.isCompleted
-  def finish() = finishPromise.success(0)
-  def awaitDone() = Await.result(finishPromise.future, Duration.Inf)
-}
-
-class CameraMove(dx: Float, dy: Float) extends CameraMoveTrait {
+class CameraMove(dx: Float, dy: Float) extends MutateQueueItem[Camera] {
   private val _remaining = new Vector2(dx, dy)
 
   def update(delta: Float, c: Camera) = {

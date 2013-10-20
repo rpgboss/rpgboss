@@ -14,6 +14,7 @@ import rpgboss.model.event.EventHeight
 import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import rpgboss.player._
 
 /*
  * Position is marked as such:
@@ -35,7 +36,7 @@ abstract class Entity(
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) {
 
-  val moveQueue = new collection.mutable.Queue[EntityMoveTrait]
+  val moveQueue = new MutateQueue(this)
   var movesEnqueued: Long = 0
   
   var speed: Float = 3.0f
@@ -118,14 +119,12 @@ abstract class Entity(
     })
   }
 
-  def enqueueMove(move: EntityMoveTrait) = {
+  def enqueueMove(move: MutateQueueItem[Entity]) = {
     moveQueue.enqueue(move)
     movesEnqueued += 1
-    // game.logger.info("enqueueMove")
   }
   def dequeueMove() = {
     moveQueue.dequeue()
-    // game.logger.info("dequeueMove")
   }
   
   /**
@@ -140,14 +139,10 @@ abstract class Entity(
         isMovingVar = true
         movingSince = System.currentTimeMillis()
       }
-      moveQueue.head.update(this, delta)
-      
-      if (moveQueue.head.isDone())
-        dequeueMove()
-    }
-    
-    if (moveQueue.isEmpty)
+      moveQueue.runQueueItem(delta)
+    } else {
       isMovingVar = false
+    }
   }
 
   def render(batch: SpriteBatch, atlasSprites: TextureAtlas) = {
@@ -194,21 +189,11 @@ case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
     copy(minX + dx, minY + dy, maxX + dx, maxY + dy)
 }
 
-trait EntityMoveTrait {
-  def update(entity: Entity, delta: Float): Unit
-  
-  private val finishPromise = Promise[Int]()
-  
-  def isDone(): Boolean = finishPromise.isCompleted
-  def finish() = finishPromise.success(0)
-  def awaitDone() = Await.result(finishPromise.future, Duration.Inf)
-}
-
 case class EntityMove(totalDx: Float, totalDy: Float)
-  extends EntityMoveTrait {
+  extends MutateQueueItem[Entity] {
   val remainingTravel = new Vector2(totalDx, totalDy)
   
-  def update(entity: Entity, delta: Float) = {
+  def update(delta: Float, entity: Entity) = {
     import math._
 
     val desiredThisFrame = 
@@ -301,8 +286,8 @@ case class EntityMove(totalDx: Float, totalDy: Float)
   }
 }
 
-case class EntityFaceDirection(direction: Int) extends EntityMoveTrait {
-  def update(entity: Entity, delta: Float) = {
+case class EntityFaceDirection(direction: Int) extends MutateQueueItem[Entity] {
+  def update(delta: Float, entity: Entity) = {
     entity.dir = direction
     finish()
   }
