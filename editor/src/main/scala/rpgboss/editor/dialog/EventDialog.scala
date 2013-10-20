@@ -77,8 +77,8 @@ class EventDialog(
         sprite = spriteBox.getSpriteSpec,
         trigger = triggerBox.selection.item.id,
         height = heightBox.selection.item.id,
-        cmds = commandBox.listData.toArray)
-      event.states.update(idx, newState)
+        cmds = commandBox.listData)
+      event = event.copy(states = event.states.updated(idx, newState))
     }
   }
 

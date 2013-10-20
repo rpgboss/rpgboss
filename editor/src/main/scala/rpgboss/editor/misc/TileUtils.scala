@@ -14,7 +14,7 @@ object TileUtils {
   /**
    * Draw every autotile onto collageImage in one huge row.
    */
-  def getAutotileCollageImg(autotiles: Array[Autotile]) = {
+  def getAutotileCollageImg(autotiles: Seq[Autotile]) = {
     import Tileset.tilesize
     val collageImage = new BufferedImage(autotiles.length * tilesize,
       tilesize,

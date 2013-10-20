@@ -53,7 +53,7 @@ class MapTileCache(
 
   // frame here means the animation frame
   def getTileImage(
-    mapData: Array[Array[Byte]], xTile: Int, yTile: Int, frame: Byte = 0) = {
+    mapData: Seq[Seq[Byte]], xTile: Int, yTile: Int, frame: Byte = 0) = {
 
     val row = mapData(yTile)
     val idx = xTile * RpgMap.bytesPerTile

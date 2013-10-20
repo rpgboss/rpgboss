@@ -17,7 +17,7 @@ class CommandBox(
   owner: Window,
   sm: StateMaster,
   mapName: String,
-  initialCmds: Array[EventCmd])
+  initialCmds: Seq[EventCmd])
   extends ListView(initialCmds) {
 
   listenTo(mouse.clicks)

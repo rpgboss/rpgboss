@@ -3,12 +3,11 @@ package rpgboss.editor
 import rpgboss.lib.Utils._
 import rpgboss.model._
 import rpgboss.model.resource._
-
 import rpgboss.editor.imageset._
 import rpgboss.editor.uibase._
 import rpgboss.editor.cache._
-
 import scala.math._
+import scala.collection.mutable.ArrayBuffer
 
 object MapLayers extends RpgEnum {
   val Bot, Mid, Top, Evt = Value
@@ -16,7 +15,8 @@ object MapLayers extends RpgEnum {
   def drawOrderZip[T](list: List[T]) =
     List(Bot, Mid, Top) zip list
 
-  def mapOfArrays(mapData: RpgMapData): Map[Enumeration#Value, Array[Array[Byte]]] =
+  def mapOfArrays(mapData: RpgMapData): 
+      Map[Enumeration#Value, ArrayBuffer[ArrayBuffer[Byte]]] =
     Map(drawOrderZip(mapData.drawOrder): _*)
 
   def default = Bot

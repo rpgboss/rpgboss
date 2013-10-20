@@ -8,10 +8,9 @@ import rpgboss.model.Constants.DirectionMasks._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.model.resource.RpgMap._
-
 import scala.annotation.tailrec
-
 import java.awt.Rectangle
+import scala.collection.mutable.ArrayBuffer
 
 trait MapViewTool {
   def name: String
@@ -36,8 +35,8 @@ object MapViewTools {
   /**
    *
    */
-  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
-                       layerAry: Array[Array[Byte]],
+  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Seq[Autotile],
+                       layerAry: ArrayBuffer[ArrayBuffer[Byte]],
                        x0: Int, y0: Int, x1: Int, y1: Int): TileRect = {
 
     // Only need to adjust autotiles in this rect
@@ -55,8 +54,8 @@ object MapViewTools {
    * Well. This algorithm isn't even really correct for walls. It seems to mess
    * up in some cases.
    */
-  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Array[Autotile],
-                       layerAry: Array[Array[Byte]],
+  def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Seq[Autotile],
+                       layerAry: ArrayBuffer[ArrayBuffer[Byte]],
                        tilesToSet: Seq[(Int, Int)]): TileRect =
     {
       import RpgMap.bytesPerTile
@@ -225,14 +224,14 @@ object MapViewTools {
   }
 
   trait RectLikeTool extends MapViewTool {
-    var origLayerBuf: Array[Array[Byte]] = null
+    var origLayerBuf: ArrayBuffer[ArrayBuffer[Byte]] = null
     var prevPaintedRegion = TileRect.empty
 
     def doesPaint(xi: Int, yi: Int, w: Int, h: Int): Boolean
 
     def doPaint(
       vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
-      layerAry: Array[Array[Byte]],
+      layerAry: ArrayBuffer[ArrayBuffer[Byte]],
       x1: Int, y1: Int, x2: Int, y2: Int): TileRect =
       {
         println("Modified tiles: (%d, %d) to (%d, %d)".format(x1, y1, x2, y2))
@@ -409,9 +408,9 @@ object MapViewTools {
                 val tCode = tCodes(tCodeY)(tCodeX)
 
                 // Fill in the tile
-                tCode.copyToArray(
-                  layerAry(curY), curX * bytesPerTile, bytesPerTile)
-
+                for (i <- 0 until bytesPerTile)
+                  layerAry(curY)(curX * bytesPerTile + i) = tCode(i)
+                
                 // Update the running variables of min/max of edited tiles
                 import math._
                 minX = min(minX, curX)
