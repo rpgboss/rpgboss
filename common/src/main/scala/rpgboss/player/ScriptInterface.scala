@@ -44,6 +44,16 @@ class ScriptInterface(game: MyGame, state: GameState) {
     
     state.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map)) 
   }
+  
+  def moveCamera(dx: Float, dy: Float, async: Boolean) = {
+    val move = syncRun { state.camera.enqueueMove(dx, dy) }
+    if (!async)
+      move.awaitDone()
+  }
+  
+  def getCameraPos() = syncRun {
+    state.camera.info
+  }
 
   /* 
    * Things to do with the screen
@@ -219,11 +229,11 @@ class ScriptInterface(game: MyGame, state: GameState) {
             if (dx > 0) EAST else WEST
           else
             if (dy > 0) SOUTH else NORTH
-        entity.enqueueMove(EntityFaceDirection(direction))
+        syncRun { entity.enqueueMove(EntityFaceDirection(direction)) }
       }
       
       val move = EntityMove(dx, dy)
-      entity.enqueueMove(move)
+      syncRun { entity.enqueueMove(move) }
       
       if (!async)
         move.awaitDone()

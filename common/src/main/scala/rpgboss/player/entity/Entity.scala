@@ -35,7 +35,7 @@ abstract class Entity(
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) {
 
-  val moveQueue = new collection.mutable.SynchronizedQueue[EntityMoveTrait]
+  val moveQueue = new collection.mutable.Queue[EntityMoveTrait]
   var movesEnqueued: Long = 0
   
   var speed: Float = 3.0f
@@ -135,8 +135,7 @@ abstract class Entity(
   def eventTouchCallback(touchedNpcs: Iterable[EventEntity])
 
   def update(delta: Float) = {
-    var moveQueueUpdateDone = false
-    while (!moveQueueUpdateDone && !moveQueue.isEmpty) {
+    if (!moveQueue.isEmpty) {
       if (!isMovingVar) {
         isMovingVar = true
         movingSince = System.currentTimeMillis()
@@ -145,8 +144,6 @@ abstract class Entity(
       
       if (moveQueue.head.isDone())
         dequeueMove()
-      else
-        moveQueueUpdateDone = true
     }
     
     if (moveQueue.isEmpty)

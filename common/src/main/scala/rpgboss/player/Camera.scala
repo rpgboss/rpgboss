@@ -4,6 +4,8 @@ import scala.concurrent._
 import scala.concurrent.duration.Duration
 import com.badlogic.gdx.math.Vector2
 
+case class CameraInfo(x: Float, y: Float, speed: Float, moveQueueLength: Int)
+
 /** Controls where the camera is pointed. Accessed only on the Gdx thread.
  *  
  *  The camera is implicitly locked to the player. If however, there are moves
@@ -13,54 +15,26 @@ import com.badlogic.gdx.math.Vector2
  *  camera to jerk afterwards.
  */
 class Camera(game: MyGame) {
-  private var _x: Float = 0f
-  private var _y: Float = 0f
-  
-  private var _speed: Float = 2f // tiles per second
-  
-  private val moveQueue = new collection.mutable.Queue[CameraMove]
-  
-  class CameraMove(dx: Float, dy: Float) {
-    private val _remaining = new Vector2(dx, dy)
-    private val finishPromise = Promise[Int]()
-    
-    def remainingLength = _remaining.len()
-    def subtractTravel(travel: Vector2) = _remaining.sub(travel)
-    def remainingDx = _remaining.x
-    def remainingDy = _remaining.y
-    def remaining = _remaining.cpy()
-    
-    def finish() = finishPromise.success(0)
-    def awaitDone() = Await.result(finishPromise.future, Duration.Inf)
-  }
+  var x: Float = 0f
+  var y: Float = 0f
+  var speed: Float = 2f // tiles per second
+  val moveQueue = new collection.mutable.Queue[CameraMoveTrait]
   
   def state = game.state
   
-  def x = _x
-  def y = _y
-  
-  def setSpeed(speed: Float) = 
-    _speed = speed
+  def info = CameraInfo(x, y, speed, moveQueue.length)
   
   def update(delta: Float) = {
     if (moveQueue.isEmpty) {
-      _x = game.state.playerEntity.x
-      _y = game.state.playerEntity.y
+      x = game.state.playerEntity.x
+      y = game.state.playerEntity.y
     } else if (!moveQueue.isEmpty) {
-      val maxTravel = delta * _speed
       val move = moveQueue.head
+
+      moveQueue.head.update(delta, this)
       
-      if (move.remainingLength <= maxTravel) {
-        _x += move.remainingDx
-        _y += move.remainingDy
+      if (moveQueue.head.isDone())
         moveQueue.dequeue()
-        move.finish()
-      } else {
-        val travel = move.remaining.nor().scl(maxTravel)
-        _x += travel.x
-        _y += travel.y
-        move.subtractTravel(travel)
-      }
     }
   }
   
@@ -69,9 +43,32 @@ class Camera(game: MyGame) {
     moveQueue.enqueue(move)
     return move
   }
+}
+
+trait CameraMoveTrait {
+  private val finishPromise = Promise[Int]()
   
-  def setCameraLoc(x: Float, y: Float) = {
-    _x = x
-    _y = y
+  def update(delta: Float, c: Camera)
+  
+  def isDone() = finishPromise.isCompleted
+  def finish() = finishPromise.success(0)
+  def awaitDone() = Await.result(finishPromise.future, Duration.Inf)
+}
+
+class CameraMove(dx: Float, dy: Float) extends CameraMoveTrait {
+  private val _remaining = new Vector2(dx, dy)
+
+  def update(delta: Float, c: Camera) = {
+    val maxTravel = delta * c.speed
+    if (_remaining.len() <= maxTravel) {
+      c.x += _remaining.x
+      c.y += _remaining.y
+      finish()
+    } else {
+      val travel = _remaining.nor().scl(maxTravel)
+      c.x += travel.x
+      c.y += travel.y
+      _remaining.sub(travel)
+    }
   }
 }
