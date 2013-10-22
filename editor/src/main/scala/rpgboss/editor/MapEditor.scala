@@ -201,7 +201,7 @@ class MapEditor(
     } getOrElse {
       // Need the +0.5f to offset into center of selected tile 
       RpgEvent.blank(
-        vs.nextMapData.lastGeneratedEventId + 1,
+        vs.mapMeta.lastGeneratedEventId + 1,
         canvasPanel.cursorSquare.x1 + 0.5f,
         canvasPanel.cursorSquare.y1 + 0.5f)
     }
@@ -212,9 +212,9 @@ class MapEditor(
       vs.mapName,
       event,
       onOk = { e: RpgEvent =>
-        if (isNewEvent) 
-          vs.nextMapData.lastGeneratedEventId += 1
-        
+        val newMetadata = vs.mapMeta.copy(
+            lastGeneratedEventId = vs.mapMeta.lastGeneratedEventId + 1)
+        sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
         vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
         
         commitVS(vs)

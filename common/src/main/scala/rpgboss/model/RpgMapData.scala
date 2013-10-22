@@ -21,8 +21,7 @@ import scala.collection.mutable.ArrayBuffer
 case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
                       midLayer: ArrayBuffer[ArrayBuffer[Byte]],
                       topLayer: ArrayBuffer[ArrayBuffer[Byte]],
-                      var events: Map[Int, RpgEvent],
-                      var lastGeneratedEventId: Int = 0) {
+                      var events: Map[Int, RpgEvent]) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
   

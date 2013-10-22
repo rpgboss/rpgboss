@@ -19,7 +19,8 @@ case class RpgMapMetadata(var parent: String,
                           var changeMusicOnEnter: Boolean = false,
                           var music: Option[SoundSpec] = None,
                           var editorCenterX: Float = 0f,
-                          var editorCenterY: Float = 0f) {
+                          var editorCenterY: Float = 0f,
+                          var lastGeneratedEventId: Int = 0) {
   def withinBounds(x: Float, y: Float) = {
     x < xSize && y < ySize && x >= 0 && y >= 0
   }

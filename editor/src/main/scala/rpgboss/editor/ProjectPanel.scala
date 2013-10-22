@@ -67,7 +67,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         val processBuilder =
           new ProcessBuilder(javaPath, "-cp",
             classpath,
-            "rpgboss.player.PlayerDesktop",
+            "rpgboss.player.LwjglPlayer",
             projPath)
 
         println(processBuilder.command().mkString(" "))
