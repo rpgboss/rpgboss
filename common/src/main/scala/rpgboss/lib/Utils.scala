@@ -112,4 +112,7 @@ object Utils {
 
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m
+  
+  def removeFromSeq[T](seq: Seq[T], i: Int) =
+    seq.take(i) ++ seq.drop(i + 1)
 }

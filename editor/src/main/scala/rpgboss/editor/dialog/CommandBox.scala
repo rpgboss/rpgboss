@@ -7,6 +7,8 @@ import rpgboss.model.event._
 import rpgboss.editor.dialog.cmd._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.dialog.cmd.NewEvtCmdBox
+import java.awt.event.MouseEvent
+import rpgboss.editor.uibase.PopupMenu
 
 /**
  * Holds and edits list of commands.
@@ -40,8 +42,27 @@ class CommandBox(
 
   val cmdBox = this
   reactions += {
-    case MouseClicked(`cmdBox`, pt, _, clicks, _) =>
-      if (clicks == 2) {
+    case e: MouseClicked =>
+      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+        // List won't automatically select
+        val closestI = this.peer.locationToIndex(e.point)
+        if (closestI != -1) {
+          this.selectIndices(closestI)
+          
+          val menu = new PopupMenu {
+            contents += new MenuItem(Action("Delete") {
+              if (!selection.items.isEmpty && 
+                  selection.items.head != EndOfScript()) {
+                listData = rpgboss.lib.Utils.removeFromSeq(
+                listData, selection.indices.head)
+              }
+            })
+          }
+          
+          menu.show(this, e.point.x, e.point.y)
+        }
+        
+      } else if (e.clicks == 2) {
         selection.items.head match {
           case c: EndOfScript => newCmdDialog()
           case _ => editSelectedCmd()
