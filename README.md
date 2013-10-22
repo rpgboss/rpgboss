@@ -12,7 +12,8 @@ Below directions assume a POSIX environment.
 
 Pre-requisites:
 
-+  sbt: http://www.scala-sbt.org/
++  git
++  sbt - http://www.scala-sbt.org/
 +  Java
 
 Build instructions:
