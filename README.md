@@ -19,40 +19,40 @@ Build instructions:
 
 1. Create a directory to hold rpgboss and its dependencies.
 
-   mkdir rpgboss
-   cd rpgboss
+    mkdir rpgboss
+    cd rpgboss
 
 2. The build depends on https://github.com/ritschwumm/xsbt-webstart. Satisfy this by:
 
-   git clone https://github.com/ritschwumm/xsbt-classpath.git
-   cd xsbt-classpath
-   sbt publish-local
-   cd ..
-   git clone https://github.com/ritschwumm/xsbt-webstart.git
-   cd xsbt-webstart
-   sbt publish-local
-   cd ..
+    git clone https://github.com/ritschwumm/xsbt-classpath.git
+    cd xsbt-classpath
+    sbt publish-local
+    cd ..
+    git clone https://github.com/ritschwumm/xsbt-webstart.git
+    cd xsbt-webstart
+    sbt publish-local
+    cd ..
 
 3. Clone this repo and enter it.
 
-   git clone https://github.com/tommycli/rpgboss.git
-   cd rpgboss
+    git clone https://github.com/tommycli/rpgboss.git
+    cd rpgboss
 
 4. Run sbt. Once you are in the sbt prompt, run these commands to pull in extra dependencies:
 
-   sbt
-   > update-gdx
-   > update-libs
+    sbt
+    > update-gdx
+    > update-libs
 
 5. You should still be in the sbt prompt. Switch to the 'editor' subproject, compile, and package it.
 
-   > project editor
-   > compile
-   > package
+    > project editor
+    > compile
+    > package
 
 6. You can run the editor from the sbt prompt also.
 
-   > run
+    > run
 
 Material
 --------
