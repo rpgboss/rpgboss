@@ -131,6 +131,7 @@ class MyGame(gamepath: File)
       screenLayer.update(delta)
       
       // Render the two layers
+      screenLayer.preMapRender()
       mapLayer.render()
       screenLayer.render()
     } else {

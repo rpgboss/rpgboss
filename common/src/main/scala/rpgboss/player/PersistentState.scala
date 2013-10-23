@@ -7,7 +7,7 @@ import collection.mutable.{SynchronizedMap => MutableSynchronizedMap}
  * This whole class should only be accessed on the Gdx thread.
  */
 class PersistentState {
-  val pictures = Array.fill[Option[PictureInfo]](32)(None)
+  val pictures = Array.fill[Option[PictureInfo]](64)(None)
 
   private val globalInts =
     new MutableHashMap[String, Int]() 

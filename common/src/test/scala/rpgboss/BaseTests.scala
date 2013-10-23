@@ -88,6 +88,13 @@ abstract class GameTest extends ProjectTest {
       scriptInterface.setNewGameVars()
       testScript()
     }
+    
+    // Should only be run on scripting thread. |key| is an internal key.
+    def scriptKeyPress(key: Int, duration: Float) = {
+      syncRun { inputs.myKeyDown(key) }
+      Thread.sleep((duration * 1000).toLong)
+      syncRun { inputs.myKeyUp(key) }
+    }
   }
   
   def scriptInterface = game.scriptInterface

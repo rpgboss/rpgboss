@@ -33,6 +33,25 @@ class MoveSpec extends UnitSpec {
     test.runTest()
   }
   
+  "Move" should "should work in reponse to key press" in {
+    val test = new GameTest {
+      def testScript() = {
+        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+        game.scriptKeyPress(MyKeys.Right, 5f / game.state.playerEntity.speed)
+        
+        val player = scriptInterface.getPlayerEntityInfo()
+        
+        waiter {
+          val epsilon = 0.15f // slack because of sloppy key press simulation
+          player.x should be (5.5f +- epsilon)
+          player.y should be (0.5f +- epsilon)
+        }
+      }
+    }
+    
+    test.runTest()
+  }
+  
   "MoveEvent" should "work with THIS_EVENT" in {
     val test = new GameTest {
       override def setupMapData(mapData: RpgMapData) = {

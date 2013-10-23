@@ -36,6 +36,15 @@ object Constants {
     def allBlocked(b: Byte) = (b & ALLCARDINAL) == ALLCARDINAL
     def flagged(b: Byte, dir: Int) = (b & dir) == dir
   }
+  
+  object PictureSlots {
+    val BACKGROUND = 0
+    val FOREGROUND = 8
+    val OVER_MAP_BACKGROUND = 24
+    val OVER_MAP_FOREGOUND = 32
+    val ABOVE_ALL = 56
+    val TOTAL = 64
+  }
 
   import DirectionMasks._
 

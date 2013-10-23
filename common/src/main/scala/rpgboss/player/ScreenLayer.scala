@@ -1,6 +1,7 @@
 package rpgboss.player
 
 import rpgboss.model._
+import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.utils.Logger
@@ -59,6 +60,18 @@ class ScreenLayer(game: MyGame, state: GameState) {
       windows.tail.foreach(_.update(delta, false))
 
   }
+  
+  // Render that's called before the map layer is drawn
+  def preMapRender() = {
+    batch.begin()
+    
+    for (i <- PictureSlots.BACKGROUND until PictureSlots.FOREGROUND;
+         pic <- state.persistent.pictures(i)) {
+      pic.render(batch)
+    } 
+    
+    batch.end()
+  }
 
   def render() = {
     /*
@@ -73,8 +86,9 @@ class ScreenLayer(game: MyGame, state: GameState) {
     batch.begin()
 
     // Render pictures
-    for (pic <- state.persistent.pictures) {
-      pic.map(_.render(batch))
+    for (i <- PictureSlots.FOREGROUND until PictureSlots.TOTAL;
+         pic <- state.persistent.pictures(i)) {
+      pic.render(batch)
     }
 
     // Render all windows

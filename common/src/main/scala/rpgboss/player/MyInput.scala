@@ -99,7 +99,11 @@ class MyInputMultiplexer extends InputAdapter {
   
   private val keyIsActive = new Array[Boolean](MyKeys.totalNumber)
   
-  override def keyDown(keycode: Int) = mapKey(keycode) map { key =>
+  override def keyDown(keycode: Int) = 
+    mapKey(keycode).map(myKeyDown _).getOrElse(false)
+  
+  // Key down on abstract keys defined internally
+  def myKeyDown(key: Int) = {
     /*
      * This bit of hackery iterates through the whole list looking for a
      * handler that handles the input correctly.
@@ -107,14 +111,17 @@ class MyInputMultiplexer extends InputAdapter {
     keyIsActive(key) = true
     val handler = inputProcessors.find { _.capturedKeys.contains(key) }
     handler.map { _.keyDown(key) }.isDefined
-  } getOrElse false
+  }
 
-  override def keyUp(keycode: Int) = mapKey(keycode) map { key =>
+  override def keyUp(keycode: Int) = 
+    mapKey(keycode).map(myKeyUp _).getOrElse(false)
+  
+  def myKeyUp(key: Int) = {
     keyIsActive(key) = false
     val handler = inputProcessors.find { _.capturedKeys.contains(key) }
     handler.map { _.keyUp(key) }.isDefined
-  } getOrElse false
-
+  }
+  
   def prepend(newHandler: InputHandler) = {
     for (key <- newHandler.capturedKeys; if keyIsActive(key)) {
       // Send a keyUp signals to all input handlers that are now shadowed
