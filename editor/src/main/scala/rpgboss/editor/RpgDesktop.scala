@@ -4,6 +4,8 @@ import scala.swing._
 import scala.swing.event._
 import com.typesafe.scalalogging.slf4j.Logging
 import java.lang.Thread.UncaughtExceptionHandler
+import javax.swing.UIManager
+import javax.imageio.ImageIO
 
 object RpgDesktop
   extends SwingApplication
@@ -38,13 +40,28 @@ object RpgDesktop
   }
 
   override def startup(args: Array[String]) = {
+    UIManager.setLookAndFeel(
+      UIManager.getSystemLookAndFeelClassName());
+    
+    val iconStream = getClass.getClassLoader.getResourceAsStream("icon.png")
+    val icon = ImageIO.read(iconStream)
+    
     System.setProperty("sun.awt.exception.handler", "rpgboss.editor.EDTErrorHandler");
     Thread.setDefaultUncaughtExceptionHandler(this);
 
     // code adapted from SimpleSwingApplication.scala
     val t = top()
+    t.peer.setIconImage(icon)
     if (t.size == new Dimension(0, 0)) t.pack()
     t.visible = true
+  }
+  
+  override def main(args: Array[String]) {
+    if (args.size >= 2 && args.head == "--player") {
+      rpgboss.player.LwjglPlayer.main(args.tail)
+    } else {
+      super.main(args)
+    }
   }
 }
 

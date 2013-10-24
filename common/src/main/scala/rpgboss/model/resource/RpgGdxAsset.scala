@@ -6,10 +6,12 @@ trait RpgGdxAsset[T] {
   def absPath: String
 
   def loadAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): Unit = {
+    println("Load: " + absPath)
     assets.load(absPath, m.runtimeClass.asInstanceOf[Class[T]])
   }
 
   def getAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): T = {
+    println("Get: " + absPath)
     assets.get(absPath, m.runtimeClass.asInstanceOf[Class[T]])
   }
 

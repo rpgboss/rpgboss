@@ -10,6 +10,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.LifecycleListener
 import org.lwjgl.opengl.Display
+import java.io.File
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -47,28 +48,44 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     })
     contents += new Button(Action("Play...") {
       if (sm.askSaveUnchanged(this)) {
-        val separator = System.getProperty("file.separator")
-
-        val classpath =
-          List("java.class.path", "java.boot.class.path", "sun.boot.class.path")
-            .map(s => System.getProperty(s, "")).mkString(":")
-
-        println(classpath)
-
-        val javaPath =
-          System.getProperty("java.home") +
-            separator +
-            "bin" +
-            separator +
-            "java";
-
         val projPath = sm.getProj.dir.getCanonicalPath()
-
-        val processBuilder =
-          new ProcessBuilder(javaPath, "-cp",
-            classpath,
-            "rpgboss.player.LwjglPlayer",
-            projPath)
+        val winExecutable = "rpgboss-editor.exe"
+        
+        // Returns path to windows executable if it exists, null otherwise
+        def getWinExecutable(): Option[File] = {
+          val programDir = new File(System.getProperty("user.dir"))
+          
+          val executablePath = new File(programDir, winExecutable)
+          
+          if (executablePath.exists())
+            Some(executablePath)
+          else
+            None
+        } 
+        
+        val processBuilder: ProcessBuilder = {
+          getWinExecutable() map { exePath =>
+            new ProcessBuilder(exePath.toString, "--player", projPath)
+          } getOrElse {
+            val separator = System.getProperty("file.separator")
+            val classpath =
+              List("java.class.path", "java.boot.class.path", 
+                   "sun.boot.class.path")
+                .map(s => System.getProperty(s, "")).mkString(":")
+                
+            val javaPath =
+              System.getProperty("java.home") +
+                separator +
+                "bin" +
+                separator +
+                "java";
+            
+            new ProcessBuilder(javaPath, "-cp",
+              classpath,
+              "rpgboss.player.LwjglPlayer",
+              projPath)
+          }
+        }
 
         println(processBuilder.command().mkString(" "))
         val process = processBuilder.start();

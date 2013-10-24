@@ -95,6 +95,7 @@ class ChoiceWindow(
   def keyActivate(key: Int) = {
     import MyKeys._
     
+    // TODO: Remove hack
     // Need to finish loading all assets before accepting key input
     assets.finishLoading()
 

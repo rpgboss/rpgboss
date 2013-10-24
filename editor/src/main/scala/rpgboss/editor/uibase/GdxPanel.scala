@@ -16,7 +16,7 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
     add(gdxCanvas.getCanvas())
   }
   
-  lazy val gdxListener = new ApplicationAdapter with Logging {
+  lazy val gdxListener = new ApplicationAdapter {
     override def create() = {
       logger.debug("create()")
     }
@@ -38,7 +38,7 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
     }
   }
   
-  lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener, false) with Logging {
+  lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener, false) {
     
     logger.info("Gdx Canvas constructor")
     

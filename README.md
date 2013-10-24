@@ -1,7 +1,7 @@
 rpgboss-editor
 ==============
 
-RPG game editor.
+RPG game editor. Runs on Windows, Linux, and Mac. Authored games eventually will run on mobile platforms also. Based on libgdx.
 
 Licensed under AGPL3.
 
@@ -66,6 +66,13 @@ sbt
 ```
 > run
 ```
+
+Packaging into a cross-platform binary
+--------------------------------------
+
+To package into a cross-platform binary, we use launch4j.
+
+1. Install launch4j.
 
 Material
 --------

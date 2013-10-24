@@ -129,28 +129,28 @@ class ScriptInterface(game: MyGame, state: GameState) {
     columns: Int,
     displayedLines: Int,
     allowCancel: Boolean): ChoiceWindow = {
-    val window = new ChoiceWindow(
-      game.screenLayer.getWindowId(),
-      game,
-      game.assets,
-      project,
-      lines,
-      x, y, w, h,
-      game.screenLayer.windowskin,
-      game.screenLayer.windowskinRegion,
-      game.screenLayer.fontbmp,
-      initialState = Window.Opening,
-      justification = justification,
-      columns = columns,
-      displayedLines = displayedLines,
-      allowCancel = allowCancel)
-
     syncRun {
+      val window = new ChoiceWindow(
+        game.screenLayer.getWindowId(),
+        game,
+        game.assets,
+        project,
+        lines,
+        x, y, w, h,
+        game.screenLayer.windowskin,
+        game.screenLayer.windowskinRegion,
+        game.screenLayer.fontbmp,
+        initialState = Window.Opening,
+        justification = justification,
+        columns = columns,
+        displayedLines = displayedLines,
+        allowCancel = allowCancel)
+
       game.screenLayer.windows.prepend(window)
       game.inputs.prepend(window)
+      
+      window
     }
-
-    window
   }
 
   def newChoiceWindow(
