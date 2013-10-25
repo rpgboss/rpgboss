@@ -68,10 +68,11 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
             new ProcessBuilder(exePath.toString, "--player", projPath)
           } getOrElse {
             val separator = System.getProperty("file.separator")
+            val cpSeparator = System.getProperty("path.separator")
             val classpath =
               List("java.class.path", "java.boot.class.path", 
                    "sun.boot.class.path")
-                .map(s => System.getProperty(s, "")).mkString(":")
+                .map(s => System.getProperty(s, "")).mkString(cpSeparator)
                 
             val javaPath =
               System.getProperty("java.home") +

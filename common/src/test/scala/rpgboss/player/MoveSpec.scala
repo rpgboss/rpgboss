@@ -42,7 +42,7 @@ class MoveSpec extends UnitSpec {
         val player = scriptInterface.getPlayerEntityInfo()
         
         waiter {
-          val epsilon = 0.15f // slack because of sloppy key press simulation
+          val epsilon = 1.0f // slack because of sloppy key press simulation
           player.x should be (5.5f +- epsilon)
           player.y should be (0.5f +- epsilon)
         }
