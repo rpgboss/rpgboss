@@ -2,7 +2,6 @@ import sbt._
 
 import Keys._
 import ProguardPlugin._
-import WebStartPlugin._
 import scala.sys.process.{Process => SysProcess}
 
 object Settings {
@@ -49,7 +48,7 @@ object Settings {
   )
 
   lazy val editor = Settings.playerDesktop ++ editorLibs ++
-    editorProguard ++ editorWebstart
+    editorProguard
   
   lazy val editorLibs = Seq(
     libraryDependencies ++= Seq(
@@ -70,41 +69,6 @@ object Settings {
 //      keepAllScala,
 //      keepMain("rpgboss.editor.RpgDesktop")
   ))
-
-  lazy val editorWebstart = webstartSettings ++ Seq(
-    webstartGenConfig := GenConfig(
-        dname       = "CN=Snake Oil, OU=An Anonymous Hacker, O=Bad Guys Inc., L=Bielefeld, ST=33641, C=DE",
-        validity    = 365
-    ),
-    webstartKeyConfig := KeyConfig(
-        keyStore    = file("key/keyStore"),
-        storePass   = "password",
-        alias       = "alias",
-        keyPass     = "password"
-    ),
-    webstartJnlpConfigs := Seq(JnlpConfig(
-        fileName    = "rpgboss.jnlp",
-        descriptor  = (fileName:String, assets:Seq[JnlpAsset]) => {
-            <jnlp spec="1.5+" codebase="http://rpgboss.com/webstart/" href={fileName}>
-                <information>
-                    <title>rpgboss</title>
-                    <vendor>rpgboss</vendor>
-                    <description>rpgboss game editor and player</description>
-                    <icon href="my_icon.png"/>
-                    <icon href="my_splash.png" kind="splash"/>
-                </information>
-                <security>
-                    <all-permissions/>
-                </security> 
-                <resources>
-                    <j2se version="1.6+" max-heap-size="192m"/>
-                    { assets map { _.toElem } }
-                </resources>
-                <application-desc main-class="rpgboss.editor.RpgDesktop"/>
-            </jnlp>
-        }
-    ))
-  )
 
   val updateLibgdx = TaskKey[Unit]("update-gdx", "Updates libgdx")
 

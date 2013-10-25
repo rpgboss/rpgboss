@@ -8,6 +8,7 @@ project/boot/
 project/plugins/project
 .cache
 .classpath
+.history
 .project
 .settings
 TODO
