@@ -8,7 +8,7 @@ Licensed under AGPL3.
 Building
 --------
 
-Below directions assume a POSIX environment.
+Below directions assume a POSIX environment. It should still work on Windows (I've done it), but you may need to modify the directions slightly.
 
 Pre-requisites:
 
@@ -47,12 +47,24 @@ sbt
 > run
 ```
 
-Packaging into a cross-platform binary
---------------------------------------
-
-To package into a cross-platform binary, we use launch4j.
+Packaging into binaries
+-----------------------
 
 1. Install launch4j.
+
+2. Enter the repository and run the package shell script.
+
+```
+cd rpgboss
+./package/package.sh
+```
+
+3. Find your binaries in:
+
+```
+$ ls package/target/
+rpgboss-editor.exe  rpgboss-editor-linux.tar.gz
+```
 
 Material
 --------
