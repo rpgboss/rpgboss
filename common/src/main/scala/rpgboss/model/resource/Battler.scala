@@ -12,7 +12,7 @@ case class Battler(proj: Project, name: String,
 }
 
 object Battler extends MetaResource[Battler, BattlerMetadata] {
-  def rcType = "Battler"
+  def rcType = "battler"
   def keyExts = Array("png", "jpg", "jpeg")
 
   def defaultInstance(proj: Project, name: String) =

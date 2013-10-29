@@ -94,6 +94,10 @@ http://rpgmakertimes.agilityhoster.com/2011/02/final-fantasy-i-xpvx-windowskin/
 LordSpirit.jpg:
 http://www.rpgrevolution.com/forums/index.php?autocom=gallery&req=si&img=3701
 
+defaultrc_battleback/crownlesswish_rrr.jpg
+http://www.rpgrevolution.com/forums/index.php?autocom=gallery&req=si&img=3769
+http://crownlesswish.deviantart.com/
+
 ### Sounds
 
 Generated using bfxr at:
