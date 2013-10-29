@@ -74,6 +74,10 @@ Material
 http://www.tekepon.net/fsm/
 http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
 
+### Battlers
+
+http://opengameart.org/content/sideview-pixel-art-rpg-enemy-sprites under creative commons.
+
 ### Iconsets
 
 420__Pixel_Art__Icons_for_RPG_by_Ails.png:
