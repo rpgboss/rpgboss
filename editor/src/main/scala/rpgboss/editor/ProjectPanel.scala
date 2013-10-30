@@ -83,9 +83,9 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
             
             new ProcessBuilder(javaPath, "-cp",
               classpath,
-              "rpgboss.player.RpgDesktop",
+              "rpgboss.editor.RpgDesktop",
               "--player",
-              """"%s"""".format(projPath))
+              projPath)
           }
         }
 
