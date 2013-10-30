@@ -12,6 +12,7 @@ object Settings {
     scalacOptions ++= List("-deprecation", "-unchecked"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
+      "ch.qos.logback" % "logback-classic" % "1.0.6",
       "com.google.guava" % "guava" % "10.0",
       "com.typesafe" % "scalalogging-slf4j_2.10" % "1.0.1",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
@@ -36,19 +37,7 @@ object Settings {
     Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum")
    )
 
-  lazy val playerDesktop = Settings.common ++ Seq (
-    libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % "1.0.6"
-    ),
-    unmanagedJars in Compile <<= baseDirectory map { base =>
-      var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
-      var jars = baseDirectories ** "*.jar"
-      jars.classpath
-    }
-  )
-
-  lazy val editor = Settings.playerDesktop ++ editorLibs ++
-    editorProguard
+  lazy val editor = Settings.common ++ editorLibs ++ editorProguard
   
   lazy val editorLibs = Seq(
     libraryDependencies ++= Seq(
@@ -57,6 +46,11 @@ object Settings {
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
     ),
+    unmanagedJars in Compile <<= baseDirectory map { base => 
+      var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
+      var jars = baseDirectories ** "*.jar"
+      jars.classpath
+    },
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
     scalacOptions ++= List("-deprecation", "-unchecked"))
 
@@ -142,15 +136,9 @@ object LibgdxBuild extends Build {
     settings = Settings.common
   )
 
-  lazy val playerDesktop = Project (
-    "player-desktop",
-    file("player-desktop"),
-    settings = Settings.playerDesktop
-  ) dependsOn common
-
   lazy val editor = Project (
     "editor",
     file("editor"),
     settings = Settings.editor
-  ) dependsOn playerDesktop
+  ) dependsOn common
 }
