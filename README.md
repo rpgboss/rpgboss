@@ -66,6 +66,12 @@ $ ls package/target/
 rpgboss-editor.exe  rpgboss-editor-linux.tar.gz
 ```
 
+Project structure
+-----------------
+
++ **common** - Contains the models, and all the game player logic. Also contains all the automated tests. Contains the desktop player. The 'main' class is at rpgboss.player.LwjglPlayer. It requires the path to the game project directory as its first argument to run the game.
++ **editor** - Contains the Swing based editor. Contains no game logic, just UI to edit the model defined in the *common* package. The 'main' class is rpgboss.editor.RpgDesktop.
+
 Material
 --------
 
