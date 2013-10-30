@@ -32,7 +32,7 @@ case class EntitySpec(
   var eventId: Int = -1)
 
 case class SpriteSpec(
-  spriteset: String,
+  name: String,
   spriteIndex: Int,
   dir: Int = SpriteSpec.Directions.SOUTH,
   step: Int = SpriteSpec.Steps.STILL)

@@ -90,7 +90,7 @@ abstract class Entity(
   }
 
   def setSprite(spriteSpec: Option[SpriteSpec]) = spriteSpec map { s =>
-    spriteset = game.mapLayer.spritesets(s.spriteset)
+    spriteset = game.mapLayer.spritesets(s.name)
     spriteIdx = s.spriteIndex
     graphicWTiles = spriteset.tileW.toFloat / Tileset.tilesize.toFloat
     graphicHTiles = spriteset.tileH.toFloat / Tileset.tilesize.toFloat

@@ -74,7 +74,7 @@ class EventDialog(
     def formToModel() = {
       val origState = event.states(idx)
       val newState = origState.copy(
-        sprite = spriteBox.getSpriteSpec,
+        sprite = spriteBox.getValue,
         trigger = triggerBox.selection.item.id,
         height = heightBox.selection.item.id,
         cmds = commandBox.listData)

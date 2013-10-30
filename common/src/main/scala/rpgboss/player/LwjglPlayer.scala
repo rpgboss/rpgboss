@@ -20,7 +20,13 @@ object LwjglPlayer {
     if (args.length < 1) {
 
     } else {
-      val game = new MyGame(new File(args(0)))
+      val file = new File(args(0))
+      
+      if (!file.isDirectory()) {
+        println("Cannot read directory: " + args(0))
+        return
+      }
+      val game = new MyGame(file)
       launch(game);
     }
   }

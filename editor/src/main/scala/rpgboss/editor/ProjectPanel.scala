@@ -83,12 +83,14 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
             
             new ProcessBuilder(javaPath, "-cp",
               classpath,
-              "rpgboss.player.LwjglPlayer",
-              projPath)
+              "rpgboss.player.RpgDesktop",
+              "--player",
+              """"%s"""".format(projPath))
           }
         }
 
         println(processBuilder.command().mkString(" "))
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         val process = processBuilder.start();
         process.waitFor();
 

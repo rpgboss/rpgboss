@@ -16,7 +16,7 @@ class EventImageCache(sm: StateMaster)
     .build(this)
 
   def load(spriteSpec: SpriteSpec) = {
-    val spriteset = Spriteset.readFromDisk(sm.getProj, spriteSpec.spriteset)
+    val spriteset = Spriteset.readFromDisk(sm.getProj, spriteSpec.name)
     val srcImg = spriteset.srcTileImg(spriteSpec)
 
     val dstSz = Tileset.tilesize - 4 - 1
