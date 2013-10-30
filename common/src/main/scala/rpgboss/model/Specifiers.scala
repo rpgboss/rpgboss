@@ -37,6 +37,8 @@ case class SpriteSpec(
   dir: Int = SpriteSpec.Directions.SOUTH,
   step: Int = SpriteSpec.Steps.STILL)
   
+case class BattlerSpec(name: String)
+  
 case class SoundSpec(
   sound: String,
   volume: Float = 1.0f,
@@ -108,6 +110,21 @@ case class Character(
 case class CharClass(
   var name: String = "",
   var canUseEquipSubtypes: ArrayBuffer[Int] = ArrayBuffer(),
+  var effects: ArrayBuffer[Effect] = ArrayBuffer()) extends HasName
+
+case class Enemy(
+  var name: String = "",
+  var battler: Option[BattlerSpec] = None,
+  var level: Int = 5,
+  var mhp: Int = 40,
+  var mmp: Int = 40,
+  var str: Int = 10,
+  var dex: Int = 10,
+  var con: Int = 10,
+  var int: Int = 10,
+  var wis: Int = 10,
+  var cha: Int = 10,
+  var expValue: Int = 100,
   var effects: ArrayBuffer[Effect] = ArrayBuffer()) extends HasName
 
 case class Skill(name: String = "") extends HasName
