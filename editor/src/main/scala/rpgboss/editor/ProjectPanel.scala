@@ -10,7 +10,8 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.LifecycleListener
 import org.lwjgl.opengl.Display
-import java.io.File
+import java.io._
+import java.util.Scanner
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -27,6 +28,17 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
   def selectMap(mapOpt: Option[RpgMap]) = {
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
+  }
+  
+  def inheritIO(src: InputStream, dest: PrintStream) = {
+    new Thread(new Runnable() {
+        def run() = {
+            val sc = new Scanner(src);
+            while (sc.hasNextLine()) {
+                dest.println(sc.nextLine());
+            }
+        }
+    }).start();
   }
 
   val topBar = new BoxPanel(Orientation.Horizontal) {
@@ -90,10 +102,11 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         }
 
         println(processBuilder.command().mkString(" "))
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
-        val process = processBuilder.start();
+        val process = processBuilder.start()
+        inheritIO(process.getInputStream(), System.out)
+        inheritIO(process.getErrorStream(), System.err)
+        
         process.waitFor();
-
       }
     })
   }

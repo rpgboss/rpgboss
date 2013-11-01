@@ -6,8 +6,7 @@ import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.dialog._
 import javax.swing.BorderFactory
 import javax.swing.table.AbstractTableModel
-import rpgboss.model.Effect
-import rpgboss.model.RpgEnum
+import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.editor.uibase.StdDialog
@@ -31,17 +30,18 @@ import EffectKey.WisAdd
 import rpgboss.editor.uibase.NumberSpinner
 import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
+import rpgboss.model.Effect
 import scala.collection.mutable.ArrayBuffer
 
 class EffectPanel(
   owner: Window,
   dbDiag: DatabaseDialog,
-  initial: ArrayBuffer[Effect],
-  onUpdate: ArrayBuffer[Effect] => Unit)
+  initial: Seq[Effect],
+  onUpdate: Seq[Effect] => Unit)
   extends BoxPanel(Orientation.Vertical) {
   border = BorderFactory.createTitledBorder("Effects")
 
-  var effects = initial
+  var effects = ArrayBuffer(initial :_*)
   val table = new Table() {
     val tableModel = new AbstractTableModel() {
       val colNames = Array("Description", "Key", "Value")
@@ -95,7 +95,7 @@ class EffectPanel(
             dbDiag,
             EffectKey.defaultEffect,
             e => {
-              effects = effects ++ Array(e)
+              effects += e
               onUpdate(effects)
               tableModel.fireTableRowsUpdated(row, row)
               tableModel.fireTableRowsInserted(row + 1, row + 1)

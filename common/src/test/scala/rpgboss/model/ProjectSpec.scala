@@ -19,6 +19,7 @@ class ProjectSpec extends UnitSpec {
     p.data.uuid = "fakeuid"
     p.data.startup.startingParty = Vector(4)
     p.data.enums.characters.head.name = "New Test Name"
+    p.data.enums.enemies.head.name = "New Enemy name"
     
     p.writeMetadata() should equal (true)
     

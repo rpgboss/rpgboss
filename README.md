@@ -83,6 +83,15 @@ Project structure
 
 + **editor** - Contains the Swing based editor. Contains no game logic, just UI to edit the model defined in the *common* package. The 'main' class is rpgboss.editor.RpgDesktop.
 
+Development Notes
+-----------------
+
++ If you add a resource type, make sure you add it to the list at Resource.resourceTypes.
+
++ If you add an rpgboss.model.event.EventCmd, be sure to add it to EventCmd.types.
+
++ Use 'Seq' as the array class in all the models. Use of Array breaks model equality comparison. Use of ArrayBuffer makes de-serialization silently fail. If you need to edit individual elements of the Seq, convert it to an ArrayBuffer in the application code.
+
 Material
 --------
 
