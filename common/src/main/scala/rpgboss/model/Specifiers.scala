@@ -128,8 +128,8 @@ case class Enemy(
   
 case class EncounterUnit(
   enemyIdx: Int,
-  x: Int,
-  y: Int)
+  var x: Int,
+  var y: Int)
   
 case class Encounter(
   var name: String = "#<None>",
