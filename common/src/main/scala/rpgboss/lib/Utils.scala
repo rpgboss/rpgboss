@@ -2,6 +2,7 @@ package rpgboss.lib
 import java.io._
 import scala.io.Source
 import java.awt._
+import javax.imageio.ImageIO
 
 class FileHelper(file: File) {
   import FileHelper._
@@ -115,4 +116,7 @@ object Utils {
   
   def removeFromSeq[T](seq: Seq[T], i: Int) =
     seq.take(i) ++ seq.drop(i + 1)
+  
+  def readClasspathImage(path: String) = 
+    ImageIO.read(getClass.getClassLoader.getResourceAsStream(path))
 }

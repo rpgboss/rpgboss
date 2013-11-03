@@ -117,9 +117,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
       owner.updateTileMeta(xTile, yTile, newMetadata)
     }
 
-    val cl = getClass.getClassLoader
-
-    def loadIcon(path: String) = ImageIO.read(cl.getResourceAsStream(path))
+    def loadIcon(path: String) = rpgboss.lib.Utils.readClasspathImage(path)
 
     val iconPass = loadIcon("tilesetMetadataIcons/all-pass.png")
     val iconStop = loadIcon("tilesetMetadataIcons/all-blocked.png")

@@ -21,6 +21,7 @@ case class ProjectDataEnums(
   var characters: Seq[Character] = ProjectData.defaultCharacters,
   var classes: Seq[CharClass] = Seq(CharClass()),
   var enemies: Seq[Enemy] = Seq(Enemy()),
+  var encounters: Seq[Encounter] = Seq(Encounter()),
   var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()),
   var items: Seq[Item] = Seq(Item()),
   var skills: Seq[Skill] = Seq(Skill()),

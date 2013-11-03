@@ -125,6 +125,15 @@ case class Enemy(
   var cha: Int = 10,
   var expValue: Int = 100,
   var effects: Seq[Effect] = Seq()) extends HasName
+  
+case class EncounterUnit(
+  enemyIdx: Int,
+  x: Int,
+  y: Int)
+  
+case class Encounter(
+  var name: String = "#<None>",
+  var units: Seq[EncounterUnit] = Seq())
 
 case class Skill(name: String = "") extends HasName
 

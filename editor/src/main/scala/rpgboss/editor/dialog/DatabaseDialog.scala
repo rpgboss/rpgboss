@@ -18,14 +18,15 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   val charPane = new CharactersPanel(owner, sm, this)
   val classesPane = new ClassesPanel(owner, sm, this)
   val enemiesPane = new EnemiesPanel(owner, sm, this)
+  val encountersPane = new EncountersPanel(owner, sm, this)
   val itemsPane = new ItemsPanel(owner, sm, this)
   val statusPane = new StatusPanel(owner, sm, this)
   val sysPane = new SystemPanel(owner, sm, this)
   val enumPane = new EnumerationsPanel(owner, sm, this)
 
   val panels =
-    List(charPane, classesPane, enemiesPane, itemsPane, statusPane, sysPane, 
-         enumPane)
+    List(charPane, classesPane, enemiesPane, encountersPane, itemsPane, 
+         statusPane, sysPane, enumPane)
 
   def applyFunc() = {
     sm.setProjData(model)

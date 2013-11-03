@@ -39,7 +39,7 @@ trait MetaResource[T, MT] {
    * Lists files matching the extension filter in the resource directory, as
    * well as direct child subdirectories.
    */
-  def list(proj: Project) = {
+  def list(proj: Project): Array[String] = {
     val items = collection.mutable.Buffer[String]()
     
     def extensionFilter(file: File): Boolean = {
@@ -50,7 +50,13 @@ trait MetaResource[T, MT] {
       return false
     }
     
-    for(rootFile <- rcDir(proj).listFiles()) {
+    val resourceDir = rcDir(proj)
+    if (!resourceDir.exists())
+      resourceDir.mkdir()
+    if (resourceDir.isFile())
+      return Array()
+    
+    for(rootFile <- resourceDir.listFiles()) {
       if(rootFile.isFile() && extensionFilter(rootFile)) {
         items.append(rootFile.getName())
       } else if(rootFile.isDirectory()) {

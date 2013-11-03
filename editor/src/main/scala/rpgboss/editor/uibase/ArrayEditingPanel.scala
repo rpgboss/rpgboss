@@ -40,6 +40,34 @@ object ArrayUtils {
       a
 }
 
+class ArrayListView[T](initialAry: Seq[T]) extends ListView(initialAry) {
+  
+  def onListSelectionChanged(): Unit = {}
+  def label(a: T): String = a.toString
+  
+  // Renders the item with the index passed in
+  def idxRenderer[A, B](f: (A, Int) => B)(implicit renderer: Renderer[B]) =
+    new Renderer[A] {
+      def componentFor(
+        list: ListView[_],
+        isSelected: Boolean,
+        focused: Boolean,
+        a: A,
+        index: Int): Component =
+        renderer.componentFor(list, isSelected, focused, f(a, index), index)
+    }
+  
+  renderer = idxRenderer({
+    case (a, idx) =>
+      "%d: %s".format(idx, label(a))
+  })
+
+  listenTo(selection)
+  reactions += {
+    case ListSelectionChanged(_, _, _) => onListSelectionChanged()
+  }
+}
+
 abstract class ArrayEditingPanel[T](
   owner: Window,
   label: String,
@@ -90,41 +118,24 @@ abstract class ArrayEditingPanel[T](
     ArrayUtils.normalizedAry(
       initialAry, minElems, maxElems, newDefaultInstance _)
 
-  val listView = new ListView(normalizedInitialAry) {
-    // Renders the item with the index passed in
-    def idxRenderer[A, B](f: (A, Int) => B)(implicit renderer: Renderer[B]) =
-      new Renderer[A] {
-        def componentFor(
-          list: ListView[_],
-          isSelected: Boolean,
-          focused: Boolean,
-          a: A,
-          index: Int): Component =
-          renderer.componentFor(list, isSelected, focused, f(a, index), index)
-      }
+  val listView = new ArrayListView(normalizedInitialAry) {
+    override def label(a: T) = ArrayEditingPanel.this.label(a)    
     
-    renderer = idxRenderer({
-      case (a, idx) =>
-        "%d: %s".format(idx, label(a))
-    })
+    override def onListSelectionChanged() = {
+      editPaneContainer.contents.clear()
 
-    listenTo(selection)
-    reactions += {
-      case ListSelectionChanged(_, _, _) =>
-        editPaneContainer.contents.clear()
+      if (selection.indices.isEmpty) {
+        editPaneContainer.contents += editPaneEmpty
+      } else {
+        val editPane = editPaneForItem(
+          selection.indices.head,
+          selection.items.head)
 
-        if (selection.indices.isEmpty) {
-          editPaneContainer.contents += editPaneEmpty
-        } else {
-          val editPane = editPaneForItem(
-            selection.indices.head,
-            selection.items.head)
+        editPaneContainer.contents += editPane
+      }
 
-          editPaneContainer.contents += editPane
-        }
-
-        editPaneContainer.revalidate()
-        editPaneContainer.repaint()
+      editPaneContainer.revalidate()
+      editPaneContainer.repaint()
     }
   }
 

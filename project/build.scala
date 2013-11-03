@@ -56,31 +56,26 @@ object Settings {
 
   lazy val editorProguard = proguardSettings ++ Seq(
     proguardOptions := Seq(
+      "-optimizationpasses 5",
       "-forceprocessing",
+      "-dontwarn",
 //      "-dontwarn scala.**",
-      "-dontusemixedcaseclassnames",
-      "-dontskipnonpubliclibraryclasses",
-      "-keep class rpgboss.** { *; }",
-      "-keep class scala.tools.scalap.scalax.rules.** { *; }", // for json4s
-      "-keep class scala.reflect.** { *; }", // for json4s
-      "-keep class scalaswingcontrib.tree.** { *; }",
-      "-keep class com.badlogic.**",
-      "-keep class com.badlogic.backends.**",
-      "-keep class * implements com.badlogic.gdx.utils.Json*",
-      "-keep class com.google.**",
-      "-keep class java.lang.reflect.**",
-      "-keepclasseswithmembernames class * { native <methods>; }",
-      "-keep class ** { public *** getPointer(...); }",
-//        """-keepclasseswithmembers public class * {
-//          public static void main(java.lang.String[]);
-//        }""",
-//      "-keep class RpgDesktop { *; }",
-//      "-dontshrink",
-      "-dontoptimize",
-      "-dontobfuscate",
-      "-dontpreverify"
-//      keepAllScala,
-//      keepMain("rpgboss.editor.RpgDesktop")
+//      "-dontusemixedcaseclassnames",
+//      "-dontskipnonpubliclibraryclasses",
+//      "-keep class rpgboss.** { *; }",
+//      "-keep class scala.tools.scalap.scalax.rules.scalasig.ClassFileParser { *; }", // for json4s
+//      "-keep class scala.tools.scalap.scalax.rules.*Rule* { *; }", // for json4s
+//      "-keep class scala.reflect.** { *; }", // for json4s
+//      "-keep class scalaswingcontrib.tree.** { *; }",
+//      "-keep class com.badlogic.gdx.backends.** { *; }",
+//      "-keep class ** { *** getPointer(...); }",
+//      "-keep class org.lwjgl.openal.** { *; }",
+//      "-keep class org.lwjgl.opengl.** { *; }",
+//      "-keep class org.mozilla.javascript.optimizer.OptRuntime { *; }",
+//      "-keepclasseswithmembernames class * { native <methods>; }",
+//      keepMain("rpgboss.editor.RpgDesktop"),
+      "-dontshrink",
+      "-dontobfuscate"
   ))
 
   val updateLibgdx = TaskKey[Unit]("update-gdx", "Updates libgdx")

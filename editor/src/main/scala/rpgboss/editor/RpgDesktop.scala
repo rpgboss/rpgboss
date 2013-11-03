@@ -43,8 +43,7 @@ object RpgDesktop
     UIManager.setLookAndFeel(
       UIManager.getSystemLookAndFeelClassName());
     
-    val iconStream = getClass.getClassLoader.getResourceAsStream("icon.png")
-    val icon = ImageIO.read(iconStream)
+    val icon = rpgboss.lib.Utils.readClasspathImage("icon.png")
     
     System.setProperty("sun.awt.exception.handler", "rpgboss.editor.EDTErrorHandler");
     Thread.setDefaultUncaughtExceptionHandler(this);

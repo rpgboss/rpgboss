@@ -380,6 +380,5 @@ class MapEditor(
 }
 
 object MapEditor {
-  lazy val startingLocIcon = ImageIO.read(
-    getClass.getClassLoader.getResourceAsStream("player_play.png"))
+  lazy val startingLocIcon = rpgboss.lib.Utils.readClasspathImage("player_play.png")
 }
