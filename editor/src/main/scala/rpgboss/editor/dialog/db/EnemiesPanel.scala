@@ -43,12 +43,9 @@ class EnemiesPanel(
       val fLevel = new NumberSpinner(model.level, 1, 50, model.level = _)
       val fMhp = new NumberSpinner(model.mhp, 5, 5000, model.mhp = _)
       val fMmp = new NumberSpinner(model.mmp, 0, 500, model.mhp = _)
-      val fStr = new NumberSpinner(model.str, 1, 50, model.str = _)
-      val fDex = new NumberSpinner(model.dex, 1, 50, model.dex = _)
-      val fCon = new NumberSpinner(model.con, 1, 50, model.con = _)
-      val fInt = new NumberSpinner(model.int, 1, 50, model.int = _)
-      val fWis = new NumberSpinner(model.wis, 1, 50, model.wis = _)
-      val fCha = new NumberSpinner(model.cha, 1, 50, model.cha = _)
+      val fAtk = new NumberSpinner(model.atk, 1, 50, model.atk = _)
+      val fSpd = new NumberSpinner(model.spd, 1, 50, model.spd = _)
+      val fMag = new NumberSpinner(model.mag, 1, 50, model.mag = _)
       
       val fExpValue = 
         new NumberSpinner(model.expValue, 10, 50000, model.expValue = _)
@@ -62,12 +59,9 @@ class EnemiesPanel(
       row().grid(leftLabel("Max HP:")).add(fMhp)
       row().grid(leftLabel("Max MP:")).add(fMmp)
 
-      row().grid(leftLabel("STR:")).add(fStr)
-      row().grid(leftLabel("DEX:")).add(fDex)
-      row().grid(leftLabel("CON:")).add(fCon)
-      row().grid(leftLabel("INT:")).add(fInt)
-      row().grid(leftLabel("WIS:")).add(fWis)
-      row().grid(leftLabel("CHA:")).add(fCha)
+      row().grid(leftLabel("ATK:")).add(fAtk)
+      row().grid(leftLabel("SPD:")).add(fSpd)
+      row().grid(leftLabel("MAG:")).add(fMag)
       
       row().grid(leftLabel("EXP Value:")).add(fExpValue)
     }

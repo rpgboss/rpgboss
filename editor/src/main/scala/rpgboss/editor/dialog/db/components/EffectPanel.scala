@@ -10,23 +10,6 @@ import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.editor.uibase.StdDialog
-import EffectKey.AddStatusEffect
-import EffectKey.ChaAdd
-import EffectKey.ConAdd
-import EffectKey.DexAdd
-import EffectKey.EscapeBattle
-import EffectKey.IntAdd
-import EffectKey.LearnSkill
-import EffectKey.MhpAdd
-import EffectKey.MmpAdd
-import EffectKey.RecoverHpAdd
-import EffectKey.RecoverHpMul
-import EffectKey.RecoverMpAdd
-import EffectKey.RecoverMpMul
-import EffectKey.RemoveStatusEffect
-import EffectKey.StrAdd
-import EffectKey.UseSkill
-import EffectKey.WisAdd
 import rpgboss.editor.uibase.NumberSpinner
 import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
@@ -239,12 +222,9 @@ class EffectDialog(
   val effectsStats = Array(
     intEffect(MhpAdd),
     intEffect(MmpAdd),
-    intEffect(StrAdd),
-    intEffect(DexAdd),
-    intEffect(ConAdd),
-    intEffect(IntAdd),
-    intEffect(WisAdd),
-    intEffect(ChaAdd))
+    intEffect(AtkAdd),
+    intEffect(AgiAdd),
+    intEffect(MagAdd))
 
   val effectsOther = Array(
     nilEffect(EscapeBattle),
@@ -311,13 +291,10 @@ object EffectKey extends RpgEnum {
 
   val MhpAdd = Val("Increase Max HP")
   val MmpAdd = Val("Increase Max MP")
-  val StrAdd = Val("Increase STR")
-  val DexAdd = Val("Increase DEX")
-  val ConAdd = Val("Increase CON")
-  val IntAdd = Val("Increase INT")
-  val WisAdd = Val("Increase WIS")
-  val ChaAdd = Val("Increase CHA")
-
+  val AtkAdd = Val("Increase ATK")
+  val AgiAdd = Val("Increase AGI")
+  val MagAdd = Val("Increase MAG")
+  
   val EscapeBattle = Val("Escape battle")
 
   val UseSkill = Val("Use skill")

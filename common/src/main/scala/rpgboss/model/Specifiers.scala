@@ -1,7 +1,6 @@
 package rpgboss.model
 
 import Constants._
-import Curve.Linear
 
 trait HasName {
   def name: String
@@ -45,26 +44,19 @@ case class SoundSpec(
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 
-case class Curve(a: Int, b: Int, c: Int) {
+case class Curve(base: Int, perLevel: Int) {
   def apply(x: Int) = {
-    a * x * x + b * x + c
+    perLevel * (x - 1) + base
   }
 }
 
-object Curve {
-  def Linear(slope: Int, intercept: Int) =
-    Curve(0, slope, intercept)
-}
 case class CharProgressions(
-  exp: Curve = Curve(10, 10, 0),
-  mhp: Curve = Linear(25, 50),
-  mmp: Curve = Linear(5, 20),
-  str: Curve = Linear(3, 10),
-  dex: Curve = Linear(3, 10),
-  con: Curve = Linear(3, 10),
-  int: Curve = Linear(3, 10),
-  wis: Curve = Linear(3, 10),
-  cha: Curve = Linear(3, 10))
+  exp: Curve = Curve(300, 100), // Exp required to level up. Not cumulative.
+  mhp: Curve = Curve(50, 10),
+  mmp: Curve = Curve(20, 4),
+  atk: Curve = Curve(10, 2),
+  spd: Curve = Curve(10, 2),
+  mag: Curve = Curve(10, 2))
 
 case class EquipSet(
   weapon: Int,
@@ -117,12 +109,9 @@ case class Enemy(
   var level: Int = 5,
   var mhp: Int = 40,
   var mmp: Int = 40,
-  var str: Int = 10,
-  var dex: Int = 10,
-  var con: Int = 10,
-  var int: Int = 10,
-  var wis: Int = 10,
-  var cha: Int = 10,
+  var atk: Int = 10,
+  var spd: Int = 10,
+  var mag: Int = 10,
   var expValue: Int = 100,
   var effects: Seq[Effect] = Seq()) extends HasName
   
@@ -138,7 +127,6 @@ case class Encounter(
 case class Skill(name: String = "") extends HasName
 
 object CharState {
-
   /*
    * val defaultStates = 
       CharState("Dead",      Map("NoAction"->1)),

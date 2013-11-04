@@ -25,7 +25,7 @@ case class ProjectDataEnums(
   var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()),
   var items: Seq[Item] = Seq(Item()),
   var skills: Seq[Skill] = Seq(Skill()),
-  var elements: Seq[String] = Seq(""),
+  var elements: Seq[String] = ProjectData.defaultElements,
   var equipSubtypes: Seq[String] = Seq(""))
 
 case class ProjectData(
@@ -45,8 +45,7 @@ object ProjectData {
     Character("Graven", sprite = Some(SpriteSpec("vx_chara01_a.png", 2))),
     Character("Carona", sprite = Some(SpriteSpec("vx_chara01_a.png", 6))))
 
-  /*
-  def defaultDamageTypes = Seq(
+  def defaultElements = Seq(
     "Untyped",
     
     "Blunt",
@@ -62,5 +61,5 @@ object ProjectData {
     "Death",
     "Order",
     "Chaos"
-  )*/
+  )
 }
