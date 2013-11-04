@@ -103,6 +103,13 @@ case class CharClass(
   var canUseEquipSubtypes: Seq[Int] = Seq(),
   var effects: Seq[Effect] = Seq()) extends HasName
 
+case class CharacterStatus(
+  characterId: Int,
+  equipment: EquipSet,
+  statusEffects: Seq[StatusEffect],
+  hp: Int,
+  mp: Int)
+
 case class Enemy(
   var name: String = "",
   var battler: Option[BattlerSpec] = None,
