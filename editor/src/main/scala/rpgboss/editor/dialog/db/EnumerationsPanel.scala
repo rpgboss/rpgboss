@@ -31,16 +31,15 @@ class EnumerationsPanel(
       }
     }
 
-  val fEquipSubtypes =
+  val fEquipTypes =
     new StringArrayEditingPanel(
       owner,
-      "Equipment subtypes",
-      dbDiag.model.enums.equipSubtypes) {
+      "Equipment Types",
+      dbDiag.model.enums.equipTypes) {
       override def onListDataUpdate() = {
-        logger.info("Skill types updated")
-        dbDiag.model.enums.equipSubtypes = arrayBuffer
+        dbDiag.model.enums.equipTypes = arrayBuffer
       }
     }
 
-  row.grid().add(fElements).add(fEquipSubtypes)
+  row.grid().add(fElements).add(fEquipTypes)
 }

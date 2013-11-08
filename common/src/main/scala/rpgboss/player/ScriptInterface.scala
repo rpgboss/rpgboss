@@ -288,6 +288,12 @@ class ScriptInterface(game: MyGame, state: GameState) {
   val CHARACTER_MPS = "characterMps"
   val CHARACTER_MAX_HPS = "characterMaxHps"
   val CHARACTER_MAX_MPS = "characterMaxMps"
+  
+  def CHARACTER_EQUIP(characterId: Int) = 
+    "characterEquip-%d".format(characterId)
     
+  def CHARACTER_STATUS_EFFECTS(characterId: Int) = 
+    "characterStatusEffects-%d".format(characterId)
+  
   val PICTURE_SLOTS = Constants.PictureSlots
 }

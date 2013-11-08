@@ -95,9 +95,4 @@ object Constants {
 
     def default = Always
   }
-
-  object EquipSlot extends RpgEnum {
-    val None, Weapon, Offhand, Armor, Head, Accessory = Value
-    def default = None
-  }
 }

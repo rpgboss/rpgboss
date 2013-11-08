@@ -4,41 +4,12 @@ import scala.swing._
 import scala.swing.event._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.dialog._
+import rpgboss.lib._
 import javax.swing.BorderFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import java.awt.{ Font, Color }
 import scala.swing.ListView.Renderer
 import scala.collection.mutable.ArrayBuffer
-
-object ArrayUtils {
-  import ListView._
-
-  def resized[T](
-    a: Seq[T],
-    newSize: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Seq[T] = {
-    val oldSize = a.size
-
-    if (newSize > oldSize) {
-      val padder = Array.fill(newSize - oldSize) { newDefaultInstance() }
-      (a ++ padder)
-    } else if (newSize < oldSize) {
-      a.take(newSize)
-    } else a
-  }
-
-  def normalizedAry[T](
-    a: Seq[T],
-    minElems: Int,
-    maxElems: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Seq[T] =
-    if (a.size > maxElems)
-      resized(a, maxElems, newDefaultInstance)
-    else if (a.size < minElems)
-      resized(a, minElems, newDefaultInstance)
-    else
-      a
-}
 
 class ArrayListView[T](initialAry: Seq[T]) extends ListView(initialAry) {
   

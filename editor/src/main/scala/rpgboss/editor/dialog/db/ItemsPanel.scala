@@ -63,14 +63,10 @@ class ItemsPanel(
             setEnabledFields()
           })
 
-        val fEquipSlot = enumCombo(EquipSlot)(
-          model.slot,
-          v => updateModel(model.copy(slot = v.id)))
-
-        val fEquipSubtype = indexedCombo(
-          dbDiag.model.enums.equipSubtypes,
-          model.equipSubtype,
-          v => updateModel(model.copy(equipSubtype = v)))
+        val fEquipType = indexedCombo(
+          dbDiag.model.enums.equipTypes,
+          model.equipType,
+          v => updateModel(model.copy(equipType = v)))
 
         val fScope = enumCombo(Scope)(
           model.scopeId,
@@ -83,8 +79,7 @@ class ItemsPanel(
         def setEnabledFields() = {
           fPrice.enabled = fSellable.selected
 
-          fEquipSlot.enabled = model.itemType == ItemType.Equipment.id
-          fEquipSubtype.enabled = model.itemType == ItemType.Equipment.id
+          fEquipType.enabled = model.itemType == ItemType.Equipment.id
           fScope.enabled = model.itemType != ItemType.Equipment.id
           fAccess.enabled = model.itemType != ItemType.Equipment.id
         }
@@ -101,8 +96,7 @@ class ItemsPanel(
           .grid(lbl("Item type:")).add(fItemType)
 
         row()
-          .grid(lbl("Equip slot:")).add(fEquipSlot)
-          .grid(lbl("Equip subtype:")).add(fEquipSubtype)
+          .grid(lbl("Equip type:")).add(fEquipType)
 
         row()
           .grid(lbl("Effect scope:")).add(fScope)

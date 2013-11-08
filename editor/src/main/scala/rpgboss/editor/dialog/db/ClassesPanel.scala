@@ -37,12 +37,12 @@ class ClassesPanel(
     val fEffects =
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _)
 
-    val fCanEquip = new StringArrayMultiselectPanel(
+    val fCanEquip = new ArrayMultiselectPanel(
       owner,
       "Can equip",
-      dbDiag.model.enums.equipSubtypes,
-      model.canUseEquipSubtypes,
-      v => model.canUseEquipSubtypes = ArrayBuffer(v :_*))
+      dbDiag.model.enums.items,
+      model.canUseItems,
+      v => model.canUseItems = ArrayBuffer(v :_*))
 
     val mainFields = new DesignGridPanel {
 

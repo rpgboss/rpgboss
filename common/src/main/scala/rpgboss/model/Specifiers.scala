@@ -58,26 +58,6 @@ case class CharProgressions(
   spd: Curve = Curve(10, 2),
   mag: Curve = Curve(10, 2))
 
-case class EquipSet(
-  weapon: Int,
-  offhand: Int,
-  armor: Int,
-  helmet: Int,
-  acc1: Int,
-  acc2: Int)
-
-case class EquipSetBool(
-  weapon: Boolean = false,
-  offhand: Boolean = false,
-  armor: Boolean = false,
-  helmet: Boolean = false,
-  acc1: Boolean = false,
-  acc2: Boolean = false)
-
-object EquipSet {
-  def empty = EquipSet(-1, -1, -1, -1, -1, -1)
-}
-
 /**
  * @param startingEquipment   Denotes the item ids of starting equipment.
  *                            A value of -1 means it's an empty slot.
@@ -92,23 +72,16 @@ case class Character(
   var initLevel: Int = 1, var maxLevel: Int = 50,
   var charClass: Int = 0,
   var progressions: CharProgressions = CharProgressions(),
-  var startingEquipment: EquipSet = EquipSet.empty,
-  var equipFixed: EquipSetBool = EquipSetBool()) extends HasName {
+  var startingEquipment: Seq[Int] = Seq(),
+  var equipFixed: Seq[Int] = Seq()) extends HasName {
   def initMhp = progressions.mhp(initLevel)
   def initMmp = progressions.mmp(initLevel)
 }
 
 case class CharClass(
   var name: String = "",
-  var canUseEquipSubtypes: Seq[Int] = Seq(),
+  var canUseItems: Seq[Int] = Seq(),
   var effects: Seq[Effect] = Seq()) extends HasName
-
-case class CharacterStatus(
-  characterId: Int,
-  equipment: EquipSet,
-  statusEffects: Seq[StatusEffect],
-  hp: Int,
-  mp: Int)
 
 case class Enemy(
   var name: String = "",
@@ -177,9 +150,8 @@ case class Item(
 
   itemType: Int = ItemType.default.id,
 
-  slot: Int = EquipSlot.default.id,
-  equipSubtype: Int = 0,
-
+  equipType: Int = 0,
+  
   accessId: Int = ItemAccessibility.default.id,
   scopeId: Int = Scope.default.id,
 

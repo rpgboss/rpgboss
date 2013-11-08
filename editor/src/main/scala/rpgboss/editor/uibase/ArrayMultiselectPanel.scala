@@ -8,24 +8,24 @@ import com.typesafe.scalalogging.slf4j.Logging
 import scala.swing.ListView.Renderer
 import javax.swing.DefaultListSelectionModel
 
-class StringArrayMultiselectPanel(
+class ArrayMultiselectPanel[T](
   owner: Window,
   label: String,
-  choices: Seq[String],
+  choices: Seq[T],
   initialSelections: Seq[Int],
   onUpdate: Seq[Int] => Unit)
   extends DesignGridPanel
   with Logging {
   val listView = new ListView(choices) {
-    renderer = new Renderer[String] {
+    renderer = new Renderer[T] {
       def componentFor(
         list: ListView[_],
         isSelected: Boolean,
         focused: Boolean,
-        a: String,
+        a: T,
         index: Int): Component =
         {
-          new CheckBox(a) {
+          new CheckBox(a.toString()) {
             selected = isSelected
           }
         }

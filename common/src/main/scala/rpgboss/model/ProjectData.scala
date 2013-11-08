@@ -26,7 +26,7 @@ case class ProjectDataEnums(
   var items: Seq[Item] = Seq(Item()),
   var skills: Seq[Skill] = Seq(Skill()),
   var elements: Seq[String] = ProjectData.defaultElements,
-  var equipSubtypes: Seq[String] = Seq(""))
+  var equipTypes: Seq[String] = ProjectData.defaultEquipTypes)
 
 case class ProjectData(
   var uuid: String,
@@ -62,4 +62,11 @@ object ProjectData {
     "Order",
     "Chaos"
   )
+  
+  def defaultEquipTypes = Seq(
+    "Weapon",
+    "Offhand",
+    "Armor",
+    "Head",
+    "Accessory")
 }
