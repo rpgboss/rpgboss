@@ -13,7 +13,7 @@ case class Character(
   var sprite: Option[SpriteSpec] = None,
   var initLevel: Int = 1, var maxLevel: Int = 50,
   var charClass: Int = 0,
-  var progressions: CharProgressions = CharProgressions(),
+  var progressions: StatProgressions = StatProgressions(),
   var startingEquipment: Seq[Int] = Seq(),
   var equipFixed: Seq[Int] = Seq()) extends HasName {
   def initMhp = progressions.mhp(initLevel)

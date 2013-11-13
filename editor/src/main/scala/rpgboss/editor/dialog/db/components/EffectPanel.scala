@@ -13,7 +13,6 @@ import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.uibase.NumberSpinner
 import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
-import rpgboss.model.Effect
 import scala.collection.mutable.ArrayBuffer
 
 class EffectPanel(
@@ -37,8 +36,8 @@ class EffectPanel(
         if (row < effects.size) {
           val eff = effects(row)
           col match {
-            case 0 => EffectKey.withName(eff.key).desc
-            case 1 => eff.key
+            case 0 => EffectKey(eff.keyId).desc
+            case 1 => EffectKey(eff.keyId).toString
             case 2 => eff.v.toString
           }
         } else {
@@ -112,7 +111,7 @@ class EffectDialog(
   var selectedControls: EffectControls = null
 
   def selectKey(key: EffectKey.Val) = {
-    selectedControls = effectsMap.get(key.toString).get
+    selectedControls = effectsMap.get(key.id).get
 
     btnGroup.select(selectedControls.btn)
 
@@ -122,7 +121,7 @@ class EffectDialog(
 
     selectedControls.control.enabled = true
 
-    model = model.copy(key = key.toString, v = selectedControls.getVal())
+    model = model.copy(keyId = key.id, v = selectedControls.getVal())
   }
 
   private def newRadioForKey(key: EffectKey.Val) = new RadioButton() {
@@ -223,7 +222,7 @@ class EffectDialog(
     intEffect(MhpAdd),
     intEffect(MmpAdd),
     intEffect(AtkAdd),
-    intEffect(AgiAdd),
+    intEffect(SpdAdd),
     intEffect(MagAdd))
 
   val effectsOther = Array(
@@ -232,13 +231,13 @@ class EffectDialog(
     choiceEffect(LearnSkill, dbDiag.model.enums.skills))
 
   val effectsAll = effectsStatus ++ effectsStats ++ effectsOther
-  val effectsMap = Map(effectsAll.map(x => x.key.toString -> x): _*)
+  val effectsMap = Map(effectsAll.map(x => x.key.id -> x): _*)
 
   val btnGroup = new ButtonGroup(effectsAll.map(_.btn): _*)
 
   // Does initialization of dialog
   {
-    effectsMap.get(initial.key) map { ctrlGrp =>
+    effectsMap.get(initial.keyId) map { ctrlGrp =>
       selectKey(ctrlGrp.key)
       ctrlGrp.setVal(initial.v)
     }

@@ -68,7 +68,7 @@ class ItemsPanel(
           model.equipType,
           v => updateModel(model.copy(equipType = v)))
 
-        val fScope = enumCombo(Scope)(
+        val fScope = enumCombo(ItemScope)(
           model.scopeId,
           v => updateModel(model.copy(scopeId = v.id)))
 

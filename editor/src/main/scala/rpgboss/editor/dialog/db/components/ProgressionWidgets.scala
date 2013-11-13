@@ -9,14 +9,14 @@ import rpgboss.model._
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.editor.uibase.NumberSpinner
 
-class CharProgressionPanel(
-  initial: CharProgressions,
-  onUpdate: (CharProgressions) => Unit)
+class StatProgressionPanel(
+  initial: StatProgressions,
+  onUpdate: (StatProgressions) => Unit)
   extends DesignGridPanel {
   //border = BorderFactory.createTitledBorder("Stat progressions")
 
   var model = initial
-  def updateModel(newModel: CharProgressions) = {
+  def updateModel(newModel: StatProgressions) = {
     model = newModel
     onUpdate(model)
   }

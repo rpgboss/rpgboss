@@ -80,7 +80,7 @@ class CharactersPanel(
     }
 
     val progressionFields =
-      new CharProgressionPanel(model.progressions, model.progressions = _)
+      new StatProgressionPanel(model.progressions, model.progressions = _)
 
     new BoxPanel(Orientation.Horizontal) {
       contents += bioFields

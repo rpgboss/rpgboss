@@ -4,7 +4,6 @@ import Constants._
 
 trait HasName {
   def name: String
-  override def toString = name
 }
 
 /**
@@ -43,12 +42,6 @@ case class SoundSpec(
   pitch: Float = 1.0f)
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
-
-case class Curve(base: Int, perLevel: Int) {
-  def apply(x: Int) = {
-    perLevel * (x - 1) + base
-  }
-}
 
 object SpriteSpec {
   object Directions {

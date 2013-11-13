@@ -1,5 +1,7 @@
 package rpgboss.model
 
+case class Effect(keyId: Int, v: Int)
+
 object EffectKey extends RpgEnum {
   case class Val(desc: String) extends super.Val
 
@@ -16,7 +18,7 @@ object EffectKey extends RpgEnum {
   val MhpAdd = Val("Increase Max HP")
   val MmpAdd = Val("Increase Max MP")
   val AtkAdd = Val("Increase ATK")
-  val AgiAdd = Val("Increase AGI")
+  val SpdAdd = Val("Increase SPD")
   val MagAdd = Val("Increase MAG")
   
   val EscapeBattle = Val("Escape battle")
@@ -26,5 +28,5 @@ object EffectKey extends RpgEnum {
 
   def default = RecoverHpAdd
 
-  def defaultEffect = Effect(RecoverHpAdd.toString, 0)
+  def defaultEffect = Effect(RecoverHpAdd.id, 0)
 }
