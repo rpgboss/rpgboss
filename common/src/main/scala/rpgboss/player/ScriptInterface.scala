@@ -277,6 +277,8 @@ class ScriptInterface(game: MyGame, state: GameState) {
     setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
     setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
     setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
+    
+    setIntArray(CHARACTER_MAX_MPS, characters.map(x => 0))
   }
     
   val LEFT = Window.Left
@@ -292,7 +294,8 @@ class ScriptInterface(game: MyGame, state: GameState) {
   val CHARACTER_MPS = "characterMps"
   val CHARACTER_MAX_HPS = "characterMaxHps"
   val CHARACTER_MAX_MPS = "characterMaxMps"
-  
+  val CHARACTER_ROW = "characterRow"
+    
   def CHARACTER_EQUIP(characterId: Int) = 
     "characterEquip-%d".format(characterId)
     

@@ -44,7 +44,7 @@ class BattleStatsSpec extends UnitSpec {
       effects = Seq(Effect(EffectKey.AtkAdd.id, 10))))
     
     val stats1 = 
-      BattleStats(f.pData, f.baseStats, otherStatusEffectIds = Seq(0))
+      BattleStats(f.pData, f.baseStats, tempStatusEffectIds = Seq(0))
     stats1 should equal (BattleStats(
       50, 20, 20, 10, 10, Seq(f.pData.enums.statusEffects(0))))
   }

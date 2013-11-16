@@ -44,9 +44,9 @@ case class BattleStats(
 object BattleStats {
   def apply(pData: ProjectData, baseStats: BaseStats, 
             equippedIds: Seq[Int] = Seq(),
-            otherStatusEffectIds: Seq[Int] = Seq()): BattleStats = {
+            tempStatusEffectIds: Seq[Int] = Seq()): BattleStats = {
     require(equippedIds.forall(i => i >= 0 && i < pData.enums.items.length))
-    require(otherStatusEffectIds.forall(
+    require(tempStatusEffectIds.forall(
       i => i >= 0 && i < pData.enums.statusEffects.length))
       
     val equipment = equippedIds.map(pData.enums.items)
@@ -64,7 +64,7 @@ object BattleStats {
           .filter(_ >= 0)
           .filter(_ < pData.enums.statusEffects.length)
           
-      for (statusEffectId <- equipmentStatusEffectIds ++ otherStatusEffectIds) {
+      for (statusEffectId <- equipmentStatusEffectIds ++ tempStatusEffectIds) {
         val statusEffect = pData.enums.statusEffects(statusEffectId)
         val currentCount = 
           statusEffectStackMap.getOrElseUpdate(statusEffectId, 0)
