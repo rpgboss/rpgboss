@@ -16,8 +16,23 @@ case class Character(
   var progressions: StatProgressions = StatProgressions(),
   var startingEquipment: Seq[Int] = Seq(),
   var equipFixed: Seq[Int] = Seq()) extends HasName {
-  def initMhp = progressions.mhp(initLevel)
-  def initMmp = progressions.mmp(initLevel)
+  def baseStats(pData: ProjectData, level: Int) = {
+    val effects = {
+      if (charClass >= 0 && charClass < pData.enums.classes.length)
+        pData.enums.classes(charClass).effects
+      else
+        Seq()
+    }
+    
+    BaseStats(    
+      mhp = progressions.mhp(level),
+      mmp = progressions.mmp(level),
+      atk = progressions.atk(level),
+      spd = progressions.spd(level),
+      mag = progressions.mag(level),
+      effects = effects
+    )
+  }
 }
 
 case class CharClass(
@@ -35,7 +50,17 @@ case class Enemy(
   var spd: Int = 10,
   var mag: Int = 10,
   var expValue: Int = 100,
-  var effects: Seq[Effect] = Seq()) extends HasName
+  var effects: Seq[Effect] = Seq()) extends HasName {
+  def baseStats =     
+    BaseStats(    
+      mhp = mhp,
+      mmp = mmp,
+      atk = atk,
+      spd = spd,
+      mag = mag,
+      effects = effects
+    )
+}
   
 case class EncounterUnit(
   enemyIdx: Int,

@@ -15,6 +15,14 @@ case class StatProgressions(
   atk: Curve = Curve(10, 2),
   spd: Curve = Curve(10, 2),
   mag: Curve = Curve(10, 2))
+  
+case class BaseStats(
+  mhp: Int,
+  mmp: Int,
+  atk: Int,
+  spd: Int,
+  mag: Int,
+  effects: Seq[Effect])
 
 case class StatusEffect(
   name: String = "",
@@ -34,15 +42,12 @@ case class BattleStats(
   statusEffects: Seq[StatusEffect])
   
 object BattleStats {
-  def apply(pData: ProjectData, characterId: Int, level: Int, 
+  def apply(pData: ProjectData, baseStats: BaseStats, 
             equippedIds: Seq[Int] = Seq(),
             otherStatusEffectIds: Seq[Int] = Seq()): BattleStats = {
-    require(characterId >= 0 && characterId < pData.enums.characters.length)
     require(equippedIds.forall(i => i >= 0 && i < pData.enums.items.length))
     require(otherStatusEffectIds.forall(
       i => i >= 0 && i < pData.enums.statusEffects.length))
-    
-    val character = pData.enums.characters(characterId)
       
     val equipment = equippedIds.map(pData.enums.items)
     val equipmentEffects = equipment.flatMap(_.effects)
@@ -73,18 +78,18 @@ object BattleStats {
       statusEffectBuffer.toList
     }
     
-    val allEffects = equipmentEffects ++ stackedStatusEffects.flatMap(_.effects)
+    val allEffects = baseStats.effects ++ equipmentEffects ++ 
+                     stackedStatusEffects.flatMap(_.effects)
       
-    def addEffects(key: EffectKey.Value): Int = {
+    def addEffects(key: EffectKey.Value): Int =
       allEffects.filter(_.keyId == key.id).map(_.v).sum
-    }
     
     apply(
-      mhp = character.progressions.mhp(level) + addEffects(EffectKey.MhpAdd),
-      mmp = character.progressions.mmp(level) + addEffects(EffectKey.MmpAdd),
-      atk = character.progressions.atk(level) + addEffects(EffectKey.AtkAdd),
-      spd = character.progressions.spd(level) + addEffects(EffectKey.SpdAdd),
-      mag = character.progressions.mag(level) + addEffects(EffectKey.MagAdd),
+      mhp = baseStats.mhp + addEffects(EffectKey.MhpAdd),
+      mmp = baseStats.mmp + addEffects(EffectKey.MmpAdd),
+      atk = baseStats.atk + addEffects(EffectKey.AtkAdd),
+      spd = baseStats.spd + addEffects(EffectKey.SpdAdd),
+      mag = baseStats.mag + addEffects(EffectKey.MagAdd),
       statusEffects = stackedStatusEffects
     )
   }

@@ -259,8 +259,7 @@ class ScriptInterface(game: MyGame, state: GameState) {
     
   def setNewGameVars() = {
     syncRun {
-      state.playerEntity.setSprite(
-          game.project.data.enums.characters.head.sprite)
+      state.playerEntity.setSprite(project.data.enums.characters.head.sprite)
     }
     // Initialize data structures
     setIntArray(PARTY, project.data.startup.startingParty.toArray);
@@ -269,10 +268,15 @@ class ScriptInterface(game: MyGame, state: GameState) {
     setStringArray(CHARACTER_NAMES, characters.map(_.name));
     
     setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
-    setIntArray(CHARACTER_HPS, characters.map(_.initMhp))
-    setIntArray(CHARACTER_MPS, characters.map(_.initMmp))
-    setIntArray(CHARACTER_MAX_HPS, characters.map(_.initMhp))
-    setIntArray(CHARACTER_MAX_MPS, characters.map(_.initMmp))
+    
+    val characterStats = for (c <- characters)
+      yield BattleStats(project.data, c.baseStats(project.data, c.initLevel), 
+                        c.startingEquipment)
+    
+    setIntArray(CHARACTER_HPS, characterStats.map(_.mhp))
+    setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
+    setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
+    setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
   }
     
   val LEFT = Window.Left
