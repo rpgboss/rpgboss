@@ -3,12 +3,13 @@ package rpgboss.editor.uibase
 import scala.swing._
 import scala.swing.event._
 import rpgboss.editor.dialog._
+import rpgboss.model._
 import javax.swing.BorderFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.swing.ListView.Renderer
 import javax.swing.DefaultListSelectionModel
 
-class ArrayMultiselectPanel[T](
+class ArrayMultiselectPanel[T <: HasName](
   owner: Window,
   label: String,
   choices: Seq[T],
@@ -25,7 +26,7 @@ class ArrayMultiselectPanel[T](
         a: T,
         index: Int): Component =
         {
-          new CheckBox(a.toString()) {
+          new CheckBox(a.name) {
             selected = isSelected
           }
         }
