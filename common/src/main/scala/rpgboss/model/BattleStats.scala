@@ -16,6 +16,9 @@ case class StatProgressions(
   spd: Curve = Curve(10, 2),
   mag: Curve = Curve(10, 2))
   
+/** Holds the intrinsic stats of the entity without any equipment or temporary
+ *  status effects.
+ */
 case class BaseStats(
   mhp: Int,
   mmp: Int,
