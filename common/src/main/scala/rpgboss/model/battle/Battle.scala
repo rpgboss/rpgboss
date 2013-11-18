@@ -19,9 +19,9 @@ case class BattleStatus(
   val row: Int) {
   
   /**
-   * Varies between 0.0 and 1.0. At 1.0 (or greater), an entity can take a turn.
+   * Varies between 0.0 and +inf. At 1.0 and greater, entity is ready to act.
    */
-  var readiness = 0.0
+  var turnsSinceLastAction = 0.0
   
   private var _stats = 
     BattleStats(pData, baseStats, equipment, tempStatusEffects)
@@ -45,6 +45,13 @@ class Battle(
   
   private var time = 0.0f
   
+  /**
+   * How many seconds it takes an actor with 0 speed to get a new turn.
+   */
+  val baseTurnTime = 4.0
+  
+  private val readyQueue = new collection.mutable.Queue[BattleStatus]
+  
   val partyStatus: Seq[BattleStatus] = {
     for (id <- partyIds) yield {
       val baseStats = 
@@ -65,21 +72,35 @@ class Battle(
                    baseStats.mmp, baseStats, Seq(), Seq(), row)
     }
   }
+  val allStatus = partyStatus ++ enemyStatus
   
   // Set the readiness level of all the participants. Simple linear algorithm.
   { 
-    val allParticipants = partyStatus ++ enemyStatus
-    val sortedBySpeed = allParticipants.sortBy(_.stats.spd)
+    val sortedBySpeed = allStatus.sortBy(_.stats.spd)
     
-    if (allParticipants.length == 1) {
-      allParticipants.head.readiness = 1.0
+    if (allStatus.length == 1) {
+      allStatus.head.turnsSinceLastAction = 1.0
     } else {
       // Set the readiness level from 0.0 to 1.0 based on speed.
       for ((status, i) <- sortedBySpeed.zipWithIndex) {
-        status.readiness = i / (allParticipants.length - 1)
+        status.turnsSinceLastAction = i / (allStatus.length - 1)
       }
     }
   }
   
-  
+  def update(deltaSeconds: Float) = {
+    for (status <- allStatus) {
+      val effectiveTurnTime = 
+        1.0 / (1.0 + status.stats.spd.toDouble / 100.0) * baseTurnTime
+      val turnsPassed = deltaSeconds / effectiveTurnTime
+      
+      if (status.turnsSinceLastAction < 1.0 &&
+          status.turnsSinceLastAction + turnsPassed >= 1.0) {
+        readyQueue.enqueue(status)
+      }
+      
+      status.turnsSinceLastAction += turnsPassed
+    }
+  }
+    
 }
