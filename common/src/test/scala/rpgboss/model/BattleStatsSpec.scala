@@ -9,12 +9,12 @@ class BattleStatsSpec extends UnitSpec {
     
     val character = {
       val statProgressions = StatProgressions(
-      exp = Curve(300, 100),
-      mhp = Curve(50, 10),
-      mmp = Curve(20, 4),
-      atk = Curve(10, 2),
-      spd = Curve(10, 2),
-      mag = Curve(10, 2))
+        exp = Curve(300, 100),
+        mhp = Curve(50, 10),
+        mmp = Curve(20, 4),
+        atk = Curve(10, 2),
+        spd = Curve(10, 2),
+        mag = Curve(10, 2))
       
       Character(progressions = statProgressions)
     }

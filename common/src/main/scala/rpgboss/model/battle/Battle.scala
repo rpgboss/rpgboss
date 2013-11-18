@@ -7,10 +7,10 @@ object BattleEntityType extends Enumeration {
   val Party, Enemy = Value
 }
 
-case class BattleStatus(
+class BattleStatus(
   pData: ProjectData,
-  entityType: BattleEntityType.Value,
-  id: Int,
+  val entityType: BattleEntityType.Value,
+  val id: Int,
   var hp: Int,
   var mp: Int,
   val baseStats: BaseStats,
@@ -23,11 +23,18 @@ case class BattleStatus(
    */
   var turnsSinceLastAction = 0.0
   
+  /**
+   * True if the Battle has already put this entity into the ready queue.
+   */
+  var putInReadyQueue = false
+  
   private var _stats = 
     BattleStats(pData, baseStats, equipment, tempStatusEffects)
     
   def stats = _stats
 }
+
+case class BattleAction(source: BattleStatus)
 
 class Battle(
   pData: ProjectData,
@@ -50,17 +57,45 @@ class Battle(
    */
   val baseTurnTime = 4.0
   
+  /**
+   * Actions that have been queued up by the player or AI, but have not yet
+   * taken place.
+   */
+  private val actionQueue = new collection.mutable.Queue[BattleAction]
+  
+  /**
+   * Battle entities, player characters and enemies, that are ready to act but
+   * have not yet acted.
+   */
   private val readyQueue = new collection.mutable.Queue[BattleStatus]
+  
+  /**
+   * The first item in the ready queue.
+   */
+  def readyEntity = readyQueue.headOption
+  
+  /**
+   * Enqueues up an action to be taken. Also removes the actor from the ready
+   * queue.
+   */
+  def takeAction(action: BattleAction) = {
+    val dequeued = readyQueue.dequeueFirst(_ == action.source)
+    assert(dequeued.isDefined)
+    action.source.turnsSinceLastAction = 0
+    action.source.putInReadyQueue = false
+    
+    actionQueue.enqueue(action)
+  }
   
   val partyStatus: Seq[BattleStatus] = {
     for (id <- partyIds) yield {
       val baseStats = 
         pData.enums.characters(id).baseStats(pData, characterLevels(id))
-      BattleStatus(pData, BattleEntityType.Party, id, initialCharacterHps(id), 
-                   initialCharacterMps(id),
-                   baseStats, characterEquip(id),
-                   initialCharacterTempStatusEffects(id), 
-                   characterRows(id))
+      new BattleStatus(pData, BattleEntityType.Party, id, 
+                       initialCharacterHps(id), initialCharacterMps(id),
+                       baseStats, characterEquip(id),
+                       initialCharacterTempStatusEffects(id), 
+                       characterRows(id))
     }
   }
   val enemyStatus: Seq[BattleStatus] = {
@@ -68,8 +103,8 @@ class Battle(
     for ((unit, i) <- encounter.units.zipWithIndex) yield {
       val baseStats = pData.enums.enemies(unit.enemyIdx).baseStats
       val row = (i * 2) / encounter.units.length
-      BattleStatus(pData, BattleEntityType.Enemy, i, baseStats.mhp, 
-                   baseStats.mmp, baseStats, Seq(), Seq(), row)
+      new BattleStatus(pData, BattleEntityType.Enemy, i, baseStats.mhp, 
+                       baseStats.mmp, baseStats, Seq(), Seq(), row)
     }
   }
   val allStatus = partyStatus ++ enemyStatus
@@ -86,21 +121,30 @@ class Battle(
         status.turnsSinceLastAction = i / (allStatus.length - 1)
       }
     }
+    
+    // Initialize ready queue
+    update(0)
   }
   
   def update(deltaSeconds: Float) = {
+    time += deltaSeconds
+    val newlyReady = new collection.mutable.ArrayBuffer[BattleStatus]
+    
     for (status <- allStatus) {
       val effectiveTurnTime = 
         1.0 / (1.0 + status.stats.spd.toDouble / 100.0) * baseTurnTime
-      val turnsPassed = deltaSeconds / effectiveTurnTime
+      status.turnsSinceLastAction += deltaSeconds / effectiveTurnTime
       
-      if (status.turnsSinceLastAction < 1.0 &&
-          status.turnsSinceLastAction + turnsPassed >= 1.0) {
-        readyQueue.enqueue(status)
+      if (status.turnsSinceLastAction >= 1.0 && !status.putInReadyQueue) {
+        newlyReady.append(status)
+        status.putInReadyQueue = true
       }
-      
-      status.turnsSinceLastAction += turnsPassed
     }
+    
+    // Add newly ready items in order
+    newlyReady
+      .sortBy(_.turnsSinceLastAction)
+      .foreach(x => readyQueue.enqueue(x))
   }
     
 }
