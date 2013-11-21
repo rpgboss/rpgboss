@@ -17,24 +17,34 @@ class BattleStatus(
   val equipment: Seq[Int] = Seq(),
   private var tempStatusEffects: Seq[Int],
   val row: Int) {
-  
-  /**
-   * Varies between 0.0 and +inf. At 1.0 and greater, entity is ready to act.
-   */
-  var turnsSinceLastAction = 0.0
-  
-  /**
-   * True if the Battle has already put this entity into the ready queue.
-   */
-  var putInReadyQueue = false
-  
+    
   private var _stats = 
     BattleStats(pData, baseStats, equipment, tempStatusEffects)
     
   def stats = _stats
+  
+  override def toString = "BattleStatus(%s, %d)".format(entityType, id)
 }
 
-case class BattleAction(source: BattleStatus)
+trait BattleAction {
+  def source: BattleStatus
+  def process(battle: Battle)
+}
+ 
+case class NullAction(source: BattleStatus) extends BattleAction {
+  def process(battle: Battle) = {}
+}
+
+/**
+ * Indicates when this entity will be ready
+ */
+case class ReadyAction(source: BattleStatus) extends BattleAction {
+  def process(battle: Battle) = {
+    battle.readyQueue.enqueue(source)
+  }
+}
+
+case class TimestampedBattleAction(time: Double, action: BattleAction)
 
 class Battle(
   pData: ProjectData,
@@ -50,7 +60,7 @@ class Battle(
   require(encounter.units.forall(
     unit => unit.enemyIdx >= 0 && unit.enemyIdx < pData.enums.enemies.length))
   
-  private var time = 0.0f
+  private var time = 0.0
   
   /**
    * How many seconds it takes an actor with 0 speed to get a new turn.
@@ -58,16 +68,23 @@ class Battle(
   val baseTurnTime = 4.0
   
   /**
-   * Actions that have been queued up by the player or AI, but have not yet
-   * taken place.
+   * Time separation between initial ready times
    */
-  private val actionQueue = new collection.mutable.Queue[BattleAction]
+  val readySeparation = baseTurnTime * 0.3
+  
+  /**
+   * Simulation events that have been queued up, but have not yet taken place.
+   * Ordering is by negative time, as we want events processed in time order.
+   */
+  private val eventQueue = 
+    new collection.mutable.PriorityQueue[TimestampedBattleAction]()(
+        Ordering.by(-_.time))
   
   /**
    * Battle entities, player characters and enemies, that are ready to act but
    * have not yet acted.
    */
-  private val readyQueue = new collection.mutable.Queue[BattleStatus]
+  val readyQueue = new collection.mutable.Queue[BattleStatus]
   
   /**
    * The first item in the ready queue.
@@ -79,12 +96,16 @@ class Battle(
    * queue.
    */
   def takeAction(action: BattleAction) = {
+    // Remove the action taker from list of ready actors
     val dequeued = readyQueue.dequeueFirst(_ == action.source)
     assert(dequeued.isDefined)
-    action.source.turnsSinceLastAction = 0
-    action.source.putInReadyQueue = false
     
-    actionQueue.enqueue(action)
+    // Enqueue the actual action
+    eventQueue.enqueue(TimestampedBattleAction(time, action))
+    
+    // Enqueue next ready time
+    val turnTime = baseTurnTime / (1.0 + action.source.stats.spd / 100.0)
+    eventQueue.enqueue(TimestampedBattleAction(time + turnTime, action))
   }
   
   val partyStatus: Seq[BattleStatus] = {
@@ -111,40 +132,24 @@ class Battle(
   
   // Set the readiness level of all the participants. Simple linear algorithm.
   { 
-    val sortedBySpeed = allStatus.sortBy(_.stats.spd)
+    val fastestToSlowest = allStatus.sortBy(-_.stats.spd)
     
-    if (allStatus.length == 1) {
-      allStatus.head.turnsSinceLastAction = 1.0
-    } else {
-      // Set the readiness level from 0.0 to 1.0 based on speed.
-      for ((status, i) <- sortedBySpeed.zipWithIndex) {
-        status.turnsSinceLastAction = i / (allStatus.length - 1)
-      }
+    for ((status, i) <- fastestToSlowest.zipWithIndex) {
+      eventQueue.enqueue(TimestampedBattleAction(
+          time + i * baseTurnTime * 0.3, ReadyAction(status)))
     }
     
     // Initialize ready queue
     update(0)
   }
   
-  def update(deltaSeconds: Float) = {
+  def update(deltaSeconds: Double) = {
     time += deltaSeconds
-    val newlyReady = new collection.mutable.ArrayBuffer[BattleStatus]
     
-    for (status <- allStatus) {
-      val effectiveTurnTime = 
-        1.0 / (1.0 + status.stats.spd.toDouble / 100.0) * baseTurnTime
-      status.turnsSinceLastAction += deltaSeconds / effectiveTurnTime
-      
-      if (status.turnsSinceLastAction >= 1.0 && !status.putInReadyQueue) {
-        newlyReady.append(status)
-        status.putInReadyQueue = true
-      }
+    while (!eventQueue.isEmpty && eventQueue.head.time <= time) {
+      val event = eventQueue.dequeue().action
+      event.process(this)
     }
-    
-    // Add newly ready items in order
-    newlyReady
-      .sortBy(_.turnsSinceLastAction)
-      .foreach(x => readyQueue.enqueue(x))
   }
     
 }
