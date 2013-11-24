@@ -4,7 +4,7 @@ import rpgboss._
 import rpgboss.model._
 
 class BattleSpec extends UnitSpec {
-  def fixture = new {
+  def fixture(commanders: Seq[BattleCommander]) = new {
     val pData = ProjectData("fake-uuid", "fake-title")
     
     val characterFast = 
@@ -26,11 +26,12 @@ class BattleSpec extends UnitSpec {
       characterEquip = Seq(Seq(), Seq()),
       initialCharacterTempStatusEffects = Seq(Seq(), Seq()),
       characterRows = Seq(0, 0),
-      encounter = Encounter(units = Seq(EncounterUnit(0, 100, 100))))
+      encounter = Encounter(units = Seq(EncounterUnit(0, 100, 100))),
+      commanders = commanders)
   }
   
   "Battle" should "make fastest unit go first" in {
-    val f = fixture
+    val f = fixture(Nil)
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
@@ -42,7 +43,7 @@ class BattleSpec extends UnitSpec {
   }
   
   "Battle" should "have actions proceed in order" in {
-    val f = fixture
+    val f = fixture(Nil)
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)

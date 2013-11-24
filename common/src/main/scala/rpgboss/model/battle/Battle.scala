@@ -7,6 +7,9 @@ object BattleEntityType extends Enumeration {
   val Party, Enemy = Value
 }
 
+/**
+ * @param row     0 for front row. 1 for back row. Other values are undefined.
+ */
 class BattleStatus(
   pData: ProjectData,
   val entityType: BattleEntityType.Value,
@@ -26,25 +29,13 @@ class BattleStatus(
   override def toString = "BattleStatus(%s, %d)".format(entityType, id)
 }
 
-trait BattleAction {
-  def source: BattleStatus
-  def process(battle: Battle)
+trait BattleCommander {
+  /**
+   * Called for commanders when an entity is ready. Return true if this
+   * commander has 'handled' the readiness of this item.
+   */
+  def onReady(source: BattleStatus): Boolean
 }
- 
-case class NullAction(source: BattleStatus) extends BattleAction {
-  def process(battle: Battle) = {}
-}
-
-/**
- * Indicates when this entity will be ready
- */
-case class ReadyAction(source: BattleStatus) extends BattleAction {
-  def process(battle: Battle) = {
-    battle.readyQueue.enqueue(source)
-  }
-}
-
-case class TimestampedBattleAction(time: Double, action: BattleAction)
 
 class Battle(
   pData: ProjectData,
@@ -55,7 +46,8 @@ class Battle(
   characterEquip: Seq[Seq[Int]],
   initialCharacterTempStatusEffects: Seq[Seq[Int]],
   characterRows: Seq[Int],
-  encounter: Encounter) {
+  encounter: Encounter,
+  commanders: Seq[BattleCommander]) {
   require(partyIds.forall(i => i >= 0 && i < pData.enums.characters.length))
   require(encounter.units.forall(
     unit => unit.enemyIdx >= 0 && unit.enemyIdx < pData.enums.enemies.length))

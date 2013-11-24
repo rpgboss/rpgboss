@@ -1,5 +1,5 @@
 function main() {
-  game.setTransition(0, 1, 600);
+  game.setTransition(1, 0, 600);
   game.playMusic(0, project.data().startup().titleMusic(), true, 2000);
   game.showPicture(0, project.data().startup().titlePic(), 0, 0, 640, 480);
   var winW = 200;
@@ -14,14 +14,14 @@ function main() {
   var choiceIdx = choiceWin.getChoice();
   choiceWin.destroy();
   
-  game.setTransition(1, 0, 400);
+  game.setTransition(0, 1, 400);
   game.sleep(400);
   game.hidePicture(0);
   
   teleportLoc(project.data().startup().startingLoc(), Transitions.NONE().id());
   
   game.setPlayerLoc(project.data().startup().startingLoc());
-  game.setTransition(0, 1, 400);
+  game.setTransition(1, 0, 400);
   
   game.setNewGameVars();
 }

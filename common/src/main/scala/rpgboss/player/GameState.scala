@@ -92,15 +92,6 @@ class GameState(game: MyGame, project: Project) {
     eventEntities.values.foreach(_.update(delta))
     playerEntity.update(delta)
 
-    // Update current transition
-    curTransition.synchronized {
-      curTransition map { transition =>
-        if (transition.done) {
-          curTransition = None
-        }
-      }
-    }
-
     camera.update(delta)
   }
 

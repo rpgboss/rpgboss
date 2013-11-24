@@ -103,7 +103,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
       Gdx.gl.glEnable(GL10.GL_BLEND)
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 
-      shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
+      shapeRenderer.setColor(0, 0, 0, transition.curAlpha.toFloat)
       shapeRenderer.rect(0, 0, 640, 480)
       shapeRenderer.end()
     }

@@ -129,6 +129,10 @@ http://crownlesswish.deviantart.com/
 Generated using bfxr at:
 http://www.bfxr.net/
 
+http://opengameart.org/content/rpg-sound-pack
+
+http://opengameart.org/content/37-hitspunches
+
 ### Material Rules
 
 Autotiles are individual files in Rpg Maker VX format.

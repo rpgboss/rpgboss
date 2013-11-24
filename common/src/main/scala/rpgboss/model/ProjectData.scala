@@ -12,10 +12,14 @@ case class ProjectDataStartup(
   var msgfont: String = "VeraMono.ttf",
   var fontsize: Int = 24,
 
-  var soundCursor: Option[SoundSpec] = Some(SoundSpec("MenuCursor.wav")),
-  var soundSelect: Option[SoundSpec] = Some(SoundSpec("MenuSelect.wav")),
-  var soundCancel: Option[SoundSpec] = Some(SoundSpec("MenuCancel.wav")),
-  var soundCannot: Option[SoundSpec] = Some(SoundSpec("MenuCannot.wav")))
+  var soundCursor: Option[SoundSpec] = 
+    Some(SoundSpec("rpgboss-menu/MenuCursor.wav")),
+  var soundSelect: Option[SoundSpec] = 
+    Some(SoundSpec("rpgboss-menu/MenuSelect.wav")),
+  var soundCancel: Option[SoundSpec] = 
+    Some(SoundSpec("rpgboss-menu/MenuCancel.wav")),
+  var soundCannot: Option[SoundSpec] = 
+    Some(SoundSpec("rpgboss-menu/MenuCannot.wav")))
 
 case class ProjectDataEnums(
   var characters: Seq[Character] = ProjectData.defaultCharacters,
