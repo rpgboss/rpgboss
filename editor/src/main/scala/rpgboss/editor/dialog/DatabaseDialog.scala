@@ -14,19 +14,21 @@ import rpgboss.editor.uibase.StdDialog
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Database") {
   val model = sm.getProjData
-
+  
+  val animationsPane = new AnimationsPanel(owner, sm, this)
   val charPane = new CharactersPanel(owner, sm, this)
   val classesPane = new ClassesPanel(owner, sm, this)
   val enemiesPane = new EnemiesPanel(owner, sm, this)
   val encountersPane = new EncountersPanel(owner, sm, this)
   val itemsPane = new ItemsPanel(owner, sm, this)
+  val skillsPane = new SkillsPanel(owner, sm, this)
   val statusPane = new StatusPanel(owner, sm, this)
   val sysPane = new SystemPanel(owner, sm, this)
   val enumPane = new EnumerationsPanel(owner, sm, this)
 
   val panels =
     List(charPane, classesPane, enemiesPane, encountersPane, itemsPane, 
-         statusPane, sysPane, enumPane)
+         skillsPane, statusPane, animationsPane, sysPane, enumPane)
 
   def applyFunc() = {
     sm.setProjData(model)

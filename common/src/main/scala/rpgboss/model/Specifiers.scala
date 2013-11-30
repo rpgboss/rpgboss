@@ -22,6 +22,19 @@ object WhichEntity extends RpgEnum {
   
   def default = PLAYER
 }
+
+object Scope extends RpgEnum {
+  val None = Value
+  val SelfOnly = Value("User only")
+  val OneEnemy = Value("One enemy")
+  val AllEnemies = Value("All enemies")
+  val OneAlly = Value("One ally")
+  val AllAllies = Value("All allies")
+  val OneAllyDead = Value("One dead ally")
+  val AllAlliesDead = Value("All dead allies")
+
+  def default = OneAlly
+}
   
 // Specifies an entity: Either the player or an event on the current map.
 case class EntitySpec(

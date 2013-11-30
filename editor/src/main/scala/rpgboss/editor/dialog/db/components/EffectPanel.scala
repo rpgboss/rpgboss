@@ -197,7 +197,8 @@ class EffectDialog(
       v => spinner.setValue(v))
   }
 
-  def choiceEffect[T](key: EffectKey.Val, choices: Seq[T]): EffectControls = {
+  def choiceEffect[T <: HasName](key: EffectKey.Val, 
+                                 choices: Seq[T]): EffectControls = {
     val combo = indexedCombo(choices, 0, i => onCurControlChange())
 
     EffectControls(

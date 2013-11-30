@@ -71,8 +71,6 @@ case class Encounter(
   var name: String = "#<None>",
   var units: Seq[EncounterUnit] = Seq())
 
-case class Skill(name: String = "") extends HasName
-
 object CharState {
   /*
    * val defaultStates = 
