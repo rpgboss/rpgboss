@@ -37,8 +37,11 @@ class SkillsPanel(
         model.scopeId,
         v => model.scopeId = v.id)
       
-      row().grid(leftLabel("Name:")).add(fName)
-      row().grid(leftLabel("Scope:")).add(fScope)
+      val fDamages = new DamagesPanel(dbDiag, model.damages, model.damages = _)
+        
+      row().grid(lbl("Name:")).add(fName)
+      row().grid(lbl("Scope:")).add(fScope)
+      row().grid(lbl("Damages:")).add(fDamages)
     }
   }
 

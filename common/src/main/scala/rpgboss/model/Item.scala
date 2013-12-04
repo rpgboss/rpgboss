@@ -37,6 +37,7 @@ case class Item(
   
   var equipType: Int = 0,
   
+  var useOnAttack: Boolean = false,
   var onUseSkillId: Int = 0,
   
   var icon: Option[IconSpec] = None) extends HasName

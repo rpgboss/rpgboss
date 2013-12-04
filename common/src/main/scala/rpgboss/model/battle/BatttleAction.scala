@@ -27,4 +27,11 @@ case class AttackAction(source: BattleStatus, target: BattleStatus)
   }
 }
 
+case class SkillAction(source: BattleStatus, target: BattleStatus)
+  extends BattleAction {
+  def process(battle: Battle) = {
+    
+  }
+}
+
 case class TimestampedBattleAction(time: Double, action: BattleAction)

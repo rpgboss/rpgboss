@@ -69,6 +69,11 @@ class ItemsPanel(
           model.equipType,
           model.equipType = _)
           
+        val fUseOnAttack = boolField(
+          model.useOnAttack, 
+          model.useOnAttack = _, 
+          "Use on Attack")
+          
         val fOnUseSkillId = indexedCombo(
           dbDiag.model.enums.skills,
           model.onUseSkillId,
@@ -81,8 +86,10 @@ class ItemsPanel(
           fAccess.enabled = model.itemType != ItemType.Equipment.id
           
           fEquipType.enabled = model.itemType == ItemType.Equipment.id
+          
+          fUseOnAttack.enabled = model.itemType == ItemType.Equipment.id
           fOnUseSkillId.enabled =
-            model.itemType == ItemType.Equipment.id
+            model.itemType == ItemType.Equipment.id && model.useOnAttack
         }
 
         setEnabledFields()
@@ -102,6 +109,7 @@ class ItemsPanel(
         
         row()
           .grid(lbl("Equip type:")).add(fEquipType)
+        row().grid().add(fUseOnAttack)
         row()
           .grid(lbl("On use skill:")).add(fOnUseSkillId)
       }
