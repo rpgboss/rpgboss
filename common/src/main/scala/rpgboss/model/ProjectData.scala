@@ -22,15 +22,16 @@ case class ProjectDataStartup(
     Some(SoundSpec("rpgboss-menu/MenuCannot.wav")))
 
 case class ProjectDataEnums(
+  var animations: Seq[Animation] = Seq(Animation()),
   var characters: Seq[Character] = ProjectData.defaultCharacters,
   var classes: Seq[CharClass] = Seq(CharClass()),
+  var elements: Seq[String] = ProjectData.defaultElements,
   var enemies: Seq[Enemy] = Seq(Enemy()),
   var encounters: Seq[Encounter] = Seq(Encounter()),
-  var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()),
+  var equipTypes: Seq[String] = ProjectData.defaultEquipTypes,
   var items: Seq[Item] = Seq(Item()),
   var skills: Seq[Skill] = Seq(Skill()),
-  var elements: Seq[String] = ProjectData.defaultElements,
-  var equipTypes: Seq[String] = ProjectData.defaultEquipTypes)
+  var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()))
 
 case class ProjectData(
   var uuid: String,

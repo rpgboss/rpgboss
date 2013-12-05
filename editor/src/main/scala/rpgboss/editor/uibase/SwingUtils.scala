@@ -76,13 +76,30 @@ object SwingUtils {
     }
   }
 
-  def indexedCombo[T](choices: Seq[T], initial: Int, onUpdate: Int => Unit) = {
+  def indexedComboStrings(choices: Seq[String], initial: Int, 
+                          onUpdate: Int => Unit) = {
     new ComboBox(choices) {
       selection.index = initial
 
       renderer = ListView.Renderer(choice => {
         val idx = choices.indexOf(choice)
-        "%d: %s".format(idx, choice.toString())
+        "%d: %s".format(idx, choice)
+      })
+
+      reactions += {
+        case SelectionChanged(_) => onUpdate(selection.index)
+      }
+    }
+  }
+  
+  def indexedCombo[T <: HasName](choices: Seq[T], initial: Int, 
+                                 onUpdate: Int => Unit) = {
+    new ComboBox(choices) {
+      selection.index = initial
+
+      renderer = ListView.Renderer(choice => {
+        val idx = choices.indexOf(choice)
+        "%d: %s".format(idx, choice.name)
       })
 
       reactions += {

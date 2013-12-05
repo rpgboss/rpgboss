@@ -1,18 +1,5 @@
 package rpgboss.model
 
-object ItemScope extends RpgEnum {
-  val None = Value
-  val SelfOnly = Value("User only")
-  val OneEnemy = Value("One enemy")
-  val AllEnemies = Value("All enemies")
-  val OneAlly = Value("One ally")
-  val AllAllies = Value("All allies")
-  val OneAllyDead = Value("One dead ally")
-  val AllAlliesDead = Value("All dead allies")
-
-  def default = OneAlly
-}
-
 object ItemType extends RpgEnum {
   val Consumable, Reusable, Equipment = Value
   val KeyItem = Value("Key item")
@@ -32,19 +19,25 @@ object ItemAccessibility extends RpgEnum {
 object Item {
 }
 
+/**
+ * @param scopeId       Affected targets for consumables
+ */
 case class Item(
-  name: String = "",
-  desc: String = "",
-  effects: Seq[Effect] = Seq(),
+  var name: String = "Item",
+  var desc: String = "Item description",
+  var effects: Seq[Effect] = Seq(),
 
-  sellable: Boolean = true,
-  price: Int = 100,
+  var sellable: Boolean = true,
+  var price: Int = 100,
 
-  itemType: Int = ItemType.default.id,
+  var itemType: Int = ItemType.default.id,
 
-  equipType: Int = 0,
+  var accessId: Int = ItemAccessibility.default.id,
+  var scopeId: Int = Scope.default.id,
   
-  accessId: Int = ItemAccessibility.default.id,
-  scopeId: Int = ItemScope.default.id,
-
-  icon: Option[IconSpec] = None) extends HasName
+  var equipType: Int = 0,
+  
+  var useOnAttack: Boolean = false,
+  var onUseSkillId: Int = 0,
+  
+  var icon: Option[IconSpec] = None) extends HasName

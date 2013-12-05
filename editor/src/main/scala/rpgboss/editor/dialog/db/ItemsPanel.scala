@@ -28,60 +28,68 @@ class ItemsPanel(
   def newDefaultInstance() = new Item()
   def label(item: Item) = item.name
 
-  def editPaneForItem(idx: Int, initial: Item) = {
-    var model = initial
-
-    def updateModel(newModel: Item) = {
-      model = newModel
-      updatePreserveSelection(idx, model)
-    }
-
+  def editPaneForItem(idx: Int, model: Item) = {
     new BoxPanel(Orientation.Horizontal) {
       val leftPane = new DesignGridPanel {
-        val fName =
-          textField(model.name, v => updateModel(model.copy(name = v)))
+        val fName = textField(model.name, v => {
+          model.name = v
+          refreshModel()
+        })
 
-        val fDesc =
-          textField(model.desc, v => updateModel(model.copy(desc = v)))
+        val fDesc = textField(model.desc, model.desc = _)
 
-        val fSellable: CheckBox =
-          boolField(model.sellable, v => {
-            updateModel(model.copy(sellable = v))
-            setEnabledFields()
-          })
+        val fSellable: CheckBox = boolField(model.sellable, v => {
+          model.sellable = v
+          setEnabledFields()
+        })
 
         val fPrice = new NumberSpinner(
           model.price,
           MINPRICE,
           MAXPRICE,
-          onUpdate = v => updateModel(model.copy(price = v)))
+          onUpdate = model.price = _)
 
         val fItemType = enumCombo(ItemType)(
           model.itemType,
           v => {
-            updateModel(model.copy(itemType = v.id))
+            model.itemType = v.id
             setEnabledFields()
           })
 
-        val fEquipType = indexedCombo(
-          dbDiag.model.enums.equipTypes,
-          model.equipType,
-          v => updateModel(model.copy(equipType = v)))
-
-        val fScope = enumCombo(ItemScope)(
+        val fScope = enumCombo(Scope)(
           model.scopeId,
-          v => updateModel(model.copy(scopeId = v.id)))
+          v => model.scopeId = v.id)
 
         val fAccess = enumCombo(ItemAccessibility)(
           model.accessId,
-          v => updateModel(model.copy(accessId = v.id)))
+          v => model.accessId = v.id)
 
+        val fEquipType = indexedComboStrings(
+          dbDiag.model.enums.equipTypes,
+          model.equipType,
+          model.equipType = _)
+          
+        val fUseOnAttack = boolField(
+          model.useOnAttack, 
+          model.useOnAttack = _, 
+          "Use on Attack")
+          
+        val fOnUseSkillId = indexedCombo(
+          dbDiag.model.enums.skills,
+          model.onUseSkillId,
+          model.onUseSkillId = _)
+          
         def setEnabledFields() = {
           fPrice.enabled = fSellable.selected
 
-          fEquipType.enabled = model.itemType == ItemType.Equipment.id
           fScope.enabled = model.itemType != ItemType.Equipment.id
           fAccess.enabled = model.itemType != ItemType.Equipment.id
+          
+          fEquipType.enabled = model.itemType == ItemType.Equipment.id
+          
+          fUseOnAttack.enabled = model.itemType == ItemType.Equipment.id
+          fOnUseSkillId.enabled =
+            model.itemType == ItemType.Equipment.id && model.useOnAttack
         }
 
         setEnabledFields()
@@ -96,16 +104,18 @@ class ItemsPanel(
           .grid(lbl("Item type:")).add(fItemType)
 
         row()
-          .grid(lbl("Equip type:")).add(fEquipType)
-
-        row()
           .grid(lbl("Effect scope:")).add(fScope)
           .grid(lbl("Item access:")).add(fAccess)
+        
+        row()
+          .grid(lbl("Equip type:")).add(fEquipType)
+        row().grid().add(fUseOnAttack)
+        row()
+          .grid(lbl("On use skill:")).add(fOnUseSkillId)
       }
 
-      val rightPane = new EffectPanel(owner, dbDiag, model.effects, es => {
-        updateModel(model.copy(effects = es))
-      })
+      val rightPane = 
+        new EffectPanel(owner, dbDiag, model.effects, model.effects = _)
 
       contents += leftPane
       contents += rightPane
@@ -113,7 +123,6 @@ class ItemsPanel(
   }
 
   override def onListDataUpdate() = {
-    logger.info("Items data updated")
     dbDiag.model.enums.items = arrayBuffer
   }
 }
