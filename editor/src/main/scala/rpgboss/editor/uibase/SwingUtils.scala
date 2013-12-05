@@ -11,6 +11,36 @@ object SwingUtils {
   def leftLabel(s: String) = new Label(s) {
     xAlignment = Alignment.Left
   }
+  
+  /**
+   * General form that can be used for unusual index positioning.
+   */
+  def customIdxRenderer[A, B](f: (A, Int) => B)
+    (implicit renderer: ListView.Renderer[B]): ListView.Renderer[A] =
+    new ListView.Renderer[A] {
+      def componentFor(
+        list: ListView[_],
+        isSelected: Boolean,
+        focused: Boolean,
+        a: A,
+        indexArgument: Int): Component = {
+        
+        // Normalize for case of selected combobox. (Otherwise -1 shown).
+        val index = if (indexArgument < 0)
+          list.selection.indices.head
+        else
+          indexArgument
+        
+        renderer.componentFor(list, isSelected, focused, f(a, index), index)
+      }
+    }
+  
+  /**
+   * Standard "42: Name" format.
+   */
+  def standardIdxRenderer[A, B](labelF: A => B)
+    (implicit renderer: ListView.Renderer[B]) =
+      customIdxRenderer((a: A, idx: Int) => "%d: %s".format(idx, labelF(a)))
 
   def boolField(text: String, initial: Boolean, onUpdate: Boolean => Unit,
                 additionalAction: Option[() => Unit] = None) =
@@ -87,11 +117,7 @@ object SwingUtils {
                           additionalAction: Option[() => Unit] = None) = {
     new ComboBox(choices) {
       selection.index = initial
-
-      renderer = ListView.Renderer(choice => {
-        val idx = choices.indexOf(choice)
-        "%d: %s".format(idx, choice)
-      })
+      renderer = standardIdxRenderer(x => x)
 
       reactions += {
         case SelectionChanged(_) => 
@@ -106,11 +132,7 @@ object SwingUtils {
     additionalAction: Option[() => Unit] = None) = {
     new ComboBox(choices) {
       selection.index = initial
-
-      renderer = ListView.Renderer(choice => {
-        val idx = choices.indexOf(choice)
-        "%d: %s".format(idx, choice.name)
-      })
+      renderer = standardIdxRenderer(_.name)
 
       reactions += {
         case SelectionChanged(_) => 

@@ -16,22 +16,7 @@ class ArrayListView[T](initialAry: Seq[T]) extends ListView(initialAry) {
   def onListSelectionChanged(): Unit = {}
   def label(a: T): String = a.toString
   
-  // Renders the item with the index passed in
-  def idxRenderer[A, B](f: (A, Int) => B)(implicit renderer: Renderer[B]) =
-    new Renderer[A] {
-      def componentFor(
-        list: ListView[_],
-        isSelected: Boolean,
-        focused: Boolean,
-        a: A,
-        index: Int): Component =
-        renderer.componentFor(list, isSelected, focused, f(a, index), index)
-    }
-  
-  renderer = idxRenderer({
-    case (a, idx) =>
-      "%d: %s".format(idx, label(a))
-  })
+  renderer = standardIdxRenderer(label _)
 
   listenTo(selection)
   reactions += {
