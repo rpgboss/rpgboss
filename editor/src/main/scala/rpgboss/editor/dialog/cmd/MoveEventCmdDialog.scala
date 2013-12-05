@@ -26,9 +26,9 @@ class MoveEventCmdDialog(
   val fieldDy = new FloatSpinner(model.dy, -100, 100, model.dy = _, 0.1f)
   
   val fieldAffixDirection = 
-    boolField(model.affixDirection, model.affixDirection = _)
+    boolField("", model.affixDirection, model.affixDirection = _)
   val fieldAsync = 
-    boolField(model.async, model.async = _)
+    boolField("", model.async, model.async = _)
 
   def okFunc() = {
     successF(model)

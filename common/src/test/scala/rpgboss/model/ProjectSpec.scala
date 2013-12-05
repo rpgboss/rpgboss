@@ -2,6 +2,7 @@ package rpgboss.model
 
 import rpgboss._
 import com.google.common.io.Files
+import rpgboss.model.Project
 
 class ProjectSpec extends UnitSpec {
   "ProjectDataStartup" should "be equal-comparable" in {

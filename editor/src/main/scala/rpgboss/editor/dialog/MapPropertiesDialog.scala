@@ -48,18 +48,19 @@ class MapPropertiesDialog(
     metadataModel.ySize = _)
 
   val fieldChangeMusic = boolField(
+    "Change music on enter",
     metadataModel.changeMusicOnEnter, 
-    v => {
-      metadataModel.changeMusicOnEnter = v
-      fieldMusic.enabled = v
-    },
-    "Change music on enter")
+    metadataModel.changeMusicOnEnter = _,
+    Some(setEnabledFields _))
     
   val fieldMusic = new MusicField(
     owner, sm, metadataModel.music,
     metadataModel.music = _)
   
-  fieldMusic.enabled = metadataModel.changeMusicOnEnter
+  def setEnabledFields() =
+    fieldMusic.enabled = metadataModel.changeMusicOnEnter
+    
+  setEnabledFields()
 
   contents = new DesignGridPanel {
     

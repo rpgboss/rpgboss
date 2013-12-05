@@ -33,9 +33,7 @@ class SkillsPanel(
           refreshModel()
         })
       
-      val fScope = enumCombo(Scope)(
-        model.scopeId,
-        v => model.scopeId = v.id)
+      val fScope = enumIdCombo(Scope)(model.scopeId, model.scopeId = _)
       
       val fDamages = new DamagesPanel(dbDiag, model.damages, model.damages = _)
         

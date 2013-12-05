@@ -41,10 +41,10 @@ class StatusPanel(
         val fName =
           textField(model.name, v => updateModel(model.copy(name = v)))
 
-        val fReleaseOnBattleEnd =
-          boolField(
-            model.releaseOnBattleEnd,
-            v => updateModel(model.copy(releaseOnBattleEnd = v)))
+        val fReleaseOnBattleEnd = boolField(
+          "",
+          model.releaseOnBattleEnd,
+          v => updateModel(model.copy(releaseOnBattleEnd = v)))
 
         val fReleaseTime = new NumberSpinner(
           model.releaseTime,

@@ -38,10 +38,11 @@ class ItemsPanel(
 
         val fDesc = textField(model.desc, model.desc = _)
 
-        val fSellable: CheckBox = boolField(model.sellable, v => {
-          model.sellable = v
-          setEnabledFields()
-        })
+        val fSellable: CheckBox = boolField(
+          "", 
+          model.sellable, 
+          model.sellable = _, 
+          Some(setEnabledFields _))
 
         val fPrice = new NumberSpinner(
           model.price,
@@ -49,37 +50,35 @@ class ItemsPanel(
           MAXPRICE,
           onUpdate = model.price = _)
 
-        val fItemType = enumCombo(ItemType)(
+        val fItemType = enumIdCombo(ItemType)(
           model.itemType,
-          v => {
-            model.itemType = v.id
-            setEnabledFields()
-          })
+          model.itemType = _,
+          Some(setEnabledFields _))
 
-        val fScope = enumCombo(Scope)(
-          model.scopeId,
-          v => model.scopeId = v.id)
+        val fScope = enumIdCombo(Scope)(model.scopeId, model.scopeId = _)
 
-        val fAccess = enumCombo(ItemAccessibility)(
+        val fAccess = enumIdCombo(ItemAccessibility)(
           model.accessId,
-          v => model.accessId = v.id)
+          model.accessId = _)
 
         val fEquipType = indexedComboStrings(
           dbDiag.model.enums.equipTypes,
           model.equipType,
-          model.equipType = _)
+          model.equipType = _,
+          Some(setEnabledFields _))
           
         val fUseOnAttack = boolField(
+          "Use on Attack",
           model.useOnAttack, 
-          model.useOnAttack = _, 
-          "Use on Attack")
+          model.useOnAttack = _,
+          Some(setEnabledFields _))
           
         val fOnUseSkillId = indexedCombo(
           dbDiag.model.enums.skills,
           model.onUseSkillId,
           model.onUseSkillId = _)
           
-        def setEnabledFields() = {
+        def setEnabledFields(): Unit = {
           fPrice.enabled = fSellable.selected
 
           fScope.enabled = model.itemType != ItemType.Equipment.id

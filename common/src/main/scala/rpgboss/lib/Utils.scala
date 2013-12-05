@@ -129,7 +129,7 @@ object ArrayUtils {
     val oldSize = a.size
 
     if (newSize > oldSize) {
-      val padder = Array.fill(newSize - oldSize) { newDefaultInstance() }
+      val padder = Array.fill(newSize - oldSize)(newDefaultInstance())
       (a ++ padder)
     } else if (newSize < oldSize) {
       a.take(newSize)

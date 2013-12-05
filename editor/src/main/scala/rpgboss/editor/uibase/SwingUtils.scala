@@ -12,21 +12,27 @@ object SwingUtils {
     xAlignment = Alignment.Left
   }
 
-  def boolField(initial: Boolean, onUpdate: Boolean => Unit, text: String = "") =
+  def boolField(text: String, initial: Boolean, onUpdate: Boolean => Unit,
+                additionalAction: Option[() => Unit] = None) =
     new CheckBox(text) {
       selected = initial
       listenTo(this)
       reactions += {
-        case ButtonClicked(_) => onUpdate(selected)
+        case ButtonClicked(_) => 
+          onUpdate(selected)
+          additionalAction.foreach(_.apply())
       }
     }
 
-  def textField(initial: String, onUpdate: String => Unit) =
+  def textField(initial: String, onUpdate: String => Unit,
+                additionalAction: Option[() => Unit] = None) =
     new TextField {
       text = initial
       listenTo(this)
       reactions += {
-        case ValueChanged(_) => onUpdate(text)
+        case ValueChanged(_) => 
+          onUpdate(text)
+          additionalAction.foreach(_.apply())
       }
     }
   
@@ -77,7 +83,8 @@ object SwingUtils {
   }
 
   def indexedComboStrings(choices: Seq[String], initial: Int, 
-                          onUpdate: Int => Unit) = {
+                          onUpdate: Int => Unit, 
+                          additionalAction: Option[() => Unit] = None) = {
     new ComboBox(choices) {
       selection.index = initial
 
@@ -87,13 +94,16 @@ object SwingUtils {
       })
 
       reactions += {
-        case SelectionChanged(_) => onUpdate(selection.index)
+        case SelectionChanged(_) => 
+          onUpdate(selection.index)
+          additionalAction.foreach(_.apply())
       }
     }
   }
   
-  def indexedCombo[T <: HasName](choices: Seq[T], initial: Int, 
-                                 onUpdate: Int => Unit) = {
+  def indexedCombo[T <: HasName](
+    choices: Seq[T], initial: Int, onUpdate: Int => Unit,
+    additionalAction: Option[() => Unit] = None) = {
     new ComboBox(choices) {
       selection.index = initial
 
@@ -103,23 +113,28 @@ object SwingUtils {
       })
 
       reactions += {
-        case SelectionChanged(_) => onUpdate(selection.index)
+        case SelectionChanged(_) => 
+          onUpdate(selection.index)
+          additionalAction.foreach(_.apply())
       }
     }
   }
 
-  def enumCombo[T <: Enumeration](enum: T)(
+  def enumIdCombo[T <: Enumeration](enum: T)(
     initialId: Int,
-    onUpdate: enum.Value => Any,
-    choices: Seq[enum.Value] = Seq()) = {
+    onUpdate: Int => Any,
+    additionalAction: Option[() => Unit] = None,
+    overrideChoiceSet: Option[Seq[enum.Value]] = None) = {
 
-    val actualChoices = if (choices.isEmpty) enum.values.toSeq else choices
+    val choices = overrideChoiceSet.getOrElse(enum.values.toSeq)
 
-    new ComboBox(actualChoices) {
+    new ComboBox(choices) {
       selection.item = enum(initialId)
       listenTo(selection)
       reactions += {
-        case SelectionChanged(_) => onUpdate(selection.item)
+        case SelectionChanged(_) => 
+          onUpdate(selection.item.id)
+          additionalAction.foreach(_.apply())
       }
     }
   }
