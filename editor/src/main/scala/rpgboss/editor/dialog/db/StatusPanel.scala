@@ -28,47 +28,38 @@ class StatusPanel(
   def newDefaultInstance() = new StatusEffect()
   def label(item: StatusEffect) = item.name
 
-  def editPaneForItem(idx: Int, initial: StatusEffect) = {
-    var model = initial
-
-    def updateModel(newModel: StatusEffect) = {
-      model = newModel
-      updatePreserveSelection(idx, model)
-    }
-
+  def editPaneForItem(idx: Int, model: StatusEffect) = {
     new BoxPanel(Orientation.Horizontal) {
       val leftPane = new DesignGridPanel {
-        val fName =
-          textField(model.name, v => updateModel(model.copy(name = v)))
+        val fName = textField(model.name, model.name = _, 
+                              Some(() => updatePreserveSelection(idx, model)))
 
-        val fReleaseOnBattleEnd = boolField(
-          "",
-          model.releaseOnBattleEnd,
-          v => updateModel(model.copy(releaseOnBattleEnd = v)))
+        val fReleaseOnBattleEnd = boolField("", model.releaseOnBattleEnd,
+                                            model.releaseOnBattleEnd = _)
 
         val fReleaseTime = new NumberSpinner(
           model.releaseTime,
           0,
           50,
-          onUpdate = v => updateModel(model.copy(releaseTime = v)))
+          model.releaseTime = _)
 
         val fReleaseChance = new NumberSpinner(
           model.releaseChance,
           0,
           100,
-          onUpdate = v => updateModel(model.copy(releaseChance = v)))
+          model.releaseChance = _)
 
         val fReleaseDmgChance = new NumberSpinner(
           model.releaseDmgChance,
           0,
           100,
-          onUpdate = v => updateModel(model.copy(releaseDmgChance = v)))
+          model.releaseDmgChance = _)
 
         val fMaxStacks = new NumberSpinner(
           model.maxStacks,
           0,
           50,
-          onUpdate = v => updateModel(model.copy(maxStacks = v)))
+          model.maxStacks = _)
 
         row().grid(lbl("Name:")).add(fName)
 
@@ -80,9 +71,8 @@ class StatusPanel(
         row().grid(lbl("Maximum stacks:")).add(fMaxStacks)
       }
 
-      val rightPane = new EffectPanel(owner, dbDiag, model.effects, es => {
-        updateModel(model.copy(effects = es))
-      })
+      val rightPane = 
+          new EffectPanel(owner, dbDiag, model.effects, model.effects = _)
 
       contents += leftPane
       contents += rightPane

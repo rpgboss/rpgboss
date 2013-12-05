@@ -28,13 +28,13 @@ case class BaseStats(
   effects: Seq[Effect])
 
 case class StatusEffect(
-  name: String = "",
-  effects: Seq[Effect] = Seq(),
-  releaseOnBattleEnd: Boolean = false,
-  releaseTime: Int = 0,
-  releaseChance: Int = 0,
-  releaseDmgChance: Int = 0,
-  maxStacks: Int = 1) extends HasName
+  var name: String = "",
+  var effects: Seq[Effect] = Seq(),
+  var releaseOnBattleEnd: Boolean = false,
+  var releaseTime: Int = 0,
+  var releaseChance: Int = 0,
+  var releaseDmgChance: Int = 0,
+  var maxStacks: Int = 1) extends HasName
 
 case class BattleStats(
   mhp: Int,
