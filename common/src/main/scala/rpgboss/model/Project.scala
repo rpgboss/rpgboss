@@ -9,8 +9,7 @@ import scala.collection.JavaConversions._
 import java.io._
 
 case class Project(dir: File, data: ProjectData) {
-  def writeMetadata(): Boolean =
-    JsonUtils.writeModelToJson(Project.filename(dir), data)
+  def writeMetadata(): Boolean = data.write(dir)
 
   def rcDir = dir
 }
@@ -23,10 +22,7 @@ object Project {
       uuid = java.util.UUID.randomUUID().toString(),
       title = title))
 
-  def filename(dir: File) = new File(dir, "rpgproject.json")
-
   def readFromDisk(projDir: File): Option[Project] =
-    JsonUtils.readModelFromJson[ProjectData](filename(projDir)).map(
-      Project(projDir, _))
+    ProjectData.read(projDir).map(Project(projDir, _))
 }
 

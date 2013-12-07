@@ -1,6 +1,7 @@
 package rpgboss.model
 import rpgboss.model.resource.RpgMap
 import java.io.File
+import rpgboss.lib.JsonUtils
 
 case class ProjectDataStartup(
   var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
@@ -13,13 +14,13 @@ case class ProjectDataStartup(
   var msgfont: String = "VeraMono.ttf",
   var fontsize: Int = 24,
 
-  var soundCursor: Option[SoundSpec] = 
+  var soundCursor: Option[SoundSpec] =
     Some(SoundSpec("rpgboss-menu/MenuCursor.wav")),
-  var soundSelect: Option[SoundSpec] = 
+  var soundSelect: Option[SoundSpec] =
     Some(SoundSpec("rpgboss-menu/MenuSelect.wav")),
-  var soundCancel: Option[SoundSpec] = 
+  var soundCancel: Option[SoundSpec] =
     Some(SoundSpec("rpgboss-menu/MenuCancel.wav")),
-  var soundCannot: Option[SoundSpec] = 
+  var soundCannot: Option[SoundSpec] =
     Some(SoundSpec("rpgboss-menu/MenuCannot.wav")))
 
 case class ProjectDataEnums(
@@ -32,12 +33,7 @@ case class ProjectDataEnums(
   var equipTypes: Seq[String] = ProjectData.defaultEquipTypes,
   var items: Seq[Item] = Seq(Item()),
   var skills: Seq[Skill] = Seq(Skill()),
-  var statusEffects: Seq[StatusEffect] = Seq(StatusEffect())) {
-  
-  def readFromDirectory(dir: File) = {
-    
-  }
-}
+  var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()))
 
 case class ProjectData(
   var uuid: String,
@@ -46,9 +42,16 @@ case class ProjectData(
   var lastCreatedMapId: Int = 1, // Start at 1)
   var startup: ProjectDataStartup = ProjectDataStartup(),
   var enums: ProjectDataEnums = ProjectDataEnums()) {
+
+  def write(dir: File) =
+    JsonUtils.writeModelToJson(ProjectData.rootFile(dir), this)
 }
 
 object ProjectData {
+  def rootFile(dir: File) = new File(dir, "rpgproject.json")
+
+  def read(dir: File) = JsonUtils.readModelFromJson[ProjectData](rootFile(dir))
+
   def defaultCharacters = Seq(
     Character("Pando", sprite = Some(SpriteSpec("vx_chara01_a.png", 4))),
     Character("Estine", sprite = Some(SpriteSpec("vx_chara01_a.png", 1))),
@@ -58,22 +61,22 @@ object ProjectData {
 
   def defaultElements = Seq(
     "Untyped",
-    
+
     "Blunt",
     "Piercing",
     "Slashing",
-    
+
     "Fire",
     "Cold",
     "Electric",
     "Earth",
-    
+
     "Life",
     "Death",
     "Order",
     "Chaos"
   )
-  
+
   def defaultEquipTypes = Seq(
     "Weapon",
     "Offhand",
