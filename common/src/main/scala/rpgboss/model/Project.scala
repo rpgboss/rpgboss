@@ -26,6 +26,7 @@ object Project {
   def filename(dir: File) = new File(dir, "rpgproject.json")
 
   def readFromDisk(projDir: File): Option[Project] =
-    JsonUtils.readModelFromJson(filename(projDir)).map(Project(projDir, _))
+    JsonUtils.readModelFromJson[ProjectData](filename(projDir)).map(
+      Project(projDir, _))
 }
 

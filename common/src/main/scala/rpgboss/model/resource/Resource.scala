@@ -35,7 +35,7 @@ trait MetaResource[T, MT] {
    */
   def list(proj: Project): Array[String] = {
     val items = collection.mutable.Buffer[String]()
-    
+
     def extensionFilter(file: File): Boolean = {
       for(ext <- keyExts) {
         if(file.getName.endsWith(ext))
@@ -43,13 +43,13 @@ trait MetaResource[T, MT] {
       }
       return false
     }
-    
+
     val resourceDir = rcDir(proj)
     if (!resourceDir.exists())
       resourceDir.mkdir()
     if (resourceDir.isFile())
       return Array()
-    
+
     for(rootFile <- resourceDir.listFiles()) {
       if(rootFile.isFile() && extensionFilter(rootFile)) {
         items.append(rootFile.getName())
@@ -61,7 +61,7 @@ trait MetaResource[T, MT] {
         }
       }
     }
-    
+
     items.sortWith(_ < _).toArray
   }
 
@@ -69,10 +69,10 @@ trait MetaResource[T, MT] {
     val resourceFile = new File(rcDir(proj), name)
     val resourceFilename = resourceFile.getName()
     val resourceDir = resourceFile.getParentFile()
-    
+
     new File(resourceDir, "%s.metadata.json".format(resourceFilename))
   }
-  
+
   // Create a new instance with the default metadata
   def defaultInstance(proj: Project, name: String): T
 
@@ -80,7 +80,8 @@ trait MetaResource[T, MT] {
 
   // Returns default instance in case of failure to retrieve
   def readFromDisk(proj: Project, name: String)(implicit m: Manifest[MT]): T = {
-    val metadataOpt = JsonUtils.readModelFromJson(metadataFile(proj, name))(m)
+    val metadataOpt =
+      JsonUtils.readModelFromJson[MT](metadataFile(proj, name))(m)
     metadataOpt.map(apply(proj, name, _)).getOrElse(defaultInstance(proj, name))
   }
 }
@@ -89,6 +90,6 @@ case class ResourceException(msg: String) extends Exception(msg)
 
 object Resource {
   val resourceTypes = List(
-      AnimationImage, Autotile, Battler, Iconset, Msgfont, Music, Picture, 
+      AnimationImage, Autotile, Battler, Iconset, Msgfont, Music, Picture,
       RpgMap, Script, Sound, Spriteset, Tileset, Windowskin)
 }
