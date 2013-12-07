@@ -78,8 +78,7 @@ object ProjectData {
     }
 
     modelOpt.foreach { model =>
-      val enums = ProjectDataEnums()
-
+      val enums = model.enums
       readModel[Seq[Animation]]("animations", enums.animations = _)
       readModel[Seq[Character]]("characters", enums.characters = _)
       readModel[Seq[CharClass]]("classes", enums.classes = _)
@@ -90,8 +89,6 @@ object ProjectData {
       readModel[Seq[Item]]("items", enums.items = _)
       readModel[Seq[Skill]]("skills", enums.skills = _)
       readModel[Seq[StatusEffect]]("statusEffects", enums.statusEffects = _)
-
-      model.enums = enums
     }
 
     modelOpt
