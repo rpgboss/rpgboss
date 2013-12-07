@@ -204,6 +204,10 @@ abstract class RightPaneArrayEditingPanel[T](
 
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
+      maximumSize = new Dimension(250, 5000)
+      preferredSize = new Dimension(250, 500)
+      minimumSize = new Dimension(250, 250)
+      
       row().grid().add(bigLbl)
       row().grid().add(scrollPane)
       row().grid().add(btnSetListSize)

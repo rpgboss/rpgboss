@@ -1,9 +1,6 @@
 package rpgboss.model.resource
 
 import rpgboss.lib._
-import rpgboss.lib.FileHelper._
-import org.json4s._
-import org.json4s.native.Serialization
 import scala.collection.JavaConversions._
 import java.io._
 import rpgboss.model.Project
@@ -23,10 +20,7 @@ trait Resource[T, MT <: AnyRef] extends Logging {
   def dataFile = dataFileVar
 
   def writeMetadata(): Boolean =
-    meta.metadataFile(proj, name).useWriter { writer =>
-      implicit val formats = DefaultFormats
-      Serialization.writePrettyOld(metadata, writer) != null
-    } getOrElse false
+    JsonUtils.writeModelToJson(meta.metadataFile(proj, name), metadata)
 }
 
 trait MetaResource[T, MT] {
@@ -86,10 +80,8 @@ trait MetaResource[T, MT] {
 
   // Returns default instance in case of failure to retrieve
   def readFromDisk(proj: Project, name: String)(implicit m: Manifest[MT]): T = {
-    implicit val formats = DefaultFormats
-    metadataFile(proj, name).getReader().map { reader =>
-      apply(proj, name, Serialization.read[MT](reader))
-    } getOrElse defaultInstance(proj, name)
+    val metadataOpt = JsonUtils.readModelFromJson(metadataFile(proj, name))(m)
+    metadataOpt.map(apply(proj, name, _)).getOrElse(defaultInstance(proj, name))
   }
 }
 

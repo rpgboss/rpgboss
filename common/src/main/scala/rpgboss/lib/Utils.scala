@@ -154,3 +154,24 @@ object ArrayUtils {
     newDefaultInstance: () => T)(implicit m: Manifest[T]): Seq[T] =
       normalizedAry(a, nElems, nElems, newDefaultInstance)
 }
+
+object JsonUtils {
+  import FileHelper._
+  import org.json4s._
+  import org.json4s.native.Serialization
+  
+  def readModelFromJson[T](file: File)(implicit m: Manifest[T]): Option[T] = {
+    implicit val formats = DefaultFormats
+    file.getReader().map { reader =>
+      Serialization.read[T](reader)
+    }
+  }
+  
+  def writeModelToJson[T <: AnyRef](file: File, model: T): Boolean = {
+    file.useWriter { writer =>
+      implicit val formats = DefaultFormats
+      Serialization.writePretty(model, writer) != null
+    } getOrElse false
+  }
+    
+}

@@ -50,8 +50,6 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
   def rightPaneDim = new Dimension(384, 384)
   
   val rightPaneContainer = new BoxPanel(Orientation.Vertical) {
-    preferredSize = rightPaneDim
-    maximumSize = rightPaneDim
     minimumSize = rightPaneDim
   }
   
@@ -101,7 +99,11 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
       row.grid().add(new Label("Select " + metaResource.rcType + ":"))
-      row.grid().add(rcList)
+      row.grid().add(new ScrollPane {
+        contents = rcList
+        maximumSize = new Dimension(250, 5000)
+        minimumSize = new Dimension(250, 250)
+      })
     }
     contents += rightPaneContainer
   })

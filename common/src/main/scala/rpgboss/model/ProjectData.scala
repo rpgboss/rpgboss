@@ -1,5 +1,6 @@
 package rpgboss.model
 import rpgboss.model.resource.RpgMap
+import java.io.File
 
 case class ProjectDataStartup(
   var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
@@ -31,7 +32,12 @@ case class ProjectDataEnums(
   var equipTypes: Seq[String] = ProjectData.defaultEquipTypes,
   var items: Seq[Item] = Seq(Item()),
   var skills: Seq[Skill] = Seq(Skill()),
-  var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()))
+  var statusEffects: Seq[StatusEffect] = Seq(StatusEffect())) {
+  
+  def readFromDirectory(dir: File) = {
+    
+  }
+}
 
 case class ProjectData(
   var uuid: String,
