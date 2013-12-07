@@ -52,7 +52,8 @@ class MapLayer(game: MyGame) {
   val spritesets = Map() ++ Spriteset.list(project).map(
     name => (name, Spriteset.readFromDisk(project, name)))
 
-  val packerSprites = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
+  val packerSprites =
+    new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
   spritesets.foreach {
     case (name, spriteset) =>
       val srcPixmap = new Pixmap(
@@ -66,7 +67,7 @@ class MapLayer(game: MyGame) {
         packerSprites.pack(spriteset.name, srcPixmap)
         srcPixmap.dispose()
       } else if (srcFormat == Pixmap.Format.RGB888) {
-        // TODO: Optimize pixel transfer         
+        // TODO: Optimize pixel transfer
 
         // Build transparency from (0, 0) pixel
         val dstPixmap = new Pixmap(
@@ -179,7 +180,7 @@ class MapLayer(game: MyGame) {
 
     // Render the player event
     // TODO: Seems really inefficient here
-    val entities: List[Entity] = 
+    val entities: List[Entity] =
       state.playerEntity :: state.eventEntities.values.toList
     entities.sortBy(_.y).foreach(_.render(batch, atlasSprites))
 

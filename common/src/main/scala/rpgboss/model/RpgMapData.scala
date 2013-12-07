@@ -13,9 +13,9 @@ import scala.collection.mutable.ArrayBuffer
 
 /*
  * This class has mutable members.
- * 
+ *
  * See RpgMap object for an explanation of the data format.
- * 
+ *
  * botLayer, midLayer, and topLayer must always be of size at least 1 x 1
  */
 case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
@@ -24,7 +24,7 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
                       var events: Map[Int, RpgEvent]) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
-  
+
   def writeCsv(file: File, data: Seq[Seq[Byte]]) = {
     val writer =
       new CSVWriter(new FileWriter(file), '\t', CSVWriter.NO_QUOTE_CHARACTER)
@@ -45,11 +45,8 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
       writeCsv(midFile, midLayer) &&
       writeCsv(topFile, topLayer)
 
-    val eventsWritten = evtFile.useWriter { writer =>
-      implicit val formats = RpgMapData.formats
-      Serialization.writePretty(
-          RpgMapDataEventsIntermediate(events), writer) != null
-    } getOrElse false
+    val eventsWritten =
+      JsonUtils.writeModelToJsonWithFormats(evtFile, events, RpgMapData.formats)
 
     layersWritten && eventsWritten
   }
@@ -89,7 +86,7 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
 
 case class RpgMapDataEventsIntermediate(events: Seq[RpgEvent])
 object RpgMapDataEventsIntermediate {
-  def apply(events: Map[Int, RpgEvent]): RpgMapDataEventsIntermediate = 
+  def apply(events: Map[Int, RpgEvent]): RpgMapDataEventsIntermediate =
     apply(events.values.toArray)
 }
 
@@ -116,7 +113,7 @@ case object RpgMapData {
     for (row <- csvIt) {
       buffer.append(ArrayBuffer(row.map(_.toInt.toByte): _*))
     }
-    
+
     reader.close()
 
     Some(buffer)
@@ -129,14 +126,13 @@ case object RpgMapData {
     val midAryOpt = readCsvArray(midFile)
     val topAryOpt = readCsvArray(topFile)
 
-    implicit val formats = RpgMapData.formats
-
-    val eventsOpt = evtFile.getReader().map { reader =>    
-      val intermediate = 
-        Serialization.read[RpgMapDataEventsIntermediate](reader)
+    val eventsIntermediateOpt =
+      JsonUtils.readModelFromJsonWithFormats[RpgMapDataEventsIntermediate](
+        evtFile, RpgMapData.formats)
+    val eventsOpt = eventsIntermediateOpt.map { intermediate =>
       intermediate.events.map(event => event.id->event).toMap
     }
-    
+
     for (botAry <- botAryOpt; midAry <- midAryOpt; topAry <- topAryOpt;
          events <- eventsOpt)
       yield RpgMapData(botAry, topAry, midAry, events)

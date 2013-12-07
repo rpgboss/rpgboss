@@ -10,10 +10,7 @@ import java.io._
 
 case class Project(dir: File, data: ProjectData) {
   def writeMetadata(): Boolean =
-    Project.filename(dir).useWriter { writer =>
-      implicit val formats = org.json4s.DefaultFormats
-      Serialization.writePretty(data, writer) != null
-    } getOrElse false
+    JsonUtils.writeModelToJson(Project.filename(dir), data)
 
   def rcDir = dir
 }
@@ -29,10 +26,6 @@ object Project {
   def filename(dir: File) = new File(dir, "rpgproject.json")
 
   def readFromDisk(projDir: File): Option[Project] =
-    filename(projDir).readAsString.map { str =>
-      implicit val formats = org.json4s.DefaultFormats
-      val pd = Serialization.read[ProjectData](str)
-      Project(projDir, pd)
-    }
+    JsonUtils.readModelFromJson(filename(projDir)).map(Project(projDir, _))
 }
 

@@ -113,11 +113,11 @@ object Utils {
 
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m
-  
+
   def removeFromSeq[T](seq: Seq[T], i: Int) =
     seq.take(i) ++ seq.drop(i + 1)
-  
-  def readClasspathImage(path: String) = 
+
+  def readClasspathImage(path: String) =
     ImageIO.read(getClass.getClassLoader.getResourceAsStream(path))
 }
 
@@ -147,7 +147,7 @@ object ArrayUtils {
       resized(a, minElems, newDefaultInstance)
     else
       a
-      
+
   def normalizedAry[T](
     a: Seq[T],
     nElems: Int,
@@ -159,19 +159,25 @@ object JsonUtils {
   import FileHelper._
   import org.json4s._
   import org.json4s.native.Serialization
-  
-  def readModelFromJson[T](file: File)(implicit m: Manifest[T]): Option[T] = {
-    implicit val formats = DefaultFormats
+
+  def readModelFromJsonWithFormats[T](
+    file: File, formats: Formats)(implicit m: Manifest[T]): Option[T] = {
     file.getReader().map { reader =>
-      Serialization.read[T](reader)
+      Serialization.read[T](reader)(formats, m)
     }
   }
-  
-  def writeModelToJson[T <: AnyRef](file: File, model: T): Boolean = {
+
+  def readModelFromJson[T](file: File)(implicit m: Manifest[T]) =
+    readModelFromJsonWithFormats(file, DefaultFormats)(m)
+
+  def writeModelToJson[T <: AnyRef](file: File, model: T): Boolean =
+    writeModelToJsonWithFormats(file, model, DefaultFormats)
+
+  def writeModelToJsonWithFormats[T <: AnyRef](
+    file: File, model: T, formats: Formats): Boolean = {
     file.useWriter { writer =>
-      implicit val formats = DefaultFormats
-      Serialization.writePretty(model, writer) != null
+      Serialization.writePretty(model, writer)(formats) != null
     } getOrElse false
   }
-    
+
 }
