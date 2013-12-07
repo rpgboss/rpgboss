@@ -15,13 +15,13 @@ case class ProjectDataStartup(
   var fontsize: Int = 24,
 
   var soundCursor: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuCursor.wav")),
+    Some(SoundSpec("rpgboss-menu/MenuCursor.mp3")),
   var soundSelect: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuSelect.wav")),
+    Some(SoundSpec("rpgboss-menu/MenuSelect.mp3")),
   var soundCancel: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuCancel.wav")),
+    Some(SoundSpec("rpgboss-menu/MenuCancel.mp3")),
   var soundCannot: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuCannot.wav")))
+    Some(SoundSpec("rpgboss-menu/MenuCannot.mp3")))
 
 case class ProjectDataEnums(
   var animations: Seq[Animation] = Seq(Animation()),
