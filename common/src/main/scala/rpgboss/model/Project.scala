@@ -16,11 +16,7 @@ case class Project(dir: File, data: ProjectData) {
 
 object Project {
 
-  def startingProject(title: String,
-                      dir: File) =
-    Project(dir, ProjectData(
-      uuid = java.util.UUID.randomUUID().toString(),
-      title = title))
+  def startingProject(title: String, dir: File) = Project(dir, ProjectData())
 
   def readFromDisk(projDir: File): Option[Project] =
     ProjectData.read(projDir).map(Project(projDir, _))

@@ -36,21 +36,66 @@ case class ProjectDataEnums(
   var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()))
 
 case class ProjectData(
-  var uuid: String,
-  var title: String,
+  var uuid: String = java.util.UUID.randomUUID().toString(),
+  var title: String = "Untitled Project",
   var recentMapName: String = "",
   var lastCreatedMapId: Int = 1, // Start at 1)
   var startup: ProjectDataStartup = ProjectDataStartup(),
   var enums: ProjectDataEnums = ProjectDataEnums()) {
 
-  def write(dir: File) =
-    JsonUtils.writeModelToJson(ProjectData.rootFile(dir), this)
+  def write(dir: File) = {
+    val enumsStripped = copy(enums = null)
+    def writeModel[T <: AnyRef](name: String, model: T) =
+      JsonUtils.writeModelToJson(new File(dir, "%s.json".format(name)), model)
+
+    writeModel("rpgproject", enumsStripped)
+    writeModel("animations", enums.animations)
+    writeModel("characters", enums.characters)
+    writeModel("classes", enums.classes)
+    writeModel("elements", enums.elements)
+    writeModel("enemies", enums.enemies)
+    writeModel("encounters", enums.encounters)
+    writeModel("equipTypes", enums.equipTypes)
+    writeModel("items", enums.items)
+    writeModel("skills", enums.skills)
+    writeModel("statusEffects", enums.statusEffects)
+  }
 }
 
 object ProjectData {
-  def rootFile(dir: File) = new File(dir, "rpgproject.json")
+  def read(dir: File): Option[ProjectData] = {
+    val modelOpt = JsonUtils.readModelFromJson[ProjectData](
+      new File(dir, "rpgproject.json"))
 
-  def read(dir: File) = JsonUtils.readModelFromJson[ProjectData](rootFile(dir))
+    // Executes the setter only if it successfully reads it from file.
+    def readModel[T <: AnyRef](
+      name: String, setter: T => Unit)(implicit m: Manifest[T]) = {
+      val opt =
+        JsonUtils.readModelFromJson[T](new File(dir, "%s.json".format(name)))
+
+      if (opt.isDefined)
+        setter(opt.get)
+    }
+
+    modelOpt.foreach { model =>
+      val enums = ProjectDataEnums()
+
+      readModel[Seq[Animation]]("animations", enums.animations = _)
+      readModel[Seq[Character]]("characters", enums.characters = _)
+      readModel[Seq[CharClass]]("classes", enums.classes = _)
+      readModel[Seq[String]]("elements", enums.elements = _)
+      readModel[Seq[Enemy]]("enemies", enums.enemies = _)
+      readModel[Seq[Encounter]]("encounters", enums.encounters = _)
+      readModel[Seq[String]]("equipTypes", enums.equipTypes = _)
+      readModel[Seq[Item]]("items", enums.items = _)
+      readModel[Seq[Skill]]("skills", enums.skills = _)
+      readModel[Seq[StatusEffect]]("statusEffects", enums.statusEffects = _)
+
+      model.enums = enums
+    }
+
+    modelOpt
+  }
 
   def defaultCharacters = Seq(
     Character("Pando", sprite = Some(SpriteSpec("vx_chara01_a.png", 4))),

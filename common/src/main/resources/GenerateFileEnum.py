@@ -11,6 +11,8 @@ for root, subFolders, files in os.walk(rootdir):
     if file != enumFn:
       fileList.append(abridgedRoot + "/" + file)
 
+fileList.sort()
+
 with open(os.path.join(rootdir, enumFn), 'wb') as f:
   for file in fileList:
     f.write((u"%s\n" % file).encode('utf-8'))
