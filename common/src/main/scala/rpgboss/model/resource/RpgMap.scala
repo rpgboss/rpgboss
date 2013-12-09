@@ -43,11 +43,9 @@ case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
   extends Resource[RpgMap, RpgMapMetadata] {
   def meta = RpgMap
 
-  def saveMapData(d: RpgMapData) =
-    d.writeToFile(proj, name)
+  def saveMapData(d: RpgMapData) = d.writeToFile(proj, name)
 
-  def readMapData(): Option[RpgMapData] =
-    RpgMapData.readFromDisk(proj, name)
+  def readMapData(): Option[RpgMapData] = RpgMapData.readFromDisk(proj, name)
 
   def id = name.split("\\.").head
   def displayId = "%s [%s]".format(metadata.title, id)
@@ -57,19 +55,19 @@ case class RpgMap(proj: Project, name: String, metadata: RpgMapMetadata)
 
 /*
  * An explanation of the data format.
- * 
+ *
  * Each tile on the map is comprised of 3 bytes.
- * 
+ *
  * Byte 1 value:
  * -2 = autotile
  * -1 = empty tile
  * 0-127 = one of the 128 tilesets possible
- * 
+ *
  * Byte 2 value:
  * If autotile, then the autotile number from 0-255
  * If regular tile, then x tile index ranging from 0-255
  * If empty, ignored.
- * 
+ *
  * Byte 3 value:
  * If autotile, then this byte describes the border configuration.
  *    See Autotile.DirectionMasks for how this works specifically.

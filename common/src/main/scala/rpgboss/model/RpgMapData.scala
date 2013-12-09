@@ -45,10 +45,12 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
       writeCsv(midFile, midLayer) &&
       writeCsv(topFile, topLayer)
 
-    val eventsWritten =
-      JsonUtils.writeModelToJsonWithFormats(evtFile, events, RpgMapData.formats)
+    val eventsWritten = JsonUtils.writeModelToJsonWithFormats(
+      evtFile,
+      RpgMapDataEventsIntermediate(events),
+      RpgMapData.formats)
 
-    layersWritten && eventsWritten
+    mapFileWritten && layersWritten && eventsWritten
   }
 
   def resized(newXSize: Int, newYSize: Int) = {
@@ -91,8 +93,7 @@ object RpgMapDataEventsIntermediate {
 }
 
 case object RpgMapData {
-  val formats = Serialization.formats(ShortTypeHints(
-    EventCmd.types))
+  val formats = Serialization.formats(ShortTypeHints(EventCmd.types))
 
   def datafiles(p: Project, name: String) = {
     val mapFile = new File(RpgMap.rcDir(p), name)

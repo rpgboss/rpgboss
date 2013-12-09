@@ -14,8 +14,6 @@ trait Resource[T, MT <: AnyRef] extends Logging {
 
   def rcTypeDir = new File(proj.rcDir, meta.rcType)
   val dataFileVar = new File(rcTypeDir, name)
-  if (!(dataFileVar.isFile && dataFileVar.canRead))
-    logger.error("Can't read: %s".format(dataFileVar.getCanonicalPath()))
 
   def dataFile = dataFileVar
 
