@@ -11,7 +11,7 @@ object SwingUtils {
   def leftLabel(s: String) = new Label(s) {
     xAlignment = Alignment.Left
   }
-  
+
   /**
    * General form that can be used for unusual index positioning.
    */
@@ -24,17 +24,17 @@ object SwingUtils {
         focused: Boolean,
         a: A,
         indexArgument: Int): Component = {
-        
+
         // Normalize for case of selected combobox. (Otherwise -1 shown).
         val index = if (indexArgument < 0)
           list.selection.indices.head
         else
           indexArgument
-        
+
         renderer.componentFor(list, isSelected, focused, f(a, index), index)
       }
     }
-  
+
   /**
    * Standard "42: Name" format.
    */
@@ -48,7 +48,7 @@ object SwingUtils {
       selected = initial
       listenTo(this)
       reactions += {
-        case ButtonClicked(_) => 
+        case ButtonClicked(_) =>
           onUpdate(selected)
           additionalAction.foreach(_.apply())
       }
@@ -60,24 +60,24 @@ object SwingUtils {
       text = initial
       listenTo(this)
       reactions += {
-        case ValueChanged(_) => 
+        case ValueChanged(_) =>
           onUpdate(text)
           additionalAction.foreach(_.apply())
       }
     }
-  
+
   trait FloatSlider {
     def stepsPerOne: Int
     def value: Int
     def floatValue: Float = value.toFloat / stepsPerOne
   }
-  
+
   def floatSlider(initial: Float, minArg: Float, maxArg: Float,
-                  stepsPerOneArg: Int, minorStepArg: Int, majorStepArg: Int,  
+                  stepsPerOneArg: Int, minorStepArg: Int, majorStepArg: Int,
                   onUpdate: Float => Unit) = {
     new Slider with FloatSlider {
       def stepsPerOne = stepsPerOneArg
-      
+
       min = (minArg * stepsPerOne).toInt
       max = (maxArg * stepsPerOne).toInt
       minorTickSpacing = minorStepArg
@@ -85,16 +85,16 @@ object SwingUtils {
       snapToTicks = true
       paintLabels = true
       value = (initial * stepsPerOne).toInt
-      
+
       listenTo(this)
       reactions += {
         case ValueChanged(_) => onUpdate(floatValue)
       }
     }
   }
-  
-  def slider(initial: Int, minArg: Int, maxArg: Int, 
-             minorStepArg: Int, majorStepArg: Int,  
+
+  def slider(initial: Int, minArg: Int, maxArg: Int,
+             minorStepArg: Int, majorStepArg: Int,
              onUpdate: Int => Unit) = {
     new Slider {
       min = minArg
@@ -104,7 +104,7 @@ object SwingUtils {
       snapToTicks = true
       paintLabels = true
       value = initial
-      
+
       listenTo(this)
       reactions += {
         case ValueChanged(_) => onUpdate(value)
@@ -112,21 +112,21 @@ object SwingUtils {
     }
   }
 
-  def indexedComboStrings(choices: Seq[String], initial: Int, 
-                          onUpdate: Int => Unit, 
+  def indexedComboStrings(choices: Seq[String], initial: Int,
+                          onUpdate: Int => Unit,
                           additionalAction: Option[() => Unit] = None) = {
     new ComboBox(choices) {
       selection.index = initial
       renderer = standardIdxRenderer(x => x)
 
       reactions += {
-        case SelectionChanged(_) => 
+        case SelectionChanged(_) =>
           onUpdate(selection.index)
           additionalAction.foreach(_.apply())
       }
     }
   }
-  
+
   def indexedCombo[T <: HasName](
     choices: Seq[T], initial: Int, onUpdate: Int => Unit,
     additionalAction: Option[() => Unit] = None) = {
@@ -135,7 +135,7 @@ object SwingUtils {
       renderer = standardIdxRenderer(_.name)
 
       reactions += {
-        case SelectionChanged(_) => 
+        case SelectionChanged(_) =>
           onUpdate(selection.index)
           additionalAction.foreach(_.apply())
       }
@@ -154,7 +154,7 @@ object SwingUtils {
       selection.item = enum(initialId)
       listenTo(selection)
       reactions += {
-        case SelectionChanged(_) => 
+        case SelectionChanged(_) =>
           onUpdate(selection.item.id)
           additionalAction.foreach(_.apply())
       }
@@ -183,9 +183,9 @@ object SwingUtils {
       }
     }
 
-  def enumRadios[T <: Enumeration](enum: T)(
-    initial: T#Value,
-    selectF: T#Value => Any,
+  def enumIdRadios[T <: Enumeration](enum: T)(
+    initialId: Int,
+    onUpdate: Int => Any,
     choices: Seq[T#Value] = Seq(),
     disabledSet: Set[T#Value] = Set[T#Value]()) =
     {
@@ -193,11 +193,11 @@ object SwingUtils {
       actualChoices.map { eVal =>
         new RadioButton() {
           action = Action(eVal.toString) {
-            selectF(eVal)
+            onUpdate(eVal.id)
           }
-          
+
           enabled = !disabledSet.contains(eVal)
-          selected = enabled && eVal == initial
+          selected = enabled && eVal.id == initialId
         }
       }
     }

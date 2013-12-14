@@ -14,6 +14,8 @@ import rpgboss.editor.uibase.NumberSpinner
 import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
 import scala.collection.mutable.ArrayBuffer
+import java.awt.event.MouseEvent
+import rpgboss.editor.uibase.PopupMenu
 
 class EffectPanel(
   owner: Window,
@@ -59,7 +61,6 @@ class EffectPanel(
         val row = selection.rows.head
         if (row < effects.size) {
           val initialE = effects(row)
-
           val diag = new EffectDialog(
             owner,
             dbDiag,
@@ -70,7 +71,6 @@ class EffectPanel(
               tableModel.fireTableRowsUpdated(row, row)
             })
           diag.open()
-
         } else {
           val diag = new EffectDialog(
             owner,
@@ -85,10 +85,40 @@ class EffectPanel(
           diag.open()
         }
       }
+      case e: MouseClicked if e.peer.getButton() == MouseEvent.BUTTON3 => {
+        val (x0, y0) = (e.point.getX().toInt, e.point.getY().toInt)
+
+        if (clickRow != -1)
+          tree.selectRows(clickRow)
+
+        val clickNode =
+          if (clickRow == -1)
+            projectRoot
+          else
+            tree.selection.paths.head.last
+
+        val menu = popupMenuFor(clickNode)
+        menu.showWithCallback(tree, x0, y0, onHide = () => {
+          origRow.map(p => tree.selectRows(p))
+
+          // Renable all eventns
+          listenTo(tree.selection)
+          listenTo(tree.mouse.clicks)
+        })
+        val menu = new PopupMenu {
+          contents += new MenuItem(Action("Delete") {
+
+          })
+        }
+        menu.show(this, x0, y0)
+      }
+
+      }
     }
   }
 
-  contents += new ScrollPane {
+  contents +=
+new ScrollPane {
     contents = table
   }
 }
@@ -197,7 +227,7 @@ class EffectDialog(
       v => spinner.setValue(v))
   }
 
-  def choiceEffect[T <: HasName](key: EffectKey.Val, 
+  def choiceEffect[T <: HasName](key: EffectKey.Val,
                                  choices: Seq[T]): EffectControls = {
     val combo = indexedCombo(choices, 0, i => onCurControlChange())
 
@@ -222,9 +252,11 @@ class EffectDialog(
   val effectsStats = Array(
     intEffect(MhpAdd),
     intEffect(MmpAdd),
-    intEffect(AtkAdd),
     intEffect(SpdAdd),
-    intEffect(MagAdd))
+    intEffect(AtkAdd),
+    intEffect(MagAdd),
+    intEffect(ArmAdd),
+    intEffect(MreAdd))
 
   val effectsOther = Array(
     nilEffect(EscapeBattle),

@@ -79,8 +79,7 @@ class CharactersPanel(
         .grid(leftLabel("Max level:")).add(fMaxLevel)
     }
 
-    val progressionFields =
-      new StatProgressionPanel(model.progressions, model.progressions = _)
+    val progressionFields = new StatProgressionPanel(model.progressions)
 
     new BoxPanel(Orientation.Horizontal) {
       contents += bioFields

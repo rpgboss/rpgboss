@@ -17,10 +17,12 @@ object EffectKey extends RpgEnum {
 
   val MhpAdd = Val("Increase Max HP")
   val MmpAdd = Val("Increase Max MP")
-  val AtkAdd = Val("Increase ATK")
-  val SpdAdd = Val("Increase SPD")
-  val MagAdd = Val("Increase MAG")
-  
+  val AtkAdd = Val("Increase Attack")
+  val SpdAdd = Val("Increase Speed")
+  val MagAdd = Val("Increase Magic")
+  val ArmAdd = Val("Increase Armor")
+  val MreAdd = Val("Increase Magic Resist")
+
   val EscapeBattle = Val("Escape battle")
 
   val UseSkill = Val("Use skill")

@@ -24,9 +24,7 @@ class TeleportCmdDialog(
   var transition = initial.transition
 
   val transitionRadios = new BoxPanel(Orientation.Horizontal) {
-    val radioBtns = enumRadios(Transitions)(
-      Transitions(transition),
-      t => transition = t.id)
+    val radioBtns = enumIdRadios(Transitions)(transition, transition = _)
 
     addBtnsAsGrp(contents, radioBtns)
   }

@@ -10,16 +10,20 @@ import rpgboss.editor.dialog.DatabaseDialog
 /**
  * Updates model in-place.
  */
-class DamagePanel(dbDiag: DatabaseDialog, model: Damage) 
+class DamagePanel(dbDiag: DatabaseDialog, model: Damage)
   extends DesignGridPanel {
-  
   val fElement = indexedComboStrings(
-      dbDiag.model.enums.elements, 
+      dbDiag.model.enums.elements,
       model.elementId,
       model.elementId = _)
-      
+
   val fFormula = textField(model.formula, model.formula = _)
-  
+
+  val radiosType = enumIdRadios(DamageType)(model.typeId, model.typeId = _)
+  val panelType = new BoxPanel(Orientation.Horizontal)
+  addBtnsAsGrp(panelType.contents, radiosType)
+
+  row().grid(lbl("Damage type:")).add(panelType)
   row().grid(lbl("Element:")).add(fElement)
   row().grid(lbl("Formula:")).add(fFormula)
 }
@@ -33,7 +37,7 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
   extends BoxPanel(Orientation.Vertical) {
 
   var model = initial
-  
+
   val buttonPanel = new BoxPanel(Orientation.Horizontal) {
     contents += new Button(Action("Add") {
       model = model :+ Damage()
@@ -41,7 +45,7 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
       damagesPanel.revalidate()
       onUpdate(model)
     })
-    
+
     contents += new Button(Action("Remove Last") {
       if (model.length > 1) {
         model = model.dropRight(1)
@@ -51,10 +55,10 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
       }
     })
   }
-  
+
   val damagesPanel = new BoxPanel(Orientation.Vertical)
   model.foreach(v => damagesPanel.contents += new DamagePanel(dbDiag, v))
-  
+
   contents += buttonPanel
   contents += new ScrollPane {
     contents = damagesPanel

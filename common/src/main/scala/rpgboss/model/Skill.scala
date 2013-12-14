@@ -1,6 +1,12 @@
 package rpgboss.model
 
+object DamageType extends RpgEnum {
+  val Physical, Magic = Value
+  def default = Physical
+}
+
 case class Damage(
+  var typeId: Int = DamageType.Physical.id,
   var elementId: Int = 0,
   var formula: String = "10")
 

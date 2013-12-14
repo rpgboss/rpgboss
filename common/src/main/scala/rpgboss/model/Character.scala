@@ -23,13 +23,15 @@ case class Character(
       else
         Seq()
     }
-    
-    BaseStats(    
+
+    BaseStats(
       mhp = progressions.mhp(level),
       mmp = progressions.mmp(level),
       atk = progressions.atk(level),
       spd = progressions.spd(level),
       mag = progressions.mag(level),
+      arm = progressions.arm(level),
+      mre = progressions.mre(level),
       effects = effects
     )
   }
@@ -49,31 +51,34 @@ case class Enemy(
   var atk: Int = 10,
   var spd: Int = 10,
   var mag: Int = 10,
+  var arm: Int = 10,
+  var mre: Int = 10,
   var expValue: Int = 100,
   var effects: Seq[Effect] = Seq()) extends HasName {
-  def baseStats =     
-    BaseStats(    
+  def baseStats =
+    BaseStats(
       mhp = mhp,
       mmp = mmp,
       atk = atk,
       spd = spd,
       mag = mag,
-      effects = effects
-    )
+      arm = arm,
+      mre = mre,
+      effects = effects)
 }
-  
+
 case class EncounterUnit(
   enemyIdx: Int,
   var x: Int,
   var y: Int)
-  
+
 case class Encounter(
   var name: String = "#<None>",
   var units: Seq[EncounterUnit] = Seq())
 
 object CharState {
   /*
-   * val defaultStates = 
+   * val defaultStates =
       CharState("Dead",      Map("NoAction"->1)),
       CharState("Stunned",   Map("NoAction"->1),     1, 100),
       CharState("Berserk",   Map("AutoAtkEnemy"->1,

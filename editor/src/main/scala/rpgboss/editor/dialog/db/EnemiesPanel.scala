@@ -46,26 +46,31 @@ class EnemiesPanel(
       val fAtk = new NumberSpinner(model.atk, 1, 50, model.atk = _)
       val fSpd = new NumberSpinner(model.spd, 1, 50, model.spd = _)
       val fMag = new NumberSpinner(model.mag, 1, 50, model.mag = _)
-      
-      val fExpValue = 
+      val fArm = new NumberSpinner(model.arm, 1, 50, model.arm = _)
+      val fMre = new NumberSpinner(model.mre, 1, 50, model.mre = _)
+
+      val fExpValue =
         new NumberSpinner(model.expValue, 10, 50000, model.expValue = _)
-      
+
       row().grid(leftLabel("Name:")).add(fName)
-      
+
       row().grid(leftLabel("Battler:")).add(fBattler)
-      
+
       row().grid(leftLabel("Level:")).add(fLevel)
 
       row().grid(leftLabel("Max HP:")).add(fMhp)
       row().grid(leftLabel("Max MP:")).add(fMmp)
 
-      row().grid(leftLabel("ATK:")).add(fAtk)
-      row().grid(leftLabel("SPD:")).add(fSpd)
-      row().grid(leftLabel("MAG:")).add(fMag)
-      
+      row().grid(leftLabel("Attack:")).add(fAtk)
+      row().grid(leftLabel("Magic:")).add(fMag)
+
+      row().grid(leftLabel("Armor:")).add(fArm)
+      row().grid(leftLabel("Magic Resist:")).add(fMre)
+
+      row().grid(leftLabel("Speed:")).add(fSpd)
       row().grid(leftLabel("EXP Value:")).add(fExpValue)
     }
-    
+
     val fEffects =
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _)
 
