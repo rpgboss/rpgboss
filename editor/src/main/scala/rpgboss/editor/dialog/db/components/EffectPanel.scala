@@ -48,6 +48,39 @@ class EffectPanel(
       }
 
       override def isCellEditable(r: Int, c: Int) = false
+
+      def showEditDialog(row: Int) = {
+        val initialE = effects(row)
+        val diag = new EffectDialog(
+          owner,
+          dbDiag,
+          initialE,
+          e => {
+            effects.update(row, e)
+            onUpdate(effects)
+            fireTableRowsUpdated(row, row)
+          })
+        diag.open()
+      }
+
+      def showNewDialog() = {
+        val diag = new EffectDialog(
+          owner,
+          dbDiag,
+          EffectKey.defaultEffect,
+          e => {
+            effects += e
+            onUpdate(effects)
+            fireTableRowsUpdated(effects.size - 2, effects.size - 2)
+            fireTableRowsInserted(effects.size - 1, effects.size - 1)
+          })
+        diag.open()
+      }
+
+      def deleteRow(row: Int) = {
+        effects.remove(row)
+        fireTableRowsDeleted(row, row)
+      }
     }
 
     model = tableModel
@@ -60,65 +93,40 @@ class EffectPanel(
       case MouseClicked(_, _, _, 2, _) => {
         val row = selection.rows.head
         if (row < effects.size) {
-          val initialE = effects(row)
-          val diag = new EffectDialog(
-            owner,
-            dbDiag,
-            initialE,
-            e => {
-              effects.update(row, e)
-              onUpdate(effects)
-              tableModel.fireTableRowsUpdated(row, row)
-            })
-          diag.open()
+          tableModel.showEditDialog(row)
         } else {
-          val diag = new EffectDialog(
-            owner,
-            dbDiag,
-            EffectKey.defaultEffect,
-            e => {
-              effects += e
-              onUpdate(effects)
-              tableModel.fireTableRowsUpdated(row, row)
-              tableModel.fireTableRowsInserted(row + 1, row + 1)
-            })
-          diag.open()
+          tableModel.showNewDialog()
         }
       }
       case e: MouseClicked if e.peer.getButton() == MouseEvent.BUTTON3 => {
         val (x0, y0) = (e.point.getX().toInt, e.point.getY().toInt)
 
-        if (clickRow != -1)
-          tree.selectRows(clickRow)
+        val row = peer.rowAtPoint(e.point)
 
-        val clickNode =
-          if (clickRow == -1)
-            projectRoot
-          else
-            tree.selection.paths.head.last
+        if (row != -1) {
+          selection.rows.clear()
+          selection.rows += row
+          val menu = new PopupMenu {
+            contents += new MenuItem(Action("New...") {
+              tableModel.showNewDialog()
+            })
 
-        val menu = popupMenuFor(clickNode)
-        menu.showWithCallback(tree, x0, y0, onHide = () => {
-          origRow.map(p => tree.selectRows(p))
-
-          // Renable all eventns
-          listenTo(tree.selection)
-          listenTo(tree.mouse.clicks)
-        })
-        val menu = new PopupMenu {
-          contents += new MenuItem(Action("Delete") {
-
-          })
+            if (row != rowCount - 1) {
+              contents += new MenuItem(Action("Edit...") {
+                tableModel.showEditDialog(row)
+              })
+              contents += new MenuItem(Action("Delete") {
+                tableModel.deleteRow(row)
+              })
+            }
+          }
+          menu.show(this, x0, y0)
         }
-        menu.show(this, x0, y0)
-      }
-
       }
     }
   }
 
-  contents +=
-new ScrollPane {
+  contents += new ScrollPane {
     contents = table
   }
 }
