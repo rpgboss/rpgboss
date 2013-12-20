@@ -41,23 +41,23 @@ class ChoiceWindow(
   val textWTotal = w - 2*xpad
   val textHTotal = h - 2*ypad
   val textColW = textWTotal / columns
-  
+
   private var curChoice = defaultChoice
-  
+
   def wrapChoices = displayedLines == 0
-  
-  override val capturedKeys = 
-    Set(MyKeys.Left, MyKeys.Right, MyKeys.Up, MyKeys.Down, 
+
+  override val capturedKeys =
+    Set(MyKeys.Left, MyKeys.Right, MyKeys.Up, MyKeys.Down,
         MyKeys.OK, MyKeys.Cancel)
-        
+
   var scrollXPosition = 0
   val textImages: Array[WindowText] = {
-    val columnChoicesAry = 
+    val columnChoicesAry =
       Array.fill(columns)(new collection.mutable.ArrayBuffer[String]())
     for (i <- 0 until lines.length) {
       columnChoicesAry(i % columns).append(lines(i))
     }
-    
+
     val windowTexts = for (i <- 0 until columns) yield new WindowText(
       game,
       columnChoicesAry(i).toArray,
@@ -68,33 +68,33 @@ class ChoiceWindow(
       fontbmp,
       justification
     )
-    
+
     windowTexts.toArray
   }
-  
+
   def setLineHeight(height: Int) = textImages.foreach(_.setLineHeight(height))
-  
+
   override def update(delta: Float, acceptInput: Boolean) = {
     super.update(delta, acceptInput)
     textImages.foreach(_.update())
   }
-        
+
   val choiceChannel = new Channel[Int]()
-  
+
   def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
     val snd = spec.map(s => Sound.readFromDisk(proj, s.sound))
     snd.map(_.loadAsset(assets))
     snd
   }
-  
+
   val soundSelect = optionallyReadAndLoad(proj.data.startup.soundSelect)
   val soundCursor = optionallyReadAndLoad(proj.data.startup.soundCursor)
   val soundCancel = optionallyReadAndLoad(proj.data.startup.soundCancel)
   val soundCannot = optionallyReadAndLoad(proj.data.startup.soundCannot)
-  
+
   def keyActivate(key: Int) = {
     import MyKeys._
-    
+
     // TODO: Remove hack
     // Need to finish loading all assets before accepting key input
     assets.finishLoading()
@@ -133,7 +133,7 @@ class ChoiceWindow(
           curChoice -= (columns - 1)
         else
           curChoice += 1
-        
+
         soundCursor.map(_.getAsset(assets).play())
       } else if (key == Left) {
         // Go back to right if all the way on left
@@ -141,16 +141,16 @@ class ChoiceWindow(
           curChoice += (columns - 1)
         else
           curChoice -= 1
-        
+
         soundCursor.map(_.getAsset(assets).play())
       }
     }
- 
+
     if (key == OK) {
       soundSelect.map(_.getAsset(assets).play())
       choiceChannel.write(curChoice)
     }
-    
+
     if (key == Cancel && allowCancel) {
       soundCancel.map(_.getAsset(assets).play())
       choiceChannel.write(-1)
@@ -158,10 +158,10 @@ class ChoiceWindow(
   }
 
   def hasFocus = game.inputs.hasFocus(this)
-  
+
   def takeFocus() = game.syncRun {
     println("takeFocus %d".format(id))
-      
+
     game.screenLayer.windows.find(_.id == id).map { window =>
       game.inputs.remove(window)
       game.screenLayer.windows -= window
@@ -169,13 +169,13 @@ class ChoiceWindow(
       game.screenLayer.windows.prepend(window)
     }
   }
-  
+
   override def render(b: SpriteBatch) = {
     // Draw the window and text
     super.render(b)
-    
+
     if (state == Window.Open || state == Window.Opening) {
-      val renderedLines = 
+      val renderedLines =
         if (displayedLines == 0) lines.length else displayedLines
       textImages.foreach(_.render(b, scrollXPosition, renderedLines))
 

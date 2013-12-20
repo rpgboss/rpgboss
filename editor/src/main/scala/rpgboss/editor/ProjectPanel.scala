@@ -29,7 +29,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   def selectMap(mapOpt: Option[RpgMap]) = {
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
   }
-  
+
   def inheritIO(src: InputStream, dest: PrintStream) = {
     new Thread(new Runnable() {
         def run() = {
@@ -62,37 +62,38 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
       if (sm.askSaveUnchanged(this)) {
         val projPath = sm.getProj.dir.getCanonicalPath()
         val winExecutable = "rpgboss-editor.exe"
-        
+
         // Returns path to windows executable if it exists, null otherwise
         def getWinExecutable(): Option[File] = {
           val programDir = new File(System.getProperty("user.dir"))
-          
+
           val executablePath = new File(programDir, winExecutable)
-          
+
           if (executablePath.exists())
             Some(executablePath)
           else
             None
-        } 
-        
+        }
+
         val processBuilder: ProcessBuilder = {
           getWinExecutable() map { exePath =>
-            new ProcessBuilder(exePath.toString, "--player", projPath)
+            new ProcessBuilder(exePath.toString, "--player",
+                """"%s"""".format(projPath))
           } getOrElse {
             val separator = System.getProperty("file.separator")
             val cpSeparator = System.getProperty("path.separator")
             val classpath =
-              List("java.class.path", "java.boot.class.path", 
+              List("java.class.path", "java.boot.class.path",
                    "sun.boot.class.path")
                 .map(s => System.getProperty(s, "")).mkString(cpSeparator)
-                
+
             val javaPath =
               System.getProperty("java.home") +
                 separator +
                 "bin" +
                 separator +
                 "java";
-            
+
             new ProcessBuilder(javaPath, "-cp",
               classpath,
               "rpgboss.editor.RpgDesktop",
@@ -105,7 +106,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         val process = processBuilder.start()
         inheritIO(process.getInputStream(), System.out)
         inheritIO(process.getErrorStream(), System.err)
-        
+
         process.waitFor();
       }
     })

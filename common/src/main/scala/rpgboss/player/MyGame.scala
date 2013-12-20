@@ -49,7 +49,7 @@ class MyGame(gamepath: File)
   var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
   val inputs = new MyInputMultiplexer()
-  
+
   /**
    * Run the following on the GUI thread
    */
@@ -69,9 +69,9 @@ class MyGame(gamepath: File)
    * matrix to the identity, and the projection matrix to an orthographic
    * projection with its lower left corner of the screen at (0, 0) and its
    * upper right corner at (Gdx.graphics.getWidth(), Gdx.graphics.getHeight())
-   * 
+   *
    * This makes the eye-coordinates the same as the screen-coordinates.
-   * 
+   *
    * If you'd like to specify your objects in some other space, simply
    * change the projection and modelview (transform) matrices.
    */
@@ -83,7 +83,7 @@ class MyGame(gamepath: File)
 
   def create() = {
     com.badlogic.gdx.utils.Timer.instance().start()
-    
+
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
 
@@ -94,10 +94,10 @@ class MyGame(gamepath: File)
 
     // Register accessors
     TweenAccessors.registerAccessors()
-    
+
     beginGame()
   }
-  
+
   def beginGame() = {
     ScriptThread.fromFile(this, "main.js", "main()").run()
   }
@@ -117,19 +117,19 @@ class MyGame(gamepath: File)
 
     // Log fps
     //fps.log()
-    
+
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL10.GL_BLEND)
 
-    if(assets.update()) {
+    if (assets.update()) {
       // update state
       state.update(delta)
-  
+
       mapLayer.update(delta)
       screenLayer.update(delta)
-      
+
       // Render the two layers
       screenLayer.preMapRender()
       mapLayer.render()

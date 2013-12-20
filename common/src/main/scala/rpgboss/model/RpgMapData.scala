@@ -82,7 +82,10 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
   }
 
   def deepcopy() = {
-    copy(events = events.mapValues(_.copy()))
+    copy(botLayer = botLayer.map(_.clone()),
+         midLayer = midLayer.map(_.clone()),
+         topLayer = topLayer.map(_.clone()),
+         events = events.mapValues(_.copy()))
   }
 }
 
