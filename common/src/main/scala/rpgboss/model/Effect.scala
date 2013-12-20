@@ -1,6 +1,6 @@
 package rpgboss.model
 
-case class Effect(keyId: Int, v: Int)
+case class Effect(keyId: Int, var v: Int)
 
 object EffectKey extends RpgEnum {
   case class Val(desc: String) extends super.Val

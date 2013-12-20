@@ -21,22 +21,74 @@ class EffectPanel(
   owner: Window,
   dbDiag: DatabaseDialog,
   initial: Seq[Effect],
-  onUpdate: Seq[Effect] => Unit)
+  onUpdate: Seq[Effect] => Unit,
+  includeStatEffects: Boolean)
   extends BoxPanel(Orientation.Vertical) {
-  border = BorderFactory.createTitledBorder("Effects")
 
-  var effects = ArrayBuffer(initial :_*)
-  val table = new Table() {
+  import EffectKey._
+  
+  def isStatEffect(e: Effect) = {
+    val statKeys = 
+      Set(MhpAdd, MmpAdd, AtkAdd, SpdAdd, MagAdd, ArmAdd, MreAdd).map(_.id)
+    statKeys.contains(e.keyId)
+  }
+  
+  def updateFromModel() = {
+    onUpdate(statEffects ++ miscEffects)
+  }
+  
+  var statEffects: ArrayBuffer[Effect] = 
+    ArrayBuffer(initial.filter(isStatEffect) : _*)
+  val statEffectsPanel = new DesignGridPanel {
+    def statSpinner(eKey: EffectKey.Value) = {
+      def spinFunc(newValue: Int) = {
+        if (newValue == 0) {
+          // Remove existing effect.
+          statEffects = statEffects.filter(_.keyId != eKey.id)
+        } else {
+          // Update existing effect, or append a new one.
+          statEffects.find(_.keyId == eKey.id) map { effect =>
+            effect.v = newValue
+          } getOrElse {
+            statEffects.append(Effect(eKey.id, newValue))
+          }
+        }
+        updateFromModel()
+      }
+      
+      val initialValue = 
+        statEffects.find(_.keyId == eKey.id).map(_.v).getOrElse(0)
+      
+      new NumberSpinner(initialValue, -1000, 1000, spinFunc)
+    }
+    
+    row()
+      .grid(lbl("+Max HP")).add(statSpinner(MhpAdd))
+      .grid(lbl("+Attack")).add(statSpinner(AtkAdd))
+      .grid(lbl("+Armor")).add(statSpinner(ArmAdd))
+    row()
+      .grid(lbl("+Max MP")).add(statSpinner(MmpAdd))
+      .grid(lbl("+Speed")).add(statSpinner(SpdAdd))
+      .grid(lbl("+Mag. Res.")).add(statSpinner(MreAdd))
+      
+    row()
+      .grid()
+      .grid(lbl("+Magic")).add(statSpinner(MagAdd))
+      .grid()
+  }
+  
+  var miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
+  val miscEffectsTable = new Table() {
     val tableModel = new AbstractTableModel() {
       val colNames = Array("Description", "Key", "Value")
 
-      def getRowCount() = effects.size + 1 // last element blank for adding
+      def getRowCount() = miscEffects.size + 1 // last element blank for adding
       def getColumnCount() = 3
       override def getColumnName(col: Int) = colNames(col)
 
       def getValueAt(row: Int, col: Int) = {
-        if (row < effects.size) {
-          val eff = effects(row)
+        if (row < miscEffects.size) {
+          val eff = miscEffects(row)
           col match {
             case 0 => EffectKey(eff.keyId).desc
             case 1 => EffectKey(eff.keyId).toString
@@ -50,14 +102,14 @@ class EffectPanel(
       override def isCellEditable(r: Int, c: Int) = false
 
       def showEditDialog(row: Int) = {
-        val initialE = effects(row)
+        val initialE = miscEffects(row)
         val diag = new EffectDialog(
           owner,
           dbDiag,
           initialE,
           e => {
-            effects.update(row, e)
-            onUpdate(effects)
+            miscEffects.update(row, e)
+            updateFromModel()
             fireTableRowsUpdated(row, row)
           })
         diag.open()
@@ -69,16 +121,16 @@ class EffectPanel(
           dbDiag,
           EffectKey.defaultEffect,
           e => {
-            effects += e
-            onUpdate(effects)
-            fireTableRowsUpdated(effects.size - 2, effects.size - 2)
-            fireTableRowsInserted(effects.size - 1, effects.size - 1)
+            miscEffects += e
+            updateFromModel()
+            fireTableRowsUpdated(miscEffects.size - 2, miscEffects.size - 2)
+            fireTableRowsInserted(miscEffects.size - 1, miscEffects.size - 1)
           })
         diag.open()
       }
 
       def deleteRow(row: Int) = {
-        effects.remove(row)
+        miscEffects.remove(row)
         fireTableRowsDeleted(row, row)
       }
     }
@@ -92,7 +144,7 @@ class EffectPanel(
     reactions += {
       case MouseClicked(_, _, _, 2, _) => {
         val row = selection.rows.head
-        if (row < effects.size) {
+        if (row < miscEffects.size) {
           tableModel.showEditDialog(row)
         } else {
           tableModel.showNewDialog()
@@ -125,9 +177,17 @@ class EffectPanel(
       }
     }
   }
-
+  
+  if (includeStatEffects) {
+    contents += new BoxPanel(Orientation.Vertical) {
+      border = BorderFactory.createTitledBorder("Stat boosts")
+      contents += statEffectsPanel
+    }
+  }
+  
   contents += new ScrollPane {
-    contents = table
+    border = BorderFactory.createTitledBorder("Other Effects")
+    contents = miscEffectsTable
   }
 }
 

@@ -35,7 +35,7 @@ class ClassesPanel(
       })
 
     val fEffects =
-      new EffectPanel(owner, dbDiag, model.effects, model.effects = _)
+      new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
 
     val fCanEquip = new ArrayMultiselectPanel(
       owner,

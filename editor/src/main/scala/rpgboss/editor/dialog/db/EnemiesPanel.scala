@@ -72,7 +72,7 @@ class EnemiesPanel(
     }
 
     val fEffects =
-      new EffectPanel(owner, dbDiag, model.effects, model.effects = _)
+      new EffectPanel(owner, dbDiag, model.effects, model.effects = _, false)
 
     new BoxPanel(Orientation.Horizontal) {
       contents += bioFields
