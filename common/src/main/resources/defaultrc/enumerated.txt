@@ -344,7 +344,6 @@ msgfont/VeraMono.ttf
 picture/LordSpirit.jpg
 picture/StartingLogo.png
 picture/defaultrc_battleback/crownlesswish_rrr.jpg
-rpgproject.json
 script/globals.js
 script/main.js
 script/menu.js
