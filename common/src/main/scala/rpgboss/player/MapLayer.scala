@@ -97,6 +97,49 @@ class MapLayer(game: MyGame) {
   val atlasSprites = packerSprites.generateTextureAtlas(
     TextureFilter.Nearest, TextureFilter.Nearest, false)
 
+  def drawTile(batch: SpriteBatch, mapAndAssets: MapAndAssets, 
+               whereInSecond: Float, tileX: Int, tileY: Int,
+               byte1: Byte, byte2: Byte, byte3: Byte) = {
+    if (byte1 < 0) {
+      if (byte1 == RpgMap.autotileByte) { // Autotile
+        val autotile = mapAndAssets.autotiles(byte2)
+        val region = mapAndAssets.atlasTiles.findRegion(
+          "autotile/%s".format(autotile.name))
+
+        val frameIdx = (whereInSecond * autotile.frames).toInt
+
+        val srcDestPositions = autotile.getHalfTiles(byte3, frameIdx)
+
+        srcDestPositions map {
+          case ((srcXHt, srcYHt), (dstXHt, dstYHt)) =>
+            batch.draw(
+              region.getTexture(),
+              tileX.toFloat + dstXHt * 0.5f,
+              tileY.toFloat + dstYHt * 0.5f,
+              0.5f, 0.5f,
+              region.getRegionX() + srcXHt * Tileset.halftile,
+              region.getRegionY() + srcYHt * Tileset.halftile,
+              Tileset.halftile, Tileset.halftile,
+              false, true)
+        }
+      }
+    } else { // Regular tile
+      //println("Draw regular tile")
+      val tileset = mapAndAssets.tilesets(byte1)
+      val region =
+        mapAndAssets.atlasTiles.findRegion("tileset/%s".format(tileset.name))
+      batch.draw(
+        region.getTexture(),
+        tileX.toFloat,
+        tileY.toFloat,
+        1.0f, 1.0f,
+        region.getRegionX() + byte2 * Tileset.tilesize,
+        region.getRegionY() + byte3 * Tileset.tilesize,
+        Tileset.tilesize, Tileset.tilesize,
+        false, true)
+    }
+  }
+    
   // Update. Called on Gdx thread before render.
   def update(delta: Float) = {
   }
@@ -108,8 +151,6 @@ class MapLayer(game: MyGame) {
 
     updateCameraLoc()
 
-    batch.begin()
-
     // Leftmost, rightmost, topmost, bottom-most tiles to render
     val tileL = math.max(0, cameraL.toInt)
     val tileR = math.min(map.metadata.xSize - 1, cameraR.toInt + 1)
@@ -118,15 +159,12 @@ class MapLayer(game: MyGame) {
 
     // Where we are in the current second. Varies within [0, 1.0)
     val whereInSecond = (System.currentTimeMillis() % 1000).toFloat / 1000f
-    /*println("Render")
-    println(tileL)
-    println(tileR)
-    println(tileT)
-    println(tileB)*/
-    for (
-      layerAry <- List(
-        mapData.botLayer, mapData.midLayer, mapData.topLayer)
-    ) {
+
+    batch.begin()
+    
+    // Draw all the tiles
+    for (layerAry <- 
+         List(mapData.botLayer, mapData.midLayer, mapData.topLayer)) {
       for (tileY <- tileT to tileB) {
         val row = layerAry(tileY)
         import RpgMap.bytesPerTile
@@ -135,55 +173,44 @@ class MapLayer(game: MyGame) {
           val byte1 = row(idx)
           val byte2 = row(idx + 1)
           val byte3 = row(idx + 2)
-
-          if (byte1 < 0) {
-            if (byte1 == RpgMap.autotileByte) { // Autotile
-              val autotile = autotiles(byte2)
-              val region =
-                atlasTiles.findRegion("autotile/%s".format(autotile.name))
-
-              val frameIdx = (whereInSecond * autotile.frames).toInt
-
-              val srcDestPositions = autotile.getHalfTiles(byte3, frameIdx)
-
-              srcDestPositions map {
-                case ((srcXHt, srcYHt), (dstXHt, dstYHt)) =>
-                  batch.draw(
-                    region.getTexture(),
-                    tileX.toFloat + dstXHt * 0.5f,
-                    tileY.toFloat + dstYHt * 0.5f,
-                    0.5f, 0.5f,
-                    region.getRegionX() + srcXHt * halftile,
-                    region.getRegionY() + srcYHt * halftile,
-                    halftile, halftile,
-                    false, true)
-              }
-            }
-          } else { // Regular tile
-            //println("Draw regular tile")
-            val region =
-              atlasTiles.findRegion("tileset/%s".format(tilesets(byte1).name))
-            batch.draw(
-              region.getTexture(),
-              tileX.toFloat,
-              tileY.toFloat,
-              1.0f, 1.0f,
-              region.getRegionX() + byte2 * tilesize,
-              region.getRegionY() + byte3 * tilesize,
-              tilesize, tilesize,
-              false, true)
-
-          }
+          drawTile(batch, mapAndAssets, whereInSecond, tileX, tileY, byte1, 
+                   byte2, byte3)
         }
       }
     }
 
-    // Render the player event
-    // TODO: Seems really inefficient here
-    val entities: List[Entity] =
-      state.playerEntity :: state.eventEntities.values.toList
-    entities.sortBy(_.y).foreach(_.render(batch, atlasSprites))
+    val zSortedEntities = 
+      (state.playerEntity :: state.eventEntities.values.toList)
+        .filter(e => (e.x >= cameraL - 2) && (e.x <= cameraR + 2) &&
+                     (e.y >= cameraT - 2) && (e.y <= cameraB + 2))
+        .sortBy(_.y).toArray
 
+    // Draw sprites and elevated tiles in order of z priority
+    {
+      var entityI = 0
+      var tileI = 0
+      def tiles = mapAndAssets.elevatedTiles
+      
+      while (entityI < zSortedEntities.size || tileI < tiles.size) {
+        if (tileI == tiles.size || 
+            (entityI < zSortedEntities.size && 
+            zSortedEntities(entityI).y < tiles(tileI).zPriority)) {
+          zSortedEntities(entityI).render(batch, atlasSprites)
+          entityI += 1
+        } else {
+          val tile = tiles(tileI)
+          
+          if ((tile.tileX >= cameraL - 2) && (tile.tileX <= cameraR + 2) &&
+              (tile.tileY >= cameraT - 2) && (tile.tileY <= cameraB + 2)) {
+            drawTile(batch, mapAndAssets, whereInSecond, tile.tileX, tile.tileY,
+                     tile.byte1, tile.byte2, tile.byte3)
+          }
+          
+          tileI += 1
+        }
+      }
+    }
+    
     batch.end()
   }
 

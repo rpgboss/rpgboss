@@ -19,7 +19,8 @@ import javax.imageio.ImageIO
  * @param blockedDirs   Bit is on for each direction that is blocked.
  *                      Uses masks according to DirectionMasks
  *                      The the four "biggest" bits are undefined.
- *
+ * @param height        Used to indicate if it's an elevated tile. A zero value
+ *                      is used for an ordinary tile.
  */
 case class AutotileMetadata(blockedDirs: Byte = 0, height: Byte = 0)
 

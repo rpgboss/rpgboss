@@ -52,6 +52,52 @@ class MapAndAssets(project: Project, mapName: String) {
     tilesetPix.dispose()
   }
 
+  /**
+   * Create a list of elevated tiles that may need to be drawn above the 
+   * player and event sprites. 
+   */
+  case class ElevatedTile(tileX: Int, tileY: Int, byte1: Byte, byte2: Byte,
+                          byte3: Byte, zPriority: Int)
+  val elevatedTiles: IndexedSeq[ElevatedTile] = {
+    val buffer = new ArrayBuffer[ElevatedTile]
+    
+    for (layerAry <- 
+         List(mapData.botLayer, mapData.midLayer, mapData.topLayer)) {
+      for (tileY <- 0 until map.metadata.ySize) {
+        val row = layerAry(tileY)
+        import RpgMap.bytesPerTile
+        for (tileX <- 0 until map.metadata.xSize) {
+          val idx = tileX * bytesPerTile
+          val byte1 = row(idx)
+          val byte2 = row(idx + 1)
+          val byte3 = row(idx + 2)
+          
+          if (byte1 < 0) {
+            if (byte1 == RpgMap.autotileByte) { // Autotile
+              val autotile = autotiles(byte2)
+              val height = autotile.metadata.height.toInt
+              if (height > 0) {
+                buffer.append(ElevatedTile(
+                  tileX, tileY, byte1, byte2, byte3, height + tileY))
+              } 
+            }
+          } else { // Regular tile
+            val tileset = tilesets(byte1)
+            val height = tileset.metadata.heightAry(byte3)(byte2)
+            if (height > 0) {
+              println(ElevatedTile(
+                tileX, tileY, byte1, byte2, byte3, height + tileY))
+              buffer.append(ElevatedTile(
+                tileX, tileY, byte1, byte2, byte3, height + tileY))
+            }
+          }
+        }
+      }
+    }
+    
+    buffer.sortBy(_.zPriority)
+  }
+  
   def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
     import RpgMap._
     import Constants.DirectionMasks._
