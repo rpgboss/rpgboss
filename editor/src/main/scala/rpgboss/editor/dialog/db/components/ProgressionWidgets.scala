@@ -7,7 +7,7 @@ import rpgboss.editor.dialog._
 import javax.swing.BorderFactory
 import rpgboss.model._
 import rpgboss.editor.uibase.DesignGridPanel
-import rpgboss.editor.uibase.NumberSpinner
+import rpgboss.editor.uibase.DoubleSpinner
 
 /**
  * Edits the model in-place.
@@ -21,11 +21,12 @@ class StatProgressionPanel(model: StatProgressions)
       text = model(50).toString
     }
 
-    def numSpinner(initial: Int, mutateF: (Int) => Unit) = {
-      new NumberSpinner(initial, 0, 1000, onUpdate = { v =>
+    def numSpinner(initial: Double, mutateF: (Double) => Unit) = {
+      new DoubleSpinner(initial, 0, 1000, onUpdate = { v =>
         mutateF(v)
         lvl50Val.text = model(50).toString
-      })
+      }, 
+      step = 0.1)
     }
 
     new DesignGridPanel {

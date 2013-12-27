@@ -1,8 +1,8 @@
 package rpgboss.model
 
-case class Curve(var base: Int, var perLevel: Int) {
-  def apply(x: Int) = {
-    perLevel * (x - 1) + base
+case class Curve(var base: Double, var perLevel: Double) {
+  def apply(x: Int): Int = {
+    (perLevel * (x - 1) + base).round.toInt
   }
 }
 
