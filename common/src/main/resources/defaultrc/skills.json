@@ -1,0 +1,13 @@
+[
+  {
+    "name":"Skill",
+    "scopeId":2,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":"10"
+      }
+    ]
+  }
+]

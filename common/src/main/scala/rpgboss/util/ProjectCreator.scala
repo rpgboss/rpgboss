@@ -8,23 +8,23 @@ import rpgboss.model.resource._
 object ProjectCreator {
   // Returns true if project has been created and all default resources copied
   def create(shortname: String, projectDirectory: File): Option[Project] = {
-    val p = Project.startingProject(shortname, projectDirectory)
-    val mapName = RpgMap.generateName(p.data.lastCreatedMapId)
+    val projectStub = Project.startingProject(shortname, projectDirectory)
+    val mapName = RpgMap.generateName(projectStub.data.lastCreatedMapId)
 
     projectDirectory.mkdir()
     Resource.resourceTypes.foreach {
-      _.rcDir(p).mkdir()
+      _.rcDir(projectStub).mkdir()
     }
     
     val allSavedOkay =
-      p.writeMetadata() &&
-      RpgMap.defaultMapData.writeToFile(p, mapName) &&
-      RpgMap.defaultInstance(p, mapName).writeMetadata()
+      projectStub.data.writeRootWithoutEnums(projectStub.dir) &&
+      RpgMap.defaultMapData.writeToFile(projectStub, mapName) &&
+      RpgMap.defaultInstance(projectStub, mapName).writeMetadata()
 
     val cl = getClass.getClassLoader
 
     val copiedAllResources = {
-      val projRcDir = p.rcDir
+      val projRcDir = projectStub.rcDir
 
       val rcStream = cl.getResourceAsStream("defaultrc/enumerated.txt")
       val resources = io.Source.fromInputStream(rcStream).getLines().toList
@@ -50,7 +50,7 @@ object ProjectCreator {
     }
     
     if (allSavedOkay && copiedAllResources) {
-      Some(p)
+      Project.readFromDisk(projectStub.dir)
     } else {
       None
     }

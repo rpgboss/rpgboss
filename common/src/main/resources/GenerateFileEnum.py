@@ -9,7 +9,11 @@ for root, subFolders, files in os.walk(rootdir):
   abridgedRoot = root[len(rootdir)+1:]
   for file in files:
     if file != enumFn:
-      fileList.append(abridgedRoot + "/" + file)
+      if abridgedRoot == "":
+        path = file
+      else:
+        path = abridgedRoot + "/" + file
+      fileList.append(path)
 
 fileList.sort()
 

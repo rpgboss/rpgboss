@@ -1,0 +1,47 @@
+[
+  {
+    "name":"Knight",
+    "canUseItems":[
+      
+    ],
+    "effects":[
+      
+    ]
+  },
+  {
+    "name":"Healer",
+    "canUseItems":[
+      
+    ],
+    "effects":[
+      
+    ]
+  },
+  {
+    "name":"Engineer",
+    "canUseItems":[
+      
+    ],
+    "effects":[
+      
+    ]
+  },
+  {
+    "name":"Rogue",
+    "canUseItems":[
+      
+    ],
+    "effects":[
+      
+    ]
+  },
+  {
+    "name":"Wizard",
+    "canUseItems":[
+      
+    ],
+    "effects":[
+      
+    ]
+  }
+]

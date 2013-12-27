@@ -14,6 +14,7 @@ animation/spieralwind/animation_weapon010arrow.png
 animation/spieralwind/animation_weapon015rance.png
 animation/spieralwind/animation_wind002.png
 animation/spieralwind/animation_wind004.png
+animations.json
 autotile/Refmap-A1-0-0-A.png
 autotile/Refmap-A1-0-0-A.png.metadata.json
 autotile/Refmap-A1-0-0-B.png
@@ -323,10 +324,17 @@ battler/jrpgbeasts_sm/ooze.png
 battler/jrpgbeasts_sm/oozeskull.png
 battler/jrpgbeasts_sm/spider.png
 battler/jrpgbeasts_sm/wasp.png
+characters.json
+classes.json
+elements.json
+encounters.json
+enemies.json
+equipTypes.json
 face/01fsm_actorA.png
 face/f_actor01.png
 iconset/420__Pixel_Art__Icons_for_RPG_by_Ails.png
 iconset/420__Pixel_Art__Icons_for_RPG_by_Ails.png.metadata.json
+items.json
 msgfont/Vera-Bold.ttf
 msgfont/Vera-Italic.ttf
 msgfont/Vera.ttf
@@ -336,9 +344,11 @@ msgfont/VeraMono.ttf
 picture/LordSpirit.jpg
 picture/StartingLogo.png
 picture/defaultrc_battleback/crownlesswish_rrr.jpg
+rpgproject.json
 script/globals.js
 script/main.js
 script/menu.js
+skills.json
 sound/opengameart-37hitspunches/hit02.mp3
 sound/opengameart-37hitspunches/hit12.mp3
 sound/opengameart-37hitspunches/hit33.mp3
@@ -402,6 +412,7 @@ spriteset/vx_chara07_a.png
 spriteset/vx_chara07_b.png
 spriteset/vx_chara07_c.png
 spriteset/vx_chara08_a.png
+statusEffects.json
 tileset/Refmap-TileA5.png
 tileset/Refmap-TileA5.png.metadata.json
 tileset/Refmap-TileB.png

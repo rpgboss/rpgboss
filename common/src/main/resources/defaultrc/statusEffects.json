@@ -1,0 +1,13 @@
+[
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  }
+]

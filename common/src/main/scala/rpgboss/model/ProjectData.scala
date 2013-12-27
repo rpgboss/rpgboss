@@ -42,13 +42,11 @@ case class ProjectData(
   var lastCreatedMapId: Int = 1, // Start at 1)
   var startup: ProjectDataStartup = ProjectDataStartup(),
   var enums: ProjectDataEnums = ProjectDataEnums()) {
-
-  def write(dir: File) = {
-    val enumsStripped = copy(enums = null)
+  
+  def writeEnums(dir: File) = {
     def writeModel[T <: AnyRef](name: String, model: T) =
       JsonUtils.writeModelToJson(new File(dir, "%s.json".format(name)), model)
-
-    writeModel("rpgproject", enumsStripped)
+    
     writeModel("animations", enums.animations)
     writeModel("characters", enums.characters)
     writeModel("classes", enums.classes)
@@ -59,6 +57,19 @@ case class ProjectData(
     writeModel("items", enums.items)
     writeModel("skills", enums.skills)
     writeModel("statusEffects", enums.statusEffects)
+  }
+  
+  def writeRootWithoutEnums(dir: File) = {
+    val enumsStripped = copy(enums = null)
+    def writeModel[T <: AnyRef](name: String, model: T) =
+      JsonUtils.writeModelToJson(new File(dir, "%s.json".format(name)), model)
+    
+    writeModel("rpgproject", enumsStripped)
+  }
+  
+  def write(dir: File) = {
+    writeRootWithoutEnums(dir)
+    writeEnums(dir)
   }
 }
 

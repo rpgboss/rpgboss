@@ -1,0 +1,17 @@
+[
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "effects":[
+      
+    ]
+  }
+]
