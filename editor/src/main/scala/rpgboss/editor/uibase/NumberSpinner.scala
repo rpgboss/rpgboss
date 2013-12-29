@@ -13,7 +13,9 @@ class NumberSpinner(
   onUpdate: ((Int) => Unit) = (v) => {},
   step: Int = 1)
   extends BoxPanel(Orientation.Horizontal) {
-  val model = new SpinnerNumberModel(initial, min, max, step)
+  val normalizedInitial = math.min(math.max(initial, min), max)
+  
+  val model = new SpinnerNumberModel(normalizedInitial, min, max, step)
 
   val spinner = new JSpinner(model)
 
@@ -40,7 +42,9 @@ class DoubleSpinner(
   onUpdate: ((Double) => Unit) = (v) => {},
   step: Double)
   extends BoxPanel(Orientation.Horizontal) {
-  val model = new SpinnerNumberModel(initial, min, max, step)
+  val normalizedInitial = math.min(math.max(initial, min), max)
+  
+  val model = new SpinnerNumberModel(normalizedInitial, min, max, step)
 
   val spinner = new JSpinner(model)
 
@@ -67,7 +71,9 @@ class FloatSpinner(
   onUpdate: ((Float) => Unit) = (v) => {},
   step: Float)
   extends BoxPanel(Orientation.Horizontal) {
-  val model = new SpinnerNumberModel(initial, min, max, step)
+  val normalizedInitial = math.min(math.max(initial, min), max)
+  
+  val model = new SpinnerNumberModel(normalizedInitial, min, max, step)
 
   val spinner = new JSpinner(model)
 

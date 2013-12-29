@@ -46,12 +46,8 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
       opt getOrElse "<None>"
     })
   }
-
-  def rightPaneDim = new Dimension(384, 384)
   
-  val rightPaneContainer = new BoxPanel(Orientation.Vertical) {
-    minimumSize = rightPaneDim
-  }
+  val rightPaneContainer = new BoxPanel(Orientation.Vertical)
   
   // Must call with valid arguments.
   // Call this only when updating both the spriteset and the spriteIndex
@@ -98,11 +94,13 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
 
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
+      maximumSize = new Dimension(250, 5000)
+      preferredSize = new Dimension(250, 500)
+      minimumSize = new Dimension(250, 250)
+      
       row.grid().add(new Label("Select " + metaResource.rcType + ":"))
       row.grid().add(new ScrollPane {
         contents = rcList
-        maximumSize = new Dimension(250, 5000)
-        minimumSize = new Dimension(250, 250)
       })
     }
     contents += rightPaneContainer

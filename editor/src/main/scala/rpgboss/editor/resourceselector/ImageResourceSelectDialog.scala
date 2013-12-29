@@ -58,9 +58,7 @@ abstract class BattlerSelectDialog(
   def specToResourceName(spec: BattlerSpec): String = spec.name
   def newRcNameToSpec(name: String, prevSpec: Option[BattlerSpec]) =
     BattlerSpec(name)
-
-  def rightPaneDim = new Dimension(384, 384)
-
+  
   override def rightPaneFor(
     selection: BattlerSpec,
     updateSelectionF: BattlerSpec => Unit) = {

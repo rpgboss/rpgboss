@@ -18,6 +18,8 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
   extends StdDialog(owner, "Select" + metaResource.rcType.capitalize)
   with Logging {
   
+  minimumSize = new Dimension(550, 550)
+  
   def onSuccess(result: Option[SpecType]): Unit
  
   def okFunc(): Unit = {
