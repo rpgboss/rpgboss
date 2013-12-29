@@ -179,18 +179,22 @@ class MapLayer(game: MyGame) {
       }
     }
 
+    // Get a list of all the entities within the camera's view, sorted by 
+    // their y position.
     val zSortedEntities = 
       (state.playerEntity :: state.eventEntities.values.toList)
         .filter(e => (e.x >= cameraL - 2) && (e.x <= cameraR + 2) &&
                      (e.y >= cameraT - 2) && (e.y <= cameraB + 2))
         .sortBy(_.y).toArray
 
-    // Draw sprites and elevated tiles in order of z priority
+    // Draw sprites and elevated tiles in order of z priority.
     {
       var entityI = 0
       var tileI = 0
       def tiles = mapAndAssets.elevatedTiles
       
+      // Iterate through both the list of elevated tiles and entities,
+      // drawing the 'lower' item on each iteration.
       while (entityI < zSortedEntities.size || tileI < tiles.size) {
         if (tileI == tiles.size || 
             (entityI < zSortedEntities.size && 
