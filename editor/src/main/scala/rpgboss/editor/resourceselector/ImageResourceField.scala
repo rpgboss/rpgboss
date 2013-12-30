@@ -12,6 +12,8 @@ import rpgboss.editor.resourceselector._
 import java.awt.Dimension
 import java.awt.Graphics2D
 import rpgboss.model.resource.Tileset.tilesize
+import java.awt.geom.AffineTransform
+import java.awt.image.AffineTransformOp
 
 abstract class ImageResourceField[SpecT](
   owner: Window, 
@@ -87,6 +89,18 @@ class SpriteField(
     }
 }
 
+
+object BattlerField {
+  def getImage(m: BattlerSpec, proj: Project): BufferedImage = {
+    val orig = Battler.readFromDisk(proj, m.name).img
+    val tx = new AffineTransform()
+    tx.scale(m.scale, m.scale);
+
+    val op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+    op.filter(orig, null);
+  }
+}
+
 class BattlerField(
   owner: Window, 
   sm: StateMaster, 
@@ -94,12 +108,12 @@ class BattlerField(
   onUpdate: (Option[BattlerSpec]) => Any)
   extends ImageResourceField(owner, sm, initial, onUpdate) {
   
-  def getImage(m: BattlerSpec): BufferedImage =
-    Battler.readFromDisk(sm.getProj, m.name).img
-  
   def componentW = 128
   def componentH = 128
   
+  def getImage(m: BattlerSpec): BufferedImage = 
+    BattlerField.getImage(m, sm.getProj)
+    
   def getSelectDialog() =
     new BattlerSelectDialog(owner, sm, getValue) {
       def onSuccess(result: Option[BattlerSpec]) =

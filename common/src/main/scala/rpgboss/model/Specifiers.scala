@@ -47,7 +47,7 @@ case class SpriteSpec(
   dir: Int = SpriteSpec.Directions.SOUTH,
   step: Int = SpriteSpec.Steps.STILL)
   
-case class BattlerSpec(name: String)
+case class BattlerSpec(var name: String, var scale: Double = 1.0)
   
 case class SoundSpec(
   sound: String,
