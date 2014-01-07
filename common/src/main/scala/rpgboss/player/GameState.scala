@@ -48,7 +48,7 @@ class GameState(game: MyGame, project: Project) {
       val mapAndAssets = new MapAndAssets(project, mapName.get)
       mapAndAssetsOption = Some(mapAndAssets)
       eventEntities = mapAndAssets.mapData.events.map {
-        case (k, v) => (k, new EventEntity(game, v))
+        case (k, v) => (k, new EventEntity(game, v, screenSpace = false))
       }
     } else {
       mapAndAssetsOption.map(_.dispose())

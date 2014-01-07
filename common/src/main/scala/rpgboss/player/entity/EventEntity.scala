@@ -6,8 +6,8 @@ import rpgboss.player.ScriptThread
 import rpgboss.model.SpriteSpec
 import scala.concurrent.Promise
 
-class EventEntity(game: MyGame, val mapEvent: RpgEvent)
-  extends Entity(game, mapEvent.x, mapEvent.y) {
+class EventEntity(game: MyGame, val mapEvent: RpgEvent, screenSpace: Boolean)
+  extends Entity(game, mapEvent.x, mapEvent.y, screenSpace = screenSpace) {
   
   def id = mapEvent.id
   

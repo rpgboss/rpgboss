@@ -16,7 +16,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.player._
 
-/*
+/**
  * Position is marked as such:
  * __TOP__
  * |     |
@@ -27,14 +27,18 @@ import rpgboss.player._
  *   BOT
  * It is the bottom center of the sprite.
  * 
- * Bottom edge length is boundBoxTiles
+ * Bottom edge length is boundBoxTiles.
+ * 
+ * @param   screenSpace     If this is true, the units used by this entity are
+ *                          assumed to be pixels instead of tiles.
  */
 abstract class Entity(
   val game: MyGame,
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
-  var initialSprite: Option[SpriteSpec] = None) {
+  var initialSprite: Option[SpriteSpec] = None,
+  screenSpace: Boolean) {
 
   val moveQueue = new MutateQueue(this)
   var movesEnqueued: Long = 0
@@ -46,8 +50,11 @@ abstract class Entity(
 
   var spriteset: Spriteset = null
   var spriteIdx: Int = -1
-  var graphicWTiles: Float = 0f
-  var graphicHTiles: Float = 0f
+  
+  // These can be either in tiles or pixels, depending construction parameter
+  // |screenSpace|.
+  var graphicW: Float = 0f
+  var graphicH: Float = 0f
 
   var stillStep = SpriteSpec.Steps.STILL
   var boundingBoxHalfsize = 0.5f
@@ -92,10 +99,12 @@ abstract class Entity(
   def setSprite(spriteSpec: Option[SpriteSpec]) = spriteSpec map { s =>
     spriteset = game.spritesets(s.name)
     spriteIdx = s.spriteIndex
-    graphicWTiles = spriteset.tileW.toFloat / Tileset.tilesize.toFloat
-    graphicHTiles = spriteset.tileH.toFloat / Tileset.tilesize.toFloat
+    
+    val divisor = if (screenSpace) 1.0 else Tileset.tilesize.toDouble
+    graphicW = (spriteset.tileW.toDouble / divisor).toFloat
+    graphicH = (spriteset.tileH.toDouble / divisor).toFloat
     // Minus the delta to allow events to fit into tiles easily
-    setBoundingBoxHalfsize((graphicWTiles - collisionDeltas) * 0.5f)
+    setBoundingBoxHalfsize((graphicW - collisionDeltas) * 0.5f)
     dir = s.dir
     stillStep = s.step
   } getOrElse {
@@ -157,8 +166,8 @@ abstract class Entity(
        * We use top-left because we have flipped the y-axis in libgdx to match
        * the map coordinates we use.
        */
-      val dstOriginX: Float = x - graphicWTiles / 2.0f
-      val dstOriginY: Float = y - graphicHTiles + graphicWTiles / 2
+      val dstOriginX: Float = x - graphicW / 2.0f
+      val dstOriginY: Float = y - graphicH + graphicW / 2
 
       val srcXInRegion = region.getRegionX() + srcX
       val srcYInRegion = region.getRegionY() + srcY
@@ -167,7 +176,7 @@ abstract class Entity(
         region.getTexture(),
         dstOriginX.toFloat,
         dstOriginY.toFloat,
-        graphicWTiles, graphicHTiles,
+        graphicW, graphicH,
         srcXInRegion,
         srcYInRegion,
         spriteset.tileW,

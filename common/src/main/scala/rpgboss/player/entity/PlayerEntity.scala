@@ -11,7 +11,7 @@ import MyKeys.Right
 import MyKeys.Up
 
 class PlayerEntity(game: MyGame)
-  extends Entity(game: MyGame)
+  extends Entity(game: MyGame, screenSpace = false)
   with PlayerInputHandler {
   // Add input handling
   game.inputs.prepend(this)
