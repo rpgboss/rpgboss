@@ -6,8 +6,8 @@ import rpgboss.player.ScriptThread
 import rpgboss.model.SpriteSpec
 import scala.concurrent.Promise
 
-class EventEntity(game: MyGame, val mapEvent: RpgEvent, screenSpace: Boolean)
-  extends Entity(game, mapEvent.x, mapEvent.y, screenSpace = screenSpace) {
+class EventEntity(game: MyGame, val mapEvent: RpgEvent)
+  extends Entity(game, mapEvent.x, mapEvent.y) {
   
   def id = mapEvent.id
   
@@ -51,7 +51,7 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent, screenSpace: Boolean)
     return curThread
   }
 
-  def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
+  override def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.EVENTTOUCH.id ||

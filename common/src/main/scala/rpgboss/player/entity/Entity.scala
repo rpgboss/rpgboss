@@ -32,13 +32,12 @@ import rpgboss.player._
  * @param   screenSpace     If this is true, the units used by this entity are
  *                          assumed to be pixels instead of tiles.
  */
-abstract class Entity(
+class Entity(
   val game: MyGame,
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
-  var initialSprite: Option[SpriteSpec] = None,
-  screenSpace: Boolean) {
+  var initialSprite: Option[SpriteSpec] = None) {
 
   val moveQueue = new MutateQueue(this)
   var movesEnqueued: Long = 0
@@ -53,6 +52,7 @@ abstract class Entity(
   
   // These can be either in tiles or pixels, depending construction parameter
   // |screenSpace|.
+  def screenSpace: Boolean = false
   var graphicW: Float = 0f
   var graphicH: Float = 0f
 
@@ -140,7 +140,7 @@ abstract class Entity(
    * This method is called when event collides against another event during
    * movement.
    */
-  def eventTouchCallback(touchedNpcs: Iterable[EventEntity])
+  def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {}
 
   def update(delta: Float) = {
     if (!moveQueue.isEmpty) {

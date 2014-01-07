@@ -45,6 +45,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
   }
   
   private var _battle: Option[Battle] = None
+  private val _battleEntities = new collection.mutable.ArrayBuffer[BattleEntity]
 
   val screenCamera: OrthographicCamera = new OrthographicCamera()
   screenCamera.setToOrtho(true, 640, 480) // y points down
@@ -101,6 +102,8 @@ class ScreenLayer(game: MyGame, state: GameState) {
     for (i <- PictureSlots.BATTLE_BEGIN until PictureSlots.BATTLE_END) {
       game.scriptInterface.hidePicture(i)
     }
+    
+    _battleEntities.clear()
   }
   
   def update(delta: Float) = {

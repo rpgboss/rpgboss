@@ -11,7 +11,7 @@ import MyKeys.Right
 import MyKeys.Up
 
 class PlayerEntity(game: MyGame)
-  extends Entity(game: MyGame, screenSpace = false)
+  extends Entity(game: MyGame)
   with PlayerInputHandler {
   // Add input handling
   game.inputs.prepend(this)
@@ -124,7 +124,7 @@ class PlayerEntity(game: MyGame)
       0.05f /* delaySeconds */)
   }
 
-  def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
+  override def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.PLAYERTOUCH.id ||
