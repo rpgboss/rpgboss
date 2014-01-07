@@ -48,55 +48,6 @@ class MapLayer(game: MyGame) {
     batch.setProjectionMatrix(tileCamera.combined)
   }
 
-  // Generate and pack sprites
-  val spritesets = Map() ++ Spriteset.list(project).map(
-    name => (name, Spriteset.readFromDisk(project, name)))
-
-  val packerSprites =
-    new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
-  spritesets.foreach {
-    case (name, spriteset) =>
-      val srcPixmap = new Pixmap(
-        Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
-
-      val srcFormat = srcPixmap.getFormat()
-      if (srcFormat == Pixmap.Format.RGBA8888 ||
-        srcFormat == Pixmap.Format.RGBA4444) {
-
-        // Already has transparency. Pack and dispose.
-        packerSprites.pack(spriteset.name, srcPixmap)
-        srcPixmap.dispose()
-      } else if (srcFormat == Pixmap.Format.RGB888) {
-        // TODO: Optimize pixel transfer
-
-        // Build transparency from (0, 0) pixel
-        val dstPixmap = new Pixmap(
-          srcPixmap.getWidth(), srcPixmap.getHeight(), Pixmap.Format.RGBA8888)
-
-        val transparentVal = srcPixmap.getPixel(0, 0)
-
-        for (y <- 0 until srcPixmap.getHeight()) {
-          for (x <- 0 until srcPixmap.getWidth()) {
-            val curPixel = srcPixmap.getPixel(x, y)
-
-            if (curPixel != transparentVal) {
-              dstPixmap.drawPixel(x, y, curPixel)
-            }
-          }
-        }
-
-        packerSprites.pack(spriteset.name, dstPixmap)
-        srcPixmap.dispose()
-        dstPixmap.dispose()
-      }
-  }
-
-  game.logger.info("Packed sprites into %d pages".format(
-    packerSprites.getPages().size))
-
-  val atlasSprites = packerSprites.generateTextureAtlas(
-    TextureFilter.Nearest, TextureFilter.Nearest, false)
-
   def drawTile(batch: SpriteBatch, mapAndAssets: MapAndAssets, 
                whereInSecond: Float, tileX: Int, tileY: Int,
                byte1: Byte, byte2: Byte, byte3: Byte) = {
@@ -199,7 +150,7 @@ class MapLayer(game: MyGame) {
         if (tileI == tiles.size || 
             (entityI < zSortedEntities.size && 
             zSortedEntities(entityI).y < tiles(tileI).zPriority)) {
-          zSortedEntities(entityI).render(batch, atlasSprites)
+          zSortedEntities(entityI).render(batch, game.atlasSprites)
           entityI += 1
         } else {
           val tile = tiles(tileI)
@@ -219,7 +170,6 @@ class MapLayer(game: MyGame) {
   }
 
   def dispose() = {
-    atlasSprites.dispose()
     batch.dispose()
   }
 }

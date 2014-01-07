@@ -33,7 +33,7 @@ class GameState(game: MyGame, project: Project) {
 
   // protagonist. Modify all these things on the Gdx thread
   var playerEntity: PlayerEntity = new PlayerEntity(game)
-
+  
   val camera = new Camera(game)
   
   val persistent = new PersistentState()
@@ -107,12 +107,8 @@ class GameState(game: MyGame, project: Project) {
  * Need call on dispose first
  */
 case class PictureInfo(
-  project: Project,
-  name: String,
+  texture: Texture,
   x: Int, y: Int, w: Int, h: Int) {
-  val picture = Picture.readFromDisk(project, name)
-  val texture =
-    new Texture(Gdx.files.absolute(picture.dataFile.getAbsolutePath()))
 
   def dispose() = texture.dispose()
 

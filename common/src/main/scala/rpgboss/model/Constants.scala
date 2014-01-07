@@ -38,12 +38,15 @@ object Constants {
   }
   
   object PictureSlots {
-    val BACKGROUND = 0
-    val FOREGROUND = 8
-    val OVER_MAP_BACKGROUND = 24
-    val OVER_MAP_FOREGOUND = 32
-    val ABOVE_ALL = 56
-    val TOTAL = 64
+    val BELOW_MAP = 0
+    val ABOVE_MAP = 8
+    val BATTLE_BEGIN = 24
+    val BATTLE_BACKGROUND = 24
+    val BATTLE_SPRITES_ENEMIES = 28
+    val BATTLE_SPRITES_PARTY = 40
+    val BATTLE_END = 50
+    val ABOVE_WINDOW = 50
+    val END = 64
   }
 
   import DirectionMasks._

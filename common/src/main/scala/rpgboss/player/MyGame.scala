@@ -49,6 +49,11 @@ class MyGame(gamepath: File)
   var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
   val inputs = new MyInputMultiplexer()
+  
+  // Generate and pack sprites
+  val spritesets = Map() ++ Spriteset.list(project).map(
+    name => (name, Spriteset.readFromDisk(project, name)))
+  var atlasSprites: TextureAtlas = null
 
   /**
    * Run the following on the GUI thread
@@ -86,7 +91,52 @@ class MyGame(gamepath: File)
 
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
-
+  
+    val packerSprites =
+      new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
+    spritesets.foreach {
+      case (name, spriteset) =>
+        val srcPixmap = new Pixmap(
+          Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
+  
+        val srcFormat = srcPixmap.getFormat()
+        if (srcFormat == Pixmap.Format.RGBA8888 ||
+          srcFormat == Pixmap.Format.RGBA4444) {
+  
+          // Already has transparency. Pack and dispose.
+          packerSprites.pack(spriteset.name, srcPixmap)
+          srcPixmap.dispose()
+        } else if (srcFormat == Pixmap.Format.RGB888) {
+          // TODO: Optimize pixel transfer
+  
+          // Build transparency from (0, 0) pixel
+          val dstPixmap = new Pixmap(
+            srcPixmap.getWidth(), srcPixmap.getHeight(), Pixmap.Format.RGBA8888)
+  
+          val transparentVal = srcPixmap.getPixel(0, 0)
+  
+          for (y <- 0 until srcPixmap.getHeight()) {
+            for (x <- 0 until srcPixmap.getWidth()) {
+              val curPixel = srcPixmap.getPixel(x, y)
+  
+              if (curPixel != transparentVal) {
+                dstPixmap.drawPixel(x, y, curPixel)
+              }
+            }
+          }
+  
+          packerSprites.pack(spriteset.name, dstPixmap)
+          srcPixmap.dispose()
+          dstPixmap.dispose()
+        }
+    }
+  
+    logger.info("Packed sprites into %d pages".format(
+      packerSprites.getPages().size))
+  
+    atlasSprites = packerSprites.generateTextureAtlas(
+      TextureFilter.Nearest, TextureFilter.Nearest, false)
+    
     state = new GameState(this, project)
     scriptInterface = new ScriptInterface(this, state)
     mapLayer = new MapLayer(this)
@@ -106,6 +156,7 @@ class MyGame(gamepath: File)
     state.dispose()
     mapLayer.dispose()
     screenLayer.dispose()
+    atlasSprites.dispose()
   }
 
   override def pause() {}

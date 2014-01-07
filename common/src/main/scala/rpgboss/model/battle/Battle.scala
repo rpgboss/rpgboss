@@ -39,14 +39,14 @@ trait BattleCommander {
 
 class Battle(
   pData: ProjectData,
-  partyIds: Seq[Int],
+  val partyIds: Seq[Int],
   characterLevels: Seq[Int],
   initialCharacterHps: Seq[Int],
   initialCharacterMps: Seq[Int],
   characterEquip: Seq[Seq[Int]],
   initialCharacterTempStatusEffects: Seq[Seq[Int]],
   characterRows: Seq[Int],
-  encounter: Encounter,
+  val encounter: Encounter,
   commanders: Seq[BattleCommander]) {
   require(partyIds.forall(i => i >= 0 && i < pData.enums.characters.length))
   require(encounter.units.forall(

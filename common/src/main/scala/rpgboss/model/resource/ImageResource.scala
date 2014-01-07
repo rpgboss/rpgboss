@@ -6,6 +6,8 @@ import java.io._
 import java.awt.image._
 import javax.imageio._
 import java.awt.Graphics
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.Gdx
 
 trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   def tileH: Int
@@ -40,6 +42,9 @@ trait ImageResource[T, MT <: AnyRef] extends Resource[T, MT] {
   lazy val img = Option(ImageIO.read(dataFile)) getOrElse {
     throw ResourceException("Can't load window skin: %s".format(name))
   }
+  
+  def newGdxTexture = 
+    new Texture(Gdx.files.absolute(dataFile.getAbsolutePath()))
 }
 
 object ImageResource {

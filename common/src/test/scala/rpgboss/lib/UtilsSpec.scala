@@ -9,7 +9,7 @@ class UtilsSpec extends UnitSpec {
     val orig = Seq(TestClass())
     val resized = ArrayUtils.resized(orig, 3, TestClass.apply _)
     
-    resized(1) should not eq (resized(2))
+    resized(1) should not be theSameInstanceAs (resized(2))
   }
 
 }

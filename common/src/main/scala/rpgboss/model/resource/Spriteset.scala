@@ -83,8 +83,8 @@ case class Spriteset(proj: Project,
    * Gets the offset for a given sprite in texels
    *
    * @param index   Given between 0-7. The sprite number in the page.
-   * @param dir     One of Spriteset.DirectionOffsets. 0-3
-   * @param step    One of Spriteset.Steps. 0-3
+   * @param dir     One of SpriteSpec.Directions. 0-3
+   * @param step    One of SpriteSpec.Steps. 0-3
    */
   def srcTexels(index: Int, dir: Int, step: Int) = {
     val (xTile, yTile) = srcTile(index, dir, step)

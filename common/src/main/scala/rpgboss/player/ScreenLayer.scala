@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import rpgboss.model.battle._
 
 /**
  * This class renders stuff on the screen.
@@ -42,6 +43,8 @@ class ScreenLayer(game: MyGame, state: GameState) {
     lastWindowId += 1
     lastWindowId
   }
+  
+  private var _battle: Option[Battle] = None
 
   val screenCamera: OrthographicCamera = new OrthographicCamera()
   screenCamera.setToOrtho(true, 640, 480) // y points down
@@ -52,6 +55,54 @@ class ScreenLayer(game: MyGame, state: GameState) {
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
+  def startBattle(battle: Battle, bgPicture: Option[String]) = {
+    assert(_battle.isEmpty)
+    
+    bgPicture.map { picName =>
+      // TODO: Make more robust
+      game.scriptInterface.showPicture(PictureSlots.BATTLE_BACKGROUND, picName, 
+                                       0, 0, 640, 320)
+    }
+    
+    _battle = Some(battle)
+    
+    for ((unit, i) <- battle.encounter.units.zipWithIndex) {
+      val enemy = project.data.enums.enemies(unit.enemyIdx)
+      enemy.battler.map { battlerSpec =>
+        val battler = Battler.readFromDisk(project, battlerSpec.name)
+        val texture = battler.newGdxTexture
+        game.scriptInterface.showTexture(
+          PictureSlots.BATTLE_SPRITES_ENEMIES + i, 
+          texture, 
+          unit.x, 
+          unit.y, 
+          (texture.getWidth() * battlerSpec.scale).toInt, 
+          (texture.getHeight() * battlerSpec.scale).toInt)
+      }
+    }
+    
+    for ((partyId, i) <- battle.partyIds.zipWithIndex) {
+      val character = project.data.enums.characters(partyId)
+      character.sprite.map { spriteSpec =>
+        val sprite = Spriteset.readFromDisk(project, spriteSpec.name)
+        val (xTexel, yTexel) = 
+          sprite.srcTexels(spriteSpec.spriteIndex, 
+                           SpriteSpec.Directions.WEST,
+                           SpriteSpec.Steps.STILL)
+        
+      }
+    }
+  }
+  
+  def endBattle() = {
+    assert(_battle.isDefined)
+    _battle = None
+    
+    for (i <- PictureSlots.BATTLE_BEGIN until PictureSlots.BATTLE_END) {
+      game.scriptInterface.hidePicture(i)
+    }
+  }
+  
   def update(delta: Float) = {
     // Update windows
     if (!windows.isEmpty)
@@ -65,7 +116,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
   def preMapRender() = {
     batch.begin()
     
-    for (i <- PictureSlots.BACKGROUND until PictureSlots.FOREGROUND;
+    for (i <- PictureSlots.BELOW_MAP until PictureSlots.ABOVE_MAP;
          pic <- state.persistent.pictures(i)) {
       pic.render(batch)
     } 
@@ -85,8 +136,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
 
     batch.begin()
 
-    // Render pictures
-    for (i <- PictureSlots.FOREGROUND until PictureSlots.TOTAL;
+    for (i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
          pic <- state.persistent.pictures(i)) {
       pic.render(batch)
     }
@@ -94,6 +144,11 @@ class ScreenLayer(game: MyGame, state: GameState) {
     // Render all windows
     windows.foreach(_.render(batch))
 
+    for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.END;
+         pic <- state.persistent.pictures(i)) {
+      pic.render(batch)
+    }
+    
     batch.end()
 
     // Render transition

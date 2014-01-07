@@ -5,6 +5,7 @@ import rpgboss.model.resource._
 import com.badlogic.gdx.Gdx
 import aurelienribon.tweenengine._
 import rpgboss.player.entity._
+import com.badlogic.gdx.graphics.Texture
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -69,9 +70,19 @@ class ScriptInterface(game: MyGame, state: GameState) {
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =
     syncRun {
       persistent.pictures(slot).map(_.dispose())
-      persistent.pictures(slot) = Some(PictureInfo(project, name, x, y, w, h))
+      val picture = Picture.readFromDisk(project, name)
+      persistent.pictures(slot) = 
+        Some(PictureInfo(picture.newGdxTexture, x, y, w, h))
     }
 
+  // TODO: Reconcile with showPicture
+  def showTexture(slot: Int, texture: Texture, x: Int, y: Int, w: Int, h: Int) =
+    syncRun {
+      persistent.pictures(slot).map(_.dispose())
+      persistent.pictures(slot) = 
+        Some(PictureInfo(texture, x, y, w, h))
+    }
+  
   def hidePicture(slot: Int) = syncRun {
     persistent.pictures(slot).map(_.dispose())
     persistent.pictures(slot) = None
