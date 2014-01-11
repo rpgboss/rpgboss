@@ -20,7 +20,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
 class MapLayer(game: MyGame) {
 
   def project = game.project
-  def state = game.state
+  def mapLayerState = game.mapLayerState
   val batch = new SpriteBatch()
 
   var screenW = 20.0
@@ -35,12 +35,12 @@ class MapLayer(game: MyGame) {
   tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
 
   def updateCameraLoc() = {
-    cameraL = state.camera.x - screenW / 2
-    cameraR = state.camera.x + screenW / 2
-    cameraT = state.camera.y - screenH / 2
-    cameraB = state.camera.y + screenH / 2
-    tileCamera.position.x = state.camera.x
-    tileCamera.position.y = state.camera.y
+    cameraL = mapLayerState.camera.x - screenW / 2
+    cameraR = mapLayerState.camera.x + screenW / 2
+    cameraT = mapLayerState.camera.y - screenH / 2
+    cameraB = mapLayerState.camera.y + screenH / 2
+    tileCamera.position.x = mapLayerState.camera.x
+    tileCamera.position.y = mapLayerState.camera.y
     tileCamera.update()
 
     // Set the projection matrix to the combined camera matrices
@@ -95,7 +95,7 @@ class MapLayer(game: MyGame) {
   def update(delta: Float) = {
   }
 
-  def render() = state.mapAndAssetsOption map { mapAndAssets =>
+  def render() = mapLayerState.mapAndAssetsOption map { mapAndAssets =>
     import mapAndAssets._
 
     import Tileset._
@@ -133,7 +133,7 @@ class MapLayer(game: MyGame) {
     // Get a list of all the entities within the camera's view, sorted by 
     // their y position.
     val zSortedEntities = 
-      (state.playerEntity :: state.eventEntities.values.toList)
+      (mapLayerState.playerEntity :: mapLayerState.eventEntities.values.toList)
         .filter(e => (e.x >= cameraL - 2) && (e.x <= cameraR + 2) &&
                      (e.y >= cameraT - 2) && (e.y <= cameraB + 2))
         .sortBy(_.y).toArray

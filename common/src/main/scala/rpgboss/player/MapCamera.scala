@@ -14,36 +14,34 @@ case class CameraInfo(x: Float, y: Float, speed: Float, moveQueueLength: Int)
  *  Callers must move the camera back to the player if they don't want the
  *  camera to jerk afterwards.
  */
-class Camera(game: MyGame) {
+class MapCamera(game: MyGame) {
   var x: Float = 0f
   var y: Float = 0f
   var speed: Float = 2f // tiles per second
-  val moveQueue = new MutateQueue(this)
-  
-  def state = game.state
-  
+  val moveQueue = new MutateQueue(MapCamera.this)
+    
   def info = CameraInfo(x, y, speed, moveQueue.queue.length)
   
   def update(delta: Float) = {
     if (moveQueue.isEmpty) {
-      x = game.state.playerEntity.x
-      y = game.state.playerEntity.y
+      x = game.mapLayerState.playerEntity.x
+      y = game.mapLayerState.playerEntity.y
     } else {
       moveQueue.runQueueItem(delta)
     }
   }
   
-  def enqueueMove(dx: Float, dy: Float): CameraMove = {
-    val move = new CameraMove(dx, dy)
+  def enqueueMove(dx: Float, dy: Float): MapCameraMove = {
+    val move = new MapCameraMove(dx, dy)
     moveQueue.enqueue(move)
     return move
   }
 }
 
-class CameraMove(dx: Float, dy: Float) extends MutateQueueItem[Camera] {
+class MapCameraMove(dx: Float, dy: Float) extends MutateQueueItem[MapCamera] {
   private val _remaining = new Vector2(dx, dy)
 
-  def update(delta: Float, c: Camera) = {
+  def update(delta: Float, c: MapCamera) = {
     val maxTravel = delta * c.speed
     if (_remaining.len() <= maxTravel) {
       c.x += _remaining.x

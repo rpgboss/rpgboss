@@ -48,6 +48,7 @@ class MyGame(gamepath: File)
 
   var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
+  var battleState: BattleState = null
   val inputs = new MyInputMultiplexer()
   
   // Generate and pack sprites
@@ -82,7 +83,7 @@ class MyGame(gamepath: File)
    */
 
   var persistent: PersistentState = null
-  var state: GameState = null
+  var mapLayerState: MapLayerState = null
   var scriptInterface: ScriptInterface = null
 
   val assets = new RpgAssetManager(project)
@@ -140,10 +141,11 @@ class MyGame(gamepath: File)
     
     persistent = new PersistentState()
     
-    state = new GameState(this, project)
-    scriptInterface = new ScriptInterface(this, state)
+    mapLayerState = new MapLayerState(this, project)
+    battleState = new BattleState(this, project)
+    scriptInterface = new ScriptInterface(this, mapLayerState)
     mapLayer = new MapLayer(this)
-    screenLayer = new ScreenLayer(this, state)
+    screenLayer = new ScreenLayer(this, mapLayerState)
 
     // Register accessors
     TweenAccessors.registerAccessors()
@@ -156,7 +158,7 @@ class MyGame(gamepath: File)
   }
 
   override def dispose() {
-    state.dispose()
+    mapLayerState.dispose()
     mapLayer.dispose()
     screenLayer.dispose()
     atlasSprites.dispose()
@@ -179,14 +181,21 @@ class MyGame(gamepath: File)
 
     if (assets.update()) {
       // update state
-      state.update(delta)
+      if (!battleState.battleActive) {
+        mapLayerState.update(delta)
+      }
+      battleState.update(delta)
 
-      mapLayer.update(delta)
+      if (!battleState.battleActive) {
+        mapLayer.update(delta)
+      }
       screenLayer.update(delta)
 
       // Render the two layers
       screenLayer.preMapRender()
-      mapLayer.render()
+      if (!battleState.battleActive) {
+        mapLayer.render()
+      }
       screenLayer.render()
     } else {
       // TODO: loading screen

@@ -21,7 +21,7 @@ import rpgboss.model.battle._
  *  
  *  All these methods should be called on the Gdx thread only.
  */
-class GameState(game: MyGame, project: Project) {
+class MapLayerState(game: MyGame, project: Project) {
   val tweenManager = new TweenManager()
 
   val musics = Array.fill[Option[GdxMusic]](8)(None)
@@ -36,7 +36,7 @@ class GameState(game: MyGame, project: Project) {
   // protagonist. Modify all these things on the Gdx thread
   var playerEntity: PlayerEntity = new PlayerEntity(game)
   
-  val camera = new Camera(game)
+  val camera = new MapCamera(game)
   
   // All the events on the current map, including the player event
   var eventEntities = Map[Int, EventEntity]()
@@ -49,7 +49,7 @@ class GameState(game: MyGame, project: Project) {
       val mapAndAssets = new MapAndAssets(project, mapNameOption.get)
       mapAndAssetsOption = Some(mapAndAssets)
       eventEntities = mapAndAssets.mapData.events.map {
-        case (k, v) => (k, new EventEntity(game, mapName, v))
+        case (k, v) => ((k, new EventEntity(game, mapName, v)))
       }
     } else {
       mapAndAssetsOption.map(_.dispose())

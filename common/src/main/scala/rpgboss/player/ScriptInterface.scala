@@ -15,7 +15,7 @@ object EntityInfo {
 
 // These methods should be called only from scripting threads. Calling these 
 // methods on the Gdx threads will likely cause deadlocks.
-class ScriptInterface(game: MyGame, state: GameState) {
+class ScriptInterface(game: MyGame, state: MapLayerState) {
   private def persistent = game.persistent
   private def project = game.project
   import game.syncRun
