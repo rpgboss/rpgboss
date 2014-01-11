@@ -15,6 +15,7 @@ import rpgboss.player.entity.PlayerEntity
 import rpgboss.player.entity.EventEntity
 import rpgboss.player.entity.Entity
 import aurelienribon.tweenengine._
+import rpgboss.model.battle._
 
 /** This class contains all the state information about the game.
  *  
@@ -82,7 +83,7 @@ class GameState(game: MyGame, project: Project) {
     persistent.getStringArray(key)
   def setStringArray(key: String, value: Array[String]) =
     persistent.setStringArray(key, value)
-    
+      
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {
     // Update tweens
