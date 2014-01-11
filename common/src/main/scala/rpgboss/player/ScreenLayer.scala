@@ -66,7 +66,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
     batch.begin()
     
     for (i <- PictureSlots.BELOW_MAP until PictureSlots.ABOVE_MAP;
-         pic <- state.persistent.pictures(i)) {
+         pic <- game.persistent.pictures(i)) {
       pic.render(batch)
     } 
     
@@ -86,7 +86,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
     batch.begin()
 
     for (i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
-         pic <- state.persistent.pictures(i)) {
+         pic <- game.persistent.pictures(i)) {
       pic.render(batch)
     }
 
@@ -94,7 +94,7 @@ class ScreenLayer(game: MyGame, state: GameState) {
     windows.foreach(_.render(batch))
 
     for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.END;
-         pic <- state.persistent.pictures(i)) {
+         pic <- game.persistent.pictures(i)) {
       pic.render(batch)
     }
     

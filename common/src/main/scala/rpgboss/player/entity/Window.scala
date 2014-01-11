@@ -35,7 +35,7 @@ object Window {
     nameCtrl.replaceAllIn(raw, rMatch => nameList(rMatch.group(1).toInt))
   def variableReplace(raw: String, game: MyGame) = {
     variableCtrl.replaceAllIn(raw, rMatch => 
-      game.state.getInt(rMatch.group(1)).toString)
+      game.persistent.getInt(rMatch.group(1)).toString)
   }
 }
 
@@ -209,7 +209,7 @@ class WindowText(
     xOffset: Float, yOffset: Float) = {
     val namesProcessedText = Window.nameReplace(
         text, 
-        game.state.getStringArray(game.scriptInterface.CHARACTER_NAMES))
+        game.persistent.getStringArray(game.scriptInterface.CHARACTER_NAMES))
     
     val intProcessedText = Window.variableReplace(namesProcessedText, game)
     

@@ -31,25 +31,25 @@ class GameState(game: MyGame, project: Project) {
 
   // current map
   var mapAndAssetsOption: Option[MapAndAssets] = None
+  def mapName = mapAndAssetsOption.map(_.map.name)
 
   // protagonist. Modify all these things on the Gdx thread
   var playerEntity: PlayerEntity = new PlayerEntity(game)
   
   val camera = new Camera(game)
   
-  val persistent = new PersistentState()
-
   // All the events on the current map, including the player event
   var eventEntities = Map[Int, EventEntity]()
   
-  def updateMapAssets(mapName: Option[String]) = {
-    if (mapName.isDefined) {
+  def updateMapAssets(mapNameOption: Option[String]) = {
+    if (mapNameOption.isDefined) {
+      val mapName = mapNameOption.get
       mapAndAssetsOption.map(_.dispose())
 
-      val mapAndAssets = new MapAndAssets(project, mapName.get)
+      val mapAndAssets = new MapAndAssets(project, mapNameOption.get)
       mapAndAssetsOption = Some(mapAndAssets)
       eventEntities = mapAndAssets.mapData.events.map {
-        case (k, v) => (k, new EventEntity(game, v))
+        case (k, v) => (k, new EventEntity(game, mapName, v))
       }
     } else {
       mapAndAssetsOption.map(_.dispose())
@@ -57,32 +57,6 @@ class GameState(game: MyGame, project: Project) {
       eventEntities = Map.empty
     }
   }
-  
-  def getEventState(eventId: Int): Int = {
-    if (playerEntity.mapName.isDefined)
-      persistent.getEventState(playerEntity.mapName.get, eventId)
-    else
-      -1
-  }
-  def setEventState(eventId: Int, newState: Int): Unit = {
-    if (playerEntity.mapName.isDefined)
-      persistent.getEventState(playerEntity.mapName.get, eventId)
-  }
-      
-  def getInt(key: String): Int = persistent.getInt(key)
-  def setInt(key: String, value: Int) = {
-    persistent.setInt(key, value)
-    eventEntities.values.foreach(_.updateState())
-  }
-
-  def getIntArray(key: String): Array[Int] = persistent.getIntArray(key)
-  def setIntArray(key: String, value: Array[Int]) =
-    persistent.setIntArray(key, value)
-  
-  def getStringArray(key: String): Array[String] = 
-    persistent.getStringArray(key)
-  def setStringArray(key: String, value: Array[String]) =
-    persistent.setStringArray(key, value)
       
   // Called every frame... by MyGame's render call. 
   def update(delta: Float) = {

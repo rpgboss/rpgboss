@@ -13,7 +13,7 @@ import scala.collection.mutable.ArrayBuffer
  * This class wraps a map and its assets. It should only be instantiated
  * on the Gdx thread, as it makes calls to OpenGL
  */
-class MapAndAssets(project: Project, mapName: String) {
+class MapAndAssets(project: Project, val mapName: String) {
   val map: RpgMap = RpgMap.readFromDisk(project, mapName)
   val mapData: RpgMapData = map.readMapData().get
 

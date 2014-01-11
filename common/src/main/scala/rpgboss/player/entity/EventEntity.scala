@@ -1,12 +1,13 @@
 package rpgboss.player.entity
 
 import rpgboss.model.event._
-import rpgboss.player.MyGame
-import rpgboss.player.ScriptThread
+import rpgboss.player._
 import rpgboss.model.SpriteSpec
 import scala.concurrent.Promise
+import scala.collection.mutable.Subscriber
+import scala.collection.script.Message
 
-class EventEntity(game: MyGame, val mapEvent: RpgEvent)
+class EventEntity(game: MyGame, mapName: String, val mapEvent: RpgEvent)
   extends Entity(game, mapEvent.x, mapEvent.y) {
   
   def id = mapEvent.id
@@ -16,9 +17,19 @@ class EventEntity(game: MyGame, val mapEvent: RpgEvent)
   var evtStateIdx = 0
 
   def evtState = mapEvent.states(evtStateIdx)
+  
+  val persistentListener = 
+    new Subscriber[PersistentStateUpdate, PersistentState#Pub] {
+    def notify(pub: PersistentState#Pub, evt: PersistentStateUpdate) = 
+      evt match {
+        case EventStateChange(mapName, id) => updateState()
+        case _ => Unit
+      }
+    game.persistent.subscribe(this) 
+  }
 
   def updateState() = {
-    evtStateIdx = game.state.getEventState(mapEvent.id)
+    evtStateIdx = game.persistent.getEventState(mapName, mapEvent.id)
     setSprite(evtState.sprite)
   }
   updateState()

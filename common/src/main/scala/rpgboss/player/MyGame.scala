@@ -81,6 +81,7 @@ class MyGame(gamepath: File)
    * change the projection and modelview (transform) matrices.
    */
 
+  var persistent: PersistentState = null
   var state: GameState = null
   var scriptInterface: ScriptInterface = null
 
@@ -136,6 +137,8 @@ class MyGame(gamepath: File)
   
     atlasSprites = packerSprites.generateTextureAtlas(
       TextureFilter.Nearest, TextureFilter.Nearest, false)
+    
+    persistent = new PersistentState()
     
     state = new GameState(this, project)
     scriptInterface = new ScriptInterface(this, state)

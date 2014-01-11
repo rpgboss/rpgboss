@@ -16,7 +16,7 @@ object EntityInfo {
 // These methods should be called only from scripting threads. Calling these 
 // methods on the Gdx threads will likely cause deadlocks.
 class ScriptInterface(game: MyGame, state: GameState) {
-  private def persistent = state.persistent
+  private def persistent = game.persistent
   private def project = game.project
   import game.syncRun
   
@@ -252,21 +252,23 @@ class ScriptInterface(game: MyGame, state: GameState) {
   }
 
   def getInt(key: String): Int = syncRun {
-    state.getInt(key)
+    persistent.getInt(key)
   }
-  // This must be synchronized because this updates event states
   def setInt(key: String, value: Int) = syncRun {
-    state.setInt(key, value)
+    persistent.setInt(key, value)
   }
-
-  def getIntArray(key: String): Array[Int] = persistent.getIntArray(key)
-  def setIntArray(key: String, value: Array[Int]) =
+  def getIntArray(key: String): Array[Int] = syncRun {
+    persistent.getIntArray(key)
+  }
+  def setIntArray(key: String, value: Array[Int]) = syncRun {
     persistent.setIntArray(key, value)
-
-  def getStringArray(key: String): Array[String] = 
+  } 
+  def getStringArray(key: String): Array[String] = syncRun {
     persistent.getStringArray(key)
-  def setStringArray(key: String, value: Array[String]) =
+  }
+  def setStringArray(key: String, value: Array[String]) = syncRun {
     persistent.setStringArray(key, value)
+  }
     
   def setNewGameVars() = {
     syncRun {
