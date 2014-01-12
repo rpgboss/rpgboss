@@ -142,7 +142,7 @@ class MyGame(gamepath: File)
     
     battleState = new BattleState(this, project)
     mapLayer = new MapLayer(this)
-    screenLayer = new ScreenLayer(this)
+    screenLayer = new ScreenLayer(project)
     scriptInterface = new ScriptInterface(this, mapLayer)
 
     // Register accessors

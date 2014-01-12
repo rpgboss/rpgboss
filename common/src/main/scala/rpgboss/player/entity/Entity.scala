@@ -28,9 +28,6 @@ import rpgboss.player._
  * It is the bottom center of the sprite.
  * 
  * Bottom edge length is boundBoxTiles.
- * 
- * @param   screenSpace     If this is true, the units used by this entity are
- *                          assumed to be pixels instead of tiles.
  */
 class Entity(
   val game: MyGame,
@@ -50,9 +47,6 @@ class Entity(
   var spriteset: Spriteset = null
   var spriteIdx: Int = -1
   
-  // These can be either in tiles or pixels, depending construction parameter
-  // |screenSpace|.
-  def screenSpace: Boolean = false
   var graphicW: Float = 0f
   var graphicH: Float = 0f
 
@@ -100,9 +94,8 @@ class Entity(
     spriteset = game.spritesets(s.name)
     spriteIdx = s.spriteIndex
     
-    val divisor = if (screenSpace) 1.0 else Tileset.tilesize.toDouble
-    graphicW = (spriteset.tileW.toDouble / divisor).toFloat
-    graphicH = (spriteset.tileH.toDouble / divisor).toFloat
+    graphicW = (spriteset.tileW.toDouble / Tileset.tilesize).toFloat
+    graphicH = (spriteset.tileH.toDouble / Tileset.tilesize).toFloat
     // Minus the delta to allow events to fit into tiles easily
     setBoundingBoxHalfsize((graphicW - collisionDeltas) * 0.5f)
     dir = s.dir
@@ -156,32 +149,8 @@ class Entity(
 
   def render(batch: SpriteBatch, atlasSprites: TextureAtlas) = {
     if (spriteset != null) {
-      val region = atlasSprites.findRegion(spriteset.name)
-      val step = currentStep()
-      val (srcX, srcY) = spriteset.srcTexels(spriteIdx, dir, step)
-
-      /*
-       * Given the definition of the position (see beginning of the file),
-       * calculate the top-left corner of the graphic we draw.
-       * We use top-left because we have flipped the y-axis in libgdx to match
-       * the map coordinates we use.
-       */
-      val dstOriginX: Float = x - graphicW / 2.0f
-      val dstOriginY: Float = y - graphicH + graphicW / 2
-
-      val srcXInRegion = region.getRegionX() + srcX
-      val srcYInRegion = region.getRegionY() + srcY
-
-      batch.draw(
-        region.getTexture(),
-        dstOriginX.toFloat,
-        dstOriginY.toFloat,
-        graphicW, graphicH,
-        srcXInRegion,
-        srcYInRegion,
-        spriteset.tileW,
-        spriteset.tileH,
-        false, true)
+      GdxGraphicsUtils.renderSprite(batch, atlasSprites, spriteset, spriteIdx, 
+          dir, currentStep(), x, y, graphicW, graphicH)
     }
   }
 }

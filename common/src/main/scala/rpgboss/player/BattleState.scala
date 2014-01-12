@@ -6,10 +6,12 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 
+case class PartyBattler(spriteSpec: SpriteSpec)
+
 class BattleState(game: MyGame, project: Project) {
   // Battle variables
   private var _battle: Option[Battle] = None
-  private val _battleEntities = new collection.mutable.ArrayBuffer[BattleEntity]
+  private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
   
   def battleActive = _battle.isDefined
   
@@ -44,7 +46,7 @@ class BattleState(game: MyGame, project: Project) {
       character.sprite.map { spriteSpec =>
         val x = 600
         val y = 40 * i + 100
-        _battleEntities.append(new BattleEntity(game, x, y, spriteSpec))
+        _partyBattlers.append(PartyBattler(spriteSpec))
       }
     }
   }
@@ -57,7 +59,7 @@ class BattleState(game: MyGame, project: Project) {
       game.scriptInterface.hidePicture(i)
     }
     
-    _battleEntities.clear()
+    _partyBattlers.clear()
   }
      
   def update(delta: Float) = {

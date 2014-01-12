@@ -20,8 +20,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
  * 
  * This class should only be accessed on the gdx thread
  */
-class ScreenLayer(game: MyGame) {
-  def project = game.project
+class ScreenLayer(project: Project) {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
   
