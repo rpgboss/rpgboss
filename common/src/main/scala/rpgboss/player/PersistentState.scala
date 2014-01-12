@@ -15,12 +15,8 @@ case class EventStateChange(key: (String, Int), value: Int)
 class PersistentState 
   extends ThreadChecked
   with Publisher[PersistentStateUpdate] {
-  val pictures = Array.fill[Option[PictureInfo]](64)(None)
-
   private val globalInts = new MutableHashMap[String, Int]
-
   private val intArrays = new MutableHashMap[String, Array[Int]]
-
   private val stringArrays = new MutableHashMap[String, Array[String]]
 
   // mapName->eventId->state

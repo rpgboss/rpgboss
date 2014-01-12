@@ -36,6 +36,7 @@ class ScreenLayer(game: MyGame, state: MapLayerState) {
   
   private var lastWindowId: Long = 0
   
+  val pictures = Array.fill[Option[PictureInfo]](64)(None)
   val windows = new collection.mutable.ArrayBuffer[Window]
   
   def getWindowId() : Long = {
@@ -66,7 +67,7 @@ class ScreenLayer(game: MyGame, state: MapLayerState) {
     batch.begin()
     
     for (i <- PictureSlots.BELOW_MAP until PictureSlots.ABOVE_MAP;
-         pic <- game.persistent.pictures(i)) {
+         pic <- pictures(i)) {
       pic.render(batch)
     } 
     
@@ -86,7 +87,7 @@ class ScreenLayer(game: MyGame, state: MapLayerState) {
     batch.begin()
 
     for (i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
-         pic <- game.persistent.pictures(i)) {
+         pic <- pictures(i)) {
       pic.render(batch)
     }
 
@@ -94,7 +95,7 @@ class ScreenLayer(game: MyGame, state: MapLayerState) {
     windows.foreach(_.render(batch))
 
     for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.END;
-         pic <- game.persistent.pictures(i)) {
+         pic <- pictures(i)) {
       pic.render(batch)
     }
     

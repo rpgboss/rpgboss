@@ -69,23 +69,23 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
 
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =
     syncRun {
-      persistent.pictures(slot).map(_.dispose())
+      game.screenLayer.pictures(slot).map(_.dispose())
       val picture = Picture.readFromDisk(project, name)
-      persistent.pictures(slot) = 
+      game.screenLayer.pictures(slot) = 
         Some(PictureInfo(picture.newGdxTexture, x, y, w, h))
     }
 
   // TODO: Reconcile with showPicture
   def showTexture(slot: Int, texture: Texture, x: Int, y: Int, w: Int, h: Int) =
     syncRun {
-      persistent.pictures(slot).map(_.dispose())
-      persistent.pictures(slot) = 
+      game.screenLayer.pictures(slot).map(_.dispose())
+      game.screenLayer.pictures(slot) = 
         Some(PictureInfo(texture, x, y, w, h))
     }
   
   def hidePicture(slot: Int) = syncRun {
-    persistent.pictures(slot).map(_.dispose())
-    persistent.pictures(slot) = None
+    game.screenLayer.pictures(slot).map(_.dispose())
+    game.screenLayer.pictures(slot) = None
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
