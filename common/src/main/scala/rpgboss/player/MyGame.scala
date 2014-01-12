@@ -49,7 +49,7 @@ class MyGame(gamepath: File)
   var mapLayer: MapLayer = null
   var screenLayer: ScreenLayer = null
   var battleState: BattleState = null
-  val inputs = new MyInputMultiplexer()
+  val inputs = new InputMultiplexer()
   
   // Generate and pack sprites
   val spritesets = Map() ++ Spriteset.list(project).map(

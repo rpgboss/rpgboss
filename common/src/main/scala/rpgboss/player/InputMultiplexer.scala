@@ -80,7 +80,7 @@ trait ChoiceInputHandler extends InputHandler {
 /**
  * As in libgdx, delegation stops once a handler returns true
  */
-class MyInputMultiplexer extends InputAdapter {
+class InputMultiplexer extends InputAdapter {
   val inputProcessors = new scala.collection.mutable.ListBuffer[InputHandler]()
 
   def hasFocus(handler: InputHandler) = 
