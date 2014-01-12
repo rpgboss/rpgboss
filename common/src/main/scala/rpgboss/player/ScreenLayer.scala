@@ -20,7 +20,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
  * 
  * This class should only be accessed on the gdx thread
  */
-class ScreenLayer(game: MyGame, state: MapLayerState) {
+class ScreenLayer(game: MyGame) {
   def project = game.project
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
@@ -119,5 +119,22 @@ class ScreenLayer(game: MyGame, state: MapLayerState) {
 
   def dispose() = {
     batch.dispose()
+  }
+}
+
+/**
+ * Need call on dispose first
+ */
+case class PictureInfo(
+  texture: Texture,
+  x: Int, y: Int, w: Int, h: Int) {
+
+  def dispose() = texture.dispose()
+
+  def render(batch: SpriteBatch) = {
+    batch.draw(texture,
+      x, y, w, h,
+      0, 0, texture.getWidth(), texture.getHeight(),
+      false, true)
   }
 }

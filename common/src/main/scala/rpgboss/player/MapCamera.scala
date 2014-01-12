@@ -24,8 +24,8 @@ class MapCamera(game: MyGame) {
   
   def update(delta: Float) = {
     if (moveQueue.isEmpty) {
-      x = game.mapLayerState.playerEntity.x
-      y = game.mapLayerState.playerEntity.y
+      x = game.mapLayer.playerEntity.x
+      y = game.mapLayer.playerEntity.y
     } else {
       moveQueue.runQueueItem(delta)
     }

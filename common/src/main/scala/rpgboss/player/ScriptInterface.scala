@@ -15,7 +15,7 @@ object EntityInfo {
 
 // These methods should be called only from scripting threads. Calling these 
 // methods on the Gdx threads will likely cause deadlocks.
-class ScriptInterface(game: MyGame, state: MapLayerState) {
+class ScriptInterface(game: MyGame, mapLayer: MapLayer) {
   private def persistent = game.persistent
   private def project = game.project
   import game.syncRun
@@ -35,25 +35,25 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
    */
 
   def setPlayerSprite(spritespec: Option[SpriteSpec]) = syncRun {
-    state.playerEntity.setSprite(spritespec)
+    mapLayer.playerEntity.setSprite(spritespec)
   }
 
   def setPlayerLoc(loc: MapLoc) = syncRun {
-    state.playerEntity.x = loc.x
-    state.playerEntity.y = loc.y
-    state.playerEntity.mapName = Some(loc.map)
+    mapLayer.playerEntity.x = loc.x
+    mapLayer.playerEntity.y = loc.y
+    mapLayer.playerEntity.mapName = Some(loc.map)
     
-    state.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map)) 
+    mapLayer.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map)) 
   }
   
   def moveCamera(dx: Float, dy: Float, async: Boolean) = {
-    val move = syncRun { state.camera.enqueueMove(dx, dy) }
+    val move = syncRun { mapLayer.camera.enqueueMove(dx, dy) }
     if (!async)
       move.awaitDone()
   }
   
   def getCameraPos() = syncRun {
-    state.camera.info
+    mapLayer.camera.info
   }
 
   /* 
@@ -92,7 +92,7 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDurationMs: Int) = syncRun {
 
-    state.musics(slot).map({ oldMusic =>
+    mapLayer.musics(slot).map({ oldMusic =>
       val tweenMusic = new GdxMusicTweenable(oldMusic)
       Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
         .target(0f)
@@ -102,10 +102,10 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
               oldMusic.stop()
             }
           }
-        }).start(state.tweenManager)
+        }).start(mapLayer.tweenManager)
     })
 
-    state.musics(slot) = specOpt.map { spec =>
+    mapLayer.musics(slot) = specOpt.map { spec =>
       val resource = Music.readFromDisk(project, spec.sound)
       resource.loadAsset(game.assets)
       // TODO: fix this blocking call
@@ -121,7 +121,7 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
       // Setup volume tween
       val tweenMusic = new GdxMusicTweenable(newMusic)
       Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
-        .target(spec.volume).start(state.tweenManager)
+        .target(spec.volume).start(mapLayer.tweenManager)
 
       newMusic
     }
@@ -197,21 +197,21 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
   }
   
   def getPlayerEntityInfo(): EntityInfo = syncRun {
-    EntityInfo(state.playerEntity)
+    EntityInfo(mapLayer.playerEntity)
   }
   
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
-    state.eventEntities.get(id).map(EntityInfo.apply)
+    mapLayer.eventEntities.get(id).map(EntityInfo.apply)
   }
   
   def movePlayer(dx: Float, dy: Float,
                  affixDirection: Boolean = false, 
                  async: Boolean = false) = {
-    moveEntity(state.playerEntity, dx, dy, affixDirection, async)
+    moveEntity(mapLayer.playerEntity, dx, dy, affixDirection, async)
   }
   
   def activateEvent(id: Int, awaitFinish: Boolean) = {
-    val eventOpt = state.eventEntities.get(id)
+    val eventOpt = mapLayer.eventEntities.get(id)
     val scriptOpt = eventOpt.flatMap(_.activate(SpriteSpec.Directions.NONE))
     
     if (awaitFinish)
@@ -223,7 +223,7 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
   def moveEvent(id: Int, dx: Float, dy: Float,
                 affixDirection: Boolean = false, 
                 async: Boolean = false) = {
-    val entityOpt = state.eventEntities.get(id)
+    val entityOpt = mapLayer.eventEntities.get(id)
     entityOpt.foreach { entity => 
       moveEntity(entity, dx, dy, affixDirection, async)
     }
@@ -273,7 +273,7 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
     
   def setNewGameVars() = {
     syncRun {
-      state.playerEntity.setSprite(project.data.enums.characters.head.sprite)
+      mapLayer.playerEntity.setSprite(project.data.enums.characters.head.sprite)
     }
     // Initialize data structures
     setIntArray(PARTY, project.data.startup.startingParty.toArray);

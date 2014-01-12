@@ -83,7 +83,6 @@ class MyGame(gamepath: File)
    */
 
   var persistent: PersistentState = null
-  var mapLayerState: MapLayerState = null
   var scriptInterface: ScriptInterface = null
 
   val assets = new RpgAssetManager(project)
@@ -141,11 +140,10 @@ class MyGame(gamepath: File)
     
     persistent = new PersistentState()
     
-    mapLayerState = new MapLayerState(this, project)
     battleState = new BattleState(this, project)
-    scriptInterface = new ScriptInterface(this, mapLayerState)
     mapLayer = new MapLayer(this)
-    screenLayer = new ScreenLayer(this, mapLayerState)
+    screenLayer = new ScreenLayer(this)
+    scriptInterface = new ScriptInterface(this, mapLayer)
 
     // Register accessors
     TweenAccessors.registerAccessors()
@@ -158,7 +156,6 @@ class MyGame(gamepath: File)
   }
 
   override def dispose() {
-    mapLayerState.dispose()
     mapLayer.dispose()
     screenLayer.dispose()
     atlasSprites.dispose()
@@ -181,12 +178,9 @@ class MyGame(gamepath: File)
 
     if (assets.update()) {
       // update state
-      if (!battleState.battleActive) {
-        mapLayerState.update(delta)
-      }
-      battleState.update(delta)
-
-      if (!battleState.battleActive) {
+      if (battleState.battleActive) {
+        battleState.update(delta)
+      } else {
         mapLayer.update(delta)
       }
       screenLayer.update(delta)

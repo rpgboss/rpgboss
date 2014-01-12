@@ -1,14 +1,16 @@
 package rpgboss.player
 
-import rpgboss.model._
-import rpgboss.model.resource._
+import aurelienribon.tweenengine.TweenManager
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.utils.Logger
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
-import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.audio.{ Music => GdxMusic }
+import rpgboss.model._
+import rpgboss.model.resource._
+import rpgboss.player.entity._
 
 /**
  * *
@@ -18,9 +20,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
  * ApplicationListener.
  */
 class MapLayer(game: MyGame) {
-
   def project = game.project
-  def mapLayerState = game.mapLayerState
   val batch = new SpriteBatch()
 
   var screenW = 20.0
@@ -34,13 +34,46 @@ class MapLayer(game: MyGame) {
   val tileCamera: OrthographicCamera = new OrthographicCamera()
   tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
 
+  val tweenManager = new TweenManager()
+
+  val musics = Array.fill[Option[GdxMusic]](8)(None)
+  
+  // current map
+  var mapAndAssetsOption: Option[MapAndAssets] = None
+  def mapName = mapAndAssetsOption.map(_.map.name)
+
+  // protagonist. Modify all these things on the Gdx thread
+  var playerEntity: PlayerEntity = new PlayerEntity(game)
+  
+  val camera = new MapCamera(game)
+  
+  // All the events on the current map, including the player event
+  var eventEntities = Map[Int, EventEntity]()
+  
+  def updateMapAssets(mapNameOption: Option[String]) = {
+    if (mapNameOption.isDefined) {
+      val mapName = mapNameOption.get
+      mapAndAssetsOption.map(_.dispose())
+
+      val mapAndAssets = new MapAndAssets(project, mapNameOption.get)
+      mapAndAssetsOption = Some(mapAndAssets)
+      eventEntities = mapAndAssets.mapData.events.map {
+        case (k, v) => ((k, new EventEntity(game, mapName, v)))
+      }
+    } else {
+      mapAndAssetsOption.map(_.dispose())
+      mapAndAssetsOption = None
+      eventEntities = Map.empty
+    }
+  }
+  
   def updateCameraLoc() = {
-    cameraL = mapLayerState.camera.x - screenW / 2
-    cameraR = mapLayerState.camera.x + screenW / 2
-    cameraT = mapLayerState.camera.y - screenH / 2
-    cameraB = mapLayerState.camera.y + screenH / 2
-    tileCamera.position.x = mapLayerState.camera.x
-    tileCamera.position.y = mapLayerState.camera.y
+    cameraL = camera.x - screenW / 2
+    cameraR = camera.x + screenW / 2
+    cameraT = camera.y - screenH / 2
+    cameraB = camera.y + screenH / 2
+    tileCamera.position.x = camera.x
+    tileCamera.position.y = camera.y
     tileCamera.update()
 
     // Set the projection matrix to the combined camera matrices
@@ -93,9 +126,17 @@ class MapLayer(game: MyGame) {
     
   // Update. Called on Gdx thread before render.
   def update(delta: Float) = {
+    // Update tweens
+    tweenManager.update(delta)
+
+    // Update events, including player event
+    eventEntities.values.foreach(_.update(delta))
+    playerEntity.update(delta)
+
+    camera.update(delta)
   }
 
-  def render() = mapLayerState.mapAndAssetsOption map { mapAndAssets =>
+  def render() = mapAndAssetsOption map { mapAndAssets =>
     import mapAndAssets._
 
     import Tileset._
@@ -133,7 +174,7 @@ class MapLayer(game: MyGame) {
     // Get a list of all the entities within the camera's view, sorted by 
     // their y position.
     val zSortedEntities = 
-      (mapLayerState.playerEntity :: mapLayerState.eventEntities.values.toList)
+      (playerEntity :: eventEntities.values.toList)
         .filter(e => (e.x >= cameraL - 2) && (e.x <= cameraR + 2) &&
                      (e.y >= cameraT - 2) && (e.y <= cameraB + 2))
         .sortBy(_.y).toArray
@@ -170,6 +211,7 @@ class MapLayer(game: MyGame) {
   }
 
   def dispose() = {
+    mapAndAssetsOption.map(_.dispose())
     batch.dispose()
   }
 }
