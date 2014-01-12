@@ -64,7 +64,8 @@ class ScriptInterface(game: MyGame, state: MapLayerState) {
     startAlpha: Float,
     endAlpha: Float,
     durationMs: Int) = syncRun {
-    state.curTransition = Some(Transition(startAlpha, endAlpha, durationMs))
+    game.screenLayer.curTransition = 
+      Some(Transition(startAlpha, endAlpha, durationMs))
   }
 
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =

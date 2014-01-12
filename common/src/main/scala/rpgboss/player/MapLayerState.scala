@@ -25,10 +25,7 @@ class MapLayerState(game: MyGame, project: Project) {
   val tweenManager = new TweenManager()
 
   val musics = Array.fill[Option[GdxMusic]](8)(None)
-
-  // Should only be modified on the Gdx thread
-  var curTransition: Option[Transition] = None
-
+  
   // current map
   var mapAndAssetsOption: Option[MapAndAssets] = None
   def mapName = mapAndAssetsOption.map(_.map.name)

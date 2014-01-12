@@ -24,6 +24,9 @@ class ScreenLayer(game: MyGame, state: MapLayerState) {
   def project = game.project
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
+  
+  // Should only be modified on the Gdx thread
+  var curTransition: Option[Transition] = None
 
   val windowskin = 
     Windowskin.readFromDisk(project, project.data.startup.windowskin)
@@ -102,7 +105,7 @@ class ScreenLayer(game: MyGame, state: MapLayerState) {
     batch.end()
 
     // Render transition
-    state.curTransition map { transition =>
+    curTransition map { transition =>
 
       // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL10.GL_BLEND)
