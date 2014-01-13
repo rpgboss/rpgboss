@@ -47,10 +47,9 @@ class MyGame(gamepath: File)
   val fps = new FPSLogger()
 
   var mapLayer: MapLayer = null
-  var screenLayer: ScreenLayer = null
   var battleState: BattleState = null
   val inputs = new InputMultiplexer()
-  
+
   // Generate and pack sprites
   val spritesets = Map() ++ Spriteset.list(project).map(
     name => (name, Spriteset.readFromDisk(project, name)))
@@ -87,62 +86,67 @@ class MyGame(gamepath: File)
 
   val assets = new RpgAssetManager(project)
 
+  def activeScreen =
+    if (battleState.battleActive)
+      battleState.screenLayer
+    else
+      mapLayer.screenLayer
+
   def create() = {
     com.badlogic.gdx.utils.Timer.instance().start()
 
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
-  
+
     val packerSprites =
       new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
     spritesets.foreach {
       case (name, spriteset) =>
         val srcPixmap = new Pixmap(
           Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
-  
+
         val srcFormat = srcPixmap.getFormat()
         if (srcFormat == Pixmap.Format.RGBA8888 ||
           srcFormat == Pixmap.Format.RGBA4444) {
-  
+
           // Already has transparency. Pack and dispose.
           packerSprites.pack(spriteset.name, srcPixmap)
           srcPixmap.dispose()
         } else if (srcFormat == Pixmap.Format.RGB888) {
           // TODO: Optimize pixel transfer
-  
+
           // Build transparency from (0, 0) pixel
           val dstPixmap = new Pixmap(
             srcPixmap.getWidth(), srcPixmap.getHeight(), Pixmap.Format.RGBA8888)
-  
+
           val transparentVal = srcPixmap.getPixel(0, 0)
-  
+
           for (y <- 0 until srcPixmap.getHeight()) {
             for (x <- 0 until srcPixmap.getWidth()) {
               val curPixel = srcPixmap.getPixel(x, y)
-  
+
               if (curPixel != transparentVal) {
                 dstPixmap.drawPixel(x, y, curPixel)
               }
             }
           }
-  
+
           packerSprites.pack(spriteset.name, dstPixmap)
           srcPixmap.dispose()
           dstPixmap.dispose()
         }
     }
-  
+
     logger.info("Packed sprites into %d pages".format(
       packerSprites.getPages().size))
-  
+
     atlasSprites = packerSprites.generateTextureAtlas(
       TextureFilter.Nearest, TextureFilter.Nearest, false)
-    
+
     persistent = new PersistentState()
-    
+
     battleState = new BattleState(this, project)
     mapLayer = new MapLayer(this)
-    screenLayer = new ScreenLayer(project)
     scriptInterface = new ScriptInterface(this, mapLayer)
 
     // Register accessors
@@ -156,8 +160,8 @@ class MyGame(gamepath: File)
   }
 
   override def dispose() {
+    battleState.dispose()
     mapLayer.dispose()
-    screenLayer.dispose()
     atlasSprites.dispose()
   }
 
@@ -180,17 +184,11 @@ class MyGame(gamepath: File)
       // update state
       if (battleState.battleActive) {
         battleState.update(delta)
+        battleState.render()
       } else {
         mapLayer.update(delta)
-      }
-      screenLayer.update(delta)
-
-      // Render the two layers
-      screenLayer.preMapRender()
-      if (!battleState.battleActive) {
         mapLayer.render()
       }
-      screenLayer.render()
     } else {
       // TODO: loading screen
     }

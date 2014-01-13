@@ -11,11 +11,13 @@ import rpgboss.player.MyKeys
 import com.badlogic.gdx.assets.AssetManager
 import scala.concurrent._
 import scala.concurrent.duration.Duration
-import rpgboss.player.MyGame
+import rpgboss.player._
 
 class ChoiceWindow(
   id: Long,
-  game: MyGame,
+  persistent: PersistentState,
+  screenLayer: ScreenLayer,
+  inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
   lines: Array[String] = Array(),
@@ -33,8 +35,8 @@ class ChoiceWindow(
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
   extends Window(
-      id, game, assets, proj, x, y, w, h, skin, skinRegion, fontbmp,
-      initialState, openCloseMs)
+    id, screenLayer, inputs, assets, proj, x, y, w, h, skin, skinRegion,
+    fontbmp, initialState, openCloseMs)
   with ChoiceInputHandler {
   val xpad = 24
   val ypad = 24
@@ -59,7 +61,7 @@ class ChoiceWindow(
     }
 
     val windowTexts = for (i <- 0 until columns) yield new WindowText(
-      game,
+      persistent,
       columnChoicesAry(i).toArray,
       x + xpad + textColW*i,
       y + ypad,
@@ -157,16 +159,14 @@ class ChoiceWindow(
     }
   }
 
-  def hasFocus = game.inputs.hasFocus(this)
+  def hasFocus = inputs.hasFocus(this)
 
-  def takeFocus() = game.syncRun {
-    println("takeFocus %d".format(id))
-
-    game.screenLayer.windows.find(_.id == id).map { window =>
-      game.inputs.remove(window)
-      game.screenLayer.windows -= window
-      game.inputs.prepend(window)
-      game.screenLayer.windows.prepend(window)
+  def takeFocus() = {
+    screenLayer.windows.find(_.id == id).map { window =>
+      inputs.remove(window)
+      screenLayer.windows -= window
+      inputs.prepend(window)
+      screenLayer.windows.prepend(window)
     }
   }
 

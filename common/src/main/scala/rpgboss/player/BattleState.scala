@@ -12,35 +12,37 @@ class BattleState(game: MyGame, project: Project) {
   // Battle variables
   private var _battle: Option[Battle] = None
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
-  
+
+  val screenLayer = new ScreenLayer(project)
+
   def battleActive = _battle.isDefined
-  
+
   def startBattle(battle: Battle, bgPicture: Option[String]) = {
     assert(_battle.isEmpty)
-    
+
     bgPicture.map { picName =>
       // TODO: Make more robust
-      game.scriptInterface.showPicture(PictureSlots.BATTLE_BACKGROUND, picName, 
+      game.scriptInterface.showPicture(PictureSlots.BATTLE_BACKGROUND, picName,
                                        0, 0, 640, 320)
     }
-    
+
     _battle = Some(battle)
-    
+
     for ((unit, i) <- battle.encounter.units.zipWithIndex) {
       val enemy = project.data.enums.enemies(unit.enemyIdx)
       enemy.battler.map { battlerSpec =>
         val battler = Battler.readFromDisk(project, battlerSpec.name)
         val texture = battler.newGdxTexture
         game.scriptInterface.showTexture(
-          PictureSlots.BATTLE_SPRITES_ENEMIES + i, 
-          texture, 
-          unit.x, 
-          unit.y, 
-          (texture.getWidth() * battlerSpec.scale).toInt, 
+          PictureSlots.BATTLE_SPRITES_ENEMIES + i,
+          texture,
+          unit.x,
+          unit.y,
+          (texture.getWidth() * battlerSpec.scale).toInt,
           (texture.getHeight() * battlerSpec.scale).toInt)
       }
     }
-    
+
     for ((partyId, i) <- battle.partyIds.zipWithIndex) {
       val character = project.data.enums.characters(partyId)
       character.sprite.map { spriteSpec =>
@@ -50,19 +52,24 @@ class BattleState(game: MyGame, project: Project) {
       }
     }
   }
-  
+
   def endBattle() = {
     assert(_battle.isDefined)
     _battle = None
-    
+
     for (i <- PictureSlots.BATTLE_BEGIN until PictureSlots.BATTLE_END) {
       game.scriptInterface.hidePicture(i)
     }
-    
+
     _partyBattlers.clear()
   }
-     
+
   def update(delta: Float) = {
+    screenLayer.update(delta)
+  }
+
+  def render() = {
+    screenLayer.render()
   }
 
   /**

@@ -23,6 +23,8 @@ class MapLayer(game: MyGame) {
   def project = game.project
   val batch = new SpriteBatch()
 
+  val screenLayer = new ScreenLayer(project)
+
   var screenW = 20.0
   var screenH = 15.0
 
@@ -37,19 +39,19 @@ class MapLayer(game: MyGame) {
   val tweenManager = new TweenManager()
 
   val musics = Array.fill[Option[GdxMusic]](8)(None)
-  
+
   // current map
   var mapAndAssetsOption: Option[MapAndAssets] = None
   def mapName = mapAndAssetsOption.map(_.map.name)
 
   // protagonist. Modify all these things on the Gdx thread
   var playerEntity: PlayerEntity = new PlayerEntity(game)
-  
+
   val camera = new MapCamera(game)
-  
+
   // All the events on the current map, including the player event
   var eventEntities = Map[Int, EventEntity]()
-  
+
   def updateMapAssets(mapNameOption: Option[String]) = {
     if (mapNameOption.isDefined) {
       val mapName = mapNameOption.get
@@ -66,7 +68,7 @@ class MapLayer(game: MyGame) {
       eventEntities = Map.empty
     }
   }
-  
+
   def updateCameraLoc() = {
     cameraL = camera.x - screenW / 2
     cameraR = camera.x + screenW / 2
@@ -81,7 +83,7 @@ class MapLayer(game: MyGame) {
     batch.setProjectionMatrix(tileCamera.combined)
   }
 
-  def drawTile(batch: SpriteBatch, mapAndAssets: MapAndAssets, 
+  def drawTile(batch: SpriteBatch, mapAndAssets: MapAndAssets,
                whereInSecond: Float, tileX: Int, tileY: Int,
                byte1: Byte, byte2: Byte, byte3: Byte) = {
     if (byte1 < 0) {
@@ -123,7 +125,7 @@ class MapLayer(game: MyGame) {
         false, true)
     }
   }
-    
+
   // Update. Called on Gdx thread before render.
   def update(delta: Float) = {
     // Update tweens
@@ -134,9 +136,11 @@ class MapLayer(game: MyGame) {
     playerEntity.update(delta)
 
     camera.update(delta)
+
+    screenLayer.update(delta)
   }
 
-  def render() = mapAndAssetsOption map { mapAndAssets =>
+  def renderMap() = mapAndAssetsOption map { mapAndAssets =>
     import mapAndAssets._
 
     import Tileset._
@@ -153,9 +157,9 @@ class MapLayer(game: MyGame) {
     val whereInSecond = (System.currentTimeMillis() % 1000).toFloat / 1000f
 
     batch.begin()
-    
+
     // Draw all the tiles
-    for (layerAry <- 
+    for (layerAry <-
          List(mapData.botLayer, mapData.midLayer, mapData.topLayer)) {
       for (tileY <- tileT to tileB) {
         val row = layerAry(tileY)
@@ -165,15 +169,15 @@ class MapLayer(game: MyGame) {
           val byte1 = row(idx)
           val byte2 = row(idx + 1)
           val byte3 = row(idx + 2)
-          drawTile(batch, mapAndAssets, whereInSecond, tileX, tileY, byte1, 
+          drawTile(batch, mapAndAssets, whereInSecond, tileX, tileY, byte1,
                    byte2, byte3)
         }
       }
     }
 
-    // Get a list of all the entities within the camera's view, sorted by 
+    // Get a list of all the entities within the camera's view, sorted by
     // their y position.
-    val zSortedEntities = 
+    val zSortedEntities =
       (playerEntity :: eventEntities.values.toList)
         .filter(e => (e.x >= cameraL - 2) && (e.x <= cameraR + 2) &&
                      (e.y >= cameraT - 2) && (e.y <= cameraB + 2))
@@ -184,30 +188,36 @@ class MapLayer(game: MyGame) {
       var entityI = 0
       var tileI = 0
       def tiles = mapAndAssets.elevatedTiles
-      
+
       // Iterate through both the list of elevated tiles and entities,
       // drawing the 'lower' item on each iteration.
       while (entityI < zSortedEntities.size || tileI < tiles.size) {
-        if (tileI == tiles.size || 
-            (entityI < zSortedEntities.size && 
+        if (tileI == tiles.size ||
+            (entityI < zSortedEntities.size &&
             zSortedEntities(entityI).y < tiles(tileI).zPriority)) {
           zSortedEntities(entityI).render(batch, game.atlasSprites)
           entityI += 1
         } else {
           val tile = tiles(tileI)
-          
+
           if ((tile.tileX >= cameraL - 2) && (tile.tileX <= cameraR + 2) &&
               (tile.tileY >= cameraT - 2) && (tile.tileY <= cameraB + 2)) {
             drawTile(batch, mapAndAssets, whereInSecond, tile.tileX, tile.tileY,
                      tile.byte1, tile.byte2, tile.byte3)
           }
-          
+
           tileI += 1
         }
       }
     }
-    
+
     batch.end()
+  }
+
+  def render() = {
+    screenLayer.preMapRender()
+    renderMap()
+    screenLayer.render()
   }
 
   def dispose() = {

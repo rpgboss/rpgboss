@@ -13,13 +13,39 @@ object EntityInfo {
   def apply(e: Entity): EntityInfo = apply(e.x, e.y, e.dir)
 }
 
-// These methods should be called only from scripting threads. Calling these 
+trait HasScriptConstants {
+  val LEFT = Window.Left
+  val CENTER = Window.Center
+  val RIGHT = Window.Right
+
+  val PARTY = "party"
+  val INVENTORY_IDXS = "inventoryIdxs"
+  val INVENTORY_QTYS = "inventoryQtys"
+  val CHARACTER_NAMES = "characterNames"
+  val CHARACTER_LEVELS = "characterLevels"
+  val CHARACTER_HPS = "characterHps"
+  val CHARACTER_MPS = "characterMps"
+  val CHARACTER_MAX_HPS = "characterMaxHps"
+  val CHARACTER_MAX_MPS = "characterMaxMps"
+  val CHARACTER_ROW = "characterRow"
+
+  def CHARACTER_EQUIP(characterId: Int) =
+    "characterEquip-%d".format(characterId)
+
+  def CHARACTER_STATUS_EFFECTS(characterId: Int) =
+    "characterStatusEffects-%d".format(characterId)
+
+  val PICTURE_SLOTS = Constants.PictureSlots
+}
+
+// These methods should be called only from scripting threads. Calling these
 // methods on the Gdx threads will likely cause deadlocks.
-class ScriptInterface(game: MyGame, mapLayer: MapLayer) {
+class ScriptInterface(game: MyGame, mapLayer: MapLayer)
+  extends HasScriptConstants{
   private def persistent = game.persistent
   private def project = game.project
   import game.syncRun
-  
+
   /*
    * The below functions are all called from the script threads only.
    */
@@ -42,21 +68,21 @@ class ScriptInterface(game: MyGame, mapLayer: MapLayer) {
     mapLayer.playerEntity.x = loc.x
     mapLayer.playerEntity.y = loc.y
     mapLayer.playerEntity.mapName = Some(loc.map)
-    
-    mapLayer.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map)) 
+
+    mapLayer.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map))
   }
-  
+
   def moveCamera(dx: Float, dy: Float, async: Boolean) = {
     val move = syncRun { mapLayer.camera.enqueueMove(dx, dy) }
     if (!async)
       move.awaitDone()
   }
-  
+
   def getCameraPos() = syncRun {
     mapLayer.camera.info
   }
 
-  /* 
+  /*
    * Things to do with the screen
    */
 
@@ -64,29 +90,29 @@ class ScriptInterface(game: MyGame, mapLayer: MapLayer) {
     startAlpha: Float,
     endAlpha: Float,
     durationMs: Int) = syncRun {
-    game.screenLayer.curTransition = 
+    game.activeScreen.curTransition =
       Some(Transition(startAlpha, endAlpha, durationMs))
   }
 
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) =
     syncRun {
-      game.screenLayer.pictures(slot).map(_.dispose())
+      game.activeScreen.pictures(slot).map(_.dispose())
       val picture = Picture.readFromDisk(project, name)
-      game.screenLayer.pictures(slot) = 
+      game.activeScreen.pictures(slot) =
         Some(PictureInfo(picture.newGdxTexture, x, y, w, h))
     }
 
   // TODO: Reconcile with showPicture
   def showTexture(slot: Int, texture: Texture, x: Int, y: Int, w: Int, h: Int) =
     syncRun {
-      game.screenLayer.pictures(slot).map(_.dispose())
-      game.screenLayer.pictures(slot) = 
+      game.activeScreen.pictures(slot).map(_.dispose())
+      game.activeScreen.pictures(slot) =
         Some(PictureInfo(texture, x, y, w, h))
     }
-  
+
   def hidePicture(slot: Int) = syncRun {
-    game.screenLayer.pictures(slot).map(_.dispose())
-    game.screenLayer.pictures(slot) = None
+    game.activeScreen.pictures(slot).map(_.dispose())
+    game.activeScreen.pictures(slot) = None
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
@@ -143,24 +169,26 @@ class ScriptInterface(game: MyGame, mapLayer: MapLayer) {
     allowCancel: Boolean): ChoiceWindow = {
     syncRun {
       val window = new ChoiceWindow(
-        game.screenLayer.getWindowId(),
-        game,
+        game.activeScreen.getWindowId(),
+        game.persistent,
+        game.activeScreen,
+        game.inputs,
         game.assets,
         project,
         lines,
         x, y, w, h,
-        game.screenLayer.windowskin,
-        game.screenLayer.windowskinRegion,
-        game.screenLayer.fontbmp,
+        game.activeScreen.windowskin,
+        game.activeScreen.windowskinRegion,
+        game.activeScreen.fontbmp,
         initialState = Window.Opening,
         justification = justification,
         columns = columns,
         displayedLines = displayedLines,
         allowCancel = allowCancel)
 
-      game.screenLayer.windows.prepend(window)
+      game.activeScreen.windows.prepend(window)
       game.inputs.prepend(window)
-      
+
       window
     }
   }
@@ -177,76 +205,78 @@ class ScriptInterface(game: MyGame, mapLayer: MapLayer) {
   def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
                     msPerChar: Int) = {
     val window = new PrintingTextWindow(
-      game.screenLayer.getWindowId(),
-      game,
+      game.activeScreen.getWindowId(),
+      game.persistent,
+      game.activeScreen,
+      game.inputs,
       game.assets,
       project,
       text,
       x, y, w, h,
-      game.screenLayer.windowskin,
-      game.screenLayer.windowskinRegion,
-      game.screenLayer.fontbmp,
+      game.activeScreen.windowskin,
+      game.activeScreen.windowskinRegion,
+      game.activeScreen.fontbmp,
       msPerChar)
 
     syncRun {
-      game.screenLayer.windows.prepend(window)
+      game.activeScreen.windows.prepend(window)
       game.inputs.prepend(window)
     }
 
     window
   }
-  
+
   def getPlayerEntityInfo(): EntityInfo = syncRun {
     EntityInfo(mapLayer.playerEntity)
   }
-  
+
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
     mapLayer.eventEntities.get(id).map(EntityInfo.apply)
   }
-  
+
   def movePlayer(dx: Float, dy: Float,
-                 affixDirection: Boolean = false, 
+                 affixDirection: Boolean = false,
                  async: Boolean = false) = {
     moveEntity(mapLayer.playerEntity, dx, dy, affixDirection, async)
   }
-  
+
   def activateEvent(id: Int, awaitFinish: Boolean) = {
     val eventOpt = mapLayer.eventEntities.get(id)
     val scriptOpt = eventOpt.flatMap(_.activate(SpriteSpec.Directions.NONE))
-    
+
     if (awaitFinish)
       scriptOpt.map(_.awaitFinish())
-    
+
     scriptOpt.isDefined
   }
-  
+
   def moveEvent(id: Int, dx: Float, dy: Float,
-                affixDirection: Boolean = false, 
+                affixDirection: Boolean = false,
                 async: Boolean = false) = {
     val entityOpt = mapLayer.eventEntities.get(id)
-    entityOpt.foreach { entity => 
+    entityOpt.foreach { entity =>
       moveEntity(entity, dx, dy, affixDirection, async)
     }
     entityOpt.isDefined
   }
-    
+
   private def moveEntity(entity: Entity, dx: Float, dy: Float,
-                         affixDirection: Boolean = false, 
+                         affixDirection: Boolean = false,
                          async: Boolean = false) = {
     import SpriteSpec.Directions._
     if (dx != 0 || dy != 0) {
       if (!affixDirection) {
-        val direction = 
+        val direction =
           if (math.abs(dx) > math.abs(dy))
             if (dx > 0) EAST else WEST
           else
             if (dy > 0) SOUTH else NORTH
         syncRun { entity.enqueueMove(EntityFaceDirection(direction)) }
       }
-      
+
       val move = EntityMove(dx, dy)
       syncRun { entity.enqueueMove(move) }
-      
+
       if (!async)
         move.awaitDone()
     }
@@ -263,58 +293,39 @@ class ScriptInterface(game: MyGame, mapLayer: MapLayer) {
   }
   def setIntArray(key: String, value: Array[Int]) = syncRun {
     persistent.setIntArray(key, value)
-  } 
+  }
   def getStringArray(key: String): Array[String] = syncRun {
     persistent.getStringArray(key)
   }
   def setStringArray(key: String, value: Array[String]) = syncRun {
     persistent.setStringArray(key, value)
   }
-    
+
   def setNewGameVars() = {
     syncRun {
       mapLayer.playerEntity.setSprite(project.data.enums.characters.head.sprite)
     }
     // Initialize data structures
     setIntArray(PARTY, project.data.startup.startingParty.toArray);
-    
+
     var characters = project.data.enums.characters.toArray;
     setStringArray(CHARACTER_NAMES, characters.map(_.name));
-    
+
     setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
-    
+
     val characterStats = for (c <- characters)
-      yield BattleStats(project.data, c.baseStats(project.data, c.initLevel), 
+      yield BattleStats(project.data, c.baseStats(project.data, c.initLevel),
                         c.startingEquipment)
-    
+
     setIntArray(CHARACTER_HPS, characterStats.map(_.mhp))
     setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
     setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
     setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
-    
+
     setIntArray(CHARACTER_MAX_MPS, characters.map(x => 0))
   }
-    
-  val LEFT = Window.Left
-  val CENTER = Window.Center
-  val RIGHT = Window.Right
+}
 
-  val PARTY = "party"
-  val INVENTORY_IDXS = "inventoryIdxs"
-  val INVENTORY_QTYS = "inventoryQtys"
-  val CHARACTER_NAMES = "characterNames"
-  val CHARACTER_LEVELS = "characterLevels"
-  val CHARACTER_HPS = "characterHps"
-  val CHARACTER_MPS = "characterMps"
-  val CHARACTER_MAX_HPS = "characterMaxHps"
-  val CHARACTER_MAX_MPS = "characterMaxMps"
-  val CHARACTER_ROW = "characterRow"
-    
-  def CHARACTER_EQUIP(characterId: Int) = 
-    "characterEquip-%d".format(characterId)
-    
-  def CHARACTER_STATUS_EFFECTS(characterId: Int) = 
-    "characterStatusEffects-%d".format(characterId)
-  
-  val PICTURE_SLOTS = Constants.PictureSlots
+object ScriptInterfaceConstants extends HasScriptConstants {
+
 }

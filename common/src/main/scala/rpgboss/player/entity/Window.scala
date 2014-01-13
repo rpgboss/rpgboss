@@ -11,11 +11,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.assets.AssetManager
 import scala.concurrent.Promise
-import rpgboss.player.InputHandler
-import rpgboss.player.MyKeys
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import rpgboss.player.MyGame
+import rpgboss.player._
 
 object Window {
   val Opening = 0
@@ -30,19 +28,20 @@ object Window {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
   val nameCtrl = """\\[Nn]\[(\d+)\]""".r
   val variableCtrl = """\\[Vv]\[([a-zA-Z_$][\w_$]*)\]""".r
-  
+
   def nameReplace(raw: String, nameList: Array[String]) =
     nameCtrl.replaceAllIn(raw, rMatch => nameList(rMatch.group(1).toInt))
-  def variableReplace(raw: String, game: MyGame) = {
-    variableCtrl.replaceAllIn(raw, rMatch => 
-      game.persistent.getInt(rMatch.group(1)).toString)
+  def variableReplace(raw: String, persistent: PersistentState) = {
+    variableCtrl.replaceAllIn(raw, rMatch =>
+      persistent.getInt(rMatch.group(1)).toString)
   }
 }
 
 // stateAge starts at 0 and goes up as window opens or closes
 class Window(
   val id: Long,
-  game: MyGame,
+  screenLayer: ScreenLayer,
+  inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
   val x: Int, val y: Int, val w: Int, val h: Int,
@@ -100,22 +99,22 @@ class Window(
     if (state != Window.Closing && state != Window.Closed)
       changeState(Window.Closing)
   }
-  
+
   def postClose() = {
     closePromise.success(0)
   }
-  
+
   def awaitClose() = {
     Await.result(closePromise.future, Duration.Inf)
   }
-  
+
   def destroy() = {
     close()
-    
+
     awaitClose()
-    
-    game.inputs.remove(this)
-    game.screenLayer.windows -= this
+
+    inputs.remove(this)
+    screenLayer.windows -= this
   }
 
   // This is used to either convey a choice, or simply that the window
@@ -125,7 +124,9 @@ class Window(
 
 class PrintingTextWindow(
   id: Long,
-  game: MyGame,
+  persistent: PersistentState,
+  screenLayer: ScreenLayer,
+  inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
   text: Array[String] = Array(),
@@ -139,23 +140,23 @@ class PrintingTextWindow(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends Window(
-    id, game, assets, proj, x, y, w, h, skin, skinRegion, fontbmp, initialState,
-    openCloseMs) {
+    id, screenLayer, inputs, assets, proj, x, y, w, h, skin, skinRegion,
+    fontbmp, initialState, openCloseMs) {
   val xpad = 24
   val ypad = 24
-  
+
   val textImage = new PrintingWindowText(
-    game,
+    persistent,
     text,
-    x + xpad, 
-    y + ypad, 
-    w - 2*xpad, 
-    h - 2*ypad, 
+    x + xpad,
+    y + ypad,
+    w - 2*xpad,
+    h - 2*ypad,
     skin,
-    skinRegion, 
-    fontbmp, 
-    msPerChar, 
-    linesPerBlock, 
+    skinRegion,
+    fontbmp,
+    msPerChar,
+    linesPerBlock,
     justification)
 
   override def keyDown(key: Int) = {
@@ -193,13 +194,13 @@ class PrintingTextWindow(
 }
 
 class WindowText(
-  game: MyGame,
+  persistent: PersistentState,
   text: Array[String],
   x: Int, y: Int, w: Int, h: Int,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
   var lineHeight: Int = 32) {
-  
+
   def setLineHeight(height: Int) = {
     lineHeight = height
   }
@@ -208,15 +209,16 @@ class WindowText(
     b: SpriteBatch, text: String,
     xOffset: Float, yOffset: Float) = {
     val namesProcessedText = Window.nameReplace(
-        text, 
-        game.persistent.getStringArray(game.scriptInterface.CHARACTER_NAMES))
-    
-    val intProcessedText = Window.variableReplace(namesProcessedText, game)
-    
+        text,
+        persistent.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES))
+
+    val intProcessedText =
+      Window.variableReplace(namesProcessedText, persistent)
+
     val processedText = intProcessedText
-    
+
     val colorCodesExist = Window.colorCtrl.findFirstIn(processedText).isDefined
-    
+
     // Make left-aligned if color codes exist
     val fontAlign = if (colorCodesExist) {
       HAlignment.LEFT
@@ -227,37 +229,37 @@ class WindowText(
         case Window.Right => HAlignment.RIGHT
       }
     }
-    
+
     // Draw shadow
     fontbmp.setColor(Color.BLACK)
     fontbmp.drawMultiLine(b, processedText,
       x + xOffset + 2,
       y + yOffset + 2,
       w, fontAlign)
-      
+
     fontbmp.setColor(Color.WHITE)
-    
+
     // Finds first color token, prints everything behind it, sets the color
     // and then does it again with the remaining text.
     @annotation.tailrec
-    def printUntilColorTokenOrEnd(remainingText: CharSequence, 
+    def printUntilColorTokenOrEnd(remainingText: CharSequence,
                                   xStart: Float): Unit = {
       if (remainingText.length() == 0)
         return
-      
+
       val rMatchOption = Window.colorCtrl.findFirstMatchIn(remainingText)
       val textToPrintNow = rMatchOption.map(_.before).getOrElse(remainingText)
-      
-      val textBounds = 
+
+      val textBounds =
         fontbmp.drawMultiLine(b, textToPrintNow,
           xStart,
           y + yOffset,
           w, fontAlign)
-      
-      printUntilColorTokenOrEnd(rMatchOption.map(_.after).getOrElse(""), 
+
+      printUntilColorTokenOrEnd(rMatchOption.map(_.after).getOrElse(""),
                                 xStart + textBounds.width)
     }
-    
+
     printUntilColorTokenOrEnd(processedText, x + xOffset)
   }
 
@@ -274,7 +276,7 @@ class WindowText(
 }
 
 class PrintingWindowText(
-  game: MyGame,
+  persistent: PersistentState,
   text: Array[String],
   x: Int, y: Int, w: Int, h: Int,
   skin: Windowskin,
@@ -283,7 +285,7 @@ class PrintingWindowText(
   msPerChar: Int = 50,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends WindowText(game, text, x, y, w, h, fontbmp, justification) {
+  extends WindowText(persistent, text, x, y, w, h, fontbmp, justification) {
 
   def drawAwaitingArrow = true
 
