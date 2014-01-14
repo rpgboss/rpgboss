@@ -55,6 +55,22 @@ class ScreenLayer(project: Project) {
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
   
+  def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) = {
+    val picture = Picture.readFromDisk(project, name)
+    showTexture(slot, picture.newGdxTexture, x, y, w, h)
+  }
+
+  def showTexture(slot: Int, texture: Texture, x: Int, y: Int, w: Int, 
+                  h: Int) = {    
+    pictures(slot).map(_.dispose())
+    pictures(slot) = Some(PictureInfo(texture, x, y, w, h))
+  }
+  
+  def hidePicture(slot: Int) = {
+    pictures(slot).map(_.dispose())
+    pictures(slot) = None
+  }
+
   def update(delta: Float) = {
     // Update windows
     if (!windows.isEmpty)
@@ -118,6 +134,9 @@ class ScreenLayer(project: Project) {
 
   def dispose() = {
     batch.dispose()
+    for (pictureOpt <- pictures; picture <- pictureOpt) {
+      picture.dispose()
+    }
   }
 }
 

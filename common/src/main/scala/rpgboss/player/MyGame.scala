@@ -145,7 +145,7 @@ class MyGame(gamepath: File)
 
     persistent = new PersistentState()
 
-    battleState = new BattleState(this, project)
+    battleState = new BattleState(project)
     mapLayer = new MapLayer(this)
     scriptInterface = new ScriptInterface(this, mapLayer)
 

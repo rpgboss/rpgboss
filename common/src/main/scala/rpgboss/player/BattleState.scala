@@ -8,7 +8,7 @@ import rpgboss.player.entity._
 
 case class PartyBattler(spriteSpec: SpriteSpec)
 
-class BattleState(game: MyGame, project: Project) {
+class BattleState(project: Project) {
   // Battle variables
   private var _battle: Option[Battle] = None
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
@@ -22,8 +22,8 @@ class BattleState(game: MyGame, project: Project) {
 
     bgPicture.map { picName =>
       // TODO: Make more robust
-      game.scriptInterface.showPicture(PictureSlots.BATTLE_BACKGROUND, picName,
-                                       0, 0, 640, 320)
+      screenLayer.showPicture(PictureSlots.BATTLE_BACKGROUND, picName, 
+                              0, 0, 640, 320)
     }
 
     _battle = Some(battle)
@@ -33,7 +33,7 @@ class BattleState(game: MyGame, project: Project) {
       enemy.battler.map { battlerSpec =>
         val battler = Battler.readFromDisk(project, battlerSpec.name)
         val texture = battler.newGdxTexture
-        game.scriptInterface.showTexture(
+        screenLayer.showTexture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           texture,
           unit.x,
@@ -58,7 +58,7 @@ class BattleState(game: MyGame, project: Project) {
     _battle = None
 
     for (i <- PictureSlots.BATTLE_BEGIN until PictureSlots.BATTLE_END) {
-      game.scriptInterface.hidePicture(i)
+      screenLayer.hidePicture(i)
     }
 
     _partyBattlers.clear()
