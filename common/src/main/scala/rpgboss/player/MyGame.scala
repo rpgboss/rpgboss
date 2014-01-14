@@ -131,8 +131,9 @@ class MyGame(gamepath: File)
 
     persistent = new PersistentState()
 
-    battleState = new BattleState(project)
-    mapLayer = new MapLayer(this)
+    // TODO: Make configurable screen pixel dimensions
+    battleState = new BattleState(project, 640, 480)
+    mapLayer = new MapLayer(this, 640, 480)
     scriptInterface = new ScriptInterface(this, mapLayer)
 
     // Register accessors

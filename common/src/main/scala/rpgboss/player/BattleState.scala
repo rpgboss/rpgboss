@@ -9,12 +9,13 @@ import rpgboss.lib.ThreadChecked
 
 case class PartyBattler(spriteSpec: SpriteSpec)
 
-class BattleState(project: Project) extends ThreadChecked {
+class BattleState(project: Project, screenW: Int, screenH: Int) 
+  extends ThreadChecked {
   // Battle variables
   private var _battle: Option[Battle] = None
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
 
-  val screenLayer = new ScreenLayer(project)
+  val screenLayer = new ScreenLayer(project, screenW, screenH)
 
   def battleActive = _battle.isDefined
 
@@ -68,10 +69,12 @@ class BattleState(project: Project) extends ThreadChecked {
   }
 
   def update(delta: Float) = {
+    assert(onValidThread())
     screenLayer.update(delta)
   }
 
   def render() = {
+    assert(onValidThread())
     screenLayer.render()
   }
 
@@ -79,5 +82,7 @@ class BattleState(project: Project) extends ThreadChecked {
    * Dispose of any disposable resources
    */
   def dispose() = {
+    assert(onValidThread())
+    screenLayer.dispose()
   }
 }

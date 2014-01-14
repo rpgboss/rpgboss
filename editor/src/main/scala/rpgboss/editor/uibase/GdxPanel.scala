@@ -19,7 +19,8 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
   
   preferredSize = new Dimension(canvasW, canvasH)
   
-  val gdxListener = new ApplicationAdapter {
+  // lazy val, otherwise an NPE crash due to wonky order of initialization
+  lazy val gdxListener = new ApplicationAdapter {
     override def create() = {
       logger.debug("create()")
     }

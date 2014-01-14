@@ -19,4 +19,16 @@ object GdxUtils {
     Gdx.app.postRunnable(runnable)
     Await.result(promise.future, Duration.Inf)
   }
+  
+  /**
+   * Run the following on the GUI thread
+   */
+  def asyncRun[T](op: => T): Unit = {
+    val runnable = new Runnable() {
+      def run() = {
+        op
+      }
+    }
+    Gdx.app.postRunnable(runnable)
+  }
 }

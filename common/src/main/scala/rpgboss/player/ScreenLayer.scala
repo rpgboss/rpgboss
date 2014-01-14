@@ -20,7 +20,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
  * 
  * This class should only be accessed on the gdx thread
  */
-class ScreenLayer(project: Project) {
+class ScreenLayer(project: Project, screenW: Int, screenH: Int) {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
   
@@ -47,7 +47,7 @@ class ScreenLayer(project: Project) {
   }
 
   val screenCamera: OrthographicCamera = new OrthographicCamera()
-  screenCamera.setToOrtho(true, 640, 480) // y points down
+  screenCamera.setToOrtho(true, screenW, screenH) // y points down
   screenCamera.update()
 
   batch.setProjectionMatrix(screenCamera.combined)
@@ -56,12 +56,16 @@ class ScreenLayer(project: Project) {
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
   
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) = {
+    // TODO: Remove this Pot hack
+    GLTexture.setEnforcePotImages(false)
     val picture = Picture.readFromDisk(project, name)
     showTexture(slot, picture.newGdxTexture, x, y, w, h)
   }
 
   def showTexture(slot: Int, texture: Texture, x: Int, y: Int, w: Int, 
-                  h: Int) = {    
+                  h: Int) = {
+    // TODO: Remove this Pot hack
+    GLTexture.setEnforcePotImages(false)
     pictures(slot).map(_.dispose())
     pictures(slot) = Some(PictureInfo(texture, x, y, w, h))
   }

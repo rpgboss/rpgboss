@@ -19,11 +19,11 @@ import rpgboss.player.entity._
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
  */
-class MapLayer(game: MyGame) {
+class MapLayer(game: MyGame, screenWPixels: Int, screenHPixels: Int) {
   def project = game.project
   val batch = new SpriteBatch()
 
-  val screenLayer = new ScreenLayer(project)
+  val screenLayer = new ScreenLayer(project, screenWPixels, screenHPixels)
 
   var screenW = 20.0
   var screenH = 15.0

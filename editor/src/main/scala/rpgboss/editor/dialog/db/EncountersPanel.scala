@@ -7,6 +7,7 @@ import rpgboss.editor.uibase.SwingUtils._
 import scala.swing._
 import scala.swing.event._
 import rpgboss.editor.dialog._
+import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
@@ -16,56 +17,56 @@ import java.awt.image.BufferedImage
 import rpgboss.player.BattleState
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
+import rpgboss.model.battle.Battle
 
-class EncounterFieldGdxPanel(project: Project) extends GdxPanel(640, 320) {
-  val battleState = new BattleState(project)
+object EncounterFieldGdxPanel {
+  val width = 640
+  val height = 320
+}
+
+class EncounterFieldGdxPanel(project: Project, initial: Encounter) 
+  extends GdxPanel(EncounterFieldGdxPanel.width, 
+                   EncounterFieldGdxPanel.height) {
+  var battleState: BattleState = null
   
-  override val gdxListener = new ApplicationAdapter {
+  override lazy val gdxListener = new ApplicationAdapter {
+    def updateBattleState(encounter: Encounter) = {
+      assume(battleState != null)
+      
+      // TODO: See if this dummy battle constructor has a better home
+      val battle = new Battle(
+        project.data,
+        project.data.startup.startingParty,
+        project.data.enums.characters.map(v => 1),
+        project.data.enums.characters.map(v => 1),
+        project.data.enums.characters.map(v => 1),
+        project.data.enums.characters.map(v => Seq()),
+        project.data.enums.characters.map(v => Seq()),
+        project.data.enums.characters.map(v => 0),
+        encounter,
+        Nil)
+      
+      if (battleState.battleActive)
+        battleState.endBattle()
+      
+      battleState.startBattle(
+        battle, Some("defaultrc_battleback/crownlesswish_rrr.jpg"))
+    }
+    
+    override def create() = {
+      battleState = new BattleState(project, EncounterFieldGdxPanel.width,
+                                    EncounterFieldGdxPanel.height)
+      updateBattleState(initial)
+    }
+    
     override def render() = {
       battleState.update(Gdx.graphics.getDeltaTime())
       battleState.render()
     }
   }
-  
-  
-}
 
-abstract class EncounterFieldPanel extends Panel {
-  def panelWidth: Int
-  def panelHeight: Int
-  preferredSize = new Dimension(panelWidth, panelHeight)
-
-  val bgImg = rpgboss.lib.Utils.readClasspathImage(
-    "defaultrc/picture/defaultrc_battleback/crownlesswish_rrr.jpg")
-
-  var units: Seq[EncounterUnit] = Seq()
-  var unitImages: Seq[Option[BufferedImage]] = Seq()
-    
-  def update(units: Seq[EncounterUnit], proj: Project, pData: ProjectData) = {
-    this.units = units
-    unitImages = units.map(unit => {
-      if (unit.enemyIdx < pData.enums.enemies.length) {
-        pData.enums.enemies(unit.enemyIdx).battler.map { battler => 
-          Battler.readFromDisk(proj, battler.name).img
-        }
-      } else None
-    })
-    this.repaint()
-  }
-    
-  override def paintComponent(g: Graphics2D) =
-  {
-    super.paintComponent(g)
-    if (bgImg != null) g.drawImage(bgImg, 0, 0, panelWidth, panelHeight, null)
-    
-    (units, unitImages).zipped foreach ( (unit, img) => {
-      if (img.isDefined) {
-        g.drawImage(
-          img.get, 
-          unit.x - img.get.getWidth() / 2, 
-          unit.y - img.get.getHeight() / 2, null)
-      }
-    })
+  def updateBattleState(encounter: Encounter) = GdxUtils.asyncRun {
+    gdxListener.updateBattleState(encounter)
   }
 }
 
@@ -108,14 +109,7 @@ class EncountersPanel(
       }
     }
     
-    val fDisplay = new EncounterFieldPanel {
-      def panelWidth = battlefieldWidth
-      def panelHeight = battlefieldHeight
-      def update(): Unit = {
-        update(model.units, sm.getProj, dbDiag.model)
-      }
-      update()
-    }
+    val fDisplay = new EncounterFieldGdxPanel(sm.getProj, model)
     
     val fEnemySelector = new ArrayListView(dbDiag.model.enums.enemies) {
       override def label(a: Enemy) = a.name
@@ -127,7 +121,7 @@ class EncountersPanel(
         val unit = EncounterUnit(fEnemySelector.selection.indices.head, 0, 0)
         model.units = model.units ++ Seq(unit)
         autoArrangeModel()
-        fDisplay.update()
+        fDisplay.updateBattleState(model)
       }
     })
     
@@ -135,7 +129,7 @@ class EncountersPanel(
       if (!model.units.isEmpty) {
         model.units = model.units.dropRight(1)
         autoArrangeModel()
-        fDisplay.update()
+        fDisplay.updateBattleState(model)
       }
     })
     

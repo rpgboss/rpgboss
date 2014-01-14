@@ -37,6 +37,11 @@ trait BattleCommander {
   def onReady(source: BattleStatus): Boolean
 }
 
+/**
+ * @param   characterLevels         The levels of all the characters, not just 
+ *                                  the ones within partyIds.
+ * @param   initialCharacterHps     Array of HPs for all the characters.
+ */
 class Battle(
   pData: ProjectData,
   val partyIds: Seq[Int],
