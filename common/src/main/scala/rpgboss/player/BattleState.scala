@@ -5,10 +5,11 @@ import rpgboss.model.battle._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
+import rpgboss.lib.ThreadChecked
 
 case class PartyBattler(spriteSpec: SpriteSpec)
 
-class BattleState(project: Project) {
+class BattleState(project: Project) extends ThreadChecked {
   // Battle variables
   private var _battle: Option[Battle] = None
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
@@ -18,6 +19,7 @@ class BattleState(project: Project) {
   def battleActive = _battle.isDefined
 
   def startBattle(battle: Battle, bgPicture: Option[String]) = {
+    assert(onValidThread())
     assert(_battle.isEmpty)
 
     bgPicture.map { picName =>
@@ -54,6 +56,7 @@ class BattleState(project: Project) {
   }
 
   def endBattle() = {
+    assert(onValidThread())
     assert(_battle.isDefined)
     _battle = None
 

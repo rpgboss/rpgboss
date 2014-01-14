@@ -8,6 +8,7 @@ import org.scalatest.concurrent.AsyncAssertions.Waiter
 import org.scalatest.concurrent.PatienceConfiguration._
 import org.scalatest.time._
 import org.scalatest._
+import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.model.resource._
@@ -91,9 +92,9 @@ abstract class GameTest extends ProjectTest {
     
     // Should only be run on scripting thread. |key| is an internal key.
     def scriptKeyPress(key: Int, duration: Float) = {
-      syncRun { inputs.myKeyDown(key) }
+      GdxUtils.syncRun { inputs.myKeyDown(key) }
       Thread.sleep((duration * 1000).toLong)
-      syncRun { inputs.myKeyUp(key) }
+      GdxUtils.syncRun { inputs.myKeyUp(key) }
     }
   }
   

@@ -13,6 +13,22 @@ import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.resourceselector._
 import java.awt.image.BufferedImage
+import rpgboss.player.BattleState
+import com.badlogic.gdx.ApplicationAdapter
+import com.badlogic.gdx.Gdx
+
+class EncounterFieldGdxPanel(project: Project) extends GdxPanel(640, 320) {
+  val battleState = new BattleState(project)
+  
+  override val gdxListener = new ApplicationAdapter {
+    override def render() = {
+      battleState.update(Gdx.graphics.getDeltaTime())
+      battleState.render()
+    }
+  }
+  
+  
+}
 
 abstract class EncounterFieldPanel extends Panel {
   def panelWidth: Int

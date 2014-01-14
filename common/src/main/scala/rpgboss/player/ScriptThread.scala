@@ -5,6 +5,7 @@ import rpgboss.model.resource.Script
 import scala.concurrent.ops.spawn
 import rpgboss.model.MapLoc
 import java.lang.Thread.UncaughtExceptionHandler
+import rpgboss.lib._
 import rpgboss.model.event.RpgEvent
 import rpgboss.model.Constants._
 import rpgboss.player.entity.EventEntity
@@ -82,7 +83,7 @@ class ScriptThread(
       }
 
       onFinish.map { f =>
-        game.syncRun {
+        GdxUtils.syncRun {
           f()
         }
       }

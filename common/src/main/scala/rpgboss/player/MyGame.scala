@@ -55,20 +55,6 @@ class MyGame(gamepath: File)
     name => (name, Spriteset.readFromDisk(project, name)))
   var atlasSprites: TextureAtlas = null
 
-  /**
-   * Run the following on the GUI thread
-   */
-  def syncRun[T](op: => T): T = {
-    val promise = Promise[T]
-    val runnable = new Runnable() {
-      def run() = {
-        promise.success(op)
-      }
-    }
-    Gdx.app.postRunnable(runnable)
-    Await.result(promise.future, Duration.Inf)
-  }
-
   /*
    * SpriteBatch manages its own matrices. By default, it sets its modelview
    * matrix to the identity, and the projection matrix to an orthographic

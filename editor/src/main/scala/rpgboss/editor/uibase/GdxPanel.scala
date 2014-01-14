@@ -12,11 +12,14 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
   extends Component 
   with Logging
   with Disposable {
+  
   override lazy val peer = new javax.swing.JComponent with SuperMixin {
     add(gdxCanvas.getCanvas())
   }
   
-  lazy val gdxListener = new ApplicationAdapter {
+  preferredSize = new Dimension(canvasW, canvasH)
+  
+  val gdxListener = new ApplicationAdapter {
     override def create() = {
       logger.debug("create()")
     }

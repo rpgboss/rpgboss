@@ -1,5 +1,6 @@
 package rpgboss.player
 
+import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.Gdx
@@ -44,7 +45,8 @@ class ScriptInterface(game: MyGame, mapLayer: MapLayer)
   extends HasScriptConstants{
   private def persistent = game.persistent
   private def project = game.project
-  import game.syncRun
+  
+  import GdxUtils._
 
   /*
    * The below functions are all called from the script threads only.
