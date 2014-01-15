@@ -6,8 +6,15 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import rpgboss.lib.ThreadChecked
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 
-case class PartyBattler(spriteSpec: SpriteSpec)
+case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int, 
+                        y: Int) {
+  val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
+  
+  val imageW = spriteset.tileW.toFloat
+  val imageH = spriteset.tileH.toFloat
+}
 
 class BattleState(project: Project, screenW: Int, screenH: Int) 
   extends ThreadChecked {
@@ -51,7 +58,7 @@ class BattleState(project: Project, screenW: Int, screenH: Int)
       character.sprite.map { spriteSpec =>
         val x = 600
         val y = 40 * i + 100
-        _partyBattlers.append(PartyBattler(spriteSpec))
+        _partyBattlers.append(PartyBattler(project, spriteSpec, x, y))
       }
     }
   }
@@ -73,9 +80,26 @@ class BattleState(project: Project, screenW: Int, screenH: Int)
     screenLayer.update(delta)
   }
 
-  def render() = {
+  def render(atlasSprites: TextureAtlas) = {
     assert(onValidThread())
     screenLayer.render()
+    
+    screenLayer.batch.begin()
+    // TODO: Fix hack of re-using screenLayer's spritebatch
+    for (partyBattler <- _partyBattlers) {
+      GdxGraphicsUtils.renderSprite(
+        screenLayer.batch, 
+        atlasSprites, 
+        partyBattler.spriteset,
+        partyBattler.spriteSpec.spriteIndex,
+        SpriteSpec.Directions.WEST,
+        SpriteSpec.Steps.STILL,
+        partyBattler.x, 
+        partyBattler.y, 
+        partyBattler.imageW, 
+        partyBattler.imageH)
+    }
+    screenLayer.batch.end()
   }
 
   /**
@@ -83,6 +107,10 @@ class BattleState(project: Project, screenW: Int, screenH: Int)
    */
   def dispose() = {
     assert(onValidThread())
+    
+    if (battleActive)
+      endBattle()
+    
     screenLayer.dispose()
   }
 }

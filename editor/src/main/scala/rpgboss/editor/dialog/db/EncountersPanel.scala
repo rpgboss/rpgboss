@@ -18,6 +18,7 @@ import rpgboss.player.BattleState
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import rpgboss.model.battle.Battle
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 
 object EncounterFieldGdxPanel {
   val width = 640
@@ -28,6 +29,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
   extends GdxPanel(EncounterFieldGdxPanel.width, 
                    EncounterFieldGdxPanel.height) {
   var battleState: BattleState = null
+  var atlasSprites: TextureAtlas = null
   
   override lazy val gdxListener = new ApplicationAdapter {
     def updateBattleState(encounter: Encounter) = {
@@ -54,6 +56,8 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     }
     
     override def create() = {
+      atlasSprites = GdxUtils.generateSpritesTextureAtlas(
+        Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
       battleState = new BattleState(project, EncounterFieldGdxPanel.width,
                                     EncounterFieldGdxPanel.height)
       updateBattleState(initial)
@@ -61,7 +65,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     
     override def render() = {
       battleState.update(Gdx.graphics.getDeltaTime())
-      battleState.render()
+      battleState.render(atlasSprites)
     }
   }
 

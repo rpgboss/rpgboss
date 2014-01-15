@@ -19,6 +19,7 @@ import java.lang.Thread.UncaughtExceptionHandler
 import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import rpgboss.lib.GdxUtils
 
 case class MutableMapLoc(
   var map: String = "",
@@ -84,50 +85,7 @@ class MyGame(gamepath: File)
     // Attach inputs
     Gdx.input.setInputProcessor(inputs)
 
-    val packerSprites =
-      new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
-    spritesets.foreach {
-      case (name, spriteset) =>
-        val srcPixmap = new Pixmap(
-          Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
-
-        val srcFormat = srcPixmap.getFormat()
-        if (srcFormat == Pixmap.Format.RGBA8888 ||
-          srcFormat == Pixmap.Format.RGBA4444) {
-
-          // Already has transparency. Pack and dispose.
-          packerSprites.pack(spriteset.name, srcPixmap)
-          srcPixmap.dispose()
-        } else if (srcFormat == Pixmap.Format.RGB888) {
-          // TODO: Optimize pixel transfer
-
-          // Build transparency from (0, 0) pixel
-          val dstPixmap = new Pixmap(
-            srcPixmap.getWidth(), srcPixmap.getHeight(), Pixmap.Format.RGBA8888)
-
-          val transparentVal = srcPixmap.getPixel(0, 0)
-
-          for (y <- 0 until srcPixmap.getHeight()) {
-            for (x <- 0 until srcPixmap.getWidth()) {
-              val curPixel = srcPixmap.getPixel(x, y)
-
-              if (curPixel != transparentVal) {
-                dstPixmap.drawPixel(x, y, curPixel)
-              }
-            }
-          }
-
-          packerSprites.pack(spriteset.name, dstPixmap)
-          srcPixmap.dispose()
-          dstPixmap.dispose()
-        }
-    }
-
-    logger.info("Packed sprites into %d pages".format(
-      packerSprites.getPages().size))
-
-    atlasSprites = packerSprites.generateTextureAtlas(
-      TextureFilter.Nearest, TextureFilter.Nearest, false)
+    atlasSprites = GdxUtils.generateSpritesTextureAtlas(spritesets.values)
 
     persistent = new PersistentState()
 
@@ -171,7 +129,7 @@ class MyGame(gamepath: File)
       // update state
       if (battleState.battleActive) {
         battleState.update(delta)
-        battleState.render()
+        battleState.render(atlasSprites)
       } else {
         mapLayer.update(delta)
         mapLayer.render()
