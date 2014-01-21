@@ -1,6 +1,6 @@
 [
   {
-    "name":"Gaben",
+    "name":"Evandrus",
     "subtitle":"Adventurer",
     "description":"An ordinary boy thrust into extraordinary circumstances.",
     "sprite":{
@@ -54,7 +54,7 @@
     ]
   },
   {
-    "name":"Natasa",
+    "name":"Camilla",
     "subtitle":"Healer",
     "description":"A trained healer in touch with the spiritual.",
     "sprite":{
@@ -108,7 +108,7 @@
     ]
   },
   {
-    "name":"Blase",
+    "name":"Janus",
     "subtitle":"Engineer",
     "description":"A master of using tools to get out of sticky situations.",
     "sprite":{
@@ -162,7 +162,7 @@
     ]
   },
   {
-    "name":"Amelia",
+    "name":"Lara",
     "subtitle":"Rogue",
     "description":"Beneath her player exterior is a someone you wouldn't want to cross.",
     "sprite":{
@@ -216,7 +216,7 @@
     ]
   },
   {
-    "name":"Mysie",
+    "name":"Elissa",
     "subtitle":"Wizard",
     "description":"A gifted young woman intensely devoted to her craft.",
     "sprite":{
