@@ -43,6 +43,12 @@ class ClassesPanel(
       dbDiag.model.enums.items,
       model.canUseItems,
       v => model.canUseItems = ArrayBuffer(v :_*))
+    
+    val fLearnedSkills = new LearnedSkillPanel(
+      owner, 
+      dbDiag, 
+      model.learnedSkills, 
+      model.learnedSkills = _)
 
     val mainFields = new DesignGridPanel {
 
@@ -54,6 +60,7 @@ class ClassesPanel(
       contents += mainFields
       contents += fCanEquip
       contents += fEffects
+      contents += fLearnedSkills
     }
   }
 

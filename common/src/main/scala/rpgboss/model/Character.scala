@@ -37,7 +37,7 @@ case class Character(
   }
 }
 
-case class LearnedSkill(level: Int, skillId: Int)
+case class LearnedSkill(var level: Int, var skillId: Int)
 
 case class CharClass(
   var name: String = "",

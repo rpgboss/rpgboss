@@ -34,13 +34,15 @@ object SwingUtils {
         renderer.componentFor(list, isSelected, focused, f(a, index), index)
       }
     }
-
+  
   /**
    * Standard "42: Name" format.
    */
+  def standardIdxFormat(idx: Int, name: String) = "%d: %s".format(idx, name)
   def standardIdxRenderer[A, B](labelF: A => B)
     (implicit renderer: ListView.Renderer[B]) =
-      customIdxRenderer((a: A, idx: Int) => "%d: %s".format(idx, labelF(a)))
+      customIdxRenderer((a: A, idx: Int) => 
+        standardIdxFormat(idx, labelF(a).toString))
 
   def boolField(text: String, initial: Boolean, onUpdate: Boolean => Unit,
                 additionalAction: Option[() => Unit] = None) =

@@ -78,7 +78,7 @@ class EffectPanel(
       .grid()
   }
   
-  var miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
+  val miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
   val miscEffectsTable = new TableEditor() {
     def colHeaders = Array("Description", "Key", "Value")
     def getRowStrings(row: Int) = {
