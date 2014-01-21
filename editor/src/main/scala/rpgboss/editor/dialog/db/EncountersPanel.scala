@@ -82,8 +82,10 @@ class EncountersPanel(
     owner,
     "Encounters",
     dbDiag.model.enums.encounters) {
-  def battlefieldWidth: Int = 480
-  def battlefieldHeight: Int = 320
+  def battlefieldWidth: Int = 350
+  def battlefieldHeight: Int = 220
+  def yOffset = 100
+  def xOffset = 80
   
   def panelName = "Encounters"
   def newDefaultInstance() = Encounter()
@@ -101,15 +103,20 @@ class EncountersPanel(
       val xRectSize = battlefieldWidth / xRects
       val yRectSize = battlefieldHeight / 2
       
+      val xOffsetPerRow = -15
+      
       // Place units onto grid
       val newUnits = for (i <- 0 until unitCount) {
-        model.units(i).x = (i / 2) * xRectSize + (xRectSize / 2)
-        model.units(i).y = (i % 2) * yRectSize + (yRectSize / 2)
+        val col = i / 2
+        val row = i % 2
+        model.units(i).x = 
+          (col * xRectSize) + (xRectSize / 2) + (xOffsetPerRow * row) + xOffset
+        model.units(i).y = (i % 2) * yRectSize + (yRectSize / 2) + yOffset
       }
       
       // If there's an odd number, pull the 'last' unit into the center
       if (unitCount % 2 == 1) {
-        model.units.last.y = battlefieldHeight / 2
+        model.units.last.y = yRectSize + yOffset
       }
     }
     

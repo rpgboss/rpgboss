@@ -43,21 +43,25 @@ class BattleState(project: Project, screenW: Int, screenH: Int)
       enemy.battler.map { battlerSpec =>
         val battler = Battler.readFromDisk(project, battlerSpec.name)
         val texture = battler.newGdxTexture
+        
+        val battlerWidth = (texture.getWidth() * battlerSpec.scale).toInt
+        val battlerHeight = (texture.getHeight() * battlerSpec.scale).toInt
+        
         screenLayer.showTexture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           texture,
-          unit.x,
-          unit.y,
-          (texture.getWidth() * battlerSpec.scale).toInt,
-          (texture.getHeight() * battlerSpec.scale).toInt)
+          unit.x - battlerWidth / 2,
+          unit.y - battlerHeight / 2,
+          battlerWidth,
+          battlerHeight)
       }
     }
 
     for ((partyId, i) <- battle.partyIds.zipWithIndex) {
       val character = project.data.enums.characters(partyId)
       character.sprite.map { spriteSpec =>
-        val x = 600
-        val y = 40 * i + 100
+        val x = 10 * i + 550
+        val y = 20 * i + 180
         _partyBattlers.append(PartyBattler(project, spriteSpec, x, y))
       }
     }
