@@ -37,10 +37,13 @@ case class Character(
   }
 }
 
+case class LearnedSkill(level: Int, skillId: Int)
+
 case class CharClass(
   var name: String = "",
   var canUseItems: Seq[Int] = Seq(),
-  var effects: Seq[Effect] = Seq()) extends HasName
+  var effects: Seq[Effect] = Seq(),
+  var learnedSkills: Seq[LearnedSkill] = Seq()) extends HasName
 
 case class Enemy(
   var name: String = "",

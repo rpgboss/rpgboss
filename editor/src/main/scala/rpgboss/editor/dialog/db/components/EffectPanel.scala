@@ -16,6 +16,7 @@ import scala.Array.fallbackCanBuildFrom
 import scala.collection.mutable.ArrayBuffer
 import java.awt.event.MouseEvent
 import rpgboss.editor.uibase.PopupMenu
+import rpgboss.editor.uibase.TableEditor
 
 class EffectPanel(
   owner: Window,
@@ -78,103 +79,47 @@ class EffectPanel(
   }
   
   var miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
-  val miscEffectsTable = new Table() {
-    val tableModel = new AbstractTableModel() {
-      val colNames = Array("Description", "Key", "Value")
-
-      def getRowCount() = miscEffects.size + 1 // last element blank for adding
-      def getColumnCount() = 3
-      override def getColumnName(col: Int) = colNames(col)
-
-      def getValueAt(row: Int, col: Int) = {
-        if (row < miscEffects.size) {
-          val eff = miscEffects(row)
-          col match {
-            case 0 => EffectKey(eff.keyId).desc
-            case 1 => EffectKey(eff.keyId).toString
-            case 2 => eff.v.toString
-          }
-        } else {
-          "" // blank for new row
-        }
-      }
-
-      override def isCellEditable(r: Int, c: Int) = false
-
-      def showEditDialog(row: Int) = {
-        val initialE = miscEffects(row)
-        val diag = new EffectDialog(
-          owner,
-          dbDiag,
-          initialE,
-          e => {
-            miscEffects.update(row, e)
-            updateFromModel()
-            fireTableRowsUpdated(row, row)
-          })
-        diag.open()
-      }
-
-      def showNewDialog() = {
-        val diag = new EffectDialog(
-          owner,
-          dbDiag,
-          EffectKey.defaultEffect,
-          e => {
-            miscEffects += e
-            updateFromModel()
-            fireTableRowsUpdated(miscEffects.size - 2, miscEffects.size - 2)
-            fireTableRowsInserted(miscEffects.size - 1, miscEffects.size - 1)
-          })
-        diag.open()
-      }
-
-      def deleteRow(row: Int) = {
-        miscEffects.remove(row)
-        fireTableRowsDeleted(row, row)
-      }
+  val miscEffectsTable = new TableEditor() {
+    def colHeaders = Array("Description", "Key", "Value")
+    def getRowStrings(row: Int) = {
+      assume(row < miscEffects.size)
+      val eff = miscEffects(row)
+      Array(EffectKey(eff.keyId).desc, EffectKey(eff.keyId).toString,
+            eff.v.toString)
     }
-
-    model = tableModel
-
-    selection.elementMode = Table.ElementMode.Row
-    selection.intervalMode = Table.IntervalMode.Single
-
-    listenTo(mouse.clicks)
-    reactions += {
-      case MouseClicked(_, _, _, 2, _) => {
-        val row = selection.rows.head
-        if (row < miscEffects.size) {
-          tableModel.showEditDialog(row)
-        } else {
-          tableModel.showNewDialog()
-        }
-      }
-      case e: MouseClicked if e.peer.getButton() == MouseEvent.BUTTON3 => {
-        val (x0, y0) = (e.point.getX().toInt, e.point.getY().toInt)
-
-        val row = peer.rowAtPoint(e.point)
-
-        if (row != -1) {
-          selection.rows.clear()
-          selection.rows += row
-          val menu = new PopupMenu {
-            contents += new MenuItem(Action("New...") {
-              tableModel.showNewDialog()
-            })
-
-            if (row != rowCount - 1) {
-              contents += new MenuItem(Action("Edit...") {
-                tableModel.showEditDialog(row)
-              })
-              contents += new MenuItem(Action("Delete") {
-                tableModel.deleteRow(row)
-              })
-            }
-          }
-          menu.show(this, x0, y0)
-        }
-      }
+    def columnCount: Int = 3
+    def modelRowCount: Int = miscEffects.size
+    
+    def showEditDialog(row: Int, updateDisplayFunction: () => Unit) = {
+      val initialE = miscEffects(row)
+      val diag = new EffectDialog(
+        owner,
+        dbDiag,
+        initialE,
+        e => {
+          miscEffects.update(row, e)
+          updateFromModel()
+          updateDisplayFunction()
+        })
+      diag.open()
+    }
+    
+    def showNewDialog(updateDisplayFunction: () => Unit) = {
+      val diag = new EffectDialog(
+        owner,
+        dbDiag,
+        EffectKey.defaultEffect,
+        e => {
+          miscEffects += e
+          updateFromModel()
+          updateDisplayFunction()
+        })
+      diag.open()
+    }
+    
+    def deleteRow(row: Int, updateDisplayFunction: () => Unit) = {
+      miscEffects.remove(row)
+      updateDisplayFunction()
     }
   }
   
