@@ -205,4 +205,7 @@ object SwingUtils {
       }
     }
 
+  def showErrorDialog(parent: Component, message: String) = {
+    Dialog.showMessage(parent, message, "Error", Dialog.Message.Error)
+  }
 }

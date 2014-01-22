@@ -24,6 +24,7 @@ class EnemiesPanel(
   def panelName = "Enemies"
   def newDefaultInstance() = new Enemy()
   def label(e: Enemy) = e.name
+  def copyItem(x: Enemy) = x.copy()
 
   def editPaneForItem(idx: Int, model: Enemy) = {
     val bioFields = new DesignGridPanel {

@@ -27,6 +27,7 @@ class ItemsPanel(
   def panelName = "Items/Equipment"
   def newDefaultInstance() = new Item()
   def label(item: Item) = item.name
+  def copyItem(x: Item) = x.copy()
 
   def editPaneForItem(idx: Int, model: Item) = {
     new BoxPanel(Orientation.Horizontal) {

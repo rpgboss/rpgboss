@@ -2,6 +2,7 @@ package rpgboss.editor.uibase
 
 import scala.swing._
 import scala.swing.event._
+import SwingUtils._
 
 abstract class StdDialog(owner: Window, titleArg: String)
   extends Dialog(owner) {
@@ -47,5 +48,32 @@ abstract class StdDialog(owner: Window, titleArg: String)
       onClose()
       if (!okPressed) cancelFunc()
     }
+  }
+}
+
+class SingleIntegerDialog(
+  owner: Window,
+  title: String,
+  label: String,
+  helpMessage: String,
+  initial: Int,
+  min: Int,
+  max: Int,
+  okCallback: Int => Unit)
+  extends StdDialog(owner, title) {
+  val fieldInt = new NumberSpinner(initial, min, max)
+
+  def okFunc() = {
+    okCallback(fieldInt.getValue)
+    close()
+  }
+
+  contents = new DesignGridPanel {
+    if (!helpMessage.isEmpty()) {
+      row().grid().add(leftLabel(helpMessage))
+    }
+    row().grid().add(leftLabel(label))
+    row().grid().add(fieldInt)
+    addButtons(cancelBtn, okBtn)
   }
 }

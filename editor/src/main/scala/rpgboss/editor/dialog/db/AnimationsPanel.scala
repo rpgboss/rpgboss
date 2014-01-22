@@ -23,6 +23,7 @@ class AnimationsPanel(
   def panelName = "Animations"
   def newDefaultInstance() = new Animation()
   def label(a: Animation) = a.name
+  def copyItem(a: Animation) = a.copy()
 
   def editPaneForItem(idx: Int, model: Animation) = {
 

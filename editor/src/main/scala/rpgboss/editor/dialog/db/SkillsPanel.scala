@@ -23,6 +23,7 @@ class SkillsPanel(
   def panelName = "Skills"
   def newDefaultInstance() = Skill()
   def label(a: Skill) = a.name
+  def copyItem(x: Skill) = x.copy()
 
   def editPaneForItem(idx: Int, model: Skill) = {
     new DesignGridPanel {

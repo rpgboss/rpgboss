@@ -34,6 +34,7 @@ abstract class ArrayEditingPanel[T](
   with Logging {
   def newDefaultInstance(): T
   def label(a: T): String
+  def copyItem(a: T): T
 
   val editPaneContainer = new BoxPanel(Orientation.Vertical)
   def editPaneForItem(idx: Int, item: T): Component
@@ -96,53 +97,87 @@ abstract class ArrayEditingPanel[T](
   }
 
   val btnSetListSize = new Button(Action("Set array size...") {
-    val diag =
-      new ArraySizeDiag(
-        owner,
-        listView.listData.size,
-        minElems,
-        maxElems,
-        (newSize) => {
-          if (listView.selection.indices.isEmpty) {
-            listView.listData = ArrayUtils.resized(
-                listView.listData, newSize, newDefaultInstance _)
-          } else {
-            val oldSelection = listView.selection.indices.head
+    val dialog = new ArraySizeDialog(
+      owner,
+      listView.listData.size,
+      minElems,
+      maxElems,
+      (newSize) => {
+        if (listView.selection.indices.isEmpty) {
+          listView.listData = ArrayUtils.resized(
+              listView.listData, newSize, newDefaultInstance _)
+        } else {
+          val oldSelection = listView.selection.indices.head
 
-            listView.listData = ArrayUtils.resized(
-                listView.listData, newSize, newDefaultInstance _)
+          listView.listData = ArrayUtils.resized(
+              listView.listData, newSize, newDefaultInstance _)
 
-            // If selection was bigger than the size, select the last one
-            listView.selectIndices(math.min(oldSelection, newSize - 1))
-          }
-          onListDataUpdate()
-        })
-    diag.open()
+          // If selection was bigger than the size, select the last one
+          listView.selectIndices(math.min(oldSelection, newSize - 1))
+        }
+        onListDataUpdate()
+      })
+    dialog.open()
+  })
+  
+  val btnDuplicateItem = new Button(Action("Duplicate item...") {
+    if (listView.selection.indices.isEmpty) {
+      SwingUtils.showErrorDialog(this, "No item selected.")
+    } else {
+      val originalItemIdx = listView.selection.indices.head
+      val availableSlots = listView.listData.size - originalItemIdx - 1
+      if (availableSlots < 1) {
+        SwingUtils.showErrorDialog(this, "No slots to duplicate into.")
+      } else {
+        val origItem: T = listView.selection.items.head
+        val dialog = new ArrayDuplicateDialog(
+          owner,
+          availableSlots,
+          slotsToCopy => {
+            val buf = listView.listData.toBuffer
+            for (i <- originalItemIdx to (originalItemIdx + slotsToCopy)) {
+              buf.update(i, copyItem(origItem))
+            }
+            listView.listData = buf
+            onListDataUpdate()
+          })
+        dialog.open()
+      }
+    }    
   })
 
   editPaneContainer.contents += editPaneEmpty
 }
 
-class ArraySizeDiag(
+class ArraySizeDialog(
   owner: Window,
   initial: Int,
   min: Int,
   max: Int,
   okCallback: Int => Unit)
-  extends StdDialog(owner, "Set array size") {
-  val fieldSize = new NumberSpinner(initial, min, max)
+  extends SingleIntegerDialog(
+    owner,
+    "Set array size", 
+    "Array size:",
+    "",
+    initial,
+    min,
+    max,
+    okCallback)
 
-  def okFunc() = {
-    okCallback(fieldSize.getValue)
-    close()
-  }
-
-  contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Array size:"))
-    row().grid().add(fieldSize)
-    addButtons(cancelBtn, okBtn)
-  }
-}
+class ArrayDuplicateDialog(
+  owner: Window,
+  maxDuplicates: Int,
+  okCallback: Int => Unit)
+  extends SingleIntegerDialog(
+    owner,
+    "Duplicate item",
+    "No. of duplicates:",
+    "Duplicates are copied to slots below item.",
+    1,
+    1,
+    maxDuplicates,
+    okCallback)
 
 class StringArrayEditingPanel(
   owner: Window,
@@ -153,6 +188,8 @@ class StringArrayEditingPanel(
   extends ArrayEditingPanel(owner, label, initialAry, minElems, maxElems) {
   def newDefaultInstance() = ""
   def label(a: String) = a
+  // Works because strings are immutable
+  def copyItem(a: String) = a
 
   def editPaneForItem(idx: Int, item: String) = {
     new TextField {
@@ -186,7 +223,12 @@ abstract class RightPaneArrayEditingPanel[T](
   initialAry: Seq[T],
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
-  extends ArrayEditingPanel[T](owner, label, initialAry, minElems, maxElems)(m) {
+  extends ArrayEditingPanel[T](
+    owner, 
+    label, 
+    initialAry, 
+    minElems, 
+    maxElems)(m) {
   def editPaneEmpty = new BoxPanel(Orientation.Vertical)
 
   val bigLbl = new Label {
@@ -211,6 +253,7 @@ abstract class RightPaneArrayEditingPanel[T](
       row().grid().add(bigLbl)
       row().grid().add(scrollPane)
       row().grid().add(btnSetListSize)
+      row().grid().add(btnDuplicateItem)
     }
 
     contents += (editPaneContainer)

@@ -25,6 +25,7 @@ class ClassesPanel(
   def panelName = "Classes"
   def newDefaultInstance() = new CharClass()
   def label(charClass: CharClass) = charClass.name
+  def copyItem(c: CharClass) = c.copy()
 
   def editPaneForItem(idx: Int, model: CharClass) = {
     val fName = textField(

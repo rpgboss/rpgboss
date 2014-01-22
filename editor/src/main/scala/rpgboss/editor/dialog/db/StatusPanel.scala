@@ -27,6 +27,7 @@ class StatusPanel(
   def panelName = "Status Effects"
   def newDefaultInstance() = new StatusEffect()
   def label(item: StatusEffect) = item.name
+  def copyItem(x: StatusEffect) = x.copy()
 
   def editPaneForItem(idx: Int, model: StatusEffect) = {
     new BoxPanel(Orientation.Horizontal) {

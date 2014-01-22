@@ -90,6 +90,7 @@ class EncountersPanel(
   def panelName = "Encounters"
   def newDefaultInstance() = Encounter()
   def label(e: Encounter) = e.name
+  def copyItem(e: Encounter) = e.copy()
 
   def editPaneForItem(idx: Int, model: Encounter) = {
     def autoArrangeModel(): Unit = {
