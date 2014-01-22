@@ -66,15 +66,16 @@ class EffectPanel(
     row()
       .grid(lbl("+Max HP")).add(statSpinner(MhpAdd))
       .grid(lbl("+Attack")).add(statSpinner(AtkAdd))
-      .grid(lbl("+Armor")).add(statSpinner(ArmAdd))
     row()
       .grid(lbl("+Max MP")).add(statSpinner(MmpAdd))
       .grid(lbl("+Speed")).add(statSpinner(SpdAdd))
-      .grid(lbl("+Mag. Res.")).add(statSpinner(MreAdd))
       
     row()
-      .grid()
+      .grid(lbl("+Armor")).add(statSpinner(ArmAdd))
       .grid(lbl("+Magic")).add(statSpinner(MagAdd))
+    
+    row()
+      .grid(lbl("+Mag. Res.")).add(statSpinner(MreAdd))
       .grid()
   }
   

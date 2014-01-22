@@ -14,6 +14,8 @@ class LearnedSkillPanel(
   onUpdate: Seq[LearnedSkill] => Unit)
   extends BoxPanel(Orientation.Vertical) {
   
+  preferredSize = new Dimension(300, 200)
+  
   val learnedSkills = ArrayBuffer(initial : _*)
 
   border = BorderFactory.createTitledBorder("Learned Skills")
@@ -24,7 +26,7 @@ class LearnedSkillPanel(
       assume(row < learnedSkills.size)
       val learnedSkill = learnedSkills(row)
       val skill = dbDiag.model.enums.skills(learnedSkill.skillId)
-      Array("Level %d".format(learnedSkill), 
+      Array("Level %d".format(learnedSkill.level), 
             SwingUtils.standardIdxFormat(learnedSkill.skillId, skill.name))
     }
     def columnCount: Int = 2
