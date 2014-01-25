@@ -26,22 +26,27 @@ class SkillsPanel(
   def copyItem(x: Skill) = x.copy()
 
   def editPaneForItem(idx: Int, model: Skill) = {
-    new DesignGridPanel {
-      val fName = textField(
-        model.name,
-        v => {
-          model.name = v
-          refreshModel()
-        })
-      
-      val fScope = enumIdCombo(Scope)(model.scopeId, model.scopeId = _)
-      
-      val fDamages = new DamagesPanel(dbDiag, model.damages, model.damages = _)
+    new BoxPanel(Orientation.Horizontal) {
+      contents += new DesignGridPanel {
+        val fName = textField(
+          model.name,
+          v => {
+            model.name = v
+            refreshModel()
+          })
         
-      row().grid(lbl("Name:")).add(fName)
-      row().grid(lbl("Scope:")).add(fScope)
-      row().grid(lbl("Damages:")).add(fDamages)
+        val fScope = enumIdCombo(Scope)(model.scopeId, model.scopeId = _)
+        
+        val fCost = new NumberSpinner(model.cost, 0, 100, model.cost = _)
+        
+        row().grid(lbl("Name:")).add(fName)
+        row().grid(lbl("Scope:")).add(fScope)
+        row().grid(lbl("Skill point cost:")).add(fCost)
+      }
+      
+      contents += new DamagesPanel(dbDiag, model.damages, model.damages = _)    
     }
+    
   }
 
   override def onListDataUpdate() = {

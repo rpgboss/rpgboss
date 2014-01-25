@@ -8,9 +8,10 @@ object DamageType extends RpgEnum {
 case class Damage(
   var typeId: Int = DamageType.Physical.id,
   var elementId: Int = 0,
-  var formula: String = "10")
-
+  var formula: String = "")
+  
 case class Skill(
-  var name: String = "Skill",
+  var name: String = "",
   var scopeId: Int = Scope.OneEnemy.id,
+  var cost: Int = 0,
   var damages: Seq[Damage] = Seq(Damage())) extends HasName
