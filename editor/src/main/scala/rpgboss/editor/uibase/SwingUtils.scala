@@ -121,6 +121,7 @@ object SwingUtils {
       selection.index = initial
       renderer = standardIdxRenderer(x => x)
 
+      listenTo(selection)
       reactions += {
         case SelectionChanged(_) =>
           onUpdate(selection.index)

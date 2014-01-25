@@ -10,16 +10,26 @@ import rpgboss.editor.dialog.DatabaseDialog
 /**
  * Updates model in-place.
  */
-class DamagePanel(dbDiag: DatabaseDialog, model: Damage)
+class DamagePanel(
+  dbDiag: DatabaseDialog,
+  initial: Damage,
+  onUpdate: () => Unit)
   extends DesignGridPanel {
+  val model = initial
+  
   val fElement = indexedComboStrings(
-      dbDiag.model.enums.elements,
-      model.elementId,
-      model.elementId = _)
+    dbDiag.model.enums.elements,
+    model.elementId,
+    model.elementId = _,
+    Some(onUpdate))
 
-  val fFormula = textField(model.formula, model.formula = _)
+  val fFormula = textField(model.formula, model.formula = _, Some(onUpdate))
 
-  val radiosType = enumIdRadios(DamageType)(model.typeId, model.typeId = _)
+  val radiosType = enumIdRadios(DamageType)(model.typeId, v => {
+    model.typeId = v
+    onUpdate()
+  })
+  
   val panelType = new BoxPanel(Orientation.Horizontal)
   addBtnsAsGrp(panelType.contents, radiosType)
 
@@ -33,7 +43,7 @@ class DamagePanel(dbDiag: DatabaseDialog, model: Damage)
  *                      may be updated in-place. onUpdate is not called then.
  */
 class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
-                   onUpdate: Seq[Damage] => Unit)
+  onUpdate: Seq[Damage] => Unit)
   extends BoxPanel(Orientation.Vertical) {
 
   var model = initial
@@ -41,7 +51,8 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
   val buttonPanel = new BoxPanel(Orientation.Horizontal) {
     contents += new Button(Action("Add") {
       model = model :+ Damage()
-      damagesPanel.contents += new DamagePanel(dbDiag, model.last)
+      damagesPanel.contents += 
+        new DamagePanel(dbDiag, model.last, () => onUpdate(model))
       damagesPanel.revalidate()
       onUpdate(model)
     })
@@ -57,7 +68,8 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
   }
 
   val damagesPanel = new BoxPanel(Orientation.Vertical)
-  model.foreach(v => damagesPanel.contents += new DamagePanel(dbDiag, v))
+  model.foreach(v => 
+    damagesPanel.contents += new DamagePanel(dbDiag, v, () => onUpdate(model)))
 
   contents += buttonPanel
   contents += new ScrollPane {
