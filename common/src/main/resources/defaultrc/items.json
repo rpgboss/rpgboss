@@ -1,5 +1,743 @@
 [
   {
+    "name":"Wooden Sword",
+    "desc":"",
+    "effects":[
+      {
+        "keyId":8,
+        "v":10
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Item",
+    "desc":"Item description",
+    "effects":[
+      
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
     "name":"Item",
     "desc":"Item description",
     "effects":[
