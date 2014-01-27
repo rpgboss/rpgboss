@@ -13,6 +13,9 @@ import rpgboss.editor.uibase.StdDialog
 
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Database") {
+  
+  preferredSize = new Dimension(1280, 800)
+  
   val model = sm.getProjData
   
   val animationsPane = new AnimationsPanel(owner, sm, this)

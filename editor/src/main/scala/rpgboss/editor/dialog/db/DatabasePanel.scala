@@ -18,6 +18,7 @@ abstract class RightPaneArrayDatabasePanel[T](
   extends RightPaneArrayEditingPanel[T](owner, label, initialAry)(m)
   with DatabasePanel {
   override def activate(): Unit = {
-    listView.selectIndices(listView.selection.indices.head)
+    if (!listView.selection.indices.isEmpty)
+      listView.selectIndices(listView.selection.indices.head)
   }
 }

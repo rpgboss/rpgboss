@@ -259,5 +259,14 @@ abstract class RightPaneArrayEditingPanel[T](
     contents += (editPaneContainer)
   })
 
-  listView.selectIndices(0)
+  // Lazily select the first index both for performance, and also so that we
+  // don't cause graphics artifacts from drawing OpenGL stuff to the canvas.
+  // Specifically, this is to fix the bug with the Battlers field being painted
+  // over the other tabs.
+  listenTo(this)
+  reactions += {
+    case UIElementShown(_) => {
+      listView.selectIndices(0)
+    }
+  }  
 }

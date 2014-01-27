@@ -14,4 +14,5 @@ case class Skill(
   var name: String = "",
   var scopeId: Int = Scope.OneEnemy.id,
   var cost: Int = 0,
-  var damages: Seq[Damage] = Seq(Damage())) extends HasName
+  var damages: Seq[Damage] = Seq(Damage()),
+  var effects: Seq[Effect] = Seq()) extends HasName

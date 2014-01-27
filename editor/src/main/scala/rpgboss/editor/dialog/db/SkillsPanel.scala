@@ -44,7 +44,15 @@ class SkillsPanel(
         row().grid(lbl("Skill point cost:")).add(fCost)
       }
       
-      contents += new DamagesPanel(dbDiag, model.damages, model.damages = _)    
+      contents += new BoxPanel(Orientation.Vertical) {
+        val effectPanel = new EffectPanel(owner, dbDiag, model.effects, 
+                                          model.effects = _, false)
+        val damagePanel = 
+          new DamagesPanel(dbDiag, model.damages, model.damages = _)
+        
+        contents += effectPanel
+        contents += damagePanel
+      }
     }
     
   }

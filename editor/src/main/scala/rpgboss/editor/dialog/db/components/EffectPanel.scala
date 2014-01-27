@@ -25,7 +25,7 @@ class EffectPanel(
   onUpdate: Seq[Effect] => Unit,
   includeStatEffects: Boolean)
   extends BoxPanel(Orientation.Vertical) {
-
+  
   import EffectKey._
   
   def isStatEffect(e: Effect) = {

@@ -46,6 +46,8 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
   onUpdate: Seq[Damage] => Unit)
   extends BoxPanel(Orientation.Vertical) {
 
+  minimumSize = new Dimension(0, 500)
+  
   var model = initial
 
   val buttonPanel = new BoxPanel(Orientation.Horizontal) {
@@ -71,6 +73,7 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
   model.foreach(v => 
     damagesPanel.contents += new DamagePanel(dbDiag, v, () => onUpdate(model)))
 
+  border = BorderFactory.createTitledBorder("Damage")
   contents += buttonPanel
   contents += new ScrollPane {
     contents = damagesPanel
