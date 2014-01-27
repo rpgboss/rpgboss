@@ -45,7 +45,7 @@ class BattleStatsSpec extends UnitSpec {
   "BattleStats" should "work with status effects" in {
     val f = fixture
     f.pData.enums.statusEffects = Seq(StatusEffect(
-      effects = Seq(Effect(EffectKey.AtkAdd.id, 10))))
+      effects = Seq(Effect(EffectKey.AtkAdd.id, 10, 0))))
 
     val stats1 =
       BattleStats(f.pData, f.baseStats, tempStatusEffectIds = Seq(0))
@@ -56,7 +56,7 @@ class BattleStatsSpec extends UnitSpec {
   "BattleStats" should "work with equipment effects" in {
     val f = fixture
     f.pData.enums.items =
-      Seq(Item(effects = Seq(Effect(EffectKey.AtkAdd.id, 10))))
+      Seq(Item(effects = Seq(Effect(EffectKey.AtkAdd.id, 10, 0))))
 
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Seq(0))
     stats1 should equal (BattleStats(50, 20, 20, 10, 10, 10, 10, Seq()))
@@ -65,9 +65,9 @@ class BattleStatsSpec extends UnitSpec {
   "BattleStats" should "work with equipment status effects" in {
     val f = fixture
     f.pData.enums.statusEffects = Seq(StatusEffect(
-      effects = Seq(Effect(EffectKey.AtkAdd.id, 10))))
+      effects = Seq(Effect(EffectKey.AtkAdd.id, 10, 0))))
     f.pData.enums.items =
-      Seq(Item(effects = Seq(Effect(EffectKey.AddStatusEffect.id, 0))))
+      Seq(Item(effects = Seq(Effect(EffectKey.AddStatusEffect.id, 0, 0))))
 
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Seq(0))
     stats1 should equal (BattleStats(

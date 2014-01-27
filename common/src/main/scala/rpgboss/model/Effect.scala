@@ -1,6 +1,6 @@
 package rpgboss.model
 
-case class Effect(keyId: Int, var v: Int)
+case class Effect(keyId: Int, var v1: Int, var v2: Int)
 
 object EffectKey extends RpgEnum {
   case class Val(desc: String) extends super.Val
@@ -30,5 +30,5 @@ object EffectKey extends RpgEnum {
 
   def default = RecoverHpAdd
 
-  def defaultEffect = Effect(RecoverHpAdd.id, 0)
+  def defaultEffect = Effect(RecoverHpAdd.id, 0, 0)
 }

@@ -67,7 +67,7 @@ object BattleStats {
       val equipmentStatusEffectIds =
         equipmentEffects
           .filter(_.keyId == EffectKey.AddStatusEffect.id)
-          .map(_.v)
+          .map(_.v1)
           .filter(_ >= 0)
           .filter(_ < pData.enums.statusEffects.length)
 
@@ -89,7 +89,7 @@ object BattleStats {
                      stackedStatusEffects.flatMap(_.effects)
 
     def addEffects(key: EffectKey.Value): Int =
-      allEffects.filter(_.keyId == key.id).map(_.v).sum
+      allEffects.filter(_.keyId == key.id).map(_.v1).sum
 
     apply(
       mhp = baseStats.mhp + addEffects(EffectKey.MhpAdd),

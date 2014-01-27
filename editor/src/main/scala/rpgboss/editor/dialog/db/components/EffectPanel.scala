@@ -49,16 +49,16 @@ class EffectPanel(
         } else {
           // Update existing effect, or append a new one.
           statEffects.find(_.keyId == eKey.id) map { effect =>
-            effect.v = newValue
+            effect.v1 = newValue
           } getOrElse {
-            statEffects.append(Effect(eKey.id, newValue))
+            statEffects.append(Effect(eKey.id, newValue, 0))
           }
         }
         updateFromModel()
       }
       
       val initialValue = 
-        statEffects.find(_.keyId == eKey.id).map(_.v).getOrElse(0)
+        statEffects.find(_.keyId == eKey.id).map(_.v1).getOrElse(0)
       
       new NumberSpinner(initialValue, -1000, 1000, spinFunc)
     }
@@ -86,7 +86,7 @@ class EffectPanel(
       assume(row < miscEffects.size)
       val eff = miscEffects(row)
       Array(EffectKey(eff.keyId).desc, EffectKey(eff.keyId).toString,
-            eff.v.toString)
+            eff.v1.toString)
     }
     def columnCount: Int = 3
     def modelRowCount: Int = miscEffects.size
@@ -147,8 +147,8 @@ class EffectDialog(
     key: EffectKey.Val,
     btn: AbstractButton,
     control: Component,
-    getVal: () => Int,
-    setVal: (Int) => Unit)
+    getVal: () => Effect,
+    setVal: (Effect) => Unit)
 
   var model = initial
   var controls = Nil
@@ -165,7 +165,7 @@ class EffectDialog(
 
     selectedControls.control.enabled = true
 
-    model = model.copy(keyId = key.id, v = selectedControls.getVal())
+    model = selectedControls.getVal()
   }
 
   private def newRadioForKey(key: EffectKey.Val) = new RadioButton() {
@@ -175,7 +175,7 @@ class EffectDialog(
   }
 
   def onCurControlChange() = {
-    model = model.copy(v = selectedControls.getVal())
+    model = selectedControls.getVal()
   }
 
   def nilEffect(key: EffectKey.Val): EffectControls = {
@@ -183,8 +183,8 @@ class EffectDialog(
       key,
       newRadioForKey(key),
       new BoxPanel(Orientation.Vertical),
-      () => 0,
-      v => Unit)
+      () => Effect(key.id, 0, 0),
+      e => Unit)
   }
 
   def intEffect(key: EffectKey.Val): EffectControls = {
@@ -210,8 +210,8 @@ class EffectDialog(
       key,
       newRadioForKey(key),
       control,
-      () => spinner.getValue,
-      v => spinner.setValue(v))
+      () => Effect(key.id, spinner.getValue, 0),
+      e => spinner.setValue(e.v1))
   }
 
   def percentEffect(key: EffectKey.Val): EffectControls = {
@@ -237,8 +237,8 @@ class EffectDialog(
       key,
       newRadioForKey(key),
       control,
-      () => spinner.getValue,
-      v => spinner.setValue(v))
+      () => Effect(key.id, spinner.getValue, 0),
+      e => spinner.setValue(e.v1))
   }
 
   def choiceEffect[T <: HasName](key: EffectKey.Val,
@@ -249,8 +249,42 @@ class EffectDialog(
       key,
       newRadioForKey(key),
       combo,
-      () => combo.selection.index,
-      combo.selection.index = _)
+      () => Effect(key.id, combo.selection.index, 0),
+      e => combo.selection.index = e.v1)
+  }
+  
+  def choicePercentEffect[T <: HasName](key: EffectKey.Val,
+                                        choices: Seq[T]): EffectControls = {
+    val combo = indexedCombo(choices, 0, i => onCurControlChange())
+    val spinner = new NumberSpinner(
+      100,
+      0,
+      100,
+      onUpdate = v => onCurControlChange())
+    
+    val control = new BoxPanel(Orientation.Horizontal) {
+      contents += combo
+      contents += spinner
+      contents += new Label("%") {
+        preferredSize = new Dimension(15, 15)
+      }
+
+      override def enabled_=(b: Boolean) = {
+        super.enabled_=(b)
+        combo.enabled = b
+        spinner.enabled = b
+      }
+    }
+
+    EffectControls(
+      key,
+      newRadioForKey(key),
+      control,
+      () => Effect(key.id, combo.selection.index, spinner.getValue),
+      e => {
+        combo.selection.index = e.v1
+        spinner.setValue(e.v2)
+      })
   }
 
   import EffectKey._
@@ -260,8 +294,8 @@ class EffectDialog(
     percentEffect(RecoverHpMul),
     intEffect(RecoverMpAdd),
     percentEffect(RecoverMpMul),
-    choiceEffect(AddStatusEffect, dbDiag.model.enums.statusEffects),
-    choiceEffect(RemoveStatusEffect, dbDiag.model.enums.statusEffects))
+    choicePercentEffect(AddStatusEffect, dbDiag.model.enums.statusEffects),
+    choicePercentEffect(RemoveStatusEffect, dbDiag.model.enums.statusEffects))
 
   val effectsStats = Array(
     intEffect(MhpAdd),
@@ -286,7 +320,7 @@ class EffectDialog(
   {
     effectsMap.get(initial.keyId) map { ctrlGrp =>
       selectKey(ctrlGrp.key)
-      ctrlGrp.setVal(initial.v)
+      ctrlGrp.setVal(initial)
     }
   }
 
