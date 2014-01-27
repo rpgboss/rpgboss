@@ -260,15 +260,19 @@ class EffectDialog(
       100,
       0,
       100,
-      onUpdate = v => onCurControlChange())
+      onUpdate = v => onCurControlChange()) {
+      maximumSize = new Dimension(60, Int.MaxValue)
+    }
     
     val control = new BoxPanel(Orientation.Horizontal) {
       contents += combo
-      contents += spinner
-      contents += new Label("%") {
-        preferredSize = new Dimension(15, 15)
+      contents += new BoxPanel(Orientation.Horizontal) {
+        contents += spinner
+        contents += new Label("%") {
+          preferredSize = new Dimension(15, 15)
+        }
       }
-
+      
       override def enabled_=(b: Boolean) = {
         super.enabled_=(b)
         combo.enabled = b
