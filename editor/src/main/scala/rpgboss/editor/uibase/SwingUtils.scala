@@ -59,6 +59,7 @@ object SwingUtils {
   def textField(initial: String, onUpdate: String => Unit,
                 additionalAction: Option[() => Unit] = None) =
     new TextField {
+      minimumSize = new Dimension(100, 1)
       text = initial
       listenTo(this)
       reactions += {

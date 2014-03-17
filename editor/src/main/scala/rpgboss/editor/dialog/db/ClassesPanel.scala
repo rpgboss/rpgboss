@@ -56,12 +56,16 @@ class ClassesPanel(
       row().grid(leftLabel("Name:")).add(fName)
 
     }
+    
+    val rightFields = new GridPanel(2, 1) {
+      contents += fCanEquip
+      contents += fLearnedSkills
+    }
 
     new BoxPanel(Orientation.Horizontal) {
       contents += mainFields
-      contents += fCanEquip
       contents += fEffects
-      contents += fLearnedSkills
+      contents += rightFields
     }
   }
 

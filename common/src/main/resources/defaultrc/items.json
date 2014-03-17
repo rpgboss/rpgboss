@@ -1,11 +1,12 @@
 [
   {
     "name":"Wooden Sword",
-    "desc":"",
+    "desc":"A simple wooden sword.",
     "effects":[
       {
         "keyId":8,
-        "v":10
+        "v1":2,
+        "v2":0
       }
     ],
     "sellable":true,
@@ -14,82 +15,112 @@
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":3
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Iron Sword",
+    "desc":"A simple iron sword.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":10,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":3
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Steel Sword",
+    "desc":"A forged steel sword.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":17,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":3
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Frost Sword",
+    "desc":"An enchanted frost sword.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":20,
+        "v2":0
+      },
+      {
+        "keyId":14,
+        "v1":5,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":3
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Flaming Sword",
+    "desc":"An enchanted flaming sword.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":22,
+        "v2":0
+      },
+      {
+        "keyId":14,
+        "v1":6,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":3
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Void Sword",
+    "desc":"A sword made of pure energy.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":40,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
+    "useOnAttack":true,
     "onUseSkillId":0
   },
   {

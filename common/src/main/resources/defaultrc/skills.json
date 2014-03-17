@@ -2,551 +2,751 @@
   {
     "name":"Untyped ATK",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":"a.atk"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Blunt ATK",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":1,
         "formula":"a.atk"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Piercing ATK",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":2,
         "formula":"a.atk"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Slashing ATK",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":3,
         "formula":"a.atk"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
+    ]
+  },
+  {
+    "name":"Enchant 30 cold",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":5,
+        "formula":"30"
+      }
+    ],
+    "effects":[
+      
+    ]
+  },
+  {
+    "name":"Enchant 30 fire",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":4,
+        "formula":"30"
+      }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
-    ]
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ]
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Scorch",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":4,
         "formula":"a.mag"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Burn",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":4,
         "formula":"a.mag*2"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Fireball",
     "scopeId":3,
+    "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":4,
         "formula":"a.mag"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Firestorm",
     "scopeId":3,
+    "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":4,
         "formula":"a.mag*1.5"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Chill",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":5,
         "formula":"a.mag"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Freeze",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":5,
         "formula":"a.mag*1.5"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"Icestorm",
     "scopeId":3,
+    "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":5,
         "formula":"a.mag"
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   },
   {
     "name":"",
     "scopeId":2,
+    "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
         "formula":""
       }
+    ],
+    "effects":[
+      
     ]
   }
 ]
