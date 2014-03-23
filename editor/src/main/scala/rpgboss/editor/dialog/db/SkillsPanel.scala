@@ -23,7 +23,7 @@ class SkillsPanel(
   def panelName = "Skills"
   def newDefaultInstance() = Skill()
   def label(a: Skill) = a.name
-  def copyItem(x: Skill) = x.copy()
+  def copyItem(x: Skill) = x.copy(damages = x.damages.map(_.copy()))
 
   def editPaneForItem(idx: Int, model: Skill) = {
     new BoxPanel(Orientation.Horizontal) {
@@ -34,27 +34,27 @@ class SkillsPanel(
             model.name = v
             refreshModel()
           })
-        
+
         val fScope = enumIdCombo(Scope)(model.scopeId, model.scopeId = _)
-        
+
         val fCost = new NumberSpinner(model.cost, 0, 100, model.cost = _)
-        
+
         row().grid(lbl("Name:")).add(fName)
         row().grid(lbl("Scope:")).add(fScope)
         row().grid(lbl("Skill point cost:")).add(fCost)
       }
-      
+
       contents += new BoxPanel(Orientation.Vertical) {
-        val effectPanel = new EffectPanel(owner, dbDiag, model.effects, 
+        val effectPanel = new EffectPanel(owner, dbDiag, model.effects,
                                           model.effects = _, false)
-        val damagePanel = 
+        val damagePanel =
           new DamagesPanel(dbDiag, model.damages, model.damages = _)
-        
+
         contents += effectPanel
         contents += damagePanel
       }
     }
-    
+
   }
 
   override def onListDataUpdate() = {

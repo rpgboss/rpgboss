@@ -23,8 +23,8 @@ object Item {
  * @param scopeId       Affected targets for consumables
  */
 case class Item(
-  var name: String = "Item",
-  var desc: String = "Item description",
+  var name: String = "<Default item>",
+  var desc: String = "",
   var effects: Seq[Effect] = Seq(),
 
   var sellable: Boolean = true,
@@ -34,10 +34,10 @@ case class Item(
 
   var accessId: Int = ItemAccessibility.default.id,
   var scopeId: Int = Scope.default.id,
-  
+
   var equipType: Int = 0,
-  
+
   var useOnAttack: Boolean = false,
   var onUseSkillId: Int = 0,
-  
+
   var icon: Option[IconSpec] = None) extends HasName
