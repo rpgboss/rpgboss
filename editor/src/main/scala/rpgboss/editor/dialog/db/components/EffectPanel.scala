@@ -25,20 +25,20 @@ class EffectPanel(
   onUpdate: Seq[Effect] => Unit,
   includeStatEffects: Boolean)
   extends BoxPanel(Orientation.Vertical) {
-  
+
   import EffectKey._
-  
+
   def isStatEffect(e: Effect) = {
-    val statKeys = 
+    val statKeys =
       Set(MhpAdd, MmpAdd, AtkAdd, SpdAdd, MagAdd, ArmAdd, MreAdd).map(_.id)
     statKeys.contains(e.keyId)
   }
-  
+
   def updateFromModel() = {
     onUpdate(statEffects ++ miscEffects)
   }
-  
-  var statEffects: ArrayBuffer[Effect] = 
+
+  var statEffects: ArrayBuffer[Effect] =
     ArrayBuffer(initial.filter(isStatEffect) : _*)
   val statEffectsPanel = new DesignGridPanel {
     def statSpinner(eKey: EffectKey.Value) = {
@@ -56,41 +56,42 @@ class EffectPanel(
         }
         updateFromModel()
       }
-      
-      val initialValue = 
+
+      val initialValue =
         statEffects.find(_.keyId == eKey.id).map(_.v1).getOrElse(0)
-      
+
       new NumberSpinner(initialValue, -1000, 1000, spinFunc)
     }
-    
+
     row()
       .grid(lbl("+Max HP")).add(statSpinner(MhpAdd))
       .grid(lbl("+Attack")).add(statSpinner(AtkAdd))
     row()
       .grid(lbl("+Max MP")).add(statSpinner(MmpAdd))
       .grid(lbl("+Speed")).add(statSpinner(SpdAdd))
-      
+
     row()
       .grid(lbl("+Armor")).add(statSpinner(ArmAdd))
       .grid(lbl("+Magic")).add(statSpinner(MagAdd))
-    
+
     row()
       .grid(lbl("+Mag. Res.")).add(statSpinner(MreAdd))
       .grid()
   }
-  
+
   val miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
   val miscEffectsTable = new TableEditor() {
     def colHeaders = Array("Description", "Key", "Value")
     def getRowStrings(row: Int) = {
       assume(row < miscEffects.size)
       val eff = miscEffects(row)
-      Array(EffectKey(eff.keyId).desc, EffectKey(eff.keyId).toString,
-            eff.v1.toString)
+      val effectKey = EffectKey(eff.keyId)
+      Array(effectKey.desc, effectKey.toString,
+            effectKey.renderer(eff, dbDiag.model))
     }
     def columnCount: Int = 3
     def modelRowCount: Int = miscEffects.size
-    
+
     def showEditDialog(row: Int, updateDisplayFunction: () => Unit) = {
       val initialE = miscEffects(row)
       val diag = new EffectDialog(
@@ -104,7 +105,7 @@ class EffectPanel(
         })
       diag.open()
     }
-    
+
     def showNewDialog(updateDisplayFunction: () => Unit) = {
       val diag = new EffectDialog(
         owner,
@@ -117,20 +118,20 @@ class EffectPanel(
         })
       diag.open()
     }
-    
+
     def deleteRow(row: Int, updateDisplayFunction: () => Unit) = {
       miscEffects.remove(row)
       updateDisplayFunction()
     }
   }
-  
+
   if (includeStatEffects) {
     contents += new BoxPanel(Orientation.Vertical) {
       border = BorderFactory.createTitledBorder("Stat boosts")
       contents += statEffectsPanel
     }
   }
-  
+
   contents += new ScrollPane {
     border = BorderFactory.createTitledBorder("Other Effects")
     contents = miscEffectsTable
@@ -252,7 +253,7 @@ class EffectDialog(
       () => Effect(key.id, combo.selection.index, 0),
       e => combo.selection.index = e.v1)
   }
-  
+
   def choicePercentEffect[T <: HasName](key: EffectKey.Val,
                                         choices: Seq[T]): EffectControls = {
     val combo = indexedCombo(choices, 0, i => onCurControlChange())
@@ -263,7 +264,7 @@ class EffectDialog(
       onUpdate = v => onCurControlChange()) {
       maximumSize = new Dimension(60, Int.MaxValue)
     }
-    
+
     val control = new BoxPanel(Orientation.Horizontal) {
       contents += combo
       contents += new BoxPanel(Orientation.Horizontal) {
@@ -272,7 +273,7 @@ class EffectDialog(
           preferredSize = new Dimension(15, 15)
         }
       }
-      
+
       override def enabled_=(b: Boolean) = {
         super.enabled_=(b)
         combo.enabled = b

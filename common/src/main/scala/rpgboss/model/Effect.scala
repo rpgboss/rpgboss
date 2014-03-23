@@ -1,9 +1,16 @@
 package rpgboss.model
 
+import rpgboss.lib._
+
 case class Effect(keyId: Int, var v1: Int, var v2: Int)
 
 object EffectKey extends RpgEnum {
-  case class Val(desc: String) extends super.Val
+  val defaultRenderer = (e: Effect, pData: ProjectData) => e.v1.toString
+
+  case class Val(
+    desc: String,
+    renderer: (Effect, ProjectData) => String = defaultRenderer)
+    extends super.Val
 
   implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
 
@@ -25,7 +32,14 @@ object EffectKey extends RpgEnum {
 
   val EscapeBattle = Val("Escape battle")
 
-  val UseSkill = Val("Use skill")
+  val UseSkill = Val("Use skill", (e: Effect, pData: ProjectData) => {
+    val skillName =
+      if (e.v1 < pData.enums.skills.length)
+        pData.enums.skills(e.v1).name
+      else
+        "<Past end of array>"
+    StringUtils.standardIdxFormat(e.v1, skillName)
+  })
   val LearnSkill = Val("Learn skill")
 
   def default = RecoverHpAdd
