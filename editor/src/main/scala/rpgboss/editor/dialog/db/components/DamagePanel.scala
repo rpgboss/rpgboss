@@ -16,7 +16,7 @@ class DamagePanel(
   onUpdate: () => Unit)
   extends DesignGridPanel {
   val model = initial
-  
+
   val fElement = indexedComboStrings(
     dbDiag.model.enums.elements,
     model.elementId,
@@ -29,7 +29,7 @@ class DamagePanel(
     model.typeId = v
     onUpdate()
   })
-  
+
   val panelType = new BoxPanel(Orientation.Horizontal)
   addBtnsAsGrp(panelType.contents, radiosType)
 
@@ -47,30 +47,31 @@ class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
   extends BoxPanel(Orientation.Vertical) {
 
   minimumSize = new Dimension(0, 500)
-  
+
   var model = initial
 
   val buttonPanel = new BoxPanel(Orientation.Horizontal) {
     contents += new Button(Action("Add") {
       model = model :+ Damage()
-      damagesPanel.contents += 
+      damagesPanel.contents +=
         new DamagePanel(dbDiag, model.last, () => onUpdate(model))
       damagesPanel.revalidate()
       onUpdate(model)
     })
 
     contents += new Button(Action("Remove Last") {
-      if (model.length > 1) {
+      if (model.length > 0) {
         model = model.dropRight(1)
         damagesPanel.contents.trimEnd(1)
         damagesPanel.revalidate()
+        damagesPanel.repaint()
         onUpdate(model)
       }
     })
   }
 
   val damagesPanel = new BoxPanel(Orientation.Vertical)
-  model.foreach(v => 
+  model.foreach(v =>
     damagesPanel.contents += new DamagePanel(dbDiag, v, () => onUpdate(model)))
 
   border = BorderFactory.createTitledBorder("Damage")
