@@ -122,8 +122,8 @@ class MyGame(gamepath: File)
 
     // Clear the context
     Gdx.gl.glClearColor(0, 0, 0, 1)
-    Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
-    Gdx.gl.glEnable(GL10.GL_BLEND)
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+    Gdx.gl.glEnable(GL20.GL_BLEND)
 
     if (assets.update()) {
       // update state

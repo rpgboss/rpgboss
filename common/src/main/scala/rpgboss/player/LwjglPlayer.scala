@@ -10,7 +10,6 @@ object LwjglPlayer {
     conf.title = game.project.data.title;
     conf.width = 32 * 20;
     conf.height = 32 * 15;
-    conf.useGL20 = true;
     conf.forceExit = true;
 
     new LwjglApplication(game, conf);
@@ -21,7 +20,7 @@ object LwjglPlayer {
 
     } else {
       val file = new File(args(0))
-      
+
       if (!file.isDirectory()) {
         println("Cannot read directory: " + args(0))
         return

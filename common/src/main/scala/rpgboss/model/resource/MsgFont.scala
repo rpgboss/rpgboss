@@ -20,10 +20,10 @@ case class Msgfont(proj: Project, name: String,
     val generator = new FreeTypeFontGenerator(
       Gdx.files.absolute(dataFile.getAbsolutePath()))
 
-    val result = generator.generateFont(
-      proj.data.startup.fontsize,
-      FreeTypeFontGenerator.DEFAULT_CHARS,
-      true)
+    val params = new FreeTypeFontGenerator.FreeTypeFontParameter
+    params.size = proj.data.startup.fontsize
+    params.flip = true
+    val result = generator.generateFont(params)
 
     generator.dispose()
 
