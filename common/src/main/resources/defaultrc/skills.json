@@ -302,7 +302,7 @@
   {
     "name":"Scorch",
     "scopeId":2,
-    "cost":0,
+    "cost":5,
     "damages":[
       {
         "typeId":1,
@@ -317,7 +317,7 @@
   {
     "name":"Burn",
     "scopeId":2,
-    "cost":0,
+    "cost":12,
     "damages":[
       {
         "typeId":1,
@@ -332,7 +332,7 @@
   {
     "name":"Fireball",
     "scopeId":3,
-    "cost":0,
+    "cost":27,
     "damages":[
       {
         "typeId":1,
@@ -347,7 +347,7 @@
   {
     "name":"Firestorm",
     "scopeId":3,
-    "cost":0,
+    "cost":45,
     "damages":[
       {
         "typeId":1,
@@ -452,7 +452,7 @@
   {
     "name":"Chill",
     "scopeId":2,
-    "cost":0,
+    "cost":6,
     "damages":[
       {
         "typeId":1,
@@ -467,7 +467,7 @@
   {
     "name":"Freeze",
     "scopeId":2,
-    "cost":0,
+    "cost":14,
     "damages":[
       {
         "typeId":1,
@@ -482,7 +482,7 @@
   {
     "name":"Icestorm",
     "scopeId":3,
-    "cost":0,
+    "cost":30,
     "damages":[
       {
         "typeId":1,
@@ -585,14 +585,14 @@
     ]
   },
   {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
+    "name":"Cure",
+    "scopeId":4,
+    "cost":4,
     "damages":[
       {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
+        "typeId":1,
+        "elementId":8,
+        "formula":"-a.mag"
       }
     ],
     "effects":[
@@ -600,14 +600,14 @@
     ]
   },
   {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
+    "name":"Heal",
+    "scopeId":4,
+    "cost":12,
     "damages":[
       {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
+        "typeId":1,
+        "elementId":8,
+        "formula":"-2*a.mag"
       }
     ],
     "effects":[
@@ -615,14 +615,29 @@
     ]
   },
   {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
+    "name":"Full Heal",
+    "scopeId":4,
+    "cost":18,
+    "damages":[
+      
+    ],
+    "effects":[
+      {
+        "keyId":1,
+        "v1":100,
+        "v2":0
+      }
+    ]
+  },
+  {
+    "name":"Cure all",
+    "scopeId":5,
+    "cost":8,
     "damages":[
       {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
+        "typeId":1,
+        "elementId":8,
+        "formula":"-a.mag"
       }
     ],
     "effects":[
@@ -630,29 +645,14 @@
     ]
   },
   {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
+    "name":"Heal all",
+    "scopeId":5,
+    "cost":16,
     "damages":[
       {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
+        "typeId":1,
+        "elementId":8,
+        "formula":"-2*a.mag"
       }
     ],
     "effects":[

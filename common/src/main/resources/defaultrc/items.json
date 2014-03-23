@@ -5,7 +5,7 @@
     "effects":[
       {
         "keyId":8,
-        "v1":2,
+        "v1":3,
         "v2":0
       }
     ],
@@ -334,94 +334,148 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Basic Staff",
+    "desc":"A basic wooden staff.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":3,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":1
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Apprentice Staff",
+    "desc":"A basic magic staff.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":3,
+        "v2":0
+      },
+      {
+        "keyId":10,
+        "v1":6,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":1
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Focus Staff",
+    "desc":"A staff that helps one focus on casting spells.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":3,
+        "v2":0
+      },
+      {
+        "keyId":10,
+        "v1":16,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":1
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Ice Staff",
+    "desc":"A staff always cold to the touch.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":3,
+        "v2":0
+      },
+      {
+        "keyId":10,
+        "v1":23,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":5
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Elementalist Staff",
+    "desc":"A staff for advanced practicioners.",
     "effects":[
-      
+      {
+        "keyId":8,
+        "v1":3,
+        "v2":0
+      },
+      {
+        "keyId":10,
+        "v1":34,
+        "v2":0
+      },
+      {
+        "keyId":12,
+        "v1":3,
+        "v2":0
+      },
+      {
+        "keyId":14,
+        "v1":6,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":5
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Staff of Healing",
+    "desc":"Heals those hit by the staff.",
     "effects":[
-      
+      {
+        "keyId":10,
+        "v1":16,
+        "v2":0
+      }
     ],
     "sellable":true,
     "price":100,
-    "itemType":0,
+    "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
+    "useOnAttack":true,
+    "onUseSkillId":39
   },
   {
     "name":"Item",
