@@ -4,19 +4,19 @@ import rpgboss.editor.dialog.db._
 import rpgboss.editor._
 import rpgboss.editor.uibase._
 import rpgboss.editor.uibase.SwingUtils._
-import scala.swing._
-import scala.swing.event._
+import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
-import rpgboss.editor.uibase.StdDialog
+import scala.swing._
+import scala.swing.event._
 
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Database") {
   
   preferredSize = new Dimension(1280, 800)
   
-  val model = sm.getProjData
+  val model = Utils.deepCopy(sm.getProjData)
   
   val animationsPane = new AnimationsPanel(owner, sm, this)
   val charPane = new CharactersPanel(owner, sm, this)
