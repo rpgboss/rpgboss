@@ -23,8 +23,6 @@ class EnemiesPanel(
     dbDiag.model.enums.enemies) {
   def panelName = "Enemies"
   def newDefaultInstance() = new Enemy()
-  def label(e: Enemy) = e.name
-  def copyItem(x: Enemy) = x.copy()
 
   def editPaneForItem(idx: Int, model: Enemy) = {
     val bioFields = new DesignGridPanel {
@@ -74,10 +72,20 @@ class EnemiesPanel(
 
     val fEffects =
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _, false)
+    
+    val fSkills = new ArrayMultiselectPanel(
+      owner, 
+      "Known Skills", 
+      dbDiag.model.enums.skills,
+      model.skills,
+      model.skills = _)
 
     new BoxPanel(Orientation.Horizontal) {
       contents += bioFields
-      contents += fEffects
+      contents += new GridPanel(2, 1) {
+        contents += fEffects
+        contents += fSkills
+      }
     }
   }
 

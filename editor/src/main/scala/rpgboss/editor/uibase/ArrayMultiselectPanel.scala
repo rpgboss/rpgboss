@@ -15,86 +15,25 @@ class ArrayMultiselectPanel[T <: HasName](
   choices: Seq[T],
   initialSelections: Seq[Int],
   onUpdate: Seq[Int] => Unit)
-  extends DesignGridPanel
+  extends ScrollPane
   with Logging {
-  val listView = new ListView(choices) {
-    renderer = new Renderer[T] {
-      def componentFor(
-        list: ListView[_],
-        isSelected: Boolean,
-        focused: Boolean,
-        a: T,
-        index: Int): Component =
-        {
-          new CheckBox(a.name) {
-            selected = isSelected
-          }
-        }
+  
+  preferredSize = new Dimension(150, 200)
+  maximumSize = new Dimension(150, 300)
+  
+  val model = collection.mutable.Set[Int](initialSelections: _*)
+  
+  val gridPanel = new GridPanel(choices.size, 1) {
+    for ((choice, i) <- choices.zipWithIndex) {
+      contents += SwingUtils.boolField(
+        choice.name, 
+        model.contains(i),
+        v => if (v) model.add(i) else model.remove(i), 
+        Some(() => onUpdate(model.toSeq)))
     }
-
-    selection.intervalMode = ListView.IntervalMode.MultiInterval
-
-    // Make initial selections
-    selectIndices(initialSelections.filter(_ >= 0): _*)
-
-    // Respond to clicks appropriately: 
-    // http://stackoverflow.com/questions/2528344/jlist-deselect-when-clicking-an-already-selected-item
-
-    // HACK to get old listeners. May crash if implementing class changes from
-    // a DefaultListSelectionModel
-    val oldListeners = {
-      val oldModel =
-        peer.getSelectionModel().asInstanceOf[DefaultListSelectionModel]
-      oldModel.getListSelectionListeners()
-    }
-
-    val newSelectionModel = new DefaultListSelectionModel() {
-      var gestureStarted = false
-
-      override def setSelectionInterval(i0: Int, i1: Int) = {
-        if (!gestureStarted) {
-          if (isSelectedIndex(i0)) {
-            removeSelectionInterval(i0, i1)
-          } else {
-            addSelectionInterval(i0, i1)
-          }
-        }
-        gestureStarted = true
-      }
-
-      override def setValueIsAdjusting(isAdjusting: Boolean) = {
-        if (isAdjusting == false) {
-          gestureStarted = false
-        }
-      }
-    }
-
-    // HACK to restore the listeners
-    for (l <- oldListeners)
-      newSelectionModel.addListSelectionListener(l)
-
-    peer.setSelectionModel(newSelectionModel)
-
-    def updateModel() = {
-      val ary = selection.indices.toSeq
-      onUpdate(ary)
-      logger.info("Updated ArrayMultiselect: %s".format(ary))
-    }
-
-    // Call on update at approriate time
-    listenTo(selection)
-    reactions += {
-      case ListSelectionChanged(_, _, _) => updateModel()
-    }
-
   }
 
   border = BorderFactory.createTitledBorder(label)
 
-  val scrollPane = new ScrollPane {
-    contents = listView
-  }
-
-  row().grid().add(scrollPane)
-
+  contents = gridPanel
 }

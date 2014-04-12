@@ -24,7 +24,7 @@ class ArrayListView[T](initialAry: Seq[T]) extends ListView(initialAry) {
   }
 }
 
-abstract class ArrayEditingPanel[T](
+abstract class ArrayEditingPanel[T <: AnyRef](
   owner: Window,
   label: String,
   initialAry: Seq[T],
@@ -34,8 +34,7 @@ abstract class ArrayEditingPanel[T](
   with Logging {
   def newDefaultInstance(): T
   def label(a: T): String
-  def copyItem(a: T): T
-
+  
   val editPaneContainer = new BoxPanel(Orientation.Vertical)
   def editPaneForItem(idx: Int, item: T): Component
   def editPaneEmpty: Component
@@ -136,7 +135,7 @@ abstract class ArrayEditingPanel[T](
           slotsToCopy => {
             val buf = listView.listData.toBuffer
             for (i <- originalItemIdx to (originalItemIdx + slotsToCopy)) {
-              buf.update(i, copyItem(origItem))
+              buf.update(i, Utils.deepCopy(origItem))
             }
             listView.listData = buf
             onListDataUpdate()
@@ -188,8 +187,6 @@ class StringArrayEditingPanel(
   extends ArrayEditingPanel(owner, label, initialAry, minElems, maxElems) {
   def newDefaultInstance() = ""
   def label(a: String) = a
-  // Works because strings are immutable
-  def copyItem(a: String) = a
 
   def editPaneForItem(idx: Int, item: String) = {
     new TextField {
@@ -217,7 +214,7 @@ class StringArrayEditingPanel(
   row().grid().add(btnSetListSize)
 }
 
-abstract class RightPaneArrayEditingPanel[T](
+abstract class RightPaneArrayEditingPanel[T <: AnyRef](
   owner: Window,
   label: String,
   initialAry: Seq[T],
@@ -230,7 +227,7 @@ abstract class RightPaneArrayEditingPanel[T](
     minElems, 
     maxElems)(m) {
   def editPaneEmpty = new BoxPanel(Orientation.Vertical)
-
+  
   val bigLbl = new Label {
     text = label
     font = new Font("Arial", Font.BOLD, 14)

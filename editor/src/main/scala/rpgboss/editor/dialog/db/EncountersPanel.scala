@@ -89,9 +89,7 @@ class EncountersPanel(
   
   def panelName = "Encounters"
   def newDefaultInstance() = Encounter()
-  def label(e: Encounter) = e.name
-  def copyItem(e: Encounter) = e.copy()
-
+  
   def editPaneForItem(idx: Int, model: Encounter) = {
     def autoArrangeModel(): Unit = {
       if (model.units.isEmpty)
@@ -121,6 +119,38 @@ class EncountersPanel(
       }
     }
     
+    val fName = textField(model.name, model.name = _, Some(refreshModel))
+    
+    def regenerateName(): Unit = {
+      if (!model.name.isEmpty && !model.name.startsWith("#"))
+        return
+        
+      if (model.units.isEmpty)
+        fName.text = ""
+      
+      val enemyLabels = new collection.mutable.ArrayBuffer[String]
+          
+      // Array of same length and enemies to keep track of how many there are
+      val enemyCounts = Array.fill(dbDiag.model.enums.enemies.length)(0)
+      for (unit <- model.units; if unit.enemyIdx < enemyCounts.length) {
+        enemyCounts(unit.enemyIdx) += 1
+      }
+      
+      for (i <- 0 until enemyCounts.length) {
+        val count = enemyCounts(i)
+        
+        if (count > 0) {
+          val enemyName = dbDiag.model.enums.enemies(i).name
+          if (count == 1)
+            enemyLabels.append(enemyName)
+          else
+            enemyLabels.append("%d x %s".format(count, enemyName))
+        }
+      }
+      
+      fName.text = "# %s".format(enemyLabels.mkString(", "))
+    }
+    
     val fDisplay = new EncounterFieldGdxPanel(sm.getProj, model)
     
     val fEnemySelector = new ArrayListView(dbDiag.model.enums.enemies) {
@@ -133,6 +163,7 @@ class EncountersPanel(
         val unit = EncounterUnit(fEnemySelector.selection.indices.head, 0, 0)
         model.units = model.units ++ Seq(unit)
         autoArrangeModel()
+        regenerateName()
         fDisplay.updateBattleState(model)
       }
     })
@@ -141,12 +172,18 @@ class EncountersPanel(
       if (!model.units.isEmpty) {
         model.units = model.units.dropRight(1)
         autoArrangeModel()
+        regenerateName()
         fDisplay.updateBattleState(model)
       }
     })
     
     new BoxPanel(Orientation.Horizontal) {
-      contents += fDisplay
+      contents += new BoxPanel(Orientation.Vertical) {
+        contents += new DesignGridPanel {
+          row().grid(lbl("Encounter Name:")).add(fName)
+        }
+        contents += fDisplay
+      }
       contents += new BoxPanel(Orientation.Vertical) {
         contents += btnAdd
         contents += btnRemove

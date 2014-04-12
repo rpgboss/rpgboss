@@ -1,5 +1,193 @@
 [
   {
+    "name":"# Goblin",
+    "units":[
+      {
+        "enemyIdx":0,
+        "x":255,
+        "y":210
+      }
+    ]
+  },
+  {
+    "name":"# 3 x Goblin",
+    "units":[
+      {
+        "enemyIdx":0,
+        "x":167,
+        "y":155
+      },
+      {
+        "enemyIdx":0,
+        "x":152,
+        "y":265
+      },
+      {
+        "enemyIdx":0,
+        "x":342,
+        "y":210
+      }
+    ]
+  },
+  {
+    "name":"# 2 x Goblin, Goblin Commander",
+    "units":[
+      {
+        "enemyIdx":0,
+        "x":167,
+        "y":155
+      },
+      {
+        "enemyIdx":0,
+        "x":152,
+        "y":265
+      },
+      {
+        "enemyIdx":1,
+        "x":342,
+        "y":210
+      }
+    ]
+  },
+  {
+    "name":"# 2 x Goblin, Goblin Wizard",
+    "units":[
+      {
+        "enemyIdx":2,
+        "x":167,
+        "y":155
+      },
+      {
+        "enemyIdx":0,
+        "x":152,
+        "y":265
+      },
+      {
+        "enemyIdx":0,
+        "x":342,
+        "y":210
+      }
+    ]
+  },
+  {
+    "name":"# 2 x Goblin Commander",
+    "units":[
+      {
+        "enemyIdx":1,
+        "x":255,
+        "y":155
+      },
+      {
+        "enemyIdx":1,
+        "x":240,
+        "y":265
+      }
+    ]
+  },
+  {
+    "name":"# 2 x Goblin Commander, 2 x Goblin Wizard",
+    "units":[
+      {
+        "enemyIdx":2,
+        "x":167,
+        "y":155
+      },
+      {
+        "enemyIdx":2,
+        "x":152,
+        "y":265
+      },
+      {
+        "enemyIdx":1,
+        "x":342,
+        "y":155
+      },
+      {
+        "enemyIdx":1,
+        "x":327,
+        "y":265
+      }
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
+    "name":"#<None>",
+    "units":[
+      
+    ]
+  },
+  {
     "name":"#<None>",
     "units":[
       

@@ -25,7 +25,12 @@ class EffectPanel(
   onUpdate: Seq[Effect] => Unit,
   includeStatEffects: Boolean)
   extends BoxPanel(Orientation.Vertical) {
-
+  
+  if (includeStatEffects)
+    preferredSize = new Dimension(250, 300)
+  else
+    preferredSize = new Dimension(250, 200)
+  
   import EffectKey._
 
   def isStatEffect(e: Effect) = {

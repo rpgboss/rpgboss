@@ -15,7 +15,7 @@ class LearnedSkillPanel(
   onUpdate: Seq[LearnedSkill] => Unit)
   extends BoxPanel(Orientation.Vertical) {
 
-  preferredSize = new Dimension(300, 200)
+  preferredSize = new Dimension(150, 200)
 
   val learnedSkills = ArrayBuffer(initial : _*)
 

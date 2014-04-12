@@ -22,11 +22,8 @@ class AnimationsPanel(
     dbDiag.model.enums.animations) {
   def panelName = "Animations"
   def newDefaultInstance() = new Animation()
-  def label(a: Animation) = a.name
-  def copyItem(a: Animation) = a.copy()
 
   def editPaneForItem(idx: Int, model: Animation) = {
-
     new BoxPanel(Orientation.Horizontal) {
     }
   }

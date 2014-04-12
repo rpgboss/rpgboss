@@ -29,7 +29,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":300,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -48,7 +48,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":600,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -72,7 +72,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":1400,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -96,7 +96,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":1400,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -115,7 +115,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":3000,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -124,8 +124,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -139,8 +139,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -154,8 +154,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -169,8 +169,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -184,8 +184,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -199,8 +199,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -214,8 +214,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -229,8 +229,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -244,8 +244,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -259,8 +259,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -274,8 +274,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -289,8 +289,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -304,8 +304,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -319,8 +319,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -368,7 +368,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":400,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -392,7 +392,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":800,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -416,7 +416,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":1400,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -450,7 +450,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":1600,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -469,7 +469,7 @@
       }
     ],
     "sellable":true,
-    "price":100,
+    "price":1400,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
@@ -478,8 +478,8 @@
     "onUseSkillId":39
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -493,8 +493,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -508,8 +508,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -523,8 +523,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -538,8 +538,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -553,8 +553,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -568,8 +568,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -583,8 +583,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -598,8 +598,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -613,8 +613,128 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"Rusty Shiv",
+    "desc":"Found in a dusty alley.",
+    "effects":[
+      {
+        "keyId":8,
+        "v1":1,
+        "v2":0
+      },
+      {
+        "keyId":9,
+        "v1":3,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":true,
+    "onUseSkillId":2
+  },
+  {
+    "name":"Steel Dagger",
+    "desc":"A shiny dagger.",
+    "effects":[
+      {
+        "keyId":8,
+        "v1":3,
+        "v2":0
+      },
+      {
+        "keyId":9,
+        "v1":6,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":250,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":true,
+    "onUseSkillId":2
+  },
+  {
+    "name":"Dagger of Speed",
+    "desc":"Your arm is moving faster.",
+    "effects":[
+      {
+        "keyId":9,
+        "v1":20,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":1800,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":true,
+    "onUseSkillId":2
+  },
+  {
+    "name":"Cold Dagger",
+    "desc":"A blade always ice cold to the touch.",
+    "effects":[
+      {
+        "keyId":8,
+        "v1":8,
+        "v2":0
+      },
+      {
+        "keyId":9,
+        "v1":11,
+        "v2":0
+      },
+      {
+        "keyId":14,
+        "v1":5,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":2200,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":true,
+    "onUseSkillId":2
+  },
+  {
+    "name":"",
+    "desc":"",
+    "effects":[
+      {
+        "keyId":8,
+        "v1":1,
+        "v2":0
+      },
+      {
+        "keyId":9,
+        "v1":3,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":2
+  },
+  {
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -628,8 +748,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -643,8 +763,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -658,8 +778,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -673,8 +793,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -688,8 +808,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -703,8 +823,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -718,8 +838,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -733,8 +853,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],
@@ -748,83 +868,8 @@
     "onUseSkillId":0
   },
   {
-    "name":"Item",
-    "desc":"Item description",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"Item",
-    "desc":"Item description",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"Item",
-    "desc":"Item description",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"Item",
-    "desc":"Item description",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"Item",
-    "desc":"Item description",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"Item",
-    "desc":"Item description",
+    "name":"",
+    "desc":"",
     "effects":[
       
     ],

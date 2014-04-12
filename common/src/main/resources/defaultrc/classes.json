@@ -2,7 +2,12 @@
   {
     "name":"Knight",
     "canUseItems":[
-      
+      0,
+      1,
+      5,
+      2,
+      3,
+      4
     ],
     "effects":[
       
@@ -14,7 +19,12 @@
   {
     "name":"Healer",
     "canUseItems":[
-      
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
     ],
     "effects":[
       
@@ -26,7 +36,13 @@
   {
     "name":"Engineer",
     "canUseItems":[
-      
+      0,
+      1,
+      20,
+      35,
+      2,
+      21,
+      36
     ],
     "effects":[
       
@@ -38,7 +54,11 @@
   {
     "name":"Rogue",
     "canUseItems":[
-      
+      37,
+      5,
+      38,
+      35,
+      36
     ],
     "effects":[
       
@@ -50,7 +70,12 @@
   {
     "name":"Wizard",
     "canUseItems":[
-      
+      20,
+      24,
+      21,
+      25,
+      22,
+      23
     ],
     "effects":[
       

@@ -22,8 +22,6 @@ class SkillsPanel(
     dbDiag.model.enums.skills) {
   def panelName = "Skills"
   def newDefaultInstance() = Skill()
-  def label(a: Skill) = a.name
-  def copyItem(x: Skill) = x.copy(damages = x.damages.map(_.copy()))
 
   def editPaneForItem(idx: Int, model: Skill) = {
     new BoxPanel(Orientation.Horizontal) {

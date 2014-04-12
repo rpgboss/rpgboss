@@ -23,8 +23,6 @@ class CharactersPanel(
     dbDiag.model.enums.characters) {
   def panelName = "Characters"
   def newDefaultInstance() = new Character()
-  def label(character: Character) = character.name
-  def copyItem(c: Character) = c.copy()
 
   def editPaneForItem(idx: Int, model: Character) = {
     val bioFields = new DesignGridPanel {

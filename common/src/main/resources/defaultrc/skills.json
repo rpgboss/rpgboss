@@ -30,14 +30,14 @@
     ]
   },
   {
-    "name":"Piercing ATK",
+    "name":"Piercing ATK and SPD",
     "scopeId":2,
     "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":2,
-        "formula":"a.atk"
+        "formula":"a.atk / 2 + a.spd / 2"
       }
     ],
     "effects":[

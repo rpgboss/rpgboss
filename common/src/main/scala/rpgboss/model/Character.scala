@@ -57,7 +57,8 @@ case class Enemy(
   var arm: Int = 10,
   var mre: Int = 10,
   var expValue: Int = 100,
-  var effects: Seq[Effect] = Seq()) extends HasName {
+  var effects: Seq[Effect] = Seq(),
+  var skills: Seq[Int] = Seq()) extends HasName {
   def baseStats =
     BaseStats(
       mhp = mhp,
@@ -76,8 +77,8 @@ case class EncounterUnit(
   var y: Int)
 
 case class Encounter(
-  var name: String = "#<None>",
-  var units: Seq[EncounterUnit] = Seq())
+  var name: String = "",
+  var units: Seq[EncounterUnit] = Seq()) extends HasName
 
 object CharState {
   /*

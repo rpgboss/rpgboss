@@ -23,7 +23,7 @@ object Item {
  * @param scopeId       Affected targets for consumables
  */
 case class Item(
-  var name: String = "<Default item>",
+  var name: String = "",
   var desc: String = "",
   var effects: Seq[Effect] = Seq(),
 

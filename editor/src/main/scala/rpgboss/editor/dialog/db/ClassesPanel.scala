@@ -24,26 +24,24 @@ class ClassesPanel(
   with DatabasePanel {
   def panelName = "Classes"
   def newDefaultInstance() = new CharClass()
-  def label(charClass: CharClass) = charClass.name
-  def copyItem(c: CharClass) = c.copy()
 
   def editPaneForItem(idx: Int, model: CharClass) = {
     val fName = textField(
       model.name,
-      v => {
-        model.name = v
-        refreshModel()
-      })
+      model.name = _,
+      Some(refreshModel))
 
     val fEffects =
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
 
+    logger.info("constructing new array multiselect panel %s".format(model.canUseItems) )
+    
     val fCanEquip = new ArrayMultiselectPanel(
       owner,
       "Can equip",
       dbDiag.model.enums.items,
       model.canUseItems,
-      v => model.canUseItems = ArrayBuffer(v :_*))
+      model.canUseItems = _)
     
     val fLearnedSkills = new LearnedSkillPanel(
       owner, 
