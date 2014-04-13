@@ -259,22 +259,27 @@ class EffectDialog(
       e => combo.selection.index = e.v1)
   }
 
-  def choicePercentEffect[T <: HasName](key: EffectKey.Val,
-                                        choices: Seq[T]): EffectControls = {
+  def choiceWithValueEffect[T <% HasName](
+    key: EffectKey.Val,
+    choices: Seq[T],
+    initial: Int,
+    min: Int,
+    max: Int,
+    label: String): EffectControls = {
     val combo = indexedCombo(choices, 0, i => onCurControlChange())
     val spinner = new NumberSpinner(
-      100,
-      0,
-      100,
+      initial,
+      min,
+      max,
       onUpdate = v => onCurControlChange()) {
-      maximumSize = new Dimension(60, Int.MaxValue)
+      maximumSize = new Dimension(90, Int.MaxValue)
     }
 
     val control = new BoxPanel(Orientation.Horizontal) {
       contents += combo
       contents += new BoxPanel(Orientation.Horizontal) {
         contents += spinner
-        contents += new Label("%") {
+        contents += new Label(label) {
           preferredSize = new Dimension(15, 15)
         }
       }
@@ -296,7 +301,17 @@ class EffectDialog(
         spinner.setValue(e.v2)
       })
   }
-
+  
+  def choicePercentEffect[T <: HasName](key: EffectKey.Val,
+                                        choices: Seq[T]): EffectControls = {
+    choiceWithValueEffect(key, choices, 100, 0, 100, "%")
+  }
+  
+  def choicePointsEffect[T <% HasName](key: EffectKey.Val,
+                                       choices: Seq[T]): EffectControls = {
+    choiceWithValueEffect(key, choices, 0, MINEFFECTARG, MAXEFFECTARG, "p")
+  }
+  
   import EffectKey._
 
   val effectsStatus = Array(
@@ -314,7 +329,8 @@ class EffectDialog(
     intEffect(AtkAdd),
     intEffect(MagAdd),
     intEffect(ArmAdd),
-    intEffect(MreAdd))
+    intEffect(MreAdd),
+    choicePointsEffect(ElementResist, dbDiag.model.enums.elements))
 
   val effectsOther = Array(
     nilEffect(EscapeBattle),

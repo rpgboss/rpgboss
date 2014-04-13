@@ -111,25 +111,13 @@ object SwingUtils {
     }
   }
 
-  def indexedComboStrings(choices: Seq[String], initial: Int,
-                          onUpdate: Int => Unit,
-                          additionalAction: Option[() => Unit] = None) = {
-    new ComboBox(choices) {
-      selection.index = initial
-      renderer = standardIdxRenderer(x => x)
-
-      listenTo(selection)
-      reactions += {
-        case SelectionChanged(_) =>
-          onUpdate(selection.index)
-          additionalAction.foreach(_.apply())
-      }
-    }
-  }
-
-  def indexedCombo[T <: HasName](
+  /**
+   * Accepts any types <% that are 'viewable' i.e. implicitly convertible to 
+   * HasName.
+   */
+  def indexedCombo[T <% HasName](
     choices: Seq[T], initial: Int, onUpdate: Int => Unit,
-    additionalAction: Option[() => Unit] = None) = {
+    additionalAction: Option[() => Unit] = None) = {    
     new ComboBox(choices) {
       selection.index = initial
       renderer = standardIdxRenderer(_.name)

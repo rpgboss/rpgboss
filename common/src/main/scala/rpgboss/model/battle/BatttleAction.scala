@@ -6,7 +6,15 @@ trait BattleAction {
   def source: BattleStatus
   def process(battle: Battle)
 }
- 
+
+object BattleAction {
+  def getDamage(source: BattleStatus, target: BattleStatus, pData: ProjectData, 
+                skillId: Int) = {
+    assume(skillId < pData.enums.skills.length)
+    val skill = pData.enums.skills.length
+  }
+}
+
 case class NullAction(source: BattleStatus) extends BattleAction {
   def process(battle: Battle) = {}
 }

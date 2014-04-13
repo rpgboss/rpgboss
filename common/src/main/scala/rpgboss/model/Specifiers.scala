@@ -6,6 +6,15 @@ trait HasName {
   def name: String
 }
 
+object HasName {
+  /**
+   * Allows Strings to be used in functions that take HasName arguments.
+   */
+  implicit def StringToHasName(x: String) = new HasName {
+    def name = x
+  }  
+}
+
 /**
  * These locations are given with the top-left of the map being at (0, 0).
  * This means that the center of the tiles are actually at 0.5 intervals.

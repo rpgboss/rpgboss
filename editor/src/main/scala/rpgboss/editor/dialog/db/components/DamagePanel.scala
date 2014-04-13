@@ -17,7 +17,7 @@ class DamagePanel(
   extends DesignGridPanel {
   val model = initial
 
-  val fElement = indexedComboStrings(
+  val fElement = indexedCombo(
     dbDiag.model.enums.elements,
     model.elementId,
     model.elementId = _,
@@ -42,7 +42,7 @@ class DamagePanel(
  * @param onUpdate      Called when the array reference is updated. Array
  *                      may be updated in-place. onUpdate is not called then.
  */
-class DamagesPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
+class DamageArrayPanel(dbDiag: DatabaseDialog, initial: Seq[Damage],
   onUpdate: Seq[Damage] => Unit)
   extends BoxPanel(Orientation.Vertical) {
 

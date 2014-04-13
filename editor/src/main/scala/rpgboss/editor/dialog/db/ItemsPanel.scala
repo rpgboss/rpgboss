@@ -1,19 +1,16 @@
 package rpgboss.editor.dialog.db
 
 import rpgboss.editor._
-import rpgboss.editor.uibase._
-import rpgboss.editor.dialog.db.components._
-import rpgboss.editor.uibase.SwingUtils._
-import scala.swing._
-import scala.swing.event._
-
 import rpgboss.editor.dialog._
-
+import rpgboss.editor.dialog.db.components._
+import rpgboss.editor.uibase._
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
-
 import net.java.dev.designgridlayout._
+import scala.swing._
+import scala.swing.event._
 
 class ItemsPanel(
   owner: Window,
@@ -30,6 +27,8 @@ class ItemsPanel(
   def editPaneForItem(idx: Int, model: Item) = {
     new BoxPanel(Orientation.Horizontal) {
       val leftPane = new DesignGridPanel {
+        import HasName._
+        
         val fName = textField(model.name, v => {
           model.name = v
           refreshModel()
@@ -60,7 +59,7 @@ class ItemsPanel(
           model.accessId,
           model.accessId = _)
 
-        val fEquipType = indexedComboStrings(
+        val fEquipType = indexedCombo(
           dbDiag.model.enums.equipTypes,
           model.equipType,
           model.equipType = _,

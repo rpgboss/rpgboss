@@ -1,1 +1,2 @@
+Make user interface for Effects behave correctly when there are multiple StatAdd fields.
 Move away from Seq, as it's linear time for random access.

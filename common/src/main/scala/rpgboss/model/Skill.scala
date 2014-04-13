@@ -8,7 +8,9 @@ object DamageType extends RpgEnum {
 case class Damage(
   var typeId: Int = DamageType.Physical.id,
   var elementId: Int = 0,
-  var formula: String = "")
+  var formula: String = "") {
+  
+}
   
 case class Skill(
   var name: String = "",

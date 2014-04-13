@@ -42,7 +42,7 @@ class BattleSpec extends UnitSpec {
     f.battle.readyEntity should equal (None)
   }
   
-  "Battle" should "have actions proceed in order" in {
+  "Battle" should "have battle units act in order of speed" in {
     val f = fixture(Nil)
     
     f.battle.readyEntity should be ('isDefined)
