@@ -6,6 +6,7 @@ import com.google.common.io.Files
 class BattleStatsSpec extends UnitSpec {
   def fixture = new {
     val pData = ProjectData("fake-uuid", "fake-title")
+    pData.enums.elements = Seq("Element0", "Element1")
 
     val character = {
       val statProgressions = StatProgressions(
@@ -36,10 +37,12 @@ class BattleStatsSpec extends UnitSpec {
     val f = fixture
 
     val stats1 = BattleStats(f.pData, f.character.baseStats(f.pData, 1))
-    stats1 should equal (BattleStats(50, 20, 10, 10, 10, 10, 10, Seq()))
+    stats1 should equal (
+      BattleStats(50, 20, 10, 10, 10, 10, 10, Seq(0, 0), Seq()))
 
     val stats11 = BattleStats(f.pData, f.character.baseStats(f.pData, 11))
-    stats11 should equal (BattleStats(150, 60, 30, 30, 30, 20, 20, Seq()))
+    stats11 should equal (
+      BattleStats(150, 60, 30, 30, 30, 20, 20, Seq(0, 0), Seq()))
   }
 
   "BattleStats" should "work with status effects" in {
@@ -50,7 +53,8 @@ class BattleStatsSpec extends UnitSpec {
     val stats1 =
       BattleStats(f.pData, f.baseStats, tempStatusEffectIds = Seq(0))
     stats1 should equal (BattleStats(
-      50, 20, 20, 10, 10, 10, 10, Seq(f.pData.enums.statusEffects(0))))
+      50, 20, 20, 10, 10, 10, 10, Seq(0, 0), 
+      Seq(f.pData.enums.statusEffects(0))))
   }
 
   "BattleStats" should "work with equipment effects" in {
@@ -59,7 +63,8 @@ class BattleStatsSpec extends UnitSpec {
       Seq(Item(effects = Seq(Effect(EffectKey.AtkAdd.id, 10, 0))))
 
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Seq(0))
-    stats1 should equal (BattleStats(50, 20, 20, 10, 10, 10, 10, Seq()))
+    stats1 should equal (BattleStats(
+      50, 20, 20, 10, 10, 10, 10, Seq(0, 0), Seq()))
   }
 
   "BattleStats" should "work with equipment status effects" in {
@@ -71,8 +76,17 @@ class BattleStatsSpec extends UnitSpec {
 
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Seq(0))
     stats1 should equal (BattleStats(
-      50, 20, 20, 10, 10, 10, 10, Seq(f.pData.enums.statusEffects(0))))
+      50, 20, 20, 10, 10, 10, 10, Seq(0, 0), 
+      Seq(f.pData.enums.statusEffects(0))))
   }
 
+  "BattleStats" should "work with elemental resist effects" in {
+    val f = fixture
+    f.pData.enums.items =
+      Seq(Item(effects = Seq(Effect(EffectKey.ElementResist.id, 0, 10))))
 
+    val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Seq(0))
+    stats1 should equal (BattleStats(
+      50, 20, 10, 10, 10, 10, 10, Array(10, 0), Seq()))
+  }
 }

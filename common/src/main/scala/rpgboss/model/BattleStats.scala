@@ -46,6 +46,7 @@ case class BattleStats(
   mag: Int,
   arm: Int,
   mre: Int,
+  elementResists: Seq[Int],
   statusEffects: Seq[StatusEffect])
 
 object BattleStats {
@@ -90,6 +91,14 @@ object BattleStats {
 
     def addEffects(key: EffectKey.Value): Int =
       allEffects.filter(_.keyId == key.id).map(_.v1).sum
+      
+    val elementResists = Array.fill(pData.enums.elements.size)(0)
+    for (effect <- allEffects) {
+      if (effect.keyId == EffectKey.ElementResist.id &&
+          effect.v1 < elementResists.length) {
+        elementResists(effect.v1) += effect.v2
+      }
+    }
 
     apply(
       mhp = baseStats.mhp + addEffects(EffectKey.MhpAdd),
@@ -99,6 +108,7 @@ object BattleStats {
       mag = baseStats.mag + addEffects(EffectKey.MagAdd),
       arm = baseStats.arm + addEffects(EffectKey.ArmAdd),
       mre = baseStats.mre + addEffects(EffectKey.MreAdd),
+      elementResists = elementResists,
       statusEffects = stackedStatusEffects
     )
   }
