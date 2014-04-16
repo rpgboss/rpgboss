@@ -3,8 +3,8 @@ package rpgboss.model.battle
 import rpgboss._
 import rpgboss.model._
 
-class BattleSpec extends UnitSpec {
-  def fixture(commanders: Seq[BattleCommander]) = new {
+object BattleTest {
+  class BattleFixture(commanders: Seq[BattleCommander] = Seq()) {
     val pData = ProjectData("fake-uuid", "fake-title")
     
     val characterFast = 
@@ -29,6 +29,11 @@ class BattleSpec extends UnitSpec {
       encounter = Encounter(units = Seq(EncounterUnit(0, 100, 100))),
       commanders = commanders)
   }
+}
+
+class BattleSpec extends UnitSpec {
+  def fixture(commanders: Seq[BattleCommander]) = 
+    new BattleTest.BattleFixture(commanders)
   
   "Battle" should "make fastest unit go first" in {
     val f = fixture(Nil)

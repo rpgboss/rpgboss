@@ -80,7 +80,7 @@ class BattleStatsSpec extends UnitSpec {
       Seq(f.pData.enums.statusEffects(0))))
   }
 
-  "BattleStats" should "work with elemental resist effects" in {
+  "BattleStats" should "work with elemental resist effects from items" in {
     val f = fixture
     f.pData.enums.items =
       Seq(Item(effects = Seq(Effect(EffectKey.ElementResist.id, 0, 10))))

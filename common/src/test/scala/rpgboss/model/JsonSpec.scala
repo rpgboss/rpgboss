@@ -7,10 +7,12 @@ import rpgboss.UnitSpec
 class JsonSpec extends UnitSpec {
   implicit val formats = Serialization.formats(NoTypeHints)
   
+  case class Car(model: String, passengers: Seq[String])
+  
   "Json serialization" should "work for Arrays" in {
-    case class Car(model: String, passengers: Array[String])
-    val model = Car("Ford", Array("Alice", "Bob"))
+    val model = Car("Ford", Seq("Alice", "Bob"))
     val ser = Serialization.write(model)
-    Serialization.read[Car](ser) should equal (model)
+    val deserializedModel = Serialization.read[Car](ser)
+    deserializedModel should equal (model)
   }
 }

@@ -7,11 +7,32 @@ trait BattleAction {
   def process(battle: Battle)
 }
 
+case class TakenDamage(damageType: DamageType.Value, elementId: Int, value: Int)
+
 object BattleAction {
-  def getDamage(source: BattleStatus, target: BattleStatus, pData: ProjectData, 
-                skillId: Int) = {
+  def getDamages(source: BattleStatus, target: BattleStatus, pData: ProjectData, 
+                 skillId: Int): Seq[TakenDamage] = {
+    import DamageType._
+    
     assume(skillId < pData.enums.skills.length)
-    val skill = pData.enums.skills.length
+    val skill = pData.enums.skills(skillId)
+    
+    for (damage <- skill.damages) yield {
+      val armorOrMagicResist = 
+        if (damage.typeId == Physical.id) target.stats.arm else target.stats.mre
+      
+      val elementResist =
+        if (damage.elementId < target.stats.elementResists.length)
+          target.stats.elementResists(damage.elementId)
+        else 
+          0
+      
+      val totalResist = armorOrMagicResist + elementResist
+      
+      val resistMultiplier = 1.0 / (1.0 + (totalResist.toDouble / 100.0))
+      
+      TakenDamage(DamageType.apply(damage.typeId), damage.elementId, 0)
+    }
   }
 }
 

@@ -81,6 +81,8 @@ class ScriptThread(
           fnToRun,
           1, null)
       }
+      
+      Context.exit()
 
       onFinish.map { f =>
         GdxUtils.syncRun {
