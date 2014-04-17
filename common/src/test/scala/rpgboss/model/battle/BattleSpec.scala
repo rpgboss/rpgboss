@@ -4,7 +4,7 @@ import rpgboss._
 import rpgboss.model._
 
 object BattleTest {
-  class BattleFixture(commanders: Seq[BattleCommander] = Seq()) {
+  class BattleFixture() {
     val pData = ProjectData("fake-uuid", "fake-title")
     
     val characterFast = 
@@ -26,17 +26,15 @@ object BattleTest {
       characterEquip = Seq(Seq(), Seq()),
       initialCharacterTempStatusEffects = Seq(Seq(), Seq()),
       characterRows = Seq(0, 0),
-      encounter = Encounter(units = Seq(EncounterUnit(0, 100, 100))),
-      commanders = commanders)
+      encounter = Encounter(units = Seq(EncounterUnit(0, 100, 100))))
   }
 }
 
 class BattleSpec extends UnitSpec {
-  def fixture(commanders: Seq[BattleCommander]) = 
-    new BattleTest.BattleFixture(commanders)
+  def fixture = new BattleTest.BattleFixture
   
   "Battle" should "make fastest unit go first" in {
-    val f = fixture(Nil)
+    val f = fixture
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
@@ -48,7 +46,7 @@ class BattleSpec extends UnitSpec {
   }
   
   "Battle" should "have battle units act in order of speed" in {
-    val f = fixture(Nil)
+    val f = fixture
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)

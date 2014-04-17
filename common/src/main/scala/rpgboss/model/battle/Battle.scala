@@ -29,21 +29,13 @@ class BattleStatus(
   override def toString = "BattleStatus(%s, %d)".format(entityType, id)
 }
 
-trait BattleCommander {
-  /**
-   * Called for commanders when an entity is ready. Return true if this
-   * commander has 'handled' the readiness of this item.
-   */
-  def onReady(source: BattleStatus): Boolean
-}
-
 /**
  * @param   characterLevels         The levels of all the characters, not just 
  *                                  the ones within partyIds.
  * @param   initialCharacterHps     Array of HPs for all the characters.
  */
 class Battle(
-  pData: ProjectData,
+  val pData: ProjectData,
   val partyIds: Seq[Int],
   characterLevels: Seq[Int],
   initialCharacterHps: Seq[Int],
@@ -51,8 +43,7 @@ class Battle(
   characterEquip: Seq[Seq[Int]],
   initialCharacterTempStatusEffects: Seq[Seq[Int]],
   characterRows: Seq[Int],
-  val encounter: Encounter,
-  commanders: Seq[BattleCommander]) {
+  val encounter: Encounter) {
   require(partyIds.forall(i => i >= 0 && i < pData.enums.characters.length))
   require(encounter.units.forall(
     unit => unit.enemyIdx >= 0 && unit.enemyIdx < pData.enums.enemies.length))
@@ -72,16 +63,17 @@ class Battle(
   /**
    * Simulation events that have been queued up, but have not yet taken place.
    * Ordering is by negative time, as we want events processed in time order.
+   * There should not be any duplicate elements in this queue.
    */
   private val eventQueue = 
-    new collection.mutable.PriorityQueue[TimestampedBattleAction]()(
+    new collection.mutable.PriorityQueue[TimestampedBattleEvent]()(
         Ordering.by(-_.time))
   
   /**
    * Battle entities, player characters and enemies, that are ready to act but
    * have not yet acted.
    */
-  val readyQueue = new collection.mutable.Queue[BattleStatus]
+  private val readyQueue = new collection.mutable.Queue[BattleStatus]
   
   /**
    * The first item in the ready queue.
@@ -89,20 +81,30 @@ class Battle(
   def readyEntity = readyQueue.headOption
   
   /**
+   * Created here to allow for access to private readyQueue variable.
+   */
+  def newReadyEvent(entity: BattleStatus) = new BattleEvent {
+    def process(battle: Battle) = {
+      readyQueue.enqueue(entity)
+    }
+  }
+  
+  /**
    * Enqueues up an action to be taken. Also removes the actor from the ready
    * queue.
    */
   def takeAction(action: BattleAction) = {
     // Remove the action taker from list of ready actors
-    val dequeued = readyQueue.dequeueFirst(_ == action.source)
+    val dequeued = readyQueue.dequeueFirst(_ == action.actor)
     assert(dequeued.isDefined)
     
     // Enqueue the actual action
-    eventQueue.enqueue(TimestampedBattleAction(time, action))
+    eventQueue.enqueue(TimestampedBattleEvent(time, action))
     
     // Enqueue next ready time
-    val turnTime = baseTurnTime / (1.0 + action.source.stats.spd / 100.0)
-    eventQueue.enqueue(TimestampedBattleAction(time + turnTime, action))
+    val turnTime = baseTurnTime / (1.0 + action.actor.stats.spd / 100.0)
+    eventQueue.enqueue(
+        TimestampedBattleEvent(time + turnTime, newReadyEvent(action.actor)))
   }
   
   val partyStatus: Seq[BattleStatus] = {
@@ -132,8 +134,8 @@ class Battle(
     val fastestToSlowest = allStatus.sortBy(-_.stats.spd)
     
     for ((status, i) <- fastestToSlowest.zipWithIndex) {
-      eventQueue.enqueue(TimestampedBattleAction(
-          time + i * baseTurnTime * 0.3, ReadyAction(status)))
+      eventQueue.enqueue(TimestampedBattleEvent(
+          time + i * baseTurnTime * 0.3, newReadyEvent(status)))
     }
     
     // Initialize ready queue

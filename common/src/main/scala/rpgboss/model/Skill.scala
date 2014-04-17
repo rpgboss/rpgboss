@@ -28,12 +28,14 @@ class JSBattleEntity(status: BattleStatus) extends ScriptableObject {
   }
 }
 
+case class TakenDamage(damageType: DamageType.Value, elementId: Int, value: Int)
+
 case class Damage(
   var typeId: Int = DamageType.Physical.id,
   var elementId: Int = 0,
   var formula: String = "") extends Logging {
   
-  def getBaseDamage(source: BattleStatus, target: BattleStatus): Int = {
+  def getBaseDamage(source: BattleStatus, target: BattleStatus): Double = {
     val jsContext = Context.enter()
     val jsScope = jsContext.initStandardObjects()
     
@@ -50,11 +52,11 @@ case class Damage(
         1, 
         null)
           
-      val resultAsInt = Context.toNumber(jsResult).round.toInt
+      val result = Context.toNumber(jsResult)
     
       Context.exit()
       
-      resultAsInt
+      result
     } catch {
       case e: Throwable => {
         logger.error(
@@ -62,6 +64,38 @@ case class Damage(
   		  "Error: %s".format(e.getMessage()))
   		-1
       }
+    }
+  }
+}
+
+object Damage {
+  def getDamages(source: BattleStatus, target: BattleStatus, pData: ProjectData, 
+                 skillId: Int): Seq[TakenDamage] = {
+    import DamageType._
+    
+    assume(skillId < pData.enums.skills.length)
+    val skill = pData.enums.skills(skillId)
+    
+    for (damage <- skill.damages) yield {
+      val armorOrMagicResist = 
+        if (damage.typeId == Physical.id) target.stats.arm else target.stats.mre
+      
+      val elementResist =
+        if (damage.elementId < target.stats.elementResists.length)
+          target.stats.elementResists(damage.elementId)
+        else 
+          0
+      
+      val totalResist = armorOrMagicResist + elementResist
+      
+      val resistMultiplier = 1.0 / (1.0 + (totalResist.toDouble / 100.0))
+      
+      val baseDamage = damage.getBaseDamage(source, target)
+      
+      val damageValue = (baseDamage * resistMultiplier).round.toInt
+      
+      TakenDamage(
+        DamageType.apply(damage.typeId), damage.elementId, damageValue)
     }
   }
 }

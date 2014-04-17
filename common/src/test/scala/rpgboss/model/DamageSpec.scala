@@ -6,13 +6,14 @@ import rpgboss.model.battle._
 class DamageSpec extends UnitSpec {
   def fixture = new {
     val pData = ProjectData()
+    
     def status = new BattleStatus(
       pData,
       BattleEntityType.Party,
       0,
       50,
       20,
-      BaseStats(50, 20, 10, 10, 10, 10, 10, Seq()),
+      BaseStats(50, 20, 10, 10, 10, arm = 100, mre = 200, effects = Seq()),
       Seq(),
       Seq(),
       0)
@@ -33,8 +34,8 @@ class DamageSpec extends UnitSpec {
     f.testFormula("a.atk", 10)
     f.testFormula("a.spd", 10)
     f.testFormula("a.mag", 10)
-    f.testFormula("a.arm", 10)
-    f.testFormula("a.mre", 10)
+    f.testFormula("a.arm", 100)
+    f.testFormula("a.mre", 200)
   }
   
   "Damage" should "do basic arithmetic" in {
@@ -54,5 +55,20 @@ class DamageSpec extends UnitSpec {
     val f = fixture
 
     f.testFormula("foo", -1)
+  }
+  
+  "Damage" should "work correctly in a skill, handling armor, magic res." in {
+    val f = fixture
+    
+    f.pData.enums.elements = Seq("Blunt", "Fire")
+    f.pData.enums.skills = Seq(Skill(damages = Seq(
+      Damage(DamageType.Physical.id, 0, "a.atk"),
+      Damage(DamageType.Magic.id, 1, "a.mag"))))
+      
+    val takenDamages = Damage.getDamages(f.status, f.status, f.pData, 0)
+    
+    takenDamages.length should equal(2)
+    takenDamages(0) should equal(TakenDamage(DamageType.Physical, 0, 5))
+    takenDamages(1) should equal(TakenDamage(DamageType.Magic, 1, 3))
   }
 }
