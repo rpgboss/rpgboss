@@ -40,7 +40,7 @@ object Window {
 // stateAge starts at 0 and goes up as window opens or closes
 class Window(
   val id: Long,
-  screenLayer: ScreenLayer,
+  screenLayer: WindowManager,
   inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
@@ -125,7 +125,7 @@ class Window(
 class PrintingTextWindow(
   id: Long,
   persistent: PersistentState,
-  screenLayer: ScreenLayer,
+  screenLayer: WindowManager,
   inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,

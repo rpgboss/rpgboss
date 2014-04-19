@@ -14,7 +14,7 @@ import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.resourceselector._
 import java.awt.image.BufferedImage
-import rpgboss.player.BattleState
+import rpgboss.player.BattleScreen
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import rpgboss.model.battle.Battle
@@ -28,11 +28,11 @@ object EncounterFieldGdxPanel {
 class EncounterFieldGdxPanel(project: Project, initial: Encounter) 
   extends GdxPanel(EncounterFieldGdxPanel.width, 
                    EncounterFieldGdxPanel.height) {
-  var battleState: BattleState = null
+  var battleState: BattleScreen = null
   var atlasSprites: TextureAtlas = null
   
   override lazy val gdxListener = new ApplicationAdapter {
-    def updateBattleState(encounter: Encounter) = {
+    def updateBattleScreen(encounter: Encounter) = {
       assume(battleState != null)
       
       // TODO: See if this dummy battle constructor has a better home
@@ -57,9 +57,9 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     override def create() = {
       atlasSprites = GdxUtils.generateSpritesTextureAtlas(
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
-      battleState = new BattleState(project, EncounterFieldGdxPanel.width,
+      battleState = new BattleScreen(project, EncounterFieldGdxPanel.width,
                                     EncounterFieldGdxPanel.height)
-      updateBattleState(initial)
+      updateBattleScreen(initial)
     }
     
     override def render() = {
@@ -68,8 +68,8 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     }
   }
 
-  def updateBattleState(encounter: Encounter) = GdxUtils.asyncRun {
-    gdxListener.updateBattleState(encounter)
+  def updateBattleScreen(encounter: Encounter) = GdxUtils.asyncRun {
+    gdxListener.updateBattleScreen(encounter)
   }
 }
 
@@ -163,7 +163,7 @@ class EncountersPanel(
         model.units = model.units ++ Seq(unit)
         autoArrangeModel()
         regenerateName()
-        fDisplay.updateBattleState(model)
+        fDisplay.updateBattleScreen(model)
       }
     })
     
@@ -172,7 +172,7 @@ class EncountersPanel(
         model.units = model.units.dropRight(1)
         autoArrangeModel()
         regenerateName()
-        fDisplay.updateBattleState(model)
+        fDisplay.updateBattleScreen(model)
       }
     })
     

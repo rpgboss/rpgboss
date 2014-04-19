@@ -37,7 +37,7 @@ class MoveSpec extends UnitSpec {
     val test = new GameTest {
       def testScript() = {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
-        game.scriptKeyPress(MyKeys.Right, 5f / game.mapLayer.playerEntity.speed)
+        game.scriptKeyPress(MyKeys.Right, 5f / game.mapScreen.playerEntity.speed)
         
         val player = scriptInterface.getPlayerEntityInfo()
         

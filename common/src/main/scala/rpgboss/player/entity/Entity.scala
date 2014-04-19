@@ -68,7 +68,7 @@ class Entity(
   }
 
   def getMapCollisions(dxArg: Float, dyArg: Float) : (Boolean, Int) = {
-    game.mapLayer.mapAndAssetsOption map { mapAndAssets =>
+    game.mapScreen.mapAndAssetsOption map { mapAndAssets =>
       mapAndAssets.getCollisions(this, x, y, dxArg, dyArg)
     } getOrElse (true, 0)
   }
@@ -109,14 +109,14 @@ class Entity(
    * Finds all events with which this dxArg and dyArg touches
    */
   def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
-    game.mapLayer.eventEntities.values.filter(npc => {
+    game.mapScreen.eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(x + dxArg, y + dyArg)
     })
   }
 
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox()
-    game.mapLayer.eventEntities.values.filter(npc => {
+    game.mapScreen.eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(boundingBox)
     })
   }

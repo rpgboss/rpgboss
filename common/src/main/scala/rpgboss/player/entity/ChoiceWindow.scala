@@ -16,7 +16,7 @@ import rpgboss.player._
 class ChoiceWindow(
   id: Long,
   persistent: PersistentState,
-  screenLayer: ScreenLayer,
+  screenLayer: WindowManager,
   inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,

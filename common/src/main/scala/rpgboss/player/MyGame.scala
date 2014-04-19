@@ -47,8 +47,8 @@ class MyGame(gamepath: File)
   val logger = new Logger("Game", Logger.INFO)
   val fps = new FPSLogger()
 
-  var mapLayer: MapLayer = null
-  var battleState: BattleState = null
+  var mapScreen: MapScreen = null
+  var battleScreen: BattleScreen = null
   val inputs = new InputMultiplexer()
 
   // Generate and pack sprites
@@ -74,10 +74,10 @@ class MyGame(gamepath: File)
   val assets = new RpgAssetManager(project)
 
   def activeScreen =
-    if (battleState.battleActive)
-      battleState.screenLayer
+    if (battleScreen.battleActive)
+      battleScreen.screenLayer
     else
-      mapLayer.screenLayer
+      mapScreen.screenLayer
 
   def create() = {
     com.badlogic.gdx.utils.Timer.instance().start()
@@ -90,9 +90,9 @@ class MyGame(gamepath: File)
     persistent = new PersistentState()
 
     // TODO: Make configurable screen pixel dimensions
-    battleState = new BattleState(project, 640, 480)
-    mapLayer = new MapLayer(this, 640, 480)
-    scriptInterface = new ScriptInterface(this, mapLayer)
+    battleScreen = new BattleScreen(project, 640, 480)
+    mapScreen = new MapScreen(this, 640, 480)
+    scriptInterface = new ScriptInterface(this, mapScreen)
 
     // Register accessors
     TweenAccessors.registerAccessors()
@@ -105,8 +105,8 @@ class MyGame(gamepath: File)
   }
 
   override def dispose() {
-    battleState.dispose()
-    mapLayer.dispose()
+    battleScreen.dispose()
+    mapScreen.dispose()
     atlasSprites.dispose()
   }
 
@@ -127,12 +127,12 @@ class MyGame(gamepath: File)
 
     if (assets.update()) {
       // update state
-      if (battleState.battleActive) {
-        battleState.update(delta)
-        battleState.render(atlasSprites)
+      if (battleScreen.battleActive) {
+        battleScreen.update(delta)
+        battleScreen.render(atlasSprites)
       } else {
-        mapLayer.update(delta)
-        mapLayer.render()
+        mapScreen.update(delta)
+        mapScreen.render()
       }
     } else {
       // TODO: loading screen

@@ -41,7 +41,7 @@ trait HasScriptConstants {
 
 // These methods should be called only from scripting threads. Calling these
 // methods on the Gdx threads will likely cause deadlocks.
-class ScriptInterface(game: MyGame, mapLayer: MapLayer)
+class ScriptInterface(game: MyGame, mapLayer: MapScreen)
   extends HasScriptConstants{
   private def persistent = game.persistent
   private def project = game.project
