@@ -45,8 +45,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         project.data.enums.characters.map(v => Seq()),
         project.data.enums.characters.map(v => Seq()),
         project.data.enums.characters.map(v => 0),
-        encounter,
-        Nil)
+        encounter)
       
       if (battleState.battleActive)
         battleState.endBattle()
