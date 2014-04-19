@@ -24,17 +24,17 @@ import scala.concurrent.duration.Duration
  *
  */
 class ScriptThread(
-  game: MyGame,
+  game: RpgGame,
+  scriptInterface: ScriptInterface,
   scriptName: String,
   scriptBody: String,
   fnToRun: String = "",
   onFinish: Option[() => Unit] = None)
   extends UncaughtExceptionHandler {
   def initScope(jsScope: ScriptableObject): Any = {
-    val jsInterface = game.scriptInterface
 
     ScriptableObject.putProperty(jsScope, "game",
-      Context.javaToJS(jsInterface, jsScope))
+      Context.javaToJS(scriptInterface, jsScope))
     ScriptableObject.putProperty(jsScope, "project",
       Context.javaToJS(game.project, jsScope))
 
@@ -46,9 +46,9 @@ class ScriptThread(
       Context.javaToJS(MapLoc, jsScope))
     ScriptableObject.putProperty(jsScope, "Transitions",
       Context.javaToJS(Transitions, jsScope))
-    
+
     ScriptableObject.putProperty(jsScope, "None",
-      Context.javaToJS(None, jsScope))    
+      Context.javaToJS(None, jsScope))
   }
 
   val runnable = new Runnable() {
@@ -61,13 +61,13 @@ class ScriptThread(
       initScope(jsScope)
 
       val globalScript = Script.readFromDisk(game.project, "globals.js")
-      
+
       jsContext.evaluateString(
         jsScope,
         globalScript.getAsString,
         globalScript.name,
         1, null)
-      
+
       jsContext.evaluateString(
         jsScope,
         scriptBody,
@@ -81,7 +81,7 @@ class ScriptThread(
           fnToRun,
           1, null)
       }
-      
+
       Context.exit()
 
       onFinish.map { f =>
@@ -89,7 +89,7 @@ class ScriptThread(
           f()
         }
       }
-      
+
       finishPromise.success(0)
     }
   }
@@ -120,13 +120,15 @@ class ScriptThread(
 
 object ScriptThread {
   def fromFile(
-    game: MyGame,
+    game: RpgGame,
+    scriptInterface: ScriptInterface,
     scriptName: String,
     fnToRun: String = "",
     onFinish: Option[() => Unit] = None) = {
     val script = Script.readFromDisk(game.project, scriptName)
     new ScriptThread(
       game,
+      scriptInterface,
       script.name,
       script.getAsString,
       fnToRun,
@@ -134,15 +136,17 @@ object ScriptThread {
   }
 
   def fromEventEntity(
-    game: MyGame,
+    game: RpgGame,
+    scriptInterface: ScriptInterface,
     entity: EventEntity,
     state: Int,
     onFinish: Option[() => Unit] = None) = {
     val scriptName = "%s/%d".format(entity.mapEvent.name, state)
-    val scriptBody = 
+    val scriptBody =
       entity.mapEvent.states(state).cmds.flatMap(_.toJs()).mkString("\n");
     new ScriptThread(
       game,
+      scriptInterface,
       scriptName,
       scriptBody,
       "",

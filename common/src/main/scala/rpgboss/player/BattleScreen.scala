@@ -16,8 +16,12 @@ case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
   val imageH = spriteset.tileH.toFloat
 }
 
-class BattleScreen(project: Project, screenW: Int, screenH: Int)
+class BattleScreen(
+  project: Project,
+  screenW: Int,
+  screenH: Int)
   extends ThreadChecked {
+
   // Battle variables
   private var _battle: Option[Battle] = None
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]

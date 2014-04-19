@@ -25,16 +25,16 @@ object EncounterFieldGdxPanel {
   val height = 320
 }
 
-class EncounterFieldGdxPanel(project: Project, initial: Encounter) 
-  extends GdxPanel(EncounterFieldGdxPanel.width, 
+class EncounterFieldGdxPanel(project: Project, initial: Encounter)
+  extends GdxPanel(EncounterFieldGdxPanel.width,
                    EncounterFieldGdxPanel.height) {
   var battleScreen: BattleScreen = null
   var atlasSprites: TextureAtlas = null
-  
+
   override lazy val gdxListener = new ApplicationAdapter {
     def updateBattleScreen(encounter: Encounter) = {
       assume(battleScreen != null)
-      
+
       // TODO: See if this dummy battle constructor has a better home
       val battle = new Battle(
         project.data,
@@ -46,22 +46,22 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         project.data.enums.characters.map(v => Seq()),
         project.data.enums.characters.map(v => 0),
         encounter)
-      
+
       if (battleScreen.battleActive)
         battleScreen.endBattle()
-      
+
       battleScreen.startBattle(
         battle, Some("defaultrc_battleback/crownlesswish_rrr.jpg"))
     }
-    
+
     override def create() = {
       atlasSprites = GdxUtils.generateSpritesTextureAtlas(
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
       battleScreen = new BattleScreen(project, EncounterFieldGdxPanel.width,
-                                    EncounterFieldGdxPanel.height)
+                                      EncounterFieldGdxPanel.height)
       updateBattleScreen(initial)
     }
-    
+
     override def render() = {
       battleScreen.update(Gdx.graphics.getDeltaTime())
       battleScreen.render(atlasSprites)
@@ -85,59 +85,59 @@ class EncountersPanel(
   def battlefieldHeight: Int = 220
   def yOffset = 100
   def xOffset = 80
-  
+
   def panelName = "Encounters"
   def newDefaultInstance() = Encounter()
-  
+
   def editPaneForItem(idx: Int, model: Encounter) = {
     def autoArrangeModel(): Unit = {
       if (model.units.isEmpty)
         return
-      
+
       val unitCount = model.units.length
-      
+
       // Divide the battlefield into rectangles, max 2 in y, any number in x.
       val xRects = (unitCount + 1) / 2
       val xRectSize = battlefieldWidth / xRects
       val yRectSize = battlefieldHeight / 2
-      
+
       val xOffsetPerRow = -15
-      
+
       // Place units onto grid
       val newUnits = for (i <- 0 until unitCount) {
         val col = i / 2
         val row = i % 2
-        model.units(i).x = 
+        model.units(i).x =
           (col * xRectSize) + (xRectSize / 2) + (xOffsetPerRow * row) + xOffset
         model.units(i).y = (i % 2) * yRectSize + (yRectSize / 2) + yOffset
       }
-      
+
       // If there's an odd number, pull the 'last' unit into the center
       if (unitCount % 2 == 1) {
         model.units.last.y = yRectSize + yOffset
       }
     }
-    
+
     val fName = textField(model.name, model.name = _, Some(refreshModel))
-    
+
     def regenerateName(): Unit = {
       if (!model.name.isEmpty && !model.name.startsWith("#"))
         return
-        
+
       if (model.units.isEmpty)
         fName.text = ""
-      
+
       val enemyLabels = new collection.mutable.ArrayBuffer[String]
-          
+
       // Array of same length and enemies to keep track of how many there are
       val enemyCounts = Array.fill(dbDiag.model.enums.enemies.length)(0)
       for (unit <- model.units; if unit.enemyIdx < enemyCounts.length) {
         enemyCounts(unit.enemyIdx) += 1
       }
-      
+
       for (i <- 0 until enemyCounts.length) {
         val count = enemyCounts(i)
-        
+
         if (count > 0) {
           val enemyName = dbDiag.model.enums.enemies(i).name
           if (count == 1)
@@ -146,17 +146,17 @@ class EncountersPanel(
             enemyLabels.append("%d x %s".format(count, enemyName))
         }
       }
-      
+
       fName.text = "# %s".format(enemyLabels.mkString(", "))
     }
-    
+
     val fDisplay = new EncounterFieldGdxPanel(sm.getProj, model)
-    
+
     val fEnemySelector = new ArrayListView(dbDiag.model.enums.enemies) {
       override def label(a: Enemy) = a.name
     }
     fEnemySelector.selectIndices(0)
-    
+
     val btnAdd = new Button(Action("<= Add") {
       if (!fEnemySelector.selection.indices.isEmpty) {
         val unit = EncounterUnit(fEnemySelector.selection.indices.head, 0, 0)
@@ -166,7 +166,7 @@ class EncountersPanel(
         fDisplay.updateBattleScreen(model)
       }
     })
-    
+
     val btnRemove = new Button(Action("=> Remove") {
       if (!model.units.isEmpty) {
         model.units = model.units.dropRight(1)
@@ -175,7 +175,7 @@ class EncountersPanel(
         fDisplay.updateBattleScreen(model)
       }
     })
-    
+
     new BoxPanel(Orientation.Horizontal) {
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {

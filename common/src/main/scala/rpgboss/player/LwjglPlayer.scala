@@ -5,7 +5,7 @@ import com.badlogic.gdx.backends.lwjgl._
 import com.badlogic.gdx._
 
 object LwjglPlayer {
-  def launch(game: MyGame) = {
+  def launch(game: RpgGame) = {
     val conf = new LwjglApplicationConfiguration();
     conf.title = game.project.data.title;
     conf.width = 32 * 20;
@@ -25,7 +25,7 @@ object LwjglPlayer {
         println("Cannot read directory: " + args(0))
         return
       }
-      val game = new MyGame(file)
+      val game = new RpgGame(file)
       launch(game);
     }
   }

@@ -19,7 +19,10 @@ import rpgboss.player.entity._
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
  */
-class MapScreen(game: MyGame, screenWPixels: Int, screenHPixels: Int) {
+class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
+  extends RpgScreen {
+  val scriptInterface = new ScriptInterface(game, this, this)
+
   def project = game.project
   val batch = new SpriteBatch()
 

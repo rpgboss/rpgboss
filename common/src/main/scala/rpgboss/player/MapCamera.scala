@@ -14,7 +14,7 @@ case class CameraInfo(x: Float, y: Float, speed: Float, moveQueueLength: Int)
  *  Callers must move the camera back to the player if they don't want the
  *  camera to jerk afterwards.
  */
-class MapCamera(game: MyGame) {
+class MapCamera(game: RpgGame) {
   var x: Float = 0f
   var y: Float = 0f
   var speed: Float = 2f // tiles per second

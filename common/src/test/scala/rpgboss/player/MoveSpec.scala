@@ -15,7 +15,7 @@ import rpgboss.player.entity.EntityMove
 
 class MoveSpec extends UnitSpec {
   "Move" should "move right simple" in {
-    val test = new GameTest {
+    val test = new MapScreenTest {
       def testScript() = {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
         scriptInterface.movePlayer(1f, 0)
@@ -34,7 +34,7 @@ class MoveSpec extends UnitSpec {
   }
   
   "Move" should "should work in reponse to key press" in {
-    val test = new GameTest {
+    val test = new MapScreenTest {
       def testScript() = {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
         game.scriptKeyPress(MyKeys.Right, 5f / game.mapScreen.playerEntity.speed)
@@ -53,7 +53,7 @@ class MoveSpec extends UnitSpec {
   }
   
   "MoveEvent" should "work with THIS_EVENT" in {
-    val test = new GameTest {
+    val test = new MapScreenTest {
       override def setupMapData(mapData: RpgMapData) = {
         super.setupMapData(mapData)
         mapData.events = singleTestEvent(

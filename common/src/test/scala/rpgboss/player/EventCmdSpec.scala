@@ -6,7 +6,7 @@ import rpgboss.model.event._
 
 class EventCmdSpec extends UnitSpec {
   "EventCmd" should "should work with RunJs" in {
-    val test = new GameTest {
+    val test = new MapScreenTest {
       override def setupMapData(mapData: RpgMapData) = {
         super.setupMapData(mapData)
         mapData.events = singleTestEvent(RunJs(

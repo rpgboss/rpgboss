@@ -40,8 +40,11 @@ case class MutableMapLoc(
   }
 }
 
-class MyGame(gamepath: File)
-  extends ApplicationListener {
+trait RpgScreen {
+  def windowManager: WindowManager
+}
+
+class RpgGame(gamepath: File) extends ApplicationListener {
   val project = Project.readFromDisk(gamepath).get
 
   val logger = new Logger("Game", Logger.INFO)
@@ -69,15 +72,8 @@ class MyGame(gamepath: File)
    */
 
   var persistent: PersistentState = null
-  var scriptInterface: ScriptInterface = null
 
   val assets = new RpgAssetManager(project)
-
-  def activeWindowManager =
-    if (battleScreen.battleActive)
-      battleScreen.windowManager
-    else
-      mapScreen.windowManager
 
   def create() = {
     com.badlogic.gdx.utils.Timer.instance().start()
@@ -91,8 +87,7 @@ class MyGame(gamepath: File)
 
     // TODO: Make configurable screen pixel dimensions
     battleScreen = new BattleScreen(project, 640, 480)
-    mapScreen = new MapScreen(this, 640, 480)
-    scriptInterface = new ScriptInterface(this, mapScreen)
+    mapScreen = new MapScreen(RpgGame.this, 640, 480)
 
     // Register accessors
     TweenAccessors.registerAccessors()
@@ -101,7 +96,11 @@ class MyGame(gamepath: File)
   }
 
   def beginGame() = {
-    ScriptThread.fromFile(this, "main.js", "main()").run()
+    ScriptThread.fromFile(
+      RpgGame.this,
+      mapScreen.scriptInterface,
+      "main.js",
+      "main()").run()
   }
 
   override def dispose() {

@@ -1,12 +1,13 @@
 package rpgboss.player
 
+import aurelienribon.tweenengine._
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Texture
 import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
-import com.badlogic.gdx.Gdx
-import aurelienribon.tweenengine._
 import rpgboss.player.entity._
-import com.badlogic.gdx.graphics.Texture
+import Predef._
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -39,13 +40,26 @@ trait HasScriptConstants {
   val PICTURE_SLOTS = Constants.PictureSlots
 }
 
-// These methods should be called only from scripting threads. Calling these
-// methods on the Gdx threads will likely cause deadlocks.
-class ScriptInterface(game: MyGame, mapLayer: MapScreen)
-  extends HasScriptConstants{
+/**
+ * ScriptInterface is bound to a particular screen.
+ *
+ * These methods should be called only from scripting threads. Calling these
+ * methods on the Gdx threads will likely cause deadlocks.
+ *
+ * TODO: Eliminate the mapScreen argument. Map-related scripting commands should
+ * probably not even be defined when there is no map.
+ */
+class ScriptInterface(
+  game: RpgGame,
+  mapScreen: MapScreen,
+  activeScreen: RpgScreen)
+  extends HasScriptConstants {
+  assume(game != null)
+  assume(activeScreen != null)
+
   private def persistent = game.persistent
   private def project = game.project
-  
+
   import GdxUtils._
 
   /*
@@ -63,25 +77,25 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
    */
 
   def setPlayerSprite(spritespec: Option[SpriteSpec]) = syncRun {
-    mapLayer.playerEntity.setSprite(spritespec)
+    mapScreen.playerEntity.setSprite(spritespec)
   }
 
   def setPlayerLoc(loc: MapLoc) = syncRun {
-    mapLayer.playerEntity.x = loc.x
-    mapLayer.playerEntity.y = loc.y
-    mapLayer.playerEntity.mapName = Some(loc.map)
+    mapScreen.playerEntity.x = loc.x
+    mapScreen.playerEntity.y = loc.y
+    mapScreen.playerEntity.mapName = Some(loc.map)
 
-    mapLayer.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map))
+    mapScreen.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map))
   }
 
   def moveCamera(dx: Float, dy: Float, async: Boolean) = {
-    val move = syncRun { mapLayer.camera.enqueueMove(dx, dy) }
+    val move = syncRun { mapScreen.camera.enqueueMove(dx, dy) }
     if (!async)
       move.awaitDone()
   }
 
   def getCameraPos() = syncRun {
-    mapLayer.camera.info
+    mapScreen.camera.info
   }
 
   /*
@@ -92,23 +106,23 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
     startAlpha: Float,
     endAlpha: Float,
     durationMs: Int) = syncRun {
-    game.activeWindowManager.curTransition =
+    activeScreen.windowManager.curTransition =
       Some(Transition(startAlpha, endAlpha, durationMs))
   }
 
-  def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, 
+  def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int,
                   h: Int) = syncRun {
-    game.activeWindowManager.showPicture(slot, name, x, y, w, h)
+    activeScreen.windowManager.showPicture(slot, name, x, y, w, h)
   }
 
   def hidePicture(slot: Int) = syncRun {
-    game.activeWindowManager.hidePicture(slot)
+    activeScreen.windowManager.hidePicture(slot)
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDurationMs: Int) = syncRun {
 
-    mapLayer.musics(slot).map({ oldMusic =>
+    mapScreen.musics(slot).map({ oldMusic =>
       val tweenMusic = new GdxMusicTweenable(oldMusic)
       Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
         .target(0f)
@@ -118,10 +132,10 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
               oldMusic.stop()
             }
           }
-        }).start(mapLayer.tweenManager)
+        }).start(mapScreen.tweenManager)
     })
 
-    mapLayer.musics(slot) = specOpt.map { spec =>
+    mapScreen.musics(slot) = specOpt.map { spec =>
       val resource = Music.readFromDisk(project, spec.sound)
       resource.loadAsset(game.assets)
       // TODO: fix this blocking call
@@ -137,7 +151,7 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
       // Setup volume tween
       val tweenMusic = new GdxMusicTweenable(newMusic)
       Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
-        .target(spec.volume).start(mapLayer.tweenManager)
+        .target(spec.volume).start(mapScreen.tweenManager)
 
       newMusic
     }
@@ -159,24 +173,24 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
     allowCancel: Boolean): ChoiceWindow = {
     syncRun {
       val window = new ChoiceWindow(
-        game.activeWindowManager.getWindowId(),
+        activeScreen.windowManager.getWindowId(),
         game.persistent,
-        game.activeWindowManager,
+        activeScreen.windowManager,
         game.inputs,
         game.assets,
         project,
         lines,
         x, y, w, h,
-        game.activeWindowManager.windowskin,
-        game.activeWindowManager.windowskinRegion,
-        game.activeWindowManager.fontbmp,
+        activeScreen.windowManager.windowskin,
+        activeScreen.windowManager.windowskinRegion,
+        activeScreen.windowManager.fontbmp,
         initialState = Window.Opening,
         justification = justification,
         columns = columns,
         displayedLines = displayedLines,
         allowCancel = allowCancel)
 
-      game.activeWindowManager.windows.prepend(window)
+      activeScreen.windowManager.windows.prepend(window)
       game.inputs.prepend(window)
 
       window
@@ -195,21 +209,21 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
   def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
                     msPerChar: Int) = {
     val window = new PrintingTextWindow(
-      game.activeWindowManager.getWindowId(),
+      activeScreen.windowManager.getWindowId(),
       game.persistent,
-      game.activeWindowManager,
+      activeScreen.windowManager,
       game.inputs,
       game.assets,
       project,
       text,
       x, y, w, h,
-      game.activeWindowManager.windowskin,
-      game.activeWindowManager.windowskinRegion,
-      game.activeWindowManager.fontbmp,
+      activeScreen.windowManager.windowskin,
+      activeScreen.windowManager.windowskinRegion,
+      activeScreen.windowManager.fontbmp,
       msPerChar)
 
     syncRun {
-      game.activeWindowManager.windows.prepend(window)
+      activeScreen.windowManager.windows.prepend(window)
       game.inputs.prepend(window)
     }
 
@@ -217,21 +231,21 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
   }
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {
-    EntityInfo(mapLayer.playerEntity)
+    EntityInfo(mapScreen.playerEntity)
   }
 
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
-    mapLayer.eventEntities.get(id).map(EntityInfo.apply)
+    mapScreen.eventEntities.get(id).map(EntityInfo.apply)
   }
 
   def movePlayer(dx: Float, dy: Float,
                  affixDirection: Boolean = false,
                  async: Boolean = false) = {
-    moveEntity(mapLayer.playerEntity, dx, dy, affixDirection, async)
+    moveEntity(mapScreen.playerEntity, dx, dy, affixDirection, async)
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
-    val eventOpt = mapLayer.eventEntities.get(id)
+    val eventOpt = mapScreen.eventEntities.get(id)
     val scriptOpt = eventOpt.flatMap(_.activate(SpriteSpec.Directions.NONE))
 
     if (awaitFinish)
@@ -243,7 +257,7 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
   def moveEvent(id: Int, dx: Float, dy: Float,
                 affixDirection: Boolean = false,
                 async: Boolean = false) = {
-    val entityOpt = mapLayer.eventEntities.get(id)
+    val entityOpt = mapScreen.eventEntities.get(id)
     entityOpt.foreach { entity =>
       moveEntity(entity, dx, dy, affixDirection, async)
     }
@@ -293,7 +307,7 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
 
   def setNewGameVars() = {
     syncRun {
-      mapLayer.playerEntity.setSprite(project.data.enums.characters.head.sprite)
+      mapScreen.playerEntity.setSprite(project.data.enums.characters.head.sprite)
     }
     // Initialize data structures
     setIntArray(PARTY, project.data.startup.startingParty.toArray);

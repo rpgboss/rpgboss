@@ -11,10 +11,10 @@ import org.lwjgl.opengl.Display
 /** Can hold a delegate MyGame that can be replaced for running multiple tests.
  */
 class TestGameContainer extends ApplicationListener {
-  var childGame: Option[MyGame] = None
+  var childGame: Option[RpgGame] = None
 
   // Can be called on any thread, since it will post to the Gdx thread.
-  def replace(game: MyGame) = {
+  def replace(game: RpgGame) = {
     Gdx.app.postRunnable(new Runnable() {
       def run() = {
         childGame.map(_.pause())
@@ -52,7 +52,7 @@ object TestPlayer {
   val container = new TestGameContainer
   var app: LwjglApplication = null
 
-  def launch(game: MyGame) = {
+  def launch(game: RpgGame) = {
     val conf = new LwjglApplicationConfiguration();
     conf.title = game.project.data.title;
     conf.width = 32 * 20;

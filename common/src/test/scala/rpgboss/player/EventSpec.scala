@@ -8,7 +8,7 @@ class EventSpec extends UnitSpec {
   "Events" should "activate and run their script" in {
     val testIntValue = 42 // arbitrary
     
-    val test = new GameTest {
+    val test = new MapScreenTest {
       override def setupMapData(mapData: RpgMapData) = {
         super.setupMapData(mapData)
         mapData.events = singleTestEvent(SetInt("testKey", testIntValue))

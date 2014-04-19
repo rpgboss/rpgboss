@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import rpgboss.model.SpriteSpec.Steps.TOTALSTEPS
-import rpgboss.player.MyGame
+import rpgboss.player.RpgGame
 import scala.math.abs
 import scala.math.min
 import scala.math.signum
@@ -30,7 +30,7 @@ import rpgboss.player._
  * Bottom edge length is boundBoxTiles.
  */
 class Entity(
-  val game: MyGame,
+  val game: RpgGame,
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,

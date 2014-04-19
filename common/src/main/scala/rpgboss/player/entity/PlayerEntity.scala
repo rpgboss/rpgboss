@@ -10,8 +10,8 @@ import MyKeys.Left
 import MyKeys.Right
 import MyKeys.Up
 
-class PlayerEntity(game: MyGame)
-  extends Entity(game: MyGame)
+class PlayerEntity(game: RpgGame)
+  extends Entity(game: RpgGame)
   with PlayerInputHandler {
   // Add input handling
   game.inputs.prepend(this)
@@ -20,10 +20,10 @@ class PlayerEntity(game: MyGame)
   var menuActive = false
   var currentMoveQueueItem: MutateQueueItem[Entity] = null
   speed = 4f // player should be faster
-  
+
   // Set to a large number, as we expect to cancel this move when we lift button
   val moveSize = 1000f
-  
+
   def changeFacingDirection() = {
     if (keyIsActive(Left))
       enqueueMove(EntityFaceDirection(SpriteSpec.Directions.WEST))
@@ -34,28 +34,28 @@ class PlayerEntity(game: MyGame)
     else if (keyIsActive(Down))
       enqueueMove(EntityFaceDirection(SpriteSpec.Directions.SOUTH))
   }
-  
+
   def refreshPlayerMoveQueue() = {
     if (currentMoveQueueItem != null) {
       if (!currentMoveQueueItem.isDone())
         currentMoveQueueItem.finish()
       currentMoveQueueItem = null
     }
-    
+
     if (!menuActive) {
       var totalDx = 0f
       var totalDy = 0f
-      
+
       if (keyIsActive(Left))
         totalDx -= moveSize
       else if (keyIsActive(Right))
         totalDx += moveSize
-  
+
       if (keyIsActive(Up))
         totalDy -= moveSize
       else if (keyIsActive(Down))
         totalDy += moveSize
-  
+
       if (totalDx != 0f || totalDy != 0f) {
         val move = EntityMove(totalDx, totalDy)
         enqueueMove(move)
@@ -63,7 +63,7 @@ class PlayerEntity(game: MyGame)
       }
     }
   }
-    
+
   override def keyActivated(key: Int) = {
     game.logger.info("keyActivated: " + key.toString)
     import MyKeys._
@@ -76,7 +76,7 @@ class PlayerEntity(game: MyGame)
         case SpriteSpec.Directions.EAST => (1f, 0f)
         case SpriteSpec.Directions.WEST => (-1f, 0f)
       }
-      
+
       val checkDist = 0.3f // Distance to check for a collision
       val activatedEvts =
         getAllEventTouches(ux * checkDist, uy * checkDist)
@@ -93,6 +93,7 @@ class PlayerEntity(game: MyGame)
         menuActive = true
         ScriptThread.fromFile(
           game,
+          game.mapScreen.scriptInterface,
           "menu.js",
           "menu()",
           Some(() => {
@@ -105,14 +106,14 @@ class PlayerEntity(game: MyGame)
       refreshPlayerMoveQueue()
     }
   }
-  
+
   override def keyDeactivated(key: Int) = {
     refreshPlayerMoveQueue()
-    
-    // When the user has two buttons depressed to move diagonally, and then 
-    // lifts both, we detect is as two separate events. This can cause the 
+
+    // When the user has two buttons depressed to move diagonally, and then
+    // lifts both, we detect is as two separate events. This can cause the
     // player sprite to change direction right as it stops moving, looking bad.
-    // This delay to the direction change prevents that because 
+    // This delay to the direction change prevents that because
     // |changeFacingDirection()| does nothing when no keys are depressed.
     GdxTimer.schedule(
       new GdxTimer.Task {

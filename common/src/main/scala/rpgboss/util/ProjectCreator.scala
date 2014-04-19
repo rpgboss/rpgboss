@@ -15,7 +15,7 @@ object ProjectCreator {
     Resource.resourceTypes.foreach {
       _.rcDir(projectStub).mkdir()
     }
-    
+
     val allSavedOkay =
       projectStub.data.writeRootWithoutEnums(projectStub.dir) &&
       RpgMap.defaultMapData.writeToFile(projectStub, mapName) &&
@@ -44,11 +44,13 @@ object ProjectCreator {
 
         Iterator.continually(sourceStream.read(buffer))
           .takeWhile(_ != -1).foreach(fos.write(buffer, 0, _))
+
+        fos.close()
       }
 
       true
     }
-    
+
     if (allSavedOkay && copiedAllResources) {
       Project.readFromDisk(projectStub.dir)
     } else {

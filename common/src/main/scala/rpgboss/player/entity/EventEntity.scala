@@ -7,25 +7,25 @@ import scala.concurrent.Promise
 import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
 
-class EventEntity(game: MyGame, mapName: String, val mapEvent: RpgEvent)
+class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
   extends Entity(game, mapEvent.x, mapEvent.y) {
-  
+
   def id = mapEvent.id
-  
+
   private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
 
   def evtState = mapEvent.states(evtStateIdx)
-  
-  val persistentListener = 
+
+  val persistentListener =
     new Subscriber[PersistentStateUpdate, PersistentState#Pub] {
-    def notify(pub: PersistentState#Pub, evt: PersistentStateUpdate) = 
+    def notify(pub: PersistentState#Pub, evt: PersistentStateUpdate) =
       evt match {
         case EventStateChange(mapName, id) => updateState()
         case _ => Unit
       }
-    game.persistent.subscribe(this) 
+    game.persistent.subscribe(this)
   }
 
   def updateState() = {
@@ -33,23 +33,24 @@ class EventEntity(game: MyGame, mapName: String, val mapEvent: RpgEvent)
     setSprite(evtState.sprite)
   }
   updateState()
-  
+
   // Returns None if it's already running.
-  def activate(activatorsDirection: Int = 
+  def activate(activatorsDirection: Int =
                    SpriteSpec.Directions.NONE): Option[ScriptThread] = {
     import SpriteSpec._
-    
+
     if (curThread.isDefined)
       return None
-      
+
     val origDir = dir
     if (activatorsDirection != Directions.NONE)
       dir = Directions.opposite(activatorsDirection)
 
     val startingMovesEnqueued = movesEnqueued
-    
+
     curThread = Some(ScriptThread.fromEventEntity(
       game,
+      game.mapScreen.scriptInterface,
       this, evtStateIdx,
       onFinish = Some(() => {
         val movedDuringScript = movesEnqueued != startingMovesEnqueued
@@ -58,7 +59,7 @@ class EventEntity(game: MyGame, mapName: String, val mapEvent: RpgEvent)
         curThread = None
       })))
     curThread.get.run()
-    
+
     return curThread
   }
 
