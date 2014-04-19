@@ -92,17 +92,17 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
     startAlpha: Float,
     endAlpha: Float,
     durationMs: Int) = syncRun {
-    game.activeScreen.curTransition =
+    game.activeWindowManager.curTransition =
       Some(Transition(startAlpha, endAlpha, durationMs))
   }
 
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, 
                   h: Int) = syncRun {
-    game.activeScreen.showPicture(slot, name, x, y, w, h)
+    game.activeWindowManager.showPicture(slot, name, x, y, w, h)
   }
 
   def hidePicture(slot: Int) = syncRun {
-    game.activeScreen.hidePicture(slot)
+    game.activeWindowManager.hidePicture(slot)
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
@@ -159,24 +159,24 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
     allowCancel: Boolean): ChoiceWindow = {
     syncRun {
       val window = new ChoiceWindow(
-        game.activeScreen.getWindowId(),
+        game.activeWindowManager.getWindowId(),
         game.persistent,
-        game.activeScreen,
+        game.activeWindowManager,
         game.inputs,
         game.assets,
         project,
         lines,
         x, y, w, h,
-        game.activeScreen.windowskin,
-        game.activeScreen.windowskinRegion,
-        game.activeScreen.fontbmp,
+        game.activeWindowManager.windowskin,
+        game.activeWindowManager.windowskinRegion,
+        game.activeWindowManager.fontbmp,
         initialState = Window.Opening,
         justification = justification,
         columns = columns,
         displayedLines = displayedLines,
         allowCancel = allowCancel)
 
-      game.activeScreen.windows.prepend(window)
+      game.activeWindowManager.windows.prepend(window)
       game.inputs.prepend(window)
 
       window
@@ -195,21 +195,21 @@ class ScriptInterface(game: MyGame, mapLayer: MapScreen)
   def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
                     msPerChar: Int) = {
     val window = new PrintingTextWindow(
-      game.activeScreen.getWindowId(),
+      game.activeWindowManager.getWindowId(),
       game.persistent,
-      game.activeScreen,
+      game.activeWindowManager,
       game.inputs,
       game.assets,
       project,
       text,
       x, y, w, h,
-      game.activeScreen.windowskin,
-      game.activeScreen.windowskinRegion,
-      game.activeScreen.fontbmp,
+      game.activeWindowManager.windowskin,
+      game.activeWindowManager.windowskinRegion,
+      game.activeWindowManager.fontbmp,
       msPerChar)
 
     syncRun {
-      game.activeScreen.windows.prepend(window)
+      game.activeWindowManager.windows.prepend(window)
       game.inputs.prepend(window)
     }
 

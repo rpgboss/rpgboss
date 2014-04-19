@@ -114,8 +114,7 @@ object Settings {
       new ExactFilter("gdx-tools.jar") |
       new ExactFilter("extensions/gdx-freetype/gdx-freetype-natives.jar") |
       new ExactFilter("extensions/gdx-audio/gdx-audio-natives.jar") |
-      new ExactFilter("sources/gdx-backend-lwjgl-sources.jar") |
-      new ExactFilter("sources/gdx-openal-sources.jar")
+      new ExactFilter("sources/gdx-backend-lwjgl-sources.jar")
 //    IO.unzip(zipFile, desktopDest, desktopFilter)
     // Put desktop backend in common for testing purposes.
     IO.unzip(zipFile, commonDest, desktopFilter)

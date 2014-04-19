@@ -6,19 +6,19 @@ import scala.swing._
 import scala.swing.event._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.badlogic.gdx.utils.Disposable
-import com.badlogic.gdx.backends.openal.OpenALAudio
+import com.badlogic.gdx.backends.lwjgl.audio.OpenALAudio
 
-class GdxPanel(canvasW: Int = 10, canvasH: Int = 10) 
-  extends Component 
+class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
+  extends Component
   with Logging
   with Disposable {
-  
+
   override lazy val peer = new javax.swing.JComponent with SuperMixin {
     add(gdxCanvas.getCanvas())
   }
-  
+
   preferredSize = new Dimension(canvasW, canvasH)
-  
+
   // lazy val, otherwise an NPE crash due to wonky order of initialization
   lazy val gdxListener = new ApplicationAdapter {
     override def create() = {
@@ -41,39 +41,39 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
       logger.debug("resume()")
     }
   }
-  
-  lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener, false) {
-    
+
+  lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener) {
+
     logger.info("Gdx Canvas constructor")
-    
+
     override def start() = {
       logger.debug("start()")
       super.start()
     }
-    
+
     override def resize(w: Int, h: Int) = {
       logger.debug("resize(%d, %d)".format(w, h))
       super.resize(w, h)
     }
-    
+
     override def stopped() = {
       logger.debug("stopped()")
       super.stopped()
     }
-    
+
     getCanvas().setSize(canvasW, canvasH)
-    
+
     override def makeCurrent() = {
       super.makeCurrent()
       logger.debug("makeCurrent()")
     }
-    
+
     override def stop() = {
       logger.debug("stop()")
       super.stop()
     }
   }
-  
+
   def dispose() = {
     logger.debug("Destroying GdxPanel")
     gdxCanvas.stop()
@@ -83,6 +83,6 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
       logger.debug("Destroying gdx audio from GdxPanel")
     }
   }
-  
+
   def getAudio() = gdxCanvas.getAudio()
 }

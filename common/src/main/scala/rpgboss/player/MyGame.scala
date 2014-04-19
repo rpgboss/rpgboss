@@ -73,11 +73,11 @@ class MyGame(gamepath: File)
 
   val assets = new RpgAssetManager(project)
 
-  def activeScreen =
+  def activeWindowManager =
     if (battleScreen.battleActive)
-      battleScreen.screenLayer
+      battleScreen.windowManager
     else
-      mapScreen.screenLayer
+      mapScreen.windowManager
 
   def create() = {
     com.badlogic.gdx.utils.Timer.instance().start()

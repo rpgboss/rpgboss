@@ -8,21 +8,21 @@ import rpgboss.player.entity._
 import rpgboss.lib.ThreadChecked
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 
-case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int, 
+case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
                         y: Int) {
   val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
-  
+
   val imageW = spriteset.tileW.toFloat
   val imageH = spriteset.tileH.toFloat
 }
 
-class BattleScreen(project: Project, screenW: Int, screenH: Int) 
+class BattleScreen(project: Project, screenW: Int, screenH: Int)
   extends ThreadChecked {
   // Battle variables
   private var _battle: Option[Battle] = None
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
 
-  val screenLayer = new WindowManager(project, screenW, screenH)
+  val windowManager = new WindowManager(project, screenW, screenH)
 
   def battleActive = _battle.isDefined
 
@@ -32,8 +32,8 @@ class BattleScreen(project: Project, screenW: Int, screenH: Int)
 
     bgPicture.map { picName =>
       // TODO: Make more robust
-      screenLayer.showPicture(PictureSlots.BATTLE_BACKGROUND, picName, 
-                              0, 0, 640, 320)
+      windowManager.showPicture(PictureSlots.BATTLE_BACKGROUND, picName,
+                                0, 0, 640, 320)
     }
 
     _battle = Some(battle)
@@ -43,11 +43,11 @@ class BattleScreen(project: Project, screenW: Int, screenH: Int)
       enemy.battler.map { battlerSpec =>
         val battler = Battler.readFromDisk(project, battlerSpec.name)
         val texture = battler.newGdxTexture
-        
+
         val battlerWidth = (texture.getWidth() * battlerSpec.scale).toInt
         val battlerHeight = (texture.getHeight() * battlerSpec.scale).toInt
-        
-        screenLayer.showTexture(
+
+        windowManager.showTexture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           texture,
           unit.x - battlerWidth / 2,
@@ -73,7 +73,7 @@ class BattleScreen(project: Project, screenW: Int, screenH: Int)
     _battle = None
 
     for (i <- PictureSlots.BATTLE_BEGIN until PictureSlots.BATTLE_END) {
-      screenLayer.hidePicture(i)
+      windowManager.hidePicture(i)
     }
 
     _partyBattlers.clear()
@@ -81,29 +81,29 @@ class BattleScreen(project: Project, screenW: Int, screenH: Int)
 
   def update(delta: Float) = {
     assert(onValidThread())
-    screenLayer.update(delta)
+    windowManager.update(delta)
   }
 
   def render(atlasSprites: TextureAtlas) = {
     assert(onValidThread())
-    screenLayer.render()
-    
-    screenLayer.batch.begin()
+    windowManager.render()
+
+    windowManager.batch.begin()
     // TODO: Fix hack of re-using screenLayer's spritebatch
     for (partyBattler <- _partyBattlers) {
       GdxGraphicsUtils.renderSprite(
-        screenLayer.batch, 
-        atlasSprites, 
+        windowManager.batch,
+        atlasSprites,
         partyBattler.spriteset,
         partyBattler.spriteSpec.spriteIndex,
         SpriteSpec.Directions.WEST,
         SpriteSpec.Steps.STILL,
-        partyBattler.x, 
-        partyBattler.y, 
-        partyBattler.imageW, 
+        partyBattler.x,
+        partyBattler.y,
+        partyBattler.imageW,
         partyBattler.imageH)
     }
-    screenLayer.batch.end()
+    windowManager.batch.end()
   }
 
   /**
@@ -111,10 +111,10 @@ class BattleScreen(project: Project, screenW: Int, screenH: Int)
    */
   def dispose() = {
     assert(onValidThread())
-    
+
     if (battleActive)
       endBattle()
-    
-    screenLayer.dispose()
+
+    windowManager.dispose()
   }
 }

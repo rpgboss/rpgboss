@@ -28,12 +28,12 @@ object EncounterFieldGdxPanel {
 class EncounterFieldGdxPanel(project: Project, initial: Encounter) 
   extends GdxPanel(EncounterFieldGdxPanel.width, 
                    EncounterFieldGdxPanel.height) {
-  var battleState: BattleScreen = null
+  var battleScreen: BattleScreen = null
   var atlasSprites: TextureAtlas = null
   
   override lazy val gdxListener = new ApplicationAdapter {
     def updateBattleScreen(encounter: Encounter) = {
-      assume(battleState != null)
+      assume(battleScreen != null)
       
       // TODO: See if this dummy battle constructor has a better home
       val battle = new Battle(
@@ -47,24 +47,24 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         project.data.enums.characters.map(v => 0),
         encounter)
       
-      if (battleState.battleActive)
-        battleState.endBattle()
+      if (battleScreen.battleActive)
+        battleScreen.endBattle()
       
-      battleState.startBattle(
+      battleScreen.startBattle(
         battle, Some("defaultrc_battleback/crownlesswish_rrr.jpg"))
     }
     
     override def create() = {
       atlasSprites = GdxUtils.generateSpritesTextureAtlas(
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
-      battleState = new BattleScreen(project, EncounterFieldGdxPanel.width,
+      battleScreen = new BattleScreen(project, EncounterFieldGdxPanel.width,
                                     EncounterFieldGdxPanel.height)
       updateBattleScreen(initial)
     }
     
     override def render() = {
-      battleState.update(Gdx.graphics.getDeltaTime())
-      battleState.render(atlasSprites)
+      battleScreen.update(Gdx.graphics.getDeltaTime())
+      battleScreen.render(atlasSprites)
     }
   }
 
