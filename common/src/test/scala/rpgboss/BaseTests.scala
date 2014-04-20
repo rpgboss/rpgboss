@@ -77,6 +77,7 @@ abstract class MapScreenTest extends ProjectTest {
     override def beginGame() = {
       setup()
 
+      // Run this asynchronously so it doesn't block the main render thread.
       future {
         runTest()
         waiter.dismiss()
