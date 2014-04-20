@@ -136,7 +136,6 @@ class TextWindow(
   fontbmp: BitmapFont,
   initialState: Int = Window.Opening,
   openCloseMs: Int = 250,
-  linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends Window(
     id, screenLayer, inputs, assets, proj, x, y, w, h, skin, skinRegion,
@@ -152,7 +151,6 @@ class TextWindow(
     w - 2*xpad,
     h - 2*ypad,
     fontbmp,
-    linesPerBlock,
     justification)
 
   override def update(delta: Float, acceptInput: Boolean) = {

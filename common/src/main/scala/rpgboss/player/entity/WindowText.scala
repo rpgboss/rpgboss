@@ -88,7 +88,6 @@ class WindowText(
   def update() = {}
 
   def render(b: SpriteBatch, startLine: Int, linesToDraw: Int): Unit = {
-    // Draw all complete lines in current block
     val endLine = math.min(text.length, startLine + linesToDraw)
     for (lineI <- startLine until endLine) {
       val offset = lineI - startLine
