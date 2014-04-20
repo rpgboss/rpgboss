@@ -21,13 +21,17 @@ case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
  */
 class BattleScreen(
   gameOpt: Option[RpgGame],
+  atlasSprites: TextureAtlas,
   project: Project,
   screenW: Int,
   screenH: Int)
   extends ThreadChecked
   with RpgScreen {
+  assume(atlasSprites != null)
 
   val scriptInterface = new ScriptInterface(gameOpt.orNull, this)
+
+  val inputs = new InputMultiplexer()
 
   // Battle variables
   private var _battle: Option[Battle] = None
@@ -95,7 +99,7 @@ class BattleScreen(
     windowManager.update(delta)
   }
 
-  def render(atlasSprites: TextureAtlas) = {
+  def render() = {
     assert(onValidThread())
     windowManager.render()
 

@@ -23,7 +23,7 @@ object GdxUtils {
     Gdx.app.postRunnable(runnable)
     Await.result(promise.future, Duration.Inf)
   }
-  
+
   /**
    * Run the following on the GUI thread
    */
@@ -35,7 +35,7 @@ object GdxUtils {
     }
     Gdx.app.postRunnable(runnable)
   }
-  
+
   def generateSpritesTextureAtlas(spritesets: Iterable[Spriteset]) = {
     val packerSprites =
       new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
@@ -78,7 +78,7 @@ object GdxUtils {
     // TODO: Re-enable logging in a consistent way
 //    logger.info("Packed sprites into %d pages".format(
 //      packerSprites.getPages().size))
-      
+
     packerSprites.generateTextureAtlas(
       TextureFilter.Nearest, TextureFilter.Nearest, false)
   }

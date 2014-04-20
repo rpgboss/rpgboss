@@ -202,31 +202,29 @@ class ScriptInterface(
     justification: Int,
     columns: Int,
     displayedLines: Int,
-    allowCancel: Boolean): ChoiceWindow = {
-    syncRun {
-      val window = new ChoiceWindow(
-        activeScreen.windowManager.getWindowId(),
-        game.persistent,
-        activeScreen.windowManager,
-        game.inputs,
-        game.assets,
-        project,
-        lines,
-        x, y, w, h,
-        activeScreen.windowManager.windowskin,
-        activeScreen.windowManager.windowskinRegion,
-        activeScreen.windowManager.fontbmp,
-        initialState = Window.Opening,
-        justification = justification,
-        columns = columns,
-        displayedLines = displayedLines,
-        allowCancel = allowCancel)
+    allowCancel: Boolean): ChoiceWindow = syncRun {
+    val window = new ChoiceWindow(
+      activeScreen.windowManager.getWindowId(),
+      game.persistent,
+      activeScreen.windowManager,
+      activeScreen.inputs,
+      game.assets,
+      project,
+      lines,
+      x, y, w, h,
+      activeScreen.windowManager.windowskin,
+      activeScreen.windowManager.windowskinRegion,
+      activeScreen.windowManager.fontbmp,
+      initialState = Window.Opening,
+      justification = justification,
+      columns = columns,
+      displayedLines = displayedLines,
+      allowCancel = allowCancel)
 
-      activeScreen.windowManager.windows.prepend(window)
-      game.inputs.prepend(window)
+    activeScreen.windowManager.windows.prepend(window)
+    activeScreen.inputs.prepend(window)
 
-      window
-    }
+    window
   }
 
   def newChoiceWindow(
@@ -244,7 +242,7 @@ class ScriptInterface(
       activeScreen.windowManager.getWindowId(),
       game.persistent,
       activeScreen.windowManager,
-      game.inputs,
+      activeScreen.inputs,
       game.assets,
       project,
       text,
@@ -256,7 +254,7 @@ class ScriptInterface(
 
     syncRun {
       activeScreen.windowManager.windows.prepend(window)
-      game.inputs.prepend(window)
+      activeScreen.inputs.prepend(window)
     }
 
     window

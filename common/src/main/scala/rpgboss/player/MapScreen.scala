@@ -23,6 +23,8 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
   extends RpgScreen {
   val scriptInterface = new ScriptInterface(game, this)
 
+  val inputs = new InputMultiplexer()
+
   def project = game.project
   val batch = new SpriteBatch()
 
@@ -48,7 +50,7 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
   def mapName = mapAndAssetsOption.map(_.map.name)
 
   // protagonist. Modify all these things on the Gdx thread
-  var playerEntity: PlayerEntity = new PlayerEntity(game)
+  var playerEntity: PlayerEntity = new PlayerEntity(game, this)
 
   val camera = new MapCamera(game)
 

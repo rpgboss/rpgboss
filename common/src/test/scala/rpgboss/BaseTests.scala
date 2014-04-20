@@ -91,10 +91,10 @@ abstract class MapScreenTest extends ProjectTest {
     }
 
     // Should only be run on scripting thread. |key| is an internal key.
-    def scriptKeyPress(key: Int, duration: Float) = {
-      GdxUtils.syncRun { inputs.myKeyDown(key) }
+    def mapScreenKeyPress(key: Int, duration: Float) = {
+      GdxUtils.syncRun { mapScreen.inputs.myKeyDown(key) }
       Thread.sleep((duration * 1000).toLong)
-      GdxUtils.syncRun { inputs.myKeyUp(key) }
+      GdxUtils.syncRun { mapScreen.inputs.myKeyUp(key) }
     }
   }
 

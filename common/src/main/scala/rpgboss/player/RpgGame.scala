@@ -41,7 +41,11 @@ case class MutableMapLoc(
 }
 
 trait RpgScreen {
+  def inputs: InputMultiplexer
   def windowManager: WindowManager
+
+  def update(delta: Float)
+  def render()
 }
 
 class RpgGame(gamepath: File) extends ApplicationListener {
@@ -52,7 +56,8 @@ class RpgGame(gamepath: File) extends ApplicationListener {
 
   var mapScreen: MapScreen = null
   var battleScreen: BattleScreen = null
-  val inputs = new InputMultiplexer()
+
+  var activeScreen: RpgScreen = null
 
   // Generate and pack sprites
   val spritesets = Map() ++ Spriteset.list(project).map(
@@ -78,21 +83,25 @@ class RpgGame(gamepath: File) extends ApplicationListener {
   def create() = {
     com.badlogic.gdx.utils.Timer.instance().start()
 
-    // Attach inputs
-    Gdx.input.setInputProcessor(inputs)
-
     atlasSprites = GdxUtils.generateSpritesTextureAtlas(spritesets.values)
 
     persistent = new PersistentState()
 
     // TODO: Make configurable screen pixel dimensions
-    battleScreen = new BattleScreen(Some(this), project, 640, 480)
+    battleScreen = new BattleScreen(Some(this), atlasSprites, project, 640, 480)
     mapScreen = new MapScreen(this, 640, 480)
+
+    setActiveScreen(mapScreen)
 
     // Register accessors
     TweenAccessors.registerAccessors()
 
     beginGame()
+  }
+
+  def setActiveScreen(screen: RpgScreen) = {
+    activeScreen = screen
+    Gdx.input.setInputProcessor(activeScreen.inputs)
   }
 
   def beginGame() = {
@@ -125,14 +134,9 @@ class RpgGame(gamepath: File) extends ApplicationListener {
     Gdx.gl.glEnable(GL20.GL_BLEND)
 
     if (assets.update()) {
-      // update state
-      if (battleScreen.battleActive) {
-        battleScreen.update(delta)
-        battleScreen.render(atlasSprites)
-      } else {
-        mapScreen.update(delta)
-        mapScreen.render()
-      }
+      assert(activeScreen != null)
+      activeScreen.update(delta)
+      activeScreen.render()
     } else {
       // TODO: loading screen
     }

@@ -10,11 +10,14 @@ import MyKeys.Left
 import MyKeys.Right
 import MyKeys.Up
 
-class PlayerEntity(game: RpgGame)
+class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
   extends Entity(game: RpgGame)
   with PlayerInputHandler {
+  assume(game != null)
+  assume(mapScreen != null)
+
   // Add input handling
-  game.inputs.prepend(this)
+  mapScreen.inputs.prepend(this)
 
   var mapName: Option[String] = None
   var menuActive = false
@@ -93,7 +96,7 @@ class PlayerEntity(game: RpgGame)
         menuActive = true
         ScriptThread.fromFile(
           game,
-          game.mapScreen.scriptInterface,
+          mapScreen.scriptInterface,
           "menu.js",
           "menu()",
           Some(() => {
@@ -136,7 +139,7 @@ class PlayerEntity(game: RpgGame)
 
   // NOTE: this is never called... which may or may not be okay haha
   def dispose() = {
-    game.inputs.remove(PlayerEntity.this)
+    mapScreen.inputs.remove(PlayerEntity.this)
   }
 
 }
