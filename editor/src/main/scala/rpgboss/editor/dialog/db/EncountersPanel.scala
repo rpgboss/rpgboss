@@ -57,14 +57,15 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     override def create() = {
       atlasSprites = GdxUtils.generateSpritesTextureAtlas(
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
-      battleScreen = new BattleScreen(project, EncounterFieldGdxPanel.width,
+      battleScreen = new BattleScreen(None, atlasSprites, project,
+                                      EncounterFieldGdxPanel.width,
                                       EncounterFieldGdxPanel.height)
       updateBattleScreen(initial)
     }
 
     override def render() = {
       battleScreen.update(Gdx.graphics.getDeltaTime())
-      battleScreen.render(atlasSprites)
+      battleScreen.render()
     }
   }
 
@@ -127,25 +128,7 @@ class EncountersPanel(
       if (model.units.isEmpty)
         fName.text = ""
 
-      val enemyLabels = new collection.mutable.ArrayBuffer[String]
-
-      // Array of same length and enemies to keep track of how many there are
-      val enemyCounts = Array.fill(dbDiag.model.enums.enemies.length)(0)
-      for (unit <- model.units; if unit.enemyIdx < enemyCounts.length) {
-        enemyCounts(unit.enemyIdx) += 1
-      }
-
-      for (i <- 0 until enemyCounts.length) {
-        val count = enemyCounts(i)
-
-        if (count > 0) {
-          val enemyName = dbDiag.model.enums.enemies(i).name
-          if (count == 1)
-            enemyLabels.append(enemyName)
-          else
-            enemyLabels.append("%d x %s".format(count, enemyName))
-        }
-      }
+      val enemyLabels = Encounter.getEnemyLabels(model.units, dbDiag.model)
 
       fName.text = "# %s".format(enemyLabels.mkString(", "))
     }

@@ -80,6 +80,34 @@ case class Encounter(
   var name: String = "",
   var units: Seq[EncounterUnit] = Seq()) extends HasName
 
+object Encounter {
+  def getEnemyLabels(
+    units: Seq[EncounterUnit],
+    pData: ProjectData): Seq[String] = {
+    val enemyLabels = new collection.mutable.ArrayBuffer[String]
+
+    // Array of same length and enemies to keep track of how many there are
+    val enemyCounts = Array.fill(pData.enums.enemies.length)(0)
+    for (unit <- units; if unit.enemyIdx < enemyCounts.length) {
+      enemyCounts(unit.enemyIdx) += 1
+    }
+
+    for (i <- 0 until enemyCounts.length) {
+      val count = enemyCounts(i)
+
+      if (count > 0) {
+        val enemyName = pData.enums.enemies(i).name
+        if (count == 1)
+          enemyLabels.append(enemyName)
+        else
+          enemyLabels.append("%d x %s".format(count, enemyName))
+      }
+    }
+
+    enemyLabels
+  }
+}
+
 object CharState {
   /*
    * val defaultStates =
