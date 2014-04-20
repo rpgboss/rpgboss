@@ -86,8 +86,8 @@ class RpgGame(gamepath: File) extends ApplicationListener {
     persistent = new PersistentState()
 
     // TODO: Make configurable screen pixel dimensions
-    battleScreen = new BattleScreen(project, 640, 480)
-    mapScreen = new MapScreen(RpgGame.this, 640, 480)
+    battleScreen = new BattleScreen(Some(this), project, 640, 480)
+    mapScreen = new MapScreen(this, 640, 480)
 
     // Register accessors
     TweenAccessors.registerAccessors()

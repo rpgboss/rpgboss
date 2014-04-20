@@ -5,14 +5,14 @@ import rpgboss.lib.ThreadChecked
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
-case class EventStateChange(key: (String, Int), value: Int) 
+case class EventStateChange(key: (String, Int), value: Int)
   extends PersistentStateUpdate
 
 /**
  * The part of the game state that should persist through save and load cycles.
  * This whole class should only be accessed on the Gdx thread.
  */
-class PersistentState 
+class PersistentState
   extends ThreadChecked
   with Publisher[PersistentStateUpdate] {
   private val globalInts = new MutableHashMap[String, Int]
@@ -20,10 +20,10 @@ class PersistentState
   private val stringArrays = new MutableHashMap[String, Array[String]]
 
   // mapName->eventId->state
-  val eventStates = 
+  val eventStates =
     new MutableHashMap[(String, Int), Int]
     with ObservableMap[(String, Int), Int]
-  
+
   // TODO: save player location
   def setInt(key: String, value: Int) = {
     assert(onValidThread())
@@ -38,23 +38,23 @@ class PersistentState
   def getIntArray(key: String) = {
     assert(onValidThread())
     intArrays.getOrElseUpdate(key, new Array[Int](0))
-  } 
-    
+  }
+
   def setIntArray(key: String, value: Seq[Int]) = {
     assert(onValidThread())
     intArrays.update(key, value.toArray)
   }
-  
+
   def getStringArray(key: String) = {
     assert(onValidThread())
     stringArrays.getOrElseUpdate(key, new Array[String](0))
   }
-  
+
   def setStringArray(key: String, value: Seq[String]) = {
     assert(onValidThread())
     stringArrays.update(key, value.toArray)
   }
-    
+
   // Gets the event state for the current map.
   // Returns zero if none is saved.
   def getEventState(mapName: String, eventId: Int) = {

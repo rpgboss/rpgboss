@@ -20,6 +20,10 @@ trait HasScriptConstants {
   val CENTER = Window.Center
   val RIGHT = Window.Right
 
+  val PLAYER_X = "playerX"
+  val PLAYER_Y = "playerY"
+  val PLAYER_MAP_NAME = "playerMapName"
+
   val PARTY = "party"
   val INVENTORY_IDXS = "inventoryIdxs"
   val INVENTORY_QTYS = "inventoryQtys"
@@ -46,17 +50,19 @@ trait HasScriptConstants {
  * These methods should be called only from scripting threads. Calling these
  * methods on the Gdx threads will likely cause deadlocks.
  *
+ * @param   game    Allowed to be null so this may be used when there is only an
+ *                  activeScreen.
+ *
  * TODO: Eliminate the mapScreen argument. Map-related scripting commands should
  * probably not even be defined when there is no map.
  */
 class ScriptInterface(
   game: RpgGame,
-  mapScreen: MapScreen,
   activeScreen: RpgScreen)
   extends HasScriptConstants {
-  assume(game != null)
   assume(activeScreen != null)
 
+  private def mapScreen = game.mapScreen
   private def persistent = game.persistent
   private def project = game.project
 
@@ -76,24 +82,50 @@ class ScriptInterface(
    * Things to do with the player's location and camera
    */
 
-  def setPlayerSprite(spritespec: Option[SpriteSpec]) = syncRun {
-    mapScreen.playerEntity.setSprite(spritespec)
+  /**
+   * Sets the members of the player's party. Controls the sprite for both
+   * walking on the map, as well as the party members in a battle.
+   *
+   * TODO: Figure out if this requires @partyArray to be non-empty.
+   */
+  def setParty(partyArray: Array[Int]) = syncRun {
+    persistent.setIntArray(PARTY, partyArray)
+
+    if (mapScreen != null) {
+      if (partyArray.length > 0) {
+        val spritespec = project.data.enums.characters(partyArray(0)).sprite
+        mapScreen.playerEntity.setSprite(spritespec)
+      } else {
+        mapScreen.playerEntity.setSprite(None)
+      }
+    }
   }
 
   def setPlayerLoc(loc: MapLoc) = syncRun {
-    mapScreen.playerEntity.x = loc.x
-    mapScreen.playerEntity.y = loc.y
-    mapScreen.playerEntity.mapName = Some(loc.map)
+    persistent.setInt(PLAYER_X, loc.x.round)
+    persistent.setInt(PLAYER_Y, loc.y.round)
 
-    mapScreen.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map))
+    if (mapScreen != null) {
+      mapScreen.playerEntity.x = loc.x
+      mapScreen.playerEntity.y = loc.y
+      mapScreen.playerEntity.mapName = Some(loc.map)
+
+      mapScreen.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map))
+    }
   }
 
+  /**
+   * Moves the map camera.
+   */
   def moveCamera(dx: Float, dy: Float, async: Boolean) = {
     val move = syncRun { mapScreen.camera.enqueueMove(dx, dy) }
     if (!async)
       move.awaitDone()
   }
 
+  /**
+   * Gets the position of the map camera.
+   */
   def getCameraPos() = syncRun {
     mapScreen.camera.info
   }
@@ -306,11 +338,8 @@ class ScriptInterface(
   }
 
   def setNewGameVars() = {
-    syncRun {
-      mapScreen.playerEntity.setSprite(project.data.enums.characters.head.sprite)
-    }
+    setParty(project.data.startup.startingParty.toArray)
     // Initialize data structures
-    setIntArray(PARTY, project.data.startup.startingParty.toArray);
 
     var characters = project.data.enums.characters.toArray;
     setStringArray(CHARACTER_NAMES, characters.map(_.name));

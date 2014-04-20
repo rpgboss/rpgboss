@@ -21,7 +21,7 @@ import rpgboss.player.entity._
  */
 class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
   extends RpgScreen {
-  val scriptInterface = new ScriptInterface(game, this, this)
+  val scriptInterface = new ScriptInterface(game, this)
 
   def project = game.project
   val batch = new SpriteBatch()

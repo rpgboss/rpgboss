@@ -16,11 +16,18 @@ case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
   val imageH = spriteset.tileH.toFloat
 }
 
+/**
+ * @param   gameOpt   Is optional to allow BattleScreen use in the editor.
+ */
 class BattleScreen(
+  gameOpt: Option[RpgGame],
   project: Project,
   screenW: Int,
   screenH: Int)
-  extends ThreadChecked {
+  extends ThreadChecked
+  with RpgScreen {
+
+  val scriptInterface = new ScriptInterface(gameOpt.orNull, this)
 
   // Battle variables
   private var _battle: Option[Battle] = None
