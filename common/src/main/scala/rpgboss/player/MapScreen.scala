@@ -28,7 +28,8 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
   def project = game.project
   val batch = new SpriteBatch()
 
-  val windowManager = new WindowManager(project, screenWPixels, screenHPixels)
+  val windowManager = 
+    new WindowManager(game.assets, project, screenWPixels, screenHPixels)
 
   var screenW = 20.0
   var screenH = 15.0

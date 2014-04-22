@@ -207,13 +207,8 @@ class ScriptInterface(
       game.persistent,
       activeScreen.windowManager,
       activeScreen.inputs,
-      game.assets,
-      project,
       lines,
       x, y, w, h,
-      activeScreen.windowManager.windowskin,
-      activeScreen.windowManager.windowskinRegion,
-      activeScreen.windowManager.fontbmp,
       initialState = Window.Opening,
       justification = justification,
       columns = columns,
@@ -241,13 +236,8 @@ class ScriptInterface(
       game.persistent,
       activeScreen.windowManager,
       activeScreen.inputs,
-      game.assets,
-      project,
       text,
       x, y, w, h,
-      activeScreen.windowManager.windowskin,
-      activeScreen.windowManager.windowskinRegion,
-      activeScreen.windowManager.fontbmp,
       msPerChar)
 
     syncRun {

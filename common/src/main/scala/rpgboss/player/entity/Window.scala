@@ -41,12 +41,7 @@ object Window {
 class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
-  assets: RpgAssetManager,
-  proj: Project,
   val x: Int, val y: Int, val w: Int, val h: Int,
-  skin: Windowskin,
-  skinRegion: TextureRegion,
-  fontbmp: BitmapFont,
   initialState: Int = Window.Opening,
   openCloseMs: Int = 250)
   extends InputHandler {
@@ -55,6 +50,9 @@ class Window(
   var stateStarttime = System.currentTimeMillis()
   def stateAge = System.currentTimeMillis() - stateStarttime
 
+  def skin = manager.windowskin
+  def skinRegion = manager.windowskinRegion
+  
   def changeState(newState: Int) = {
     state = newState
     stateStarttime = System.currentTimeMillis()
@@ -125,19 +123,12 @@ class TextWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  assets: RpgAssetManager,
-  proj: Project,
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  skin: Windowskin,
-  skinRegion: TextureRegion,
-  fontbmp: BitmapFont,
   initialState: Int = Window.Opening,
   openCloseMs: Int = 250,
   justification: Int = Window.Left)
-  extends Window(
-    manager, inputs, assets, proj, x, y, w, h, skin, skinRegion,
-    fontbmp, initialState, openCloseMs) {
+  extends Window(manager, inputs, x, y, w, h, initialState, openCloseMs) {
   val xpad = 24
   val ypad = 24
 
@@ -148,7 +139,7 @@ class TextWindow(
     y + ypad,
     w - 2*xpad,
     h - 2*ypad,
-    fontbmp,
+    manager.fontbmp,
     justification)
 
   override def update(delta: Float, acceptInput: Boolean) = {
@@ -175,21 +166,14 @@ class PrintingTextWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  assets: RpgAssetManager,
-  proj: Project,
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  skin: Windowskin,
-  skinRegion: TextureRegion,
-  fontbmp: BitmapFont,
   msPerChar: Int,
   initialState: Int = Window.Opening,
   openCloseMs: Int = 250,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends Window(
-    manager, inputs, assets, proj, x, y, w, h, skin, skinRegion,
-    fontbmp, initialState, openCloseMs) {
+  extends Window(manager, inputs, x, y, w, h, initialState, openCloseMs) {
   val xpad = 24
   val ypad = 24
 
@@ -202,7 +186,7 @@ class PrintingTextWindow(
     h - 2*ypad,
     skin,
     skinRegion,
-    fontbmp,
+    manager.fontbmp,
     msPerChar,
     linesPerBlock,
     justification)

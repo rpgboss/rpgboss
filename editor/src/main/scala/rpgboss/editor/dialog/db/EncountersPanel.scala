@@ -57,14 +57,19 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     override def create() = {
       atlasSprites = GdxUtils.generateSpritesTextureAtlas(
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
-      battleScreen = new BattleScreen(project, EncounterFieldGdxPanel.width,
-                                      EncounterFieldGdxPanel.height)
+      battleScreen = new BattleScreen(
+        None,
+        new RpgAssetManager(project),
+        atlasSprites,
+        project, 
+        EncounterFieldGdxPanel.width,
+        EncounterFieldGdxPanel.height)
       updateBattleScreen(initial)
     }
 
     override def render() = {
       battleScreen.update(Gdx.graphics.getDeltaTime())
-      battleScreen.render(atlasSprites)
+      battleScreen.render()
     }
   }
 

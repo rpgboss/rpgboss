@@ -20,7 +20,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
  *
  * This class should only be accessed on the gdx thread
  */
-class WindowManager(project: Project, screenW: Int, screenH: Int) {
+class WindowManager(
+  val assets: RpgAssetManager, 
+  val project: Project, 
+  screenW: Int, 
+  screenH: Int) {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
 
