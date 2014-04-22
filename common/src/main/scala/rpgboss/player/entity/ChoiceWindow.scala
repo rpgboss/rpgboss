@@ -14,17 +14,11 @@ import scala.concurrent.duration.Duration
 import rpgboss.player._
 
 class ChoiceWindow(
-  id: Long,
   persistent: PersistentState,
-  screenLayer: WindowManager,
+  manager: WindowManager,
   inputs: InputMultiplexer,
-  assets: RpgAssetManager,
-  proj: Project,
   lines: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  skin: Windowskin,
-  skinRegion: TextureRegion,
-  fontbmp: BitmapFont,
   initialState: Int = Window.Opening,
   openCloseMs: Int = 250,
   justification: Int = Window.Left,
@@ -34,9 +28,7 @@ class ChoiceWindow(
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
-  extends Window(
-    id, screenLayer, inputs, assets, proj, x, y, w, h, skin, skinRegion,
-    fontbmp, initialState, openCloseMs)
+  extends Window(manager, inputs, x, y, w, h, initialState, openCloseMs)
   with ChoiceInputHandler {
   val xpad = 24
   val ypad = 24
@@ -67,7 +59,7 @@ class ChoiceWindow(
       y + ypad,
       textColW,
       textHTotal,
-      fontbmp,
+      manager.fontbmp,
       justification
     )
 
@@ -83,16 +75,19 @@ class ChoiceWindow(
 
   val choiceChannel = new Channel[Int]()
 
+  def project = manager.project
+  def assets = manager.assets
+  
   def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
-    val snd = spec.map(s => Sound.readFromDisk(proj, s.sound))
+    val snd = spec.map(s => Sound.readFromDisk(project, s.sound))
     snd.map(_.loadAsset(assets))
     snd
   }
 
-  val soundSelect = optionallyReadAndLoad(proj.data.startup.soundSelect)
-  val soundCursor = optionallyReadAndLoad(proj.data.startup.soundCursor)
-  val soundCancel = optionallyReadAndLoad(proj.data.startup.soundCancel)
-  val soundCannot = optionallyReadAndLoad(proj.data.startup.soundCannot)
+  val soundSelect = optionallyReadAndLoad(project.data.startup.soundSelect)
+  val soundCursor = optionallyReadAndLoad(project.data.startup.soundCursor)
+  val soundCancel = optionallyReadAndLoad(project.data.startup.soundCancel)
+  val soundCannot = optionallyReadAndLoad(project.data.startup.soundCannot)
 
   def keyActivate(key: Int) = {
     import MyKeys._
@@ -162,12 +157,9 @@ class ChoiceWindow(
   def hasFocus = inputs.hasFocus(this)
 
   def takeFocus() = {
-    screenLayer.windows.find(_.id == id).map { window =>
-      inputs.remove(window)
-      screenLayer.windows -= window
-      inputs.prepend(window)
-      screenLayer.windows.prepend(window)
-    }
+    inputs.remove(this)
+    inputs.prepend(this)
+    manager.focusWindow(this)
   }
 
   override def render(b: SpriteBatch) = {

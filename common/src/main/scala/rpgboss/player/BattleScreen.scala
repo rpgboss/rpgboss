@@ -17,10 +17,13 @@ case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
 }
 
 /**
+ * This class must be created and accessed only on the Gdx thread.
+ * 
  * @param   gameOpt   Is optional to allow BattleScreen use in the editor.
  */
 class BattleScreen(
   gameOpt: Option[RpgGame],
+  assets: RpgAssetManager,
   atlasSprites: TextureAtlas,
   project: Project,
   screenW: Int,
@@ -37,7 +40,7 @@ class BattleScreen(
   private var _battle: Option[Battle] = None
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
 
-  val windowManager = new WindowManager(project, screenW, screenH)
+  val windowManager = new WindowManager(assets, project, screenW, screenH)
 
   def battleActive = _battle.isDefined
 
@@ -79,6 +82,19 @@ class BattleScreen(
         val y = 20 * i + 180
         _partyBattlers.append(PartyBattler(project, spriteSpec, x, y))
       }
+    }
+    
+    for (game <- gameOpt) {
+      val enemyLines = Array("Enemy1", "Enemy2")
+      // TODO: Eliminate these literal numbers for dimensions.
+      val enemyListWindow = new TextWindow(
+        game.persistent,
+        windowManager,
+        inputs,
+        enemyLines,
+        0, 300, 200, 180,
+        initialState = Window.Open)
+      windowManager.addWindow(enemyListWindow)
     }
   }
 

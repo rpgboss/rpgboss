@@ -88,7 +88,8 @@ class RpgGame(gamepath: File) extends ApplicationListener {
     persistent = new PersistentState()
 
     // TODO: Make configurable screen pixel dimensions
-    battleScreen = new BattleScreen(Some(this), atlasSprites, project, 640, 480)
+    battleScreen = 
+      new BattleScreen(Some(this), assets, atlasSprites, project, 640, 480)
     mapScreen = new MapScreen(this, 640, 480)
 
     setActiveScreen(mapScreen)
