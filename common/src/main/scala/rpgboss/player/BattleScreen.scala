@@ -17,6 +17,8 @@ case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
 }
 
 /**
+ * This class must be created and accessed only on the Gdx thread.
+ * 
  * @param   gameOpt   Is optional to allow BattleScreen use in the editor.
  */
 class BattleScreen(
@@ -79,6 +81,24 @@ class BattleScreen(
         val y = 20 * i + 180
         _partyBattlers.append(PartyBattler(project, spriteSpec, x, y))
       }
+    }
+    
+    for (game <- gameOpt) {
+      val enemyLines = Array("Enemy1", "Enemy2")
+      // TODO: Eliminate these literal numbers for dimensions.
+      val enemyListWindow = new TextWindow(
+        game.persistent,
+        windowManager,
+        inputs,
+        game.assets,
+        project,
+        enemyLines,
+        0, 300, 200, 180,
+        windowManager.windowskin,
+        windowManager.windowskinRegion,
+        windowManager.fontbmp,
+        initialState = Window.Open)
+      windowManager.addWindow(enemyListWindow)
     }
   }
 

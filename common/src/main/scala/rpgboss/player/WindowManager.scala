@@ -36,14 +36,16 @@ class WindowManager(project: Project, screenW: Int, screenH: Int) {
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
   var fontbmp: BitmapFont = font.getBitmapFont()
 
-  private var lastWindowId: Long = 0
-
   val pictures = Array.fill[Option[PictureInfo]](64)(None)
-  val windows = new collection.mutable.ArrayBuffer[Window]
-
-  def getWindowId() : Long = {
-    lastWindowId += 1
-    lastWindowId
+  private val windows = new collection.mutable.ArrayBuffer[Window]
+  
+  // TODO: Investigate if a more advanced z-ordering is needed other than just
+  // putting the last-created one on top.
+  def addWindow(window: Window) = windows.prepend(window)
+  def removeWindow(window: Window) = windows -= window
+  def focusWindow(window: Window) = {
+    removeWindow(window)
+    addWindow(window)
   }
 
   val screenCamera: OrthographicCamera = new OrthographicCamera()

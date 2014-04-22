@@ -204,7 +204,6 @@ class ScriptInterface(
     displayedLines: Int,
     allowCancel: Boolean): ChoiceWindow = syncRun {
     val window = new ChoiceWindow(
-      activeScreen.windowManager.getWindowId(),
       game.persistent,
       activeScreen.windowManager,
       activeScreen.inputs,
@@ -221,7 +220,7 @@ class ScriptInterface(
       displayedLines = displayedLines,
       allowCancel = allowCancel)
 
-    activeScreen.windowManager.windows.prepend(window)
+    activeScreen.windowManager.addWindow(window)
     activeScreen.inputs.prepend(window)
 
     window
@@ -239,7 +238,6 @@ class ScriptInterface(
   def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
                     msPerChar: Int) = {
     val window = new PrintingTextWindow(
-      activeScreen.windowManager.getWindowId(),
       game.persistent,
       activeScreen.windowManager,
       activeScreen.inputs,
@@ -253,7 +251,7 @@ class ScriptInterface(
       msPerChar)
 
     syncRun {
-      activeScreen.windowManager.windows.prepend(window)
+      activeScreen.windowManager.addWindow(window)
       activeScreen.inputs.prepend(window)
     }
 

@@ -14,9 +14,8 @@ import scala.concurrent.duration.Duration
 import rpgboss.player._
 
 class ChoiceWindow(
-  id: Long,
   persistent: PersistentState,
-  screenLayer: WindowManager,
+  manager: WindowManager,
   inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
@@ -35,7 +34,7 @@ class ChoiceWindow(
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
   extends Window(
-    id, screenLayer, inputs, assets, proj, x, y, w, h, skin, skinRegion,
+    manager, inputs, assets, proj, x, y, w, h, skin, skinRegion,
     fontbmp, initialState, openCloseMs)
   with ChoiceInputHandler {
   val xpad = 24
@@ -162,12 +161,9 @@ class ChoiceWindow(
   def hasFocus = inputs.hasFocus(this)
 
   def takeFocus() = {
-    screenLayer.windows.find(_.id == id).map { window =>
-      inputs.remove(window)
-      screenLayer.windows -= window
-      inputs.prepend(window)
-      screenLayer.windows.prepend(window)
-    }
+    inputs.remove(this)
+    inputs.prepend(this)
+    manager.focusWindow(this)
   }
 
   override def render(b: SpriteBatch) = {

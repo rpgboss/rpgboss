@@ -39,8 +39,7 @@ object Window {
 
 // stateAge starts at 0 and goes up as window opens or closes
 class Window(
-  val id: Long,
-  screenLayer: WindowManager,
+  manager: WindowManager,
   inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
@@ -114,7 +113,7 @@ class Window(
     awaitClose()
 
     inputs.remove(this)
-    screenLayer.windows -= this
+    manager.removeWindow(this)
   }
 
   // This is used to either convey a choice, or simply that the window
@@ -123,9 +122,8 @@ class Window(
 }
 
 class TextWindow(
-  id: Long,
   persistent: PersistentState,
-  screenLayer: WindowManager,
+  manager: WindowManager,
   inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
@@ -138,7 +136,7 @@ class TextWindow(
   openCloseMs: Int = 250,
   justification: Int = Window.Left)
   extends Window(
-    id, screenLayer, inputs, assets, proj, x, y, w, h, skin, skinRegion,
+    manager, inputs, assets, proj, x, y, w, h, skin, skinRegion,
     fontbmp, initialState, openCloseMs) {
   val xpad = 24
   val ypad = 24
@@ -174,9 +172,8 @@ class TextWindow(
 }
 
 class PrintingTextWindow(
-  id: Long,
   persistent: PersistentState,
-  screenLayer: WindowManager,
+  manager: WindowManager,
   inputs: InputMultiplexer,
   assets: RpgAssetManager,
   proj: Project,
@@ -191,7 +188,7 @@ class PrintingTextWindow(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends Window(
-    id, screenLayer, inputs, assets, proj, x, y, w, h, skin, skinRegion,
+    manager, inputs, assets, proj, x, y, w, h, skin, skinRegion,
     fontbmp, initialState, openCloseMs) {
   val xpad = 24
   val ypad = 24
