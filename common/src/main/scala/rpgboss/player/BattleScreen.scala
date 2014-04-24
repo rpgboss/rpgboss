@@ -85,19 +85,38 @@ class BattleScreen(
     }
     
     for (game <- gameOpt) {
-      val enemyLines = Array("Enemy1", "Enemy2")
+      val enemyLines = 
+        Encounter.getEnemyLabels(battle.encounter.units, project.data)
       // TODO: Eliminate these literal numbers for dimensions.
       val enemyListWindow = new TextWindow(
         game.persistent,
         windowManager,
         inputs,
-        enemyLines,
-        0, 300, 200, 180,
-        initialState = Window.Open)
+        enemyLines.toArray,
+        0, 300, 200, 180)
       windowManager.addWindow(enemyListWindow)
+      
+      val partyLines = getPartyLines()
+      val partyListWindow = new TextWindow(
+        game.persistent,
+        windowManager,
+        inputs,
+        partyLines.toArray,
+        200, 300, 440, 180)
+      windowManager.addWindow(partyListWindow)
     }
   }
 
+  def getPartyLines(): Seq[String] = {
+    assume(_battle.isDefined)
+    for (status <- _battle.get.partyStatus) yield {
+      assert(status.id < _battle.get.pData.enums.characters.length)
+      val name = _battle.get.pData.enums.characters(status.id).name
+      val readiness = (math.min(status.readiness, 1.0) * 100).toInt
+      "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
+    }
+  }
+  
   def endBattle() = {
     assert(onValidThread())
     assert(_battle.isDefined)

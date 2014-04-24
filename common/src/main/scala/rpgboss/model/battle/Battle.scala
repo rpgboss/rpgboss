@@ -20,6 +20,13 @@ class BattleStatus(
   val equipment: Seq[Int] = Seq(),
   private var tempStatusEffects: Seq[Int],
   val row: Int) {
+  
+  def update(deltaSeconds: Double, baseTurnTime: Double) = {
+    val turnTime = baseTurnTime / (1.0 + stats.spd / 100.0)
+    readiness += deltaSeconds / turnTime
+  }
+  
+  var readiness: Double = 0
     
   private var _stats = 
     BattleStats(pData, baseStats, equipment, tempStatusEffects)
@@ -56,11 +63,6 @@ class Battle(
   val baseTurnTime = 4.0
   
   /**
-   * Time separation between initial ready times
-   */
-  val readySeparation = baseTurnTime * 0.3
-  
-  /**
    * Simulation events that have been queued up, but have not yet taken place.
    * Ordering is by negative time, as we want events processed in time order.
    * There should not be any duplicate elements in this queue.
@@ -70,41 +72,30 @@ class Battle(
         Ordering.by(-_.time))
   
   /**
-   * Battle entities, player characters and enemies, that are ready to act but
-   * have not yet acted.
+   * Battle entities, player characters and enemies, queued in order of 
+   * readiness.
    */
   private val readyQueue = new collection.mutable.Queue[BattleStatus]
   
   /**
-   * The first item in the ready queue.
+   * The first item in the ready queue that is ready to act.
    */
   def readyEntity = readyQueue.headOption
-  
-  /**
-   * Created here to allow for access to private readyQueue variable.
-   */
-  def newReadyEvent(entity: BattleStatus) = new BattleEvent {
-    def process(battle: Battle) = {
-      readyQueue.enqueue(entity)
-    }
-  }
   
   /**
    * Enqueues up an action to be taken. Also removes the actor from the ready
    * queue.
    */
   def takeAction(action: BattleAction) = {
-    // Remove the action taker from list of ready actors
+    // Dequeue from readiness queue.
     val dequeued = readyQueue.dequeueFirst(_ == action.actor)
     assert(dequeued.isDefined)
     
     // Enqueue the actual action
     eventQueue.enqueue(TimestampedBattleEvent(time, action))
     
-    // Enqueue next ready time
-    val turnTime = baseTurnTime / (1.0 + action.actor.stats.spd / 100.0)
-    eventQueue.enqueue(
-        TimestampedBattleEvent(time + turnTime, newReadyEvent(action.actor)))
+    // Remove readiness from actor
+    action.actor.readiness = 0
   }
   
   val partyStatus: Seq[BattleStatus] = {
@@ -131,11 +122,9 @@ class Battle(
   
   // Set the readiness level of all the participants. Simple linear algorithm.
   { 
-    val fastestToSlowest = allStatus.sortBy(-_.stats.spd)
-    
-    for ((status, i) <- fastestToSlowest.zipWithIndex) {
-      eventQueue.enqueue(TimestampedBattleEvent(
-          time + i * baseTurnTime * 0.3, newReadyEvent(status)))
+    val slowestToFastest = allStatus.sortBy(_.stats.spd)
+    for ((status, i) <- slowestToFastest.zipWithIndex) {
+      status.readiness = i.toDouble / (slowestToFastest.length - 1)
     }
     
     // Initialize ready queue
@@ -144,6 +133,15 @@ class Battle(
   
   def update(deltaSeconds: Double) = {
     time += deltaSeconds
+    
+    allStatus.foreach(_.update(deltaSeconds, baseTurnTime))
+    
+    // Enqueue any newly ready entities.
+    allStatus
+      .filter(_.readiness >= 1.0)
+      .sortBy(-_.readiness)
+      .filter(!readyQueue.contains(_))
+      .foreach(readyQueue.enqueue(_))
     
     while (!eventQueue.isEmpty && eventQueue.head.time <= time) {
       val event = eventQueue.dequeue().action
