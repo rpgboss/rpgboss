@@ -131,6 +131,8 @@ class TextWindow(
   extends Window(manager, inputs, x, y, w, h, initialState, openCloseMs) {
   val xpad = 24
   val ypad = 24
+  
+  def updateText(newText: Array[String]) = textImage.updateText(newText)
 
   val textImage = new WindowText(
     persistent,

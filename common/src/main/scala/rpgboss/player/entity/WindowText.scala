@@ -17,15 +17,20 @@ import rpgboss.player._
 
 class WindowText(
   persistent: PersistentState,
-  text: Array[String],
+  initialText: Array[String],
   x: Int, y: Int, w: Int, h: Int,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
   var lineHeight: Int = 32) {
-
+  
+  protected var _text = initialText
+  
   def setLineHeight(height: Int) = {
     lineHeight = height
   }
+  
+  def updateText(newText: Array[String]) =
+    _text = newText
 
   def drawText(
     b: SpriteBatch, text: String,
@@ -88,21 +93,21 @@ class WindowText(
   def update() = {}
 
   def render(b: SpriteBatch, startLine: Int, linesToDraw: Int): Unit = {
-    val endLine = math.min(text.length, startLine + linesToDraw)
+    val endLine = math.min(_text.length, startLine + linesToDraw)
     for (lineI <- startLine until endLine) {
       val offset = lineI - startLine
-      drawText(b, text(lineI), 0, offset * lineHeight)
+      drawText(b, _text(lineI), 0, offset * lineHeight)
     }
   }
 
   def render(b: SpriteBatch): Unit = {
-    render(b, 0, text.length)
+    render(b, 0, _text.length)
   }
 }
 
 class PrintingWindowText(
   persistent: PersistentState,
-  text: Array[String],
+  initialText: Array[String],
   x: Int, y: Int, w: Int, h: Int,
   skin: Windowskin,
   skinRegion: TextureRegion,
@@ -110,12 +115,13 @@ class PrintingWindowText(
   msPerChar: Int = 50,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends WindowText(persistent, text, x, y, w, h, fontbmp, justification) {
+  extends WindowText(
+    persistent, initialText, x, y, w, h, fontbmp, justification) {
 
   def drawAwaitingArrow = true
 
   // If display instantly...
-  var lineI = if (msPerChar == 0) text.length else 0
+  var lineI = if (msPerChar == 0) initialText.length else 0
   var charI = 0
   var blockI = 0
 
@@ -124,8 +130,15 @@ class PrintingWindowText(
   def timeSinceLastChar = System.currentTimeMillis() - lastCharPrintTime
 
   def lineInCurrentBlock = lineI < (blockI + 1) * linesPerBlock
-  def allTextPrinted = !(lineI < text.length)
+  def allTextPrinted = !(lineI < _text.length)
   def awaitingInput = allTextPrinted || !lineInCurrentBlock
+  
+  override def updateText(newText: Array[String]) = {
+    _text = newText
+    lineI = if (msPerChar == 0) newText.length else 0
+    charI = 0
+    blockI = 0
+  }
 
   override def update() = {
     // Do this update if:
@@ -134,7 +147,7 @@ class PrintingWindowText(
     //   - The lineI is in the current block
     if (msPerChar > 0 && !allTextPrinted && lineInCurrentBlock) {
       while (timeSinceLastChar > msPerChar) {
-        val line = text(lineI)
+        val line = _text(lineI)
 
         charI += 1
 
@@ -155,13 +168,13 @@ class PrintingWindowText(
     // Draw all complete lines in current block
     for (i <- blockI * linesPerBlock to (lineI - 1)) {
       val idxInBlock = i % linesPerBlock
-      drawText(b, text(i), 0, idxInBlock * lineHeight)
+      drawText(b, _text(i), 0, idxInBlock * lineHeight)
     }
 
     // Draw the currently writing line
-    if (lineI < text.length) {
+    if (lineI < _text.length) {
       val idxInBlock = lineI % linesPerBlock
-      drawText(b, text(lineI).take(charI), 0, idxInBlock * lineHeight)
+      drawText(b, _text(lineI).take(charI), 0, idxInBlock * lineHeight)
     }
 
     // If waiting for user input to finish, draw the arrow
