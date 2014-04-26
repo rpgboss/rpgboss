@@ -70,7 +70,7 @@ class ChoiceWindow(
 
   override def update(delta: Float, acceptInput: Boolean) = {
     super.update(delta, acceptInput)
-    textImages.foreach(_.update())
+    textImages.foreach(_.update(delta))
   }
 
   val choiceChannel = new Channel[Int]()

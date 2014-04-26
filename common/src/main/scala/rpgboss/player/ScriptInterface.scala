@@ -231,7 +231,7 @@ class ScriptInterface(
       false /* allowCancel */ )
 
   def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
-                    msPerChar: Int) = {
+                    msPerChar: Int) = syncRun {
     val window = new PrintingTextWindow(
       game.persistent,
       activeScreen.windowManager,
@@ -239,12 +239,10 @@ class ScriptInterface(
       text,
       x, y, w, h,
       msPerChar)
-
-    syncRun {
-      activeScreen.windowManager.addWindow(window)
-      activeScreen.inputs.prepend(window)
-    }
-
+    
+    activeScreen.windowManager.addWindow(window)
+    activeScreen.inputs.prepend(window)
+    
     window
   }
 

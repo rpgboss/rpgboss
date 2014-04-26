@@ -24,17 +24,6 @@ object Window {
   val Left = 0
   val Center = 1
   val Right = 2
-
-  val colorCtrl = """\\[Cc]\[(\d+)\]""".r
-  val nameCtrl = """\\[Nn]\[(\d+)\]""".r
-  val variableCtrl = """\\[Vv]\[([a-zA-Z_$][\w_$]*)\]""".r
-
-  def nameReplace(raw: String, nameList: Array[String]) =
-    nameCtrl.replaceAllIn(raw, rMatch => nameList(rMatch.group(1).toInt))
-  def variableReplace(raw: String, persistent: PersistentState) = {
-    variableCtrl.replaceAllIn(raw, rMatch =>
-      persistent.getInt(rMatch.group(1)).toString)
-  }
 }
 
 // stateAge starts at 0 and goes up as window opens or closes
@@ -146,7 +135,7 @@ class TextWindow(
 
   override def update(delta: Float, acceptInput: Boolean) = {
     super.update(delta, acceptInput)
-    textImage.update()
+    textImage.update(delta)
   }
 
   override def render(b: SpriteBatch) = {
@@ -193,23 +182,24 @@ class PrintingTextWindow(
     linesPerBlock,
     justification)
 
-  override def keyDown(key: Int) = {
+  override def keyDown(key: Int): Unit = {
     import MyKeys._
+    if (state == Window.Closing || state == Window.Closed)
+      return
+    
     if (key == OK) {
-      // If we have already printed the last line, set to closing
-      // otherwise, advance the block.
-
-      if (textImage.lineI < text.length) {
-        textImage.lineI += 1
-      } else {
+      if (textImage.allTextPrinted)
         changeState(Window.Closing)
-      }
+      else if(textImage.wholeBlockPrinted)
+        textImage.advanceBlock()
+      else
+        textImage.speedThrough()
     }
   }
 
   override def update(delta: Float, acceptInput: Boolean) = {
     super.update(delta, acceptInput)
-    textImage.update()
+    textImage.update(delta)
   }
 
   override def render(b: SpriteBatch) = {
