@@ -12,6 +12,7 @@ import com.badlogic.gdx.assets.AssetManager
 import scala.concurrent._
 import scala.concurrent.duration.Duration
 import rpgboss.player._
+import rpgboss.lib.GdxUtils
 
 class ChoiceWindow(
   persistent: PersistentState,
@@ -20,7 +21,7 @@ class ChoiceWindow(
   lines: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
   initialState: Int = Window.Opening,
-  openCloseMs: Int = 250,
+  openCloseTime: Double = 0.25,
   justification: Int = Window.Left,
   defaultChoice: Int = 0,
   // Choices displayed in a row-major way.
@@ -28,7 +29,7 @@ class ChoiceWindow(
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
-  extends Window(manager, inputs, x, y, w, h, initialState, openCloseMs)
+  extends Window(manager, inputs, x, y, w, h, initialState, openCloseTime)
   with ChoiceInputHandler {
   val xpad = 24
   val ypad = 24
@@ -40,7 +41,7 @@ class ChoiceWindow(
 
   def wrapChoices = displayedLines == 0
 
-  override val capturedKeys =
+  override def capturedKeys =
     Set(MyKeys.Left, MyKeys.Right, MyKeys.Up, MyKeys.Down,
         MyKeys.OK, MyKeys.Cancel)
 
@@ -89,8 +90,11 @@ class ChoiceWindow(
   val soundCancel = optionallyReadAndLoad(project.data.startup.soundCancel)
   val soundCannot = optionallyReadAndLoad(project.data.startup.soundCannot)
 
-  def keyActivate(key: Int) = {
+  def keyActivate(key: Int): Unit = {
     import MyKeys._
+    
+    if (state != Window.Open)
+      return
 
     // TODO: Remove hack
     // Need to finish loading all assets before accepting key input
@@ -154,14 +158,6 @@ class ChoiceWindow(
     }
   }
 
-  def hasFocus = inputs.hasFocus(this)
-
-  def takeFocus() = {
-    inputs.remove(this)
-    inputs.prepend(this)
-    manager.focusWindow(this)
-  }
-
   override def render(b: SpriteBatch) = {
     // Draw the window and text
     super.render(b)
@@ -172,7 +168,7 @@ class ChoiceWindow(
       textImages.foreach(_.render(b, scrollXPosition, renderedLines))
 
       // Now draw the cursor if not completed
-      if (state == Window.Open && hasFocus) {
+      if (state == Window.Open && inputs.hasFocus(this)) {
         val cursorX =
           x + xpad + (curChoice % columns)*textColW - 32
         val cursorY =
@@ -182,6 +178,15 @@ class ChoiceWindow(
     }
   }
 
-  // This method is safe to call on multiple threads
-  def getChoice() = choiceChannel.read
+  override lazy val scriptInterface = new WindowScriptInterface {
+    import GdxUtils._
+    
+    def getChoice() = choiceChannel.read
+    
+    def takeFocus(): Unit = syncRun {
+      inputs.remove(ChoiceWindow.this)
+      inputs.prepend(ChoiceWindow.this)
+      manager.focusWindow(ChoiceWindow.this)
+    }
+  }
 }

@@ -12,7 +12,7 @@ function main() {
     false /* allowCancel */);
   
   var choiceIdx = choiceWin.getChoice();
-  choiceWin.destroy();
+  choiceWin.close();
   
   game.setTransition(0, 1, 400);
   game.sleep(400);

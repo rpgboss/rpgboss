@@ -202,48 +202,47 @@ class ScriptInterface(
     justification: Int,
     columns: Int,
     displayedLines: Int,
-    allowCancel: Boolean): ChoiceWindow = syncRun {
-    val window = new ChoiceWindow(
-      game.persistent,
-      activeScreen.windowManager,
-      activeScreen.inputs,
-      lines,
-      x, y, w, h,
-      initialState = Window.Opening,
-      justification = justification,
-      columns = columns,
-      displayedLines = displayedLines,
-      allowCancel = allowCancel)
+    allowCancel: Boolean) = {
+    val window = syncRun {
+      new ChoiceWindow(
+        game.persistent,
+        activeScreen.windowManager,
+        activeScreen.inputs,
+        lines,
+        x, y, w, h,
+        initialState = Window.Opening,
+        justification = justification,
+        columns = columns,
+        displayedLines = displayedLines,
+        allowCancel = allowCancel)
+    }
 
-    activeScreen.windowManager.addWindow(window)
-    activeScreen.inputs.prepend(window)
-
-    window
+    window.scriptInterface
   }
 
   def newChoiceWindow(
     choices: Array[String],
-    x: Int, y: Int, w: Int, h: Int): ChoiceWindow =
+    x: Int, y: Int, w: Int, h: Int): ChoiceWindow#WindowScriptInterface =
     newChoiceWindow(choices, x, y, w, h,
       Window.Left,
       1 /* columns */ ,
       0 /* displayedChoices */ ,
       false /* allowCancel */ )
 
-  def newTextWindow(text: Array[String], x: Int, y: Int, w: Int, h: Int,
-                    msPerChar: Int) = syncRun {
-    val window = new PrintingTextWindow(
-      game.persistent,
-      activeScreen.windowManager,
-      activeScreen.inputs,
-      text,
-      x, y, w, h,
-      msPerChar)
-    
-    activeScreen.windowManager.addWindow(window)
-    activeScreen.inputs.prepend(window)
-    
-    window
+  def showText(text: Array[String], x: Int, y: Int, w: Int, h: Int,
+               timePerChar: Double) = {
+    val window = syncRun {
+      new PrintingTextWindow(
+        game.persistent,
+        activeScreen.windowManager,
+        activeScreen.inputs,
+        text,
+        x, y, w, h,
+        timePerChar)
+    }
+    println("Begin await close")
+    window.scriptInterface.awaitClose()
+    println("End await close")
   }
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {

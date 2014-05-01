@@ -207,7 +207,7 @@ class PrintingWindowText(
       val charsWeHaveTimeToPrint = 
         (_timeSinceLastCharacter / timePerChar).toInt
       val charsAdvanced = math.min(charsLeftInLine, charsWeHaveTimeToPrint)
-      
+
       _charI += charsAdvanced
 
       if (_charI >= line.length()) {

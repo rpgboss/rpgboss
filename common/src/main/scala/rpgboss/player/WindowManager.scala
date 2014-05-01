@@ -1,16 +1,17 @@
 package rpgboss.player
 
-import rpgboss.model._
-import rpgboss.model.Constants._
-import rpgboss.model.resource._
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.utils.Logger
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
-import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import rpgboss.model._
+import rpgboss.model.Constants._
+import rpgboss.model.resource._
+import rpgboss.player.entity._
+import rpgboss.lib.ThreadChecked
 
 /**
  * This class renders stuff on the screen.
@@ -24,7 +25,7 @@ class WindowManager(
   val assets: RpgAssetManager, 
   val project: Project, 
   screenW: Int, 
-  screenH: Int) {
+  screenH: Int) extends ThreadChecked {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
 

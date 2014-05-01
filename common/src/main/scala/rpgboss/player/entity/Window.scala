@@ -1,18 +1,19 @@
 package rpgboss.player.entity
 
-import rpgboss.model._
-import rpgboss.model.resource._
-import java.awt._
-import java.awt.image._
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.assets.AssetManager
-import scala.concurrent.Promise
+import java.awt._
+import java.awt.image._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.concurrent.Promise
+import rpgboss.lib._
+import rpgboss.model._
+import rpgboss.model.resource._
 import rpgboss.player._
 
 object Window {
@@ -26,28 +27,40 @@ object Window {
   val Right = 2
 }
 
-// stateAge starts at 0 and goes up as window opens or closes
+/**
+ * This class is created and may only be accessed on the main GDX thread, with 
+ * the exception of the getScriptInterface(), which may only be used from
+ * a different, scripting thread.
+ */
 class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
   val x: Int, val y: Int, val w: Int, val h: Int,
   initialState: Int = Window.Opening,
   openCloseTime: Double = 0.25)
-  extends InputHandler {
+  extends InputHandler with ThreadChecked {
   private var _state = initialState
   // Determines when states expire. In seconds.
   var stateAge = 0.0
+  
+  if (inputs != null)
+    inputs.prepend(this)
+    
+  if (manager != null)
+    manager.addWindow(this)
   
   def state = _state
   def skin = manager.windowskin
   def skinRegion = manager.windowskinRegion
   
-  def changeState(newState: Int) = {
+  private def changeState(newState: Int) = {
+    assert(onBoundThread())
     _state = newState
     stateAge = 0.0
   }
 
   def update(delta: Float) = {
+    assert(onBoundThread())
     stateAge += delta
     // change state of "expired" opening or closing animations
     if (stateAge >= openCloseTime) {
@@ -55,53 +68,72 @@ class Window(
         case Window.Opening => changeState(Window.Open)
         case Window.Open =>
         case Window.Closing => {
-          postClose()
           changeState(Window.Closed)
+          destroy()
         }
         case _ => Unit
       }
     }
   }
 
-  def render(b: SpriteBatch) = _state match {
-    case Window.Open => {
-      skin.draw(b, skinRegion, x, y, w, h)
+  def render(b: SpriteBatch) = {
+    assert(onBoundThread())
+    _state match {
+        case Window.Open => {
+        skin.draw(b, skinRegion, x, y, w, h)
+      }
+      case Window.Opening => {
+        val hVisible =
+          math.max(32 + (stateAge / openCloseTime * (h - 32)).toInt, 32)
+  
+        skin.draw(b, skinRegion, x, y, w, hVisible)
+      }
+      case Window.Closing => {
+        val hVisible =
+          math.max(h - (stateAge / openCloseTime * (h - 32)).toInt, 32)
+  
+        skin.draw(b, skinRegion, x, y, w, hVisible)
+      }
+      case _ => Unit
     }
-    case Window.Opening => {
-      val hVisible =
-        math.max(32 + (stateAge / openCloseTime * (h - 32)).toInt, 32)
-
-      skin.draw(b, skinRegion, x, y, w, hVisible)
-    }
-    case Window.Closing => {
-      val hVisible =
-        math.max(h - (stateAge / openCloseTime * (h - 32)).toInt, 32)
-
-      skin.draw(b, skinRegion, x, y, w, hVisible)
-    }
-    case _ => Unit
   }
 
-  def close() = {
-    if (_state != Window.Closing && _state != Window.Closed)
-      changeState(Window.Closing)
-  }
-
-  def postClose() = {
+  def startClosing() = {
+    assert(onBoundThread())
+    assert(_state == Window.Open || _state == Window.Opening)
+    changeState(Window.Closing)
+    
+    // We allow scripts to continue as soon as the window is closing to provide
+    // a snappier game.
     closePromise.success(0)
   }
 
-  def awaitClose() = {
-    Await.result(closePromise.future, Duration.Inf)
+  class WindowScriptInterface {
+    def close() = {
+      assert(onDifferentThread())
+      GdxUtils.syncRun {
+        startClosing()
+      }
+      awaitClose()
+    }
+    
+    def awaitClose() = {
+      assert(onDifferentThread())
+      Await.result(closePromise.future, Duration.Inf)
+    }
   }
+  
+  lazy val scriptInterface = new WindowScriptInterface
 
-  def destroy() = {
-    close()
-
-    awaitClose()
-
-    inputs.remove(this)
-    manager.removeWindow(this)
+  protected def destroy() = {
+    assert(onBoundThread())
+    assert(_state == Window.Closed)
+    
+    if (inputs != null)
+      inputs.remove(this)
+      
+    if (manager != null)
+      manager.removeWindow(this)
   }
 
   // This is used to either convey a choice, or simply that the window
@@ -190,7 +222,7 @@ class PrintingTextWindow(
     
     if (key == OK) {
       if (textImage.allTextPrinted)
-        changeState(Window.Closing)
+        startClosing()
       else if(textImage.wholeBlockPrinted)
         textImage.advanceBlock()
       else

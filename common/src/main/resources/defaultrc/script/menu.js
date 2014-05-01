@@ -80,8 +80,6 @@ function itemsMenu() {
   
   itemsMainWin.close();
   itemsTopWin.close();
-  itemsMainWin.destroy();
-  itemsTopWin.destroy();
 }
 
 function makeStatusWin() {
@@ -143,6 +141,4 @@ function menu() {
 
   rootMenuWin.close();
   statusWin.close();
-  rootMenuWin.destroy();
-  statusWin.destroy();
 }

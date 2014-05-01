@@ -45,7 +45,7 @@ class BattleScreen(
   def battleActive = _battle.isDefined
 
   def startBattle(battle: Battle, bgPicture: Option[String]) = {
-    assert(onValidThread())
+    assert(onBoundThread())
     assert(_battle.isEmpty)
 
     bgPicture.map { picName =>
@@ -118,7 +118,7 @@ class BattleScreen(
   }
   
   def endBattle() = {
-    assert(onValidThread())
+    assert(onBoundThread())
     assert(_battle.isDefined)
     _battle = None
 
@@ -130,12 +130,12 @@ class BattleScreen(
   }
 
   def update(delta: Float) = {
-    assert(onValidThread())
+    assert(onBoundThread())
     windowManager.update(delta)
   }
 
   def render() = {
-    assert(onValidThread())
+    assert(onBoundThread())
     windowManager.render()
 
     windowManager.batch.begin()
@@ -160,7 +160,7 @@ class BattleScreen(
    * Dispose of any disposable resources
    */
   def dispose() = {
-    assert(onValidThread())
+    assert(onBoundThread())
 
     if (battleActive)
       endBattle()

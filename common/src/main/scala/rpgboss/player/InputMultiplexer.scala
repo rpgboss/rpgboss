@@ -10,7 +10,7 @@ trait InputHandler {
   def keyUp(key: Int) = {}
   
   // Defines list of keys swallowed by this event handler
-  val capturedKeys = Set(Up, Down, Left, Right, OK, Cancel)
+  def capturedKeys = Set(Up, Down, Left, Right, OK, Cancel)
 }
 
 trait PlayerInputHandler extends InputHandler {
@@ -129,10 +129,6 @@ class InputMultiplexer extends InputAdapter {
         if (handler.capturedKeys.contains(key))
           handler.keyUp(key)
       }
-      
-      // Send a keyDown to the newly acquiring handler
-      // Actually don't do this. This leads to un-intuitive behavior.
-      // newHandler.keyDown(key)
     }
 
     inputProcessors.prepend(newHandler)
@@ -142,12 +138,6 @@ class InputMultiplexer extends InputAdapter {
     for (key <- handler.capturedKeys; if keyIsActive(key)) {
       // Send a keyUp to the handler before removal
       handler.keyUp(key)
-      
-      // Send a keyDown to the next handler that's just been unshadowed.
-      // Actually don't do this. This leads to un-intuitive behavior.
-      // val nextKeyHandler = 
-      //   inputProcessors.tail.find { _.capturedKeys.contains(key) }
-      // nextKeyHandler.map { _.keyDown(key) }
     }
     
     inputProcessors -= handler

@@ -23,11 +23,9 @@ function teleport(mapName, x, y, transition) {
 }
 
 function showText(text) {
-  var window = game.newTextWindow(
+  game.showText(
       text, 0 /* x */, 300 /* y */, 640 /* w */, 180 /* h */, 
-      20 /* msPerChar */); 
-  window.awaitClose();
-  window.destroy();
+      0.02 /* timePerChar */); 
 }
 
 // Casting to support both Javascript and Java strings.

@@ -32,7 +32,7 @@ class WindowSpec extends UnitSpec {
     w.state should equal (Window.Opening)
     w.update(0.30f)
     w.state should equal (Window.Open)
-    w.changeState(Window.Closing)
+    w.startClosing()
     w.state should equal (Window.Closing)
     w.update(0.30f)
     w.state should equal (Window.Closed)
