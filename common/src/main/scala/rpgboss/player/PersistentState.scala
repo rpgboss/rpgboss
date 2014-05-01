@@ -32,12 +32,12 @@ class PersistentState
   }
   def getInt(key: String) = {
     assert(onValidThread())
-    globalInts.get(key).get
+    globalInts.get(key).getOrElse(-1)
   }
 
   def getIntArray(key: String) = {
     assert(onValidThread())
-    intArrays.getOrElseUpdate(key, new Array[Int](0))
+    intArrays.get(key).getOrElse(new Array[Int](0))
   }
 
   def setIntArray(key: String, value: Seq[Int]) = {
@@ -47,7 +47,7 @@ class PersistentState
 
   def getStringArray(key: String) = {
     assert(onValidThread())
-    stringArrays.getOrElseUpdate(key, new Array[String](0))
+    stringArrays.getOrElse(key, new Array[String](0))
   }
 
   def setStringArray(key: String, value: Seq[String]) = {

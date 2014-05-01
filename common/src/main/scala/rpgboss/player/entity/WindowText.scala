@@ -19,12 +19,32 @@ object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
   val nameCtrl = """\\[Nn]\[(\d+)\]""".r
   val variableCtrl = """\\[Vv]\[([a-zA-Z_$][\w_$]*)\]""".r
+  
+  val NAME_OUT_OF_BOUNDS = "NAME_OUT_OF_BOUNDS"
 
-  def nameReplace(raw: String, nameList: Array[String]) =
-    nameCtrl.replaceAllIn(raw, rMatch => nameList(rMatch.group(1).toInt))
+  def nameReplace(raw: String, nameList: Array[String]) = {
+    nameCtrl.replaceAllIn(raw, rMatch => {
+      val index = rMatch.group(1).toInt
+      if (index < nameList.length) nameList(index) else NAME_OUT_OF_BOUNDS
+    })
+  }
+    
   def variableReplace(raw: String, persistent: PersistentState) = {
-    variableCtrl.replaceAllIn(raw, rMatch =>
-      persistent.getInt(rMatch.group(1)).toString)
+    variableCtrl.replaceAllIn(raw, rMatch => {
+      persistent.getInt(rMatch.group(1)).toString
+    })
+  }
+  
+  def processText(text: Array[String], persistent: PersistentState) = {
+    val newText = for(line <- text) yield {
+      val namesProcessedLine = WindowText.nameReplace(
+        line,
+        persistent.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES))
+  
+      WindowText.variableReplace(namesProcessedLine, persistent)
+    }
+    
+    newText.toArray
   }
 }
 
@@ -36,25 +56,14 @@ class WindowText(
   justification: Int = Window.Left,
   var lineHeight: Int = 32) {
   
-  def processText(text: Array[String]): Array[String] = {
-    val newText = for(line <- text) yield {
-      val namesProcessedLine = WindowText.nameReplace(
-        line,
-        persistent.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES))
-  
-      WindowText.variableReplace(namesProcessedLine, persistent)
-    }
-    
-    newText.toArray
-  }
-  
-  protected var _text: Array[String] = processText(initialText)
+  protected var _text: Array[String] = 
+    WindowText.processText(initialText, persistent)
   
   def setLineHeight(height: Int) =
     lineHeight = height
   
   def updateText(newText: Array[String]) =
-    _text = processText(newText)
+    _text = WindowText.processText(newText, persistent)
 
   def drawLine(b: SpriteBatch, line: String, xOffset: Float, yOffset: Float) = {
     val colorCodesExist = WindowText.colorCtrl.findFirstIn(line).isDefined
@@ -125,12 +134,12 @@ class PrintingWindowText(
   skin: Windowskin,
   skinRegion: TextureRegion,
   fontbmp: BitmapFont,
-  msPerChar: Int = 50,
+  timePerChar: Double = 0.05,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends WindowText(
     persistent, initialText, x, y, w, h, fontbmp, justification) {
-  assume(msPerChar >= 0)
+  assume(timePerChar >= 0)
 
   def drawAwaitingArrow = true
 
@@ -138,7 +147,7 @@ class PrintingWindowText(
    * When this is in the next block, the whole block has been printed.
    */
   private var _lineI =
-    if (msPerChar == 0) math.min(_text.length, linesPerBlock) else 0
+    if (timePerChar == 0) math.min(_text.length, linesPerBlock) else 0
 
   private var _charI = 0
   private var _blockI = 0
@@ -159,7 +168,7 @@ class PrintingWindowText(
     _blockI += 1
     _timeSinceLastCharacter = 0
     
-    if (msPerChar == 0) {
+    if (timePerChar == 0) {
       _lineI = math.min(_text.length, (_blockI + 1) * linesPerBlock)
     } else {
       assert(_lineI == _blockI * linesPerBlock)
@@ -188,17 +197,15 @@ class PrintingWindowText(
     
     _timeSinceLastCharacter += delta
     
-    val timePerCharacter = msPerChar / 1000.0
-    
     // This loop advances at most one line per iteration.
     while (!wholeBlockPrinted && !allTextPrinted && 
-           _timeSinceLastCharacter > timePerCharacter) {
+           _timeSinceLastCharacter > timePerChar) {
       assert(_lineI <= _text.length)
       val line = _text(_lineI)
 
       val charsLeftInLine = line.length() - _charI
       val charsWeHaveTimeToPrint = 
-        (_timeSinceLastCharacter / timePerCharacter).toInt
+        (_timeSinceLastCharacter / timePerChar).toInt
       val charsAdvanced = math.min(charsLeftInLine, charsWeHaveTimeToPrint)
       
       _charI += charsAdvanced
@@ -208,7 +215,7 @@ class PrintingWindowText(
         _charI = 0
       }
 
-      _timeSinceLastCharacter -= charsAdvanced * timePerCharacter
+      _timeSinceLastCharacter -= charsAdvanced * timePerChar
     }
   }
 

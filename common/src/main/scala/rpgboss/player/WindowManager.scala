@@ -78,12 +78,7 @@ class WindowManager(
   }
 
   def update(delta: Float) = {
-    // Update windows
-    if (!windows.isEmpty)
-      windows.head.update(delta, true)
-    if (windows.length > 1)
-      windows.tail.foreach(_.update(delta, false))
-
+    windows.foreach(_.update(delta)) 
   }
 
   // Render that's called before the map layer is drawn

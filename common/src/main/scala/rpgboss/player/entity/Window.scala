@@ -32,25 +32,26 @@ class Window(
   inputs: InputMultiplexer,
   val x: Int, val y: Int, val w: Int, val h: Int,
   initialState: Int = Window.Opening,
-  openCloseMs: Int = 250)
+  openCloseTime: Double = 0.25)
   extends InputHandler {
-  var state = initialState
-  // Used to determine when to expire the state and move onto next state
-  var stateStarttime = System.currentTimeMillis()
-  def stateAge = System.currentTimeMillis() - stateStarttime
-
+  private var _state = initialState
+  // Determines when states expire. In seconds.
+  var stateAge = 0.0
+  
+  def state = _state
   def skin = manager.windowskin
   def skinRegion = manager.windowskinRegion
   
   def changeState(newState: Int) = {
-    state = newState
-    stateStarttime = System.currentTimeMillis()
+    _state = newState
+    stateAge = 0.0
   }
 
-  def update(delta: Float, acceptInput: Boolean) = {
+  def update(delta: Float) = {
+    stateAge += delta
     // change state of "expired" opening or closing animations
-    if (stateAge >= openCloseMs) {
-      state match {
+    if (stateAge >= openCloseTime) {
+      _state match {
         case Window.Opening => changeState(Window.Open)
         case Window.Open =>
         case Window.Closing => {
@@ -62,19 +63,19 @@ class Window(
     }
   }
 
-  def render(b: SpriteBatch) = state match {
+  def render(b: SpriteBatch) = _state match {
     case Window.Open => {
       skin.draw(b, skinRegion, x, y, w, h)
     }
     case Window.Opening => {
       val hVisible =
-        math.max(32 + (stateAge.toDouble / openCloseMs * (h - 32)).toInt, 32)
+        math.max(32 + (stateAge / openCloseTime * (h - 32)).toInt, 32)
 
       skin.draw(b, skinRegion, x, y, w, hVisible)
     }
     case Window.Closing => {
       val hVisible =
-        math.max(h - (stateAge.toDouble / openCloseMs * (h - 32)).toInt, 32)
+        math.max(h - (stateAge / openCloseTime * (h - 32)).toInt, 32)
 
       skin.draw(b, skinRegion, x, y, w, hVisible)
     }
@@ -82,7 +83,7 @@ class Window(
   }
 
   def close() = {
-    if (state != Window.Closing && state != Window.Closed)
+    if (_state != Window.Closing && _state != Window.Closed)
       changeState(Window.Closing)
   }
 
@@ -115,9 +116,9 @@ class TextWindow(
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
   initialState: Int = Window.Opening,
-  openCloseMs: Int = 250,
+  openCloseTime: Double = 0.25,
   justification: Int = Window.Left)
-  extends Window(manager, inputs, x, y, w, h, initialState, openCloseMs) {
+  extends Window(manager, inputs, x, y, w, h, initialState, openCloseTime) {
   val xpad = 24
   val ypad = 24
   
@@ -133,8 +134,8 @@ class TextWindow(
     manager.fontbmp,
     justification)
 
-  override def update(delta: Float, acceptInput: Boolean) = {
-    super.update(delta, acceptInput)
+  override def update(delta: Float) = {
+    super.update(delta)
     textImage.update(delta)
   }
 
@@ -159,12 +160,12 @@ class PrintingTextWindow(
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  msPerChar: Int,
+  timePerChar: Double,
   initialState: Int = Window.Opening,
-  openCloseMs: Int = 250,
+  openCloseTime: Double = 0.25,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends Window(manager, inputs, x, y, w, h, initialState, openCloseMs) {
+  extends Window(manager, inputs, x, y, w, h, initialState, openCloseTime) {
   val xpad = 24
   val ypad = 24
 
@@ -178,7 +179,7 @@ class PrintingTextWindow(
     skin,
     skinRegion,
     manager.fontbmp,
-    msPerChar,
+    timePerChar,
     linesPerBlock,
     justification)
 
@@ -197,8 +198,8 @@ class PrintingTextWindow(
     }
   }
 
-  override def update(delta: Float, acceptInput: Boolean) = {
-    super.update(delta, acceptInput)
+  override def update(delta: Float) = {
+    super.update(delta)
     textImage.update(delta)
   }
 

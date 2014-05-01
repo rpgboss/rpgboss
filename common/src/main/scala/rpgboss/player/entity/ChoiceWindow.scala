@@ -68,8 +68,8 @@ class ChoiceWindow(
 
   def setLineHeight(height: Int) = textImages.foreach(_.setLineHeight(height))
 
-  override def update(delta: Float, acceptInput: Boolean) = {
-    super.update(delta, acceptInput)
+  override def update(delta: Float) = {
+    super.update(delta)
     textImages.foreach(_.update(delta))
   }
 
