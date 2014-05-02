@@ -25,7 +25,7 @@ object Item {
 case class Item(
   var name: String = "",
   var desc: String = "",
-  var effects: Seq[Effect] = Seq(),
+  var effects: Array[Effect] = Array(),
 
   var sellable: Boolean = true,
   var price: Int = 100,

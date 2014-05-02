@@ -13,9 +13,9 @@ class DamageSpec extends UnitSpec {
       0,
       50,
       20,
-      BaseStats(50, 20, 10, 10, 10, arm = 100, mre = 200, effects = Seq()),
-      Seq(),
-      Seq(),
+      BaseStats(50, 20, 10, 10, 10, arm = 100, mre = 200, effects = Array()),
+      Array(),
+      Array(),
       0)
 
     def testFormula(formula: String, expected: Int) = {
@@ -60,8 +60,8 @@ class DamageSpec extends UnitSpec {
   "Damage" should "work correctly in a skill, handling armor, magic res." in {
     val f = fixture
     
-    f.pData.enums.elements = Seq("Blunt", "Fire")
-    f.pData.enums.skills = Seq(Skill(damages = Seq(
+    f.pData.enums.elements = Array("Blunt", "Fire")
+    f.pData.enums.skills = Array(Skill(damages = Array(
       Damage(DamageType.Physical.id, 0, "a.atk"),
       Damage(DamageType.Magic.id, 1, "a.mag"))))
       

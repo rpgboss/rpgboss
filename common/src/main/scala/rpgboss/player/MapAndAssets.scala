@@ -25,7 +25,7 @@ class MapAndAssets(project: Project, val mapName: String) {
 
   val packerTiles = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
 
-  val autotiles: Seq[Autotile] = map.metadata.autotiles.map { name =>
+  val autotiles: Array[Autotile] = map.metadata.autotiles.map { name =>
     Autotile.readFromDisk(project, name)
   }
 
@@ -58,7 +58,7 @@ class MapAndAssets(project: Project, val mapName: String) {
    */
   case class ElevatedTile(tileX: Int, tileY: Int, byte1: Byte, byte2: Byte,
                           byte3: Byte, zPriority: Int)
-  val elevatedTiles: IndexedSeq[ElevatedTile] = {
+  val elevatedTiles: Array[ElevatedTile] = {
     val buffer = new ArrayBuffer[ElevatedTile]
     
     for (layerAry <- 
@@ -95,7 +95,7 @@ class MapAndAssets(project: Project, val mapName: String) {
       }
     }
     
-    buffer.sortBy(_.zPriority)
+    buffer.sortBy(_.zPriority).toArray
   }
   
   def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
@@ -104,7 +104,7 @@ class MapAndAssets(project: Project, val mapName: String) {
     val xIdx = xTile * bytesPerTile
 
     // Test top layer first, as if the top layer provides an answer, there is
-    // no need to test subsequent layers
+    // no need to test subArrayuent layers
     for (layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer)) {
       val row = layerAry(yTile)
       val byte1 = row(xIdx)

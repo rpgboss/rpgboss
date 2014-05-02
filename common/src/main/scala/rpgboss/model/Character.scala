@@ -14,14 +14,14 @@ case class Character(
   var initLevel: Int = 1, var maxLevel: Int = 50,
   var charClass: Int = 0,
   var progressions: StatProgressions = StatProgressions(),
-  var startingEquipment: Seq[Int] = Seq(),
-  var equipFixed: Seq[Int] = Seq()) extends HasName {
+  var startingEquipment: Array[Int] = Array(),
+  var equipFixed: Array[Int] = Array()) extends HasName {
   def baseStats(pData: ProjectData, level: Int) = {
-    val effects = {
+    val effects: Array[Effect] = {
       if (charClass >= 0 && charClass < pData.enums.classes.length)
         pData.enums.classes(charClass).effects
       else
-        Seq()
+        Array()
     }
 
     BaseStats(
@@ -41,9 +41,9 @@ case class LearnedSkill(var level: Int, var skillId: Int)
 
 case class CharClass(
   var name: String = "",
-  var canUseItems: Seq[Int] = Seq(),
-  var effects: Seq[Effect] = Seq(),
-  var learnedSkills: Seq[LearnedSkill] = Seq()) extends HasName
+  var canUseItems: Array[Int] = Array(),
+  var effects: Array[Effect] = Array(),
+  var learnedSkills: Array[LearnedSkill] = Array()) extends HasName
 
 case class Enemy(
   var name: String = "",
@@ -57,8 +57,8 @@ case class Enemy(
   var arm: Int = 10,
   var mre: Int = 10,
   var expValue: Int = 100,
-  var effects: Seq[Effect] = Seq(),
-  var skills: Seq[Int] = Seq()) extends HasName {
+  var effects: Array[Effect] = Array(),
+  var skills: Array[Int] = Array()) extends HasName {
   def baseStats =
     BaseStats(
       mhp = mhp,
@@ -78,12 +78,12 @@ case class EncounterUnit(
 
 case class Encounter(
   var name: String = "",
-  var units: Seq[EncounterUnit] = Seq()) extends HasName
+  var units: Array[EncounterUnit] = Array()) extends HasName
 
 object Encounter {
   def getEnemyLabels(
-    units: Seq[EncounterUnit],
-    pData: ProjectData): Seq[String] = {
+    units: Array[EncounterUnit],
+    pData: ProjectData): Array[String] = {
     val enemyLabels = new collection.mutable.ArrayBuffer[String]
 
     // Array of same length and enemies to keep track of how many there are
@@ -104,7 +104,7 @@ object Encounter {
       }
     }
 
-    enemyLabels
+    enemyLabels.toArray
   }
 }
 

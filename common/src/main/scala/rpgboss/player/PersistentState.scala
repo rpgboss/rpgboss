@@ -40,7 +40,7 @@ class PersistentState
     intArrays.get(key).getOrElse(new Array[Int](0))
   }
 
-  def setIntArray(key: String, value: Seq[Int]) = {
+  def setIntArray(key: String, value: Array[Int]) = {
     assert(onBoundThread())
     intArrays.update(key, value.toArray)
   }
@@ -50,7 +50,7 @@ class PersistentState
     stringArrays.getOrElse(key, new Array[String](0))
   }
 
-  def setStringArray(key: String, value: Seq[String]) = {
+  def setStringArray(key: String, value: Array[String]) = {
     assert(onBoundThread())
     stringArrays.update(key, value.toArray)
   }

@@ -27,11 +27,11 @@ case class BaseStats(
   mag: Int,
   arm: Int,
   mre: Int,
-  effects: Seq[Effect])
+  effects: Array[Effect])
 
 case class StatusEffect(
   var name: String = "",
-  var effects: Seq[Effect] = Seq(),
+  var effects: Array[Effect] = Array(),
   var releaseOnBattleEnd: Boolean = false,
   var releaseTime: Int = 0,
   var releaseChance: Int = 0,
@@ -46,13 +46,13 @@ case class BattleStats(
   mag: Int,
   arm: Int,
   mre: Int,
-  elementResists: Seq[Int],
-  statusEffects: Seq[StatusEffect])
+  elementResists: Array[Int],
+  statusEffects: Array[StatusEffect])
 
 object BattleStats {
   def apply(pData: ProjectData, baseStats: BaseStats,
-            equippedIds: Seq[Int] = Seq(),
-            tempStatusEffectIds: Seq[Int] = Seq()): BattleStats = {
+            equippedIds: Array[Int] = Array(),
+            tempStatusEffectIds: Array[Int] = Array()): BattleStats = {
     require(equippedIds.forall(i => i >= 0 && i < pData.enums.items.length))
     require(tempStatusEffectIds.forall(
       i => i >= 0 && i < pData.enums.statusEffects.length))
@@ -61,7 +61,7 @@ object BattleStats {
     val equipmentEffects = equipment.flatMap(_.effects)
 
     // Make sure we don't apply more than max-stacks of each status effect
-    val stackedStatusEffects: Seq[StatusEffect] = {
+    val stackedStatusEffects: Array[StatusEffect] = {
       val statusEffectStackMap = collection.mutable.Map[Int, Int]()
       val statusEffectBuffer = collection.mutable.ArrayBuffer[StatusEffect]()
 
@@ -83,7 +83,7 @@ object BattleStats {
         }
       }
 
-      statusEffectBuffer.toList
+      statusEffectBuffer.toArray
     }
 
     val allEffects = baseStats.effects ++ equipmentEffects ++

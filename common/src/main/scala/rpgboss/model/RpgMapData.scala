@@ -18,14 +18,14 @@ import scala.collection.mutable.ArrayBuffer
  *
  * botLayer, midLayer, and topLayer must always be of size at least 1 x 1
  */
-case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
-                      midLayer: ArrayBuffer[ArrayBuffer[Byte]],
-                      topLayer: ArrayBuffer[ArrayBuffer[Byte]],
+case class RpgMapData(botLayer: Array[Array[Byte]],
+                      midLayer: Array[Array[Byte]],
+                      topLayer: Array[Array[Byte]],
                       var events: Map[Int, RpgEvent]) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
 
-  def writeCsv(file: File, data: Seq[Seq[Byte]]) = {
+  def writeCsv(file: File, data: Array[Array[Byte]]) = {
     val writer =
       new CSVWriter(new FileWriter(file), '\t', CSVWriter.NO_QUOTE_CHARACTER)
 
@@ -89,7 +89,7 @@ case class RpgMapData(botLayer: ArrayBuffer[ArrayBuffer[Byte]],
   }
 }
 
-case class RpgMapDataEventsIntermediate(events: Seq[RpgEvent])
+case class RpgMapDataEventsIntermediate(events: Array[RpgEvent])
 object RpgMapDataEventsIntermediate {
   def apply(events: Map[Int, RpgEvent]): RpgMapDataEventsIntermediate =
     apply(events.values.toArray)
@@ -108,7 +108,7 @@ case object RpgMapData {
     (mapFile, botFile, midFile, topFile, evtFile)
   }
 
-  def readCsvArray(file: File): Option[ArrayBuffer[ArrayBuffer[Byte]]]= {
+  def readCsvArray(file: File): Option[Array[Array[Byte]]]= {
     val reader = new CSVReader(new FileReader(file), '\t')
     val buffer = new ArrayBuffer[ArrayBuffer[Byte]]()
 
@@ -120,7 +120,7 @@ case object RpgMapData {
 
     reader.close()
 
-    Some(buffer)
+    Some(buffer.map(_.toArray).toArray)
   }
 
   def readFromDisk(p: Project, name: String): Option[RpgMapData] = {

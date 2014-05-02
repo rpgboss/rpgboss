@@ -70,7 +70,7 @@ case class Damage(
 
 object Damage {
   def getDamages(source: BattleStatus, target: BattleStatus, pData: ProjectData, 
-                 skillId: Int): Seq[TakenDamage] = {
+                 skillId: Int): Array[TakenDamage] = {
     import DamageType._
     
     assume(skillId < pData.enums.skills.length)
@@ -104,5 +104,5 @@ case class Skill(
   var name: String = "",
   var scopeId: Int = Scope.OneEnemy.id,
   var cost: Int = 0,
-  var damages: Seq[Damage] = Seq(Damage()),
-  var effects: Seq[Effect] = Seq()) extends HasName
+  var damages: Array[Damage] = Array(Damage()),
+  var effects: Array[Effect] = Array()) extends HasName

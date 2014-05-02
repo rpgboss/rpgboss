@@ -3,7 +3,8 @@ import java.io._
 import scala.io.Source
 import java.awt._
 import javax.imageio.ImageIO
-import org.json4s.Serialization
+import org.json4s.{DefaultFormats, Formats}
+import org.json4s.native.Serialization
 
 class FileHelper(file: File) {
   import FileHelper._
@@ -123,13 +124,9 @@ object Utils {
     
   // TODO: Look for a more efficient implementation.
   def deepCopy[A <: AnyRef](a: A)(implicit m: reflect.Manifest[A]): A = {
-    import org.json4s._
-    import org.json4s.native.Serialization
-
     val json = Serialization.write(a)(DefaultFormats)
     Serialization.read[A](json)(DefaultFormats, m)
   }
-    
 }
 
 object ArrayUtils {
@@ -168,9 +165,7 @@ object ArrayUtils {
 
 object JsonUtils {
   import FileHelper._
-  import org.json4s._
-  import org.json4s.native.Serialization
-
+  
   def readModelFromJsonWithFormats[T](
     file: File, formats: Formats)(implicit m: Manifest[T]): Option[T] = {
     file.getReader().map { reader =>

@@ -14,8 +14,8 @@ case class RpgMapMetadata(var parent: String,
                           var title: String,
                           var xSize: Int,
                           var ySize: Int,
-                          var tilesets: Seq[String],
-                          var autotiles: Seq[String],
+                          var tilesets: Array[String],
+                          var autotiles: Array[String],
                           var changeMusicOnEnter: Boolean = false,
                           var music: Option[SoundSpec] = None,
                           var editorCenterX: Float = 0f,
@@ -100,7 +100,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
    * Generates an array made the seed bytes, repeated
    */
   def makeRowArray(nTiles: Int, seed: Array[Byte]) = {
-    ArrayBuffer.tabulate[Byte](nTiles * bytesPerTile)(
+    Array.tabulate[Byte](nTiles * bytesPerTile)(
       i => seed(i % bytesPerTile))
   }
 
@@ -123,11 +123,11 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
       // Make a whole row of that autotile triples
       val row = makeRowArray(xSize, autotileSeed)
       // Make multiple rows
-      ArrayBuffer.fill(ySize)(row.clone())
+      Array.fill(ySize)(row.clone())
     }
     val emptyLayer = {
       val row = makeRowArray(xSize, emptyTileSeed)
-      ArrayBuffer.fill(ySize)(row.clone())
+      Array.fill(ySize)(row.clone())
     }
 
     RpgMapData(autoLayer, emptyLayer, emptyLayer, Map())
@@ -135,14 +135,14 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
 
   def defaultMapData() = emptyMapData(initXSize, initYSize)
 
-  def defaultTilesets = ArrayBuffer(
+  def defaultTilesets = Array(
     "Refmap-TileA5.png",
     "Refmap-TileB.png",
     "Refmap-TileC.png",
     "Refmap-TileD.png",
     "Refmap-TileE.png")
 
-  def defaultAutotiles = ArrayBuffer(
+  def defaultAutotiles = Array(
     "Refmap-A1-0-0-A.png",
     "Refmap-A1-0-0-B.png",
     "Refmap-A1-0-1-A.png",

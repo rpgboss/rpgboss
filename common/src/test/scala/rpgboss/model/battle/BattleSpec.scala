@@ -14,19 +14,19 @@ object BattleTest {
     val enemyMedium =
       Enemy(spd = 8)
       
-    pData.enums.characters = Seq(characterFast, characterSlow)
-    pData.enums.enemies = Seq(enemyMedium)
+    pData.enums.characters = Array(characterFast, characterSlow)
+    pData.enums.enemies = Array(enemyMedium)
     
     val battle = new Battle(
       pData = pData, 
-      partyIds = Seq(0, 1), 
-      characterLevels = Seq(1, 1),
-      initialCharacterHps = Seq(1, 1),
-      initialCharacterMps = Seq(1, 1),
-      characterEquip = Seq(Seq(), Seq()),
-      initialCharacterTempStatusEffects = Seq(Seq(), Seq()),
-      characterRows = Seq(0, 0),
-      encounter = Encounter(units = Seq(EncounterUnit(0, 100, 100))))
+      partyIds = Array(0, 1), 
+      characterLevels = Array(1, 1),
+      initialCharacterHps = Array(1, 1),
+      initialCharacterMps = Array(1, 1),
+      characterEquip = Array(Array(), Array()),
+      initialCharacterTempStatusEffects = Array(Array(), Array()),
+      characterRows = Array(0, 0),
+      encounter = Encounter(units = Array(EncounterUnit(0, 100, 100))))
   }
 }
 

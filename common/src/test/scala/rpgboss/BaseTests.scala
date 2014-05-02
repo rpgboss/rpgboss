@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
 class ProjectTest extends ShouldMatchers {
-  def paint(array: ArrayBuffer[ArrayBuffer[Byte]], x: Int, y: Int,
+  def paint(array: Array[Array[Byte]], x: Int, y: Int,
             bytes: Array[Byte]) = {
     array.length should be > (0)
     array.head.length should be > (0)
@@ -34,7 +34,7 @@ class ProjectTest extends ShouldMatchers {
     }
   }
 
-  def paintPassable(array: ArrayBuffer[ArrayBuffer[Byte]], x: Int, y: Int) = {
+  def paintPassable(array: Array[Array[Byte]], x: Int, y: Int) = {
     paint(array, x, y, Array(RpgMap.autotileByte, 16, 0))
   }
 

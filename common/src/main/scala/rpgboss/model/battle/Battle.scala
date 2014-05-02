@@ -17,8 +17,8 @@ class BattleStatus(
   var hp: Int,
   var mp: Int,
   val baseStats: BaseStats,
-  val equipment: Seq[Int] = Seq(),
-  private var tempStatusEffects: Seq[Int],
+  val equipment: Array[Int] = Array(),
+  private var tempStatusEffects: Array[Int],
   val row: Int) {
   
   def update(deltaSeconds: Double, baseTurnTime: Double) = {
@@ -43,13 +43,13 @@ class BattleStatus(
  */
 class Battle(
   val pData: ProjectData,
-  val partyIds: Seq[Int],
-  characterLevels: Seq[Int],
-  initialCharacterHps: Seq[Int],
-  initialCharacterMps: Seq[Int],
-  characterEquip: Seq[Seq[Int]],
-  initialCharacterTempStatusEffects: Seq[Seq[Int]],
-  characterRows: Seq[Int],
+  val partyIds: Array[Int],
+  characterLevels: Array[Int],
+  initialCharacterHps: Array[Int],
+  initialCharacterMps: Array[Int],
+  characterEquip: Array[Array[Int]],
+  initialCharacterTempStatusEffects: Array[Array[Int]],
+  characterRows: Array[Int],
   val encounter: Encounter) {
   require(partyIds.forall(i => i >= 0 && i < pData.enums.characters.length))
   require(encounter.units.forall(
@@ -98,7 +98,7 @@ class Battle(
     action.actor.readiness = 0
   }
   
-  val partyStatus: Seq[BattleStatus] = {
+  val partyStatus: Array[BattleStatus] = {
     for (id <- partyIds) yield {
       val baseStats = 
         pData.enums.characters(id).baseStats(pData, characterLevels(id))
@@ -109,13 +109,13 @@ class Battle(
                        characterRows(id))
     }
   }
-  val enemyStatus: Seq[BattleStatus] = {
+  val enemyStatus: Array[BattleStatus] = {
   
     for ((unit, i) <- encounter.units.zipWithIndex) yield {
       val baseStats = pData.enums.enemies(unit.enemyIdx).baseStats
       val row = (i * 2) / encounter.units.length
       new BattleStatus(pData, BattleEntityType.Enemy, i, baseStats.mhp, 
-                       baseStats.mmp, baseStats, Seq(), Seq(), row)
+                       baseStats.mmp, baseStats, Array(), Array(), row)
     }
   }
   val allStatus = partyStatus ++ enemyStatus

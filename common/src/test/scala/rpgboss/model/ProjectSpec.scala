@@ -1,13 +1,14 @@
 package rpgboss.model
 
 import rpgboss._
+import rpgboss.lib._
 import com.google.common.io.Files
 
 class ProjectSpec extends UnitSpec {
   "ProjectDataStartup" should "be equal-comparable" in {
     val s1 = ProjectDataStartup()
     val s2 = ProjectDataStartup()
-    s1 should equal (s2)
+    s1 should deepEqual (s2)
   }
   
   "Project" should "be serializable" in {
@@ -17,7 +18,7 @@ class ProjectSpec extends UnitSpec {
     
     // Mutate some values
     p.data.uuid = "fakeuid"
-    p.data.startup.startingParty = Vector(4)
+    p.data.startup.startingParty = Array(4)
     p.data.enums.characters.head.name = "New Test Name"
     p.data.enums.enemies.head.name = "New Enemy name"
     
@@ -25,7 +26,7 @@ class ProjectSpec extends UnitSpec {
     
     val pRead = Project.readFromDisk(fakeDirectory)
     pRead.isDefined should equal (true)
-    pRead.get should equal (p)
+    pRead.get should deepEqual (p)
   }
 
 }

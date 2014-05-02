@@ -17,7 +17,7 @@ object EffectKey extends RpgEnum {
   /**
    * Renders the value of the enum index stored in v1.
    */
-  def getEnumOfValue1[T <% HasName](getChoices: ProjectData => Seq[T]) = 
+  def getEnumOfValue1[T <% HasName](getChoices: ProjectData => Array[T]) = 
     (e: Effect, pData: ProjectData) => {
       val choices = getChoices(pData)
       val skillName =
@@ -32,7 +32,7 @@ object EffectKey extends RpgEnum {
    * Renders the value of the enum index stored in v1, and then shows the number
    * stored in v2.
    */
-  def getEnumOfValue2[T <% HasName](getChoices: ProjectData => Seq[T]) = {
+  def getEnumOfValue2[T <% HasName](getChoices: ProjectData => Array[T]) = {
     val v1Func = getEnumOfValue1(getChoices)
     (e: Effect, pData: ProjectData) => {
       "%s. Value = %d ".format(v1Func(e, pData), e.v2)

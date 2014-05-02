@@ -107,7 +107,7 @@ class BattleScreen(
     }
   }
 
-  def getPartyLines(): Seq[String] = {
+  def getPartyLines(): Array[String] = {
     assume(_battle.isDefined)
     for (status <- _battle.get.partyStatus) yield {
       assert(status.id < _battle.get.pData.enums.characters.length)

@@ -5,7 +5,7 @@ import rpgboss.lib.JsonUtils
 
 case class ProjectDataStartup(
   var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
-  var startingParty: Seq[Int] = Seq(0),
+  var startingParty: Array[Int] = Array(0),
 
   var titlePic: String = "LordSpirit.jpg",
   var titleMusic: Option[SoundSpec] = None,
@@ -24,16 +24,16 @@ case class ProjectDataStartup(
     Some(SoundSpec("rpgboss-menu/MenuCannot.mp3")))
 
 case class ProjectDataEnums(
-  var animations: Seq[Animation] = Seq(Animation()),
-  var characters: Seq[Character] = ProjectData.defaultCharacters,
-  var classes: Seq[CharClass] = Seq(CharClass()),
-  var elements: Seq[String] = ProjectData.defaultElements,
-  var enemies: Seq[Enemy] = Seq(Enemy()),
-  var encounters: Seq[Encounter] = Seq(Encounter()),
-  var equipTypes: Seq[String] = ProjectData.defaultEquipTypes,
-  var items: Seq[Item] = Seq(Item()),
-  var skills: Seq[Skill] = Seq(Skill()),
-  var statusEffects: Seq[StatusEffect] = Seq(StatusEffect()))
+  var animations: Array[Animation] = Array(Animation()),
+  var characters: Array[Character] = ProjectData.defaultCharacters,
+  var classes: Array[CharClass] = Array(CharClass()),
+  var elements: Array[String] = ProjectData.defaultElements,
+  var enemies: Array[Enemy] = Array(Enemy()),
+  var encounters: Array[Encounter] = Array(Encounter()),
+  var equipTypes: Array[String] = ProjectData.defaultEquipTypes,
+  var items: Array[Item] = Array(Item()),
+  var skills: Array[Skill] = Array(Skill()),
+  var statusEffects: Array[StatusEffect] = Array(StatusEffect()))
 
 case class ProjectData(
   var uuid: String = java.util.UUID.randomUUID().toString(),
@@ -90,29 +90,29 @@ object ProjectData {
 
     modelOpt.foreach { model =>
       val enums = model.enums
-      readModel[Seq[Animation]]("animations", enums.animations = _)
-      readModel[Seq[Character]]("characters", enums.characters = _)
-      readModel[Seq[CharClass]]("classes", enums.classes = _)
-      readModel[Seq[String]]("elements", enums.elements = _)
-      readModel[Seq[Enemy]]("enemies", enums.enemies = _)
-      readModel[Seq[Encounter]]("encounters", enums.encounters = _)
-      readModel[Seq[String]]("equipTypes", enums.equipTypes = _)
-      readModel[Seq[Item]]("items", enums.items = _)
-      readModel[Seq[Skill]]("skills", enums.skills = _)
-      readModel[Seq[StatusEffect]]("statusEffects", enums.statusEffects = _)
+      readModel[Array[Animation]]("animations", enums.animations = _)
+      readModel[Array[Character]]("characters", enums.characters = _)
+      readModel[Array[CharClass]]("classes", enums.classes = _)
+      readModel[Array[String]]("elements", enums.elements = _)
+      readModel[Array[Enemy]]("enemies", enums.enemies = _)
+      readModel[Array[Encounter]]("encounters", enums.encounters = _)
+      readModel[Array[String]]("equipTypes", enums.equipTypes = _)
+      readModel[Array[Item]]("items", enums.items = _)
+      readModel[Array[Skill]]("skills", enums.skills = _)
+      readModel[Array[StatusEffect]]("statusEffects", enums.statusEffects = _)
     }
 
     modelOpt
   }
 
-  def defaultCharacters = Seq(
+  def defaultCharacters = Array(
     Character("Pando", sprite = Some(SpriteSpec("vx_chara01_a.png", 4))),
     Character("Estine", sprite = Some(SpriteSpec("vx_chara01_a.png", 1))),
     Character("Leoge", sprite = Some(SpriteSpec("vx_chara01_a.png", 3))),
     Character("Graven", sprite = Some(SpriteSpec("vx_chara01_a.png", 2))),
     Character("Carona", sprite = Some(SpriteSpec("vx_chara01_a.png", 6))))
 
-  def defaultElements = Seq(
+  def defaultElements = Array(
     "Untyped",
 
     "Blunt",
@@ -130,7 +130,7 @@ object ProjectData {
     "Chaos"
   )
 
-  def defaultEquipTypes = Seq(
+  def defaultEquipTypes = Array(
     "Weapon",
     "Offhand",
     "Armor",
