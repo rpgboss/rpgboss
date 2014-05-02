@@ -37,11 +37,11 @@ class BattleStatsSpec extends UnitSpec {
     val f = fixture
 
     val stats1 = BattleStats(f.pData, f.character.baseStats(f.pData, 1))
-    stats1 should equal (
+    stats1 should deepEqual (
       BattleStats(50, 20, 10, 10, 10, 10, 10, Array(0, 0), Array()))
 
     val stats11 = BattleStats(f.pData, f.character.baseStats(f.pData, 11))
-    stats11 should equal (
+    stats11 should deepEqual (
       BattleStats(150, 60, 30, 30, 30, 20, 20, Array(0, 0), Array()))
   }
 
@@ -52,7 +52,7 @@ class BattleStatsSpec extends UnitSpec {
 
     val stats1 =
       BattleStats(f.pData, f.baseStats, tempStatusEffectIds = Array(0))
-    stats1 should equal (BattleStats(
+    stats1 should deepEqual (BattleStats(
       50, 20, 20, 10, 10, 10, 10, Array(0, 0), 
       Array(f.pData.enums.statusEffects(0))))
   }
@@ -63,7 +63,7 @@ class BattleStatsSpec extends UnitSpec {
       Array(Item(effects = Array(Effect(EffectKey.AtkAdd.id, 10, 0))))
 
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Array(0))
-    stats1 should equal (BattleStats(
+    stats1 should deepEqual (BattleStats(
       50, 20, 20, 10, 10, 10, 10, Array(0, 0), Array()))
   }
 
@@ -75,7 +75,7 @@ class BattleStatsSpec extends UnitSpec {
       Array(Item(effects = Array(Effect(EffectKey.AddStatusEffect.id, 0, 0))))
 
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Array(0))
-    stats1 should equal (BattleStats(
+    stats1 should deepEqual (BattleStats(
       50, 20, 20, 10, 10, 10, 10, Array(0, 0), 
       Array(f.pData.enums.statusEffects(0))))
   }
@@ -86,7 +86,7 @@ class BattleStatsSpec extends UnitSpec {
       Array(Item(effects = Array(Effect(EffectKey.ElementResist.id, 0, 10))))
 
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Array(0))
-    stats1 should equal (BattleStats(
+    stats1 should deepEqual (BattleStats(
       50, 20, 10, 10, 10, 10, 10, Array(10, 0), Array()))
   }
 }

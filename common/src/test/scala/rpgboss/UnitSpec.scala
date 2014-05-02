@@ -2,41 +2,70 @@ package rpgboss
 
 import org.scalatest._
 import org.scalatest.matchers._
-import org.json4s._
-import org.json4s.native.Serialization
 
 class UnitSpec extends FlatSpec with Matchers {
-  // Case class equality tester that handles array equality correctly
-  class DeepEqualMatcher[A](expected: A) 
+  /**
+   * This exists so we can correctly compare case classes with array members.
+   * TODO: Investigate if we can do this without using json4s, which might not
+   * be always accurate.
+   */
+  class DeepEqualMatcher[A <: AnyRef](expected: A) 
     extends Matcher[A] {
     
-    def deepEquals(a: Product, b: Product): Boolean = {
-      assume(a.productArity == b.productArity)
-      val equalityList = for (i <- 0 until a.productArity) yield {
-        (a.productElement(i), b.productElement(i)) match {
-          case (x: Product, y: Product) => deepEquals(x, y)
-          case (x: Array[_], y: Array[_]) => x.sameElements(y)
-          case (x, y) => x == y
+    def deepEquals[T](a: T, b: T): Boolean = {
+      if (a.isInstanceOf[Product] && b.isInstanceOf[Product]) {
+        val aProduct = a.asInstanceOf[Product]
+        val bProduct = b.asInstanceOf[Product]
+        if (aProduct.productArity != bProduct.productArity)
+          return false
+        
+        val pairIt = (aProduct.productIterator zip bProduct.productIterator)
+        pairIt forall {
+          case (aElement, bElement) => {
+            deepEquals(aElement, bElement)
+          }
         }
+      } else if (a.isInstanceOf[Array[_]] && b.isInstanceOf[Array[_]]) {
+        val aArray = a.asInstanceOf[Array[_]]
+        val bArray = b.asInstanceOf[Array[_]]
+        if (aArray.length != bArray.length)
+          return false
+        
+        val pairIt = aArray zip bArray
+        pairIt forall {
+          case (aElement, bElement) => {
+            deepEquals(aElement, bElement)
+          }
+        }
+      } else if (a.isInstanceOf[Map[_, _]] && b.isInstanceOf[Map[_, _]]) {
+        val aMap = a.asInstanceOf[Map[_, _]]
+        val bMap = b.asInstanceOf[Map[_, _]]
+        if (aMap.size != bMap.size)
+          return false
+        
+        // TODO: Slow, but probably good enough for tests
+        var matchedKeys: List[Any] = Nil
+        for ((aK, aV) <- aMap.iterator;
+             (bK, bV) <- bMap.iterator) {
+          if (aK == bK && deepEquals(aV, bV))
+            matchedKeys = aK :: matchedKeys
+        }
+        matchedKeys.size == aMap.size
+      } else {
+        val equal = a == b
+        if (!equal)
+          println("  Not equal: (%s, %s)".format(a, b))
+        equal
       }
-      
-      !equalityList.contains(false)
     }
     
     def apply(left: A) = {
-      val equals = 
-        if (left.isInstanceOf[Product] && expected.isInstanceOf[Product]) {
-          deepEquals(left.asInstanceOf[Product], expected.asInstanceOf[Product])
-        } else {
-          left == expected
-        }
-      
       MatchResult(
-        equals,
+        deepEquals(left, expected),
         s"""$left did not deepEqual $expected""",
         s"""$left deepEqualed $expected""")
     }
   }
   
-  def deepEqual[A](right: A) = new DeepEqualMatcher(right)
+  def deepEqual[A <: AnyRef](right: A) = new DeepEqualMatcher(right)
 }

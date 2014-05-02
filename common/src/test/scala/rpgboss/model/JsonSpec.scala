@@ -13,6 +13,6 @@ class JsonSpec extends UnitSpec {
     val model = Car("Ford", Array("Alice", "Bob"))
     val ser = Serialization.write(model)
     val deserializedModel = Serialization.read[Car](ser)
-    deserializedModel should equal (model)
+    deserializedModel should deepEqual (model)
   }
 }

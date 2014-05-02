@@ -9,7 +9,7 @@ class RpgMapSpec extends UnitSpec {
   "RpgMapData" should "be equal-comparable" in {
     val md1 = RpgMap.defaultMapData()
     val md2 = RpgMap.defaultMapData()
-    md1 should equal (md2)
+    md1 should deepEqual (md2)
   }
 
   "RpgMapData" should "be persistable" in {
@@ -31,8 +31,8 @@ class RpgMapSpec extends UnitSpec {
     map2.readMapData().isDefined should equal(true)
     val md2 = map2.readMapData().get
 
-    md2.events should equal (md1.events)
-    md2 should equal (md1)
-    map2 should equal (map1)
+    md2.events should deepEqual (md1.events)
+    md2 should deepEqual (md1)
+    map2 should deepEqual (map1)
   }
 }
