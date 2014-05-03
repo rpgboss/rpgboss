@@ -79,6 +79,7 @@ class WindowManager(
   }
 
   def update(delta: Float) = {
+    println(windows)
     windows.foreach(_.update(delta)) 
   }
 

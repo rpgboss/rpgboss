@@ -67,8 +67,6 @@ class ChoiceWindow(
     windowTexts.toArray
   }
 
-  def setLineHeight(height: Int) = textImages.foreach(_.setLineHeight(height))
-
   override def update(delta: Float) = {
     super.update(delta)
     textImages.foreach(_.update(delta))
@@ -187,6 +185,10 @@ class ChoiceWindow(
       inputs.remove(ChoiceWindow.this)
       inputs.prepend(ChoiceWindow.this)
       manager.focusWindow(ChoiceWindow.this)
+    }
+    
+    def setLineHeight(height: Int) = syncRun {
+      textImages.foreach(_.setLineHeight(height))
     }
   }
 }

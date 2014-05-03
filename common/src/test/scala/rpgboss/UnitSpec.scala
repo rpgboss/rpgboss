@@ -43,14 +43,12 @@ class UnitSpec extends FlatSpec with Matchers {
         if (aMap.size != bMap.size)
           return false
         
-        // TODO: Slow, but probably good enough for tests
-        var matchedKeys: List[Any] = Nil
-        for ((aK, aV) <- aMap.iterator;
-             (bK, bV) <- bMap.iterator) {
-          if (aK == bK && deepEquals(aV, bV))
-            matchedKeys = aK :: matchedKeys
+        // TODO: Slow, but probably sufficient.
+        aMap.iterator.forall {
+          case (aK, aV) => bMap.find({
+            case (bK, bV) => aK == bK && deepEquals(aV, bV)
+          }).isDefined
         }
-        matchedKeys.size == aMap.size
       } else {
         val equal = a == b
         if (!equal)
