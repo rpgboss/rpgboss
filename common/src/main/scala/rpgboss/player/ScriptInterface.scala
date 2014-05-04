@@ -210,7 +210,6 @@ class ScriptInterface(
         activeScreen.inputs,
         lines,
         x, y, w, h,
-        initialState = Window.Opening,
         justification = justification,
         columns = columns,
         displayedLines = displayedLines,

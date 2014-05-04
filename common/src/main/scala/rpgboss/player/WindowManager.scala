@@ -46,8 +46,12 @@ class WindowManager(
   
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
-  def addWindow(window: Window) = windows.prepend(window)
-  def removeWindow(window: Window) = windows -= window
+  def addWindow(window: Window) = {
+    windows.prepend(window)
+  }
+  def removeWindow(window: Window) = {
+    windows -= window
+  }
   def focusWindow(window: Window) = {
     removeWindow(window)
     addWindow(window)
@@ -112,7 +116,7 @@ class WindowManager(
     }
 
     // Render all windows
-    windows.foreach(_.render(batch))
+    windows.reverseIterator.foreach(_.render(batch))
 
     for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.END;
          pic <- pictures(i)) {
