@@ -22,9 +22,9 @@ import rpgboss.lib.ThreadChecked
  * This class should only be accessed on the gdx thread
  */
 class WindowManager(
-  val assets: RpgAssetManager, 
-  val project: Project, 
-  screenW: Int, 
+  val assets: RpgAssetManager,
+  val project: Project,
+  screenW: Int,
   screenH: Int) extends ThreadChecked {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
@@ -43,7 +43,7 @@ class WindowManager(
 
   val pictures = Array.fill[Option[PictureInfo]](64)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
-  
+
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
   def addWindow(window: Window) = {
@@ -83,8 +83,7 @@ class WindowManager(
   }
 
   def update(delta: Float) = {
-    println(windows)
-    windows.foreach(_.update(delta)) 
+    windows.foreach(_.update(delta))
   }
 
   // Render that's called before the map layer is drawn
