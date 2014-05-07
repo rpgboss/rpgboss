@@ -28,7 +28,7 @@ object Window {
 }
 
 /**
- * This class is created and may only be accessed on the main GDX thread, with 
+ * This class is created and may only be accessed on the main GDX thread, with
  * the exception of the getScriptInterface(), which may only be used from
  * a different, scripting thread.
  */
@@ -42,17 +42,17 @@ class Window(
   private var _state = initialState
   // Determines when states expire. In seconds.
   var stateAge = 0.0
-  
+
   if (inputs != null)
     inputs.prepend(this)
-    
+
   if (manager != null)
     manager.addWindow(this)
-  
+
   def state = _state
   def skin = manager.windowskin
   def skinRegion = manager.windowskinRegion
-  
+
   private def changeState(newState: Int) = {
     assert(onBoundThread())
     _state = newState
@@ -69,7 +69,6 @@ class Window(
         case Window.Open =>
         case Window.Closing => {
           changeState(Window.Closed)
-          destroy()
         }
         case _ => Unit
       }
@@ -85,13 +84,13 @@ class Window(
       case Window.Opening => {
         val hVisible =
           math.max(32 + (stateAge / openCloseTime * (h - 32)).toInt, 32)
-  
+
         skin.draw(b, skinRegion, x, y, w, hVisible)
       }
       case Window.Closing => {
         val hVisible =
           math.max(h - (stateAge / openCloseTime * (h - 32)).toInt, 32)
-  
+
         skin.draw(b, skinRegion, x, y, w, hVisible)
       }
       case _ => Unit
@@ -102,7 +101,7 @@ class Window(
     assert(onBoundThread())
     assert(_state == Window.Open || _state == Window.Opening)
     changeState(Window.Closing)
-    
+
     // We allow scripts to continue as soon as the window is closing to provide
     // a snappier game.
     closePromise.success(0)
@@ -116,22 +115,22 @@ class Window(
       }
       awaitClose()
     }
-    
+
     def awaitClose() = {
       assert(onDifferentThread())
       Await.result(closePromise.future, Duration.Inf)
     }
   }
-  
+
   lazy val scriptInterface = new WindowScriptInterface
 
-  protected def destroy() = {
+  def removeFromWindowManagerAndInputs() = {
     assert(onBoundThread())
     assert(_state == Window.Closed)
-    
+
     if (inputs != null)
       inputs.remove(this)
-      
+
     if (manager != null)
       manager.removeWindow(this)
   }
@@ -153,7 +152,7 @@ class TextWindow(
   extends Window(manager, inputs, x, y, w, h, initialState, openCloseTime) {
   val xpad = 24
   val ypad = 24
-  
+
   def updateText(newText: Array[String]) = textImage.updateText(newText)
 
   val textImage = new WindowText(
@@ -219,7 +218,7 @@ class PrintingTextWindow(
     import MyKeys._
     if (state == Window.Closing || state == Window.Closed)
       return
-    
+
     if (key == OK) {
       if (textImage.allTextPrinted)
         startClosing()

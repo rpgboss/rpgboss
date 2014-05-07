@@ -84,6 +84,12 @@ class WindowManager(
 
   def update(delta: Float) = {
     windows.foreach(_.update(delta))
+
+    windows.foreach(window => {
+      if (window.state == Window.Closed) {
+        window.removeFromWindowManagerAndInputs()
+      }
+    })
   }
 
   // Render that's called before the map layer is drawn
