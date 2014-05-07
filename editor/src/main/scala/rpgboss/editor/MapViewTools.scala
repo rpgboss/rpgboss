@@ -10,7 +10,6 @@ import rpgboss.model.resource._
 import rpgboss.model.resource.RpgMap._
 import scala.annotation.tailrec
 import java.awt.Rectangle
-import scala.collection.mutable.ArrayBuffer
 
 trait MapViewTool {
   def name: String
@@ -18,7 +17,7 @@ trait MapViewTool {
   def onMouseDown(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
                   layer: MapLayers.Value,
                   x1: Int, y1: Int): TileRect
-  // x1, y1 are init press coords; x2, y2 are where mouse has been dragged 
+  // x1, y1 are init press coords; x2, y2 are where mouse has been dragged
   def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
                      layer: MapLayers.Value,
                      x1: Int, y1: Int, x2: Int, y2: Int): TileRect
@@ -36,7 +35,7 @@ object MapViewTools {
    *
    */
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Seq[Autotile],
-                       layerAry: ArrayBuffer[ArrayBuffer[Byte]],
+                       layerAry: Array[Array[Byte]],
                        x0: Int, y0: Int, x1: Int, y1: Int): TileRect = {
 
     // Only need to adjust autotiles in this rect
@@ -55,7 +54,7 @@ object MapViewTools {
    * up in some cases.
    */
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Seq[Autotile],
-                       layerAry: ArrayBuffer[ArrayBuffer[Byte]],
+                       layerAry: Array[Array[Byte]],
                        tilesToSet: Seq[(Int, Int)]): TileRect =
     {
       import RpgMap.bytesPerTile
@@ -104,7 +103,7 @@ object MapViewTools {
               val autotile = autotiles(autotileNum)
 
               if (autotile.terrainMode) {
-                // NOTE: In terrain mode, an out-of-bound tile counts as the 
+                // NOTE: In terrain mode, an out-of-bound tile counts as the
                 // same type tile.
 
                 // This is easy. Just iterate through directions, setting flags
@@ -139,7 +138,7 @@ object MapViewTools {
                 val wallXBounds = wallWest to wallEast
                 val wallYBounds = wallNorth to wallSouth
 
-                // determine if all tiles (xTest, y) 
+                // determine if all tiles (xTest, y)
                 // where y elem [wallNorth, wallSouth] are same type autotile
                 def allSameType(xTest: Int) = {
                   // all same for out of bounds
@@ -224,14 +223,14 @@ object MapViewTools {
   }
 
   trait RectLikeTool extends MapViewTool {
-    var origLayerBuf: ArrayBuffer[ArrayBuffer[Byte]] = null
+    var origLayerBuf: Array[Array[Byte]] = null
     var prevPaintedRegion = TileRect.empty
 
     def doesPaint(xi: Int, yi: Int, w: Int, h: Int): Boolean
 
     def doPaint(
       vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
-      layerAry: ArrayBuffer[ArrayBuffer[Byte]],
+      layerAry: Array[Array[Byte]],
       x1: Int, y1: Int, x2: Int, y2: Int): TileRect =
       {
         println("Modified tiles: (%d, %d) to (%d, %d)".format(x1, y1, x2, y2))
@@ -410,7 +409,7 @@ object MapViewTools {
                 // Fill in the tile
                 for (i <- 0 until bytesPerTile)
                   layerAry(curY)(curX * bytesPerTile + i) = tCode(i)
-                
+
                 // Update the running variables of min/max of edited tiles
                 import math._
                 minX = min(minX, curX)

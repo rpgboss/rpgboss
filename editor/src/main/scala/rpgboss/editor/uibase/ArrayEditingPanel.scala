@@ -12,10 +12,10 @@ import scala.swing.ListView.Renderer
 import scala.collection.mutable.ArrayBuffer
 
 class ArrayListView[T](initialAry: Seq[T]) extends ListView(initialAry) {
-  
+
   def onListSelectionChanged(): Unit = {}
   def label(a: T): String = a.toString
-  
+
   renderer = standardIdxRenderer(label _)
 
   listenTo(selection)
@@ -34,15 +34,13 @@ abstract class ArrayEditingPanel[T <: AnyRef](
   with LazyLogging {
   def newDefaultInstance(): T
   def label(a: T): String
-  
+
   val editPaneContainer = new BoxPanel(Orientation.Vertical)
   def editPaneForItem(idx: Int, item: T): Component
   def editPaneEmpty: Component
 
-  def arrayBuffer : ArrayBuffer[T] = {
-    val b = new ArrayBuffer[T]
-    listView.listData.copyToBuffer(b)
-    b
+  def dataAsArray : Array[T] = {
+    listView.listData.toArray
   }
 
   // Just refresh the label of the item on the list
@@ -69,14 +67,14 @@ abstract class ArrayEditingPanel[T <: AnyRef](
   def onListDataUpdate() = {
     logger.info("Empty list update call")
   }
-  
+
   def normalizedInitialAry =
     ArrayUtils.normalizedAry(
       initialAry, minElems, maxElems, newDefaultInstance _)
 
   val listView = new ArrayListView(normalizedInitialAry) {
-    override def label(a: T) = ArrayEditingPanel.this.label(a)    
-    
+    override def label(a: T) = ArrayEditingPanel.this.label(a)
+
     override def onListSelectionChanged() = {
       editPaneContainer.contents.clear()
 
@@ -118,7 +116,7 @@ abstract class ArrayEditingPanel[T <: AnyRef](
       })
     dialog.open()
   })
-  
+
   val btnDuplicateItem = new Button(Action("Duplicate item...") {
     if (listView.selection.indices.isEmpty) {
       SwingUtils.showErrorDialog(this, "No item selected.")
@@ -142,7 +140,7 @@ abstract class ArrayEditingPanel[T <: AnyRef](
           })
         dialog.open()
       }
-    }    
+    }
   })
 
   editPaneContainer.contents += editPaneEmpty
@@ -156,7 +154,7 @@ class ArraySizeDialog(
   okCallback: Int => Unit)
   extends SingleIntegerDialog(
     owner,
-    "Set array size", 
+    "Set array size",
     "Array size:",
     "",
     initial,
@@ -221,13 +219,13 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends ArrayEditingPanel[T](
-    owner, 
-    label, 
-    initialAry, 
-    minElems, 
+    owner,
+    label,
+    initialAry,
+    minElems,
     maxElems)(m) {
   def editPaneEmpty = new BoxPanel(Orientation.Vertical)
-  
+
   val bigLbl = new Label {
     text = label
     font = new Font("Arial", Font.BOLD, 14)
@@ -246,7 +244,7 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
       maximumSize = new Dimension(250, 5000)
       preferredSize = new Dimension(250, 500)
       minimumSize = new Dimension(250, 250)
-      
+
       row().grid().add(bigLbl)
       row().grid().add(scrollPane)
       row().grid().add(btnSetListSize)
@@ -265,5 +263,5 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
     case UIElementShown(_) => {
       listView.selectIndices(0)
     }
-  }  
+  }
 }

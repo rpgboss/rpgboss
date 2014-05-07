@@ -91,6 +91,6 @@ class EnemiesPanel(
 
   override def onListDataUpdate() = {
     logger.info("Enemies data updated")
-    dbDiag.model.enums.enemies = arrayBuffer
+    dbDiag.model.enums.enemies = dataAsArray
   }
 }

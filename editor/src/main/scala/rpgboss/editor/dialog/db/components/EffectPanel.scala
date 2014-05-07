@@ -21,8 +21,8 @@ import rpgboss.editor.uibase.TableEditor
 class EffectPanel(
   owner: Window,
   dbDiag: DatabaseDialog,
-  initial: Seq[Effect],
-  onUpdate: Seq[Effect] => Unit,
+  initial: Array[Effect],
+  onUpdate: Array[Effect] => Unit,
   includeStatEffects: Boolean)
   extends BoxPanel(Orientation.Vertical) {
   
@@ -40,17 +40,19 @@ class EffectPanel(
   }
 
   def updateFromModel() = {
-    onUpdate(statEffects ++ miscEffects)
+    onUpdate((statEffects ++ miscEffects).toArray)
   }
 
-  var statEffects: ArrayBuffer[Effect] =
+  val statEffects: ArrayBuffer[Effect] =
     ArrayBuffer(initial.filter(isStatEffect) : _*)
   val statEffectsPanel = new DesignGridPanel {
     def statSpinner(eKey: EffectKey.Value) = {
       def spinFunc(newValue: Int) = {
         if (newValue == 0) {
           // Remove existing effect.
-          statEffects = statEffects.filter(_.keyId != eKey.id)
+          statEffects.find(_.keyId == eKey.id) map { effect =>
+            statEffects -= effect
+          }
         } else {
           // Update existing effect, or append a new one.
           statEffects.find(_.keyId == eKey.id) map { effect =>
@@ -311,7 +313,7 @@ class EffectDialog(
                                        choices: Seq[T]): EffectControls = {
     choiceWithValueEffect(key, choices, 0, MINEFFECTARG, MAXEFFECTARG, "p")
   }
-  
+
   import EffectKey._
 
   val effectsStatus = Array(

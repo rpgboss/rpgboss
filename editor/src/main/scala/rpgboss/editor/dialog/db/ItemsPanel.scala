@@ -120,6 +120,6 @@ class ItemsPanel(
   }
 
   override def onListDataUpdate() = {
-    dbDiag.model.enums.items = arrayBuffer
+    dbDiag.model.enums.items = dataAsArray
   }
 }

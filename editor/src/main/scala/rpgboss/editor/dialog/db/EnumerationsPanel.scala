@@ -27,7 +27,7 @@ class EnumerationsPanel(
 
       override def onListDataUpdate() = {
         logger.info("Elements updated")
-        dbDiag.model.enums.elements = arrayBuffer
+        dbDiag.model.enums.elements = dataAsArray
       }
     }
 
@@ -37,7 +37,7 @@ class EnumerationsPanel(
       "Equipment Types",
       dbDiag.model.enums.equipTypes) {
       override def onListDataUpdate() = {
-        dbDiag.model.enums.equipTypes = arrayBuffer
+        dbDiag.model.enums.equipTypes = dataAsArray
       }
     }
 

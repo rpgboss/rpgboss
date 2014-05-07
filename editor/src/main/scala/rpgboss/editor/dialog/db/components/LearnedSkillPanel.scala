@@ -11,8 +11,8 @@ import scala.swing._
 class LearnedSkillPanel(
   owner: Window,
   dbDiag: DatabaseDialog,
-  initial: Seq[LearnedSkill],
-  onUpdate: Seq[LearnedSkill] => Unit)
+  initial: Array[LearnedSkill],
+  onUpdate: Array[LearnedSkill] => Unit)
   extends BoxPanel(Orientation.Vertical) {
 
   preferredSize = new Dimension(150, 200)
@@ -42,7 +42,7 @@ class LearnedSkillPanel(
         v => {
           learnedSkills.update(row, v)
           updateDisplayFunction()
-          onUpdate(learnedSkills)
+          onUpdate(learnedSkills.toArray)
         })
       diag.open()
     }
@@ -55,7 +55,7 @@ class LearnedSkillPanel(
         v => {
           learnedSkills += v
           updateDisplayFunction()
-          onUpdate(learnedSkills)
+          onUpdate(learnedSkills.toArray)
         })
       diag.open()
     }
@@ -63,7 +63,7 @@ class LearnedSkillPanel(
     def deleteRow(row: Int, updateDisplayFunction: () => Unit) = {
       learnedSkills.remove(row)
       updateDisplayFunction()
-      onUpdate(learnedSkills)
+      onUpdate(learnedSkills.toArray)
     }
   }
 

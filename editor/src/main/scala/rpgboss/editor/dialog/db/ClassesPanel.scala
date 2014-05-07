@@ -69,6 +69,6 @@ class ClassesPanel(
 
   override def onListDataUpdate() = {
     logger.info("Classes updated")
-    dbDiag.model.enums.classes = arrayBuffer
+    dbDiag.model.enums.classes = dataAsArray
   }
 }

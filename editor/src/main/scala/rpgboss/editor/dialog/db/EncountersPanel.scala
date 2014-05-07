@@ -42,8 +42,8 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         project.data.enums.characters.map(v => 1),
         project.data.enums.characters.map(v => 1),
         project.data.enums.characters.map(v => 1),
-        project.data.enums.characters.map(v => Seq()),
-        project.data.enums.characters.map(v => Seq()),
+        project.data.enums.characters.map(v => Array[Int]()),
+        project.data.enums.characters.map(v => Array[Int]()),
         project.data.enums.characters.map(v => 0),
         encounter)
 
@@ -61,7 +61,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         None,
         new RpgAssetManager(project),
         atlasSprites,
-        project, 
+        project,
         EncounterFieldGdxPanel.width,
         EncounterFieldGdxPanel.height)
       updateBattleScreen(initial)
@@ -184,6 +184,6 @@ class EncountersPanel(
   }
 
   override def onListDataUpdate() = {
-    dbDiag.model.enums.encounters = arrayBuffer
+    dbDiag.model.enums.encounters = dataAsArray
   }
 }

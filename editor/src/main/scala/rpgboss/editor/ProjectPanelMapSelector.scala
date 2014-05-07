@@ -20,7 +20,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
    * Popup actions
    */
   def popupMenuFor(node: Node) = {
-    new PopupMenu {
+    new RpgPopupMenu {
       if (node != projectRoot) {
         contents += new MenuItem(Action("Map Properties...") {
           val origMap = sm.getMap(node.mapName).get
@@ -47,7 +47,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
                 // Insert at end of list
                 tree.model.getChildrenOf(newParentNode.path).length
               }
-              
+
               removeNode(origNode)
 
               val newNode = Node(updatedMap, newParentNode.path)
@@ -66,7 +66,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
           if (answer == Dialog.Result.Yes) {
             removeNode(node)
             sm.removeMap(node.mapName)
-            
+
             val map = sm.getMap(node.mapName).get
             allNodes
               .get(map.metadata.parent)
@@ -81,7 +81,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
         val newMap = RpgMap.defaultInstance(
           sm.getProj,
           RpgMap.generateName(sm.getProj.data.lastCreatedMapId + 1))
-        
+
         newMap.metadata.parent = node.mapName
 
         val d = new MapPropertiesDialog(

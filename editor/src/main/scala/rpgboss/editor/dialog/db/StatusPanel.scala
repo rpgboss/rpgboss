@@ -80,6 +80,6 @@ class StatusPanel(
 
   override def onListDataUpdate() = {
     logger.info("Status effect data updated")
-    dbDiag.model.enums.statusEffects = arrayBuffer
+    dbDiag.model.enums.statusEffects = dataAsArray
   }
 }

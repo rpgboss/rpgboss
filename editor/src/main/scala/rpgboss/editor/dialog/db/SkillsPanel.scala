@@ -56,6 +56,6 @@ class SkillsPanel(
   }
 
   override def onListDataUpdate() = {
-    dbDiag.model.enums.skills = arrayBuffer
+    dbDiag.model.enums.skills = dataAsArray
   }
 }

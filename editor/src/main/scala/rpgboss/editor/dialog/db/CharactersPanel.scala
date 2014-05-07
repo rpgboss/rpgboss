@@ -88,6 +88,6 @@ class CharactersPanel(
 
   override def onListDataUpdate() = {
     logger.info("Characters data updated")
-    dbDiag.model.enums.characters = arrayBuffer
+    dbDiag.model.enums.characters = dataAsArray
   }
 }

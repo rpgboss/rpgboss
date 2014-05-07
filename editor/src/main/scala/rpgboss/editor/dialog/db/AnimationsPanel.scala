@@ -29,6 +29,6 @@ class AnimationsPanel(
   }
 
   override def onListDataUpdate() = {
-    dbDiag.model.enums.animations = arrayBuffer
+    dbDiag.model.enums.animations = dataAsArray
   }
 }
