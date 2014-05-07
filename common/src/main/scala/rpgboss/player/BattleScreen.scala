@@ -43,7 +43,54 @@ class BattleScreen(
   val windowManager = new WindowManager(assets, project, screenW, screenH)
 
   def battleActive = _battle.isDefined
-
+  
+  val enemyListWindow = {
+    if (gameOpt.isDefined) {
+      new TextWindow(
+        gameOpt.get.persistent,
+        windowManager,
+        inputs,
+        Array(),
+        0, 300, 200, 180)
+    } else {
+      null
+    }
+  } 
+  
+  def updateEnemyListWindow() = {
+    assert(_battle.isDefined)
+    assert(enemyListWindow != null)
+    val enemyLines = 
+      Encounter.getEnemyLabels(_battle.get.encounter.units, project.data)
+    enemyListWindow.updateText(enemyLines)
+  }
+  
+  val partyListWindow = {
+    if (gameOpt.isDefined) {
+      new TextWindow(
+        gameOpt.get.persistent,
+        windowManager,
+        inputs,
+        Array(),
+        200, 300, 440, 180)   
+    } else {
+      null
+    }
+  }
+  
+  def updatePartyListWindow() = {
+    assert(_battle.isDefined)
+    assert(partyListWindow != null)
+    
+    val partyLines = for (status <- _battle.get.partyStatus) yield {
+      assert(status.id < _battle.get.pData.enums.characters.length)
+      val name = _battle.get.pData.enums.characters(status.id).name
+      val readiness = (math.min(status.readiness, 1.0) * 100).toInt
+      "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
+    }
+    partyListWindow.updateText(partyLines)
+  }
+  
   def startBattle(battle: Battle, bgPicture: Option[String]) = {
     assert(onBoundThread())
     assert(_battle.isEmpty)
@@ -83,38 +130,6 @@ class BattleScreen(
         _partyBattlers.append(PartyBattler(project, spriteSpec, x, y))
       }
     }
-    
-    for (game <- gameOpt) {
-      val enemyLines = 
-        Encounter.getEnemyLabels(battle.encounter.units, project.data)
-      // TODO: Eliminate these literal numbers for dimensions.
-      val enemyListWindow = new TextWindow(
-        game.persistent,
-        windowManager,
-        inputs,
-        enemyLines.toArray,
-        0, 300, 200, 180)
-      windowManager.addWindow(enemyListWindow)
-      
-      val partyLines = getPartyLines()
-      val partyListWindow = new TextWindow(
-        game.persistent,
-        windowManager,
-        inputs,
-        partyLines.toArray,
-        200, 300, 440, 180)
-      windowManager.addWindow(partyListWindow)
-    }
-  }
-
-  def getPartyLines(): Array[String] = {
-    assume(_battle.isDefined)
-    for (status <- _battle.get.partyStatus) yield {
-      assert(status.id < _battle.get.pData.enums.characters.length)
-      val name = _battle.get.pData.enums.characters(status.id).name
-      val readiness = (math.min(status.readiness, 1.0) * 100).toInt
-      "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
-    }
   }
   
   def endBattle() = {
@@ -130,6 +145,9 @@ class BattleScreen(
   }
 
   def update(delta: Float) = {
+    // TODO: Peel items off the ready queue. For a player, spawn a choice 
+    // window. For an enemy, make a decision on the action.
+    
     assert(onBoundThread())
     windowManager.update(delta)
   }
