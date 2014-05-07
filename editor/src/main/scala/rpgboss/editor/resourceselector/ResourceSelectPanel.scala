@@ -1,6 +1,6 @@
 package rpgboss.editor.resourceselector
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import rpgboss.editor.StateMaster
 import rpgboss.editor.uibase._
 import rpgboss.model._
@@ -18,7 +18,7 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
   initialSelectionOpt: Option[SpecType],
   allowNone: Boolean,
   val metaResource: MetaResource[T, MT])
-  extends DesignGridPanel with Logging with Disposable {
+  extends DesignGridPanel with LazyLogging with Disposable {
   
   layout.margins(0)
 

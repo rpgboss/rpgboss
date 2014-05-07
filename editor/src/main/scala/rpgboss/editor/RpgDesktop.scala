@@ -2,14 +2,14 @@ package rpgboss.editor
 
 import scala.swing._
 import scala.swing.event._
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import java.lang.Thread.UncaughtExceptionHandler
 import javax.swing.UIManager
 import javax.imageio.ImageIO
 
 object RpgDesktop
   extends SwingApplication
-  with Logging
+  with LazyLogging
   with UncaughtExceptionHandler {
 
   def top() = new MainFrame {

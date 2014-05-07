@@ -4,9 +4,9 @@ import rpgboss.lib._
 import scala.collection.JavaConversions._
 import java.io._
 import rpgboss.model.Project
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
-trait Resource[T, MT <: AnyRef] extends Logging {
+trait Resource[T, MT <: AnyRef] extends LazyLogging {
   def name: String
   def metadata: MT
   def meta: MetaResource[T, MT]

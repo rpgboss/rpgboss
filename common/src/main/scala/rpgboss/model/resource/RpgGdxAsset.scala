@@ -2,9 +2,9 @@ package rpgboss.model.resource
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.Gdx
 import java.io.File
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
-trait RpgGdxAsset[T] extends Logging {
+trait RpgGdxAsset[T] extends LazyLogging {
   def dataFile: File
   // Gdx always uses '/' as its path separator for some reason.
   def gdxAbsPath: String = dataFile.getCanonicalPath().replaceAll("\\\\", "/")

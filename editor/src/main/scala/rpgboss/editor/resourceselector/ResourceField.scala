@@ -6,7 +6,7 @@ import rpgboss.model.resource._
 import rpgboss.model._
 import scala.swing.event.MouseClicked
 import scala.swing.event.EditDone
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import rpgboss.editor.uibase.ImagePanel
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.misc.MapLocPanel
@@ -75,7 +75,7 @@ class MapLocSelectDialog(
   initialLoc: MapLoc,
   onSuccessF: MapLoc => Unit)
   extends StdDialog(owner, "Select Map")
-  with Logging {
+  with LazyLogging {
   
   val locPanel = new MapLocPanel(this, sm, initialLoc, selectMapOnly)
   
@@ -95,7 +95,7 @@ abstract class BrowseField[SpecType](
   sm: StateMaster,
   initial: Option[SpecType],
   onUpdate: Option[SpecType] => Unit)
-  extends BoxPanel(Orientation.Horizontal) with Logging {
+  extends BoxPanel(Orientation.Horizontal) with LazyLogging {
   
   var model = initial
   

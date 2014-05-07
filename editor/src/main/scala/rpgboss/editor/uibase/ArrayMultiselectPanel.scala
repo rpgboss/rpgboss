@@ -5,7 +5,7 @@ import scala.swing.event._
 import rpgboss.editor.dialog._
 import rpgboss.model._
 import javax.swing.BorderFactory
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import scala.swing.ListView.Renderer
 import javax.swing.DefaultListSelectionModel
 
@@ -16,7 +16,7 @@ class ArrayMultiselectPanel[T <: HasName](
   initialSelections: Seq[Int],
   onUpdate: Seq[Int] => Unit)
   extends ScrollPane
-  with Logging {
+  with LazyLogging {
   
   preferredSize = new Dimension(150, 200)
   maximumSize = new Dimension(150, 300)

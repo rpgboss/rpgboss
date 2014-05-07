@@ -2,7 +2,6 @@ package rpgboss.player
 
 import org.mozilla.javascript.{ Context, ScriptableObject, Scriptable }
 import rpgboss.model.resource.Script
-import scala.concurrent.ops.spawn
 import rpgboss.model.MapLoc
 import java.lang.Thread.UncaughtExceptionHandler
 import rpgboss.lib._

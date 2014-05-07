@@ -8,7 +8,7 @@ import rpgboss.editor.dialog.cmd._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.dialog.cmd.NewEvtCmdBox
 import java.awt.event.MouseEvent
-import rpgboss.editor.uibase.PopupMenu
+import rpgboss.editor.uibase.RpgPopupMenu
 
 /**
  * Holds and edits list of commands.
@@ -49,7 +49,7 @@ class CommandBox(
         if (closestI != -1) {
           this.selectIndices(closestI)
           
-          val menu = new PopupMenu {
+          val menu = new RpgPopupMenu {
             contents += new MenuItem(Action("Delete") {
               if (!selection.items.isEmpty && 
                   selection.items.head != EndOfScript()) {

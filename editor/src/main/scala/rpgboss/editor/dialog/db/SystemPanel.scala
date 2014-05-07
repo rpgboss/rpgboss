@@ -9,7 +9,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.dialog.DatabaseDialog
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import rpgboss.editor.resourceselector._
 
 class SystemPanel(
@@ -18,7 +18,7 @@ class SystemPanel(
   val dbDiag: DatabaseDialog)
   extends DesignGridPanel
   with DatabasePanel
-  with Logging {
+  with LazyLogging {
   def panelName = "Startup"
   layout.labelAlignment(LabelAlignment.RIGHT)
 

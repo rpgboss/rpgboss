@@ -8,18 +8,16 @@ object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     fork := true, // For natives loading.
     version := "0.1",
-    scalaVersion := "2.10.1",
+    scalaVersion := "2.11.0",
     scalacOptions ++= List("-deprecation", "-unchecked"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.0.6",
       "com.google.guava" % "guava" % "10.0",
-      "com.typesafe" % "scalalogging-slf4j_2.10" % "1.0.1",
+      "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
-      "org.json4s" % "json4s-ast_2.10" % "3.2.8" withSources(),
-      "org.json4s" % "json4s-core_2.10" % "3.2.8" withSources(),
-      "org.json4s" % "json4s-native_2.10" % "3.2.8" withSources(),
-      "org.scalatest" % "scalatest_2.10" % "2.0.RC1" % "test",
+      "org.json4s" %% "json4s-native" % "3.2.9" withSources(),
+      "org.scalatest" %% "scalatest" % "2.1.5" % "test",
       "rhino" % "js" % "1.7R2"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
@@ -41,7 +39,7 @@ object Settings {
   
   lazy val editorLibs = Seq(
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-swing" % "2.10.1",
+      "org.scala-lang" % "scala-swing" % "2.11.0-M7",
       "com.github.benhutchison" % "scalaswingcontrib" % "1.5", 
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"

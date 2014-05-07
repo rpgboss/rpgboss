@@ -7,7 +7,7 @@ import rpgboss.model.resource._
 import rpgboss.model._
 import rpgboss.editor.uibase._
 import com.badlogic.gdx.audio.{ Sound => GdxSound, Music => GdxMusic }
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import com.badlogic.gdx.Gdx
 
 class SoundField(
@@ -45,7 +45,7 @@ abstract class SoundSelectDialog(
   sm: StateMaster,
   initial: Option[SoundSpec])
   extends ResourceSelectDialog(owner, sm, initial, true, Sound)
-  with Logging {
+  with LazyLogging {
 
   override def specToResourceName(spec: SoundSpec): String = spec.sound
 
@@ -97,7 +97,7 @@ abstract class MusicSelectDialog(
   sm: StateMaster,
   initial: Option[SoundSpec])
   extends ResourceSelectDialog(owner, sm, initial, true, Music)
-  with Logging {
+  with LazyLogging {
 
   override def specToResourceName(spec: SoundSpec): String = spec.sound
 

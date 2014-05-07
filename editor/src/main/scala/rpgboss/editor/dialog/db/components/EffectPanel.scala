@@ -15,7 +15,7 @@ import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
 import scala.collection.mutable.ArrayBuffer
 import java.awt.event.MouseEvent
-import rpgboss.editor.uibase.PopupMenu
+import rpgboss.editor.uibase.RpgPopupMenu
 import rpgboss.editor.uibase.TableEditor
 
 class EffectPanel(

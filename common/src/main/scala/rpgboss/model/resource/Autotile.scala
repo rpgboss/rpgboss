@@ -6,7 +6,7 @@ import rpgboss.lib.FileHelper._
 
 import org.json4s.native.Serialization
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 import scala.collection.JavaConversions._
 
@@ -28,7 +28,7 @@ case class Autotile(proj: Project,
                     name: String,
                     metadata: AutotileMetadata)
   extends ImageResource[Autotile, AutotileMetadata]
-  with Logging {
+  with LazyLogging {
   import Tileset.tilesize
   def meta = Autotile
 

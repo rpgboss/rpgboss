@@ -9,7 +9,7 @@ import rpgboss.editor.resourceselector._
 import rpgboss.editor.uibase._
 import rpgboss.editor.misc._
 import rpgboss.editor.misc.GraphicsUtils._
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import scala.math._
 import scala.swing._
 import scala.swing.event._
@@ -245,7 +245,7 @@ class MapEditor(
       val evtSelected = selectedEvtId.isDefined
       val newEditText = if (evtSelected) "Edit event..." else "New event..."
 
-      val menu = new PopupMenu {
+      val menu = new RpgPopupMenu {
         contents += new MenuItem(Action(newEditText) { editEvent() })
 
         if (evtSelected)

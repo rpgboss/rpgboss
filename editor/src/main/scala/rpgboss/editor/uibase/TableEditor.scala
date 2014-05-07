@@ -68,7 +68,7 @@ abstract class TableEditor extends Table {
       if (row != -1) {
         selection.rows.clear()
         selection.rows += row
-        val menu = new PopupMenu {
+        val menu = new RpgPopupMenu {
           contents += new MenuItem(Action("New...") {
             showNewDialog(() => {
               tableModel.fireTableRowsUpdated(modelRowCount - 1, 

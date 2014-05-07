@@ -4,13 +4,13 @@ import com.badlogic.gdx.backends.lwjgl._
 import com.badlogic.gdx._
 import scala.swing._
 import scala.swing.event._
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.backends.lwjgl.audio.OpenALAudio
 
 class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
   extends Component
-  with Logging
+  with LazyLogging
   with Disposable {
 
   override lazy val peer = new javax.swing.JComponent with SuperMixin {

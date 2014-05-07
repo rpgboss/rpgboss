@@ -1,6 +1,6 @@
 package rpgboss.model
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.{ Context, ScriptableObject, Scriptable }
 import rpgboss.model.battle.BattleStatus
 
@@ -33,7 +33,7 @@ case class TakenDamage(damageType: DamageType.Value, elementId: Int, value: Int)
 case class Damage(
   var typeId: Int = DamageType.Physical.id,
   var elementId: Int = 0,
-  var formula: String = "") extends Logging {
+  var formula: String = "") extends LazyLogging {
   
   def getBaseDamage(source: BattleStatus, target: BattleStatus): Double = {
     val jsContext = Context.enter()

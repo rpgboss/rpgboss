@@ -16,7 +16,7 @@ object MapLayers extends RpgEnum {
     List(Bot, Mid, Top) zip list
 
   def mapOfArrays(mapData: RpgMapData): 
-      Map[Enumeration#Value, ArrayBuffer[ArrayBuffer[Byte]]] =
+      Map[Enumeration#Value, Array[Array[Byte]]] =
     Map(drawOrderZip(mapData.drawOrder): _*)
 
   def default = Bot

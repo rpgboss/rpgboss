@@ -7,7 +7,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.uibase._
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 abstract class ResourceSelectDialog[SpecType, T, MT](
   owner: Window, 
@@ -16,7 +16,7 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
   allowNone: Boolean,
   metaResource: MetaResource[T, MT]) 
   extends StdDialog(owner, "Select" + metaResource.rcType.capitalize)
-  with Logging {
+  with LazyLogging {
   
   minimumSize = new Dimension(550, 550)
   

@@ -7,7 +7,7 @@ import rpgboss.model.resource._
 import rpgboss.editor.imageset._
 import rpgboss.editor._
 import rpgboss.editor.misc.GraphicsUtils._
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import scala.math._
 import scala.swing._
 import scala.swing.event._
@@ -34,7 +34,7 @@ class MapView(
   owner: Window,
   sm: StateMaster,
   initialScale: MapScales.Value)
-  extends BoxPanel(Orientation.Vertical) with SelectsMap with Logging {
+  extends BoxPanel(Orientation.Vertical) with SelectsMap with LazyLogging {
   //--- VARIABLES ---//
   protected var viewStateOpt: Option[MapViewState] = None
   protected var curTilesize = Tileset.tilesize / initialScale.id

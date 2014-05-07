@@ -6,7 +6,7 @@ import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.dialog._
 import rpgboss.lib._
 import javax.swing.BorderFactory
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import java.awt.{ Font, Color }
 import scala.swing.ListView.Renderer
 import scala.collection.mutable.ArrayBuffer
@@ -31,7 +31,7 @@ abstract class ArrayEditingPanel[T <: AnyRef](
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends DesignGridPanel
-  with Logging {
+  with LazyLogging {
   def newDefaultInstance(): T
   def label(a: T): String
   
