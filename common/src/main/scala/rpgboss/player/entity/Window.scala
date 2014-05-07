@@ -69,12 +69,7 @@ class Window(
         case Window.Open =>
         case Window.Closing => {
           changeState(Window.Closed)
-          
-          // This is run asynchronously, so we don't change the windows array
-          // while we are iterating through it.
-          GdxUtils.asyncRun {
-            destroy()
-          }
+          destroy()
         }
         case _ => Unit
       }
