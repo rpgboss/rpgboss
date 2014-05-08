@@ -21,6 +21,8 @@ class BattleStatus(
   private var tempStatusEffects: Array[Int],
   val row: Int) {
   
+  def alive = hp > 0
+  
   def update(deltaSeconds: Double, baseTurnTime: Double) = {
     val turnTime = baseTurnTime / (1.0 + stats.spd / 100.0)
     readiness += deltaSeconds / turnTime
@@ -34,6 +36,54 @@ class BattleStatus(
   def stats = _stats
   
   override def toString = "BattleStatus(%s, %d)".format(entityType, id)
+}
+
+trait BattleAI {
+  def update(battle: Battle)
+}
+
+/**
+ * This simple AI causes every ready enemy to randomly use a skill or an attack
+ * on a random target.
+ */
+class RandomEnemyAI extends BattleAI {
+  def update(battle: Battle) = {
+    for (enemyStatus <- battle.readyEnemies) {
+      // Randomly select a target among the alive party members.
+      val alivePartyMembers = battle.partyStatus.filter(_.alive)
+      assert(!alivePartyMembers.isEmpty)
+      val target = 
+        alivePartyMembers.apply(util.Random.nextInt(alivePartyMembers.length))
+      
+      val useSkill = util.Random.nextDouble() < 0.5
+      if (useSkill) {
+        assert(enemyStatus.id < battle.encounter.units.length)
+        val encounterUnit = battle.encounter.units(enemyStatus.id)
+        
+        assert(encounterUnit.enemyIdx < battle.pData.enums.enemies.length)
+        val enemy = battle.pData.enums.enemies(encounterUnit.enemyIdx)
+        
+        val skillIds = enemy.skills
+        assert(enemy.skills.forall(i => i < battle.pData.enums.skills.length))
+        
+        // Select a skill at random that the unit has enough mana for. If there
+        // are none, just attack.
+        val canAffordSkills = skillIds.filter(skillId => {
+          battle.pData.enums.skills(skillId).cost <= enemyStatus.mp
+        })
+          
+        if (canAffordSkills.isEmpty) {
+          battle.takeAction(AttackAction(enemyStatus, target))
+        } else {
+          val skillId = 
+            canAffordSkills.apply(util.Random.nextInt(canAffordSkills.length))
+          battle.takeAction(SkillAction(enemyStatus, target, skillId))
+        }
+      } else {
+        battle.takeAction(AttackAction(enemyStatus, target))
+      }
+    }
+  }
 }
 
 /**
@@ -50,7 +100,8 @@ class Battle(
   characterEquip: Array[Array[Int]],
   initialCharacterTempStatusEffects: Array[Array[Int]],
   characterRows: Array[Int],
-  val encounter: Encounter) {
+  val encounter: Encounter,
+  aiOpt: Option[BattleAI]) {
   require(partyIds.forall(i => i >= 0 && i < pData.enums.characters.length))
   require(encounter.units.forall(
     unit => unit.enemyIdx >= 0 && unit.enemyIdx < pData.enums.enemies.length))
@@ -78,9 +129,14 @@ class Battle(
   private val readyQueue = new collection.mutable.Queue[BattleStatus]
   
   /**
-   * The first item in the ready queue that is ready to act.
+   * The first item in the ready queue.
    */
   def readyEntity = readyQueue.headOption
+  
+  /**
+   * All the ready enemies.
+   */
+  def readyEnemies = readyQueue.filter(_.entityType == BattleEntityType.Enemy)
   
   /**
    * Enqueues up an action to be taken. Also removes the actor from the ready
@@ -142,6 +198,8 @@ class Battle(
       .sortBy(-_.readiness)
       .filter(!readyQueue.contains(_))
       .foreach(readyQueue.enqueue(_))
+      
+    aiOpt.map(_.update(this))
     
     while (!eventQueue.isEmpty && eventQueue.head.time <= time) {
       val event = eventQueue.dequeue().action

@@ -2,9 +2,10 @@ package rpgboss.model.battle
 
 import rpgboss._
 import rpgboss.model._
+import rpgboss.model.battle._
 
 object BattleTest {
-  class BattleFixture() {
+  class BattleFixture(aiOpt: Option[BattleAI] = None) {
     val pData = ProjectData("fake-uuid", "fake-title")
     
     val characterFast = 
@@ -26,15 +27,14 @@ object BattleTest {
       characterEquip = Array(Array(), Array()),
       initialCharacterTempStatusEffects = Array(Array(), Array()),
       characterRows = Array(0, 0),
-      encounter = Encounter(units = Array(EncounterUnit(0, 100, 100))))
+      encounter = Encounter(units = Array(EncounterUnit(0, 100, 100))),
+      aiOpt = aiOpt)
   }
 }
 
 class BattleSpec extends UnitSpec {
-  def fixture = new BattleTest.BattleFixture
-  
   "Battle" should "make fastest unit go first" in {
-    val f = fixture
+    val f = new BattleTest.BattleFixture
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
@@ -46,7 +46,7 @@ class BattleSpec extends UnitSpec {
   }
   
   "Battle" should "have battle units act in order of speed" in {
-    val f = fixture
+    val f = new BattleTest.BattleFixture
     
     f.battle.update(f.battle.baseTurnTime)
     
@@ -59,6 +59,24 @@ class BattleSpec extends UnitSpec {
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Enemy)
     f.battle.readyEntity.get.id should equal (0)
     f.battle.takeAction(NullAction(f.battle.enemyStatus(0)))
+    
+    f.battle.readyEntity should be ('isDefined)
+    f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
+    f.battle.readyEntity.get.id should equal (1)
+    f.battle.takeAction(NullAction(f.battle.partyStatus(1)))
+    
+    f.battle.readyEntity should equal (None)
+  }
+  
+  "Battle" should "use AI to automatically handle enemy actions" in {
+    val f = new BattleTest.BattleFixture(aiOpt = Some(new RandomEnemyAI))
+    
+    f.battle.update(f.battle.baseTurnTime)
+    
+    f.battle.readyEntity should be ('isDefined)
+    f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
+    f.battle.readyEntity.get.id should equal (0)
+    f.battle.takeAction(NullAction(f.battle.partyStatus(0)))
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
