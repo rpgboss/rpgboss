@@ -204,7 +204,7 @@ class ScriptInterface(
     displayedLines: Int,
     allowCancel: Boolean) = {
     val window = syncRun {
-      new ChoiceWindow(
+      new TextChoiceWindow(
         game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
@@ -221,7 +221,7 @@ class ScriptInterface(
 
   def newChoiceWindow(
     choices: Array[String],
-    x: Int, y: Int, w: Int, h: Int): ChoiceWindow#WindowScriptInterface =
+    x: Int, y: Int, w: Int, h: Int): ChoiceWindow#ChoiceWindowScriptInterface =
     newChoiceWindow(choices, x, y, w, h,
       Window.Left,
       1 /* columns */ ,

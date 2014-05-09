@@ -115,12 +115,9 @@ class Battle(
   
   /**
    * Simulation events that have been queued up, but have not yet taken place.
-   * Ordering is by negative time, as we want events processed in time order.
    * There should not be any duplicate elements in this queue.
    */
-  private val eventQueue = 
-    new collection.mutable.PriorityQueue[TimestampedBattleEvent]()(
-        Ordering.by(-_.time))
+  private val eventQueue = new collection.mutable.Queue[BattleAction]()
   
   /**
    * Battle entities, player characters and enemies, queued in order of 
@@ -148,7 +145,7 @@ class Battle(
     assert(dequeued.isDefined)
     
     // Enqueue the actual action
-    eventQueue.enqueue(TimestampedBattleEvent(time, action))
+    eventQueue.enqueue(action)
     
     // Remove readiness from actor
     action.actor.readiness = 0
@@ -201,9 +198,9 @@ class Battle(
       
     aiOpt.map(_.update(this))
     
-    while (!eventQueue.isEmpty && eventQueue.head.time <= time) {
-      val event = eventQueue.dequeue().action
-      event.process(this)
+    while (!eventQueue.isEmpty) {
+      val action = eventQueue.dequeue()
+      action.process(this)
     }
   }
     

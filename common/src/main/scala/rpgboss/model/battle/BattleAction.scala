@@ -3,20 +3,13 @@ package rpgboss.model.battle
 import rpgboss.model._
 
 /**
- * A BattleEvent is something that occurs during a battle. It may be something
- * explicitly queued by player action, or something queued internally.
- */
-trait BattleEvent {
-  def process(battle: Battle)
-}
-
-/**
  * A BattleAction is an action taken by an entity in the battle. It consumes 
  * the initiative a.k.a. readiness of that entity and moves it to the back
  * of the ready queue.
  */
-trait BattleAction extends BattleEvent {
+trait BattleAction {
   def actor: BattleStatus
+  def process(battle: Battle)
 }
 
 case class NullAction(actor: BattleStatus) extends BattleAction {
@@ -56,8 +49,3 @@ case class SkillAction(actor: BattleStatus, target: BattleStatus, skillId: Int)
   }
 }
 
-/**
- * The time is stored separately from the action, as entities may take actions
- * without knowing when they will actually occur.
- */
-case class TimestampedBattleEvent(time: Double, action: BattleEvent)

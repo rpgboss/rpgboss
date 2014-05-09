@@ -7,6 +7,7 @@ import rpgboss.model.resource._
 import rpgboss.player.entity._
 import rpgboss.lib.ThreadChecked
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import rpgboss.lib.GdxUtils
 
 case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
                         y: Int) {
@@ -32,6 +33,49 @@ class BattleScreen(
   with RpgScreen {
   assume(atlasSprites != null)
 
+  object PlayerActionWindow extends ThreadChecked {
+    class RunningWindow(battle: Battle, actor: BattleStatus) {
+      import concurrent.ExecutionContext.Implicits.global
+      
+      assert(onBoundThread())
+      assert(battle != null)
+      
+      def run() = concurrent.Future {
+        assert(onDifferentThread())
+        PlayerActionWindow.synchronized {
+          current = Some(this)
+        }
+     
+        val window = scriptInterface.newChoiceWindow(
+          Array("Attack", "Skill", "Item"), 100, 300, 140, 180)
+        
+        window.getChoice() match {
+          case 0 => GdxUtils.syncRun {
+            
+          }
+        }
+      }
+      
+      def getTarget() = {
+        assert(onDifferentThread())
+        
+        
+      }
+    }
+    
+    // Accessed on multiple threads
+    var current: Option[RunningWindow] = None
+    
+    def spawnIfNeeded(battle: Battle,
+                      readyEntity: Option[BattleStatus]) = synchronized {
+      assert(onBoundThread())
+      if (readyEntity.isDefined && current.isEmpty) {
+        val window = new RunningWindow(_battle.get, readyEntity.get)
+        window.run()
+      }
+    }
+  }
+  
   val scriptInterface = new ScriptInterface(gameOpt.orNull, this)
 
   val inputs = new InputMultiplexer()
@@ -55,7 +99,7 @@ class BattleScreen(
     } else {
       null
     }
-  } 
+  }
   
   def updateEnemyListWindow() = {
     assert(_battle.isDefined)

@@ -1,5 +1,6 @@
 package rpgboss.player.entity
 
+import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -14,14 +15,59 @@ import scala.concurrent.duration.Duration
 import rpgboss.player._
 import rpgboss.lib.GdxUtils
 
-class ChoiceWindow(
+abstract class ChoiceWindow(
+  persistent: PersistentState,
+  manager: WindowManager,
+  inputs: InputMultiplexer,
+  x: Int, y: Int, w: Int, h: Int,
+  defaultChoice: Int = 0,
+  allowCancel: Boolean = true)
+  extends Window(manager, inputs, x, y, w, h)
+  with ChoiceInputHandler {
+  
+  protected var curChoice = defaultChoice
+
+  override def capturedKeys =
+    Set(MyKeys.Left, MyKeys.Right, MyKeys.Up, MyKeys.Down,
+        MyKeys.OK, MyKeys.Cancel)
+
+  val choiceChannel = new Channel[Int]()
+
+  def project = manager.project
+  def assets = manager.assets
+  
+  def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
+    val snd = spec.map(s => Sound.readFromDisk(project, s.sound))
+    snd.map(_.loadAsset(assets))
+    snd
+  }
+
+  val soundSelect = optionallyReadAndLoad(project.data.startup.soundSelect)
+  val soundCursor = optionallyReadAndLoad(project.data.startup.soundCursor)
+  val soundCancel = optionallyReadAndLoad(project.data.startup.soundCancel)
+  val soundCannot = optionallyReadAndLoad(project.data.startup.soundCannot)
+
+  class ChoiceWindowScriptInterface extends WindowScriptInterface {
+    import GdxUtils._
+    
+    def getChoice() = choiceChannel.read
+    
+    def takeFocus(): Unit = syncRun {
+      inputs.remove(ChoiceWindow.this)
+      inputs.prepend(ChoiceWindow.this)
+      manager.focusWindow(ChoiceWindow.this)
+    }
+  }
+  
+  override lazy val scriptInterface = new ChoiceWindowScriptInterface
+}
+
+class TextChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
   lines: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  initialState: Int = Window.Opening,
-  openCloseTime: Double = 0.25,
   justification: Int = Window.Left,
   defaultChoice: Int = 0,
   // Choices displayed in a row-major way.
@@ -29,21 +75,15 @@ class ChoiceWindow(
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
-  extends Window(manager, inputs, x, y, w, h, initialState, openCloseTime)
-  with ChoiceInputHandler {
+  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h,
+                       defaultChoice, allowCancel) {
   val xpad = 24
   val ypad = 24
   val textWTotal = w - 2*xpad
   val textHTotal = h - 2*ypad
   val textColW = textWTotal / columns
 
-  private var curChoice = defaultChoice
-
   def wrapChoices = displayedLines == 0
-
-  override def capturedKeys =
-    Set(MyKeys.Left, MyKeys.Right, MyKeys.Up, MyKeys.Down,
-        MyKeys.OK, MyKeys.Cancel)
 
   var scrollXPosition = 0
   val textImages: Array[WindowText] = {
@@ -71,22 +111,6 @@ class ChoiceWindow(
     super.update(delta)
     textImages.foreach(_.update(delta))
   }
-
-  val choiceChannel = new Channel[Int]()
-
-  def project = manager.project
-  def assets = manager.assets
-  
-  def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
-    val snd = spec.map(s => Sound.readFromDisk(project, s.sound))
-    snd.map(_.loadAsset(assets))
-    snd
-  }
-
-  val soundSelect = optionallyReadAndLoad(project.data.startup.soundSelect)
-  val soundCursor = optionallyReadAndLoad(project.data.startup.soundCursor)
-  val soundCancel = optionallyReadAndLoad(project.data.startup.soundCancel)
-  val soundCannot = optionallyReadAndLoad(project.data.startup.soundCannot)
 
   def keyActivate(key: Int): Unit = {
     import MyKeys._
@@ -175,20 +199,68 @@ class ChoiceWindow(
       }
     }
   }
-
-  override lazy val scriptInterface = new WindowScriptInterface {
+  
+  class TextChoiceWindowScriptInterface extends ChoiceWindowScriptInterface {
     import GdxUtils._
-    
-    def getChoice() = choiceChannel.read
-    
-    def takeFocus(): Unit = syncRun {
-      inputs.remove(ChoiceWindow.this)
-      inputs.prepend(ChoiceWindow.this)
-      manager.focusWindow(ChoiceWindow.this)
-    }
     
     def setLineHeight(height: Int) = syncRun {
       textImages.foreach(_.setLineHeight(height))
     }
+  }
+  
+  override lazy val scriptInterface = new TextChoiceWindowScriptInterface
+}
+
+class SpatialChoiceWindow(
+  persistent: PersistentState,
+  manager: WindowManager,
+  inputs: InputMultiplexer,
+  choices: Array[IntRect] = Array(),
+  x: Int, y: Int, w: Int, h: Int,
+  defaultChoice: Int = 0,
+  allowCancel: Boolean = true)
+  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h,
+                       defaultChoice, allowCancel) {
+  def keyActivate(key: Int): Unit = {
+    import MyKeys._
+    
+    if (state != Window.Open)
+      return
+
+    // TODO: Remove hack
+    // Need to finish loading all assets before accepting key input
+    assets.finishLoading()
+
+    import MyKeys._
+    if (key == Up || key == Left) {
+      curChoice = Utils.pmod(curChoice - 1, choices.length)
+      soundCursor.map(_.getAsset(assets).play())
+    } else if (key == Down || key == Right) {
+      curChoice = Utils.pmod(curChoice + 1, choices.length)
+      soundCursor.map(_.getAsset(assets).play())
+    }
+
+    if (key == OK) {
+      soundSelect.map(_.getAsset(assets).play())
+      choiceChannel.write(curChoice)
+    }
+
+    if (key == Cancel && allowCancel) {
+      soundCancel.map(_.getAsset(assets).play())
+      choiceChannel.write(-1)
+    }
+  }
+
+  override def render(b: SpriteBatch): Unit = {
+    // Draw the window and text
+    super.render(b)
+
+    if (curChoice >= choices.length || curChoice < 0)
+      return
+      
+    val choiceRect = choices(curChoice)
+    skin.draw(b, skinRegion, 
+              choiceRect.x, choiceRect.y, choiceRect.w, choiceRect.h, 
+              bordersOnly = true)
   }
 }

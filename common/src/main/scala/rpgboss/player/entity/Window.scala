@@ -36,6 +36,7 @@ class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
   val x: Int, val y: Int, val w: Int, val h: Int,
+  invisible: Boolean = false,
   initialState: Int = Window.Opening,
   openCloseTime: Double = 0.25)
   extends InputHandler with ThreadChecked {
@@ -49,11 +50,17 @@ class Window(
   if (manager != null)
     manager.addWindow(this)
 
-  def state = _state
+  /**
+   * Accessed on multiple threads.
+   */
+  def state = synchronized {
+    _state
+  }
+  
   def skin = manager.windowskin
   def skinRegion = manager.windowskinRegion
 
-  private def changeState(newState: Int) = {
+  private def changeState(newState: Int) = synchronized {
     assert(onBoundThread())
     _state = newState
     stateAge = 0.0
@@ -64,7 +71,7 @@ class Window(
     stateAge += delta
     // change state of "expired" opening or closing animations
     if (stateAge >= openCloseTime) {
-      _state match {
+      state match {
         case Window.Opening => changeState(Window.Open)
         case Window.Open =>
         case Window.Closing => {
@@ -77,7 +84,7 @@ class Window(
 
   def render(b: SpriteBatch) = {
     assert(onBoundThread())
-    _state match {
+    state match {
         case Window.Open => {
         skin.draw(b, skinRegion, x, y, w, h)
       }
@@ -99,7 +106,7 @@ class Window(
 
   def startClosing() = {
     assert(onBoundThread())
-    assert(_state == Window.Open || _state == Window.Opening)
+    assert(state == Window.Open || state == Window.Opening)
     changeState(Window.Closing)
 
     // We allow scripts to continue as soon as the window is closing to provide
@@ -126,7 +133,7 @@ class Window(
 
   def removeFromWindowManagerAndInputs() = {
     assert(onBoundThread())
-    assert(_state == Window.Closed)
+    assert(state == Window.Closed)
 
     if (inputs != null)
       inputs.remove(this)
@@ -146,10 +153,8 @@ class TextWindow(
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  initialState: Int = Window.Opening,
-  openCloseTime: Double = 0.25,
   justification: Int = Window.Left)
-  extends Window(manager, inputs, x, y, w, h, initialState, openCloseTime) {
+  extends Window(manager, inputs, x, y, w, h) {
   val xpad = 24
   val ypad = 24
 
@@ -192,11 +197,9 @@ class PrintingTextWindow(
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
   timePerChar: Double,
-  initialState: Int = Window.Opening,
-  openCloseTime: Double = 0.25,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends Window(manager, inputs, x, y, w, h, initialState, openCloseTime) {
+  extends Window(manager, inputs, x, y, w, h) {
   val xpad = 24
   val ypad = 24
 

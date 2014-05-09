@@ -47,12 +47,15 @@ class WindowManager(
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
   def addWindow(window: Window) = {
+    assert(onBoundThread())
     windows.prepend(window)
   }
   def removeWindow(window: Window) = {
+    assert(onBoundThread())
     windows -= window
   }
   def focusWindow(window: Window) = {
+    assert(onBoundThread())
     removeWindow(window)
     addWindow(window)
   }
@@ -85,11 +88,9 @@ class WindowManager(
   def update(delta: Float) = {
     windows.foreach(_.update(delta))
 
-    windows.foreach(window => {
-      if (window.state == Window.Closed) {
-        window.removeFromWindowManagerAndInputs()
-      }
-    })
+    // TODO: Avoid a memory alloc here
+    val toRemove = windows.filter(_.state == Window.Closed)
+    toRemove.foreach(_.removeFromWindowManagerAndInputs())
   }
 
   // Render that's called before the map layer is drawn

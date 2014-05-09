@@ -63,7 +63,8 @@ case class Windowskin(proj: Project, name: String,
     batch: SpriteBatch,
     region: TextureRegion,
     x: Int, y: Int,
-    w: Int, h: Int) = {
+    w: Int, h: Int,
+    bordersOnly: Boolean = false) = {
 
     import math._
 
