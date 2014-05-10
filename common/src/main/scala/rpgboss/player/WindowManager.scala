@@ -74,6 +74,9 @@ class WindowManager(
     showTexture(slot, picture.newGdxTexture, x, y, w, h)
   }
 
+  /**
+   * Takes ownership of Texture.
+   */
   def showTexture(slot: Int, texture: Texture, x: Int, y: Int, w: Int,
                   h: Int) = {
     pictures(slot).map(_.dispose())

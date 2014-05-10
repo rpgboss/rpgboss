@@ -39,10 +39,12 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
 }
 
 trait ImageResource[T, MT <: AnyRef] extends Resource[T, MT] {
+  // TODO: Refactor or eliminate this method, since it's unpredictable
   lazy val img = Option(ImageIO.read(dataFile)) getOrElse {
     throw ResourceException("Can't load window skin: %s".format(name))
   }
   
+  // TODO: Eliminate this method in favor of asset manager
   def newGdxTexture = 
     new Texture(Gdx.files.absolute(dataFile.getAbsolutePath()))
 }

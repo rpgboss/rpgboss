@@ -20,9 +20,10 @@ abstract class ChoiceWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   x: Int, y: Int, w: Int, h: Int,
+  invisible: Boolean = false,
   defaultChoice: Int = 0,
   allowCancel: Boolean = true)
-  extends Window(manager, inputs, x, y, w, h)
+  extends Window(manager, inputs, x, y, w, h, invisible)
   with ChoiceInputHandler {
   
   protected var curChoice = defaultChoice
@@ -75,7 +76,8 @@ class TextChoiceWindow(
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
-  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h,
+  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h, 
+                       invisible = false,
                        defaultChoice, allowCancel) {
   val xpad = 24
   val ypad = 24
@@ -216,11 +218,10 @@ class SpatialChoiceWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   choices: Array[IntRect] = Array(),
-  x: Int, y: Int, w: Int, h: Int,
   defaultChoice: Int = 0,
   allowCancel: Boolean = true)
-  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h,
-                       defaultChoice, allowCancel) {
+  extends ChoiceWindow(persistent, manager, inputs, 0, 0, 0, 0,
+                       invisible = true, defaultChoice, allowCancel) {
   def keyActivate(key: Int): Unit = {
     import MyKeys._
     

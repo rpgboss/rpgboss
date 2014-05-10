@@ -13,8 +13,17 @@ case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
                         y: Int) {
   val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
 
-  val imageW = spriteset.tileW.toFloat
-  val imageH = spriteset.tileH.toFloat
+  val imageW = spriteset.tileW
+  val imageH = spriteset.tileH
+  
+  def getBoundsArray() = Array(x, y, imageW, imageH)
+}
+
+/**
+ * x and y coordinates refer to the top-left of the battler.
+ */
+case class EnemyBattlerInfo(x: Int, y: Int, w: Int, h: Int) {
+  def getBoundsArray() = Array(x, y, w, h)
 }
 
 /**
@@ -50,16 +59,48 @@ class BattleScreen(
           Array("Attack", "Skill", "Item"), 100, 300, 140, 180)
         
         window.getChoice() match {
-          case 0 => GdxUtils.syncRun {
-            
+          case 0 => {
+            val target = getTarget(defaultToParty = false)
+            GdxUtils.syncRun {
+              _battle.get.takeAction(AttackAction(actor, target))
+            }
+          }
+          case _ => {
+            GdxUtils.syncRun {
+              _battle.get.takeAction(NullAction(actor))
+            }
           }
         }
+        
+        window.close()
       }
       
-      def getTarget() = {
+      /**
+       * Gets the BattleStatus of a target in the battle.
+       * TODO: Skip in-eligible targets (dead, etc.)
+       */
+      def getTarget(defaultToParty: Boolean) = {
         assert(onDifferentThread())
+        assert(_enemyBattlers.length == _battle.get.enemyStatus.length)
+        assert(_partyBattlers.length == _battle.get.partyStatus.length)
         
+        val choices = 
+          _enemyBattlers.map(_.getBoundsArray()) ++ 
+          _partyBattlers.map(_.getBoundsArray())
         
+        val defaultChoice = 
+          if (defaultToParty)
+            _enemyBattlers.length
+          else 
+            0
+          
+        val choice = scriptInterface.getSpatialChoice(
+          choices.toArray, defaultChoice)
+          
+        if (choice < _enemyBattlers.length)
+          _battle.get.enemyStatus(choice)
+        else
+          _battle.get.partyStatus(choice - _enemyBattlers.length)
       }
     }
     
@@ -82,6 +123,8 @@ class BattleScreen(
 
   // Battle variables
   private var _battle: Option[Battle] = None
+  private val _enemyBattlers = 
+    new collection.mutable.ArrayBuffer[EnemyBattlerInfo]
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
 
   val windowManager = new WindowManager(assets, project, screenW, screenH)
@@ -147,6 +190,7 @@ class BattleScreen(
 
     _battle = Some(battle)
 
+    assert(_enemyBattlers.isEmpty)
     for ((unit, i) <- battle.encounter.units.zipWithIndex) {
       val enemy = project.data.enums.enemies(unit.enemyIdx)
       enemy.battler.map { battlerSpec =>
@@ -155,17 +199,24 @@ class BattleScreen(
 
         val battlerWidth = (texture.getWidth() * battlerSpec.scale).toInt
         val battlerHeight = (texture.getHeight() * battlerSpec.scale).toInt
+        
+        val battlerLeft = unit.x - battlerWidth / 2 
+        val battlerTop = unit.y - battlerHeight / 2
 
         windowManager.showTexture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           texture,
-          unit.x - battlerWidth / 2,
-          unit.y - battlerHeight / 2,
+          battlerLeft,
+          battlerTop,
           battlerWidth,
           battlerHeight)
+          
+        _enemyBattlers.append(EnemyBattlerInfo(
+          battlerLeft, battlerTop, battlerWidth, battlerHeight))
       }
     }
 
+    assert(_partyBattlers.isEmpty)
     for ((partyId, i) <- battle.partyIds.zipWithIndex) {
       val character = project.data.enums.characters(partyId)
       character.sprite.map { spriteSpec =>
@@ -185,12 +236,17 @@ class BattleScreen(
       windowManager.hidePicture(i)
     }
 
+    _enemyBattlers.clear()
     _partyBattlers.clear()
   }
 
-  def update(delta: Float) = {
-    // TODO: Peel items off the ready queue. For a player, spawn a choice 
-    // window. For an enemy, make a decision on the action.
+  def update(delta: Float): Unit = {
+    if (windowManager.curTransition.isDefined)
+      return
+    
+    _battle.map { battle =>
+      PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
+    }
     
     assert(onBoundThread())
     windowManager.update(delta)

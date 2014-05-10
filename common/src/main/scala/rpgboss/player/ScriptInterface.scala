@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import rpgboss.lib._
 import rpgboss.model._
+import rpgboss.model.battle._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import Predef._
@@ -141,6 +142,45 @@ class ScriptInterface(
     activeScreen.windowManager.curTransition =
       Some(Transition(startAlpha, endAlpha, durationMs))
   }
+  
+  def startBattle(encounterId: Int) = {
+    assert(encounterId > 0)
+    assert(encounterId < project.data.enums.encounters.length)
+    
+    assert(game.activeScreen == game.mapScreen)
+    
+    // Fade out map
+    setTransition(0, 1, 600)
+    sleep(600)
+    
+    syncRun {
+      game.setActiveScreen(game.battleScreen)
+    
+      // TODO fix this hack of manipulating battleScreen directly
+      activeScreen.windowManager.curTransition =
+        Some(Transition(1, 0, 600))
+        
+      val encounter = project.data.enums.encounters(encounterId)
+      val charactersIdxs = 
+        (0 until project.data.enums.characters.length).toArray
+
+      val battle = new Battle(
+        project.data,
+        persistent.getIntArray(PARTY),
+        persistent.getIntArray(CHARACTER_LEVELS),
+        persistent.getIntArray(CHARACTER_HPS),
+        persistent.getIntArray(CHARACTER_MPS),
+        charactersIdxs.map(id => persistent.getIntArray(CHARACTER_EQUIP(id))),
+        charactersIdxs.map(
+          id => persistent.getIntArray(CHARACTER_STATUS_EFFECTS(id))),
+        persistent.getIntArray(CHARACTER_ROW),
+        encounter,
+        aiOpt = Some(new RandomEnemyAI))
+      
+      // TODO: Add background picture
+      game.battleScreen.startBattle(battle, None)
+    }
+  }
 
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int,
                   h: Int) = syncRun {
@@ -227,6 +267,33 @@ class ScriptInterface(
       1 /* columns */ ,
       0 /* displayedChoices */ ,
       false /* allowCancel */ )
+      
+  /**
+   * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
+   * the choice index, or -1 if the choices were invalid.
+   */
+  def getSpatialChoice(choices: Array[Array[Int]], defaultChoice: Int): Int = {
+    if (choices.length == 0)
+      return -1
+    
+    for (choice <- choices) {
+      if (choice.length != 4)
+        return -1
+      if (choice(2) <= 0 || choice(3) <= 0)
+        return -1
+    }
+    
+    val window = syncRun {
+      new SpatialChoiceWindow(
+        game.persistent, 
+        activeScreen.windowManager,
+        activeScreen.inputs,
+        choices.map(x => IntRect(x(0), x(1), x(2), x(3))),
+        defaultChoice = defaultChoice)
+    }
+    
+    window.scriptInterface.getChoice()
+  }
 
   def showText(text: Array[String], x: Int, y: Int, w: Int, h: Int,
                timePerChar: Double) = {
@@ -239,9 +306,7 @@ class ScriptInterface(
         x, y, w, h,
         timePerChar)
     }
-    println("Begin await close")
     window.scriptInterface.awaitClose()
-    println("End await close")
   }
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {
