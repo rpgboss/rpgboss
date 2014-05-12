@@ -34,7 +34,7 @@ trait HasScriptConstants {
   val CHARACTER_MPS = "characterMps"
   val CHARACTER_MAX_HPS = "characterMaxHps"
   val CHARACTER_MAX_MPS = "characterMaxMps"
-  val CHARACTER_ROW = "characterRow"
+  val CHARACTER_ROWS = "characterRow"
 
   def CHARACTER_EQUIP(characterId: Int) =
     "characterEquip-%d".format(characterId)
@@ -144,7 +144,7 @@ class ScriptInterface(
   }
   
   def startBattle(encounterId: Int) = {
-    assert(encounterId > 0)
+    assert(encounterId >= 0)
     assert(encounterId < project.data.enums.encounters.length)
     
     assert(game.activeScreen == game.mapScreen)
@@ -173,7 +173,7 @@ class ScriptInterface(
         charactersIdxs.map(id => persistent.getIntArray(CHARACTER_EQUIP(id))),
         charactersIdxs.map(
           id => persistent.getIntArray(CHARACTER_STATUS_EFFECTS(id))),
-        persistent.getIntArray(CHARACTER_ROW),
+        persistent.getIntArray(CHARACTER_ROWS),
         encounter,
         aiOpt = Some(new RandomEnemyAI))
       
@@ -402,7 +402,7 @@ class ScriptInterface(
     setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
     setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
 
-    setIntArray(CHARACTER_MAX_MPS, characters.map(x => 0))
+    setIntArray(CHARACTER_ROWS, characters.map(x => 0))
   }
 }
 

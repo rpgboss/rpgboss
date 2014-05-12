@@ -29,6 +29,8 @@ object EventCmdDialog {
       case e: SetEvtState => new SetEvtStateDialog(owner, e, successF)
       case e: MoveEvent => 
         new MoveEventCmdDialog(owner, sm, mapName, e, successF)
+      case e: StartBattle =>
+        new StartBattleCmdDialog(owner, sm, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
     }
 }

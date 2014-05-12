@@ -26,6 +26,7 @@ object EventCmd {
     classOf[SetEvtState],
     classOf[MoveEvent],
     classOf[RunJs],
+    classOf[StartBattle],
     classOf[SetInt])
 
   def aryToJs(a: Array[String]) = a.map(strToJs(_)).mkString("[", ", ", "]")
@@ -71,6 +72,10 @@ case class MoveEvent(
 
     List(getEntityCmd)
   }
+}
+
+case class StartBattle(encounterId: Int = 0) extends EventCmd {
+  def toJs() = List("game.startBattle(%d);".format(encounterId))
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {

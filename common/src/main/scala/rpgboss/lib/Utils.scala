@@ -119,8 +119,11 @@ object Utils {
   def removeFromSeq[T](seq: Seq[T], i: Int) =
     seq.take(i) ++ seq.drop(i + 1)
 
-  def readClasspathImage(path: String) =
-    ImageIO.read(getClass.getClassLoader.getResourceAsStream(path))
+  def readClasspathImage(path: String) = {
+    val resource = getClass.getClassLoader.getResourceAsStream(path)
+    assert(resource != null)
+    ImageIO.read(resource)
+  }
     
   // TODO: Look for a more efficient implementation.
   def deepCopy[A <: AnyRef](a: A)(implicit m: reflect.Manifest[A]): A = {
