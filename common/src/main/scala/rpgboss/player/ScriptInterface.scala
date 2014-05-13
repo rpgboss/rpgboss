@@ -143,7 +143,7 @@ class ScriptInterface(
       Some(Transition(startAlpha, endAlpha, durationMs))
   }
   
-  def startBattle(encounterId: Int) = {
+  def startBattle(encounterId: Int, battleBackground: String) = {
     assert(encounterId >= 0)
     assert(encounterId < project.data.enums.encounters.length)
     
@@ -177,8 +177,7 @@ class ScriptInterface(
         encounter,
         aiOpt = Some(new RandomEnemyAI))
       
-      // TODO: Add background picture
-      game.battleScreen.startBattle(battle, None)
+      game.battleScreen.startBattle(battle, battleBackground)
     }
   }
 
@@ -292,7 +291,9 @@ class ScriptInterface(
         defaultChoice = defaultChoice)
     }
     
-    window.scriptInterface.getChoice()
+    val choice = window.scriptInterface.getChoice()
+    window.scriptInterface.close()
+    choice
   }
 
   def showText(text: Array[String], x: Int, y: Int, w: Int, h: Int,

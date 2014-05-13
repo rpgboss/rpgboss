@@ -82,8 +82,12 @@ class Window(
     }
   }
 
-  def render(b: SpriteBatch) = {
+  def render(b: SpriteBatch): Unit = {
     assert(onBoundThread())
+    
+    if (invisible)
+      return
+    
     state match {
         case Window.Open => {
         skin.draw(b, skinRegion, x, y, w, h)

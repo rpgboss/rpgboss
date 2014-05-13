@@ -88,6 +88,6 @@ case class ResourceException(msg: String) extends Exception(msg)
 
 object Resource {
   val resourceTypes = List(
-      AnimationImage, Autotile, Battler, Iconset, Msgfont, Music, Picture,
-      RpgMap, Script, Sound, Spriteset, Tileset, Windowskin)
+      AnimationImage, Autotile, Battler, BattleBackground, Iconset, Msgfont, 
+      Music, Picture, RpgMap, Script, Sound, Spriteset, Tileset, Windowskin)
 }

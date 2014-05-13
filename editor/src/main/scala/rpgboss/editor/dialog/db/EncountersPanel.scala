@@ -51,8 +51,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
       if (battleScreen.battleActive)
         battleScreen.endBattle()
 
-      battleScreen.startBattle(
-        battle, Some("defaultrc_battleback/crownlesswish_rrr.jpg"))
+      battleScreen.startBattle(battle, "default/crownlesswish_rrr.jpg")
     }
 
     override def create() = {

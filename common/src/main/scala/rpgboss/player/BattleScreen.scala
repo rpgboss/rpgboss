@@ -73,6 +73,10 @@ class BattleScreen(
         }
         
         window.close()
+        
+        PlayerActionWindow.synchronized {
+          current = None
+        }
       }
       
       /**
@@ -178,14 +182,17 @@ class BattleScreen(
     partyListWindow.updateText(partyLines)
   }
   
-  def startBattle(battle: Battle, bgPicture: Option[String]) = {
+  def startBattle(battle: Battle, battleBackground: String) = {
     assert(onBoundThread())
     assert(_battle.isEmpty)
 
-    bgPicture.map { picName =>
-      // TODO: Make more robust
-      windowManager.showPicture(PictureSlots.BATTLE_BACKGROUND, picName,
-                                0, 0, 640, 320)
+    if (!battleBackground.isEmpty) {
+      val bg = BattleBackground.readFromDisk(project, battleBackground)
+      val texture = bg.newGdxTexture
+      if (texture != null) {
+        windowManager.showTexture(
+          PictureSlots.BATTLE_BACKGROUND, texture, 0, 0, 640, 320)
+      }
     }
 
     _battle = Some(battle)
@@ -241,14 +248,19 @@ class BattleScreen(
   }
 
   def update(delta: Float): Unit = {
+    assert(onBoundThread())
+    
     if (windowManager.curTransition.isDefined)
       return
     
     _battle.map { battle =>
+      battle.update(delta)
       PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
     }
     
-    assert(onBoundThread())
+    updateEnemyListWindow()
+    updatePartyListWindow()
+    
     windowManager.update(delta)
   }
 

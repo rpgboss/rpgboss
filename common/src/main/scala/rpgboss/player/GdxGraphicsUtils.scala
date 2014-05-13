@@ -5,6 +5,9 @@ import rpgboss.model._
 import rpgboss.model.resource._
 
 object GdxGraphicsUtils {
+  /**
+   * x and y are defined to the top-left of the sprite image.
+   */
   def renderSprite(
     batch: SpriteBatch, atlasSprites: TextureAtlas, spriteset: Spriteset,
     spriteIdx: Int, dir: Int, step: Int, x: Float, y: Float, w: Float, 
@@ -14,23 +17,12 @@ object GdxGraphicsUtils {
     val region = atlasSprites.findRegion(spriteset.name)
     val (srcX, srcY) = spriteset.srcTexels(spriteIdx, dir, step)
 
-    /*
-     * Given the definition of the position (see beginning of the file),
-     * calculate the top-left corner of the graphic we draw.
-     * We use top-left because we have flipped the y-axis in libgdx to match
-     * the map coordinates we use.
-     */
-    val dstOriginX: Float = x - w / 2.0f
-    val dstOriginY: Float = y - h + w / 2
-
     val srcXInRegion = region.getRegionX() + srcX
     val srcYInRegion = region.getRegionY() + srcY
 
     batch.draw(
       region.getTexture(),
-      dstOriginX.toFloat,
-      dstOriginY.toFloat,
-      w, h,
+      x, y, w, h,
       srcXInRegion,
       srcYInRegion,
       spriteset.tileW,

@@ -5,6 +5,7 @@ import rpgboss.model.event._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.editor._
+import rpgboss.editor.resourceselector.BattleBackgroundField
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -13,22 +14,30 @@ class StartBattleCmdDialog(
   successF: (StartBattle) => Any)
   extends StdDialog(owner, "StartBattle") {
 
-  var encounterId = initial.encounterId 
+  var model = initial 
   
   val encounterSelect = indexedCombo(
     sm.getProjData.enums.encounters,
-    encounterId,
-    encounterId = _)
-    
+    model.encounterId,
+    v => model = model.copy(encounterId = v))
+  
+  val battleBgSelect = new BattleBackgroundField(
+    owner, 
+    sm, 
+    model.battleBackground,
+    v => model = model.copy(battleBackground = v))
 
   def okFunc() = {
-    successF(StartBattle(encounterId))
+    successF(model)
     close()
   }
 
   contents = new DesignGridPanel {
     row().grid().add(leftLabel("Encounter:"))
     row().grid().add(encounterSelect)
+    
+    row().grid().add(leftLabel("Battle Background:"))
+    row().grid().add(battleBgSelect)
 
     addButtons(cancelBtn, okBtn)
   }

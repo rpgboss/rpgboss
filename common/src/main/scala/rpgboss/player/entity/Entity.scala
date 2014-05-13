@@ -149,8 +149,17 @@ class Entity(
 
   def render(batch: SpriteBatch, atlasSprites: TextureAtlas) = {
     if (spriteset != null) {
+      /*
+       * Given the definition of the position (see beginning of the file),
+       * calculate the top-left corner of the graphic we draw.
+       * We use top-left because we have flipped the y-axis in libgdx to match
+       * the map coordinates we use.
+       */
+      val dstOriginX: Float = x - graphicW / 2.0f
+      val dstOriginY: Float = y - graphicH + graphicW / 2
+      
       GdxGraphicsUtils.renderSprite(batch, atlasSprites, spriteset, spriteIdx, 
-          dir, currentStep(), x, y, graphicW, graphicH)
+          dir, currentStep(), dstOriginX, dstOriginY, graphicW, graphicH)
     }
   }
 }

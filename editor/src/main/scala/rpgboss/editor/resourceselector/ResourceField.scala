@@ -32,6 +32,24 @@ class StringSpecSelectDialog[M, MT](
   override def onSuccess(result: Option[String]) = onSuccessF(result)
 }
 
+class BattleBackgroundSelectDialog(
+  owner: Window,
+  sm: StateMaster,
+  initialSelectionOpt: Option[String],
+  onSuccessF: (Option[String]) => Unit)
+  extends StringSpecSelectDialog(
+    owner,
+    sm,
+    initialSelectionOpt,
+    false,
+    BattleBackground,
+    onSuccessF) {
+  override def rightPaneFor(selection: String, unused: String => Unit) = {
+    val img = BattleBackground.readFromDisk(sm.getProj, selection)
+    new ImagePanel(img.img) with ResourceRightPane
+  }
+}
+
 class PictureSelectDialog(
   owner: Window,
   sm: StateMaster,
@@ -155,6 +173,18 @@ class WindowskinField(
   }
 }
 
+class BattleBackgroundField(
+  owner: Window,
+  sm: StateMaster,
+  initial: String,
+  onUpdate: String => Unit)
+  extends StringBrowseField(owner, sm, initial, onUpdate) {
+  override def doBrowse() = {
+    val diag = new BattleBackgroundSelectDialog(owner, sm, model, model = _)
+    diag.open()
+  }
+}
+
 class PictureField(
   owner: Window,
   sm: StateMaster,
@@ -162,8 +192,7 @@ class PictureField(
   onUpdate: String => Unit)
   extends StringBrowseField(owner, sm, initial, onUpdate) {
   override def doBrowse() = {
-    val diag = new PictureSelectDialog(
-      owner, sm, model, model = _)
+    val diag = new PictureSelectDialog(owner, sm, model, model = _)
     diag.open()
   }
 }

@@ -74,8 +74,10 @@ case class MoveEvent(
   }
 }
 
-case class StartBattle(encounterId: Int = 0) extends EventCmd {
-  def toJs() = List("game.startBattle(%d);".format(encounterId))
+case class StartBattle(encounterId: Int = 0, battleBackground: String = "") 
+  extends EventCmd {
+  def toJs() = List(
+    """game.startBattle(%d, "%s");""".format(encounterId, battleBackground))
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {

@@ -95,15 +95,17 @@ case class Windowskin(proj: Project, name: String,
       drawSubimage(srcXp * 16, srcYp * 16, srcWp * 16, srcHp * 16,
         dstX, dstY, dstW, dstH)
 
-    // Draw the stretched background
-    drawSubimage(0, 0, 64, 64, 0, 0, w, h)
+    if (!bordersOnly) {
+      // Draw the stretched background
+      drawSubimage(0, 0, 64, 64, 0, 0, w, h)
 
-    // Draw the tiled background  
-    for (i <- 0 until ceilIntDiv(w, 64); j <- 0 until ceilIntDiv(h, 64)) {
-      val wToDraw = min(64, w - i * 64)
-      val hToDraw = min(64, h - j * 64)
-      // Tiled background origin at (0, 64)
-      drawSubimage(0, 64, wToDraw, hToDraw, i * 64, j * 64, wToDraw, hToDraw)
+      // Draw the tiled background  
+      for (i <- 0 until ceilIntDiv(w, 64); j <- 0 until ceilIntDiv(h, 64)) {
+        val wToDraw = min(64, w - i * 64)
+        val hToDraw = min(64, h - j * 64)
+        // Tiled background origin at (0, 64)
+        drawSubimage(0, 64, wToDraw, hToDraw, i * 64, j * 64, wToDraw, hToDraw)
+      }
     }
 
     // paint borders
