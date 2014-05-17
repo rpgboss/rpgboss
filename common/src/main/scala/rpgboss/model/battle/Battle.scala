@@ -86,6 +86,13 @@ class RandomEnemyAI extends BattleAI {
   }
 }
 
+case class BattleActionNotification(
+  action: BattleAction, damages: Array[TakenDamage]) {
+  override def toString(): String = {
+    "BattleActionNotification(%s, %s)".format(action, damages.deep)
+  }
+}
+
 /**
  * @param   characterLevels         The levels of all the characters, not just 
  *                                  the ones within partyIds.
@@ -113,11 +120,18 @@ class Battle(
    */
   val baseTurnTime = 4.0
   
+  private var _currentNotification: Option[BattleActionNotification] = None
+  
+  def getNotification = _currentNotification
+  def dismissNotification() = 
+    _currentNotification = None
+  
   /**
-   * Simulation events that have been queued up, but have not yet taken place.
-   * There should not be any duplicate elements in this queue.
+   * BattleActions that have been queued up, but have not yet executed.
+   * They live in a queue because we want actions to occur and be seen
+   * by the player sequentially rather than all at once.
    */
-  private val eventQueue = new collection.mutable.Queue[BattleAction]()
+  private val actionQueue = new collection.mutable.Queue[BattleAction]()
   
   /**
    * Battle entities, player characters and enemies, queued in order of 
@@ -145,7 +159,7 @@ class Battle(
     assert(dequeued.isDefined)
     
     // Enqueue the actual action
-    eventQueue.enqueue(action)
+    actionQueue.enqueue(action)
     
     // Remove readiness from actor
     action.actor.readiness = 0
@@ -181,10 +195,10 @@ class Battle(
     }
     
     // Initialize ready queue
-    update(0)
+    advanceTime(0)
   }
   
-  def update(deltaSeconds: Double) = {
+  def advanceTime(deltaSeconds: Double) = {
     time += deltaSeconds
     
     allStatus.foreach(_.update(deltaSeconds, baseTurnTime))
@@ -198,9 +212,12 @@ class Battle(
       
     aiOpt.map(_.update(this))
     
-    while (!eventQueue.isEmpty) {
-      val action = eventQueue.dequeue()
-      action.process(this)
+    // Only do an action if there's no outstanding notification.
+    if (!actionQueue.isEmpty && _currentNotification.isEmpty) {
+      val action = actionQueue.dequeue()
+      val damages = action.process(this)
+      _currentNotification = Some(
+        BattleActionNotification(action, damages))
     }
   }
     

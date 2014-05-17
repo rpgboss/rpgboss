@@ -9,11 +9,13 @@ import rpgboss.model._
  */
 trait BattleAction {
   def actor: BattleStatus
-  def process(battle: Battle)
+  def process(battle: Battle): Array[TakenDamage]
 }
 
 case class NullAction(actor: BattleStatus) extends BattleAction {
-  def process(battle: Battle) = {}
+  def process(battle: Battle) = {
+    Array()
+  }
 }
 
 case class AttackAction(actor: BattleStatus, target: BattleStatus)
@@ -28,24 +30,29 @@ case class AttackAction(actor: BattleStatus, target: BattleStatus)
       weaponSkills
         .map(skillId => Damage.getDamages(actor, target, battle.pData, skillId))
         .flatten
+    
     target.hp -= damages.map(_.value).sum
+    
+    damages
   }
 }
 
 case class SkillAction(actor: BattleStatus, target: BattleStatus, skillId: Int)
   extends BattleAction {
-  def process(battle: Battle): Unit = {
+  def process(battle: Battle) = {
     if (skillId < battle.pData.enums.skills.length)
-      return
+      Array()
     
     val skill = battle.pData.enums.skills(skillId)
     if (actor.mp < skill.cost)
-      return
+      Array()
       
     actor.mp -= skill.cost
       
     val damages = Damage.getDamages(actor, target, battle.pData, skillId)
     target.hp -= damages.map(_.value).sum
+    
+    damages
   }
 }
 

@@ -48,7 +48,7 @@ class BattleSpec extends UnitSpec {
   "Battle" should "have battle units act in order of speed" in {
     val f = new BattleTest.BattleFixture
     
-    f.battle.update(f.battle.baseTurnTime)
+    f.battle.advanceTime(f.battle.baseTurnTime)
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
@@ -71,7 +71,7 @@ class BattleSpec extends UnitSpec {
   "Battle" should "use AI to automatically handle enemy actions" in {
     val f = new BattleTest.BattleFixture(aiOpt = Some(new RandomEnemyAI))
     
-    f.battle.update(f.battle.baseTurnTime)
+    f.battle.advanceTime(f.battle.baseTurnTime)
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)

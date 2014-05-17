@@ -1,12 +1,13 @@
 package rpgboss.player
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.utils.Logger
 import rpgboss.model._
 import rpgboss.model.battle._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import rpgboss.lib.ThreadChecked
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import rpgboss.lib.GdxUtils
 
 case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
@@ -41,6 +42,8 @@ class BattleScreen(
   extends ThreadChecked
   with RpgScreen {
   assume(atlasSprites != null)
+  
+  val logger = new Logger("BatleScreen", Logger.INFO)
 
   object PlayerActionWindow extends ThreadChecked {
     class RunningWindow(battle: Battle, actor: BattleStatus) {
@@ -254,7 +257,13 @@ class BattleScreen(
       return
     
     _battle.map { battle =>
-      battle.update(delta)
+      battle.advanceTime(delta)
+      
+      battle.getNotification.map { notification =>
+        logger.info(notification.toString())
+        battle.dismissNotification()
+      }
+      
       PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
     }
     

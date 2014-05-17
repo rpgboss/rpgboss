@@ -1,3 +1,4 @@
+* Figure out why there is no damage for BattleActions.
 * Make BattleAction actually work.
 * Make a DamageText type of window.
 * Have Battle publish events in some way to be displayed.
