@@ -41,6 +41,9 @@ case class LearnedSkill(var level: Int, var skillId: Int)
 
 case class CharClass(
   var name: String = "",
+  
+  var unarmedAttackSkillId: Int = 0,
+  
   var canUseItems: Array[Int] = Array(),
   var effects: Array[Effect] = Array(),
   var learnedSkills: Array[LearnedSkill] = Array()) extends HasName
@@ -57,6 +60,9 @@ case class Enemy(
   var arm: Int = 10,
   var mre: Int = 10,
   var expValue: Int = 100,
+  
+  var attackSkillId: Int = 0,
+  
   var effects: Array[Effect] = Array(),
   var skills: Array[Int] = Array()) extends HasName {
   def baseStats =

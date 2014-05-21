@@ -8,7 +8,10 @@ object BattleEntityType extends Enumeration {
 }
 
 /**
- * @param row     0 for front row. 1 for back row. Other values are undefined.
+ * @param onAttackSkillIds      Usually there will be only one. However, it is 
+ *                              an array to support dual-wielding.
+ * @param row                   0 for front row. 1 for back row. Other values 
+ *                              are undefined.
  */
 class BattleStatus(
   pData: ProjectData,
@@ -18,6 +21,7 @@ class BattleStatus(
   var mp: Int,
   val baseStats: BaseStats,
   val equipment: Array[Int] = Array(),
+  val onAttackSkillIds: Array[Int],
   private var tempStatusEffects: Array[Int],
   val row: Int) {
   
@@ -167,22 +171,42 @@ class Battle(
   
   val partyStatus: Array[BattleStatus] = {
     for (id <- partyIds) yield {
-      val baseStats = 
-        pData.enums.characters(id).baseStats(pData, characterLevels(id))
-      new BattleStatus(pData, BattleEntityType.Party, id, 
+      val character = pData.enums.characters(id)
+      val baseStats = character.baseStats(pData, characterLevels(id))
+      
+      val allItems = pData.enums.items
+      val weaponSkills = 
+        characterEquip(id)
+          .filter(_ < allItems.length)
+          .map(id => allItems(id).onUseSkillId)
+      val onAttackSkills = 
+        if (weaponSkills.size == 0) {
+          assume(character.charClass < pData.enums.classes.size)
+          val charClass = pData.enums.classes(character.charClass)
+          Array(charClass.unarmedAttackSkillId)
+        } else {
+          weaponSkills
+        }
+        
+      new BattleStatus(pData, BattleEntityType.Party, id,
                        initialCharacterHps(id), initialCharacterMps(id),
                        baseStats, characterEquip(id),
-                       initialCharacterTempStatusEffects(id), 
+                       onAttackSkills, initialCharacterTempStatusEffects(id),
                        characterRows(id))
     }
   }
   val enemyStatus: Array[BattleStatus] = {
   
     for ((unit, i) <- encounter.units.zipWithIndex) yield {
-      val baseStats = pData.enums.enemies(unit.enemyIdx).baseStats
+      val enemy = pData.enums.enemies(unit.enemyIdx)
+      val baseStats = enemy.baseStats
       val row = (i * 2) / encounter.units.length
       new BattleStatus(pData, BattleEntityType.Enemy, i, baseStats.mhp, 
-                       baseStats.mmp, baseStats, Array(), Array(), row)
+                       baseStats.mmp, baseStats, 
+                       equipment = Array(), 
+                       onAttackSkillIds = Array(enemy.attackSkillId),
+                       tempStatusEffects = Array(), 
+                       row)
     }
   }
   val allStatus = partyStatus ++ enemyStatus

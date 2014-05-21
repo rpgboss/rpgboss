@@ -16,6 +16,7 @@ class DamageSpec extends UnitSpec {
       BaseStats(50, 20, 10, 10, 10, arm = 100, mre = 200, effects = Array()),
       Array(),
       Array(),
+      Array(0),
       0)
 
     def testFormula(formula: String, expected: Int) = {

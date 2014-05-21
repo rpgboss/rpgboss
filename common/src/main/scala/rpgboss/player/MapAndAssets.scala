@@ -85,8 +85,8 @@ class MapAndAssets(project: Project, val mapName: String) {
             val tileset = tilesets(byte1)
             val height = tileset.metadata.heightAry(byte3)(byte2)
             if (height > 0) {
-              println(ElevatedTile(
-                tileX, tileY, byte1, byte2, byte3, height + tileY))
+//              println(ElevatedTile(
+//                tileX, tileY, byte1, byte2, byte3, height + tileY))
               buffer.append(ElevatedTile(
                 tileX, tileY, byte1, byte2, byte3, height + tileY))
             }

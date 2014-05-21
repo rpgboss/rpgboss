@@ -21,13 +21,8 @@ case class NullAction(actor: BattleStatus) extends BattleAction {
 case class AttackAction(actor: BattleStatus, target: BattleStatus)
   extends BattleAction {
   def process(battle: Battle) = {
-    val allItems = battle.pData.enums.items
-    val weaponSkills = 
-      actor.equipment
-        .filter(_ < allItems.length)
-        .map(id => allItems(id).onUseSkillId)
     val damages = 
-      weaponSkills
+      actor.onAttackSkillIds
         .map(skillId => Damage.getDamages(actor, target, battle.pData, skillId))
         .flatten
     

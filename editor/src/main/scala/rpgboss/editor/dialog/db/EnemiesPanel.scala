@@ -50,6 +50,11 @@ class EnemiesPanel(
 
       val fExpValue =
         new NumberSpinner(model.expValue, 10, 50000, model.expValue = _)
+      
+      val fAttackSkillId = indexedCombo(
+          dbDiag.model.enums.skills,
+          model.attackSkillId,
+          model.attackSkillId = _)
 
       row().grid(leftLabel("Name:")).add(fName)
 
@@ -68,6 +73,8 @@ class EnemiesPanel(
 
       row().grid(leftLabel("Speed:")).add(fSpd)
       row().grid(leftLabel("EXP Value:")).add(fExpValue)
+      
+      row().grid(leftLabel("Attack skill:")).add(fAttackSkillId)
     }
 
     val fEffects =

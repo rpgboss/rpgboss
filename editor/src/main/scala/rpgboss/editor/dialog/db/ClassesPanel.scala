@@ -30,6 +30,11 @@ class ClassesPanel(
       model.name,
       model.name = _,
       Some(refreshModel))
+      
+    val fUnarmedAttackSkillId = indexedCombo(
+      dbDiag.model.enums.skills,
+      model.unarmedAttackSkillId,
+      model.unarmedAttackSkillId = _)
 
     val fEffects =
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
@@ -50,9 +55,8 @@ class ClassesPanel(
       model.learnedSkills = _)
 
     val mainFields = new DesignGridPanel {
-
       row().grid(leftLabel("Name:")).add(fName)
-
+      row().grid(leftLabel("Unarmed attack skill:")).add(fUnarmedAttackSkillId)
     }
     
     val rightFields = new GridPanel(2, 1) {

@@ -1,7 +1,5 @@
-* Figure out why there is no damage for BattleActions.
-* Make BattleAction actually work.
 * Make a DamageText type of window.
-* Have Battle publish events in some way to be displayed.
+* Make animations for BattleDamage.
 
 * Make method that auto selects an element, asserting the collection is not empty. Use it in Battle.scala.
 * Window management and input managment are not directly linked. ChoiceWindows add and remove themselves to both stacks. Investigate if we can tie them together.

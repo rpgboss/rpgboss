@@ -32,7 +32,8 @@ object Settings {
       println("Generated file enumeration")
       Unit
     },
-    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum")
+    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum"),
+    Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("generateEnum")
    )
 
   lazy val editor = Settings.common ++ editorLibs ++ editorProguard
