@@ -123,6 +123,17 @@ class BattleScreen(
   private val _enemyBattlers = new collection.mutable.ArrayBuffer[IntRect]
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
   
+  /**
+   * Contains the state of the currently displaying battle notification.
+   * This comprises of damage text, animations, etc.
+   */
+  case class NotificationDisplay(
+    notification: BattleActionNotification,
+    windows: Seq[Window]) {
+    def done = windows.forall(_.state == Window.Closed)
+  }
+  var currentNotificationDisplay: Option[NotificationDisplay] = None
+  
   def getBox(entityType: BattleEntityType.Value, id: Int): BoxLike = {
     assume(entityType == BattleEntityType.Party ||
         entityType == BattleEntityType.Enemy)
@@ -282,15 +293,30 @@ class BattleScreen(
     _battle.map { battle =>
       battle.advanceTime(delta)
       
-      battle.getNotification.map { notification =>
-        for (damage <- notification.damages) {
-          val target = notification.action.target
-          val box = getBox(target.entityType, target.id)
-          new DamageTextWindow(gameOpt.get.persistent, windowManager, 
-              damage.value, box.x, box.y)
+      // Dismiss the current notification if it's done.
+      currentNotificationDisplay map { display =>
+        if (display.done) {
+          currentNotificationDisplay = None
+          assert (battle.getNotification.isDefined)
+          assert (display.notification == battle.getNotification.get)
+          battle.dismissNotification()
+        }
+      }
+      
+      // Add the next notification if it exists.
+      if (currentNotificationDisplay.isEmpty) {
+        battle.getNotification.map { notification =>
+          val windows = for (damage <- notification.damages) yield {
+            val target = notification.action.target
+            val box = getBox(target.entityType, target.id)
+            new DamageTextWindow(gameOpt.get.persistent, windowManager, 
+                damage.value, box.x, box.y)
+          }
+          
+          val display = NotificationDisplay(notification, windows)
+          currentNotificationDisplay = Some(display)
         }
         
-        battle.dismissNotification()
       }
       
       PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
