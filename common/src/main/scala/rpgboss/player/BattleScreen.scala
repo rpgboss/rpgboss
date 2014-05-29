@@ -193,8 +193,9 @@ class BattleScreen(
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       val texture = bg.newGdxTexture
       if (texture != null) {
-        windowManager.showTexture(
-          PictureSlots.BATTLE_BACKGROUND, texture, 0, 0, 640, 320)
+        windowManager.showPicture(
+          PictureSlots.BATTLE_BACKGROUND, 
+          TexturePicture(texture, 0, 0, 640, 320))
       }
     }
 
@@ -213,13 +214,14 @@ class BattleScreen(
         val battlerLeft = unit.x - battlerWidth / 2 
         val battlerTop = unit.y - battlerHeight / 2
 
-        windowManager.showTexture(
+        windowManager.showPicture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
-          texture,
-          battlerLeft,
-          battlerTop,
-          battlerWidth,
-          battlerHeight)
+          TexturePicture(
+            texture,
+            battlerLeft,
+            battlerTop,
+            battlerWidth,
+            battlerHeight))
           
         _enemyBattlers.append(
           IntRect(battlerLeft, battlerTop, battlerWidth, battlerHeight))
@@ -232,7 +234,28 @@ class BattleScreen(
       character.sprite.map { spriteSpec =>
         val x = 10 * i + 550
         val y = 20 * i + 180
-        _partyBattlers.append(PartyBattler(project, spriteSpec, x, y))
+        val battler = PartyBattler(project, spriteSpec, x, y)
+        
+        val (srcX, srcY) = battler.spriteset.srcTexels(
+          spriteSpec.spriteIndex, 
+          SpriteSpec.Directions.WEST, 
+          SpriteSpec.Steps.STEP0)
+        
+        windowManager.showPicture(
+          PictureSlots.BATTLE_SPRITES_PARTY + i, 
+          TextureAtlasRegionPicture(
+            atlasSprites,
+            battler.spriteset.name,
+            battler.x,
+            battler.y,
+            battler.w,
+            battler.h,
+            srcX,
+            srcY,
+            battler.spriteset.tileW,
+            battler.spriteset.tileH))
+            
+        _partyBattlers.append(battler)
       }
     }
   }
@@ -282,23 +305,6 @@ class BattleScreen(
   def render() = {
     assert(onBoundThread())
     windowManager.render()
-
-    windowManager.batch.begin()
-    // TODO: Fix hack of re-using screenLayer's spritebatch
-    for (partyBattler <- _partyBattlers) {
-      GdxGraphicsUtils.renderSprite(
-        windowManager.batch,
-        atlasSprites,
-        partyBattler.spriteset,
-        partyBattler.spriteSpec.spriteIndex,
-        SpriteSpec.Directions.WEST,
-        SpriteSpec.Steps.STILL,
-        partyBattler.x,
-        partyBattler.y,
-        partyBattler.w,
-        partyBattler.h)
-    }
-    windowManager.batch.end()
   }
 
   /**

@@ -43,6 +43,7 @@ object Constants {
     val BATTLE_BEGIN = 24
     val BATTLE_BACKGROUND = 24
     val BATTLE_SPRITES_ENEMIES = 28
+    val BATTLE_SPRITES_PARTY = 40
     val BATTLE_END = 50
     val ABOVE_WINDOW = 50
     val END = 64

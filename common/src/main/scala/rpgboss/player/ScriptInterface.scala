@@ -183,7 +183,7 @@ class ScriptInterface(
 
   def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int,
                   h: Int) = syncRun {
-    activeScreen.windowManager.showPicture(slot, name, x, y, w, h)
+    activeScreen.windowManager.showPictureByName(slot, name, x, y, w, h)
   }
 
   def hidePicture(slot: Int) = syncRun {

@@ -41,7 +41,7 @@ class WindowManager(
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
   var fontbmp: BitmapFont = font.getBitmapFont()
 
-  val pictures = Array.fill[Option[PictureInfo]](64)(None)
+  val pictures = Array.fill[Option[PictureLike]](64)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
   // TODO: Investigate if a more advanced z-ordering is needed other than just
@@ -69,18 +69,16 @@ class WindowManager(
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
-  def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int, h: Int) = {
+  def showPictureByName(slot: Int, name: String, x: Int, y: Int, w: Int, 
+                        h: Int) = {
     val picture = Picture.readFromDisk(project, name)
-    showTexture(slot, picture.newGdxTexture, x, y, w, h)
+    showPicture(slot, TexturePicture(picture.newGdxTexture, x, y, w, h))
   }
 
-  /**
-   * Takes ownership of Texture.
-   */
-  def showTexture(slot: Int, texture: Texture, x: Int, y: Int, w: Int,
-                  h: Int) = {
+  def showPicture(slot: Int, newPicture: PictureLike): Unit = {
+    assert(onBoundThread())
     pictures(slot).map(_.dispose())
-    pictures(slot) = Some(PictureInfo(texture, x, y, w, h))
+    pictures(slot) = Some(newPicture)    
   }
 
   def hidePicture(slot: Int) = {
@@ -156,12 +154,17 @@ class WindowManager(
   }
 }
 
+trait PictureLike {
+  def dispose()
+  def render(batch: SpriteBatch)
+}
+
 /**
  * Need call on dispose first
  */
-case class PictureInfo(
+case class TexturePicture(
   texture: Texture,
-  x: Int, y: Int, w: Int, h: Int) {
+  x: Int, y: Int, w: Int, h: Int) extends PictureLike {
 
   def dispose() = texture.dispose()
 
@@ -169,6 +172,32 @@ case class PictureInfo(
     batch.draw(texture,
       x, y, w, h,
       0, 0, texture.getWidth(), texture.getHeight(),
+      false, true)
+  }
+}
+
+case class TextureAtlasRegionPicture(
+  atlasSprites: TextureAtlas,
+  regionName: String,
+  x: Int, y: Int, w: Int, h: Int,
+  srcX: Int, srcY: Int, srcW: Int, srcH: Int) extends PictureLike {
+  
+  val region = atlasSprites.findRegion(regionName)
+  val srcXInRegion = region.getRegionX() + srcX
+  val srcYInRegion = region.getRegionY() + srcY
+  
+  def dispose() = {
+    // No need to dispose since the texture is part of the TextureAtlas
+  }
+  
+  def render(batch: SpriteBatch) = {
+    batch.draw(
+      region.getTexture(),
+      x, y, w, h,
+      srcXInRegion,
+      srcYInRegion,
+      srcW,
+      srcH,
       false, true)
   }
 }
