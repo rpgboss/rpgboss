@@ -7,24 +7,14 @@ import rpgboss.model.battle._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
-import rpgboss.lib.ThreadChecked
-import rpgboss.lib.GdxUtils
+import rpgboss.lib._
 
 case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
-                        y: Int) {
+                        y: Int) extends BoxLike {
   val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
 
-  val imageW = spriteset.tileW
-  val imageH = spriteset.tileH
-  
-  def getBoundsArray() = Array(x, y, imageW, imageH)
-}
-
-/**
- * x and y coordinates refer to the top-left of the battler.
- */
-case class EnemyBattlerInfo(x: Int, y: Int, w: Int, h: Int) {
-  def getBoundsArray() = Array(x, y, w, h)
+  val w = spriteset.tileW
+  val h = spriteset.tileH
 }
 
 /**
@@ -130,9 +120,19 @@ class BattleScreen(
 
   // Battle variables
   private var _battle: Option[Battle] = None
-  private val _enemyBattlers = 
-    new collection.mutable.ArrayBuffer[EnemyBattlerInfo]
+  private val _enemyBattlers = new collection.mutable.ArrayBuffer[IntRect]
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
+  
+  def getBox(entityType: BattleEntityType.Value, id: Int): BoxLike = {
+    assume(entityType == BattleEntityType.Party ||
+        entityType == BattleEntityType.Enemy)
+    
+    if (entityType == BattleEntityType.Party) {
+      return _partyBattlers(id)
+    } else {
+      return _enemyBattlers(id)
+    }
+  }
 
   val windowManager = new WindowManager(assets, project, screenW, screenH)
 
@@ -221,8 +221,8 @@ class BattleScreen(
           battlerWidth,
           battlerHeight)
           
-        _enemyBattlers.append(EnemyBattlerInfo(
-          battlerLeft, battlerTop, battlerWidth, battlerHeight))
+        _enemyBattlers.append(
+          IntRect(battlerLeft, battlerTop, battlerWidth, battlerHeight))
       }
     }
 
@@ -260,7 +260,13 @@ class BattleScreen(
       battle.advanceTime(delta)
       
       battle.getNotification.map { notification =>
-        logger.info(notification.toString())
+        for (damage <- notification.damages) {
+          val target = notification.action.target
+          val box = getBox(target.entityType, target.id)
+          new DamageTextWindow(gameOpt.get.persistent, windowManager, 
+              damage.value, box.x, box.y)
+        }
+        
         battle.dismissNotification()
       }
       
@@ -289,8 +295,8 @@ class BattleScreen(
         SpriteSpec.Steps.STILL,
         partyBattler.x,
         partyBattler.y,
-        partyBattler.imageW,
-        partyBattler.imageH)
+        partyBattler.w,
+        partyBattler.h)
     }
     windowManager.batch.end()
   }

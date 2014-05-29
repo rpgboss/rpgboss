@@ -14,6 +14,7 @@ import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.player._
+import rpgboss.lib.ThreadChecked
 
 object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
@@ -51,16 +52,21 @@ object WindowText {
 class WindowText(
   persistent: PersistentState,
   initialText: Array[String],
-  x: Int, y: Int, w: Int, h: Int,
+  private var x: Int, private var y: Int, w: Int, h: Int,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
-  var lineHeight: Int = 32) {
+  var lineHeight: Int = 32) extends ThreadChecked {
   
   protected var _text: Array[String] = 
     WindowText.processText(initialText, persistent)
   
   def setLineHeight(height: Int) =
     lineHeight = height
+    
+  def updatePosition(x: Int, y: Int) = {
+    this.x = x
+    this.y = y
+  }
   
   def updateText(newText: Array[String]) =
     _text = WindowText.processText(newText, persistent)

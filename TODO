@@ -1,4 +1,5 @@
-* Make a DamageText type of window.
+* DamageText should appear above battle sprites.
+* There should only be one battle notification going on at once.
 * Make animations for BattleDamage.
 
 * Make method that auto selects an element, asserting the collection is not empty. Use it in Battle.scala.

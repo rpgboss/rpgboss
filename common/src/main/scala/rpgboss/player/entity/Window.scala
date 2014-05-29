@@ -35,7 +35,8 @@ object Window {
 class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
-  val x: Int, val y: Int, val w: Int, val h: Int,
+  x: Int, y: Int, 
+  val w: Int, val h: Int,
   invisible: Boolean = false,
   initialState: Int = Window.Opening,
   openCloseTime: Double = 0.25)
@@ -194,6 +195,58 @@ class TextWindow(
   }
 }
 
+class DamageTextWindow(
+  persistent: PersistentState,
+  manager: WindowManager,
+  damage: Int,
+  initialX: Int, initialY: Int)
+  // TODO: We pass 'null' as inputs here because we don't want to accept input.
+  // Window has zeros for x, y, w, and h because the window itself is invisible.
+  extends Window(manager, null, 0, 0, 0, 0, 
+    invisible = true) {
+  
+  private val expiryTime = 0.6
+  private val yDisplacement = -30.0
+  
+  private var age = 0.0
+  
+  val textImage = new WindowText(
+    persistent,
+    initialText = Array(damage.toString()),
+    x = initialX,
+    y = initialY,
+    w = 20,
+    h = 20,
+    fontbmp = manager.fontbmp,
+    justification = Window.Center)
+
+  override def update(delta: Float): Unit = {
+    super.update(delta)
+    
+    if (state != Window.Open)
+      return
+    
+    age += delta;
+    
+    textImage.updatePosition(
+        initialX, 
+        ((age / expiryTime * yDisplacement) + initialY).toInt)
+    
+    super.update(delta)
+    textImage.update(delta)
+    
+    if (age > expiryTime) {
+      startClosing()
+    }
+  }
+
+  override def render(b: SpriteBatch) = {
+    super.render(b)
+    textImage.render(b)
+  }
+}
+
+
 class PrintingTextWindow(
   persistent: PersistentState,
   manager: WindowManager,
@@ -203,7 +256,7 @@ class PrintingTextWindow(
   timePerChar: Double,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends Window(manager, inputs, x, y, w, h) {
+  extends Window(manager, inputs, x, y, w, h, openCloseTime = 0.0) {
   val xpad = 24
   val ypad = 24
 

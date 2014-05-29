@@ -9,10 +9,12 @@ import rpgboss.model._
  */
 trait BattleAction {
   def actor: BattleStatus
+  def target: BattleStatus
   def process(battle: Battle): Array[TakenDamage]
 }
 
 case class NullAction(actor: BattleStatus) extends BattleAction {
+  override def target = null
   def process(battle: Battle) = {
     Array()
   }
