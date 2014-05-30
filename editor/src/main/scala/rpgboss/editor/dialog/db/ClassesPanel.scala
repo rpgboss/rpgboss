@@ -56,7 +56,7 @@ class ClassesPanel(
 
     val mainFields = new DesignGridPanel {
       row().grid(leftLabel("Name:")).add(fName)
-      row().grid(leftLabel("Unarmed attack skill:")).add(fUnarmedAttackSkillId)
+      row().grid(leftLabel("Unarmed attack:")).add(fUnarmedAttackSkillId)
     }
     
     val rightFields = new GridPanel(2, 1) {

@@ -19,9 +19,8 @@ class LearnedSkillPanel(
 
   val learnedSkills = ArrayBuffer(initial : _*)
 
-  border = BorderFactory.createTitledBorder("Learned Skills")
-
   val tableEditor = new TableEditor() {
+    def title = "Learned Skills"
     def colHeaders = Array("Level", "Skill")
     def getRowStrings(row: Int) = {
       assume(row < learnedSkills.size)
@@ -67,9 +66,7 @@ class LearnedSkillPanel(
     }
   }
 
-  contents += new ScrollPane {
-    contents = tableEditor
-  }
+  contents += tableEditor
 }
 
 class LearnedSkillDialog(

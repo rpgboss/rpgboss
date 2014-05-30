@@ -22,7 +22,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 
 object EncounterFieldGdxPanel {
   val width = 640
-  val height = 320
+  val height = 480
 }
 
 class EncounterFieldGdxPanel(project: Project, initial: Encounter)

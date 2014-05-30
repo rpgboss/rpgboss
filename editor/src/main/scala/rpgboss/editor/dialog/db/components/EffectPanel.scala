@@ -88,6 +88,8 @@ class EffectPanel(
 
   val miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
   val miscEffectsTable = new TableEditor() {
+    def title = "Other Effects"
+    
     def colHeaders = Array("Description", "Key", "Value")
     def getRowStrings(row: Int) = {
       assume(row < miscEffects.size)
@@ -139,10 +141,7 @@ class EffectPanel(
     }
   }
 
-  contents += new ScrollPane {
-    border = BorderFactory.createTitledBorder("Other Effects")
-    contents = miscEffectsTable
-  }
+  contents += miscEffectsTable
 }
 
 class EffectDialog(

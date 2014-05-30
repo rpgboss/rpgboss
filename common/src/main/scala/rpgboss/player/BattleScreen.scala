@@ -148,18 +148,16 @@ class BattleScreen(
   val windowManager = new WindowManager(assets, project, screenW, screenH)
 
   def battleActive = _battle.isDefined
+
+  val persistentState = gameOpt.map(_.persistent).getOrElse(new PersistentState)
   
   val enemyListWindow = {
-    if (gameOpt.isDefined) {
-      new TextWindow(
-        gameOpt.get.persistent,
-        windowManager,
-        inputs,
-        Array(),
-        0, 300, 200, 180)
-    } else {
-      null
-    }
+    new TextWindow(
+      persistentState,
+      windowManager,
+      inputs,
+      Array(),
+      0, 300, 200, 180)
   }
   
   def updateEnemyListWindow() = {
@@ -171,16 +169,12 @@ class BattleScreen(
   }
   
   val partyListWindow = {
-    if (gameOpt.isDefined) {
-      new TextWindow(
-        gameOpt.get.persistent,
-        windowManager,
-        inputs,
-        Array(),
-        200, 300, 440, 180)   
-    } else {
-      null
-    }
+    new TextWindow(
+      persistentState,
+      windowManager,
+      inputs,
+      Array(),
+      200, 300, 440, 180)
   }
   
   def updatePartyListWindow() = {
@@ -290,36 +284,39 @@ class BattleScreen(
     if (windowManager.curTransition.isDefined)
       return
     
-    _battle.map { battle =>
-      battle.advanceTime(delta)
-      
-      // Dismiss the current notification if it's done.
-      currentNotificationDisplay map { display =>
-        if (display.done) {
-          currentNotificationDisplay = None
-          assert (battle.getNotification.isDefined)
-          assert (display.notification == battle.getNotification.get)
-          battle.dismissNotification()
-        }
-      }
-      
-      // Add the next notification if it exists.
-      if (currentNotificationDisplay.isEmpty) {
-        battle.getNotification.map { notification =>
-          val windows = for (damage <- notification.damages) yield {
-            val target = notification.action.target
-            val box = getBox(target.entityType, target.id)
-            new DamageTextWindow(gameOpt.get.persistent, windowManager, 
-                damage.value, box.x, box.y)
+    // All these actions should not take place if this is an in-editor session.
+    if (gameOpt.isDefined) {
+      _battle.map { battle =>
+        battle.advanceTime(delta)
+        
+        // Dismiss the current notification if it's done.
+        currentNotificationDisplay map { display =>
+          if (display.done) {
+            currentNotificationDisplay = None
+            assert (battle.getNotification.isDefined)
+            assert (display.notification == battle.getNotification.get)
+            battle.dismissNotification()
           }
-          
-          val display = NotificationDisplay(notification, windows)
-          currentNotificationDisplay = Some(display)
         }
         
+        // Add the next notification if it exists.
+        if (currentNotificationDisplay.isEmpty) {
+          battle.getNotification.map { notification =>
+            val windows = for (damage <- notification.damages) yield {
+              val target = notification.action.target
+              val box = getBox(target.entityType, target.id)
+              new DamageTextWindow(gameOpt.get.persistent, windowManager, 
+                  damage.value, box.x, box.y)
+            }
+            
+            val display = NotificationDisplay(notification, windows)
+            currentNotificationDisplay = Some(display)
+          }
+          
+        }
+        
+        PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
       }
-      
-      PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
     }
     
     updateEnemyListWindow()

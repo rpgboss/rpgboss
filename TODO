@@ -1,3 +1,4 @@
+* Make Battles end. Award XP and Level up.
 * Make animations for BattleDamage.
 
 * Make method that auto selects an element, asserting the collection is not empty. Use it in Battle.scala.
