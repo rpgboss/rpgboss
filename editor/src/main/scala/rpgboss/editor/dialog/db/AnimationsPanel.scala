@@ -24,6 +24,19 @@ class AnimationsPanel(
   def newDefaultInstance() = new Animation()
 
   def editPaneForItem(idx: Int, model: Animation) = {
+//    val effects = new TableEditor() {
+//      def title = "Sound and Light Effects"
+//      
+//      def colHeaders = Array("Frame #", "Sound")
+//      def getRowStrings(row: Int) = {
+//        val effect = model.effects(row)
+//        Array(effect.frame.toString, effect.sound.sound)
+//      }
+//      def columnCount = 2
+//      def modelRowCount = model.effects.length
+//      
+//    }
+    
     new BoxPanel(Orientation.Horizontal) {
     }
   }

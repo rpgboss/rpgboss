@@ -87,50 +87,27 @@ class EffectPanel(
   }
 
   val miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
-  val miscEffectsTable = new TableEditor() {
+  val miscEffectsTable = new TableEditor[Effect]() {
     def title = "Other Effects"
     
+    def modelArray = miscEffects
+    def newInstance() = EffectKey.defaultEffect
+    def onUpdate() = updateFromModel()
+    
     def colHeaders = Array("Description", "Key", "Value")
-    def getRowStrings(row: Int) = {
-      assume(row < miscEffects.size)
-      val eff = miscEffects(row)
-      val effectKey = EffectKey(eff.keyId)
+    def getRowStrings(effect: Effect) = {
+      val effectKey = EffectKey(effect.keyId)
       Array(effectKey.desc, effectKey.toString,
-            effectKey.renderer(eff, dbDiag.model))
+            effectKey.renderer(effect, dbDiag.model))
     }
-    def columnCount: Int = 3
-    def modelRowCount: Int = miscEffects.size
-
-    def showEditDialog(row: Int, updateDisplayFunction: () => Unit) = {
-      val initialE = miscEffects(row)
+    
+    def showEditDialog(initial: Effect, okCallback: Effect => Unit) = {
       val diag = new EffectDialog(
         owner,
         dbDiag,
-        initialE,
-        e => {
-          miscEffects.update(row, e)
-          updateFromModel()
-          updateDisplayFunction()
-        })
+        initial,
+        okCallback)
       diag.open()
-    }
-
-    def showNewDialog(updateDisplayFunction: () => Unit) = {
-      val diag = new EffectDialog(
-        owner,
-        dbDiag,
-        EffectKey.defaultEffect,
-        e => {
-          miscEffects += e
-          updateFromModel()
-          updateDisplayFunction()
-        })
-      diag.open()
-    }
-
-    def deleteRow(row: Int, updateDisplayFunction: () => Unit) = {
-      miscEffects.remove(row)
-      updateDisplayFunction()
     }
   }
 

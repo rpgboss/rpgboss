@@ -19,50 +19,28 @@ class LearnedSkillPanel(
 
   val learnedSkills = ArrayBuffer(initial : _*)
 
-  val tableEditor = new TableEditor() {
+  val tableEditor = new TableEditor[LearnedSkill]() {
     def title = "Learned Skills"
+    
+    def modelArray = learnedSkills
+    def newInstance() = LearnedSkill(1, 0)
+    def onUpdate() = LearnedSkillPanel.this.onUpdate(learnedSkills.toArray)
+      
     def colHeaders = Array("Level", "Skill")
-    def getRowStrings(row: Int) = {
-      assume(row < learnedSkills.size)
-      val learnedSkill = learnedSkills(row)
+    def getRowStrings(learnedSkill: LearnedSkill) = {
       val skill = dbDiag.model.enums.skills(learnedSkill.skillId)
       Array("Level %d".format(learnedSkill.level),
             StringUtils.standardIdxFormat(learnedSkill.skillId, skill.name))
     }
-    def columnCount: Int = 2
-    def modelRowCount: Int = learnedSkills.size
 
-    def showEditDialog(row: Int, updateDisplayFunction: () => Unit) = {
-      val initialE = learnedSkills(row)
+    def showEditDialog(initial: LearnedSkill, 
+                       okCallback: LearnedSkill => Unit) = {
       val diag = new LearnedSkillDialog(
         owner,
         dbDiag,
-        initialE,
-        v => {
-          learnedSkills.update(row, v)
-          updateDisplayFunction()
-          onUpdate(learnedSkills.toArray)
-        })
+        initial,
+        okCallback)
       diag.open()
-    }
-
-    def showNewDialog(updateDisplayFunction: () => Unit) = {
-      val diag = new LearnedSkillDialog(
-        owner,
-        dbDiag,
-        LearnedSkill(1, 0),
-        v => {
-          learnedSkills += v
-          updateDisplayFunction()
-          onUpdate(learnedSkills.toArray)
-        })
-      diag.open()
-    }
-
-    def deleteRow(row: Int, updateDisplayFunction: () => Unit) = {
-      learnedSkills.remove(row)
-      updateDisplayFunction()
-      onUpdate(learnedSkills.toArray)
     }
   }
 

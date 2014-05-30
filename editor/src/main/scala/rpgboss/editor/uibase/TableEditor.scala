@@ -5,36 +5,44 @@ import scala.swing._
 import scala.swing.event.MouseClicked
 import java.awt.event.MouseEvent
 import javax.swing.BorderFactory
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * A table that can be edited by context menu. Can add a new element by double
  * clicking the last empty row.
  */
-abstract class TableEditor extends ScrollPane {
-  def colHeaders: Array[String]
-  def getRowStrings(row: Int): Array[String]
-  def columnCount: Int
-  def modelRowCount: Int
-  
-  def showEditDialog(row: Int, updateDisplayFunction: () => Unit)
-  def showNewDialog(updateDisplayFunction: () => Unit)
-  def deleteRow(row: Int, updateDisplayFunction: () => Unit)
-  
+abstract class TableEditor[T] extends ScrollPane {
   def title: String
+  
+  def modelArray: ArrayBuffer[T]
+  def newInstance(): T
+  
+  /**
+   * Called whenever modelArray changes.
+   */
+  def onUpdate()
+  
+  
+  def colHeaders: Array[String]
+  def getRowStrings(element: T): Array[String]
+  
+  def showEditDialog(initial: T, okCallback: T => Unit)
   
   border = BorderFactory.createTitledBorder(title)
   
+  def modelRowCount: Int = modelArray.length
+  
   val tableModel = new AbstractTableModel() {
     def getRowCount() = modelRowCount + 1 // last element blank for adding
-    def getColumnCount() = columnCount
+    def getColumnCount() = colHeaders.length
     override def getColumnName(col: Int) = colHeaders(col)
   
     def getValueAt(row: Int, col: Int) = {
       // There should be just one extra blank row at the end of the table.
       assume(row < modelRowCount + 1)
       if (row < modelRowCount) {
-        val rowStrings = getRowStrings(row)
-        rowStrings(col)
+        val element = modelArray(row)
+        getRowStrings(element)(col)
       } else {
         "" // blank for new row
       }
@@ -49,20 +57,33 @@ abstract class TableEditor extends ScrollPane {
 
     selection.elementMode = Table.ElementMode.Row
     selection.intervalMode = Table.IntervalMode.Single
-  
+    
+    def editDialog(row: Int) = {
+      val element = modelArray(row)
+      showEditDialog(element, v => {
+        modelArray.update(row, v)
+        tableModel.fireTableRowsUpdated(row, row)
+      })
+    }
+    
+    def newDialog() = {
+      val element = newInstance()
+      showEditDialog(element, v => {
+        modelArray += v
+        tableModel.fireTableRowsUpdated(modelRowCount - 1, modelRowCount - 1)
+        tableModel.fireTableRowsInserted(modelRowCount, modelRowCount)
+      })
+    }
+    
     // TODO: Refactor the duplicate tableModel.fire ... calls
     listenTo(mouse.clicks)
     reactions += {
       case MouseClicked(_, _, _, 2, _) => {
         val row = selection.rows.head
-        if (row < modelRowCount) {
-          showEditDialog(row, () => tableModel.fireTableRowsUpdated(row, row))
-        } else {
-          showNewDialog(() => {
-            tableModel.fireTableRowsUpdated(modelRowCount - 1, modelRowCount - 1)
-            tableModel.fireTableRowsInserted(modelRowCount, modelRowCount)
-          })
-        }
+        if (row < modelRowCount)
+          editDialog(row)
+        else
+          newDialog()
       }
       case e: MouseClicked if e.peer.getButton() == MouseEvent.BUTTON3 => {
         val (x0, y0) = (e.point.getX().toInt, e.point.getY().toInt)
@@ -74,20 +95,16 @@ abstract class TableEditor extends ScrollPane {
           selection.rows += row
           val menu = new RpgPopupMenu {
             contents += new MenuItem(Action("New...") {
-              showNewDialog(() => {
-                tableModel.fireTableRowsUpdated(modelRowCount - 1, 
-                                                modelRowCount - 1)
-                tableModel.fireTableRowsInserted(modelRowCount, modelRowCount)
-              })
+              newDialog()
             })
   
             if (row != rowCount - 1) {
               contents += new MenuItem(Action("Edit...") {
-                showEditDialog(row, 
-                               () => tableModel.fireTableRowsUpdated(row, row))
+                editDialog(row)
               })
               contents += new MenuItem(Action("Delete") {
-                deleteRow(row, () => tableModel.fireTableRowsDeleted(row, row))
+                modelArray.remove(row)
+                tableModel.fireTableRowsDeleted(row, row)
               })
             }
           }
