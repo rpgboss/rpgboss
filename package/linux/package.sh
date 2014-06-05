@@ -14,7 +14,7 @@ cp -v $SRC_DIR/launch.sh $SRC_DIR/target/rpgboss
 
 chmod -v 755 $SRC_DIR/target/rpgboss
 
-export ARCHIVE="rpgboss-editor-linux.tar.gz"
+export ARCHIVE="rpgboss-${VERSION}.tar.gz"
 
 tar -cvzf $SRC_DIR/target/$ARCHIVE -C $SRC_DIR/target .
 

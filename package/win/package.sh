@@ -7,5 +7,5 @@ mkdir $SRC_DIR/target/
 
 export SRC_DIR=$(cd "$(dirname "$0")"; pwd)
 launch4j $SRC_DIR/config-win.xml 
-cp -v $SRC_DIR/target/* $SRC_DIR/../target/
+cp -v $SRC_DIR/target/rpgboss-editor.exe $SRC_DIR/../target/rpgboss-${VERSION}.exe
 echo ""

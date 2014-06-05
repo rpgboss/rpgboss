@@ -27,21 +27,20 @@ class AnimationsPanel(
   def editPaneForItem(idx: Int, model: Animation) = {
     val effectsBuffer = ArrayBuffer(model.effects : _*)
     
-    val effects = new TableEditor[AnimationEffect]() {
-      def title = "Sound and Light Effects"
-        
-      def modelArray = effectsBuffer
-      def newInstance() = AnimationEffect()
-      
-      def colHeaders = Array("Frame #", "Sound")
-      def getRowStrings(row: Int) = {
-        val effect = model.effects(row)
-        Array(effect.frame.toString, effect.sound.sound)
-      }
-      def columnCount = 2
-      def modelRowCount = model.effects.length
-      
-    }
+//    val effects = new TableEditor[AnimationEffect]() {
+//      def title = "Sound and Light Effects"
+//        
+//      def modelArray = effectsBuffer
+//      def newInstance() = AnimationEffect()
+//      
+//      def colHeaders = Array("Frame #", "Sound")
+//      def getRowStrings(row: Int) = {
+//        val effect = model.effects(row)
+//        Array(effect.frame.toString, effect.soundOpt)
+//      }
+//      def columnCount = 2
+//      
+//    }
     
     new BoxPanel(Orientation.Horizontal) {
     }

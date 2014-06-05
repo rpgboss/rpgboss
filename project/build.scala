@@ -56,7 +56,6 @@ object Settings {
   lazy val editorProguard = proguardSettings ++ Seq(
     proguardOptions := Seq(
       "-optimizationpasses 5",
-      "-forceprocessing",
       "-dontwarn",
 //      "-dontwarn scala.**",
 //      "-dontusemixedcaseclassnames",
