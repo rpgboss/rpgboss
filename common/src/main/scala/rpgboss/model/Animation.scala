@@ -1,7 +1,7 @@
 package rpgboss.model
 
-case class AnimationEffect(frame: Int, sound: SoundSpec)
+case class AnimationEffect(frame: Int = 0, soundOpt: Option[SoundSpec])
 
 case class Animation(
-  name: String = "Animation", 
-  effects: Array[AnimationEffect] = Array()) extends HasName
+  var name: String = "Animation", 
+  var effects: Array[shapeRendererAnimationEffect] = Array()) extends HasName
