@@ -57,6 +57,8 @@ object Settings {
     proguardOptions := Seq(
       "-optimizationpasses 5",
       "-dontwarn",
+      // Doesn't seem to refresh the minified JAR appropriately without this.
+      // "-forceprocessing",
 //      "-dontwarn scala.**",
 //      "-dontusemixedcaseclassnames",
 //      "-dontskipnonpubliclibraryclasses",
