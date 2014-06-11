@@ -148,6 +148,11 @@ class BattleScreen(
   private val _enemyBattlers = new collection.mutable.ArrayBuffer[IntRect]
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
   
+  // How long to wait after being defeated.
+  private var _defeated = false
+  private var _defeatedTimer = 0.0f
+  private def defeatedMessageTime = 4.0f
+  
   /**
    * Contains the state of the currently displaying battle notification.
    * This comprises of damage text, animations, etc.
@@ -342,46 +347,60 @@ class BattleScreen(
     // All these actions should not take place if this is an in-editor session.
     if (gameOpt.isDefined) {
       _battle.map { battle =>
-        battle.advanceTime(delta)
-        
-        // Dismiss the current notification if it's done.
-        currentNotificationDisplay map { display =>
-          if (display.done) {
-            currentNotificationDisplay = None
-            assert (battle.getNotification.isDefined)
-            assert (display.notification == battle.getNotification.get)
-            battle.dismissNotification()
-          }
+        // Handle defeat
+        if (battle.partyStatus.forall(!_.alive)) {
+          _defeated = true
+          postTextNotice("Defeat...")
         }
         
-        // Add the next notification if it exists.
-        if (currentNotificationDisplay.isEmpty) {
-          battle.getNotification.map { notification =>
-            val source = notification.action.actor
-            val target = notification.action.target
-            val windows = for (damage <- notification.damages) yield {
-              val box = getBox(target.entityType, target.id)
-              new DamageTextWindow(gameOpt.get.persistent, windowManager, 
-                  damage.value, box.x, box.y)
+        if (_defeated) {
+          _defeatedTimer += delta
+          if (_defeatedTimer >= defeatedMessageTime) {
+            endBattle()
+            postTextNotice("Alerts game of defeat now.")
+          }
+        } else {
+          battle.advanceTime(delta)
+        
+          // Dismiss the current notification if it's done.
+          currentNotificationDisplay map { display =>
+            if (display.done) {
+              currentNotificationDisplay = None
+              assert (battle.getNotification.isDefined)
+              assert (display.notification == battle.getNotification.get)
+              battle.dismissNotification()
             }
-            
-            // Also display an attack notice, but don't block on its close.
-            postTextNotice("%s attacks %s.".format(
-                getEntityName(source), getEntityName(target)))
-            
-            val display = NotificationDisplay(notification, windows)
-            currentNotificationDisplay = Some(display)
           }
           
+          // Add the next notification if it exists.
+          if (currentNotificationDisplay.isEmpty) {
+            battle.getNotification.map { notification =>
+              val source = notification.action.actor
+              val target = notification.action.target
+              val windows = for (damage <- notification.damages) yield {
+                val box = getBox(target.entityType, target.id)
+                new DamageTextWindow(gameOpt.get.persistent, windowManager, 
+                    damage.value, box.x, box.y)
+              }
+              
+              // Also display an attack notice, but don't block on its close.
+              postTextNotice("%s attacks %s.".format(
+                  getEntityName(source), getEntityName(target)))
+              
+              val display = NotificationDisplay(notification, windows)
+              currentNotificationDisplay = Some(display)
+            }
+            
+          }
+          
+          PlayerActionWindow.closeCurrentIfDead()
+          PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
+    
+          updateEnemyListWindow()
+          updatePartyListWindow()
         }
-        
-        PlayerActionWindow.closeCurrentIfDead()
-        PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
       }
     }
-    
-    updateEnemyListWindow()
-    updatePartyListWindow()
     
     windowManager.update(delta)
   }
