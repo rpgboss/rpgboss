@@ -188,11 +188,12 @@ class BattleScreen(
     }
   }
   
-  def getEntityName(status: BattleStatus) {
+  def getEntityName(status: BattleStatus) = {
+    assume(battleActive)
     if (status.entityType == BattleEntityType.Party) {
       getCharacterName(status.entityIndex)
     } else {
-      
+      _battle.get.pData.enums.enemies(status.entityIndex).name
     }
   }
   
@@ -200,7 +201,7 @@ class BattleScreen(
     new TextWindow(
       persistentState,
       windowManager,
-      inputs,
+      null,
       Array(),
       0, 300, 200, 180)
   }
@@ -217,7 +218,7 @@ class BattleScreen(
     new TextWindow(
       persistentState,
       windowManager,
-      inputs,
+      null,
       Array(),
       200, 300, 440, 180)
   }
@@ -322,6 +323,15 @@ class BattleScreen(
     _enemyBattlers.clear()
     _partyBattlers.clear()
   }
+  
+  def postTextNotice(msg: String) = {
+    new TextWindow(gameOpt.get.persistent, windowManager, null, Array(msg),
+        0, 0, 640, 60) {
+      override def openCloseTime = 0.0
+      
+      override def ypad = 20
+    }
+  }
 
   def update(delta: Float): Unit = {
     assert(onBoundThread())
@@ -347,12 +357,17 @@ class BattleScreen(
         // Add the next notification if it exists.
         if (currentNotificationDisplay.isEmpty) {
           battle.getNotification.map { notification =>
+            val source = notification.action.actor
+            val target = notification.action.target
             val windows = for (damage <- notification.damages) yield {
-              val target = notification.action.target
               val box = getBox(target.entityType, target.id)
               new DamageTextWindow(gameOpt.get.persistent, windowManager, 
                   damage.value, box.x, box.y)
             }
+            
+            // Also display an attack notice, but don't block on its close.
+            postTextNotice("%s attacks %s.".format(
+                getEntityName(source), getEntityName(target)))
             
             val display = NotificationDisplay(notification, windows)
             currentNotificationDisplay = Some(display)

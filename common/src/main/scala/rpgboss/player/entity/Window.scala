@@ -37,10 +37,12 @@ class Window(
   inputs: InputMultiplexer,
   x: Int, y: Int, 
   val w: Int, val h: Int,
-  invisible: Boolean = false,
-  initialState: Int = Window.Opening,
-  openCloseTime: Double = 0.25)
+  invisible: Boolean = false)
   extends InputHandler with ThreadChecked {
+  
+  def openCloseTime: Double = 0.25
+  def initialState = if (openCloseTime > 0) Window.Opening else Window.Open 
+  
   private var _state = initialState
   // Determines when states expire. In seconds.
   protected var stateAge = 0.0
@@ -164,8 +166,8 @@ class Window(
 }
 
 /**
- * @param   openTime    If this is positive, window closes after it's open for
- *                      this period of time.
+ * @param   stayOpenTime    If this is positive, window closes after it's open for
+ *                          this period of time.
  */
 class TextWindow(
   persistent: PersistentState,
@@ -174,10 +176,11 @@ class TextWindow(
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
   justification: Int = Window.Left,
-  openTime: Double = 0.0)
+  stayOpenTime: Double = 0.0)
   extends Window(manager, inputs, x, y, w, h) {
-  val xpad = 24
-  val ypad = 24
+  
+  def xpad = 24
+  def ypad = 24
 
   def updateText(newText: Array[String]) = textImage.updateText(newText)
 
@@ -195,7 +198,7 @@ class TextWindow(
     super.update(delta)
     textImage.update(delta)
     
-    if (openTime > 0.0 && state == Window.Open && stateAge >= openTime)
+    if (stayOpenTime > 0.0 && state == Window.Open && stateAge >= stayOpenTime)
       startClosing()
   }
 
@@ -275,7 +278,7 @@ class PrintingTextWindow(
   timePerChar: Double,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends Window(manager, inputs, x, y, w, h, openCloseTime = 0.0) {
+  extends Window(manager, inputs, x, y, w, h) {
   val xpad = 24
   val ypad = 24
 
