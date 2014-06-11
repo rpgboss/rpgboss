@@ -7,6 +7,10 @@ class ThreadChecker {
 
 trait ThreadChecked {
   private var _checker = new ThreadChecker
-  def onBoundThread() = _checker.onBoundThread()
-  def onDifferentThread() = !onBoundThread()
+  def assertOnBoundThread() = {
+    assert(_checker.onBoundThread())
+  }
+  def assertOnDifferentThread() = {
+    assert(!_checker.onBoundThread())
+  }
 }

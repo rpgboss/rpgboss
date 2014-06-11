@@ -76,20 +76,17 @@ abstract class MapScreenTest extends ProjectTest {
   val game = new RpgGame(projectDirectory) {
     override def beginGame() = {
       setup()
-
+      
+      startNewGame()
+      
       // Run this asynchronously so it doesn't block the main render thread.
-      future {
-        runTest()
+      Future {
+        testScript()
         waiter.dismiss()
       }
     }
 
     def setup() = MapScreenTest.this.setup()
-
-    def runTest() = {
-      mapScreen.scriptInterface.setNewGameVars()
-      testScript()
-    }
 
     // Should only be run on scripting thread. |key| is an internal key.
     def mapScreenKeyPress(key: Int, duration: Float) = {

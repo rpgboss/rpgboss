@@ -20,6 +20,7 @@ import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.lib.GdxUtils
+import com.badlogic.gdx.Screen
 
 case class MutableMapLoc(
   var map: String = "",
@@ -40,15 +41,9 @@ case class MutableMapLoc(
   }
 }
 
-trait RpgScreen {
-  def inputs: InputMultiplexer
-  def windowManager: WindowManager
-
-  def update(delta: Float)
-  def render()
-}
-
-class RpgGame(gamepath: File) extends ApplicationListener {
+class RpgGame(gamepath: File) 
+  extends Game
+  with HasScriptConstants {
   val project = Project.readFromDisk(gamepath).get
 
   val logger = new Logger("Game", Logger.INFO)
@@ -56,8 +51,6 @@ class RpgGame(gamepath: File) extends ApplicationListener {
 
   var mapScreen: MapScreen = null
   var battleScreen: BattleScreen = null
-
-  var activeScreen: RpgScreen = null
 
   // Generate and pack sprites
   val spritesets = Map() ++ Spriteset.list(project).map(
@@ -92,17 +85,12 @@ class RpgGame(gamepath: File) extends ApplicationListener {
       new BattleScreen(Some(this), assets, atlasSprites, project, 640, 480)
     mapScreen = new MapScreen(this, 640, 480)
 
-    setActiveScreen(mapScreen)
+    setScreen(mapScreen)
 
     // Register accessors
     TweenAccessors.registerAccessors()
 
     beginGame()
-  }
-
-  def setActiveScreen(screen: RpgScreen) = {
-    activeScreen = screen
-    Gdx.input.setInputProcessor(activeScreen.inputs)
   }
 
   def beginGame() = {
@@ -112,37 +100,52 @@ class RpgGame(gamepath: File) extends ApplicationListener {
       "main.js",
       "main()").run()
   }
+  
+  /**
+   * Sets the members of the player's party. Controls the sprite for both
+   * walking on the map, as well as the party members in a battle.
+   *
+   * TODO: Figure out if this requires @partyArray to be non-empty.
+   */
+  def setParty(partyArray: Array[Int]) = {
+    persistent.setIntArray(PARTY, partyArray)
+
+    if (mapScreen != null) {
+      if (partyArray.length > 0) {
+        val spritespec = project.data.enums.characters(partyArray(0)).sprite
+        mapScreen.playerEntity.setSprite(spritespec)
+      } else {
+        mapScreen.playerEntity.setSprite(None)
+      }
+    }
+  }
+  
+  def startNewGame() = {
+    setParty(project.data.startup.startingParty.toArray)
+    // Initialize data structures
+
+    var characters = project.data.enums.characters.toArray;
+    persistent.setStringArray(CHARACTER_NAMES, characters.map(_.name));
+
+    persistent.setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
+
+    val characterStats = for (c <- characters)
+      yield BattleStats(project.data, c.baseStats(project.data, c.initLevel),
+                        c.startingEquipment)
+
+    persistent.setIntArray(CHARACTER_HPS, characterStats.map(_.mhp))
+    persistent.setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
+    persistent.setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
+    persistent.setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
+
+    persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
+  }
 
   override def dispose() {
+    super.dispose()
+    
     battleScreen.dispose()
     mapScreen.dispose()
     atlasSprites.dispose()
   }
-
-  override def pause() {}
-
-  override def render() {
-    import Tileset._
-
-    val delta = Gdx.graphics.getDeltaTime()
-
-    // Log fps
-    //fps.log()
-
-    // Clear the context
-    Gdx.gl.glClearColor(0, 0, 0, 1)
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-    Gdx.gl.glEnable(GL20.GL_BLEND)
-
-    if (assets.update()) {
-      assert(activeScreen != null)
-      activeScreen.update(delta)
-      activeScreen.render()
-    } else {
-      // TODO: loading screen
-    }
-  }
-
-  override def resize(x: Int, y: Int) {}
-  override def resume() {}
 }

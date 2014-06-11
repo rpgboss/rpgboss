@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import com.badlogic.gdx.audio.{ Music => GdxMusic }
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
@@ -28,7 +27,7 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
   def project = game.project
   val batch = new SpriteBatch()
 
-  val windowManager = 
+  def createWindowManager() = 
     new WindowManager(game.assets, project, screenWPixels, screenHPixels)
 
   var screenW = 20.0
@@ -43,8 +42,6 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
   tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
 
   val tweenManager = new TweenManager()
-
-  val musics = Array.fill[Option[GdxMusic]](8)(None)
 
   // current map
   var mapAndAssetsOption: Option[MapAndAssets] = None
@@ -221,13 +218,19 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
   }
 
   def render() = {
+    Gdx.gl.glClearColor(0, 0, 0, 1)
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+    Gdx.gl.glEnable(GL20.GL_BLEND)
+    
     windowManager.preMapRender()
     renderMap()
     windowManager.render()
   }
-
-  def dispose() = {
+  
+  override def dispose() = {
     mapAndAssetsOption.map(_.dispose())
     batch.dispose()
+    
+    super.dispose()
   }
 }

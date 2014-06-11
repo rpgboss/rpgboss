@@ -23,5 +23,5 @@ function main() {
   game.setPlayerLoc(project.data().startup().startingLoc());
   game.setTransition(1, 0, 400);
   
-  game.setNewGameVars();
+  game.startNewGame();
 }

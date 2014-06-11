@@ -47,15 +47,15 @@ class WindowManager(
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
   def addWindow(window: Window) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     windows.prepend(window)
   }
   def removeWindow(window: Window) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     windows -= window
   }
   def focusWindow(window: Window) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     removeWindow(window)
     addWindow(window)
   }
@@ -76,7 +76,7 @@ class WindowManager(
   }
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     pictures(slot).map(_.dispose())
     pictures(slot) = Some(newPicture)    
   }
@@ -147,6 +147,7 @@ class WindowManager(
   }
 
   def dispose() = {
+    assertOnBoundThread()
     batch.dispose()
     for (pictureOpt <- pictures; picture <- pictureOpt) {
       picture.dispose()

@@ -8,6 +8,8 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import rpgboss.lib._
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
 
 case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
                         y: Int) extends BoxLike {
@@ -35,25 +37,28 @@ class BattleScreen(
   
   val logger = new Logger("BatleScreen", Logger.INFO)
 
+  def createWindowManager() =
+    new WindowManager(assets, project, screenW, screenH)
+  
   object PlayerActionWindow extends ThreadChecked {
     import concurrent.ExecutionContext.Implicits.global
     
     class RunningWindow(battle: Battle, val actor: BattleStatus) {
       
-      assert(onBoundThread())
+      assertOnBoundThread()
       assert(battle != null)
       
       private var _window: ChoiceWindow#ChoiceWindowScriptInterface = null
       
       def close() = {
-        assert(onBoundThread())
+        assertOnBoundThread()
         concurrent.Future {
           _window.close()
         }
       }
       
       def run() = concurrent.Future {
-        assert(onDifferentThread())
+        assertOnDifferentThread()
         PlayerActionWindow.synchronized {
           currentOpt = Some(this)
           
@@ -87,7 +92,7 @@ class BattleScreen(
        * TODO: Skip in-eligible targets (dead, etc.)
        */
       def getTarget(defaultToParty: Boolean) = {
-        assert(onDifferentThread())
+        assertOnDifferentThread()
         assert(_enemyBattlers.length == _battle.get.enemyStatus.length)
         assert(_partyBattlers.length == _battle.get.partyStatus.length)
         
@@ -115,7 +120,7 @@ class BattleScreen(
     var currentOpt: Option[RunningWindow] = None
     
     def closeCurrentIfDead() = synchronized {
-      assert(onBoundThread())
+      assertOnBoundThread()
       
       // Closing needs to execute on script thread.
       currentOpt.map(current => {
@@ -129,7 +134,7 @@ class BattleScreen(
     
     def spawnIfNeeded(battle: Battle,
                       readyEntity: Option[BattleStatus]) = synchronized {
-      assert(onBoundThread())
+      assertOnBoundThread()
       
       if (readyEntity.isDefined && currentOpt.isEmpty &&
           readyEntity.get.entityType == BattleEntityType.Party) {
@@ -174,8 +179,6 @@ class BattleScreen(
       return _enemyBattlers(id)
     }
   }
-
-  val windowManager = new WindowManager(assets, project, screenW, screenH)
 
   def battleActive = _battle.isDefined
 
@@ -242,7 +245,7 @@ class BattleScreen(
   }
   
   def startBattle(battle: Battle, battleBackground: String) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     assert(_battle.isEmpty)
 
     if (!battleBackground.isEmpty) {
@@ -317,7 +320,7 @@ class BattleScreen(
   }
   
   def endBattle() = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     assert(_battle.isDefined)
     _battle = None
 
@@ -339,7 +342,7 @@ class BattleScreen(
   }
 
   def update(delta: Float): Unit = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     
     if (windowManager.curTransition.isDefined)
       return
@@ -406,19 +409,22 @@ class BattleScreen(
   }
 
   def render() = {
-    assert(onBoundThread())
+    Gdx.gl.glClearColor(0, 0, 0, 1)
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+    Gdx.gl.glEnable(GL20.GL_BLEND)
+
     windowManager.render()
   }
 
   /**
    * Dispose of any disposable resources
    */
-  def dispose() = {
-    assert(onBoundThread())
+  override def dispose() = {
+    assertOnBoundThread()
 
     if (battleActive)
       endBattle()
 
-    windowManager.dispose()
+    super.dispose()
   }
 }

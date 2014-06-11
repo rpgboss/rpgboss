@@ -64,13 +64,13 @@ class Window(
   def skinRegion = manager.windowskinRegion
 
   private def changeState(newState: Int) = synchronized {
-    assert(onBoundThread())
+    assertOnBoundThread()
     _state = newState
     stateAge = 0.0
   }
 
   def update(delta: Float) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     stateAge += delta
     // change state of "expired" opening or closing animations
     if (stateAge >= openCloseTime) {
@@ -86,7 +86,7 @@ class Window(
   }
 
   def render(b: SpriteBatch): Unit = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     
     if (invisible)
       return
@@ -112,7 +112,7 @@ class Window(
   }
 
   def startClosing(): Unit = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     
     // This method may be called multiple times, but the subsequent calls after
     // the first should be ignored.
@@ -129,12 +129,12 @@ class Window(
 
   class WindowScriptInterface {
     def getState() = {
-      assert(onDifferentThread())
+      assertOnDifferentThread()
       state
     }
     
     def close() = {
-      assert(onDifferentThread())
+      assertOnDifferentThread()
       GdxUtils.syncRun {
         startClosing()
       }
@@ -142,7 +142,7 @@ class Window(
     }
 
     def awaitClose() = {
-      assert(onDifferentThread())
+      assertOnDifferentThread()
       Await.result(closePromise.future, Duration.Inf)
     }
   }
@@ -150,7 +150,7 @@ class Window(
   lazy val scriptInterface = new WindowScriptInterface
 
   def removeFromWindowManagerAndInputs() = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     assert(state == Window.Closed)
 
     if (inputs != null)

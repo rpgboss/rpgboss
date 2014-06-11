@@ -26,44 +26,44 @@ class PersistentState
 
   // TODO: save player location
   def setInt(key: String, value: Int) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     globalInts.update(key, value)
     publish(IntChange(key, value))
   }
   def getInt(key: String) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     globalInts.get(key).getOrElse(-1)
   }
 
   def getIntArray(key: String) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     intArrays.get(key).getOrElse(new Array[Int](0))
   }
 
   def setIntArray(key: String, value: Array[Int]) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     intArrays.update(key, value.toArray)
   }
 
   def getStringArray(key: String) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     stringArrays.getOrElse(key, new Array[String](0))
   }
 
   def setStringArray(key: String, value: Array[String]) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     stringArrays.update(key, value.toArray)
   }
 
   // Gets the event state for the current map.
   // Returns zero if none is saved.
   def getEventState(mapName: String, eventId: Int) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     eventStates.get((mapName, eventId)).getOrElse(0)
   }
 
   def setEventState(mapName: String, eventId: Int, newState: Int) = {
-    assert(onBoundThread())
+    assertOnBoundThread()
     eventStates.update((mapName, eventId), newState)
   }
 }

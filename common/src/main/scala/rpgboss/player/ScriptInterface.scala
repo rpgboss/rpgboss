@@ -83,25 +83,6 @@ class ScriptInterface(
    * Things to do with the player's location and camera
    */
 
-  /**
-   * Sets the members of the player's party. Controls the sprite for both
-   * walking on the map, as well as the party members in a battle.
-   *
-   * TODO: Figure out if this requires @partyArray to be non-empty.
-   */
-  def setParty(partyArray: Array[Int]) = syncRun {
-    persistent.setIntArray(PARTY, partyArray)
-
-    if (mapScreen != null) {
-      if (partyArray.length > 0) {
-        val spritespec = project.data.enums.characters(partyArray(0)).sprite
-        mapScreen.playerEntity.setSprite(spritespec)
-      } else {
-        mapScreen.playerEntity.setSprite(None)
-      }
-    }
-  }
-
   def setPlayerLoc(loc: MapLoc) = syncRun {
     persistent.setInt(PLAYER_X, loc.x.round)
     persistent.setInt(PLAYER_Y, loc.y.round)
@@ -147,14 +128,14 @@ class ScriptInterface(
     assert(encounterId >= 0)
     assert(encounterId < project.data.enums.encounters.length)
     
-    assert(game.activeScreen == game.mapScreen)
+    assert(game.getScreen() == game.mapScreen)
     
     // Fade out map
     setTransition(0, 1, 600)
     sleep(600)
     
     syncRun {
-      game.setActiveScreen(game.battleScreen)
+      game.setScreen(game.battleScreen)
     
       // TODO fix this hack of manipulating battleScreen directly
       activeScreen.windowManager.curTransition =
@@ -384,26 +365,9 @@ class ScriptInterface(
   def setStringArray(key: String, value: Array[String]) = syncRun {
     persistent.setStringArray(key, value)
   }
-
-  def setNewGameVars() = {
-    setParty(project.data.startup.startingParty.toArray)
-    // Initialize data structures
-
-    var characters = project.data.enums.characters.toArray;
-    setStringArray(CHARACTER_NAMES, characters.map(_.name));
-
-    setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
-
-    val characterStats = for (c <- characters)
-      yield BattleStats(project.data, c.baseStats(project.data, c.initLevel),
-                        c.startingEquipment)
-
-    setIntArray(CHARACTER_HPS, characterStats.map(_.mhp))
-    setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
-    setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
-    setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
-
-    setIntArray(CHARACTER_ROWS, characters.map(x => 0))
+  
+  def startNewGame() = syncRun {
+    game.startNewGame()
   }
 }
 
