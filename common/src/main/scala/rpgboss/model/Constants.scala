@@ -67,6 +67,6 @@ object Constants {
 
     def default = FADE
 
-    val fadeLength = 500
+    val fadeLength = 0.5f
   }
 }

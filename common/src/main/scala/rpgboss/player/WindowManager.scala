@@ -30,7 +30,7 @@ class WindowManager(
   val shapeRenderer = new ShapeRenderer()
 
   // Should only be modified on the Gdx thread
-  var curTransition: Option[Transition] = None
+  private var curTransition: Option[Transition] = None
 
   val windowskin =
     Windowskin.readFromDisk(project, project.data.startup.windowskin)
@@ -44,6 +44,13 @@ class WindowManager(
   val pictures = Array.fill[Option[PictureLike]](64)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
+  def setTransition(startAlpha: Float, endAlpha: Float, duration: Float) = {
+    assertOnBoundThread()
+    curTransition = Some(Transition(startAlpha, endAlpha, duration))
+  }
+    
+  def inTransition = curTransition.isDefined && !curTransition.get.done
+  
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
   def addWindow(window: Window) = {
@@ -87,6 +94,8 @@ class WindowManager(
   }
 
   def update(delta: Float) = {
+    curTransition.map(_.update(delta))
+    
     windows.foreach(_.update(delta))
 
     // TODO: Avoid a memory alloc here
@@ -139,8 +148,8 @@ class WindowManager(
       // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL20.GL_BLEND)
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-
-      shapeRenderer.setColor(0, 0, 0, transition.curAlpha.toFloat)
+      
+      shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
       shapeRenderer.rect(0, 0, 640, 480)
       shapeRenderer.end()
     }

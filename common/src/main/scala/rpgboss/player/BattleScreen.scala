@@ -35,9 +35,11 @@ class BattleScreen(
   with RpgScreen {
   assume(atlasSprites != null)
   
+  def game = gameOpt.orNull
+  
   val logger = new Logger("BatleScreen", Logger.INFO)
 
-  def createWindowManager() =
+  override def createWindowManager() =
     new WindowManager(assets, project, screenW, screenH)
   
   object PlayerActionWindow extends ThreadChecked {
@@ -143,10 +145,6 @@ class BattleScreen(
       }
     }
   }
-  
-  val scriptInterface = new ScriptInterface(gameOpt.orNull, this)
-
-  val inputs = new InputMultiplexer()
 
   // Battle variables
   private var _battle: Option[Battle] = None
@@ -344,7 +342,7 @@ class BattleScreen(
   def update(delta: Float): Unit = {
     assertOnBoundThread()
     
-    if (windowManager.curTransition.isDefined)
+    if (windowManager.inTransition)
       return
     
     // All these actions should not take place if this is an in-editor session.

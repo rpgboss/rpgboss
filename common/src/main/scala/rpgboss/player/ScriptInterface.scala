@@ -60,15 +60,19 @@ trait HasScriptConstants {
 class ScriptInterface(
   game: RpgGame,
   activeScreen: RpgScreen)
-  extends HasScriptConstants {
+  extends HasScriptConstants
+  with ThreadChecked {
   assume(activeScreen != null)
 
   private def mapScreen = game.mapScreen
   private def persistent = game.persistent
   private def project = game.project
 
-  import GdxUtils._
-
+  def syncRun[T](op: => T): T = {
+    assertOnDifferentThread()
+    GdxUtils.syncRun(op)
+  }
+  
   /*
    * The below functions are all called from the script threads only.
    */
@@ -119,9 +123,8 @@ class ScriptInterface(
   def setTransition(
     startAlpha: Float,
     endAlpha: Float,
-    durationMs: Int) = syncRun {
-    activeScreen.windowManager.curTransition =
-      Some(Transition(startAlpha, endAlpha, durationMs))
+    duration: Float) = syncRun {
+    activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
   }
   
   def startBattle(encounterId: Int, battleBackground: String) = {
@@ -131,15 +134,14 @@ class ScriptInterface(
     assert(game.getScreen() == game.mapScreen)
     
     // Fade out map
-    setTransition(0, 1, 600)
-    sleep(600)
+    setTransition(0, 1, 0.6f)
+    sleep(0.6f)
     
     syncRun {
       game.setScreen(game.battleScreen)
     
       // TODO fix this hack of manipulating battleScreen directly
-      activeScreen.windowManager.curTransition =
-        Some(Transition(1, 0, 600))
+      activeScreen.windowManager.setTransition(1, 0, 0.6f)
         
       val encounter = project.data.enums.encounters(encounterId)
       val charactersIdxs = 
@@ -172,11 +174,11 @@ class ScriptInterface(
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
-    loop: Boolean, fadeDurationMs: Int) = syncRun {
+    loop: Boolean, fadeDuration: Float) = syncRun {
 
     mapScreen.musics(slot).map({ oldMusic =>
       val tweenMusic = new GdxMusicTweenable(oldMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
         .target(0f)
         .setCallback(new TweenCallback {
           override def onEvent(typeArg: Int, x: BaseTween[_]) = {
@@ -202,7 +204,7 @@ class ScriptInterface(
 
       // Setup volume tween
       val tweenMusic = new GdxMusicTweenable(newMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDurationMs / 1000f)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
         .target(spec.volume).start(mapScreen.tweenManager)
 
       newMusic
@@ -212,8 +214,8 @@ class ScriptInterface(
   /*
    * Things to do with user interaction
    */
-  def sleep(durationMs: Int) = {
-    Thread.sleep(durationMs)
+  def sleep(duration: Float) = {
+    Thread.sleep((duration * 1000).toInt)
   }
 
   def newChoiceWindow(

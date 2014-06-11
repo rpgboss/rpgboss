@@ -4,17 +4,68 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.audio.{ Music => GdxMusic }
 import com.badlogic.gdx.Gdx
 import rpgboss.lib.ThreadChecked
+import rpgboss.model.SoundSpec
+import aurelienribon.tweenengine._
+import rpgboss.model.resource.Music
 
 
 trait RpgScreen extends Screen with ThreadChecked {
-  def inputs: InputMultiplexer
-  def createWindowManager(): WindowManager
+  def game: RpgGame
+  
+  val scriptInterface = new ScriptInterface(game, this)
+
+  val inputs = new InputMultiplexer()
+  def createWindowManager(): WindowManager =
+    new WindowManager(game.assets, game.project, game.screenWPx, game.screenHPx)
 
   val musics = Array.fill[Option[GdxMusic]](8)(None)
   val windowManager = createWindowManager()
   
+  val tweenManager = new TweenManager()
+  
+  def playMusic(slot: Int, specOpt: Option[SoundSpec],
+    loop: Boolean, fadeDuration: Float) = {
+
+    musics(slot).map({ oldMusic =>
+      val tweenMusic = new GdxMusicTweenable(oldMusic)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
+        .target(0f)
+        .setCallback(new TweenCallback {
+          override def onEvent(typeArg: Int, x: BaseTween[_]) = {
+            if (typeArg == TweenCallback.COMPLETE) {
+              oldMusic.stop()
+            }
+          }
+        }).start(tweenManager)
+    })
+
+    musics(slot) = specOpt.map { spec =>
+      val resource = Music.readFromDisk(game.project, spec.sound)
+      resource.loadAsset(game.assets)
+      // TODO: fix this blocking call
+      game.assets.finishLoading()
+      val newMusic = resource.getAsset(game.assets)
+
+      // Start at zero volume and fade to desired volume
+      newMusic.stop()
+      newMusic.setVolume(0f)
+      newMusic.setLooping(loop)
+      newMusic.play()
+
+      // Setup volume tween
+      val tweenMusic = new GdxMusicTweenable(newMusic)
+      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
+        .target(spec.volume).start(tweenManager)
+
+      newMusic
+    }
+  }
+  
+  private var onFirstShowRun = false
+  def onFirstShow() = {}
+  
+  def render()  
   def update(delta: Float)
-  def render()
 
   override def dispose() = {
     windowManager.dispose()
@@ -38,6 +89,10 @@ trait RpgScreen extends Screen with ThreadChecked {
   
   override def render(delta: Float) = {
     assertOnBoundThread()
+    
+    // Update tweens
+    tweenManager.update(delta)
+    
     update(delta)
     render()
   }
@@ -53,8 +108,13 @@ trait RpgScreen extends Screen with ThreadChecked {
   
   override def show() = {
     assertOnBoundThread()
-    Gdx.input.setInputProcessor(inputs)
     
+    if (!onFirstShowRun) {
+      onFirstShowRun = true
+      onFirstShow()
+    }
+    
+    Gdx.input.setInputProcessor(inputs)
     musics.foreach(_.map(_.play()))
   }
 }

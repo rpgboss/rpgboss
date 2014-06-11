@@ -345,8 +345,8 @@ msgfont/VeraMono.ttf
 picture/LordSpirit.jpg
 picture/StartingLogo.png
 script/globals.js
-script/main.js
 script/menu.js
+script/start.js
 skills.json
 sound/opengameart-37hitspunches/hit02.mp3
 sound/opengameart-37hitspunches/hit12.mp3

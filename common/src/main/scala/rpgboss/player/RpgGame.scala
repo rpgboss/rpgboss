@@ -73,6 +73,9 @@ class RpgGame(gamepath: File)
 
   val assets = new RpgAssetManager(project)
 
+  def screenWPx = 640
+  def screenHPx = 480
+  
   def create() = {
     com.badlogic.gdx.utils.Timer.instance().start()
 
@@ -83,9 +86,7 @@ class RpgGame(gamepath: File)
     // TODO: Make configurable screen pixel dimensions
     battleScreen = 
       new BattleScreen(Some(this), assets, atlasSprites, project, 640, 480)
-    mapScreen = new MapScreen(this, 640, 480)
-
-    setScreen(mapScreen)
+    mapScreen = new MapScreen(this)
 
     // Register accessors
     TweenAccessors.registerAccessors()
@@ -94,11 +95,14 @@ class RpgGame(gamepath: File)
   }
 
   def beginGame() = {
+    setScreen(mapScreen)
+    
+    // TODO: Temporary hack. Should be moved to StartScreen once that's done.
     ScriptThread.fromFile(
-      RpgGame.this,
+      this,
       mapScreen.scriptInterface,
-      "main.js",
-      "main()").run()
+      "start.js",
+      "start()").run()
   }
   
   /**

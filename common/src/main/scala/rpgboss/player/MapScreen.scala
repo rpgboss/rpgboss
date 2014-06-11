@@ -1,6 +1,5 @@
 package rpgboss.player
 
-import aurelienribon.tweenengine.TweenManager
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.utils.Logger
 import com.badlogic.gdx.graphics._
@@ -18,17 +17,10 @@ import rpgboss.player.entity._
  * This must be guaranteed to be instantiated after create() on the main
  * ApplicationListener.
  */
-class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
+class MapScreen(val game: RpgGame)
   extends RpgScreen {
-  val scriptInterface = new ScriptInterface(game, this)
-
-  val inputs = new InputMultiplexer()
-
   def project = game.project
   val batch = new SpriteBatch()
-
-  def createWindowManager() = 
-    new WindowManager(game.assets, project, screenWPixels, screenHPixels)
 
   var screenW = 20.0
   var screenH = 15.0
@@ -40,8 +32,6 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
 
   val tileCamera: OrthographicCamera = new OrthographicCamera()
   tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
-
-  val tweenManager = new TweenManager()
 
   // current map
   var mapAndAssetsOption: Option[MapAndAssets] = None
@@ -129,11 +119,11 @@ class MapScreen(game: RpgGame, screenWPixels: Int, screenHPixels: Int)
     }
   }
 
+  override def onFirstShow() = {
+  }
+  
   // Update. Called on Gdx thread before render.
   def update(delta: Float) = {
-    // Update tweens
-    tweenManager.update(delta)
-
     // Update events, including player event
     eventEntities.values.foreach(_.update(delta))
     playerEntity.update(delta)

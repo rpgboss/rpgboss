@@ -79,6 +79,8 @@ abstract class MapScreenTest extends ProjectTest {
       
       startNewGame()
       
+      setScreen(mapScreen)
+      
       // Run this asynchronously so it doesn't block the main render thread.
       Future {
         testScript()
