@@ -28,6 +28,9 @@ class BattleStatus(
   def alive = hp > 0
   
   def update(deltaSeconds: Double, baseTurnTime: Double) = {
+    if (!alive)
+      readiness = 0
+    
     val turnTime = baseTurnTime / (1.0 + stats.spd / 100.0)
     readiness += deltaSeconds / turnTime
   }
@@ -51,11 +54,14 @@ trait BattleAI {
  * on a random target.
  */
 class RandomEnemyAI extends BattleAI {
-  def update(battle: Battle) = {
+  def update(battle: Battle): Unit = {
+    val alivePartyMembers = battle.partyStatus.filter(_.alive)
+    // Do nothing and await Game Over if there are no alive party members.
+    if (alivePartyMembers.isEmpty)
+      return
+    
     for (enemyStatus <- battle.readyEnemies) {
       // Randomly select a target among the alive party members.
-      val alivePartyMembers = battle.partyStatus.filter(_.alive)
-      assert(!alivePartyMembers.isEmpty)
       val target = 
         alivePartyMembers.apply(util.Random.nextInt(alivePartyMembers.length))
       
@@ -157,10 +163,14 @@ class Battle(
    * Enqueues up an action to be taken. Also removes the actor from the ready
    * queue.
    */
-  def takeAction(action: BattleAction) = {
+  def takeAction(action: BattleAction): Unit = {
     // Dequeue from readiness queue.
     val dequeued = readyQueue.dequeueFirst(_ == action.actor)
-    assert(dequeued.isDefined)
+    
+    // If actor is no longer in the ready queue, it is unable to act. It is 
+    // probably dead.
+    if (dequeued.isEmpty)
+      return
     
     // Enqueue the actual action
     actionQueue.enqueue(action)
@@ -243,6 +253,9 @@ class Battle(
       _currentNotification = Some(
         BattleActionNotification(action, damages))
     }
+    
+    // Remove dead items from the ready queue.
+    readyQueue.dequeueAll(!_.alive)
   }
     
 }

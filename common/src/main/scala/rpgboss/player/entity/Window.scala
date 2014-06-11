@@ -43,7 +43,7 @@ class Window(
   extends InputHandler with ThreadChecked {
   private var _state = initialState
   // Determines when states expire. In seconds.
-  var stateAge = 0.0
+  protected var stateAge = 0.0
 
   if (inputs != null)
     inputs.prepend(this)
@@ -109,9 +109,15 @@ class Window(
     }
   }
 
-  def startClosing() = {
+  def startClosing(): Unit = {
     assert(onBoundThread())
-    assert(state == Window.Open || state == Window.Opening)
+    
+    // This method may be called multiple times, but the subsequent calls after
+    // the first should be ignored.
+    if (state != Window.Opening && state != Window.Open) {
+      return
+    }
+    
     changeState(Window.Closing)
 
     // We allow scripts to continue as soon as the window is closing to provide
@@ -120,6 +126,11 @@ class Window(
   }
 
   class WindowScriptInterface {
+    def getState() = {
+      assert(onDifferentThread())
+      state
+    }
+    
     def close() = {
       assert(onDifferentThread())
       GdxUtils.syncRun {
@@ -152,13 +163,18 @@ class Window(
   private val closePromise = Promise[Int]()
 }
 
+/**
+ * @param   openTime    If this is positive, window closes after it's open for
+ *                      this period of time.
+ */
 class TextWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  justification: Int = Window.Left)
+  justification: Int = Window.Left,
+  openTime: Double = 0.0)
   extends Window(manager, inputs, x, y, w, h) {
   val xpad = 24
   val ypad = 24
@@ -178,6 +194,9 @@ class TextWindow(
   override def update(delta: Float) = {
     super.update(delta)
     textImage.update(delta)
+    
+    if (openTime > 0.0 && state == Window.Open && stateAge >= openTime)
+      startClosing()
   }
 
   override def render(b: SpriteBatch) = {

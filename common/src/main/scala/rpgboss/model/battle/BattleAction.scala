@@ -28,7 +28,7 @@ case class AttackAction(actor: BattleStatus, target: BattleStatus)
         .map(skillId => Damage.getDamages(actor, target, battle.pData, skillId))
         .flatten
     
-    target.hp -= damages.map(_.value).sum
+    target.hp -= math.min(target.hp, damages.map(_.value).sum)
     
     damages
   }
@@ -47,7 +47,7 @@ case class SkillAction(actor: BattleStatus, target: BattleStatus, skillId: Int)
     actor.mp -= skill.cost
       
     val damages = Damage.getDamages(actor, target, battle.pData, skillId)
-    target.hp -= damages.map(_.value).sum
+    target.hp -= math.min(target.hp, damages.map(_.value).sum)
     
     damages
   }

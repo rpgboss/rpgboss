@@ -37,6 +37,11 @@ abstract class ChoiceWindow(
   def project = manager.project
   def assets = manager.assets
   
+  override def startClosing() = {
+    super.startClosing()
+    choiceChannel.write(-1)
+  }
+  
   def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
     val snd = spec.map(s => Sound.readFromDisk(project, s.sound))
     snd.map(_.loadAsset(assets))

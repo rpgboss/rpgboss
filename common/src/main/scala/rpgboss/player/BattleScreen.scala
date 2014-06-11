@@ -36,22 +36,32 @@ class BattleScreen(
   val logger = new Logger("BatleScreen", Logger.INFO)
 
   object PlayerActionWindow extends ThreadChecked {
-    class RunningWindow(battle: Battle, actor: BattleStatus) {
-      import concurrent.ExecutionContext.Implicits.global
+    import concurrent.ExecutionContext.Implicits.global
+    
+    class RunningWindow(battle: Battle, val actor: BattleStatus) {
       
       assert(onBoundThread())
       assert(battle != null)
       
+      private var _window: ChoiceWindow#ChoiceWindowScriptInterface = null
+      
+      def close() = {
+        assert(onBoundThread())
+        concurrent.Future {
+          _window.close()
+        }
+      }
+      
       def run() = concurrent.Future {
         assert(onDifferentThread())
         PlayerActionWindow.synchronized {
-          current = Some(this)
+          currentOpt = Some(this)
+          
+          _window = scriptInterface.newChoiceWindow(
+            Array("Attack", "Skill", "Item"), 100, 300, 140, 180)
         }
      
-        val window = scriptInterface.newChoiceWindow(
-          Array("Attack", "Skill", "Item"), 100, 300, 140, 180)
-        
-        window.getChoice() match {
+        _window.getChoice() match {
           case 0 => {
             val target = getTarget(defaultToParty = false)
             GdxUtils.syncRun {
@@ -65,10 +75,10 @@ class BattleScreen(
           }
         }
         
-        window.close()
+        _window.close()
         
         PlayerActionWindow.synchronized {
-          current = None
+          currentOpt = None
         }
       }
       
@@ -102,12 +112,27 @@ class BattleScreen(
     }
     
     // Accessed on multiple threads
-    var current: Option[RunningWindow] = None
+    var currentOpt: Option[RunningWindow] = None
+    
+    def closeCurrentIfDead() = synchronized {
+      assert(onBoundThread())
+      
+      // Closing needs to execute on script thread.
+      currentOpt.map(current => {
+        if (current.actor.hp <= 0) {
+          // Closing will write a -1 to the choiceChannel and cause a NullAction
+          // to be processed for this entity.
+          current.close()
+        }
+      })
+    }
     
     def spawnIfNeeded(battle: Battle,
                       readyEntity: Option[BattleStatus]) = synchronized {
       assert(onBoundThread())
-      if (readyEntity.isDefined && current.isEmpty) {
+      
+      if (readyEntity.isDefined && currentOpt.isEmpty &&
+          readyEntity.get.entityType == BattleEntityType.Party) {
         val window = new RunningWindow(_battle.get, readyEntity.get)
         window.run()
       }
@@ -151,6 +176,26 @@ class BattleScreen(
 
   val persistentState = gameOpt.map(_.persistent).getOrElse(new PersistentState)
   
+  def getCharacterName(characterId: Int) = {
+    assume(battleActive)
+    val names = 
+      persistentState.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES)
+    if (characterId < names.length) {
+      names(characterId)
+    } else {
+      assert(characterId < _battle.get.pData.enums.characters.length)
+      _battle.get.pData.enums.characters(characterId).name
+    }
+  }
+  
+  def getEntityName(status: BattleStatus) {
+    if (status.entityType == BattleEntityType.Party) {
+      getCharacterName(status.id)
+    } else {
+      
+    }
+  }
+  
   val enemyListWindow = {
     new TextWindow(
       persistentState,
@@ -183,7 +228,7 @@ class BattleScreen(
     
     val partyLines = for (status <- _battle.get.partyStatus) yield {
       assert(status.id < _battle.get.pData.enums.characters.length)
-      val name = _battle.get.pData.enums.characters(status.id).name
+      val name = getCharacterName(status.id)
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
       "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
     }
@@ -315,6 +360,7 @@ class BattleScreen(
           
         }
         
+        PlayerActionWindow.closeCurrentIfDead()
         PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
       }
     }
