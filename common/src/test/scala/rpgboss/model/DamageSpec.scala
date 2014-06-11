@@ -8,6 +8,7 @@ class DamageSpec extends UnitSpec {
     val pData = ProjectData()
     
     def status = new BattleStatus(
+      0,
       pData,
       BattleEntityType.Party,
       0,

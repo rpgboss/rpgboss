@@ -38,7 +38,7 @@ class BattleSpec extends UnitSpec {
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
-    f.battle.readyEntity.get.id should equal (0)
+    f.battle.readyEntity.get.entityIndex should equal (0)
     
     f.battle.takeAction(NullAction(f.battle.partyStatus(0)))
     
@@ -52,17 +52,17 @@ class BattleSpec extends UnitSpec {
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
-    f.battle.readyEntity.get.id should equal (0)
+    f.battle.readyEntity.get.entityIndex should equal (0)
     f.battle.takeAction(NullAction(f.battle.partyStatus(0)))
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Enemy)
-    f.battle.readyEntity.get.id should equal (0)
+    f.battle.readyEntity.get.entityIndex should equal (0)
     f.battle.takeAction(NullAction(f.battle.enemyStatus(0)))
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
-    f.battle.readyEntity.get.id should equal (1)
+    f.battle.readyEntity.get.entityIndex should equal (1)
     f.battle.takeAction(NullAction(f.battle.partyStatus(1)))
     
     f.battle.readyEntity should equal (None)
@@ -75,12 +75,12 @@ class BattleSpec extends UnitSpec {
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
-    f.battle.readyEntity.get.id should equal (0)
+    f.battle.readyEntity.get.entityIndex should equal (0)
     f.battle.takeAction(NullAction(f.battle.partyStatus(0)))
     
     f.battle.readyEntity should be ('isDefined)
     f.battle.readyEntity.get.entityType should equal (BattleEntityType.Party)
-    f.battle.readyEntity.get.id should equal (1)
+    f.battle.readyEntity.get.entityIndex should equal (1)
     f.battle.takeAction(NullAction(f.battle.partyStatus(1)))
     
     f.battle.readyEntity should equal (None)

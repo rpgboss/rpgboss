@@ -190,7 +190,7 @@ class BattleScreen(
   
   def getEntityName(status: BattleStatus) {
     if (status.entityType == BattleEntityType.Party) {
-      getCharacterName(status.id)
+      getCharacterName(status.entityIndex)
     } else {
       
     }
@@ -227,8 +227,8 @@ class BattleScreen(
     assert(partyListWindow != null)
     
     val partyLines = for (status <- _battle.get.partyStatus) yield {
-      assert(status.id < _battle.get.pData.enums.characters.length)
-      val name = getCharacterName(status.id)
+      assert(status.entityIndex < _battle.get.pData.enums.characters.length)
+      val name = getCharacterName(status.entityIndex)
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
       "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
     }
