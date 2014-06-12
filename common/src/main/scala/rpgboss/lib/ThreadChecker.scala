@@ -1,16 +1,15 @@
 package rpgboss.lib
 
-class ThreadChecker {
-  private var _boundThread = java.lang.Thread.currentThread()
-  def onBoundThread() = java.lang.Thread.currentThread() == _boundThread 
-}
-
 trait ThreadChecked {
-  private var _checker = new ThreadChecker
+  private var _boundThread = java.lang.Thread.currentThread()
+  
+  def rebindToCurrentThread() = {
+    _boundThread = java.lang.Thread.currentThread()
+  }
   def assertOnBoundThread() = {
-    assert(_checker.onBoundThread())
+    assert(java.lang.Thread.currentThread() == _boundThread)
   }
   def assertOnDifferentThread() = {
-    assert(!_checker.onBoundThread())
+    assert(java.lang.Thread.currentThread() != _boundThread)
   }
 }

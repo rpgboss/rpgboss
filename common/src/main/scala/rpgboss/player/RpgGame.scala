@@ -21,6 +21,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.lib.GdxUtils
 import com.badlogic.gdx.Screen
+import rpgboss.lib.ThreadChecked
 
 case class MutableMapLoc(
   var map: String = "",
@@ -43,12 +44,14 @@ case class MutableMapLoc(
 
 class RpgGame(gamepath: File) 
   extends Game
-  with HasScriptConstants {
+  with HasScriptConstants
+  with ThreadChecked {
   val project = Project.readFromDisk(gamepath).get
 
   val logger = new Logger("Game", Logger.INFO)
   val fps = new FPSLogger()
 
+  var startScreen: StartScreen = null
   var mapScreen: MapScreen = null
   var battleScreen: BattleScreen = null
 
@@ -77,6 +80,8 @@ class RpgGame(gamepath: File)
   def screenHPx = 480
   
   def create() = {
+    rebindToCurrentThread()
+    
     com.badlogic.gdx.utils.Timer.instance().start()
 
     atlasSprites = GdxUtils.generateSpritesTextureAtlas(spritesets.values)
@@ -84,6 +89,7 @@ class RpgGame(gamepath: File)
     persistent = new PersistentState()
 
     // TODO: Make configurable screen pixel dimensions
+    startScreen = new StartScreen(this)
     battleScreen = 
       new BattleScreen(Some(this), assets, atlasSprites, project, 640, 480)
     mapScreen = new MapScreen(this)
@@ -95,12 +101,13 @@ class RpgGame(gamepath: File)
   }
 
   def beginGame() = {
-    setScreen(mapScreen)
+    assertOnBoundThread()
     
-    // TODO: Temporary hack. Should be moved to StartScreen once that's done.
+    setScreen(startScreen) 
+    
     ScriptThread.fromFile(
       this,
-      mapScreen.scriptInterface,
+      startScreen.scriptInterface,
       "start.js",
       "start()").run()
   }
@@ -112,6 +119,8 @@ class RpgGame(gamepath: File)
    * TODO: Figure out if this requires @partyArray to be non-empty.
    */
   def setParty(partyArray: Array[Int]) = {
+    assertOnBoundThread()
+    
     persistent.setIntArray(PARTY, partyArray)
 
     if (mapScreen != null) {
@@ -125,6 +134,8 @@ class RpgGame(gamepath: File)
   }
   
   def startNewGame() = {
+    assertOnBoundThread()
+    
     setParty(project.data.startup.startingParty.toArray)
     // Initialize data structures
 
@@ -143,13 +154,29 @@ class RpgGame(gamepath: File)
     persistent.setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
 
     persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
+    
+    mapScreen.windowManager.setTransition(1, 0, 0.4f)
+    setScreen(mapScreen)
+  }
+  
+  def quit() {
+    assertOnBoundThread()
+    
+    Gdx.app.exit()
+  }
+  
+  def gameOver() {
+    // TODO: Ghetto but effective to just land on the start screen again.
+    beginGame()
   }
 
   override def dispose() {
-    super.dispose()
+    assertOnBoundThread()
     
     battleScreen.dispose()
     mapScreen.dispose()
     atlasSprites.dispose()
+    
+    super.dispose()
   }
 }

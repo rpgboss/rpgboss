@@ -119,9 +119,6 @@ class MapScreen(val game: RpgGame)
     }
   }
 
-  override def onFirstShow() = {
-  }
-  
   // Update. Called on Gdx thread before render.
   def update(delta: Float) = {
     // Update events, including player event

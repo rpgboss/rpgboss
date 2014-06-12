@@ -3,17 +3,12 @@ function newGame() {
   game.sleep(0.4);
   game.hidePicture(0);
   
-  game.startNewGame();
   teleportLoc(project.data().startup().startingLoc(), Transitions.NONE().id());
   
-  game.setTransition(1, 0, 0.4);
-  game.sleep(0.4);
+  game.startNewGame();
 }
 
-function start() {
-  game.setTransition(1, 0, 0.4);
-  game.playMusic(0, project.data().startup().titleMusic(), true, 2.0);
-  game.showPicture(0, project.data().startup().titlePic(), 0, 0, 640, 480);
+function showStartDialog() {
   var winW = 200;
   
   while (true) {
@@ -31,6 +26,20 @@ function start() {
     if (choiceIdx == 0) {
       newGame();
       break;
+    } else if (choiceIdx == 2) {
+      game.quit();
+      break;
     }
   }
+}
+
+function start() {
+  game.setTransition(1, 0, 0.4);
+  game.playMusic(0, project.data().startup().titleMusic(), true, 2.0);
+  game.showPicture(0, project.data().startup().titlePic(), 0, 0, 640, 480);
+  
+  showStartDialog();
+}
+
+function gameOver() {
 }

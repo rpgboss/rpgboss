@@ -92,6 +92,18 @@ class WindowManager(
     pictures(slot).map(_.dispose())
     pictures(slot) = None
   }
+  
+  def reset() = {
+    for (i <- 0 until pictures.length) {
+      hidePicture(i)
+    }
+    
+    windows.foreach(_.startClosing())
+    
+    // TODO: This could potentially leave window promises unfulfilled, since
+    // we don't update them anymore.
+    windows.clear()
+  }
 
   def update(delta: Float) = {
     curTransition.map(_.update(delta))

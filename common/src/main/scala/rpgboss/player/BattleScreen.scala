@@ -156,6 +156,9 @@ class BattleScreen(
   private var _defeatedTimer = 0.0f
   private def defeatedMessageTime = 4.0f
   
+  private var enemyListWindow: TextWindow = null
+  private var partyListWindow: TextWindow = null
+  
   /**
    * Contains the state of the currently displaying battle notification.
    * This comprises of damage text, animations, etc.
@@ -203,14 +206,7 @@ class BattleScreen(
     }
   }
   
-  val enemyListWindow = {
-    new TextWindow(
-      persistentState,
-      windowManager,
-      null,
-      Array(),
-      0, 300, 200, 180)
-  }
+
   
   def updateEnemyListWindow() = {
     assert(_battle.isDefined)
@@ -219,16 +215,7 @@ class BattleScreen(
       Encounter.getEnemyLabels(_battle.get.encounter.units, project.data)
     enemyListWindow.updateText(enemyLines)
   }
-  
-  val partyListWindow = {
-    new TextWindow(
-      persistentState,
-      windowManager,
-      null,
-      Array(),
-      200, 300, 440, 180)
-  }
-  
+    
   def updatePartyListWindow() = {
     assert(_battle.isDefined)
     assert(partyListWindow != null)
@@ -246,6 +233,27 @@ class BattleScreen(
     assertOnBoundThread()
     assert(_battle.isEmpty)
 
+    _battle = Some(battle)
+     
+    enemyListWindow = {
+      new TextWindow(
+        persistentState,
+        windowManager,
+        null,
+        Array(),
+        0, 300, 200, 180)
+    }
+    
+    partyListWindow = {
+      new TextWindow(
+        persistentState,
+        windowManager,
+        null,
+        Array(),
+        200, 300, 440, 180)
+    }
+
+    
     if (!battleBackground.isEmpty) {
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       val texture = bg.newGdxTexture
@@ -255,8 +263,6 @@ class BattleScreen(
           TexturePicture(texture, 0, 0, 640, 320))
       }
     }
-
-    _battle = Some(battle)
 
     assert(_enemyBattlers.isEmpty)
     for ((unit, i) <- battle.encounter.units.zipWithIndex) {
@@ -321,10 +327,15 @@ class BattleScreen(
     assertOnBoundThread()
     assert(_battle.isDefined)
     _battle = None
+    _defeated = false
+    _defeatedTimer = 0
 
-    for (i <- PictureSlots.BATTLE_BEGIN until PictureSlots.BATTLE_END) {
-      windowManager.hidePicture(i)
-    }
+    currentNotificationDisplay = None
+    
+    enemyListWindow = null
+    partyListWindow = null
+    
+    windowManager.reset()
 
     _enemyBattlers.clear()
     _partyBattlers.clear()
@@ -358,7 +369,7 @@ class BattleScreen(
           _defeatedTimer += delta
           if (_defeatedTimer >= defeatedMessageTime) {
             endBattle()
-            postTextNotice("Alerts game of defeat now.")
+            gameOpt.get.gameOver()
           }
         } else {
           battle.advanceTime(delta)

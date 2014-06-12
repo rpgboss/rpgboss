@@ -371,6 +371,9 @@ class ScriptInterface(
   def startNewGame() = syncRun {
     game.startNewGame()
   }
+  def quit() = syncRun {
+    game.quit()
+  }
 }
 
 object ScriptInterfaceConstants extends HasScriptConstants {

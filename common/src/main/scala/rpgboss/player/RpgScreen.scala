@@ -60,10 +60,7 @@ trait RpgScreen extends Screen with ThreadChecked {
       newMusic
     }
   }
-  
-  private var onFirstShowRun = false
-  def onFirstShow() = {}
-  
+    
   def render()  
   def update(delta: Float)
 
@@ -108,11 +105,6 @@ trait RpgScreen extends Screen with ThreadChecked {
   
   override def show() = {
     assertOnBoundThread()
-    
-    if (!onFirstShowRun) {
-      onFirstShowRun = true
-      onFirstShow()
-    }
     
     Gdx.input.setInputProcessor(inputs)
     musics.foreach(_.map(_.play()))
