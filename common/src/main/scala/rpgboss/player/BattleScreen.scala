@@ -186,6 +186,7 @@ class BattleScreen(
   val persistentState = gameOpt.map(_.persistent).getOrElse(new PersistentState)
   
   def getCharacterName(characterId: Int) = {
+    assertOnBoundThread()
     assume(battleActive)
     val names = 
       persistentState.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES)
@@ -205,8 +206,6 @@ class BattleScreen(
       _battle.get.pData.enums.enemies(status.entityIndex).name
     }
   }
-  
-
   
   def updateEnemyListWindow() = {
     assert(_battle.isDefined)
@@ -245,7 +244,9 @@ class BattleScreen(
         windowManager,
         null,
         Array(),
-        0, 300, 200, 180)
+        0, 300, 200, 180) {
+        override def openCloseTime = 0
+      }
     }
     
     partyListWindow = {
@@ -254,10 +255,11 @@ class BattleScreen(
         windowManager,
         null,
         Array(),
-        200, 300, 440, 180)
+        200, 300, 440, 180) {
+        override def openCloseTime = 0
+      }
     }
 
-    
     if (!battleBackground.isEmpty) {
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       val texture = bg.newGdxTexture
@@ -357,6 +359,7 @@ class BattleScreen(
   def update(delta: Float): Unit = {
     assertOnBoundThread()
     
+    windowManager.update(delta)
     if (windowManager.inTransition)
       return
     
@@ -377,13 +380,24 @@ class BattleScreen(
           if (!_victorySequenceStarted) {
             _victorySequenceStarted = true
             
-            val xp = _battle.get.victoryExperience
-            
+            val exp = _battle.get.victoryExperience
+            val leveled = PersistentStateUtil.givePartyExperience(
+              gameOpt.get.persistent,
+              _battle.get.pData.enums.characters,
+              _battle.get.partyIds,
+              exp)
+            val names = leveled.map(getCharacterName)
             
             import concurrent.ExecutionContext.Implicits.global
             
             concurrent.Future {
-              scriptInterface.showText(Array("Received %d XP.".format(xp)))
+              scriptInterface.showText(Array("Received %d XP.".format(exp)))
+              for (i <- leveled) {
+                scriptInterface.showText(Array("%s leveled!".format(names(i))))
+              }
+                          
+              // TODO: endBattle() is called this script. Seems janky.
+              scriptInterface.endBattleBackToMap()
             }
           }
         } else {
@@ -432,8 +446,6 @@ class BattleScreen(
         }
       }
     }
-    
-    windowManager.update(delta)
   }
 
   def render() = {

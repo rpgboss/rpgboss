@@ -120,14 +120,17 @@ class MapScreen(val game: RpgGame)
   }
 
   // Update. Called on Gdx thread before render.
-  def update(delta: Float) = {
+  def update(delta: Float): Unit = {
+    windowManager.update(delta)
+    camera.update(delta)
+    
+    // We want the camera and window manager to update, but not anything else.
+    if (windowManager.inTransition)
+      return
+    
     // Update events, including player event
     eventEntities.values.foreach(_.update(delta))
     playerEntity.update(delta)
-
-    camera.update(delta)
-
-    windowManager.update(delta)
   }
 
   def renderMap() = mapAndAssetsOption map { mapAndAssets =>

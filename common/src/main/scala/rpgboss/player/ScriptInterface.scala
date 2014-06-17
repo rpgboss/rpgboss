@@ -142,7 +142,7 @@ class ScriptInterface(
       game.setScreen(game.battleScreen)
     
       // TODO fix this hack of manipulating battleScreen directly
-      activeScreen.windowManager.setTransition(1, 0, 0.6f)
+      game.battleScreen.windowManager.setTransition(1, 0, 0.6f)
         
       val encounter = project.data.enums.encounters(encounterId)
       val charactersIdxs = 
@@ -162,6 +162,20 @@ class ScriptInterface(
         aiOpt = Some(new RandomEnemyAI))
       
       game.battleScreen.startBattle(battle, battleBackground)
+    }
+  }
+  
+  def endBattleBackToMap() = {
+    setTransition(0, 1, 0.5f)
+    sleep(0.5f)
+
+    syncRun {
+      game.setScreen(game.mapScreen)
+      
+      // TODO fix hack of manipulating mapScreen directly
+      game.mapScreen.windowManager.setTransition(1, 0, 0.5f)
+      
+      game.battleScreen.endBattle()
     }
   }
 
