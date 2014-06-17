@@ -22,11 +22,6 @@ function teleport(mapName, x, y, transition) {
   return teleportLoc(MapLoc.apply(mapName, x, y), transition);
 }
 
-function showText(text) {
-  game.showText(text, 0 /* x */, 300 /* y */, 640 /* w */, 180 /* h */, 
-                0.02 /* timePerChar */); 
-}
-
 // Casting to support both Javascript and Java strings.
 function leftPad(string, totalLen) {
   var castedString = String(string);

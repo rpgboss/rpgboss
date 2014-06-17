@@ -140,7 +140,7 @@ class PrintingWindowText(
   skin: Windowskin,
   skinRegion: TextureRegion,
   fontbmp: BitmapFont,
-  timePerChar: Double = 0.05,
+  timePerChar: Float = 0.05f,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends WindowText(
@@ -163,7 +163,7 @@ class PrintingWindowText(
    * non-zero after each frame, since we conceptually print characters between
    * frames.
    */
-  private var _timeSinceLastCharacter: Double = 0
+  private var _timeSinceLastCharacter: Float = 0
 
   def wholeBlockPrinted = _lineI >= (_blockI + 1) * linesPerBlock
   def allTextPrinted = !(_lineI < _text.length)
@@ -186,7 +186,7 @@ class PrintingWindowText(
    * Used to print some text faster if the user is getting impatient.
    */
   def speedThrough() =
-    _timeSinceLastCharacter += 1.0
+    _timeSinceLastCharacter += 1.0f
   
   override def updateText(newText: Array[String]) = {
     super.updateText(newText)

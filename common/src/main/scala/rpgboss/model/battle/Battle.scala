@@ -127,6 +127,18 @@ class Battle(
   
   private var time = 0.0
   
+  private var _defeat = false
+  def defeat = _defeat
+  
+  private var _victory = false
+  def victory = _victory
+  
+  def victoryExperience = {
+    enemyStatus
+      .map(status => pData.enums.enemies.apply(status.entityIndex).expValue)
+      .sum
+  }
+  
   /**
    * How many seconds it takes an actor with 0 speed to get a new turn.
    */
@@ -236,7 +248,10 @@ class Battle(
     advanceTime(0)
   }
   
-  def advanceTime(deltaSeconds: Double) = {
+  def advanceTime(deltaSeconds: Double): Unit = {
+    if (_defeat || _victory)
+      return
+      
     time += deltaSeconds
     
     allStatus.foreach(_.update(deltaSeconds, baseTurnTime))
@@ -260,6 +275,14 @@ class Battle(
     
     // Remove dead items from the ready queue.
     readyQueue.dequeueAll(!_.alive)
+    
+    if (partyStatus.forall(!_.alive)) {
+      _defeat = true
+      readyQueue.clear()
+    } else if (enemyStatus.forall(!_.alive)) {
+      _victory = true
+      readyQueue.clear()
+    }
   }
     
 }

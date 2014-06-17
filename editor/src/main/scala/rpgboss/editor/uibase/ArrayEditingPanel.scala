@@ -11,7 +11,7 @@ import java.awt.{ Font, Color }
 import scala.swing.ListView.Renderer
 import scala.collection.mutable.ArrayBuffer
 
-class ArrayListView[T](initialAry: Seq[T]) extends ListView(initialAry) {
+class ArrayListView[T](initialAry: Array[T]) extends ListView(initialAry) {
 
   def onListSelectionChanged(): Unit = {}
   def label(a: T): String = a.toString
@@ -27,7 +27,7 @@ class ArrayListView[T](initialAry: Seq[T]) extends ListView(initialAry) {
 abstract class ArrayEditingPanel[T <: AnyRef](
   owner: Window,
   label: String,
-  initialAry: Seq[T],
+  initialAry: Array[T],
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends DesignGridPanel
@@ -102,12 +102,12 @@ abstract class ArrayEditingPanel[T <: AnyRef](
       (newSize) => {
         if (listView.selection.indices.isEmpty) {
           listView.listData = ArrayUtils.resized(
-              listView.listData, newSize, newDefaultInstance _)
+              listView.listData.toArray, newSize, newDefaultInstance _)
         } else {
           val oldSelection = listView.selection.indices.head
 
           listView.listData = ArrayUtils.resized(
-              listView.listData, newSize, newDefaultInstance _)
+              listView.listData.toArray, newSize, newDefaultInstance _)
 
           // If selection was bigger than the size, select the last one
           listView.selectIndices(math.min(oldSelection, newSize - 1))
@@ -179,7 +179,7 @@ class ArrayDuplicateDialog(
 class StringArrayEditingPanel(
   owner: Window,
   label: String,
-  initialAry: Seq[String],
+  initialAry: Array[String],
   minElems: Int = 1,
   maxElems: Int = 1024)
   extends ArrayEditingPanel(owner, label, initialAry, minElems, maxElems) {
@@ -215,7 +215,7 @@ class StringArrayEditingPanel(
 abstract class RightPaneArrayEditingPanel[T <: AnyRef](
   owner: Window,
   label: String,
-  initialAry: Seq[T],
+  initialAry: Array[T],
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends ArrayEditingPanel[T](

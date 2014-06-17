@@ -34,6 +34,7 @@ trait HasScriptConstants {
   val CHARACTER_MPS = "characterMps"
   val CHARACTER_MAX_HPS = "characterMaxHps"
   val CHARACTER_MAX_MPS = "characterMaxMps"
+  val CHARACTER_EXPS = "characterExps"
   val CHARACTER_ROWS = "characterRow"
 
   def CHARACTER_EQUIP(characterId: Int) =
@@ -280,7 +281,7 @@ class ScriptInterface(
   }
 
   def showText(text: Array[String], x: Int, y: Int, w: Int, h: Int,
-               timePerChar: Double) = {
+               timePerChar: Float) = {
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
@@ -292,6 +293,9 @@ class ScriptInterface(
     }
     window.scriptInterface.awaitClose()
   }
+  
+  def showText(text: Array[String]): Unit =
+    showText(text, x = 0, y = 300, w = 640, h = 180, timePerChar = 0.02f)
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {
     EntityInfo(mapScreen.playerEntity)

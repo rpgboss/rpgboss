@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Logger
 import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
+import rpgboss.lib._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import java.util.concurrent.Executors
@@ -21,7 +22,6 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.lib.GdxUtils
 import com.badlogic.gdx.Screen
-import rpgboss.lib.ThreadChecked
 
 case class MutableMapLoc(
   var map: String = "",
@@ -139,8 +139,8 @@ class RpgGame(gamepath: File)
     setParty(project.data.startup.startingParty.toArray)
     // Initialize data structures
 
-    var characters = project.data.enums.characters.toArray;
-    persistent.setStringArray(CHARACTER_NAMES, characters.map(_.name));
+    var characters = project.data.enums.characters.toArray
+    persistent.setStringArray(CHARACTER_NAMES, characters.map(_.name))
 
     persistent.setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
 
@@ -152,6 +152,8 @@ class RpgGame(gamepath: File)
     persistent.setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
     persistent.setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
     persistent.setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
+    
+    persistent.setIntArray(CHARACTER_EXPS , characters.map(x => 0))
 
     persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
     

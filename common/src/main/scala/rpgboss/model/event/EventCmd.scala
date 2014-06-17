@@ -38,7 +38,7 @@ case class EndOfScript() extends EventCmd {
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
-  def toJs() = List("showText(" + aryToJs(lines) + ");")
+  def toJs() = List("game.showText(" + aryToJs(lines) + ");")
 }
 
 case class Teleport(loc: MapLoc, transition: Int) extends EventCmd {

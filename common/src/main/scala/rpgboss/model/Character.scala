@@ -16,6 +16,9 @@ case class Character(
   var progressions: StatProgressions = StatProgressions(),
   var startingEquipment: Array[Int] = Array(),
   var equipFixed: Array[Int] = Array()) extends HasName {
+  
+  def expToLevel(level: Int) = progressions.exp(level)
+  
   def baseStats(pData: ProjectData, level: Int) = {
     val effects: Array[Effect] = {
       if (charClass >= 0 && charClass < pData.enums.classes.length)
@@ -23,7 +26,7 @@ case class Character(
       else
         Array()
     }
-
+    
     BaseStats(
       mhp = progressions.mhp(level),
       mmp = progressions.mmp(level),

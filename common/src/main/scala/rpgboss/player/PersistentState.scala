@@ -35,9 +35,12 @@ class PersistentState
     globalInts.get(key).getOrElse(-1)
   }
 
+  /**
+   * Returns a defensive copy of the stored array.
+   */
   def getIntArray(key: String) = {
     assertOnBoundThread()
-    intArrays.get(key).getOrElse(new Array[Int](0))
+    intArrays.get(key).map(_.clone()).getOrElse(new Array[Int](0))
   }
 
   def setIntArray(key: String, value: Array[Int]) = {
@@ -45,9 +48,12 @@ class PersistentState
     intArrays.update(key, value.toArray)
   }
 
+  /**
+   * Returns a defensive copy of the stored array.
+   */
   def getStringArray(key: String) = {
     assertOnBoundThread()
-    stringArrays.getOrElse(key, new Array[String](0))
+    stringArrays.get(key).map(_.clone()).getOrElse(new Array[String](0))
   }
 
   def setStringArray(key: String, value: Array[String]) = {
@@ -65,5 +71,44 @@ class PersistentState
   def setEventState(mapName: String, eventId: Int, newState: Int) = {
     assertOnBoundThread()
     eventStates.update((mapName, eventId), newState)
+  }
+}
+
+object PersistentStateUtils extends HasScriptConstants {
+  /**
+   * Returns list of characters that leveled up by their character index.
+   */
+  def givePartyExperience(persistent: PersistentState, 
+                          characters: Array[rpgboss.model.Character], 
+                          partyIds: Array[Int], 
+                          experience: Int) = {
+    val levels = persistent.getIntArray(CHARACTER_LEVELS)
+    val exps = persistent.getIntArray(CHARACTER_EXPS)
+    
+    assert(levels.length == characters.length)
+    assert(exps.length == characters.length)
+    
+    val leveledBuffer = collection.mutable.ArrayBuffer[Int]()
+    for (i <- partyIds) {
+      val character = characters(i)
+      exps(i) += experience
+      
+      var leveled = false
+      while (exps(i) >= character.expToLevel(levels(i))) {
+        exps(i) -= character.expToLevel(levels(i))
+        levels(i) += 1
+        
+        leveled = true
+      }
+      
+      if (leveled) {character.expToLevel(levels(i))
+        leveledBuffer += i
+      }
+    }
+    
+    persistent.setIntArray(CHARACTER_LEVELS, levels)
+    persistent.setIntArray(CHARACTER_EXPS, exps)
+    
+    leveledBuffer.toArray
   }
 }

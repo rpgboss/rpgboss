@@ -152,9 +152,9 @@ class BattleScreen(
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
   
   // How long to wait after being defeated.
-  private var _defeated = false
   private var _defeatedTimer = 0.0f
   private def defeatedMessageTime = 4.0f
+  private var _victorySequenceStarted = false
   
   private var enemyListWindow: TextWindow = null
   private var partyListWindow: TextWindow = null
@@ -211,8 +211,12 @@ class BattleScreen(
   def updateEnemyListWindow() = {
     assert(_battle.isDefined)
     assert(enemyListWindow != null)
+    val aliveUnits = _battle.get.encounter.units.zipWithIndex.filter {
+      case (_, i) => _battle.get.enemyStatus.apply(i).alive
+    }.map(_._1)
+    
     val enemyLines = 
-      Encounter.getEnemyLabels(_battle.get.encounter.units, project.data)
+      Encounter.getEnemyLabels(aliveUnits, project.data)
     enemyListWindow.updateText(enemyLines)
   }
     
@@ -327,9 +331,9 @@ class BattleScreen(
     assertOnBoundThread()
     assert(_battle.isDefined)
     _battle = None
-    _defeated = false
     _defeatedTimer = 0
-
+    _victorySequenceStarted = false
+    
     currentNotificationDisplay = None
     
     enemyListWindow = null
@@ -360,16 +364,27 @@ class BattleScreen(
     if (gameOpt.isDefined) {
       _battle.map { battle =>
         // Handle defeat
-        if (battle.partyStatus.forall(!_.alive)) {
-          _defeated = true
-          postTextNotice("Defeat...")
-        }
-        
-        if (_defeated) {
+        if (battle.defeat) {
+          if (_defeatedTimer == 0) {
+            postTextNotice("Defeat...")
+          }
           _defeatedTimer += delta
           if (_defeatedTimer >= defeatedMessageTime) {
             endBattle()
             gameOpt.get.gameOver()
+          }
+        } else if (battle.victory) {
+          if (!_victorySequenceStarted) {
+            _victorySequenceStarted = true
+            
+            val xp = _battle.get.victoryExperience
+            
+            
+            import concurrent.ExecutionContext.Implicits.global
+            
+            concurrent.Future {
+              scriptInterface.showText(Array("Received %d XP.".format(xp)))
+            }
           }
         } else {
           battle.advanceTime(delta)
@@ -387,20 +402,24 @@ class BattleScreen(
           // Add the next notification if it exists.
           if (currentNotificationDisplay.isEmpty) {
             battle.getNotification.map { notification =>
-              val source = notification.action.actor
-              val target = notification.action.target
-              val windows = for (damage <- notification.damages) yield {
-                val box = getBox(target.entityType, target.id)
-                new DamageTextWindow(gameOpt.get.persistent, windowManager, 
-                    damage.value, box.x, box.y)
+              if (notification.action.isInstanceOf[AttackAction]) {
+                val source = notification.action.actor
+                val target = notification.action.target
+                val windows = for (damage <- notification.damages) yield {
+                  val box = getBox(target.entityType, target.id)
+                  new DamageTextWindow(gameOpt.get.persistent, windowManager, 
+                      damage.value, box.x, box.y)
+                }
+                
+                // Also display an attack notice, but don't block on its close.
+                postTextNotice("%s attacks %s.".format(
+                    getEntityName(source), getEntityName(target)))
+                
+                val display = NotificationDisplay(notification, windows)
+                currentNotificationDisplay = Some(display)
+              } else {
+                postTextNotice("Not implemented yet.")
               }
-              
-              // Also display an attack notice, but don't block on its close.
-              postTextNotice("%s attacks %s.".format(
-                  getEntityName(source), getEntityName(target)))
-              
-              val display = NotificationDisplay(notification, windows)
-              currentNotificationDisplay = Some(display)
             }
             
           }

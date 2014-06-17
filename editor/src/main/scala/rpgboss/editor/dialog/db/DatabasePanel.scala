@@ -15,7 +15,7 @@ trait DatabasePanel {
 abstract class RightPaneArrayDatabasePanel[T <: HasName](
   owner: Window,
   label: String,
-  initialAry: Seq[T])(implicit m: Manifest[T])
+  initialAry: Array[T])(implicit m: Manifest[T])
   extends RightPaneArrayEditingPanel[T](owner, label, initialAry)(m)
   with DatabasePanel {
   

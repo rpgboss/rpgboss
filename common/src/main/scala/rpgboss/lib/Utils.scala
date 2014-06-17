@@ -134,9 +134,9 @@ object Utils {
 
 object ArrayUtils {
   def resized[T](
-    a: Seq[T],
+    a: Array[T],
     newSize: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Seq[T] = {
+    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Array[T] = {
     val oldSize = a.size
 
     if (newSize > oldSize) {
@@ -148,10 +148,10 @@ object ArrayUtils {
   }
 
   def normalizedAry[T](
-    a: Seq[T],
+    a: Array[T],
     minElems: Int,
     maxElems: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Seq[T] =
+    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Array[T] =
     if (a.size > maxElems)
       resized(a, maxElems, newDefaultInstance)
     else if (a.size < minElems)
@@ -160,9 +160,9 @@ object ArrayUtils {
       a
 
   def normalizedAry[T](
-    a: Seq[T],
+    a: Array[T],
     nElems: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]): Seq[T] =
+    newDefaultInstance: () => T)(implicit m: Manifest[T]): Array[T] =
       normalizedAry(a, nElems, nElems, newDefaultInstance)
 }
 

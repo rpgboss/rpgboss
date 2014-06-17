@@ -275,7 +275,7 @@ class PrintingTextWindow(
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
   x: Int, y: Int, w: Int, h: Int,
-  timePerChar: Double,
+  timePerChar: Float,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends Window(manager, inputs, x, y, w, h) {
