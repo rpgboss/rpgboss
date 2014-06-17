@@ -20,9 +20,7 @@ class PersistentState
   private val stringArrays = new MutableHashMap[String, Array[String]]
 
   // mapName->eventId->state
-  val eventStates =
-    new MutableHashMap[(String, Int), Int]
-    with ObservableMap[(String, Int), Int]
+  private val eventStates = new MutableHashMap[(String, Int), Int]
 
   // TODO: save player location
   def setInt(key: String, value: Int) = {
@@ -74,7 +72,7 @@ class PersistentState
   }
 }
 
-object PersistentStateUtils extends HasScriptConstants {
+object PersistentStateUtil extends HasScriptConstants {
   /**
    * Returns list of characters that leveled up by their character index.
    */
