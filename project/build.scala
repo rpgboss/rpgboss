@@ -86,8 +86,8 @@ object Settings {
     import java.net.URL
     
     // Declare names
-    val baseUrl = "http://libgdx.badlogicgames.com/nightlies"
-    val gdxName = "libgdx-nightly-latest"
+    val baseUrl = "http://libgdx.badlogicgames.com/releases"
+    val gdxName = "libgdx-1.1.0"
 
     // Fetch the file.
     s.log.info("Pulling %s" format(gdxName))
