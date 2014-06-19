@@ -50,20 +50,25 @@ sbt
 Packaging into binaries
 -----------------------
 
-1. Install launch4j.
+Prerequisites:
 
-2. Enter the repository and run the package shell script.
++ launch4j
++ A Java keystore at ../keystore.jks.
+
+Instructions:
+
+1. Enter the repository and run the package shell script.
 
 ```
 cd rpgboss
 ./package/package.sh
 ```
 
-3. Find your binaries in:
+2. Find your binaries in:
 
 ```
 $ ls package/target/
-rpgboss-editor.exe  rpgboss-editor-linux.tar.gz
+rpgboss-0.1-SNAPSHOT.exe  rpgboss-0.1-SNAPSHOT.tar.gz
 ```
 
 Project structure
