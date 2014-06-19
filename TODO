@@ -1,5 +1,6 @@
+* Make battle feel more responsive to player input.
 * Restore charaters' HP and MP after battle (temporary hack).
-* Indicate via battler display when a character or enemy is dead.
+* Indicate via battler display when a character is dead.
 * Make animations for BattleDamage.
 
 * Make method that auto selects an element, asserting the collection is not empty. Use it in Battle.scala.

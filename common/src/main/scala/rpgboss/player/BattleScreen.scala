@@ -10,6 +10,7 @@ import rpgboss.player.entity._
 import rpgboss.lib._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
+import scala.collection.mutable.ArrayBuffer
 
 case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
                         y: Int) extends BoxLike {
@@ -65,7 +66,7 @@ class BattleScreen(
           currentOpt = Some(this)
           
           _window = scriptInterface.newChoiceWindow(
-            Array("Attack", "Skill", "Item"), 100, 300, 140, 180)
+            Array("Attack"), 100, 300, 140, 180)
         }
      
         _window.getChoice() match {
@@ -98,23 +99,31 @@ class BattleScreen(
         assert(_enemyBattlers.length == _battle.get.enemyStatus.length)
         assert(_partyBattlers.length == _battle.get.partyStatus.length)
         
-        val choices = 
-          _enemyBattlers.map(_.getBoundsArray()) ++ 
-          _partyBattlers.map(_.getBoundsArray())
+        val _aliveEnemyList = _battle.get.enemyStatus.filter(_.alive)
+        val _alivePartyList = _battle.get.partyStatus.filter(_.alive)
+
+        val aliveStatuses = _aliveEnemyList ++ _alivePartyList
+        val choices = new ArrayBuffer[Array[Int]]
+        for (status <- _aliveEnemyList) {
+          choices.append(_enemyBattlers(status.id).getBoundsArray())
+        }
+        for (status <- _alivePartyList) {
+          choices.append(_partyBattlers(status.id).getBoundsArray())
+        }
         
         val defaultChoice = 
           if (defaultToParty)
-            _enemyBattlers.length
+            _aliveEnemyList.length
           else 
             0
           
         val choice = scriptInterface.getSpatialChoice(
           choices.toArray, defaultChoice)
           
-        if (choice < _enemyBattlers.length)
-          _battle.get.enemyStatus(choice)
+        if (choice < _aliveEnemyList.length)
+          _aliveEnemyList(choice)
         else
-          _battle.get.partyStatus(choice - _enemyBattlers.length)
+          _alivePartyList(choice - _aliveEnemyList.length)
       }
     }
     
@@ -207,7 +216,7 @@ class BattleScreen(
     }
   }
   
-  def updateEnemyListWindow() = {
+  def updateEnemyListWindowAndBattlers() = {
     assert(_battle.isDefined)
     assert(enemyListWindow != null)
     val aliveUnits = _battle.get.encounter.units.zipWithIndex.filter {
@@ -217,9 +226,15 @@ class BattleScreen(
     val enemyLines = 
       Encounter.getEnemyLabels(aliveUnits, project.data)
     enemyListWindow.updateText(enemyLines)
+    
+    // TODO: Handle enemy revive
+    for (enemyStatus <- _battle.get.enemyStatus; if !enemyStatus.alive) {
+      windowManager.hidePicture(
+        PictureSlots.BATTLE_SPRITES_ENEMIES + enemyStatus.id)
+    }
   }
     
-  def updatePartyListWindow() = {
+  def updatePartyListWindowAndBattlers() = {
     assert(_battle.isDefined)
     assert(partyListWindow != null)
     
@@ -230,6 +245,12 @@ class BattleScreen(
       "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
     }
     partyListWindow.updateText(partyLines)
+    
+    // TODO: Handle party revive
+    for (status <- _battle.get.partyStatus; if !status.alive) {
+      windowManager.hidePicture(
+        PictureSlots.BATTLE_SPRITES_PARTY + status.id)
+    }
   }
   
   def startBattle(battle: Battle, battleBackground: String) = {
@@ -441,8 +462,8 @@ class BattleScreen(
           PlayerActionWindow.closeCurrentIfDead()
           PlayerActionWindow.spawnIfNeeded(battle, battle.readyEntity)
     
-          updateEnemyListWindow()
-          updatePartyListWindow()
+          updateEnemyListWindowAndBattlers()
+          updatePartyListWindowAndBattlers()
         }
       }
     }

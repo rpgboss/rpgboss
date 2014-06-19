@@ -227,7 +227,7 @@ class DamageTextWindow(
   extends Window(manager, null, 0, 0, 0, 0, 
     invisible = true) {
   
-  private val expiryTime = 0.6
+  private val expiryTime = 1.6
   private val yDisplacement = -30.0
   
   private var age = 0.0
