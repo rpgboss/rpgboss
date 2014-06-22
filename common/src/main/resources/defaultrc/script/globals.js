@@ -7,14 +7,14 @@ function teleportLoc(loc, transition) {
   }
   
   if (Transitions.get(transition) == Transitions.FADE()) {
-    game.setTransition(1, 0, fadeDuration);
+    game.setTransition(0, 1, fadeDuration);
     game.sleep(fadeDuration);
   }
 
   game.setPlayerLoc(loc);
 
   if (Transitions.get(transition) == Transitions.FADE()) {
-    game.setTransition(0, 1, fadeDuration);
+    game.setTransition(1, 0, fadeDuration);
   }
 }
 
