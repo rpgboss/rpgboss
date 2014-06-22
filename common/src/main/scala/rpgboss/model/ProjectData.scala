@@ -2,30 +2,31 @@ package rpgboss.model
 import rpgboss.model.resource.RpgMap
 import java.io.File
 import rpgboss.lib.JsonUtils
+import rpgboss.model.resource.ResourceConstants
 
 case class ProjectDataStartup(
-  var startingLoc: MapLoc = MapLoc(RpgMap.generateName(1), 5.5f, 5.5f),
-  var startingParty: Array[Int] = Array(0),
+  var startingLoc: MapLoc,
+  var startingParty: Array[Int],
 
-  var titlePic: String = "LordSpirit.jpg",
-  var titleMusic: Option[SoundSpec] = None,
+  var titlePic: String,
+  var titleMusic: Option[SoundSpec],
 
-  var windowskin: String = "LastPhantasmScanlines.png",
-  var msgfont: String = "VeraMono.ttf",
-  var fontsize: Int = 24,
+  var windowskin: String,
+  var msgfont: String,
+  var fontsize: Int,
 
-  var soundCursor: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuCursor.mp3")),
-  var soundSelect: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuSelect.mp3")),
-  var soundCancel: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuCancel.mp3")),
-  var soundCannot: Option[SoundSpec] =
-    Some(SoundSpec("rpgboss-menu/MenuCannot.mp3")))
+  var soundCursor: Option[SoundSpec],
+  var soundSelect: Option[SoundSpec],
+  var soundCancel: Option[SoundSpec],
+  var soundCannot: Option[SoundSpec])
+
+object ProjectDataStartup {
+  def apply(): ProjectDataStartup = ResourceConstants.getProjectDataStartup
+}
 
 case class ProjectDataEnums(
   var animations: Array[Animation] = Array(Animation()),
-  var characters: Array[Character] = ProjectData.defaultCharacters,
+  var characters: Array[Character] = ResourceConstants.defaultCharacters,
   var classes: Array[CharClass] = Array(CharClass()),
   var elements: Array[String] = ProjectData.defaultElements,
   var enemies: Array[Enemy] = Array(Enemy()),
@@ -42,11 +43,11 @@ case class ProjectData(
   var lastCreatedMapId: Int = 1, // Start at 1)
   var startup: ProjectDataStartup = ProjectDataStartup(),
   var enums: ProjectDataEnums = ProjectDataEnums()) {
-  
+
   def writeEnums(dir: File) = {
     def writeModel[T <: AnyRef](name: String, model: T) =
       JsonUtils.writeModelToJson(new File(dir, "%s.json".format(name)), model)
-    
+
     writeModel("animations", enums.animations)
     writeModel("characters", enums.characters)
     writeModel("classes", enums.classes)
@@ -58,15 +59,15 @@ case class ProjectData(
     writeModel("skills", enums.skills)
     writeModel("statusEffects", enums.statusEffects)
   }
-  
+
   def writeRootWithoutEnums(dir: File) = {
     val enumsStripped = copy(enums = null)
     def writeModel[T <: AnyRef](name: String, model: T) =
       JsonUtils.writeModelToJson(new File(dir, "%s.json".format(name)), model)
-    
+
     writeModel("rpgproject", enumsStripped)
   }
-  
+
   def write(dir: File) = {
     writeRootWithoutEnums(dir)
     writeEnums(dir)
@@ -104,13 +105,6 @@ object ProjectData {
 
     modelOpt
   }
-
-  def defaultCharacters = Array(
-    Character("Pando", sprite = Some(SpriteSpec("vx_chara01_a.png", 4))),
-    Character("Estine", sprite = Some(SpriteSpec("vx_chara01_a.png", 1))),
-    Character("Leoge", sprite = Some(SpriteSpec("vx_chara01_a.png", 3))),
-    Character("Graven", sprite = Some(SpriteSpec("vx_chara01_a.png", 2))),
-    Character("Carona", sprite = Some(SpriteSpec("vx_chara01_a.png", 6))))
 
   def defaultElements = Array(
     "Untyped",

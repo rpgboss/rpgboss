@@ -39,7 +39,7 @@ class ProjectTest extends ShouldMatchers {
   }
 
   def singleTestEvent(cmd: EventCmd, x: Float = 2f, y: Float = 2f) = {
-    val sprite = SpriteSpec("vx_chara02_a.png", 0)
+    val sprite = ResourceConstants.defaultSpriteSpec
     val states = Array(RpgEventState(sprite = Some(sprite), cmds = Array(cmd)))
     Map(
       1->RpgEvent(1, "Testevent", x, y, states)
@@ -76,11 +76,11 @@ abstract class MapScreenTest extends ProjectTest {
   val game = new RpgGame(projectDirectory) {
     override def beginGame() = {
       setup()
-      
+
       startNewGame()
-      
+
       setScreen(mapScreen)
-      
+
       // Run this asynchronously so it doesn't block the main render thread.
       Future {
         testScript()

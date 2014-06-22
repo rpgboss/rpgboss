@@ -68,7 +68,7 @@ trait MetaResource[T, MT] {
     val resourceFilename = resourceFile.getName()
     val resourceDir = resourceFile.getParentFile()
 
-    new File(resourceDir, "%s.metadata.json".format(resourceFilename))
+    new File(resourceDir, "%s.%s".format(resourceFilename, Resource.metadataSuffix))
   }
 
   // Create a new instance with the default metadata
@@ -87,7 +87,9 @@ trait MetaResource[T, MT] {
 case class ResourceException(msg: String) extends Exception(msg)
 
 object Resource {
+  def metadataSuffix = "metadata.json"
+
   val resourceTypes = List(
-      AnimationImage, Autotile, Battler, BattleBackground, Iconset, Msgfont, 
+      AnimationImage, Autotile, Battler, BattleBackground, Iconset, Msgfont,
       Music, Picture, RpgMap, Script, Sound, Spriteset, Tileset, Windowskin)
 }

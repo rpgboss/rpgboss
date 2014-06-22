@@ -4,7 +4,7 @@
     "subtitle":"Adventurer",
     "description":"An ordinary boy thrust into extraordinary circumstances.",
     "sprite":{
-      "name":"vx_chara01_a.png",
+      "name":"sys/vx_chara01_a.png",
       "spriteIndex":4,
       "dir":0,
       "step":1
@@ -58,7 +58,7 @@
     "subtitle":"Healer",
     "description":"A trained healer in touch with the spiritual.",
     "sprite":{
-      "name":"vx_chara01_a.png",
+      "name":"sys/vx_chara01_a.png",
       "spriteIndex":6,
       "dir":0,
       "step":1
@@ -112,7 +112,7 @@
     "subtitle":"Engineer",
     "description":"A master of using tools to get out of sticky situations.",
     "sprite":{
-      "name":"vx_chara01_a.png",
+      "name":"sys/vx_chara01_a.png",
       "spriteIndex":3,
       "dir":0,
       "step":1
@@ -166,7 +166,7 @@
     "subtitle":"Rogue",
     "description":"Beneath her player exterior is a someone you wouldn't want to cross.",
     "sprite":{
-      "name":"vx_chara02_c.png",
+      "name":"sys/vx_chara02_c.png",
       "spriteIndex":4,
       "dir":0,
       "step":1
@@ -220,7 +220,7 @@
     "subtitle":"Wizard",
     "description":"A gifted young woman intensely devoted to her craft.",
     "sprite":{
-      "name":"vx_chara01_b.png",
+      "name":"sys/vx_chara01_b.png",
       "spriteIndex":7,
       "dir":0,
       "step":1

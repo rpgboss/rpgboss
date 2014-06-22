@@ -11,7 +11,7 @@ case class BattleBackground(proj: Project, name: String,
 
 }
 
-object BattleBackground 
+object BattleBackground
   extends MetaResource[BattleBackground, BattleBackgroundMetadata] {
   def rcType = "battlebg"
   def keyExts = Array("png", "jpg", "jpeg")
