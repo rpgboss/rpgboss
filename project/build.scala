@@ -8,7 +8,7 @@ object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     fork := true, // For natives loading.
     version := "0.1",
-    scalaVersion := "2.11.0",
+    scalaVersion := "2.11.1",
     scalacOptions ++= List("-deprecation", "-unchecked"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
@@ -39,9 +39,10 @@ object Settings {
   lazy val editor = Settings.common ++ editorLibs ++ editorProguard
   
   lazy val editorLibs = Seq(
+    scalaVersion := "2.11.1",
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-swing" % "2.11.0-M7",
-      "com.github.benhutchison" % "scalaswingcontrib" % "1.5", 
+      "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
+      "com.github.benhutchison" %% "scalaswingcontrib" % "1.5", 
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
     ),
@@ -55,7 +56,7 @@ object Settings {
 
   lazy val editorProguard = proguardSettings ++ Seq(
     proguardOptions := Seq(
-      "-optimizationpasses 5",
+//      "-optimizationpasses 5",
       "-dontwarn",
       // Doesn't seem to refresh the minified JAR appropriately without this.
       // "-forceprocessing",
