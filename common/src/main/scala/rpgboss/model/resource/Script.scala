@@ -15,7 +15,6 @@ case class Script(proj: Project, name: String,
                   metadata: ScriptMetadata)
   extends Resource[Script, ScriptMetadata] {
   def meta = Script
-  def getAsString = dataFile.readAsString.getOrElse("")
 }
 
 object Script extends MetaResource[Script, ScriptMetadata] {

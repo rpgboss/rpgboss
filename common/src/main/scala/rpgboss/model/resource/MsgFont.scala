@@ -17,8 +17,7 @@ case class Msgfont(proj: Project, name: String,
   def meta = Msgfont
 
   def getBitmapFont(): BitmapFont = {
-    val generator = new FreeTypeFontGenerator(
-      Gdx.files.absolute(dataFile.getAbsolutePath()))
+    val generator = new FreeTypeFontGenerator(getGdxFileHandle)
 
     val params = new FreeTypeFontGenerator.FreeTypeFontParameter
     params.size = proj.data.startup.fontsize

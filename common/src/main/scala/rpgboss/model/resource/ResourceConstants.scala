@@ -3,6 +3,13 @@ package rpgboss.model.resource
 import rpgboss.model._
 
 object ResourceConstants {
+  def defaultRcDir = "defaultrc"
+  lazy val defaultRcList =  {
+    val rcStream =
+      getClass.getClassLoader.getResourceAsStream("defaultrc/enumerated.txt")
+    io.Source.fromInputStream(rcStream).getLines().toList
+  }
+
   def systemStartScript = "sys/start.js"
   def systemStartCall = "start()"
 

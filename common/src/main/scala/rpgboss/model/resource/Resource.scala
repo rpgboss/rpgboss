@@ -5,17 +5,47 @@ import scala.collection.JavaConversions._
 import java.io._
 import rpgboss.model.Project
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.Gdx
+import com.google.common.io.CharStreams
 
 trait Resource[T, MT <: AnyRef] extends LazyLogging {
   def name: String
   def metadata: MT
   def meta: MetaResource[T, MT]
   def proj: Project
+  def rcType: String = meta.rcType
 
   def rcTypeDir = new File(proj.rcDir, meta.rcType)
-  val dataFileVar = new File(rcTypeDir, name)
 
-  def dataFile = dataFileVar
+  /**
+   * Can return null if it can't be read in either the project or classpath
+   */
+  def newDataStream: InputStream = {
+    val fileInProject = new File(rcTypeDir, name)
+    if (fileInProject.isFile() && fileInProject.canRead()) {
+      new FileInputStream(fileInProject)
+    } else {
+      getClass.getClassLoader().getResourceAsStream(
+        "%s/%s/%s".format(ResourceConstants.defaultRcDir, meta.rcType, name))
+    }
+  }
+
+  def getGdxFileHandle: FileHandle = {
+    val fileInProject = new File(rcTypeDir, name)
+    if (fileInProject.isFile() && fileInProject.canRead()) {
+      Gdx.files.absolute(fileInProject.getAbsolutePath())
+    } else {
+      Gdx.files.classpath(
+        "%s/%s/%s".format(ResourceConstants.defaultRcDir, meta.rcType, name))
+    }
+  }
+
+  def readAsString = {
+    val s = CharStreams.toString(new InputStreamReader(newDataStream, "UTF-8"))
+    newDataStream.close()
+    s
+  }
 
   def writeMetadata(): Boolean =
     JsonUtils.writeModelToJson(meta.metadataFile(proj, name), metadata)
@@ -42,6 +72,7 @@ trait MetaResource[T, MT] {
       return false
     }
 
+    // Add in-project files.
     val resourceDir = rcDir(proj)
     if (!resourceDir.exists())
       resourceDir.mkdir()
@@ -56,6 +87,19 @@ trait MetaResource[T, MT] {
           if(subFile.isFile() && extensionFilter(subFile)) {
             items.append(rootFile.getName() + "/" + subFile.getName())
           }
+        }
+      }
+    }
+
+    // Add in-classpath files.
+    for (path <- ResourceConstants.defaultRcList) {
+      val components = path.split("/")
+      if (!components.isEmpty &&
+          components.head == rcType) {
+        val file = new File(path)
+        if (extensionFilter(file)) {
+          val pathWithoutRcType: String = components.tail.mkString("/")
+          items.append(pathWithoutRcType)
         }
       }
     }
@@ -88,8 +132,11 @@ case class ResourceException(msg: String) extends Exception(msg)
 
 object Resource {
   def metadataSuffix = "metadata.json"
+  def jsonSuffix = "json"
 
   val resourceTypes = List(
       AnimationImage, Autotile, Battler, BattleBackground, Iconset, Msgfont,
       Music, Picture, RpgMap, Script, Sound, Spriteset, Tileset, Windowskin)
+
+
 }

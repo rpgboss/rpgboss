@@ -15,13 +15,6 @@ class FileHelper(file: File) {
     finally { fw.close }
   }
 
-  def readAsString: Option[String] = {
-    if (file.isFile && file.canRead)
-      Some(Source.fromFile(file).mkString)
-    else
-      None
-  }
-
   def deleteAll(): Boolean = {
     def deleteFile(dfile: File): Boolean = {
       val subFilesGone =
@@ -124,7 +117,7 @@ object Utils {
     assert(resource != null)
     ImageIO.read(resource)
   }
-    
+
   // TODO: Look for a more efficient implementation.
   def deepCopy[A <: AnyRef](a: A)(implicit m: reflect.Manifest[A]): A = {
     val json = Serialization.write(a)(DefaultFormats)
@@ -168,7 +161,7 @@ object ArrayUtils {
 
 object JsonUtils {
   import FileHelper._
-  
+
   def readModelFromJsonWithFormats[T](
     file: File, formats: Formats)(implicit m: Manifest[T]): Option[T] = {
     file.getReader().map { reader =>

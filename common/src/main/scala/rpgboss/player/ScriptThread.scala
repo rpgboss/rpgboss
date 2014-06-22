@@ -65,7 +65,7 @@ class ScriptThread(
 
       jsContext.evaluateString(
         jsScope,
-        globalScript.getAsString,
+        globalScript.readAsString,
         globalScript.name,
         1, null)
 
@@ -131,7 +131,7 @@ object ScriptThread {
       game,
       scriptInterface,
       script.name,
-      script.getAsString,
+      script.readAsString,
       fnToRun,
       onFinish)
   }

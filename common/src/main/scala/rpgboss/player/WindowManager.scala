@@ -34,8 +34,7 @@ class WindowManager(
 
   val windowskin =
     Windowskin.readFromDisk(project, project.data.startup.windowskin)
-  val windowskinTexture =
-    new Texture(Gdx.files.absolute(windowskin.dataFile.getAbsolutePath()))
+  val windowskinTexture = new Texture(windowskin.getGdxFileHandle)
   val windowskinRegion = new TextureRegion(windowskinTexture)
 
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
@@ -48,9 +47,9 @@ class WindowManager(
     assertOnBoundThread()
     curTransition = Some(Transition(startAlpha, endAlpha, duration))
   }
-    
+
   def inTransition = curTransition.isDefined && !curTransition.get.done
-  
+
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
   def addWindow(window: Window) = {
@@ -76,7 +75,7 @@ class WindowManager(
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
-  def showPictureByName(slot: Int, name: String, x: Int, y: Int, w: Int, 
+  def showPictureByName(slot: Int, name: String, x: Int, y: Int, w: Int,
                         h: Int) = {
     val picture = Picture.readFromDisk(project, name)
     showPicture(slot, TexturePicture(picture.newGdxTexture, x, y, w, h))
@@ -85,21 +84,21 @@ class WindowManager(
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
     assertOnBoundThread()
     pictures(slot).map(_.dispose())
-    pictures(slot) = Some(newPicture)    
+    pictures(slot) = Some(newPicture)
   }
 
   def hidePicture(slot: Int) = {
     pictures(slot).map(_.dispose())
     pictures(slot) = None
   }
-  
+
   def reset() = {
     for (i <- 0 until pictures.length) {
       hidePicture(i)
     }
-    
+
     windows.foreach(_.startClosing())
-    
+
     // TODO: This could potentially leave window promises unfulfilled, since
     // we don't update them anymore.
     windows.clear()
@@ -107,7 +106,7 @@ class WindowManager(
 
   def update(delta: Float) = {
     curTransition.map(_.update(delta))
-    
+
     windows.foreach(_.update(delta))
 
     // TODO: Avoid a memory alloc here
@@ -160,7 +159,7 @@ class WindowManager(
       // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL20.GL_BLEND)
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-      
+
       shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
       shapeRenderer.rect(0, 0, 640, 480)
       shapeRenderer.end()
@@ -203,15 +202,15 @@ case class TextureAtlasRegionPicture(
   regionName: String,
   x: Int, y: Int, w: Int, h: Int,
   srcX: Int, srcY: Int, srcW: Int, srcH: Int) extends PictureLike {
-  
+
   val region = atlasSprites.findRegion(regionName)
   val srcXInRegion = region.getRegionX() + srcX
   val srcYInRegion = region.getRegionY() + srcY
-  
+
   def dispose() = {
     // No need to dispose since the texture is part of the TextureAtlas
   }
-  
+
   def render(batch: SpriteBatch) = {
     batch.draw(
       region.getTexture(),

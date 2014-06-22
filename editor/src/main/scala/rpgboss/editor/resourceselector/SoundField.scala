@@ -52,21 +52,21 @@ abstract class SoundSelectDialog(
   override def newRcNameToSpec(name: String,
                                prevSpec: Option[SoundSpec]): SoundSpec =
     prevSpec.getOrElse(SoundSpec("")).copy(sound = name)
-    
+
   override def rightPaneFor(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit) = {
     new DesignGridPanel with ResourceRightPane {
       import rpgboss.editor.uibase.SwingUtils._
-      
+
       override def dispose() = {
         gdxPanel.dispose()
         currentSound.dispose()
         super.dispose()
       }
-      
+
       val gdxPanel = new GdxPanel()
-      
+
       val volumeSlider = floatSlider(
         selection.volume, 0f, 1f, 100, 5, 25,
         v => updateSelectionF(
@@ -79,7 +79,7 @@ abstract class SoundSelectDialog(
 
       val resource = Sound.readFromDisk(sm.getProj, selection.sound)
 
-      val currentSound = gdxPanel.getAudio.newSound(resource.getHandle())
+      val currentSound = gdxPanel.getAudio.newSound(resource.getGdxFileHandle)
 
       row().grid().add(new Button(Action("Play") {
         currentSound.play(volumeSlider.floatValue, pitchSlider.floatValue, 0f)
@@ -116,18 +116,18 @@ abstract class MusicSelectDialog(
         gdxPanel.dispose()
         super.dispose()
       }
-      
+
       val volumeSlider = floatSlider(
         selection.volume, 0f, 1f, 100, 5, 25,
         v => updateSelectionF(
           selection.copy(volume = v)))
-      
+
       val gdxPanel = new GdxPanel()
-      
+
       val resource = Music.readFromDisk(sm.getProj, selection.sound)
-      
+
       val currentMusic: Option[GdxMusic] =
-        Some(gdxPanel.getAudio.newMusic(resource.getHandle()))
+        Some(gdxPanel.getAudio.newMusic(resource.getGdxFileHandle))
 
       row().grid().add(new Button(Action("Play") {
         currentMusic.map(x => logger.debug(x.isPlaying().toString))

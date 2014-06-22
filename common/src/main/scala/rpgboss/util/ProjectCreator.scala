@@ -26,10 +26,8 @@ object ProjectCreator {
     val copiedAllResources = {
       val projRcDir = projectStub.rcDir
 
-      val rcStream = cl.getResourceAsStream("defaultrc/enumerated.txt")
-      val resources = io.Source.fromInputStream(rcStream).getLines().toList
-
-      for (resourceName <- resources) {
+      for (resourceName <- ResourceConstants.defaultRcList;
+           if resourceName.endsWith(Resource.jsonSuffix)) {
 
         val target = new File(projRcDir, resourceName)
 
@@ -40,7 +38,8 @@ object ProjectCreator {
         val buffer = new Array[Byte](1024 * 32)
 
         val sourceStream =
-          cl.getResourceAsStream("defaultrc/%s".format(resourceName))
+          cl.getResourceAsStream("%s/%s".format(
+            ResourceConstants.defaultRcDir, resourceName))
 
         Iterator.continually(sourceStream.read(buffer))
           .takeWhile(_ != -1).foreach(fos.write(buffer, 0, _))

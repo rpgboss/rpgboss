@@ -40,8 +40,7 @@ object GdxUtils {
     val packerSprites =
       new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
     spritesets.foreach { spriteset =>
-      val srcPixmap = new Pixmap(
-        Gdx.files.absolute(spriteset.dataFile.getAbsolutePath()))
+      val srcPixmap = new Pixmap(spriteset.getGdxFileHandle)
 
       val srcFormat = srcPixmap.getFormat()
       if (srcFormat == Pixmap.Format.RGBA8888 ||

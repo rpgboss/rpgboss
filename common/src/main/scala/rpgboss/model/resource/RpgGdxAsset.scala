@@ -3,28 +3,28 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.Gdx
 import java.io.File
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import com.badlogic.gdx.files.FileHandle
 
 trait RpgGdxAsset[T] extends LazyLogging {
-  def dataFile: File
-  // Gdx always uses '/' as its path separator for some reason.
-  def gdxAbsPath: String = dataFile.getCanonicalPath().replaceAll("\\\\", "/")
+  def rcType: String
+  def name: String
+
+  private def gdxPath: String = "%s/%s".format(rcType, name)
 
   def loadAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): Unit = {
     try {
-      assets.load(gdxAbsPath, m.runtimeClass.asInstanceOf[Class[T]])
+      assets.load(gdxPath, m.runtimeClass.asInstanceOf[Class[T]])
     } catch {
       case e: Throwable =>
-        logger.error("Could not load an asset: " + gdxAbsPath, e)
+        logger.error("Could not load an asset: " + gdxPath, e)
     }
   }
 
   def getAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): T = {
-    assets.get(gdxAbsPath, m.runtimeClass.asInstanceOf[Class[T]])
+    assets.get(gdxPath, m.runtimeClass.asInstanceOf[Class[T]])
   }
 
   def unloadAsset(assets: RpgAssetManager): Unit = {
-    assets.unload(gdxAbsPath)
+    assets.unload(gdxPath)
   }
-
-  def getHandle() = Gdx.files.absolute(gdxAbsPath)
 }

@@ -31,8 +31,7 @@ class MapAndAssets(project: Project, val mapName: String) {
 
   // Pack all the autotiles
   autotiles.map { autotile =>
-    val autotilePix = new Pixmap(
-      Gdx.files.absolute(autotile.dataFile.getAbsolutePath()))
+    val autotilePix = new Pixmap(autotile.getGdxFileHandle)
 
     packerTiles.pack("autotile/%s".format(autotile.name), autotilePix)
 
@@ -44,8 +43,7 @@ class MapAndAssets(project: Project, val mapName: String) {
 
   // Pack all tilesets
   tilesets.map { tileset =>
-    val tilesetPix = new Pixmap(
-      Gdx.files.absolute(tileset.dataFile.getAbsolutePath()))
+    val tilesetPix = new Pixmap(tileset.getGdxFileHandle)
 
     packerTiles.pack("tileset/%s".format(tileset.name), tilesetPix)
 
@@ -53,15 +51,15 @@ class MapAndAssets(project: Project, val mapName: String) {
   }
 
   /**
-   * Create a list of elevated tiles that may need to be drawn above the 
-   * player and event sprites. 
+   * Create a list of elevated tiles that may need to be drawn above the
+   * player and event sprites.
    */
   case class ElevatedTile(tileX: Int, tileY: Int, byte1: Byte, byte2: Byte,
                           byte3: Byte, zPriority: Int)
   val elevatedTiles: Array[ElevatedTile] = {
     val buffer = new ArrayBuffer[ElevatedTile]
-    
-    for (layerAry <- 
+
+    for (layerAry <-
          List(mapData.botLayer, mapData.midLayer, mapData.topLayer)) {
       for (tileY <- 0 until map.metadata.ySize) {
         val row = layerAry(tileY)
@@ -71,7 +69,7 @@ class MapAndAssets(project: Project, val mapName: String) {
           val byte1 = row(idx)
           val byte2 = row(idx + 1)
           val byte3 = row(idx + 2)
-          
+
           if (byte1 < 0) {
             if (byte1 == RpgMap.autotileByte) { // Autotile
               val autotile = autotiles(byte2)
@@ -79,7 +77,7 @@ class MapAndAssets(project: Project, val mapName: String) {
               if (height > 0) {
                 buffer.append(ElevatedTile(
                   tileX, tileY, byte1, byte2, byte3, height + tileY))
-              } 
+              }
             }
           } else { // Regular tile
             val tileset = tilesets(byte1)
@@ -94,10 +92,10 @@ class MapAndAssets(project: Project, val mapName: String) {
         }
       }
     }
-    
+
     buffer.sortBy(_.zPriority).toArray
   }
-  
+
   def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
     import RpgMap._
     import Constants.DirectionMasks._
