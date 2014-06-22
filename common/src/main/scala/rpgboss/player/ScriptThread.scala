@@ -11,6 +11,7 @@ import rpgboss.player.entity.EventEntity
 import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import rpgboss.model.resource.ResourceConstants
 
 /**
  * Thread used to run a javascript script...
@@ -59,7 +60,8 @@ class ScriptThread(
 
       initScope(jsScope)
 
-      val globalScript = Script.readFromDisk(game.project, "globals.js")
+      val globalScript =
+        Script.readFromDisk(game.project, ResourceConstants.globalsScript)
 
       jsContext.evaluateString(
         jsScope,

@@ -173,4 +173,6 @@ object ResourceConstants {
     Character("Char4", sprite = Some(SpriteSpec("sys/vx_chara01_a.png", 4))))
 
   def defaultSpriteSpec = SpriteSpec("sys/vx_chara01_a.png", 0)
+
+  def globalsScript = "sys/globals.js"
 }
