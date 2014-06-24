@@ -19,32 +19,36 @@ Pre-requisites:
 Build instructions:
 
 1. Check that your Java install is working. If this does not work, make sure Java is installed an in your PATH.
-```
+    ```
     $ java -version                                                                                                                                              
     java version "1.7.0_55"                                                                                                                                                                OpenJDK Runtime Environment (IcedTea 2.4.7) (ArchLinux build 7.u55_2.4.7-1-x86_64)
     OpenJDK 64-Bit Server VM (build 24.51-b03, mixed mode)
-```
+    ```
+
 2. Clone this repo and enter it.
-```
+    ```
     $ git clone https://github.com/tommycli/rpgboss.git
     $ cd rpgboss
-```
+    ```
+
 3. Run sbt. Once you are in the sbt prompt, run these commands to pull in extra dependencies:
-```
+    ```
     $ sbt
     > update-gdx
     > update-libs
-```
+    ```
+
 4. You should still be in the sbt prompt. Switch to the 'editor' subproject, compile, and package it.
-```
+    ```
     > project editor
     > compile
     > package
-```
+    ```
+
 5. You can run the editor from the sbt prompt also.
-```
+    ```
     > run
-```
+    ```
 
 Packaging into binaries
 -----------------------
@@ -56,15 +60,16 @@ Prerequisites:
 Instructions:
 
 1. Enter the repository and run the package shell script.
-```
+    ```
     $ cd rpgboss
     $ ./package/package.sh
-```
+    ```
+
 2. Find your binaries in:
-```
+    ```
     $ ls package/target/
     rpgboss-0.1-SNAPSHOT.exe  rpgboss-0.1-SNAPSHOT.tar.gz
-```
+    ```
 
 Project structure
 -----------------
