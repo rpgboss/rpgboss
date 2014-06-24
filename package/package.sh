@@ -1,8 +1,12 @@
 #!/bin/sh
 set -e
 
-export VERSION="0.1-SNAPSHOT"
+export VERSION="0.1.0"
 export SRC_DIR=$(cd "$(dirname "$0")"; pwd)
+
+cd $SRC_DIR
+rm -rf target
+mkdir -p target
 
 cd $SRC_DIR/..
 sbt 'project editor' proguard
