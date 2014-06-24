@@ -14,14 +14,15 @@ Pre-requisites:
 
 +  git
 +  sbt - http://www.scala-sbt.org/
-+  Java
++  Java 6, 7, or 8.
 
 Build instructions:
 
-1. Check that your Java install is working. If this does not work, make sure Java is installed an in your PATH.
+1. Check that your Java install is working. It can be Java 6, 7, or 8. If this does not work, make sure Java is installed an in your PATH.
     ```
     $ java -version                                                                                                                                              
-    java version "1.7.0_55"                                                                                                                                                                OpenJDK Runtime Environment (IcedTea 2.4.7) (ArchLinux build 7.u55_2.4.7-1-x86_64)
+    java version "1.7.0_55"
+    OpenJDK Runtime Environment (IcedTea 2.4.7) (ArchLinux build 7.u55_2.4.7-1-x86_64)
     OpenJDK 64-Bit Server VM (build 24.51-b03, mixed mode)
     ```
 
@@ -48,6 +49,11 @@ Build instructions:
 5. You can run the editor from the sbt prompt also.
     ```
     > run
+    ```
+
+6. You can generate Eclipse IDE project files. It's what I use.
+    ```
+    > eclipse
     ```
 
 Packaging into binaries
