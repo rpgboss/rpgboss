@@ -56,6 +56,16 @@ Build instructions:
     > eclipse
     ```
 
+Commiting and Automated tests
+-----------------------------
+
+Automated tests are how rpgboss verifies that changes don't break existing functionality. Run automated tests before committing! 
+
+1. Run automated tests with:
+    ```
+    $ sbt test
+    ```
+
 Packaging into binaries
 -----------------------
 
