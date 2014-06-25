@@ -13,6 +13,7 @@ for root, subFolders, files in os.walk(rootdir):
         path = file
       else:
         path = abridgedRoot + "/" + file
+      path = path.replace("\\", "/")  # normalize paths
       fileList.append(path)
 
 fileList.sort()
