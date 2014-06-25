@@ -77,6 +77,14 @@ Instructions:
     rpgboss-0.1-SNAPSHOT.exe  rpgboss-0.1-SNAPSHOT.tar.gz
     ```
 
+Misc
+----
+
+Please use LF line endings. This will allow for CRLF line endings under Windows, but auto-convert to LF on checkin.
+    ```
+    $ git config --global core.autocrlf input
+    ```
+
 Project structure
 -----------------
 
