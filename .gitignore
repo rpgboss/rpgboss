@@ -1,5 +1,6 @@
 key
 common/lib/
+common/.project
 player-desktop/lib
 libs/
 target/
