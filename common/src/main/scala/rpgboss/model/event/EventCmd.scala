@@ -29,8 +29,40 @@ object EventCmd {
     classOf[StartBattle],
     classOf[SetInt])
 
-  def aryToJs(a: Array[String]) = a.map(strToJs(_)).mkString("[", ", ", "]")
-  def strToJs(s: String) = """"%s"""".format(s.replaceAll("\"", "\\\\\""))
+  case class JsExp(exp: String)
+
+  def toJs(x: Any): String = {
+    import java.util.Locale
+    x match {
+      case JsExp(exp) =>
+        exp
+      case x: String =>
+        """"%s"""".format(x.replaceAll("\"", "\\\\\""))
+      case x: Array[String] =>
+        x.map(toJs).mkString("[", ", ", "]")
+      case x: Double =>
+        "%f".formatLocal(Locale.US, x)
+      case x: Float =>
+        "%f".formatLocal(Locale.US, x)
+      case x: Int =>
+        "%d".formatLocal(Locale.US, x)
+      case x: Long =>
+        "%d".formatLocal(Locale.US, x)
+      case x: Boolean =>
+        "%b".formatLocal(Locale.US, x)
+      case _ =>
+        "undefined"
+    }
+  }
+
+  def callJs(functionName: String, args: Any*) = {
+    val argsString = args.map(toJs).mkString(", ")
+    """%s(%s);""".format(functionName, argsString)
+  }
+
+  def callJsToList(functionName: String, args: Any*) = {
+    List(callJs(functionName, args: _*))
+  }
 }
 
 case class EndOfScript() extends EventCmd {
@@ -38,17 +70,15 @@ case class EndOfScript() extends EventCmd {
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
-  def toJs() = List("game.showText(" + aryToJs(lines) + ");")
+  def toJs() = callJsToList("game.showText", lines)
 }
 
 case class Teleport(loc: MapLoc, transition: Int) extends EventCmd {
-  def toJs() = List("""teleport("%s", %f, %f, %d);""".format(
-    loc.map, loc.x, loc.y, transition))
+  def toJs() = callJsToList("teleport", loc.map, loc.x, loc.y, transition)
 }
 
 case class SetEvtState(state: Int = 0) extends EventCmd {
-  def toJs() =
-    List("""game.setEvtState(%s, %d);""".format("event.idx()", state))
+  def toJs() = callJsToList("game.setEvtState", JsExp("event.idx()"), state)
 }
 
 case class MoveEvent(
@@ -58,26 +88,23 @@ case class MoveEvent(
   var affixDirection: Boolean = false,
   var async: Boolean = false) extends EventCmd {
   def toJs() = {
-    val getEntityCmd = entitySpec match {
+    entitySpec match {
       case EntitySpec(which, _) if which == WhichEntity.PLAYER.id =>
-        """game.movePlayer(%f, %f, %b, %b);""".format(
-          dx, dy, affixDirection, async)
+        callJsToList("game.movePlayer", dx, dy, affixDirection, async)
       case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
-        """game.moveEvent(%s, %f, %f, %b, %b);""".format(
-            "event.id()", dx, dy, affixDirection, async)
+        callJsToList(
+          "game.moveEvent", JsExp("event.id()"), dx, dy, affixDirection,
+          async)
       case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
-        """game.moveEvent(%d, %f, %f, %b, %b);""".format(
-            entitySpec.eventId, dx, dy, affixDirection, async)
+        callJsToList(
+          "game.moveEvent", entitySpec.eventId, dx, dy, affixDirection, async)
     }
-
-    List(getEntityCmd)
   }
 }
 
-case class StartBattle(encounterId: Int = 0, battleBackground: String = "") 
+case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
   extends EventCmd {
-  def toJs() = List(
-    """game.startBattle(%d, "%s");""".format(encounterId, battleBackground))
+  def toJs() = callJsToList("game.startBattle", encounterId, battleBackground)
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {
@@ -85,5 +112,5 @@ case class RunJs(scriptBody: String = "") extends EventCmd {
 }
 
 case class SetInt(key: String, value: Int) extends EventCmd {
-  def toJs() = List("""game.setInt("%s", %d);""".format(key, value))
+  def toJs() = callJsToList("game.setInt", key, value)
 }
