@@ -17,7 +17,7 @@ object EventArrayComboBox {
     (ComboBox[RpgEvent], Boolean) = {
     val events : Vector[RpgEvent] = mapData.events.values.toVector.sortBy(_.id)
     val indexOfInitialInArray = events.indexWhere(_.id == initialId)
-    val found = indexOfInitialInArray != -1
+    val initialIdFound = indexOfInitialInArray != -1
 
     // If no events exist, both the selection and custom renderer won't work,
     // so we provide a dummy disabled comboBox.
@@ -26,33 +26,37 @@ object EventArrayComboBox {
         enabled = false
       }
     } else {
+      // Update the initialId if it wasn't found.
+      if (!initialIdFound)
+        onUpdate(events.head.id)
+
       new ComboBox[RpgEvent](events) {
-        selection.index = if (found) indexOfInitialInArray else 0
+        selection.index = if (initialIdFound) indexOfInitialInArray else 0
 
         renderer = ListView.Renderer(event => {
           "%d: %s".format(event.id, event.name)
         })
 
+        listenTo(this.selection)
         reactions += {
           case SelectionChanged(_) => onUpdate(selection.item.id)
         }
       }
     }
 
-    (comboBox, found)
+    (comboBox, initialIdFound)
   }
 }
 
+/**
+ * @param   model   Is mutated in place.
+ */
 class EntitySelectPanel(
   owner: Window,
   sm: StateMaster,
   mapData: RpgMapData,
-  initial: EntitySpec,
-  updateF: EntitySpec => Unit)
+  model: EntitySpec)
   extends DesignGridPanel {
-
-  // model is mutable
-  val model = initial
 
   def updateFieldState() = {
     fieldEventId.enabled =

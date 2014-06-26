@@ -5,6 +5,7 @@ import rpgboss.model.event.EventCmd
 import rpgboss.editor.dialog._
 import rpgboss.model.event._
 import rpgboss.editor.StateMaster
+import rpgboss.lib.Utils
 
 object EventCmdDialog {
   /**
@@ -22,15 +23,16 @@ object EventCmdDialog {
     sm: StateMaster,
     mapName: String,
     evtCmd: EventCmd,
-    successF: (EventCmd) => Any) =
+    successF: (EventCmd) => Any) = {
     evtCmd match {
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
       case e: SetEvtState => new SetEvtStateDialog(owner, e, successF)
-      case e: MoveEvent => 
+      case e: MoveEvent =>
         new MoveEventCmdDialog(owner, sm, mapName, e, successF)
       case e: StartBattle =>
         new StartBattleCmdDialog(owner, sm, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
     }
+  }
 }
