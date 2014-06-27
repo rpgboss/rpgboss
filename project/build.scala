@@ -88,7 +88,7 @@ object Settings {
     
     // Declare names
     val baseUrl = "http://libgdx.badlogicgames.com/releases"
-    val gdxName = "libgdx-1.1.0"
+    val gdxName = "libgdx-1.2.0"
 
     // Fetch the file.
     s.log.info("Pulling %s" format(gdxName))
@@ -104,20 +104,15 @@ object Settings {
       new ExactFilter("gdx.jar") |
       new ExactFilter("extensions/gdx-freetype/gdx-freetype.jar") |
       new ExactFilter("extensions/gdx-audio/gdx-audio.jar")
-      //new ExactFilter("sources/gdx-sources.jar")
     IO.unzip(zipFile, commonDest, commonFilter)
 
-    val desktopDest = file("player-desktop/lib")
     val desktopFilter = 
       new ExactFilter("gdx-natives.jar") |
       new ExactFilter("gdx-backend-lwjgl.jar") |
       new ExactFilter("gdx-backend-lwjgl-natives.jar") |
       new ExactFilter("gdx-tools.jar") |
-      new ExactFilter("extensions/gdx-freetype/gdx-freetype-natives.jar") |
-      new ExactFilter("extensions/gdx-audio/gdx-audio-natives.jar") |
-      new ExactFilter("sources/gdx-backend-lwjgl-sources.jar")
-//    IO.unzip(zipFile, desktopDest, desktopFilter)
-    // Put desktop backend in common for testing purposes.
+      new ExactFilter("extensions/gdx-freetype/gdx-freetype-natives.jar")
+    
     IO.unzip(zipFile, commonDest, desktopFilter)
 
     // Destroy the file.
