@@ -32,26 +32,19 @@ Build instructions:
     $ cd rpgboss
     ```
 
-3. Run sbt. Once you are in the sbt prompt, run these commands to pull in extra dependencies:
+3. Run sbt. You will be put in the editor subproject by default. Compile and package it.
     ```
     $ sbt
-    > update-gdx
-    > update-libs
-    ```
-
-4. You should still be in the sbt prompt. Switch to the 'editor' subproject, compile, and package it.
-    ```
-    > project editor
     > compile
     > package
     ```
 
-5. You can run the editor from the sbt prompt also.
+4. You can run the editor from the sbt prompt also. Note: This mode of running currently does not support test playing games with the "Test" button. Use Eclipse or run a packaged binary instead.
     ```
     > run
     ```
 
-6. You can generate Eclipse IDE project files. It's what I use.
+5. You can generate Eclipse IDE project files. It's what I use, and supports test playing. Your eclipse project files will probably get out of date when dependencies change. You will then have to rerun this command and refresh your project in Eclipse.
     ```
     > eclipse
     ```

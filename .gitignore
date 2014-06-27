@@ -1,7 +1,6 @@
-key
 common/lib/
 common/.project
-player-desktop/lib
+downloaded-libs
 libs/
 target/
 src_managed/

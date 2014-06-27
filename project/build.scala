@@ -32,7 +32,11 @@ object Settings {
       Unit
     },
     Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum"),
-    Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("generateEnum")
+    Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("update-libs"),
+    Keys.`package` <<= (Keys.`package` in Compile) dependsOn TaskKey[Unit]("generateEnum"),
+    Keys.`package` <<= (Keys.`package` in Compile) dependsOn TaskKey[Unit]("update-libs"),
+    Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("generateEnum"),
+    Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("update-libs")
    )
 
   lazy val editor = Settings.common ++ editorLibs ++ editorProguard
@@ -84,7 +88,23 @@ object Settings {
     import Process._
     import java.io._
     import java.net.URL
-
+    
+    def downloadIfNeeded(filename: String, file: File, url: URL) = {
+      if (file.exists) {
+        s.log.info("%s already up to date.".format(filename))
+      } else {
+        val tempFile = File.createTempFile(filename, null)
+        
+        s.log.info("Pulling %s" format(filename))
+        s.log.warn("This may take a few minutes...")
+        IO.download(url, tempFile)
+        IO.move(tempFile, file)
+      }
+    }
+    
+    val downloadDir = file("downloaded-libs")
+    IO.createDirectory(downloadDir)
+    
     // Delete and remake directory
     IO.delete(file("common/lib"))
     IO.createDirectory(file("common/lib"))    
@@ -94,12 +114,11 @@ object Settings {
     val gdxName = "libgdx-1.2.0"
 
     // Fetch the file.
-    s.log.info("Pulling %s" format(gdxName))
-    s.log.warn("This may take a few minutes...")
     val gdxZipName = "%s.zip" format(gdxName)
-    val gdxZipFile = new java.io.File(gdxZipName)
+    val gdxZipFile = new java.io.File(downloadDir, gdxZipName)
     val gdxUrl = new URL("%s/%s" format(gdxBaseUrl, gdxZipName))
-    IO.download(gdxUrl, gdxZipFile)
+    
+    downloadIfNeeded(gdxZipName, gdxZipFile, gdxUrl)
 
     // Extract jars into their respective lib folders.
     val commonDest = file("common/lib")
@@ -114,21 +133,16 @@ object Settings {
       new ExactFilter("extensions/gdx-freetype/gdx-freetype-natives.jar")
     
     IO.unzip(gdxZipFile, commonDest, commonFilter)
-
-    // Destroy the file.
-    gdxZipFile.delete
-    s.log.info("Complete")
     
-    s.log.info("Pulling other libraries...")
+    val tweenZipName = "tween-engine-api-6.3.3.zip"
     
-    val zipName = "tween-engine-api-6.3.3.zip"
-    val zipFile = new File(zipName)
-    val url = new URL("https://java-universal-tween-engine.googlecode.com/" + 
-                      "files/" + zipName)
-    IO.download(url, zipFile)
-    IO.unzip(zipFile, file("common/lib"))
-
-    zipFile.delete
+    val tweenZipFile = new File(downloadDir, tweenZipName)
+    val tweenUrl = new URL(
+      "https://java-universal-tween-engine.googlecode.com/" + 
+      "files/" + tweenZipName)
+    
+    downloadIfNeeded(tweenZipName, tweenZipFile, tweenUrl)
+    IO.unzip(tweenZipFile, file("common/lib"))
     
     s.log.info("Complete")
   }
@@ -141,7 +155,9 @@ object LibgdxBuild extends Build {
     settings = Settings.common
   )
 
-  lazy val editor = Project (
+  // TODO: Fix this hack. Name "editor" "Aeditor" so it's lexographically first 
+  // and thus loaded by sbt as the default project.
+  lazy val Aeditor = Project (
     "editor",
     file("editor"),
     settings = Settings.editor
