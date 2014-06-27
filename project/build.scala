@@ -26,7 +26,6 @@ object Settings {
       jars.classpath
     },
     updateLibsTask,
-    updateLibgdxTask,
     TaskKey[Unit]("generateEnum") := {  
       SysProcess("python GenerateFileEnum.py", new File("common/src/main/resources")).run()
       println("Generated file enumeration")
@@ -79,47 +78,6 @@ object Settings {
       "-dontobfuscate"
   ))
 
-  val updateLibgdx = TaskKey[Unit]("update-gdx", "Updates libgdx")
-
-  val updateLibgdxTask = updateLibgdx <<= streams map { (s: TaskStreams) =>
-    import Process._
-    import java.io._
-    import java.net.URL
-    
-    // Declare names
-    val baseUrl = "http://libgdx.badlogicgames.com/releases"
-    val gdxName = "libgdx-1.2.0"
-
-    // Fetch the file.
-    s.log.info("Pulling %s" format(gdxName))
-    s.log.warn("This may take a few minutes...")
-    val zipName = "%s.zip" format(gdxName)
-    val zipFile = new java.io.File(zipName)
-    val url = new URL("%s/%s" format(baseUrl, zipName))
-    IO.download(url, zipFile)
-
-    // Extract jars into their respective lib folders.
-    val commonDest = file("common/lib")
-    val commonFilter = 
-      new ExactFilter("gdx.jar") |
-      new ExactFilter("extensions/gdx-freetype/gdx-freetype.jar") |
-      new ExactFilter("extensions/gdx-audio/gdx-audio.jar")
-    IO.unzip(zipFile, commonDest, commonFilter)
-
-    val desktopFilter = 
-      new ExactFilter("gdx-natives.jar") |
-      new ExactFilter("gdx-backend-lwjgl.jar") |
-      new ExactFilter("gdx-backend-lwjgl-natives.jar") |
-      new ExactFilter("gdx-tools.jar") |
-      new ExactFilter("extensions/gdx-freetype/gdx-freetype-natives.jar")
-    
-    IO.unzip(zipFile, commonDest, desktopFilter)
-
-    // Destroy the file.
-    zipFile.delete
-    s.log.info("Complete")
-  }
-
   val updateLibs = TaskKey[Unit]("update-libs", "Updates libs")
   
   val updateLibsTask = updateLibs <<= streams map { (s: TaskStreams) =>
@@ -127,6 +85,42 @@ object Settings {
     import java.io._
     import java.net.URL
 
+    // Delete and remake directory
+    IO.delete(file("common/lib"))
+    IO.createDirectory(file("common/lib"))    
+    
+    // Declare names
+    val gdxBaseUrl = "http://libgdx.badlogicgames.com/releases"
+    val gdxName = "libgdx-1.2.0"
+
+    // Fetch the file.
+    s.log.info("Pulling %s" format(gdxName))
+    s.log.warn("This may take a few minutes...")
+    val gdxZipName = "%s.zip" format(gdxName)
+    val gdxZipFile = new java.io.File(gdxZipName)
+    val gdxUrl = new URL("%s/%s" format(gdxBaseUrl, gdxZipName))
+    IO.download(gdxUrl, gdxZipFile)
+
+    // Extract jars into their respective lib folders.
+    val commonDest = file("common/lib")
+    val commonFilter = 
+      new ExactFilter("gdx.jar") |
+      new ExactFilter("extensions/gdx-freetype/gdx-freetype.jar") |
+      new ExactFilter("extensions/gdx-audio/gdx-audio.jar") |
+      new ExactFilter("gdx-natives.jar") |
+      new ExactFilter("gdx-backend-lwjgl.jar") |
+      new ExactFilter("gdx-backend-lwjgl-natives.jar") |
+      new ExactFilter("gdx-tools.jar") |
+      new ExactFilter("extensions/gdx-freetype/gdx-freetype-natives.jar")
+    
+    IO.unzip(gdxZipFile, commonDest, commonFilter)
+
+    // Destroy the file.
+    gdxZipFile.delete
+    s.log.info("Complete")
+    
+    s.log.info("Pulling other libraries...")
+    
     val zipName = "tween-engine-api-6.3.3.zip"
     val zipFile = new File(zipName)
     val url = new URL("https://java-universal-tween-engine.googlecode.com/" + 
@@ -135,6 +129,8 @@ object Settings {
     IO.unzip(zipFile, file("common/lib"))
 
     zipFile.delete
+    
+    s.log.info("Complete")
   }
 }
 
