@@ -112,7 +112,7 @@ Development Notes
 
 + If you add an rpgboss.model.event.EventCmd, be sure to add it to EventCmd.types.
 
-+ Use 'Seq' as the array class in all the models. Use of Array breaks model equality comparison. Use of ArrayBuffer makes de-serialization silently fail. If you need to edit individual elements of the Seq, convert it to an ArrayBuffer in the application code.
++ Use Array as the collection type. It works in tests now due to a custom DeepEqualMatcher, is performant, and well supported in serialization.
 
 Material
 --------
