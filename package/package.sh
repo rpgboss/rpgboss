@@ -9,6 +9,7 @@ rm -rf target
 mkdir -p target
 
 cd $SRC_DIR/..
+sbt 'project common' test
 sbt 'project editor' proguard
 $SRC_DIR/win/package.sh
 $SRC_DIR/linux/package.sh
