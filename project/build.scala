@@ -103,8 +103,8 @@ object Settings {
     val commonFilter = 
       new ExactFilter("gdx.jar") |
       new ExactFilter("extensions/gdx-freetype/gdx-freetype.jar") |
-      new ExactFilter("extensions/gdx-audio/gdx-audio.jar") |
-      new ExactFilter("sources/gdx-sources.jar")
+      new ExactFilter("extensions/gdx-audio/gdx-audio.jar")
+      //new ExactFilter("sources/gdx-sources.jar")
     IO.unzip(zipFile, commonDest, commonFilter)
 
     val desktopDest = file("player-desktop/lib")
