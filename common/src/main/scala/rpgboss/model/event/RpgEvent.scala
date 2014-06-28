@@ -34,13 +34,12 @@ case class RpgEvent(
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
-    RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y, 
+    RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
              Array(RpgEventState()))
 }
 
 /**
- * @param   cmds    Guaranteed to be of at least length 1 and end with an
- *                  EndOfScript()
+ * @param   cmds    May be empty.
  */
 case class RpgEventState(
   switchCondition: Option[EventCondition] = None,

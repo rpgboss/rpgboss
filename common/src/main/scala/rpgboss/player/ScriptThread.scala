@@ -144,7 +144,7 @@ object ScriptThread {
     onFinish: Option[() => Unit] = None) = {
     val scriptName = "%s/%d".format(entity.mapEvent.name, state)
     val scriptBody =
-      entity.mapEvent.states(state).cmds.flatMap(_.toJs()).mkString("\n");
+      entity.mapEvent.states(state).cmds.flatMap(_.toJs).mkString("\n");
     new ScriptThread(
       game,
       scriptInterface,

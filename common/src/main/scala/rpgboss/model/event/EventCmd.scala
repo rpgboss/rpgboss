@@ -5,21 +5,39 @@ import rpgboss.model._
 import rpgboss.player._
 
 trait EventCmd extends HasScriptConstants {
-  def toJs(): Array[String]
-  override def toString = {
-    val js = toJs().toList
+  def sections: Array[CodeSection]
 
-    if (js.isEmpty) {
-      ">>> "
+  val toJs: Array[String] =
+    sections.flatMap(_.toJs)
+
+  override def toString: String = {
+    if (toJs.isEmpty) {
+      return ">>> "
     } else {
-      val lines = (">>> " + js.head) :: js.tail.map("... " + _)
-
+      val js = toJs.toList
+      val lines = Array(">>> " + js.head) ++ js.tail.map("... " + _)
       lines.mkString("\n")
     }
   }
 }
 
 object EventCmd {
+  trait CodeSection {
+    def toJs: Array[String]
+  }
+
+  case class PlainLines(lines: Array[String]) extends CodeSection {
+    def toJs = lines
+  }
+
+  case class CommandList(cmds: Array[EventCmd],
+                         indent: Int) extends CodeSection {
+    def toJs = cmds
+      .map(_.toJs) // Convert to JS
+      .flatten
+      .map(("  " * indent) + _)  // Indent by 2 spaces
+  }
+
   def types = List(
     classOf[EndOfScript],
     classOf[LockPlayerMovement],
@@ -31,12 +49,12 @@ object EventCmd {
     classOf[StartBattle],
     classOf[SetInt])
 
-  case class JsExp(exp: String)
+  case class RawJs(exp: String)
 
   def toJs(x: Any): String = {
     import java.util.Locale
     x match {
-      case JsExp(exp) =>
+      case RawJs(exp) =>
         exp
       case x: String =>
         """"%s"""".format(x.replaceAll("\"", "\\\\\""))
@@ -57,49 +75,51 @@ object EventCmd {
     }
   }
 
-  def JsCall(functionName: String, args: Any*): JsExp = {
+  def jsCall(functionName: String, args: Any*): RawJs = {
     val argsString = args.map(toJs).mkString(", ")
-    JsExp("""%s(%s)""".format(functionName, argsString))
+    RawJs("""%s(%s)""".format(functionName, argsString))
   }
 
-  def JsStatement(functionName: String, args: Any*): String = {
-    JsCall(functionName, args: _*).exp + ";"
+  def jsStatement(functionName: String, args: Any*): String = {
+    jsCall(functionName, args: _*).exp + ";"
   }
 
-  def callJsToList(functionName: String, args: Any*): Array[String] = {
-    Array(JsStatement(functionName, args: _*))
+  def singleCall(functionName: String, args: Any*): Array[CodeSection] = {
+    Array(PlainLines(Array(jsStatement(functionName, args: _*))))
   }
 }
 
 case class EndOfScript() extends EventCmd {
-  def toJs() = Array()
+  def sections = Array()
 }
 
 case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
   // TODO: Clean this up. Probably need a better JS DSL.
-  def toJs() =
-    Array(
-      JsStatement("game.setInt", PLAYER_MOVEMENT_LOCKS,
-        JsExp(JsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " + 1")),
-      JsExp("try {").exp) ++
-    body.flatMap(_.toJs()).map("  " + _) ++
-    Array(
-      JsExp("} finally {").exp,
-      JsStatement("  game.setInt", PLAYER_MOVEMENT_LOCKS,
-        JsExp(JsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " - 1")),
-      JsExp("}").exp)
+  def sections = Array(
+    PlainLines(Array(
+      jsStatement("game.setInt", PLAYER_MOVEMENT_LOCKS,
+        RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " + 1")),
+      RawJs("try {").exp)),
+    CommandList(body, 1),
+    PlainLines(Array(
+      RawJs("} finally {").exp,
+      jsStatement("  game.setInt", PLAYER_MOVEMENT_LOCKS,
+        RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " - 1")),
+      RawJs("}").exp))
+  )
+
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
-  def toJs() = callJsToList("game.showText", lines)
+  def sections = singleCall("game.showText", lines)
 }
 
 case class Teleport(loc: MapLoc, transition: Int) extends EventCmd {
-  def toJs() = callJsToList("teleport", loc.map, loc.x, loc.y, transition)
+  def sections = singleCall("teleport", loc.map, loc.x, loc.y, transition)
 }
 
 case class SetEvtState(state: Int = 0) extends EventCmd {
-  def toJs() = callJsToList("game.setEvtState", JsExp("event.idx()"), state)
+  def sections = singleCall("game.setEvtState", RawJs("event.idx()"), state)
 }
 
 case class MoveEvent(
@@ -108,16 +128,16 @@ case class MoveEvent(
   var dy: Float = 0f,
   var affixDirection: Boolean = false,
   var async: Boolean = false) extends EventCmd {
-  def toJs() = {
+  def sections = {
     entitySpec match {
       case EntitySpec(which, _) if which == WhichEntity.PLAYER.id =>
-        callJsToList("game.movePlayer", dx, dy, affixDirection, async)
+        singleCall("game.movePlayer", dx, dy, affixDirection, async)
       case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
-        callJsToList(
-          "game.moveEvent", JsExp("event.id()"), dx, dy, affixDirection,
+        singleCall(
+          "game.moveEvent", RawJs("event.id()"), dx, dy, affixDirection,
           async)
       case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
-        callJsToList(
+        singleCall(
           "game.moveEvent", entitySpec.eventId, dx, dy, affixDirection, async)
     }
   }
@@ -125,13 +145,13 @@ case class MoveEvent(
 
 case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
   extends EventCmd {
-  def toJs() = callJsToList("game.startBattle", encounterId, battleBackground)
+  def sections = singleCall("game.startBattle", encounterId, battleBackground)
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {
-  def toJs() = Array(scriptBody.split("\n") : _*)
+  def sections = Array(PlainLines(Array(scriptBody.split("\n") : _*)))
 }
 
 case class SetInt(key: String, value: Int) extends EventCmd {
-  def toJs() = callJsToList("game.setInt", key, value)
+  def sections = singleCall("game.setInt", key, value)
 }

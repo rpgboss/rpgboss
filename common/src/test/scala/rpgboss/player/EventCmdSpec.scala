@@ -10,7 +10,7 @@ class EventCmdSpec extends UnitSpec {
       ShowText(Array("Hello")),
       SetInt("foo", 1)))
 
-    e.toJs() should deepEqual(Array(
+    e.toJs should deepEqual(Array(
       """game.setInt("playerMovementLocks", game.getInt("playerMovementLocks") + 1);""",
       """try {""",
       """  game.showText(["Hello"]);""",

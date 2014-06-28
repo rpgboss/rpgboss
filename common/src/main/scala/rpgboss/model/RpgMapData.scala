@@ -151,7 +151,7 @@ case object RpgMapData {
         }
       }
 
-      RpgMapData(botAry, topAry, midAry, events)
+      RpgMapData(botAry, topAry, midAry, fixedEvents)
     }
   }
 }
