@@ -138,8 +138,21 @@ case object RpgMapData {
     }
 
     for (botAry <- botAryOpt; midAry <- midAryOpt; topAry <- topAryOpt;
-         events <- eventsOpt)
-      yield RpgMapData(botAry, topAry, midAry, events)
+         events <- eventsOpt) yield {
+
+      // TODO: Move to a more mature system for schema migration.
+      val fixedEvents = events.map {
+        case (k, event) => {
+          val newStates = event.states.map { state =>
+            val newCmds = state.cmds.filter(!_.isInstanceOf[EndOfScript])
+            state.copy(cmds = newCmds)
+          }
+          (k, event.copy(states = newStates))
+        }
+      }
+
+      RpgMapData(botAry, topAry, midAry, events)
+    }
   }
 }
 

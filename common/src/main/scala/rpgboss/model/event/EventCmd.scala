@@ -2,11 +2,12 @@ package rpgboss.model.event
 
 import EventCmd._
 import rpgboss.model._
+import rpgboss.player._
 
-trait EventCmd {
-  def toJs(): List[String]
+trait EventCmd extends HasScriptConstants {
+  def toJs(): Array[String]
   override def toString = {
-    val js = toJs()
+    val js = toJs().toList
 
     if (js.isEmpty) {
       ">>> "
@@ -21,6 +22,7 @@ trait EventCmd {
 object EventCmd {
   def types = List(
     classOf[EndOfScript],
+    classOf[LockPlayerMovement],
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEvtState],
@@ -55,18 +57,37 @@ object EventCmd {
     }
   }
 
-  def callJs(functionName: String, args: Any*) = {
+  def JsCall(functionName: String, args: Any*): JsExp = {
     val argsString = args.map(toJs).mkString(", ")
-    """%s(%s);""".format(functionName, argsString)
+    JsExp("""%s(%s)""".format(functionName, argsString))
   }
 
-  def callJsToList(functionName: String, args: Any*) = {
-    List(callJs(functionName, args: _*))
+  def JsStatement(functionName: String, args: Any*): String = {
+    JsCall(functionName, args: _*).exp + ";"
+  }
+
+  def callJsToList(functionName: String, args: Any*): Array[String] = {
+    Array(JsStatement(functionName, args: _*))
   }
 }
 
 case class EndOfScript() extends EventCmd {
-  def toJs() = Nil
+  def toJs() = Array()
+}
+
+case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
+  // TODO: Clean this up. Probably need a better JS DSL.
+  def toJs() =
+    Array(
+      JsStatement("game.setInt", PLAYER_MOVEMENT_LOCKS,
+        JsExp(JsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " + 1")),
+      JsExp("try {").exp) ++
+    body.flatMap(_.toJs()).map("  " + _) ++
+    Array(
+      JsExp("} finally {").exp,
+      JsStatement("  game.setInt", PLAYER_MOVEMENT_LOCKS,
+        JsExp(JsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " - 1")),
+      JsExp("}").exp)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
@@ -108,7 +129,7 @@ case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {
-  def toJs() = List(scriptBody)
+  def toJs() = Array(scriptBody.split("\n") : _*)
 }
 
 case class SetInt(key: String, value: Int) extends EventCmd {

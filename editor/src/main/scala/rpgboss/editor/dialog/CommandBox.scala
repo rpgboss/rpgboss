@@ -25,7 +25,7 @@ class CommandBox(
   listenTo(mouse.clicks)
 
   def newCmdDialog() = {
-    val d = new NewEvtCmdBox(evtDiag, sm, owner, mapName, this, 
+    val d = new NewEvtCmdBox(evtDiag, sm, owner, mapName, this,
                              selection.indices.head)
     d.open()
   }
@@ -33,7 +33,7 @@ class CommandBox(
   def editSelectedCmd() = {
     val selectedIdx = selection.indices.head
     val selectedCmd = selection.items.head
-    val d = EventCmdDialog.dialogFor(owner, sm, mapName, selectedCmd, 
+    val d = EventCmdDialog.dialogFor(owner, sm, mapName, selectedCmd,
       newEvt => {
         listData = listData.updated(selectedIdx, newEvt)
       })
@@ -48,20 +48,20 @@ class CommandBox(
         val closestI = this.peer.locationToIndex(e.point)
         if (closestI != -1) {
           this.selectIndices(closestI)
-          
+
           val menu = new RpgPopupMenu {
             contents += new MenuItem(Action("Delete") {
-              if (!selection.items.isEmpty && 
+              if (!selection.items.isEmpty &&
                   selection.items.head != EndOfScript()) {
                 listData = rpgboss.lib.Utils.removeFromSeq(
                 listData, selection.indices.head)
               }
             })
           }
-          
+
           menu.show(this, e.point.x, e.point.y)
         }
-        
+
       } else if (e.clicks == 2) {
         selection.items.head match {
           case c: EndOfScript => newCmdDialog()

@@ -52,7 +52,7 @@ class UnitSpec extends FlatSpec with Matchers {
       } else {
         val equal = a == b
         if (!equal)
-          println("  Not equal: (%s, %s)".format(a, b))
+          println("  Not equal: \n    %s\n    %s".format(a, b))
         equal
       }
     }

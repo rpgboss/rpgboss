@@ -25,6 +25,8 @@ trait HasScriptConstants {
   val PLAYER_Y = "playerY"
   val PLAYER_MAP_NAME = "playerMapName"
 
+  val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
+
   val PARTY = "party"
   val INVENTORY_IDXS = "inventoryIdxs"
   val INVENTORY_QTYS = "inventoryQtys"
@@ -73,7 +75,7 @@ class ScriptInterface(
     assertOnDifferentThread()
     GdxUtils.syncRun(op)
   }
-  
+
   /*
    * The below functions are all called from the script threads only.
    */
@@ -127,25 +129,25 @@ class ScriptInterface(
     duration: Float) = syncRun {
     activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
   }
-  
+
   def startBattle(encounterId: Int, battleBackground: String) = {
     assert(encounterId >= 0)
     assert(encounterId < project.data.enums.encounters.length)
-    
+
     assert(game.getScreen() == game.mapScreen)
-    
+
     // Fade out map
     setTransition(0, 1, 0.6f)
     sleep(0.6f)
-    
+
     syncRun {
       game.setScreen(game.battleScreen)
-    
+
       // TODO fix this hack of manipulating battleScreen directly
       game.battleScreen.windowManager.setTransition(1, 0, 0.6f)
-        
+
       val encounter = project.data.enums.encounters(encounterId)
-      val charactersIdxs = 
+      val charactersIdxs =
         (0 until project.data.enums.characters.length).toArray
 
       val battle = new Battle(
@@ -160,21 +162,21 @@ class ScriptInterface(
         persistent.getIntArray(CHARACTER_ROWS),
         encounter,
         aiOpt = Some(new RandomEnemyAI))
-      
+
       game.battleScreen.startBattle(battle, battleBackground)
     }
   }
-  
+
   def endBattleBackToMap() = {
     setTransition(0, 1, 0.5f)
     sleep(0.5f)
 
     syncRun {
       game.setScreen(game.mapScreen)
-      
+
       // TODO fix hack of manipulating mapScreen directly
       game.mapScreen.windowManager.setTransition(1, 0, 0.5f)
-      
+
       game.battleScreen.endBattle()
     }
   }
@@ -264,7 +266,7 @@ class ScriptInterface(
       1 /* columns */ ,
       0 /* displayedChoices */ ,
       false /* allowCancel */ )
-      
+
   /**
    * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
    * the choice index, or -1 if the choices were invalid.
@@ -272,23 +274,23 @@ class ScriptInterface(
   def getSpatialChoice(choices: Array[Array[Int]], defaultChoice: Int): Int = {
     if (choices.length == 0)
       return -1
-    
+
     for (choice <- choices) {
       if (choice.length != 4)
         return -1
       if (choice(2) <= 0 || choice(3) <= 0)
         return -1
     }
-    
+
     val window = syncRun {
       new SpatialChoiceWindow(
-        game.persistent, 
+        game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
         choices.map(x => IntRect(x(0), x(1), x(2), x(3))),
         defaultChoice = defaultChoice)
     }
-    
+
     val choice = window.scriptInterface.getChoice()
     window.scriptInterface.close()
     choice
@@ -307,7 +309,7 @@ class ScriptInterface(
     }
     window.scriptInterface.awaitClose()
   }
-  
+
   def showText(text: Array[String]): Unit =
     showText(text, x = 0, y = 300, w = 640, h = 180, timePerChar = 0.02f)
 
@@ -385,7 +387,7 @@ class ScriptInterface(
   def setStringArray(key: String, value: Array[String]) = syncRun {
     persistent.setStringArray(key, value)
   }
-  
+
   def startNewGame() = syncRun {
     game.startNewGame()
   }

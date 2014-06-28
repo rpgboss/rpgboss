@@ -50,7 +50,7 @@ case class RpgEventState(
   cmds: Array[EventCmd] = RpgEventState.defaultCmds)
 
 object RpgEventState {
-  def defaultCmds: Array[EventCmd] = Array(EndOfScript())
+  def defaultCmds: Array[EventCmd] = Array()
 }
 
 case class EventCondition(
