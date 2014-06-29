@@ -12,66 +12,96 @@ import rpgboss.editor.uibase.RpgPopupMenu
 import javax.swing.UIManager
 import javax.swing.BorderFactory
 import java.awt.Font
+import scala.collection.mutable.ArrayBuffer
 
-/**
- * @param   onUpdateCmd   Called when the command at index is updated with a
- *                        new version.
- */
-class CommandBoxListViewRenderer(
+object EventCmdPanel {
+  val textFont = new Font("Monospaced", Font.BOLD, 14)
+}
+
+class EventCmdPanel(
   evtDiag: EventDialog,
   owner: Window,
   sm: StateMaster,
   mapName: String,
-  onUpdateCmd: (Int, EventCmd) => Unit)
-  extends ListView.Renderer[EventCmd] {
-  def componentFor(list: ListView[_], isSelected: Boolean, hasFocus: Boolean,
-      cmd: EventCmd, index: Int) = new BoxPanel(Orientation.Vertical) {
+  parentCmdBox: CommandBox,
+  initialIndex: Int,
+  initial: EventCmd,
+  onUpdate: (EventCmd) => Unit)
+  extends BoxPanel(Orientation.Vertical) {
 
-    val evtCmdColor =
-      if (isSelected)
-        UIManager.getColor("TextArea.selectionBackground")
+  var index = initialIndex
+
+  background = UIManager.getColor("TextArea.background")
+
+  initial.sections.zipWithIndex.foreach {
+    case (EventCmd.PlainLines(lines), i) => {
+      contents += new BoxPanel(Orientation.Horizontal) {
+        opaque = false
+        contents += new Label {
+          font = EventCmdPanel.textFont
+          xAlignment = Alignment.Left
+
+          val beginBlurb = if (i == 0) "&gt;&gt;&gt; " else "... "
+          text = "<html>" + beginBlurb +
+                 lines
+                   .map(_.replace(" ", "&nbsp;"))
+                   .mkString("<br>... ") +
+                 "</html>"
+        }
+        contents += Swing.HGlue
+      }
+    }
+    case (EventCmd.CommandList(innerCmds, indent), sectionI) => {
+      contents += new BoxPanel(Orientation.Horizontal) {
+        opaque = false
+
+        // Use evtDiag's graphics because our own is not yet initialized.
+        val textFontMetrics =
+          evtDiag.peer.getGraphics().getFontMetrics(EventCmdPanel.textFont)
+        val indentPx = textFontMetrics.stringWidth(("  " * indent))
+        contents += Swing.HStrut(indentPx)
+
+        def updateInnerCmds(newInnerCmds: Array[EventCmd]) =
+          onUpdate(initial.copyWithNewInnerCmds(sectionI, newInnerCmds))
+
+        contents += new CommandBox(evtDiag, owner, sm, mapName, innerCmds,
+                                   updateInnerCmds, inner = true)
+        contents += Swing.HGlue
+      }
+    }
+  }
+
+  listenTo(mouse.clicks)
+  reactions += {
+    case e: MouseClicked =>
+      requestFocus()
+      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+        val menu = new RpgPopupMenu {
+          contents += new MenuItem(Action("Insert command...") {
+            parentCmdBox.newCmdDialog(index + 1)
+          })
+          contents += new MenuItem(Action("Edit...") {
+            parentCmdBox.editSelectedCmd(index)
+          })
+          contents += new MenuItem(Action("Delete") {
+            parentCmdBox.deleteCmd(index)
+          })
+        }
+
+        menu.show(this, e.point.x, e.point.y)
+      } else if (e.clicks == 2) {
+        parentCmdBox.newCmdDialog(index + 1)
+      }
+  }
+
+  focusable = true
+  listenTo(this)
+  reactions += {
+    case e: FocusEvent if !e.temporary => {
+      if (hasFocus)
+        background = UIManager.getColor("TextArea.selectionBackground")
       else
-        UIManager.getColor("TextArea.inactiveBackground")
-
-    background = evtCmdColor
-
-    val textFont = new Font("Monospaced", Font.BOLD, 14)
-
-    cmd.sections.zipWithIndex.foreach {
-      case (EventCmd.PlainLines(lines), i) => {
-        contents += new BoxPanel(Orientation.Horizontal) {
-          background = evtCmdColor
-          contents += new Label {
-            font = textFont
-            xAlignment = Alignment.Left
-
-            val beginBlurb = if (i == 0) "&gt;&gt;&gt; " else "... "
-            text = "<html>" + beginBlurb +
-                   lines
-                     .map(_.replace(" ", "&nbsp;"))
-                     .mkString("<br>... ") +
-                   "</html>"
-          }
-          contents += Swing.HGlue
-        }
-      }
-      case (EventCmd.CommandList(innerCmds, indent), sectionI) => {
-        contents += new BoxPanel(Orientation.Horizontal) {
-          background = evtCmdColor
-
-          val textFontMetrics =
-            evtDiag.peer.getGraphics().getFontMetrics(textFont)
-          val indentPx = textFontMetrics.stringWidth(("  " * indent))
-          contents += Swing.HStrut(indentPx)
-
-          def updateInnerCmds(newInnerCmds: Array[EventCmd]) =
-            onUpdateCmd(index, cmd.copyWithNewInnerCmds(sectionI, newInnerCmds))
-
-          contents += new CommandBox(evtDiag, owner, sm, mapName, innerCmds,
-                                     updateInnerCmds)
-          contents += Swing.HGlue
-        }
-      }
+        background = UIManager.getColor("TextArea.background")
     }
   }
 }
@@ -87,100 +117,125 @@ class CommandBox(
   sm: StateMaster,
   mapName: String,
   initialCmds: Array[EventCmd],
-  onUpdate: (Array[EventCmd]) => Unit)
-  extends GridPanel(1, 1) {
+  onUpdate: (Array[EventCmd]) => Unit,
+  inner: Boolean)
+  extends BoxPanel(Orientation.Vertical) {
 
-  val listView = new ListView[EventCmd] {
-    listData = initialCmds ++ List(EndOfScript())
+  background = UIManager.getColor("TextArea.background")
 
-    renderer =
-      new CommandBoxListViewRenderer(evtDiag, owner, sm, mapName, updateCmd)
+  val model = ArrayBuffer(initialCmds : _*)
+  def getEventCmds: Array[EventCmd] = model.toArray
+
+  def newEventCmdPanel(i: Int, cmd: EventCmd) =
+    new EventCmdPanel(evtDiag, owner, sm, mapName, this, i, cmd,
+                      newCmd => updateCmd(i, newCmd))
+  for ((cmd, i) <- model.zipWithIndex) {
+    contents += newEventCmdPanel(i, cmd)
   }
 
-  def getEventCmds: Array[EventCmd] = listView.listData.dropRight(1).toArray
+  // The 'dummy' command to indicate to user where to place the next one.
+  contents += new BoxPanel(Orientation.Horizontal) {
+    background = UIManager.getColor("TextArea.background")
+    contents += new Label(">>>") {
+      font = EventCmdPanel.textFont
+      xAlignment = Alignment.Left
+    }
+    contents += Swing.HGlue
 
-  def newCmdDialog() = {
-    val iToInsert =
-      if (!listView.selection.indices.headOption.isDefined) {
-        0
-      } else {
-        val selectedI = listView.selection.indices.head
+    listenTo(this)
+    listenTo(this.mouse.clicks)
+    reactions += {
+      case e: MouseClicked =>
+        requestFocus()
+        if (e.peer.getButton() == MouseEvent.BUTTON3) {
+          val menu = new RpgPopupMenu {
+            contents += new MenuItem(Action("Insert command...") {
+              newCmdDialog(model.length)
+            })
+          }
 
-        // Insert after the selected EvtCmd in all cases unless it is the
-        // EndOfScript sentinel EventCmd at the very end.
-        if (selectedI == listView.listData.length - 1)
-          selectedI
+          menu.show(this, e.point.x, e.point.y)
+        } else if (e.clicks == 2) {
+          newCmdDialog(model.length)
+        }
+      case e: FocusEvent if !e.temporary =>
+        if (hasFocus)
+          background = UIManager.getColor("TextArea.selectionBackground")
         else
-          selectedI + 1
-      }
+          background = UIManager.getColor("TextArea.background")
+    }
+  }
 
-    val d = new NewEvtCmdBox(evtDiag, sm, owner, mapName, this, iToInsert)
+  if (!inner)
+    contents += Swing.VGlue
+
+  listenTo(mouse.clicks)
+  reactions += {
+    case e: MouseClicked =>
+      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+        val menu = new RpgPopupMenu {
+          contents += new MenuItem(Action("Insert command...") {
+            newCmdDialog(model.length)
+          })
+        }
+
+        menu.show(this, e.point.x, e.point.y)
+      } else if (e.clicks == 2) {
+        newCmdDialog(model.length)
+      }
+  }
+
+  def newCmdDialog(indexToInsert: Int) = {
+    assert(indexToInsert >= 0)
+    assert(indexToInsert <= model.length)
+    val d = new NewEvtCmdBox(evtDiag, sm, owner, mapName, this, indexToInsert)
     d.open()
   }
 
-  def editSelectedCmd() = {
-    val selectedIdx = listView.selection.indices.head
-    val selectedCmd = listView.selection.items.head
+  def editSelectedCmd(index: Int) = {
+    assert(index >= 0)
+    assert(index < model.length)
+    val selectedCmd = model(index)
     val d = EventCmdDialog.dialogFor(owner, sm, mapName, selectedCmd,
-      newEvt => updateCmd(selectedIdx, newEvt))
+      newEvt => updateCmd(index, newEvt))
     if (d != null)
       d.open()
     else
       Dialog.showMessage(this, "Nothing to edit", "Info")
   }
 
-  contents += listView
+  def insertCmd(idx: Int, cmd: EventCmd) = {
+    model.insert(idx, cmd)
+    onUpdate(model.toArray)
 
-  listenTo(listView.mouse.clicks)
-  reactions += {
-    case e: MouseClicked =>
-      if (e.peer.getButton() == MouseEvent.BUTTON3) {
-        // List won't automatically select
-        val closestI = listView.peer.locationToIndex(e.point)
-        if (closestI != -1) {
-          listView.selectIndices(closestI)
-
-          val menu = new RpgPopupMenu {
-            contents += new MenuItem(Action("Insert command...") {
-              newCmdDialog();
-            })
-
-            val selectedCmd = listView.listData(closestI)
-
-            if (!selectedCmd.isInstanceOf[EndOfScript]) {
-              contents += new MenuItem(Action("Edit...") {
-                editSelectedCmd();
-              })
-              contents += new MenuItem(Action("Delete") {
-                if (!listView.selection.items.isEmpty) {
-                  listView.listData = rpgboss.lib.Utils.removeFromSeq(
-                    listView.listData, listView.selection.indices.head)
-                }
-              })
-            }
-          }
-
-          menu.show(this, e.point.x, e.point.y)
-        }
-      } else if (e.clicks == 2) {
-        newCmdDialog()
-      }
+    // Insert a new panel.
+    contents.insert(idx, newEventCmdPanel(idx, cmd))
+    // Update the index of all the event panels following this one.
+    for (i <- (idx + 1) until model.length) {
+      contents(i).asInstanceOf[EventCmdPanel].index += 1
+    }
+    revalidate()
   }
 
   def updateCmd(idx: Int, cmd: EventCmd): Unit = {
-    listView.listData = listView.listData.updated(idx, cmd)
+    model.update(idx, cmd)
+    onUpdate(model.toArray)
+
+    // Insert a new panel.
+    contents.update(idx, newEventCmdPanel(idx, cmd))
+    revalidate()
   }
 
-  /**
-   * @param   idx   The index of the new command. Other elements will be moved
-   *                to "fit" the new command in.
-   */
-  def insertCmd(idx: Int, cmd: EventCmd) = {
-    val newList =
-      listView.listData.take(idx) ++
-      Seq(cmd) ++
-      listView.listData.takeRight(listView.listData.length - idx)
+  def deleteCmd(idx: Int) = {
+    assert(idx >= 0)
+    assert(idx < model.length)
+    model.remove(idx)
+    onUpdate(model.toArray)
 
-    listView.listData = newList
+    contents.remove(idx)
+    for (i <- idx until model.length) {
+      contents(i).asInstanceOf[EventCmdPanel].index -= 1
+    }
+    revalidate()
   }
 }
