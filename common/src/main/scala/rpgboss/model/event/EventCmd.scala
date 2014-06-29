@@ -7,18 +7,17 @@ import rpgboss.player._
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
 
+  /**
+   *  Returns a copy of this EventCmd with a new set of inner commands placed
+   *  in section |sectionI|.
+   */
+  def copyWithNewInnerCmds(sectionI: Int,
+                           newInnerCmds: Array[EventCmd]): EventCmd = {
+    throw new NotImplementedError
+  }
+
   val toJs: Array[String] =
     sections.flatMap(_.toJs)
-
-  override def toString: String = {
-    if (toJs.isEmpty) {
-      return ">>> "
-    } else {
-      val js = toJs.toList
-      val lines = Array(">>> " + js.head) ++ js.tail.map("... " + _)
-      lines.mkString("\n")
-    }
-  }
 }
 
 object EventCmd {
@@ -94,7 +93,7 @@ object EventCmd {
  * within UI elements of script lists.
  */
 case class EndOfScript() extends EventCmd {
-  def sections = Array()
+  def sections = Array(PlainLines(Array("")))
 }
 
 case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
@@ -112,6 +111,11 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
       RawJs("}").exp))
   )
 
+  override def copyWithNewInnerCmds(sectionI: Int,
+                                    newInnerCmds: Array[EventCmd]): EventCmd = {
+    assert (sectionI == 1)
+    copy(body = newInnerCmds)
+  }
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

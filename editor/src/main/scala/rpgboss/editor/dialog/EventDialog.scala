@@ -61,7 +61,8 @@ class EventDialog(
       owner,
       sm,
       mapName,
-      curEvtState.cmds)
+      curEvtState.cmds,
+      _ => Unit)  // Don't need onUpdate notifies, as use formToModel function.
 
     contents += new DesignGridPanel {
       row.grid.add(leftLabel("Commands:"))

@@ -33,6 +33,7 @@ object EventCmdDialog {
       case e: StartBattle =>
         new StartBattleCmdDialog(owner, sm, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
+      case _ => null
     }
   }
 }

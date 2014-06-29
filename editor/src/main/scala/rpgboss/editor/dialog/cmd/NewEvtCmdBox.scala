@@ -36,7 +36,13 @@ class NewEvtCmdBox(
             NewEvtCmdBox.this.close()
             cmdBox.insertCmd(idxToInsert, evtCmd)
           })
-        d.open()
+
+        if (d != null) {
+          d.open()
+        } else {
+          cmdBox.insertCmd(idxToInsert, e)
+          NewEvtCmdBox.this.close()
+        }
       }
     }
   }
@@ -44,12 +50,18 @@ class NewEvtCmdBox(
   contents = new DesignGridPanel {
     row().grid().add(leftLabel("Windows:"))
     row().grid().add(btnEvtCmd("Show text...", ShowText()))
+
+    row().grid().add(leftLabel("Movement:"))
     row().grid().add(btnEvtCmd("Teleport player...",
       Teleport(
         MapLoc(evtDiag.mapName, evtDiag.event.x, evtDiag.event.y),
         Transitions.FADE.id)))
-    row().grid().add(btnEvtCmd("Change event state...", SetEvtState()))
     row().grid().add(btnEvtCmd("Move event...", MoveEvent()))
+    row().grid().add(btnEvtCmd("Lock player movement...",
+      LockPlayerMovement(Array())))
+
+    row().grid().add(leftLabel("Other:"))
+    row().grid().add(btnEvtCmd("Change event state...", SetEvtState()))
     row().grid().add(btnEvtCmd("Start battle...", StartBattle()))
     row().grid().add(btnEvtCmd("Run Javascript...", RunJs()))
 
