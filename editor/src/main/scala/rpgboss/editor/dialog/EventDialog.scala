@@ -77,7 +77,7 @@ class EventDialog(
         sprite = spriteBox.getValue,
         trigger = triggerBox.selection.item.id,
         height = heightBox.selection.item.id,
-        cmds = commandBox.listData.toArray)
+        cmds = commandBox.getEventCmds)
       event = event.copy(states = event.states.updated(idx, newState))
     }
   }

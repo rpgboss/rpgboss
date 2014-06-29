@@ -89,6 +89,10 @@ object EventCmd {
   }
 }
 
+/**
+ * This should never appear in any scripts, but is used as a sentinel value
+ * within UI elements of script lists.
+ */
 case class EndOfScript() extends EventCmd {
   def sections = Array()
 }

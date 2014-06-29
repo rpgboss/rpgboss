@@ -19,71 +19,80 @@ class CommandBox(
   owner: Window,
   sm: StateMaster,
   mapName: String,
-  initialCmds: Seq[EventCmd])
-  extends ListView(initialCmds) {
+  initialCmds: Array[EventCmd])
+  extends GridPanel(1, 1) {
 
-  listenTo(mouse.clicks)
+  val listView = new ListView[EventCmd] {
+    listData = initialCmds ++ List(EndOfScript())
+  }
+
+  def getEventCmds: Array[EventCmd] = listView.listData.dropRight(1).toArray
 
   def newCmdDialog() = {
     val d = new NewEvtCmdBox(
       evtDiag, sm, owner, mapName, this,
-      selection.indices.headOption.map(_ + 1).getOrElse(0))
+      listView.selection.indices.headOption.map(_ + 1).getOrElse(0))
     d.open()
   }
 
   def editSelectedCmd() = {
-    val selectedIdx = selection.indices.head
-    val selectedCmd = selection.items.head
+    val selectedIdx = listView.selection.indices.head
+    val selectedCmd = listView.selection.items.head
     val d = EventCmdDialog.dialogFor(owner, sm, mapName, selectedCmd,
       newEvt => {
-        listData = listData.updated(selectedIdx, newEvt)
+        listView.listData = listView.listData.updated(selectedIdx, newEvt)
       })
     d.open()
   }
 
-  val cmdBox = this
+  contents += listView
+
+  listenTo(listView.mouse.clicks)
   reactions += {
     case e: MouseClicked =>
       if (e.peer.getButton() == MouseEvent.BUTTON3) {
         // List won't automatically select
-        val closestI = this.peer.locationToIndex(e.point)
+        val closestI = listView.peer.locationToIndex(e.point)
         if (closestI != -1) {
-          this.selectIndices(closestI)
+          listView.selectIndices(closestI)
 
           val menu = new RpgPopupMenu {
             contents += new MenuItem(Action("Insert command") {
               newCmdDialog();
             })
-            contents += new MenuItem(Action("Edit") {
-              editSelectedCmd();
-            })
-            contents += new MenuItem(Action("Delete") {
-              if (!selection.items.isEmpty) {
-                listData = rpgboss.lib.Utils.removeFromSeq(
-                listData, selection.indices.head)
-              }
-            })
+
+            val selectedCmd = listView.listData(closestI)
+
+            if (!selectedCmd.isInstanceOf[EndOfScript]) {
+              contents += new MenuItem(Action("Edit") {
+                editSelectedCmd();
+              })
+              contents += new MenuItem(Action("Delete") {
+                if (!listView.selection.items.isEmpty) {
+                  listView.listData = rpgboss.lib.Utils.removeFromSeq(
+                    listView.listData, listView.selection.indices.head)
+                }
+              })
+            }
           }
 
-          menu.show(this, e.point.x, e.point.y)
-        } else {
-          val menu = new RpgPopupMenu {
-            contents += new MenuItem(Action("Insert command") {
-              newCmdDialog();
-            })
-          }
           menu.show(this, e.point.x, e.point.y)
         }
-
       } else if (e.clicks == 2) {
         newCmdDialog()
       }
   }
 
+  /**
+   * @param   idx   The index of the new command. Other elements will be moved
+   *                to "fit" the new command in.
+   */
   def insertCmd(idx: Int, cmd: EventCmd) = {
     val newList =
-      listData.take(idx) ++ Seq(cmd) ++ listData.takeRight(listData.length - idx)
+      listView.listData.take(idx) ++
+      Seq(cmd) ++
+      listView.listData.takeRight(listView.listData.length - idx)
 
-    listData = newList
+    listView.listData = newList
   }
 }
