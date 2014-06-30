@@ -30,7 +30,7 @@ class PersistentState
   }
   def getInt(key: String) = {
     assertOnBoundThread()
-    globalInts.get(key).getOrElse(-1)
+    globalInts.get(key).getOrElse(0)
   }
 
   /**
@@ -76,37 +76,37 @@ object PersistentStateUtil extends HasScriptConstants {
   /**
    * Returns list of characters that leveled up by their character index.
    */
-  def givePartyExperience(persistent: PersistentState, 
-                          characters: Array[rpgboss.model.Character], 
-                          partyIds: Array[Int], 
+  def givePartyExperience(persistent: PersistentState,
+                          characters: Array[rpgboss.model.Character],
+                          partyIds: Array[Int],
                           experience: Int) = {
     val levels = persistent.getIntArray(CHARACTER_LEVELS)
     val exps = persistent.getIntArray(CHARACTER_EXPS)
-    
+
     assert(levels.length == characters.length)
     assert(exps.length == characters.length)
-    
+
     val leveledBuffer = collection.mutable.ArrayBuffer[Int]()
     for (i <- partyIds) {
       val character = characters(i)
       exps(i) += experience
-      
+
       var leveled = false
       while (exps(i) >= character.expToLevel(levels(i))) {
         exps(i) -= character.expToLevel(levels(i))
         levels(i) += 1
-        
+
         leveled = true
       }
-      
+
       if (leveled) {character.expToLevel(levels(i))
         leveledBuffer += i
       }
     }
-    
+
     persistent.setIntArray(CHARACTER_LEVELS, levels)
     persistent.setIntArray(CHARACTER_EXPS, exps)
-    
+
     leveledBuffer.toArray
   }
 }

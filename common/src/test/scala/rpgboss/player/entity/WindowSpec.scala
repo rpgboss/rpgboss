@@ -7,25 +7,25 @@ class WindowSpec extends UnitSpec {
   "Window" should "do text substitution" in {
     val p = new PersistentState
     p.setInt("a", 1)
-    p.setStringArray(ScriptInterfaceConstants.CHARACTER_NAMES , 
+    p.setStringArray(ScriptInterfaceConstants.CHARACTER_NAMES ,
         Array("NameA", "NameB"))
-        
+
     WindowText.processText(Array("hello", "world"), p) should equal (
         Array("hello", "world"))
-    
+
     WindowText.processText(Array(raw"hello \N[0]", "world"), p) should equal (
         Array("hello NameA", "world"))
-    
+
     WindowText.processText(Array(raw"hello \N[1] \V[a]"), p) should equal (
         Array("hello NameB 1"))
-    
+
     WindowText.processText(Array(raw"hello \N[5] \V[a]"), p) should equal (
         Array("hello NAME_OUT_OF_BOUNDS 1"))
-    
+
     WindowText.processText(Array(raw"hello \N[1] \V[b]"), p) should equal (
-        Array("hello NameB -1"))
+        Array("hello NameB 0"))
   }
-  
+
   "Window" should "change state on time" in {
     val w = new Window(null, null, 0, 0, 100, 100) {
       override def openCloseTime = 0.25
