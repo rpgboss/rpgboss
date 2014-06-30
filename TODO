@@ -1,3 +1,4 @@
+* Write a unit test for the movement disable.
 * Make battle feel more responsive to player input.
 * Restore charaters' HP and MP after battle (temporary hack).
 * Indicate via battler display when a character is dead.
