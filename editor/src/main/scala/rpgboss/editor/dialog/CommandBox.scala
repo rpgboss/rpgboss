@@ -59,14 +59,13 @@ class EventCmdPanel(
         val textFontMetrics =
           evtDiag.peer.getGraphics().getFontMetrics(EventCmdPanel.textFont)
         val indentPx = textFontMetrics.stringWidth(("  " * indent))
-        contents += Swing.HStrut(indentPx)
+        contents += Swing.RigidBox(new Dimension(indentPx, 1))
 
         def updateInnerCmds(newInnerCmds: Array[EventCmd]) =
           onUpdate(initial.copyWithNewInnerCmds(sectionI, newInnerCmds))
 
         contents += new CommandBox(evtDiag, owner, sm, mapName, innerCmds,
                                    updateInnerCmds, inner = true)
-        contents += Swing.HGlue
       }
     }
   }
