@@ -53,12 +53,12 @@ class EventCmdPanel(
     }
     case (EventCmd.CommandList(innerCmds, indent), sectionI) => {
       contents += new BoxPanel(Orientation.Horizontal) {
-        opaque = false
+        opaque = true
+        // TODO: Pick a better color
+        //background = UIManager.getColor("TextArea.inactiveBackground")
+        background = java.awt.Color.GRAY
 
-        // Use evtDiag's graphics because our own is not yet initialized.
-        val textFontMetrics =
-          evtDiag.peer.getGraphics().getFontMetrics(EventCmdPanel.textFont)
-        val indentPx = textFontMetrics.stringWidth(("  " * indent))
+        val indentPx = 20 * indent
         contents += Swing.RigidBox(new Dimension(indentPx, 1))
 
         def updateInnerCmds(newInnerCmds: Array[EventCmd]) =
