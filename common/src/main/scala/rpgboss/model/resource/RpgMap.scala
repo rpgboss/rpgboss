@@ -119,18 +119,18 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   }
 
   def emptyMapData(xSize: Int, ySize: Int) = {
-    val autoLayer = {
+    def autoLayer() = {
       // Make a whole row of that autotile triples
       val row = makeRowArray(xSize, autotileSeed)
       // Make multiple rows
       Array.fill(ySize)(row.clone())
     }
-    val emptyLayer = {
+    def emptyLayer() = {
       val row = makeRowArray(xSize, emptyTileSeed)
       Array.fill(ySize)(row.clone())
     }
 
-    RpgMapData(autoLayer, emptyLayer, emptyLayer, Map())
+    RpgMapData(autoLayer(), emptyLayer(), emptyLayer(), Map())
   }
 
   def defaultMapData() = emptyMapData(initXSize, initYSize)

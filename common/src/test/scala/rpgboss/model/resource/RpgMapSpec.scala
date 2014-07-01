@@ -12,6 +12,13 @@ class RpgMapSpec extends UnitSpec {
     md1 should deepEqual (md2)
   }
 
+  "RpgMapData" should "default instance should have distinct arrays" in {
+    val md = RpgMap.defaultMapData()
+    md.botLayer should not be theSameInstanceAs(md.midLayer)
+    md.botLayer should not be theSameInstanceAs(md.topLayer)
+    md.midLayer should not be theSameInstanceAs(md.topLayer)
+  }
+
   "RpgMapData" should "be persistable" in {
     val testMapName = "TestMap.rpgmap"
     val test = new ProjectTest
@@ -23,6 +30,11 @@ class RpgMapSpec extends UnitSpec {
 
     val state = RpgEventState(sprite = Some(SpriteSpec("testSpriteName", 0)))
     md1.events = Map(1 -> RpgEvent(1, "TestEvent", 5f, 5f, Array(state)))
+
+    // Add some differing data to each layer.
+    md1.botLayer(1)(1) = 1
+    md1.midLayer(1)(1) = 2
+    md1.topLayer(1)(1) = 3
 
     map1.writeMetadata() should equal (true)
     map1.saveMapData(md1) should equal (true)
