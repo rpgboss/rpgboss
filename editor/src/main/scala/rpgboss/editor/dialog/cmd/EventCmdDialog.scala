@@ -6,6 +6,15 @@ import rpgboss.editor.dialog._
 import rpgboss.model.event._
 import rpgboss.editor.StateMaster
 import rpgboss.lib.Utils
+import rpgboss.model.RpgEnum
+
+object AddOrRemove extends RpgEnum {
+  val Add, Remove = Value
+  def default = Add
+
+  def fromBoolean(x: Boolean) = if (x) Add else Remove
+  def toBoolean(id: Int) = id == Add.id
+}
 
 object EventCmdDialog {
   /**
@@ -25,6 +34,7 @@ object EventCmdDialog {
     evtCmd: EventCmd,
     successF: (EventCmd) => Any) = {
     evtCmd match {
+      case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
       case e: SetEvtState => new SetEvtStateDialog(owner, e, successF)

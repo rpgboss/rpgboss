@@ -40,6 +40,7 @@ object EventCmd {
   def types = List(
     classOf[EndOfScript],
     classOf[LockPlayerMovement],
+    classOf[ModifyParty],
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEvtState],
@@ -89,8 +90,8 @@ object EventCmd {
 }
 
 /**
- * This should never appear in any scripts, but is used as a sentinel value
- * within UI elements of script lists.
+ * @deprecated  Scripts no longer end with this, but this will stick around to
+ *              allow old scripts to still deserialize correctly.
  */
 case class EndOfScript() extends EventCmd {
   def sections = Array(PlainLines(Array("")))
@@ -116,6 +117,11 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
     assert (sectionI == 1)
     copy(body = newInnerCmds)
   }
+}
+
+case class ModifyParty(add: Boolean = true, characterId: Int = 0)
+  extends EventCmd {
+  def sections = singleCall("game.modifyParty", add, characterId)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

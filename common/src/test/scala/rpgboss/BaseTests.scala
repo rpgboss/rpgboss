@@ -58,7 +58,7 @@ class ProjectTest extends ShouldMatchers {
   val waiter = new Waiter
 }
 
-abstract class MapScreenTest extends ProjectTest {
+abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
   def setup() = {
     val map = RpgMap.readFromDisk(project, mapName)
     val mapData = map.readMapData().get

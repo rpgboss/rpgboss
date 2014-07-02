@@ -60,6 +60,9 @@ class NewEvtCmdBox(
     row().grid().add(btnEvtCmd("Lock player movement...",
       LockPlayerMovement(Array())))
 
+    row().grid().add(leftLabel("Party:"))
+    row().grid().add(btnEvtCmd("Modify Party...", ModifyParty()))
+
     row().grid().add(leftLabel("Other:"))
     row().grid().add(btnEvtCmd("Change event state...", SetEvtState()))
     row().grid().add(btnEvtCmd("Start battle...", StartBattle()))

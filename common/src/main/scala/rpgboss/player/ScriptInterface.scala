@@ -369,6 +369,32 @@ class ScriptInterface(
     }
   }
 
+  def modifyParty(add: Boolean, characterId: Int): Boolean = {
+    // Can't be anonymous due to use of 'return', which breaks out of closures.
+    def f(): Boolean = {
+      if (characterId >= project.data.enums.characters.size)
+        return false
+
+      val existing = persistent.getIntArray(PARTY)
+      if (add) {
+        if (existing.contains(characterId))
+          return false
+
+        val newParty = existing :+ characterId
+        persistent.setIntArray(PARTY, newParty)
+        return true
+      } else {
+        if (!existing.contains(characterId))
+          return false
+
+        persistent.setIntArray(PARTY, existing.filter(_ != characterId))
+        return true
+      }
+    }
+
+    syncRun { f() }
+  }
+
   def getInt(key: String): Int = syncRun {
     persistent.getInt(key)
   }
