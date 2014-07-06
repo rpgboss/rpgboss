@@ -11,7 +11,7 @@ import rpgboss.model.resource.Music
 
 trait RpgScreen extends Screen with ThreadChecked {
   def game: RpgGame
-  
+
   val scriptInterface = new ScriptInterface(game, this)
 
   val inputs = new InputMultiplexer()
@@ -20,9 +20,9 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   val musics = Array.fill[Option[GdxMusic]](8)(None)
   val windowManager = createWindowManager()
-  
+
   val tweenManager = new TweenManager()
-  
+
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDuration: Float) = {
 
@@ -60,36 +60,36 @@ trait RpgScreen extends Screen with ThreadChecked {
       newMusic
     }
   }
-    
-  def render()  
+
+  def render()
   def update(delta: Float)
 
   override def dispose() = {
     windowManager.dispose()
-    
+
     musics.foreach(_.map(music => {
       music.stop()
       music.dispose()
     }))
   }
-  
+
   override def hide() = {
     assertOnBoundThread()
     Gdx.input.setInputProcessor(null)
-    
+
     musics.foreach(_.map(_.pause()))
   }
-   
+
   override def pause() = {
     assertOnBoundThread()
   }
-  
+
   override def render(delta: Float) = {
     assertOnBoundThread()
-    
+
     // Update tweens
     tweenManager.update(delta)
-    
+
     update(delta)
     render()
   }
@@ -98,14 +98,14 @@ trait RpgScreen extends Screen with ThreadChecked {
     assertOnBoundThread()
     // Do nothing for now
   }
-  
+
   override def resume() = {
     assertOnBoundThread()
   }
-  
+
   override def show() = {
     assertOnBoundThread()
-    
+
     Gdx.input.setInputProcessor(inputs)
     musics.foreach(_.map(_.play()))
   }

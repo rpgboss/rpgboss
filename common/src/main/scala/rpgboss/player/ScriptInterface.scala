@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import rpgboss.lib._
 import rpgboss.model._
+import rpgboss.model.Constants._
 import rpgboss.model.battle._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
@@ -100,6 +101,35 @@ class ScriptInterface(
       mapScreen.playerEntity.mapName = Some(loc.map)
 
       mapScreen.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map))
+    }
+  }
+
+  def teleport(mapName: String, x: Float, y: Float, transitionId: Int) = {
+    val loc = MapLoc(mapName, x, y)
+    val map = getMap(loc)
+    val transition = Transitions.get(transitionId)
+    val fadeDuration = Transitions.fadeLength
+
+    syncRun {
+      if (map.metadata.changeMusicOnEnter) {
+        mapScreen.playMusic(0, map.metadata.music, true, fadeDuration);
+      }
+
+      if (transition == Transitions.FADE) {
+        mapScreen.windowManager.setTransition(0, 1, fadeDuration)
+      }
+    }
+
+    if (transition == Transitions.FADE) {
+      sleep(fadeDuration);
+    }
+
+    setPlayerLoc(loc);
+
+    if (transition == Transitions.FADE) {
+      syncRun {
+        mapScreen.windowManager.setTransition(1, 0, fadeDuration);
+      }
     }
   }
 

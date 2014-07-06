@@ -128,8 +128,9 @@ case class ShowText(lines: Array[String] = Array()) extends EventCmd {
   def sections = singleCall("game.showText", lines)
 }
 
-case class Teleport(loc: MapLoc, transition: Int) extends EventCmd {
-  def sections = singleCall("teleport", loc.map, loc.x, loc.y, transition)
+case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
+  def sections =
+    singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }
 
 case class SetEvtState(state: Int = 0) extends EventCmd {

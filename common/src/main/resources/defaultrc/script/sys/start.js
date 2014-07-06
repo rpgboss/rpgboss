@@ -3,7 +3,9 @@ function newGame() {
   game.sleep(0.4);
   game.hidePicture(0);
   
-  teleportLoc(project.data().startup().startingLoc(), Transitions.NONE().id());
+  var loc = project.data().startup().startingLoc();
+  game.teleport(
+    loc.map(), loc.x(), loc.y(), Transitions.NONE().id());
   
   game.startNewGame();
 }

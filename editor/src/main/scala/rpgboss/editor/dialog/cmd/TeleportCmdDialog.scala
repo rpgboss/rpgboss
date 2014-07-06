@@ -16,15 +16,15 @@ class TeleportCmdDialog(
   extends StdDialog(owner, "Teleport Player") {
 
   def okFunc() = {
-    val cmd = Teleport(mapLocPanel.loc, transition)
+    val cmd = Teleport(mapLocPanel.loc, transitionId)
     successF(cmd)
     close()
   }
 
-  var transition = initial.transition
+  var transitionId = initial.transitionId
 
   val transitionRadios = new BoxPanel(Orientation.Horizontal) {
-    val radioBtns = enumIdRadios(Transitions)(transition, transition = _)
+    val radioBtns = enumIdRadios(Transitions)(transitionId, transitionId = _)
 
     addBtnsAsGrp(contents, radioBtns)
   }

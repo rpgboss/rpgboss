@@ -39,7 +39,7 @@ class EventCmdSpec extends UnitSpec {
     val e = Teleport(MapLoc("mapname", 1.5f, 5.5f), 0)
 
     e.toJs should deepEqual (Array(
-      """teleport("mapname", 1.500000, 5.500000, 0);"""))
+      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
 
     import java.util.Locale
     val defaultLocale = Locale.getDefault()
@@ -47,7 +47,7 @@ class EventCmdSpec extends UnitSpec {
     Locale.setDefault(Locale.FRANCE)
 
     e.toJs should deepEqual (Array(
-      """teleport("mapname", 1.500000, 5.500000, 0);"""))
+      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
 
     Locale.setDefault(defaultLocale)
   }
