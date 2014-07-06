@@ -192,40 +192,7 @@ class ScriptInterface(
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDuration: Float) = syncRun {
-
-    mapScreen.musics(slot).map({ oldMusic =>
-      val tweenMusic = new GdxMusicTweenable(oldMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
-        .target(0f)
-        .setCallback(new TweenCallback {
-          override def onEvent(typeArg: Int, x: BaseTween[_]) = {
-            if (typeArg == TweenCallback.COMPLETE) {
-              oldMusic.stop()
-            }
-          }
-        }).start(mapScreen.tweenManager)
-    })
-
-    mapScreen.musics(slot) = specOpt.map { spec =>
-      val resource = Music.readFromDisk(project, spec.sound)
-      resource.loadAsset(game.assets)
-      // TODO: fix this blocking call
-      game.assets.finishLoading()
-      val newMusic = resource.getAsset(game.assets)
-
-      // Start at zero volume and fade to desired volume
-      newMusic.stop()
-      newMusic.setVolume(0f)
-      newMusic.setLooping(loop)
-      newMusic.play()
-
-      // Setup volume tween
-      val tweenMusic = new GdxMusicTweenable(newMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
-        .target(spec.volume).start(mapScreen.tweenManager)
-
-      newMusic
-    }
+    activeScreen.playMusic(slot, specOpt, loop, fadeDuration)
   }
 
   /*
