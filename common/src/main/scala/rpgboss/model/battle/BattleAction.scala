@@ -27,16 +27,27 @@ case class AttackAction(actor: BattleStatus, targets: Array[BattleStatus])
   extends BattleAction {
   def process(battle: Battle) = {
     assert(targets.length == 1)
-    val target = targets.head
+    val desiredTarget = targets.head
 
-    val damages =
-      actor.onAttackSkillIds
-        .map(skillId => Damage.getDamages(actor, target, battle.pData, skillId))
-        .flatten
+    val actualTargets =
+      if (desiredTarget.alive)
+        Some(desiredTarget)
+      else
+        battle.randomAliveOf(desiredTarget.entityType)
 
-    target.hp -= math.min(target.hp, damages.map(_.value).sum)
+    val hitOption = for (target <- actualTargets) yield {
+      val damages =
+        actor.onAttackSkillIds
+          .map(skillId =>
+            Damage.getDamages(actor, target, battle.pData, skillId))
+          .flatten
 
-    Array(Hit(target, damages))
+      target.hp -= math.min(target.hp, damages.map(_.value).sum)
+
+      Hit(target, damages)
+    }
+
+    hitOption.toArray
   }
 }
 

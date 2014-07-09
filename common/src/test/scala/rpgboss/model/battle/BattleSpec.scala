@@ -92,6 +92,32 @@ class BattleSpec extends UnitSpec {
   }
 
   "Battle" should "reassign attacks on dead party members to live ones" in {
+    val f = new BattleTest.BattleFixture(aiOpt = Some(new RandomEnemyAI)) {
+      override def initialCharacterHps = Array(0, 1)
+    }
 
+    val action =
+      AttackAction(f.battle.enemyStatus.head, Array(f.battle.partyStatus.head))
+    val hits = action.process(f.battle)
+
+    hits.length should equal (1)
+    hits.head.hitActor should equal (f.battle.partyStatus(1))
+  }
+
+  "Battle" should "reassign attacks on dead enemies to live ones" in {
+    val f = new BattleTest.BattleFixture {
+      override def encounter = Encounter(
+        units = Array(EncounterUnit(0, 100, 100), EncounterUnit(0, 100, 100)))
+    }
+
+    f.battle.enemyStatus.head.hp = 0
+    f.battle.enemyStatus.head.alive should equal (false)
+
+    val action =
+      AttackAction(f.battle.partyStatus.head, Array(f.battle.enemyStatus.head))
+    val hits = action.process(f.battle)
+
+    hits.length should equal (1)
+    hits.head.hitActor should equal (f.battle.enemyStatus(1))
   }
 }

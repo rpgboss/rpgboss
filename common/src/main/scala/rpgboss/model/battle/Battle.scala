@@ -47,7 +47,7 @@ class BattleStatus(
 
   def stats = _stats
 
-  override def toString = "BattleStatus(%s, %d)".format(entityType, entityIndex)
+  override def toString = "BattleStatus(%s, %d)".format(entityType, id)
 }
 
 trait BattleAI {
