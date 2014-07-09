@@ -11,21 +11,24 @@ case class Hit(hitActor: BattleStatus, damages: Array[TakenDamage])
  */
 trait BattleAction {
   def actor: BattleStatus
-  def target: BattleStatus
+  def targets: Array[BattleStatus]
 
   def process(battle: Battle): Array[Hit]
 }
 
 case class NullAction(actor: BattleStatus) extends BattleAction {
-  override def target = null
+  override def targets = Array()
   def process(battle: Battle) = {
     Array()
   }
 }
 
-case class AttackAction(actor: BattleStatus, target: BattleStatus)
+case class AttackAction(actor: BattleStatus, targets: Array[BattleStatus])
   extends BattleAction {
   def process(battle: Battle) = {
+    assert(targets.length == 1)
+    val target = targets.head
+
     val damages =
       actor.onAttackSkillIds
         .map(skillId => Damage.getDamages(actor, target, battle.pData, skillId))
@@ -37,7 +40,8 @@ case class AttackAction(actor: BattleStatus, target: BattleStatus)
   }
 }
 
-case class SkillAction(actor: BattleStatus, target: BattleStatus, skillId: Int)
+case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
+                       skillId: Int)
   extends BattleAction {
   def process(battle: Battle) = {
     if (skillId < battle.pData.enums.skills.length)
@@ -49,10 +53,13 @@ case class SkillAction(actor: BattleStatus, target: BattleStatus, skillId: Int)
 
     actor.mp -= skill.cost
 
-    val damages = Damage.getDamages(actor, target, battle.pData, skillId)
-    target.hp -= math.min(target.hp, damages.map(_.value).sum)
+    assert(targets.length >= 1)
 
-    Array(Hit(target, damages))
+    for (target <- targets) yield {
+      val damages = Damage.getDamages(actor, target, battle.pData, skillId)
+      target.hp -= math.min(target.hp, damages.map(_.value).sum)
+      Hit(target, damages)
+    }
   }
 }
 

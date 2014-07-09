@@ -83,14 +83,17 @@ class RandomEnemyAI extends BattleAI {
         })
 
         if (canAffordSkills.isEmpty) {
-          battle.takeAction(AttackAction(enemyStatus, target.get))
+          battle.takeAction(AttackAction(enemyStatus, Array(target.get)))
         } else {
           val skillId =
             canAffordSkills.apply(util.Random.nextInt(canAffordSkills.length))
-          battle.takeAction(SkillAction(enemyStatus, target.get, skillId))
+          val skill = battle.pData.enums.skills(skillId)
+
+
+          battle.takeAction(SkillAction(enemyStatus, Array(target.get), skillId))
         }
       } else {
-        battle.takeAction(AttackAction(enemyStatus, target.get))
+        battle.takeAction(AttackAction(enemyStatus, Array(target.get)))
       }
     }
   }

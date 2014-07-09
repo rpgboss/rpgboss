@@ -73,7 +73,7 @@ class BattleScreen(
           case 0 => {
             val target = getTarget(defaultToParty = false)
             GdxUtils.syncRun {
-              _battle.get.takeAction(AttackAction(actor, target))
+              _battle.get.takeAction(AttackAction(actor, Array(target)))
             }
           }
           case _ => {
@@ -439,7 +439,7 @@ class BattleScreen(
             battle.getNotification.map { notification =>
               if (notification.action.isInstanceOf[AttackAction]) {
                 val source = notification.action.actor
-                val target = notification.action.target
+                val target = notification.action.targets.head
                 val windows =
                   for (hit <- notification.hits;
                        damage <- hit.damages) yield {
