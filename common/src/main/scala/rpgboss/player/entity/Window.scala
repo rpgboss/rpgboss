@@ -35,14 +35,14 @@ object Window {
 class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
-  x: Int, y: Int, 
+  x: Int, y: Int,
   val w: Int, val h: Int,
   invisible: Boolean = false)
   extends InputHandler with ThreadChecked {
-  
+
   def openCloseTime: Double = 0.25
-  def initialState = if (openCloseTime > 0) Window.Opening else Window.Open 
-  
+  def initialState = if (openCloseTime > 0) Window.Opening else Window.Open
+
   private var _state = initialState
   // Determines when states expire. In seconds.
   protected var stateAge = 0.0
@@ -59,7 +59,7 @@ class Window(
   def state = synchronized {
     _state
   }
-  
+
   def skin = manager.windowskin
   def skinRegion = manager.windowskinRegion
 
@@ -87,10 +87,10 @@ class Window(
 
   def render(b: SpriteBatch): Unit = {
     assertOnBoundThread()
-    
+
     if (invisible)
       return
-    
+
     state match {
         case Window.Open => {
         skin.draw(b, skinRegion, x, y, w, h)
@@ -113,13 +113,13 @@ class Window(
 
   def startClosing(): Unit = {
     assertOnBoundThread()
-    
+
     // This method may be called multiple times, but the subsequent calls after
     // the first should be ignored.
     if (state != Window.Opening && state != Window.Open) {
       return
     }
-    
+
     changeState(Window.Closing)
 
     // We allow scripts to continue as soon as the window is closing to provide
@@ -132,7 +132,7 @@ class Window(
       assertOnDifferentThread()
       state
     }
-    
+
     def close() = {
       assertOnDifferentThread()
       GdxUtils.syncRun {
@@ -178,7 +178,7 @@ class TextWindow(
   justification: Int = Window.Left,
   stayOpenTime: Double = 0.0)
   extends Window(manager, inputs, x, y, w, h) {
-  
+
   def xpad = 24
   def ypad = 24
 
@@ -197,7 +197,7 @@ class TextWindow(
   override def update(delta: Float) = {
     super.update(delta)
     textImage.update(delta)
-    
+
     if (stayOpenTime > 0.0 && state == Window.Open && stateAge >= stayOpenTime)
       startClosing()
   }
@@ -224,14 +224,14 @@ class DamageTextWindow(
   initialX: Int, initialY: Int)
   // TODO: We pass 'null' as inputs here because we don't want to accept input.
   // Window has zeros for x, y, w, and h because the window itself is invisible.
-  extends Window(manager, null, 0, 0, 0, 0, 
+  extends Window(manager, null, 0, 0, 0, 0,
     invisible = true) {
-  
-  private val expiryTime = 1.6
-  private val yDisplacement = -30.0
-  
+
+  private val expiryTime = 0.8
+  private val yDisplacement = -25.0
+
   private var age = 0.0
-  
+
   val textImage = new WindowText(
     persistent,
     initialText = Array(damage.toString()),
@@ -244,19 +244,19 @@ class DamageTextWindow(
 
   override def update(delta: Float): Unit = {
     super.update(delta)
-    
+
     if (state != Window.Open)
       return
-    
+
     age += delta;
-    
+
     textImage.updatePosition(
-        initialX, 
+        initialX,
         ((age / expiryTime * yDisplacement) + initialY).toInt)
-    
+
     super.update(delta)
     textImage.update(delta)
-    
+
     if (age > expiryTime) {
       startClosing()
     }
