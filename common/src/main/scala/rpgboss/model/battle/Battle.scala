@@ -33,12 +33,14 @@ class BattleStatus(
 
   def alive = hp > 0
 
-  def update(deltaSeconds: Double, baseTurnTime: Double) = {
-    if (!alive)
+  def update(pendingAction: Boolean, deltaSeconds: Double,
+             baseTurnTime: Double) = {
+    if (!alive) {
       readiness = 0
-
-    val turnTime = baseTurnTime / (1.0 + stats.spd / 100.0)
-    readiness += deltaSeconds / turnTime
+    } else if (!pendingAction) {
+      val turnTime = baseTurnTime / (1.0 + stats.spd / 100.0)
+      readiness += deltaSeconds / turnTime
+    }
   }
 
   var readiness: Double = 0
@@ -276,7 +278,11 @@ class Battle(
 
     time += deltaSeconds
 
-    allStatus.foreach(_.update(deltaSeconds, baseTurnTime))
+    for (status <- allStatus) {
+      val pendingAction = actionQueue.exists(_.actor == status)
+
+      status.update(pendingAction, deltaSeconds, baseTurnTime)
+    }
 
     // Enqueue any newly ready entities.
     allStatus
