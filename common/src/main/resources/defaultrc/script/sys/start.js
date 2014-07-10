@@ -14,7 +14,7 @@ function showStartDialog() {
   var winW = 200;
   
   while (true) {
-    var choiceWin = game.newChoiceWindow(
+    var choiceWin = game.newChoiceWindowWithOptions(
       ["New Game", "Load Game", "Quit"],
       320-winW/2, 280, winW, 130,
       game.CENTER(),

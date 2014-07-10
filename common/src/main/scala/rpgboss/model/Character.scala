@@ -16,9 +16,9 @@ case class Character(
   var progressions: StatProgressions = StatProgressions(),
   var startingEquipment: Array[Int] = Array(),
   var equipFixed: Array[Int] = Array()) extends HasName {
-  
+
   def expToLevel(level: Int) = progressions.exp(level)
-  
+
   def baseStats(pData: ProjectData, level: Int) = {
     val effects: Array[Effect] = {
       if (charClass >= 0 && charClass < pData.enums.classes.length)
@@ -26,7 +26,7 @@ case class Character(
       else
         Array()
     }
-    
+
     BaseStats(
       mhp = progressions.mhp(level),
       mmp = progressions.mmp(level),
@@ -44,12 +44,16 @@ case class LearnedSkill(var level: Int, var skillId: Int)
 
 case class CharClass(
   var name: String = "",
-  
+
   var unarmedAttackSkillId: Int = 0,
-  
+
   var canUseItems: Array[Int] = Array(),
   var effects: Array[Effect] = Array(),
-  var learnedSkills: Array[LearnedSkill] = Array()) extends HasName
+  var learnedSkills: Array[LearnedSkill] = Array()) extends HasName {
+  def knownSkillIds(level: Int): Array[Int] = {
+    learnedSkills.filter(_.level  <= level).map(_.skillId)
+  }
+}
 
 case class Enemy(
   var name: String = "",
@@ -63,11 +67,11 @@ case class Enemy(
   var arm: Int = 10,
   var mre: Int = 10,
   var expValue: Int = 100,
-  
+
   var attackSkillId: Int = 0,
-  
+
   var effects: Array[Effect] = Array(),
-  var skills: Array[Int] = Array()) extends HasName {
+  var skillIds: Array[Int] = Array()) extends HasName {
   def baseStats =
     BaseStats(
       mhp = mhp,

@@ -9,8 +9,8 @@ trait BoxLike {
   def y: Int
   def w: Int
   def h: Int
-  
-  def getBoundsArray() = Array(x, y, w, h)
+
+  def getIntRect() = IntRect(x, y, w, h)
 }
 
 /**

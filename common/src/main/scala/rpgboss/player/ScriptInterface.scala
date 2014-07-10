@@ -232,13 +232,17 @@ class ScriptInterface(
     Thread.sleep((duration * 1000).toInt)
   }
 
-  def newChoiceWindow(
+  /**
+   * TODO: This is named different currently to allow newChoiceWindow to call
+   * into this and use its default arguments. This should be renamed.
+   */
+  def newChoiceWindowWithOptions(
     lines: Array[String],
     x: Int, y: Int, w: Int, h: Int,
-    justification: Int,
-    columns: Int,
-    displayedLines: Int,
-    allowCancel: Boolean) = {
+    justification: Int = Window.Left,
+    columns: Int = 1,
+    displayedLines: Int = 0,
+    allowCancel: Boolean = false) = {
     val window = syncRun {
       new TextChoiceWindow(
         game.persistent,
@@ -258,11 +262,7 @@ class ScriptInterface(
   def newChoiceWindow(
     choices: Array[String],
     x: Int, y: Int, w: Int, h: Int): ChoiceWindow#ChoiceWindowScriptInterface =
-    newChoiceWindow(choices, x, y, w, h,
-      Window.Left,
-      1 /* columns */ ,
-      0 /* displayedChoices */ ,
-      false /* allowCancel */ )
+    newChoiceWindowWithOptions(choices, x, y, w, h)
 
   /**
    * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
@@ -279,12 +279,24 @@ class ScriptInterface(
         return -1
     }
 
+    getSpatialChoice(
+      choices.map(x => Set(IntRect(x(0), x(1), x(2), x(3)))), defaultChoice)
+  }
+
+  /**
+   * TODO: No idea how this would be called from Javascript, but it's convenient
+   * from Scala.
+   */
+  def getSpatialChoice(choices: Array[Set[IntRect]],
+                       defaultChoice: Int): Int = {
+    assert(!choices.isEmpty)
+
     val window = syncRun {
       new SpatialChoiceWindow(
         game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
-        choices.map(x => IntRect(x(0), x(1), x(2), x(3))),
+        choices,
         defaultChoice = defaultChoice)
     }
 

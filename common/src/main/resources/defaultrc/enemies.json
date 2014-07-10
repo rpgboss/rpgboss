@@ -17,7 +17,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -39,7 +39,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -61,7 +61,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       30,
       20
     ]
@@ -80,7 +80,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -98,7 +98,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -116,7 +116,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -134,7 +134,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -152,7 +152,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -170,7 +170,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -188,7 +188,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -210,7 +210,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -232,7 +232,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -254,7 +254,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -276,7 +276,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       42,
       39,
       40
@@ -300,7 +300,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       42,
       39,
       43,
@@ -322,7 +322,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -340,7 +340,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -358,7 +358,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -376,7 +376,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -394,7 +394,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -412,7 +412,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -430,7 +430,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -448,7 +448,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -466,7 +466,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -484,7 +484,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -502,7 +502,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -520,7 +520,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -538,7 +538,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -556,7 +556,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -574,7 +574,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -592,7 +592,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -610,7 +610,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -628,7 +628,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -646,7 +646,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -664,7 +664,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -682,7 +682,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -700,7 +700,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -718,7 +718,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -736,7 +736,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -754,7 +754,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -772,7 +772,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -790,7 +790,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -808,7 +808,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -826,7 +826,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -844,7 +844,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -862,7 +862,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -880,7 +880,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -898,7 +898,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -916,7 +916,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   },
@@ -934,7 +934,7 @@
     "effects":[
       
     ],
-    "skills":[
+    "skillIds":[
       
     ]
   }

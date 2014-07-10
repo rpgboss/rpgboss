@@ -60,27 +60,83 @@ class BattleScreen(
         }
       }
 
+      /**
+       * Returns true when we are done and the action window should exit.
+       * Otherwise, it's expected to get another choice and try again.
+       */
+      def processWindow(choice: Int): Boolean = {
+        assertOnDifferentThread()
+
+        choice match {
+          case 0 => {
+            val targets = getTargets(Scope.OneEnemy)
+
+            if (targets.isEmpty)
+              return false
+
+            GdxUtils.syncRun {
+              _battle.get.takeAction(AttackAction(actor, targets.get))
+            }
+            return true
+          }
+          case 1 => {
+            val skillChoices = for (skillId <- actor.knownSkillIds) yield {
+              assert(skillId < battle.pData.enums.skills.length)
+              battle.pData.enums.skills(skillId)
+            }
+
+            val skillWindow = scriptInterface.newChoiceWindowWithOptions(
+              skillChoices.map(_.name), 0, 300, 640, 180,
+              columns = 2, allowCancel = true)
+
+            while (true) {
+              val idxInChoiceBox = skillWindow.getChoice()
+              if (idxInChoiceBox == -1) {
+                skillWindow.close()
+                return false
+              }
+
+              val skillId = actor.knownSkillIds(idxInChoiceBox)
+              val skill = skillChoices(idxInChoiceBox)
+              val scope = Scope(skill.scopeId)
+              val targets = getTargets(scope)
+              if (targets.isDefined) {
+                skillWindow.close()
+                GdxUtils.syncRun {
+                  _battle.get.takeAction(
+                    SkillAction(actor, targets.get, skillId))
+                }
+                return true
+              }
+            }
+
+            assert(0 == 1) // We should never reach this point
+            skillWindow.close()
+            return true
+          }
+          case _ => {
+            GdxUtils.syncRun {
+              // This is optional because this condition may be reached
+              // if the battle is over and the outstanding window closes.
+              _battle.map(_.takeAction(NullAction(actor)))
+            }
+            return true
+          }
+        }
+      }
+
       def run() = concurrent.Future {
         assertOnDifferentThread()
         PlayerActionWindow.synchronized {
           currentOpt = Some(this)
 
-          _window = scriptInterface.newChoiceWindow(
-            Array("Attack"), 100, 300, 140, 180)
+          _window = scriptInterface.newChoiceWindowWithOptions(
+            Array("Attack", "Skill"), 100, 300, 140, 180, allowCancel = true)
         }
 
-        _window.getChoice() match {
-          case 0 => {
-            val target = getTarget(defaultToParty = false)
-            GdxUtils.syncRun {
-              _battle.get.takeAction(AttackAction(actor, Array(target)))
-            }
-          }
-          case _ => {
-            GdxUtils.syncRun {
-              _battle.get.takeAction(NullAction(actor))
-            }
-          }
+        var done = false
+        while (!done) {
+          done = processWindow(_window.getChoice())
         }
 
         _window.close()
@@ -91,39 +147,59 @@ class BattleScreen(
       }
 
       /**
-       * Gets the BattleStatus of a target in the battle.
-       * TODO: Skip in-eligible targets (dead, etc.)
+       * Makes the player choose the targets of the action based on the scope.
        */
-      def getTarget(defaultToParty: Boolean) = {
+      def getTargets(scope: Scope.Value): Option[Array[BattleStatus]] = {
         assertOnDifferentThread()
         assert(_enemyBattlers.length == _battle.get.enemyStatus.length)
         assert(_partyBattlers.length == _battle.get.partyStatus.length)
 
-        val _aliveEnemyList = _battle.get.enemyStatus.filter(_.alive)
-        val _alivePartyList = _battle.get.partyStatus.filter(_.alive)
+        val enemyList = _battle.get.enemyStatus
+        val partyList = _battle.get.partyStatus
 
-        val aliveStatuses = _aliveEnemyList ++ _alivePartyList
-        val choices = new ArrayBuffer[Array[Int]]
-        for (status <- _aliveEnemyList) {
-          choices.append(_enemyBattlers(status.id).getBoundsArray())
+        val (aliveEnemyList, deadEnemyList) = enemyList.partition(_.alive)
+        val (alivePartyList, deadPartyList) = partyList.partition(_.alive)
+
+        val choices = new ArrayBuffer[Array[BattleStatus]]
+        scope match {
+          case Scope.AllAllies =>
+            choices.append(partyList)
+            choices.append(aliveEnemyList)
+          case Scope.AllAlliesDead =>
+            choices.append(deadPartyList)
+          case Scope.AllEnemies =>
+            choices.append(aliveEnemyList)
+            choices.append(alivePartyList)
+          case Scope.OneAlly =>
+            alivePartyList.map(x => choices.append(Array(x)))
+            aliveEnemyList.map(x => choices.append(Array(x)))
+          case Scope.OneAllyDead =>
+            deadPartyList.map(x => choices.append(Array(x)))
+            deadEnemyList.map(x => choices.append(Array(x)))
+          case Scope.OneEnemy =>
+            aliveEnemyList.map(x => choices.append(Array(x)))
+            alivePartyList.map(x => choices.append(Array(x)))
+          case Scope.SelfOnly =>
+            choices.append(Array(actor))
         }
-        for (status <- _alivePartyList) {
-          choices.append(_partyBattlers(status.id).getBoundsArray())
+
+        def toBattler(status: BattleStatus) = status.entityType match {
+          case BattleEntityType.Enemy => _enemyBattlers(status.id)
+          case BattleEntityType.Party => _partyBattlers(status.id)
         }
 
-        val defaultChoice =
-          if (defaultToParty)
-            _aliveEnemyList.length
-          else
-            0
+        // Convert each choice to a Set[IntRect]
+        val boxChoices: Array[Set[IntRect]] = choices.map { choice =>
+          choice.map(x => toBattler(x).getIntRect()).toSet
+        }.toArray
 
-        val choice = scriptInterface.getSpatialChoice(
-          choices.toArray, defaultChoice)
+        val choiceIdx = scriptInterface.getSpatialChoice(
+          boxChoices, defaultChoice = 0)
 
-        if (choice < _aliveEnemyList.length)
-          _aliveEnemyList(choice)
+        if (choiceIdx == -1)
+          None
         else
-          _alivePartyList(choice - _aliveEnemyList.length)
+          Some(choices(choiceIdx))
       }
     }
 
@@ -437,27 +513,32 @@ class BattleScreen(
           // Add the next notification if it exists.
           if (currentNotificationDisplay.isEmpty) {
             battle.getNotification.map { notification =>
-              if (notification.action.isInstanceOf[AttackAction]) {
-                val source = notification.action.actor
-                val target = notification.action.targets.head
-                val windows =
-                  for (hit <- notification.hits;
-                       damage <- hit.damages) yield {
-                    val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
-                    new DamageTextWindow(gameOpt.get.persistent, windowManager,
-                        damage.value, box.x, box.y)
-                  }
+              val source = notification.action.actor
 
-                // Also display an attack notice, but don't block on its close.
-                // TODO: Post better notices for multi-hits.
-                postTextNotice("%s attacks %s.".format(
-                    getEntityName(source), getEntityName(target)))
+              val windows =
+                for (hit <- notification.hits;
+                     damage <- hit.damages) yield {
+                  val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
+                  new DamageTextWindow(gameOpt.get.persistent, windowManager,
+                      damage.value, box.x, box.y)
+                }
 
-                val display = NotificationDisplay(notification, windows)
-                currentNotificationDisplay = Some(display)
-              } else {
-                postTextNotice("Not implemented yet.")
+              notification.action match {
+                case action: AttackAction =>
+                  val target = notification.action.targets.head
+
+                  postTextNotice("%s attacks %s.".format(
+                      getEntityName(source), getEntityName(target)))
+                case action: SkillAction =>
+                  val skill = _battle.get.pData.enums.skills(action.skillId)
+                  postTextNotice("%s uses %s.".format(
+                      getEntityName(source), skill.name))
+                case _ =>
+                  postTextNotice("Not implemented yet.")
               }
+
+              val display = NotificationDisplay(notification, windows)
+                currentNotificationDisplay = Some(display)
             }
 
           }

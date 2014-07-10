@@ -98,7 +98,7 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
         ScriptThread.fromFile(
           game,
           mapScreen.scriptInterface,
-          "menu.js",
+          "sys/menu.js",
           "menu()",
           Some(() => {
             menuActive = false

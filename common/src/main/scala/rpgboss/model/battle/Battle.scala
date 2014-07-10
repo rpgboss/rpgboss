@@ -27,6 +27,7 @@ class BattleStatus(
   val baseStats: BaseStats,
   val equipment: Array[Int] = Array(),
   val onAttackSkillIds: Array[Int],
+  val knownSkillIds: Array[Int],
   private var tempStatusEffects: Array[Int],
   val row: Int) {
 
@@ -73,8 +74,8 @@ class RandomEnemyAI extends BattleAI {
         assert(enemyStatus.entityIndex < battle.pData.enums.enemies.length)
         val enemy = battle.pData.enums.enemies(enemyStatus.entityIndex)
 
-        val skillIds = enemy.skills
-        assert(enemy.skills.forall(i => i < battle.pData.enums.skills.length))
+        val skillIds = enemy.skillIds
+        assert(enemy.skillIds.forall(i => i < battle.pData.enums.skills.length))
 
         // Select a skill at random that the unit has enough mana for. If there
         // are none, just attack.
@@ -197,7 +198,8 @@ class Battle(
   val partyStatus: Array[BattleStatus] = {
     for ((characterId, i) <- partyIds.zipWithIndex) yield {
       val character = pData.enums.characters(characterId)
-      val baseStats = character.baseStats(pData, characterLevels(characterId))
+      val level = characterLevels(characterId)
+      val baseStats = character.baseStats(pData, level)
 
       val allItems = pData.enums.items
       val weaponSkills =
@@ -213,11 +215,16 @@ class Battle(
           weaponSkills
         }
 
+      assert(character.charClass < pData.enums.classes.length)
+      val knownSkillIds =
+        pData.enums.classes(character.charClass).knownSkillIds(level)
+
       new BattleStatus(i, pData, BattleEntityType.Party, characterId,
                        initialCharacterHps(characterId),
                        initialCharacterMps(characterId),
                        baseStats, characterEquip(characterId),
                        onAttackSkills,
+                       knownSkillIds,
                        initialCharacterTempStatusEffects(characterId),
                        characterRows(characterId))
     }
@@ -232,6 +239,7 @@ class Battle(
                        baseStats.mhp, baseStats.mmp, baseStats,
                        equipment = Array(),
                        onAttackSkillIds = Array(enemy.attackSkillId),
+                       knownSkillIds = enemy.skillIds,
                        tempStatusEffects = Array(),
                        row)
     }

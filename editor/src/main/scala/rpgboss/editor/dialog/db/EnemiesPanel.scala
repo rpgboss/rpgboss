@@ -50,7 +50,7 @@ class EnemiesPanel(
 
       val fExpValue =
         new NumberSpinner(model.expValue, 10, 50000, model.expValue = _)
-      
+
       val fAttackSkillId = indexedCombo(
           dbDiag.model.enums.skills,
           model.attackSkillId,
@@ -73,19 +73,19 @@ class EnemiesPanel(
 
       row().grid(leftLabel("Speed:")).add(fSpd)
       row().grid(leftLabel("EXP Value:")).add(fExpValue)
-      
+
       row().grid(leftLabel("Attack skill:")).add(fAttackSkillId)
     }
 
     val fEffects =
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _, false)
-    
+
     val fSkills = new ArrayMultiselectPanel(
-      owner, 
-      "Known Skills", 
+      owner,
+      "Known Skills",
       dbDiag.model.enums.skills,
-      model.skills,
-      model.skills = _)
+      model.skillIds,
+      model.skillIds = _)
 
     new BoxPanel(Orientation.Horizontal) {
       contents += bioFields

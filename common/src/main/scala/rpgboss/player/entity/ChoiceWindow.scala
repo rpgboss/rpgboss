@@ -25,7 +25,7 @@ abstract class ChoiceWindow(
   allowCancel: Boolean = true)
   extends Window(manager, inputs, x, y, w, h, invisible)
   with ChoiceInputHandler {
-  
+
   protected var curChoice = defaultChoice
 
   override def capturedKeys =
@@ -36,12 +36,12 @@ abstract class ChoiceWindow(
 
   def project = manager.project
   def assets = manager.assets
-  
+
   override def startClosing() = {
     super.startClosing()
     choiceChannel.write(-1)
   }
-  
+
   def optionallyReadAndLoad(spec: Option[SoundSpec]) = {
     val snd = spec.map(s => Sound.readFromDisk(project, s.sound))
     snd.map(_.loadAsset(assets))
@@ -55,16 +55,16 @@ abstract class ChoiceWindow(
 
   class ChoiceWindowScriptInterface extends WindowScriptInterface {
     import GdxUtils._
-    
+
     def getChoice() = choiceChannel.read
-    
+
     def takeFocus(): Unit = syncRun {
       inputs.remove(ChoiceWindow.this)
       inputs.prepend(ChoiceWindow.this)
       manager.focusWindow(ChoiceWindow.this)
     }
   }
-  
+
   override lazy val scriptInterface = new ChoiceWindowScriptInterface
 }
 
@@ -81,7 +81,7 @@ class TextChoiceWindow(
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
-  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h, 
+  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h,
                        invisible = false,
                        defaultChoice, allowCancel) {
   val xpad = 24
@@ -121,7 +121,7 @@ class TextChoiceWindow(
 
   def keyActivate(key: Int): Unit = {
     import MyKeys._
-    
+
     if (state != Window.Open)
       return
 
@@ -206,30 +206,34 @@ class TextChoiceWindow(
       }
     }
   }
-  
+
   class TextChoiceWindowScriptInterface extends ChoiceWindowScriptInterface {
     import GdxUtils._
-    
+
     def setLineHeight(height: Int) = syncRun {
       textImages.foreach(_.setLineHeight(height))
     }
   }
-  
+
   override lazy val scriptInterface = new TextChoiceWindowScriptInterface
 }
 
+/**
+ * @param   choices     Is an Array[Set[IntRect]] to support some choices being
+ *                      defined by multiple rectangles on screen. For instance,
+ *                      selecting all the members of your party during a battle.
+ */
 class SpatialChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  choices: Array[IntRect] = Array(),
-  defaultChoice: Int = 0,
-  allowCancel: Boolean = true)
+  choices: Array[Set[IntRect]] = Array(),
+  defaultChoice: Int = 0)
   extends ChoiceWindow(persistent, manager, inputs, 0, 0, 0, 0,
-                       invisible = true, defaultChoice, allowCancel) {
+                       invisible = true, defaultChoice, allowCancel = true) {
   def keyActivate(key: Int): Unit = {
     import MyKeys._
-    
+
     if (state != Window.Open)
       return
 
@@ -251,7 +255,7 @@ class SpatialChoiceWindow(
       choiceChannel.write(curChoice)
     }
 
-    if (key == Cancel && allowCancel) {
+    if (key == Cancel) {
       soundCancel.map(_.getAsset(assets).play())
       choiceChannel.write(-1)
     }
@@ -263,10 +267,11 @@ class SpatialChoiceWindow(
 
     if (curChoice >= choices.length || curChoice < 0)
       return
-      
-    val choiceRect = choices(curChoice)
-    skin.draw(b, skinRegion, 
-              choiceRect.x, choiceRect.y, choiceRect.w, choiceRect.h, 
-              bordersOnly = true)
+
+    for (choiceRect <- choices(curChoice)) {
+      skin.draw(b, skinRegion,
+                choiceRect.x, choiceRect.y, choiceRect.w, choiceRect.h,
+                bordersOnly = true)
+    }
   }
 }
