@@ -68,7 +68,13 @@ case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
 
     for (target <- targets) yield {
       val damages = Damage.getDamages(actor, target, battle.pData, skillId)
-      target.hp -= math.min(target.hp, damages.map(_.value).sum)
+      target.hp -= damages.map(_.value).sum
+
+      if (target.hp < 0)
+        target.hp = 0
+      else if (target.hp > target.stats.mhp)
+        target.hp = target.stats.mhp
+
       Hit(target, damages)
     }
   }

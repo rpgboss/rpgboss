@@ -120,4 +120,30 @@ class BattleSpec extends UnitSpec {
     hits.length should equal (1)
     hits.head.hitActor should equal (f.battle.enemyStatus(1))
   }
+
+  "Battle" should "heal targets up to, but not exceeding, their max HP" in {
+    val f = new BattleTest.BattleFixture
+
+    f.pData.enums.skills =
+      Array(
+        Skill(damages = Array(
+          Damage(typeId = DamageType.Magic.id, elementId = 0,
+                 formula = "-a.mag*10")))
+    )
+
+    val partyHead = f.battle.partyStatus.head
+
+    val action = SkillAction(partyHead, Array(partyHead), skillId = 0)
+    val hits = action.process(f.battle)
+
+    hits.length should equal (1)
+    hits.head.hitActor should equal (partyHead)
+    hits.head.damages.length should equal (1)
+
+    // The reported healing value should exceed the HP
+    hits.head.damages.head should equal (TakenDamage(DamageType.Magic, 0, -91))
+
+    // But the final HP should equal the max HP
+    partyHead.hp should equal(partyHead.stats.mhp)
+  }
 }
