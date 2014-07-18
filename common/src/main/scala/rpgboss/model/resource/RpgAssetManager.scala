@@ -20,5 +20,4 @@ class RpgFileHandleResolver(proj: Project) extends FileHandleResolver {
 
 class RpgAssetManager(proj: Project)
   extends AssetManager(new RpgFileHandleResolver(proj)) {
-
 }

@@ -1,12 +1,11 @@
 package rpgboss.player
 
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.audio.{ Music => GdxMusic }
 import com.badlogic.gdx.Gdx
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.SoundSpec
 import aurelienribon.tweenengine._
-import rpgboss.model.resource.Music
+import rpgboss.model.resource.{Music, MusicPlayer}
 
 
 trait RpgScreen extends Screen with ThreadChecked {
@@ -18,7 +17,7 @@ trait RpgScreen extends Screen with ThreadChecked {
   def createWindowManager(): WindowManager =
     new WindowManager(game.assets, game.project, game.screenWPx, game.screenHPx)
 
-  val musics = Array.fill[Option[GdxMusic]](8)(None)
+  val musics = Array.fill[Option[MusicPlayer]](8)(None)
   val windowManager = createWindowManager()
 
   val tweenManager = new TweenManager()
@@ -27,7 +26,7 @@ trait RpgScreen extends Screen with ThreadChecked {
     loop: Boolean, fadeDuration: Float) = {
 
     musics(slot).map({ oldMusic =>
-      val tweenMusic = new GdxMusicTweenable(oldMusic)
+      val tweenMusic = new MusicPlayerTweenable(oldMusic)
       Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
         .target(0f)
         .setCallback(new TweenCallback {
@@ -41,10 +40,7 @@ trait RpgScreen extends Screen with ThreadChecked {
 
     musics(slot) = specOpt.map { spec =>
       val resource = Music.readFromDisk(game.project, spec.sound)
-      resource.loadAsset(game.assets)
-      // TODO: fix this blocking call
-      game.assets.finishLoading()
-      val newMusic = resource.getAsset(game.assets)
+      val newMusic = resource.newPlayer(game.assets)
 
       // Start at zero volume and fade to desired volume
       newMusic.stop()
@@ -53,7 +49,7 @@ trait RpgScreen extends Screen with ThreadChecked {
       newMusic.play()
 
       // Setup volume tween
-      val tweenMusic = new GdxMusicTweenable(newMusic)
+      val tweenMusic = new MusicPlayerTweenable(newMusic)
       Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
         .target(spec.volume).start(tweenManager)
 

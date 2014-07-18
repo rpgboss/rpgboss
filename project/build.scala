@@ -13,7 +13,7 @@ object Settings {
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.0.6",
-      "com.google.guava" % "guava" % "10.0",
+      "com.google.guava" % "guava" % "17.0",
       "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
       "org.json4s" %% "json4s-native" % "3.2.9" withSources(),

@@ -179,6 +179,8 @@ class RpgGame(gamepath: File)
     mapScreen.dispose()
     atlasSprites.dispose()
 
+    assets.dispose()
+
     super.dispose()
   }
 }

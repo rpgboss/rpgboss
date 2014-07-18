@@ -60,8 +60,8 @@ abstract class SoundSelectDialog(
       import rpgboss.editor.uibase.SwingUtils._
 
       override def dispose() = {
-        gdxPanel.dispose()
         currentSound.dispose()
+        gdxPanel.dispose()
         super.dispose()
       }
 
@@ -111,9 +111,12 @@ abstract class MusicSelectDialog(
     new DesignGridPanel with ResourceRightPane {
       import rpgboss.editor.uibase.SwingUtils._
 
+      val assets = new RpgAssetManager(sm.getProj)
+
       override def dispose() = {
         currentMusic.map(_.dispose())
         gdxPanel.dispose()
+        assets.dispose()
         super.dispose()
       }
 
@@ -126,12 +129,9 @@ abstract class MusicSelectDialog(
 
       val resource = Music.readFromDisk(sm.getProj, selection.sound)
 
-      val currentMusic: Option[GdxMusic] =
-        Some(gdxPanel.getAudio.newMusic(resource.getGdxFileHandle))
+      val currentMusic: Option[MusicPlayer] = Some(resource.newPlayer(assets))
 
       row().grid().add(new Button(Action("Play") {
-        currentMusic.map(x => logger.debug(x.isPlaying().toString))
-        currentMusic.map(x => logger.debug(x.getPosition().toString))
         currentMusic.map(_.stop())
         currentMusic.map(_.setVolume(volumeSlider.floatValue))
         currentMusic.map(_.play())
