@@ -157,7 +157,8 @@ object ResourceConstants {
     startingParty = Array(0),
 
     titlePic = "sys/LordSpirit.jpg",
-    titleMusic = None,
+    titleMusic =
+      Some(SoundSpec("sys/Journey to the East - Town of Legend.mid")),
 
     windowskin = "sys/LastPhantasmScanlines.png",
     msgfont = "sys/VeraMono.ttf",
