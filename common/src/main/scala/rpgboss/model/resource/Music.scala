@@ -95,26 +95,36 @@ class MidiMusicPlayer(music: Music) extends MusicPlayer with LazyLogging {
   }
 
   def pause() = {
-    if (sequencer != null)
+    if (sequencer != null && sequencer.isOpen()) {
       sequencer.stop()
+    } else {
+      logger.warn("MIDI sequencer null or not open")
+    }
   }
 
   def play() = {
-    if (sequencer != null)
+    if (sequencer != null && sequencer.isOpen()) {
       sequencer.start()
+    } else {
+      logger.warn("MIDI sequencer null or not open")
+    }
   }
 
   def setLooping(loop: Boolean) = {
-    if (sequencer != null) {
+    if (sequencer != null && sequencer.isOpen()) {
       val count = if (loop) Sequencer.LOOP_CONTINUOUSLY else 0
       sequencer.setLoopCount(count)
+    } else {
+      logger.warn("MIDI sequencer null or not open")
     }
   }
 
   def stop() = {
-    if (sequencer != null) {
+    if (sequencer != null && sequencer.isOpen()) {
       sequencer.stop()
       sequencer.setTickPosition(0)
+    } else {
+      logger.warn("MIDI sequencer null or not open")
     }
   }
 

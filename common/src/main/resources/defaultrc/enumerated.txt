@@ -342,10 +342,10 @@ msgfont/sys/Vera.ttf
 msgfont/sys/VeraMono-Bold.ttf
 msgfont/sys/VeraMono-Italic.ttf
 msgfont/sys/VeraMono.ttf
-music/A Midsummer Night's Dream - A Forest People.mid
-music/Journey to the East - Town of Legend.mid
-music/Macbeth - To War.mid
-music/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
+music/sys/A Midsummer Night's Dream - A Forest People.mid
+music/sys/Journey to the East - Town of Legend.mid
+music/sys/Macbeth - To War.mid
+music/sys/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
 picture/sys/LordSpirit.jpg
 script/sys/globals.js
 script/sys/menu.js
