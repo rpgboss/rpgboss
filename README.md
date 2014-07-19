@@ -163,7 +163,7 @@ http://opengameart.org/content/37-hitspunches
 
 ### Music
 
-Default music contributed by Reddit user 'Aaronofthe'.
+Default music by Aaron McDonald. Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). http://creativecommons.org/licenses/by-sa/4.0/
 
 ### Material Rules
 
