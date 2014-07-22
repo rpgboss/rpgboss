@@ -8,6 +8,7 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.Gdx
 import com.google.common.io.CharStreams
+import com.google.common.io.Files
 
 trait Resource[T, MT <: AnyRef] extends LazyLogging {
   def name: String
@@ -57,41 +58,20 @@ trait MetaResource[T, MT] {
 
   def rcDir(proj: Project) = new File(proj.rcDir, rcType)
 
+  def extensionFilter(file: File): Boolean = {
+    for(ext <- keyExts) {
+      if(file.getName.endsWith(ext))
+        return true
+    }
+    return false
+  }
+
   /**
-   * Lists files matching the extension filter in the resource directory, as
-   * well as direct child subdirectories.
+   * Lists the built-in system resources of this type.
    */
-  def list(proj: Project): Array[String] = {
-    val items = collection.mutable.Buffer[String]()
-
-    def extensionFilter(file: File): Boolean = {
-      for(ext <- keyExts) {
-        if(file.getName.endsWith(ext))
-          return true
-      }
-      return false
-    }
-
-    // Add in-project files.
-    val resourceDir = rcDir(proj)
-    if (!resourceDir.exists())
-      resourceDir.mkdir()
-    if (resourceDir.isFile())
-      return Array()
-
-    for(rootFile <- resourceDir.listFiles()) {
-      if(rootFile.isFile() && extensionFilter(rootFile)) {
-        items.append(rootFile.getName())
-      } else if(rootFile.isDirectory()) {
-        for(subFile <- rootFile.listFiles()) {
-          if(subFile.isFile() && extensionFilter(subFile)) {
-            items.append(rootFile.getName() + "/" + subFile.getName())
-          }
-        }
-      }
-    }
-
+  def listSystemResources() = {
     // Add in-classpath files.
+    val classpathItems = collection.mutable.Buffer[String]()
     for (path <- ResourceConstants.defaultRcList) {
       val components = path.split("/")
       if (!components.isEmpty &&
@@ -99,12 +79,58 @@ trait MetaResource[T, MT] {
         val file = new File(path)
         if (extensionFilter(file)) {
           val pathWithoutRcType: String = components.tail.mkString("/")
-          items.append(pathWithoutRcType)
+          classpathItems.append(pathWithoutRcType)
+        }
+      }
+    }
+    classpathItems.sorted.toArray
+  }
+
+  /**
+   * Lists the custom resources in the project.
+   */
+  def listCustomResources(proj: Project): Array[String] = {
+    // Add in-project files.
+    val resourceDir = rcDir(proj)
+    if (!resourceDir.exists())
+      resourceDir.mkdir()
+    if (resourceDir.isFile())
+      return Array()
+
+    val projectItems = collection.mutable.Buffer[String]()
+    for(rootFile <- resourceDir.listFiles()) {
+      if(rootFile.isFile() && extensionFilter(rootFile)) {
+        projectItems.append(rootFile.getName())
+      } else if(rootFile.isDirectory()) {
+        for(subFile <- rootFile.listFiles()) {
+          if(subFile.isFile() && extensionFilter(subFile)) {
+            projectItems.append(rootFile.getName() + "/" + subFile.getName())
+          }
         }
       }
     }
 
-    items.sortWith(_ < _).toArray
+    projectItems.sorted.toArray
+  }
+
+  /**
+   * Lists files matching the extension filter in the resource directory, as
+   * well as direct child subdirectories.
+   */
+  def list(proj: Project): Array[String] = {
+    (listSystemResources() ++ listCustomResources(proj)).toArray
+  }
+
+  def importCustom(proj: Project, source: File) = {
+    assert(extensionFilter(source))
+    assert(source.isFile() && source.canRead())
+    Files.copy(source, new File(rcDir(proj), source.getName()))
+  }
+
+  def deleteCustom(proj: Project, name: String) = {
+    val f = new File(rcDir(proj), name)
+    assert(f.isFile() && f.canWrite())
+    f.delete()
   }
 
   def metadataFile(proj: Project, name: String) = {

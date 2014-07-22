@@ -31,7 +31,7 @@ abstract class ArrayEditingPanel[T <: AnyRef](
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends DesignGridPanel
-  with LazyLogging {
+  with HasEnhancedListView[T] {
   def newDefaultInstance(): T
   def label(a: T): String
 
@@ -45,28 +45,6 @@ abstract class ArrayEditingPanel[T <: AnyRef](
 
   // Just refresh the label of the item on the list
   def refreshModel() = updatePreserveSelection(listView.listData)
-
-  def updatePreserveSelection(idx: Int, newVal: T): Unit =
-    updatePreserveSelection(listView.listData.updated(idx, newVal))
-
-  def updatePreserveSelection(newData: Seq[T]) = {
-    listView.deafTo(listView.selection)
-
-    if (listView.selection.indices.isEmpty) {
-      listView.listData = newData
-    } else {
-      val oldSelection = listView.selection.indices.head
-      listView.listData = newData
-      listView.selectIndices(oldSelection)
-    }
-
-    listView.listenTo(listView.selection)
-    onListDataUpdate()
-  }
-
-  def onListDataUpdate() = {
-    logger.info("Empty list update call")
-  }
 
   def normalizedInitialAry =
     ArrayUtils.normalizedAry(

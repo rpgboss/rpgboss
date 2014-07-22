@@ -17,10 +17,12 @@ class ResourcesDialog(owner: Window, sm: StateMaster)
     close()
   }
 
+  val importResourcesPanel = new ImportResourcesPanel(sm)
   val tilesetsMetadataPanel = new TilesetsMetadataPanel(sm)
 
   val tabPane = new TabbedPane() {
     import TabbedPane._
+    pages += new Page("Import", importResourcesPanel)
     pages += new Page("Tilesets", tilesetsMetadataPanel)
   }
 
