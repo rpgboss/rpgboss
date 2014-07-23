@@ -30,5 +30,4 @@ class ResourcesDialog(owner: Window, sm: StateMaster)
     row().grid().add(tabPane)
     addButtons(cancelBtn, okBtn)
   }
-
 }

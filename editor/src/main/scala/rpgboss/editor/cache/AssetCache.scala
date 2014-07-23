@@ -15,8 +15,16 @@ class AssetCache(proj: Project) {
     autotileMap = Map(autotiles.map(a => a.name -> a): _*)
   }
 
-  def getTileset(name: String) = tilesetMap(name)
-  def getAutotile(name: String) = autotileMap(name)
+  def getTileset(name: String) = {
+    if (!tilesetMap.contains(name))
+      invalidate()
+    tilesetMap(name)
+  }
+  def getAutotile(name: String) = {
+    if (!autotileMap.contains(name))
+      invalidate()
+    autotileMap(name)
+  }
   def getSpriteset(name: String) =
     Spriteset.readFromDisk(proj, name)
 
