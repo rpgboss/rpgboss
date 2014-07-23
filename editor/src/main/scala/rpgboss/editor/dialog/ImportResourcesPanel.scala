@@ -77,7 +77,9 @@ class ImportResourcesPanel(sm: StateMaster)
       
       updateResourceFileList()
     }
-  })
+  }) {
+    enabled = false
+  }
 
   resourceTypeList.selectIndices(0)
 

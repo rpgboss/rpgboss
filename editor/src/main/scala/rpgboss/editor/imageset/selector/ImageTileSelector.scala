@@ -72,14 +72,10 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
   val yTilesInSlice = img.getHeight / tilesizeY
 
   // Set the sizes on the viewport to account for the scrollbars
-  peer.getViewport().setPreferredSize(
-    new Dimension(
-      xTilesVisible * tilesizeX,
-      imageSlices * img.getHeight()))
-  peer.getViewport().setMinimumSize(
-    new Dimension(
-      xTilesVisible * tilesizeX,
-      math.min(4 * tilesizeY, imageSlices * img.getHeight())))
+  val innerSize = new Dimension(
+    xTilesVisible * tilesizeX,
+    math.min(4 * tilesizeY, imageSlices * img.getHeight()))
+  peer.getViewport().setPreferredSize(innerSize)
 
   var xRngInSelectorSpace = 0 to 0
   var yRngInSelectorSpace = 0 to 0

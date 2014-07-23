@@ -10,6 +10,7 @@ import rpgboss.model.event._
 import rpgboss.lib.FileHelper._
 import rpgboss.model.resource.RpgMap
 import scala.collection.mutable.ArrayBuffer
+import rpgboss.model.resource.RpgMapMetadata
 
 /*
  * This class has mutable members.
@@ -24,6 +25,33 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
                       var events: Map[Int, RpgEvent]) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
+
+  /**
+   * Removes all the invalid tiles. Allows for an optimized player engine.
+   */
+  def sanitizeForMetadata(metadata: RpgMapMetadata) = {
+    for (layerAry <-
+         List(botLayer, midLayer, topLayer)) {
+      for (tileY <- 0 until metadata.ySize) {
+        val row = layerAry(tileY)
+        import RpgMap.bytesPerTile
+        for (tileX <- 0 until metadata.xSize) {
+          val idx = tileX * bytesPerTile
+          val byte1 = row(idx)
+          val byte2 = row(idx + 1)
+          val byte3 = row(idx + 2)
+
+          if (byte1 < 0) {
+
+          } else { // Regular tile
+            if (byte1 >= metadata.tilesets.length) {
+              row(idx) = RpgMap.emptyTileByte
+            }
+          }
+        }
+      }
+    }
+  }
 
   def writeCsv(file: File, data: Array[Array[Byte]]) = {
     val writer =

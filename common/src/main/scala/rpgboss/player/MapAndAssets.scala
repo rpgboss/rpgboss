@@ -16,6 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 class MapAndAssets(project: Project, val mapName: String) {
   val map: RpgMap = RpgMap.readFromDisk(project, mapName)
   val mapData: RpgMapData = map.readMapData().get
+  mapData.sanitizeForMetadata(map.metadata)
 
   /**
    * *

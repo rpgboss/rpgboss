@@ -7,6 +7,8 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.resourceselector.MusicField
+import rpgboss.editor.resourceselector.TilesetArrayField
+import rpgboss.editor.resourceselector.TilesetArrayField
 
 class MapPropertiesDialog(
   owner: Window,
@@ -17,17 +19,17 @@ class MapPropertiesDialog(
   onOk: (RpgMap, RpgMapData) => Any)
   extends StdDialog(owner, title + " - " + initialMap.displayId) {
 
-  var metadataModel = initialMap.metadata.copy()
+  val model = initialMap.metadata.copy()
 
   def okFunc(): Unit = {
-    val newMap = initialMap.copy(metadata = metadataModel)
+    val newMap = initialMap.copy(metadata = model)
 
     val newMapData = {
-      if (metadataModel.xSize == initialMap.metadata.xSize &&
-        metadataModel.ySize == initialMap.metadata.ySize) {
+      if (model.xSize == initialMap.metadata.xSize &&
+        model.ySize == initialMap.metadata.ySize) {
         initialMapData
       } else {
-        initialMapData.resized(metadataModel.xSize, metadataModel.ySize)
+        initialMapData.resized(model.xSize, model.ySize)
       }
     }
 
@@ -35,49 +37,54 @@ class MapPropertiesDialog(
     close()
   }
 
-  val fieldTitle = textField(metadataModel.title, metadataModel.title = _)
+  val fTitle = textField(model.title, model.title = _)
 
-  val fieldWidth = new NumberSpinner(
-    metadataModel.xSize,
+  val fWidth = new NumberSpinner(
+    model.xSize,
     RpgMap.minXSize, RpgMap.maxXSize,
-    metadataModel.xSize = _)
+    model.xSize = _)
 
-  val fieldHeight = new NumberSpinner(
+  val fHeight = new NumberSpinner(
     initialMap.metadata.ySize,
     RpgMap.minYSize, RpgMap.maxYSize,
-    metadataModel.ySize = _)
+    model.ySize = _)
 
-  val fieldChangeMusic = boolField(
+  val fChangeMusic = boolField(
     "Change music on enter",
-    metadataModel.changeMusicOnEnter, 
-    metadataModel.changeMusicOnEnter = _,
-    Some(setEnabledFields _))
-    
-  val fieldMusic = new MusicField(
-    owner, sm, metadataModel.music,
-    metadataModel.music = _)
-  
+    model.changeMusicOnEnter,
+    model.changeMusicOnEnter = _,
+    Some(setEnabledFields))
+
+  val fMusic = new MusicField(
+    owner, sm, model.music,
+    model.music = _)
+
+  val fTilesets =
+    new TilesetArrayField(owner, sm, model.tilesets, model.tilesets = _)
+
   def setEnabledFields() =
-    fieldMusic.enabled = metadataModel.changeMusicOnEnter
-    
+    fMusic.enabled = model.changeMusicOnEnter
+
   setEnabledFields()
 
   contents = new DesignGridPanel {
-    
+
     row().grid(leftLabel("Map ID:")).add(new TextField {
       text = initialMap.id
       enabled = false
     })
-    
-    row().grid(leftLabel("Map Title:")).add(fieldTitle)
+
+    row().grid(leftLabel("Map Title:")).add(fTitle)
 
     row().grid(leftLabel("Dimensions:"))
       .add(leftLabel("Width")).add(leftLabel("Height"))
     row().grid()
-      .add(fieldWidth).add(fieldHeight)
-    
-    row().grid(leftLabel("Music:")).add(fieldChangeMusic)
-    row().grid().add(fieldMusic)
+      .add(fWidth).add(fHeight)
+
+    row().grid(leftLabel("Music:")).add(fChangeMusic)
+    row().grid().add(fMusic)
+
+    row().grid(leftLabel("Tilesets:")).add(fTilesets)
 
     addButtons(cancelBtn, okBtn)
   }
