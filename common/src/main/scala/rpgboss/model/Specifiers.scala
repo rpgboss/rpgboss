@@ -12,7 +12,7 @@ object HasName {
    */
   implicit def StringToHasName(x: String) = new HasName {
     def name = x
-  }  
+  }
 }
 
 /**
@@ -28,7 +28,7 @@ object WhichEntity extends RpgEnum {
   val PLAYER = Value(0, "Player")
   val THIS_EVENT = Value(1, "This event")
   val OTHER_EVENT = Value(2, "Other event")
-  
+
   def default = PLAYER
 }
 
@@ -44,7 +44,7 @@ object Scope extends RpgEnum {
 
   def default = OneAlly
 }
-  
+
 // Specifies an entity: Either the player or an event on the current map.
 case class EntitySpec(
   var whichEntityId: Int = WhichEntity.default.id,
@@ -55,11 +55,11 @@ case class SpriteSpec(
   spriteIndex: Int,
   dir: Int = SpriteSpec.Directions.SOUTH,
   step: Int = SpriteSpec.Steps.STILL)
-  
+
 case class BattlerSpec(var name: String, var scale: Double = 1.0)
-  
+
 case class SoundSpec(
-  sound: String,
+  sound: String = "",
   volume: Float = 1.0f,
   pitch: Float = 1.0f)
 
@@ -72,7 +72,7 @@ object SpriteSpec {
     val EAST = 2
     val NORTH = 3
     val NONE = -1
-    
+
     def opposite(dir: Int) = dir match {
       case SOUTH => NORTH
       case WEST => EAST
