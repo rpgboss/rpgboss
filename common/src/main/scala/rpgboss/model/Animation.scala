@@ -8,7 +8,7 @@ case class AnimationKeyframe(
 case class AnimationVisual(
   var startTime: Float = 0.0f,
   var endTime: Float = 1.0f,
-  var animationName: String = "",
+  var animationImage: String = "",
   var startFrame: AnimationKeyframe = AnimationKeyframe(),
   var endFrame: AnimationKeyframe = AnimationKeyframe())
 

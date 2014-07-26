@@ -34,13 +34,14 @@ class AnimationsPanel(
       def colHeaders = Array("Start", "End", "Animation File")
       def getRowStrings(visual: AnimationVisual) = {
         Array(visual.startTime.toString, visual.endTime.toString,
-          visual.animationName)
+          visual.animationImage)
       }
       def onUpdate() =
         model.visuals = modelArray.toArray
       def showEditDialog(initial: AnimationVisual,
         okCallback: AnimationVisual => Unit) = {
-
+        val d = new AnimationVisualDialog(owner, sm, initial, okCallback)
+        d.open()
       }
     }
 
@@ -57,12 +58,14 @@ class AnimationsPanel(
         model.sounds = modelArray.toArray
       def showEditDialog(initial: AnimationSound,
         okCallback: AnimationSound => Unit) = {
-
+        val d = new AnimationSoundDialog(owner, sm, initial, okCallback)
+        d.open()
       }
     }
 
     new BoxPanel(Orientation.Horizontal) {
       contents += fVisuals
+      contents += fSounds
     }
   }
 
@@ -86,8 +89,20 @@ class AnimationVisualDialog(
   val fEndTime =
     new FloatSpinner(model.endTime, 0f, 30f, model.endTime = _, 0.1f)
 
+  val fAnimationImage = new AnimationImageBrowseField(
+    owner, sm, model.animationImage, model.animationImage = _)
+
+  val fStartFrame = new AnimationKeyframePanel(model.startFrame)
+  val fEndFrame = new AnimationKeyframePanel(model.endFrame)
 
   contents = new DesignGridPanel {
+    row().grid(leftLabel("Start time:")).add(fStartTime)
+    row().grid(leftLabel("End time:")).add(fEndTime)
+
+    row().grid(leftLabel("Animation image:")).add(fAnimationImage)
+
+    row().grid(leftLabel("Start frame:")).add(fStartFrame)
+    row().grid(leftLabel("End frame:")).add(fEndFrame)
 
     addButtons(cancelBtn, okBtn)
   }
@@ -98,6 +113,50 @@ class AnimationVisualDialog(
     model.startTime = math.min(start, end)
     model.endTime = math.max(start, end)
 
+    onOk(model)
+    close()
+  }
+}
+
+/**
+ * Modifies |model| in-place.
+ */
+class AnimationKeyframePanel(model: AnimationKeyframe) extends DesignGridPanel {
+  val fFrameIndex =
+    new NumberSpinner(model.frameIndex, 0, 100, model.frameIndex = _)
+  val fX = new NumberSpinner(model.x, -999, 999, model.x = _)
+  val fY = new NumberSpinner(model.y, -999, 999, model.y = _)
+
+  row().grid(leftLabel("Frame index:")).add(fFrameIndex, 2)
+  row().grid(leftLabel("x:")).add(fX).grid(leftLabel("y:")).add(fY)
+}
+
+class AnimationSoundDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: AnimationSound,
+  onOk: (AnimationSound) => Unit)
+  extends StdDialog(owner, "Animation Sound") {
+  import SwingUtils._
+
+  val model = Utils.deepCopy(initial)
+  val fTime = new FloatSpinner(model.time, 0f, 30f, model.time = _, 0.1f)
+  val fSound = {
+    val initialModel =
+      if (model.sound.sound.isEmpty()) None else Some(model.sound)
+    new SoundField(
+      owner, sm, initialModel, x => model.sound = x.get, allowNone = false)
+  }
+
+
+  contents = new DesignGridPanel {
+    row().grid(leftLabel("Start time:")).add(fTime)
+    row().grid(leftLabel("Sound:")).add(fSound)
+
+    addButtons(cancelBtn, okBtn)
+  }
+
+  def okFunc() = {
     onOk(model)
     close()
   }
