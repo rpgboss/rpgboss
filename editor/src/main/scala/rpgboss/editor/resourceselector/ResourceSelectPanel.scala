@@ -19,19 +19,19 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
   allowNone: Boolean,
   val metaResource: MetaResource[T, MT])
   extends DesignGridPanel with LazyLogging with Disposable {
-  
+
   layout.margins(0)
 
   def specToResourceName(spec: SpecType): String
   def newRcNameToSpec(name: String, prevSpec: Option[SpecType]): SpecType
 
   var currentRightPane: Option[ResourceRightPane] = None
-  
+
   def dispose() = currentRightPane.map(_.dispose())
-  
+
   def rightPaneFor(
     selection: SpecType,
-    updateSelectionF: SpecType => Unit): ResourceRightPane = 
+    updateSelectionF: SpecType => Unit): ResourceRightPane =
       new BoxPanel(Orientation.Vertical) with ResourceRightPane
 
   val allResources = metaResource.list(sm.getProj)
@@ -46,9 +46,9 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
       opt getOrElse "<None>"
     })
   }
-  
+
   val rightPaneContainer = new BoxPanel(Orientation.Vertical)
-  
+
   // Must call with valid arguments.
   // Call this only when updating both the spriteset and the spriteIndex
   def updateSelection(specOpt: Option[SpecType]) = {
@@ -68,11 +68,11 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
       rightPaneContainer.contents += new Label("None")
       currentRightPane = None
     }
-    
+
     rightPaneContainer.revalidate()
     rightPaneContainer.repaint()
   }
-  
+
   // Initialize the selection, but first check to make sure it's valid
   initialSelectionOpt.map { initSel =>
     val rcName = specToResourceName(initSel)
@@ -80,24 +80,30 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
       curSelection = initialSelectionOpt
       val idx = rcList.listData.indexOf(Some(rcName))
       rcList.selectIndices(idx)
+      updateSelection(curSelection)
     } else if (allowNone) {
       val idx = rcList.listData.indexOf(None)
       rcList.selectIndices(idx)
+      updateSelection(None)
     }
   } getOrElse {
     if (allowNone) {
       val idx = rcList.listData.indexOf(None)
       rcList.selectIndices(idx)
+      updateSelection(None)
+    } else if (!rcList.listData.isEmpty) {
+      rcList.selectIndices(0)
+      updateSelection(
+        rcList.selection.items.head.map(newRcNameToSpec(_, curSelection)))
     }
   }
-  updateSelection(curSelection)
 
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
       maximumSize = new Dimension(250, 5000)
       preferredSize = new Dimension(250, 500)
       minimumSize = new Dimension(250, 250)
-      
+
       row.grid().add(new Label("Select " + metaResource.rcType + ":"))
       row.grid().add(new ScrollPane {
         contents = rcList

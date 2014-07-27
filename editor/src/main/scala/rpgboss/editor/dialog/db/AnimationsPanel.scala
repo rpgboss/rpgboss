@@ -140,7 +140,7 @@ class AnimationSoundDialog(
     val initialModel =
       if (model.sound.sound.isEmpty()) None else Some(model.sound)
     new SoundField(
-      owner, sm, initialModel, x => model.sound = x.get, allowNone = false)
+      owner, sm, initialModel, _.map(model.sound = _), allowNone = false)
   }
 
 
