@@ -8,6 +8,7 @@ import javax.imageio._
 import java.awt.Graphics
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
 trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   def tileH: Int
@@ -39,6 +40,27 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
 
   def srcTexels(xTile: Int, yTile: Int): (Int, Int) =
     (xTile * tileW, yTile * tileH)
+
+  /**
+   * @param   texture   Must be the texture containing this tiled image.
+   */
+  def drawTileAt(
+    batch: SpriteBatch, texture: Texture,
+    dstX: Float, dstY: Float, dstW: Float, dstH: Float,
+    xTile: Int, yTile: Int,
+    texelXOffset: Int = 0, texelYOffset: Int = 0) = {
+    val srcXOffsetted = texelXOffset + xTile * tileW
+    val srcYOffsetted = texelYOffset + yTile * tileH
+
+    batch.draw(
+      texture,
+      dstX, dstY, dstW, dstH,
+      srcXOffsetted,
+      srcYOffsetted,
+      tileW,
+      tileH,
+      false, true)
+  }
 }
 
 trait ImageResource[T, MT <: AnyRef]

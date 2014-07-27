@@ -24,5 +24,12 @@ case class Animation(
   var visuals: Array[AnimationVisual] = Array(),
   var sounds: Array[AnimationSound] = Array()) extends HasName {
 
-  def totalTime = math.max(visuals.map(_.end.time).max, sounds.map(_.time).max)
+  def totalTime = {
+    val visualsMaxTime =
+      if (visuals.isEmpty) 0f else visuals.map(_.end.time).max
+    val soundsMaxTime =
+      if (sounds.isEmpty) 0f else sounds.map(_.time).max
+
+    math.max(visualsMaxTime, soundsMaxTime)
+  }
 }

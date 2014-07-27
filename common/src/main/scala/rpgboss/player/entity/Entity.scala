@@ -26,7 +26,7 @@ import rpgboss.player._
  * |_____|
  *   BOT
  * It is the bottom center of the sprite.
- * 
+ *
  * Bottom edge length is boundBoxTiles.
  */
 class Entity(
@@ -38,7 +38,7 @@ class Entity(
 
   val moveQueue = new MutateQueue(this)
   var movesEnqueued: Long = 0
-  
+
   var speed: Float = 3.0f
   private var isMovingVar = false
   private var movingSince: Long = 0
@@ -46,13 +46,13 @@ class Entity(
 
   var spriteset: Spriteset = null
   var spriteIdx: Int = -1
-  
+
   var graphicW: Float = 0f
   var graphicH: Float = 0f
 
   var stillStep = SpriteSpec.Steps.STILL
   var boundingBoxHalfsize = 0.5f
-  
+
   def isMoving() = isMovingVar
 
   def setBoundingBoxHalfsize(halfsizeArg: Float) = {
@@ -93,7 +93,7 @@ class Entity(
   def setSprite(spriteSpec: Option[SpriteSpec]) = spriteSpec map { s =>
     spriteset = game.spritesets(s.name)
     spriteIdx = s.spriteIndex
-    
+
     graphicW = (spriteset.tileW.toDouble / Tileset.tilesize).toFloat
     graphicH = (spriteset.tileH.toDouble / Tileset.tilesize).toFloat
     // Minus the delta to allow events to fit into tiles easily
@@ -128,7 +128,7 @@ class Entity(
   def dequeueMove() = {
     moveQueue.dequeue()
   }
-  
+
   /**
    * This method is called when event collides against another event during
    * movement.
@@ -157,9 +157,11 @@ class Entity(
        */
       val dstOriginX: Float = x - graphicW / 2.0f
       val dstOriginY: Float = y - graphicH + graphicW / 2
-      
-      GdxGraphicsUtils.renderSprite(batch, atlasSprites, spriteset, spriteIdx, 
-          dir, currentStep(), dstOriginX, dstOriginY, graphicW, graphicH)
+
+      spriteset.renderSprite(
+        batch, atlasSprites,
+        spriteIdx, dir, currentStep(),
+        dstOriginX, dstOriginY, graphicW, graphicH)
     }
   }
 }
@@ -178,11 +180,11 @@ case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
 case class EntityMove(totalDx: Float, totalDy: Float)
   extends MutateQueueItem[Entity] {
   val remainingTravel = new Vector2(totalDx, totalDy)
-  
+
   def update(delta: Float, entity: Entity) = {
     import math._
 
-    val desiredThisFrame = 
+    val desiredThisFrame =
       remainingTravel.cpy().nor().scl(min(entity.speed * delta, remainingTravel.len()))
 
     val travelledThisFrame = new Vector2()
@@ -190,16 +192,16 @@ case class EntityMove(totalDx: Float, totalDy: Float)
     var travelDoneThisFrame = false
     while (!travelDoneThisFrame && !isDone()) {
       val lengthThisIteration = min(
-          entity.collisionDeltas, 
+          entity.collisionDeltas,
           desiredThisFrame.len() - travelledThisFrame.len())
-      val movementThisIteration = 
+      val movementThisIteration =
         desiredThisFrame.cpy().nor().scl(lengthThisIteration)
       val dx = movementThisIteration.x
       val dy = movementThisIteration.y
 
       var movedThisLoop = false
-      
-      val evtsTouched = 
+
+      val evtsTouched =
         entity.getAllEventCenterTouches(dx, dy).filter(_ != entity)
       entity.eventTouchCallback(evtsTouched)
       val evtBlocking =
@@ -261,12 +263,12 @@ case class EntityMove(totalDx: Float, totalDy: Float)
         finish()
       }
     }
-    
+
 //    entity.game.logger.info("desired / travel : " + desiredThisFrame.toString()
 //                            + " " + travelledThisFrame.toString())
-    
+
     remainingTravel.sub(desiredThisFrame)
-    
+
     if (remainingTravel.len() < entity.collisionDeltas && !isDone())
       finish()
   }

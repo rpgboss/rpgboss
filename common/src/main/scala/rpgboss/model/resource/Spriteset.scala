@@ -3,18 +3,16 @@ package rpgboss.model.resource
 import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.lib.FileHelper._
-
 import org.json4s.native.Serialization
-
 import scala.collection.JavaConversions._
-
 import javax.imageio._
-
 import java.io._
 import java.awt.image._
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 
 case class SpritesetMetadata(boundsX: Int = Tileset.tilesize,
-                             boundsY: Int = Tileset.tilesize)
+  boundsY: Int = Tileset.tilesize)
 
 /**
  * *
@@ -26,8 +24,8 @@ case class SpritesetMetadata(boundsX: Int = Tileset.tilesize,
  * Each spriteset follows the rpgmaker xp format.
  */
 case class Spriteset(proj: Project,
-                     name: String,
-                     metadata: SpritesetMetadata)
+  name: String,
+  metadata: SpritesetMetadata)
   extends TiledImageResource[Spriteset, SpritesetMetadata] {
   def meta = Spriteset
 
@@ -37,7 +35,7 @@ case class Spriteset(proj: Project,
    */
   val (tileH, tileW, xSprites, ySprites) = {
     val oneSprite = name.size > 2 &&
-                    (name(0) == '$' || (name(0) == '!' && name(1) == '$'))
+      (name(0) == '$' || (name(0) == '!' && name(1) == '$'))
 
     if (oneSprite) {
       (img.getHeight() / spriteYTiles, img.getWidth() / spriteXTiles, 1, 1)
@@ -79,16 +77,26 @@ case class Spriteset(proj: Project,
     getTileImage(xTile, yTile)
   }
 
-  /**
-   * Gets the offset for a given sprite in texels
-   *
-   * @param index   Given between 0-7. The sprite number in the page.
-   * @param dir     One of SpriteSpec.Directions. 0-3
-   * @param step    One of SpriteSpec.Steps. 0-3
-   */
   def srcTexels(index: Int, dir: Int, step: Int): (Int, Int) = {
     val (xTile, yTile) = srcTile(index, dir, step)
     srcTexels(xTile, yTile)
+  }
+
+  /**
+   * x and y are defined to the top-left of the sprite image.
+   */
+  def renderSprite(
+    batch: SpriteBatch, atlasSprites: TextureAtlas,
+    spriteIndex: Int, dir: Int, step: Int,
+    dstX: Float, dstY: Float, dstW: Float, dstH: Float) = {
+    val region = atlasSprites.findRegion(name)
+    val texture = region.getTexture()
+    val (xTile, yTile) = srcTile(spriteIndex, dir, step)
+    val texelXOffset = region.getRegionX()
+    val texelYOffset = region.getRegionY()
+
+    drawTileAt(batch, texture, dstX, dstY, dstW, dstH, xTile, yTile,
+      texelXOffset, texelYOffset)
   }
 }
 

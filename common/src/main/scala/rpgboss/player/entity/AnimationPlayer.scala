@@ -5,6 +5,7 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import rpgboss.player.GdxGraphicsUtils
 
 /**
  * Can only be used from the Gdx thread.
@@ -61,8 +62,7 @@ class AnimationPlayer(
         val y = tweenFloat(alpha, visual.start.y, visual.end.y)
 
         val texture = image.getAsset(assets)
-        batch.draw(
-          texture, x - texture.getWidth() / 2, y - texture.getWidth() / 2)
+        GdxGraphicsUtils.drawCentered(batch, texture, x, y)
       }
     }
 
