@@ -4,6 +4,7 @@ import com.badlogic.gdx._
 import rpgboss.editor.uibase._
 import rpgboss.model._
 import rpgboss.lib._
+import scala.swing._
 
 object AnimationPlayerGdxPanel {
   def battleback = "defaultrc/battlebg/sys/crownlesswish_rrr.jpg"
@@ -13,11 +14,24 @@ object AnimationPlayerGdxPanel {
   def height = 320
 }
 
-class AnimationPlayerGdxPanel(project: Project, initial: Encounter)
+case class AnimationPlayerStatus(
+  playing: Boolean, currentTime: Float, totalTime: Float)
+
+class AnimationPlayerGdxPanel(
+  project: Project,
+  onStatusUpdate: AnimationPlayerStatus => Unit)
   extends GdxPanel(AnimationPlayerGdxPanel.width,
-                   AnimationPlayerGdxPanel.height) {
+    AnimationPlayerGdxPanel.height) {
   override lazy val gdxListener = new ApplicationAdapter {
     def updateAnimation(animation: Animation) = {
+
+    }
+
+    def play() = {
+
+    }
+
+    private def sendStatusUpdate() = {
 
     }
 
@@ -34,5 +48,28 @@ class AnimationPlayerGdxPanel(project: Project, initial: Encounter)
     // Make a defensive copy, as we are sending it to a different thread
     gdxListener.updateAnimation(Utils.deepCopy(animation))
   }
+
+  def play() = GdxUtils.asyncRun { gdxListener.play() }
 }
 
+class AnimationPlayerPanel(project: Project, animation: Animation)
+  extends BoxPanel(Orientation.Vertical){
+
+  val gdxPanel = new AnimationPlayerGdxPanel(project, onStatusUpdate)
+  val btnPlay = new Button(Action("Play") { gdxPanel.play() })
+
+  val lblStatus = new Label
+
+  def onStatusUpdate(status: AnimationPlayerStatus): Unit = {
+    btnPlay.enabled = !status.playing
+    btnPlay.text = if (status.playing) "Playing" else "Play"
+
+    lblStatus.text = "%f / %f s".format(status.currentTime, status.totalTime)
+  }
+
+  contents += gdxPanel
+  contents += new BoxPanel(Orientation.Horizontal) {
+    contents += btnPlay
+    contents += lblStatus
+  }
+}
