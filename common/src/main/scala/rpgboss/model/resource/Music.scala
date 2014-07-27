@@ -6,7 +6,7 @@ import rpgboss.lib.Utils._
 import rpgboss.lib.FileHelper._
 import java.io._
 import javax.sound.midi._
-import com.badlogic.gdx.audio.{Music => GdxMusic}
+import com.badlogic.gdx.audio.{ Music => GdxMusic }
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -34,11 +34,7 @@ case class Music(
     if (isMidi)
       new MidiMusicPlayer(this)
     else {
-      loadAsset(assets)
-      // TODO: fix this blocking call
-      assets.finishLoading()
-      val newMusic = getAsset(assets)
-      new GdxMusicPlayer(newMusic)
+      new GdxMusicPlayer(assets, this)
     }
   }
 }
@@ -137,14 +133,50 @@ class MidiMusicPlayer(music: Music) extends MusicPlayer with LazyLogging {
 
 /**
  * Because this can either be a MIDI or a normal libgdx music, there is a
- * special interface.
+ * special interface. No calls will work until the asset is finished loading.
  */
-class GdxMusicPlayer(gdxMusic: GdxMusic) extends MusicPlayer {
-  def getVolume() = gdxMusic.getVolume()
-  def setVolume(newVolume: Float) = gdxMusic.setVolume(newVolume)
-  def setLooping(loop: Boolean) = gdxMusic.setLooping(loop)
-  def stop() = gdxMusic.stop()
-  def pause() = gdxMusic.pause()
-  def play() = gdxMusic.play()
-  def dispose() = gdxMusic.dispose()
+class GdxMusicPlayer(assets: RpgAssetManager, music: Music)
+  extends MusicPlayer {
+
+  // TODO: Converted to use asset manager. Now I'm concerned that there cannot
+  // be independent instances of the same piece of music. Wouldn't pausing one
+  // instance of the music pause all other playing instances of the same file?
+
+  music.loadAsset(assets)
+
+  def getVolume() = {
+    if (music.isLoaded(assets))
+      music.getAsset(assets).getVolume()
+    else
+      0f
+  }
+
+  def setVolume(newVolume: Float) = {
+    if (music.isLoaded(assets))
+      music.getAsset(assets).setVolume(newVolume)
+  }
+
+  def setLooping(loop: Boolean) = {
+    if (music.isLoaded(assets))
+      music.getAsset(assets).setLooping(loop)
+  }
+
+  def stop() = {
+    if (music.isLoaded(assets))
+      music.getAsset(assets).stop()
+  }
+
+  def pause() = {
+    if (music.isLoaded(assets))
+      music.getAsset(assets).pause()
+  }
+
+  def play() = {
+    if (music.isLoaded(assets))
+      music.getAsset(assets).play()
+  }
+
+  def dispose() = {
+    music.unloadAsset(assets)
+  }
 }

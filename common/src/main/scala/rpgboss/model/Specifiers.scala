@@ -60,8 +60,8 @@ case class BattlerSpec(var name: String, var scale: Double = 1.0)
 
 case class SoundSpec(
   sound: String = "",
-  volume: Float = 1.0f,
-  pitch: Float = 1.0f)
+  var volume: Float = 1.0f,
+  var pitch: Float = 1.0f)
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 

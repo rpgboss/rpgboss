@@ -19,6 +19,12 @@ case class Sound(
   extends Resource[Sound, SoundMetadata]
   with RpgGdxAsset[com.badlogic.gdx.audio.Sound] {
   def meta = Sound
+
+  def playBySpec(assets: RpgAssetManager, spec: SoundSpec) = {
+    assert(isLoaded(assets))
+    val gdxSound = getAsset(assets)
+    gdxSound.play(spec.volume, spec.pitch, 0f /* pan */)
+  }
 }
 
 object Sound extends MetaResource[Sound, SoundMetadata] {
