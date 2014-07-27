@@ -143,7 +143,6 @@ class AnimationSoundDialog(
       owner, sm, initialModel, _.map(model.sound = _), allowNone = false)
   }
 
-
   contents = new DesignGridPanel {
     row().grid(leftLabel("Start time:")).add(fTime)
     row().grid(leftLabel("Sound:")).add(fSound)
