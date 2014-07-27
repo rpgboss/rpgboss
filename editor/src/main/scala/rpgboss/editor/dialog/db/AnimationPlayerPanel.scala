@@ -9,13 +9,14 @@ import rpgboss.player.entity.AnimationPlayer
 import rpgboss.lib._
 import scala.swing._
 import rpgboss.player.GdxGraphicsUtils
+import com.badlogic.gdx.math.Matrix4
 
 object AnimationPlayerGdxPanel {
   def battleback = "sys/crownlesswish_rrr.jpg"
   def battlerTarget = "sys/lg/goblinrider.png"
 
-  def width = 300
-  def height = 300
+  def width = 640
+  def height = 320
 }
 
 case class AnimationPlayerStatus(
@@ -59,7 +60,10 @@ class AnimationPlayerGdxPanel(
       batch.enableBlending()
 
       // Again, setting the projection matrix because it seems to work...
-      // batch.setProjectionMatrix()
+      val matrix = batch.getTransformMatrix()
+      matrix.trn(AnimationPlayerGdxPanel.width / 2,
+          AnimationPlayerGdxPanel.height / 2, 0)
+      batch.setTransformMatrix(matrix)
     }
 
     override def dispose() = {
@@ -122,9 +126,15 @@ class AnimationPlayerPanel(project: Project, animation: Animation)
     lblStatus.text = "%f / %f s".format(status.currentTime, status.totalTime)
   }
 
-  contents += gdxPanel
   contents += new BoxPanel(Orientation.Horizontal) {
+    contents += Swing.HGlue
+    contents += gdxPanel
+    contents += Swing.HGlue
+  }
+  contents += new BoxPanel(Orientation.Horizontal) {
+    contents += Swing.HGlue
     contents += btnPlay
     contents += lblStatus
+    contents += Swing.HGlue
   }
 }
