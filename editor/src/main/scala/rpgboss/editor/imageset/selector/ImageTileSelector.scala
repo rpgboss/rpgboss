@@ -72,9 +72,10 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
   val yTilesInSlice = img.getHeight / tilesizeY
 
   // Set the sizes on the viewport to account for the scrollbars
+  val minimumYTilesShown = 2
   val innerSize = new Dimension(
     xTilesVisible * tilesizeX,
-    math.min(4 * tilesizeY, imageSlices * img.getHeight()))
+    math.min(minimumYTilesShown * tilesizeY, imageSlices * img.getHeight()))
   peer.getViewport().setPreferredSize(innerSize)
 
   var xRngInSelectorSpace = 0 to 0
@@ -91,6 +92,19 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
   // Defined out here so that subclasses can override it
   def canvasPanelPaintComponent(g: Graphics2D) = {
     g.setComposite(AlphaComposite.SrcOver)
+
+    // Draw checkerboard pattern to indicate transparency
+    val checkerL = 8
+    val bounds = g.getClipBounds()
+    val evenColor = new Color(200, 200, 200)
+    val oddColor = new Color(150, 150, 150)
+    for (xi <- bounds.x / checkerL to (bounds.x + bounds.width) / checkerL;
+         yi <- bounds.y / checkerL to (bounds.y + bounds.height) / checkerL) {
+      val color = if ((xi + yi) % 2 == 0) evenColor else oddColor
+      g.setColor(color)
+      g.fillRect(xi * checkerL, yi * checkerL, checkerL, checkerL)
+    }
+
     for (i <- 0 until imageSlices) {
       g.drawImage(img,
         0, i * img.getHeight,
@@ -110,6 +124,8 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
   val canvasPanel = new Panel() {
     preferredSize = new Dimension(xTilesVisible * tilesizeX,
       imageSlices * img.getHeight)
+
+    background = java.awt.Color.WHITE
 
     override def paintComponent(g: Graphics2D) = {
       super.paintComponent(g)
