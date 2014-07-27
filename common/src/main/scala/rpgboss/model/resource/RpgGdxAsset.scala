@@ -9,7 +9,7 @@ trait RpgGdxAsset[T] extends LazyLogging {
   def rcType: String
   def name: String
 
-  private def gdxPath: String = "%s/%s".format(rcType, name)
+  def gdxPath: String = "%s/%s".format(rcType, name)
 
   def loadAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): Unit = {
     try {
@@ -19,6 +19,8 @@ trait RpgGdxAsset[T] extends LazyLogging {
         logger.error("Could not load an asset: " + gdxPath, e)
     }
   }
+
+  def isLoaded(assets: RpgAssetManager) = assets.isLoaded(gdxPath)
 
   def getAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): T = {
     assets.get(gdxPath, m.runtimeClass.asInstanceOf[Class[T]])

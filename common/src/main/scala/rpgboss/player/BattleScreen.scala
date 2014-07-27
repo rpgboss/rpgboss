@@ -359,12 +359,9 @@ class BattleScreen(
 
     if (!battleBackground.isEmpty) {
       val bg = BattleBackground.readFromDisk(project, battleBackground)
-      val texture = bg.newGdxTexture
-      if (texture != null) {
-        windowManager.showPicture(
-          PictureSlots.BATTLE_BACKGROUND,
-          TexturePicture(texture, 0, 0, 640, 320))
-      }
+      windowManager.showPicture(
+        PictureSlots.BATTLE_BACKGROUND,
+        TexturePicture(assets, bg, 0, 0, 640, 320))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -372,10 +369,9 @@ class BattleScreen(
       val enemy = project.data.enums.enemies(unit.enemyIdx)
       enemy.battler.map { battlerSpec =>
         val battler = Battler.readFromDisk(project, battlerSpec.name)
-        val texture = battler.newGdxTexture
 
-        val battlerWidth = (texture.getWidth() * battlerSpec.scale).toInt
-        val battlerHeight = (texture.getHeight() * battlerSpec.scale).toInt
+        val battlerWidth = (battler.img.getWidth() * battlerSpec.scale).toInt
+        val battlerHeight = (battler.img.getHeight() * battlerSpec.scale).toInt
 
         val battlerLeft = unit.x - battlerWidth / 2
         val battlerTop = unit.y - battlerHeight / 2
@@ -383,7 +379,8 @@ class BattleScreen(
         windowManager.showPicture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           TexturePicture(
-            texture,
+            assets,
+            battler,
             battlerLeft,
             battlerTop,
             battlerWidth,

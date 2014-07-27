@@ -78,7 +78,7 @@ class WindowManager(
   def showPictureByName(slot: Int, name: String, x: Int, y: Int, w: Int,
                         h: Int) = {
     val picture = Picture.readFromDisk(project, name)
-    showPicture(slot, TexturePicture(picture.newGdxTexture, x, y, w, h))
+    showPicture(slot, TexturePicture(assets, picture, x, y, w, h))
   }
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
@@ -183,17 +183,21 @@ trait PictureLike {
 /**
  * Need call on dispose first
  */
-case class TexturePicture(
-  texture: Texture,
+case class TexturePicture[MT <: AnyRef](
+  assets: RpgAssetManager, resource: ImageResource[_, MT],
   x: Int, y: Int, w: Int, h: Int) extends PictureLike {
 
-  def dispose() = texture.dispose()
+  resource.loadAsset(assets)
+  def dispose() = resource.unloadAsset(assets)
 
   def render(batch: SpriteBatch) = {
-    batch.draw(texture,
-      x, y, w, h,
-      0, 0, texture.getWidth(), texture.getHeight(),
-      false, true)
+    if (resource.isLoaded(assets)) {
+      val texture = resource.getAsset(assets)
+      batch.draw(texture,
+        x, y, w, h,
+        0, 0, texture.getWidth(), texture.getHeight(),
+        false, true)
+    }
   }
 }
 

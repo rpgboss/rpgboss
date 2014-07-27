@@ -15,6 +15,7 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player._
+import com.badlogic.gdx.utils.Disposable
 
 object Window {
   val Opening = 0
@@ -38,7 +39,7 @@ class Window(
   x: Int, y: Int,
   val w: Int, val h: Int,
   invisible: Boolean = false)
-  extends InputHandler with ThreadChecked {
+  extends InputHandler with ThreadChecked with Disposable {
 
   def openCloseTime: Double = 0.25
   def initialState = if (openCloseTime > 0) Window.Opening else Window.Open
@@ -109,6 +110,10 @@ class Window(
       }
       case _ => Unit
     }
+  }
+
+  def dispose() = {
+
   }
 
   def startClosing(): Unit = {
