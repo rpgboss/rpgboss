@@ -1,5 +1,7 @@
 package rpgboss.player.entity
 
+import rpgboss.lib.TweenUtils
+
 case class Transition(startAlpha: Float, endAlpha: Float, duration: Float) {
   private var age = 0.0f
   def update(delta: Float) = {
@@ -10,8 +12,7 @@ case class Transition(startAlpha: Float, endAlpha: Float, duration: Float) {
   def curAlpha = if (done) {
     endAlpha
   } else {
-    val wEnd = age / duration
-    val wStart = 1f - wEnd
-    wStart * startAlpha + wEnd * endAlpha
+    val alpha = age / duration
+    TweenUtils.tweenFloat(alpha, startAlpha, endAlpha)
   }
 }

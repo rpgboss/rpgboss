@@ -62,9 +62,9 @@ case class Spriteset(proj: Project,
     val xOffset = (index % 4) * (3)
     val yOffset = (index / 4) * (4)
 
-    // Account for the fact that 
+    // Account for the fact that
     val normalizedStep = if (step == 3) 1 else step
-    
+
     val xTile = (xOffset + normalizedStep)
     val yTile = (yOffset + dir)
 
@@ -86,9 +86,9 @@ case class Spriteset(proj: Project,
    * @param dir     One of SpriteSpec.Directions. 0-3
    * @param step    One of SpriteSpec.Steps. 0-3
    */
-  def srcTexels(index: Int, dir: Int, step: Int) = {
+  def srcTexels(index: Int, dir: Int, step: Int): (Int, Int) = {
     val (xTile, yTile) = srcTile(index, dir, step)
-    (xTile * tileW, yTile * tileH)
+    srcTexels(xTile, yTile)
   }
 }
 

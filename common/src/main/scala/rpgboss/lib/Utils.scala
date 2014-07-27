@@ -3,7 +3,7 @@ import java.io._
 import scala.io.Source
 import java.awt._
 import javax.imageio.ImageIO
-import org.json4s.{DefaultFormats, Formats}
+import org.json4s.{ DefaultFormats, Formats }
 import org.json4s.native.Serialization
 
 class FileHelper(file: File) {
@@ -129,7 +129,7 @@ object ArrayUtils {
   def resized[T](
     a: Array[T],
     newSize: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Array[T] = {
+    newDefaultInstance: () => T)(implicit m: Manifest[T]): Array[T] = {
     val oldSize = a.size
 
     if (newSize > oldSize) {
@@ -144,7 +144,7 @@ object ArrayUtils {
     a: Array[T],
     minElems: Int,
     maxElems: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]) : Array[T] =
+    newDefaultInstance: () => T)(implicit m: Manifest[T]): Array[T] =
     if (a.size > maxElems)
       resized(a, maxElems, newDefaultInstance)
     else if (a.size < minElems)
@@ -156,7 +156,7 @@ object ArrayUtils {
     a: Array[T],
     nElems: Int,
     newDefaultInstance: () => T)(implicit m: Manifest[T]): Array[T] =
-      normalizedAry(a, nElems, nElems, newDefaultInstance)
+    normalizedAry(a, nElems, nElems, newDefaultInstance)
 }
 
 object JsonUtils {
@@ -182,4 +182,35 @@ object JsonUtils {
     } getOrElse false
   }
 
+}
+
+object TweenUtils {
+  def tweenAlpha(start: Float, end: Float, current: Float) = {
+    assert(start <= current)
+    assert(current <= end)
+    (current - start) / (end - start)
+  }
+
+  def tweenFloat(alpha: Float, startValue: Float, endValue: Float) = {
+    assert(alpha >= 0)
+    assert(alpha < 1)
+    (1 - alpha) * startValue + alpha * endValue
+  }
+
+  /**
+   * Returns an integer in the interval [startValue, endValue).
+   * @param   alpha   Should be in interval [0, 1)
+   */
+  def tweenInt(alpha: Float, startValue: Int, endValue: Int): Int = {
+    assert(alpha >= 0)
+    assert(alpha < 1)
+    tweenFloat(alpha, startValue, endValue).toInt
+  }
+
+  /**
+   * Returns an integer in the interval [startValue, endValue]
+   */
+  def tweenIntInclusive(alpha: Float, startValue: Int, endValue: Int) = {
+    tweenInt(alpha, startValue, endValue + 1)
+  }
 }

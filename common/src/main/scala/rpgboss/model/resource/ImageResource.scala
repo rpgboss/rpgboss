@@ -36,6 +36,9 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
         "(name=%s, ti=%d, tj=%d)".format(name, ti, tj))
     }
   }
+
+  def srcTexels(xTile: Int, yTile: Int): (Int, Int) =
+    (xTile * tileW, yTile * tileH)
 }
 
 trait ImageResource[T, MT <: AnyRef]

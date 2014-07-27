@@ -9,7 +9,11 @@ case class AnimationKeyframe(
 case class AnimationVisual(
   var animationImage: String = "",
   var start: AnimationKeyframe = AnimationKeyframe(),
-  var end: AnimationKeyframe = AnimationKeyframe())
+  var end: AnimationKeyframe = AnimationKeyframe()) {
+  def within(time: Float) = {
+    time >= start.time && time < end.time
+  }
+}
 
 case class AnimationSound(
   var time: Float = 0.0f,
