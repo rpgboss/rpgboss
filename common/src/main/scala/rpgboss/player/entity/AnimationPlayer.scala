@@ -12,16 +12,31 @@ class AnimationPlayer(
   proj: Project, animation: Animation, assets: RpgAssetManager)
   extends Disposable {
 
-  /**
-   * Request all the assets used in this animation.
-   */
-  for (visual <- animation.visuals) {
-    val animationImage =
-      AnimationImage.readFromDisk(proj, visual.animationImage)
-  }
+  // Load all the assets used in this animation.
+  val animationImages = animation.visuals.map(
+    v => AnimationImage.readFromDisk(proj, v.animationImage))
+  val animationSounds = animation.sounds.map(
+    s => Sound.readFromDisk(proj, s.sound.sound))
+  animationImages.map(_.loadAsset(assets))
+  animationSounds.map(_.loadAsset(assets))
 
-  def update(delta: Float) = {
+  private var _time = 0.0f
+  private var _playing = false
+  val totalTime = animation.totalTime
 
+  def time = _time
+  def playing = _playing
+
+  def play() = _playing = true
+
+  def update(delta: Float): Unit = {
+    if (_playing) {
+      _time += delta
+      if (_time >= totalTime) {
+        _time = 0f
+        _playing = false
+      }
+    }
   }
 
   /**
@@ -32,6 +47,7 @@ class AnimationPlayer(
   }
 
   def dispose() = {
-
+    animationImages.map(_.unloadAsset(assets))
+    animationSounds.map(_.unloadAsset(assets))
   }
 }

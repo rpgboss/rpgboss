@@ -18,4 +18,7 @@ case class AnimationSound(
 case class Animation(
   var name: String = "Animation",
   var visuals: Array[AnimationVisual] = Array(),
-  var sounds: Array[AnimationSound] = Array()) extends HasName
+  var sounds: Array[AnimationSound] = Array()) extends HasName {
+
+  def totalTime = math.max(visuals.map(_.end.time).max, sounds.map(_.time).max)
+}
