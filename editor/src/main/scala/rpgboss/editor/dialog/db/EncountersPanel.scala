@@ -68,8 +68,10 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     }
 
     override def render() = {
-      battleScreen.update(Gdx.graphics.getDeltaTime())
-      battleScreen.render()
+      if (assets.update()) {
+        battleScreen.update(Gdx.graphics.getDeltaTime())
+        battleScreen.render()
+      }
     }
   }
 

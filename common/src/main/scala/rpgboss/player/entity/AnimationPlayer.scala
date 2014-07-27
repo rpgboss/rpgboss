@@ -58,11 +58,12 @@ class AnimationPlayer(
         val alpha = tweenAlpha(visual.start.time, visual.end.time, time)
         val frameIndex = tweenIntInclusive(
           alpha, visual.start.frameIndex, visual.end.frameIndex)
-        val x = tweenFloat(alpha, visual.start.x, visual.end.x)
-        val y = tweenFloat(alpha, visual.start.y, visual.end.y)
+        val dstX = tweenFloat(alpha, visual.start.x, visual.end.x)
+        val dstY = tweenFloat(alpha, visual.start.y, visual.end.y)
+        val xTile = frameIndex % image.xTiles
+        val yTile = frameIndex / image.xTiles
 
-        val texture = image.getAsset(assets)
-        GdxGraphicsUtils.drawCentered(batch, texture, x, y)
+        image.drawTileCentered(batch, assets, dstX, dstY, xTile, yTile)
       }
     }
 

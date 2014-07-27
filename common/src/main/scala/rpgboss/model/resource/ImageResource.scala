@@ -61,6 +61,18 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
       tileH,
       false, true)
   }
+
+  def drawTileCentered(
+    batch: SpriteBatch, assets: RpgAssetManager,
+    dstX: Float, dstY: Float,
+    xTile: Int, yTile: Int) {
+    assert(isLoaded(assets))
+    val texture = getAsset(assets)
+    drawTileAt(
+      batch, texture,
+      dstX - tileW / 2f, dstY - tileH / 2f, tileW, tileH,
+      xTile, yTile)
+  }
 }
 
 trait ImageResource[T, MT <: AnyRef]

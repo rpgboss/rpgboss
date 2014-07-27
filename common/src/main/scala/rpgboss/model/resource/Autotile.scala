@@ -47,7 +47,7 @@ case class Autotile(proj: Project,
     require(autotileConfig >= 0, "Autotile config integer must be positive.")
     require(frame >= 0, "Frame byte must be positive.")
 
-    logger.info("getTile (%d, %d) - %s".format(autotileConfig, frame, name))
+    // logger.info("getTile (%d, %d) - %s".format(autotileConfig, frame, name))
 
     val tile =
       new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_4BYTE_ABGR)

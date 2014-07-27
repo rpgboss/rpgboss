@@ -63,9 +63,15 @@ class AnimationsPanel(
       }
     }
 
-    new BoxPanel(Orientation.Horizontal) {
-      contents += fVisuals
-      contents += fSounds
+    val animationPlayerPanel = new AnimationPlayerPanel(sm.getProj, model)
+
+    new BoxPanel(Orientation.Vertical) {
+      contents += new BoxPanel(Orientation.Horizontal) {
+        contents += fVisuals
+        contents += fSounds
+      }
+
+      contents += animationPlayerPanel
     }
   }
 
