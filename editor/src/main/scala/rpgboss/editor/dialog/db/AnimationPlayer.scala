@@ -15,7 +15,7 @@ object AnimationPlayerGdxPanel {
 }
 
 case class AnimationPlayerStatus(
-  playing: Boolean, currentTime: Float, totalTime: Float)
+  var playing: Boolean, var currentTime: Float, var totalTime: Float)
 
 class AnimationPlayerGdxPanel(
   project: Project,
@@ -23,6 +23,8 @@ class AnimationPlayerGdxPanel(
   extends GdxPanel(AnimationPlayerGdxPanel.width,
     AnimationPlayerGdxPanel.height) {
   override lazy val gdxListener = new ApplicationAdapter {
+    var status = AnimationPlayerStatus(false, 0, 0)
+
     def updateAnimation(animation: Animation) = {
 
     }
@@ -32,7 +34,7 @@ class AnimationPlayerGdxPanel(
     }
 
     private def sendStatusUpdate() = {
-
+      Swing.onEDT(status.copy())
     }
 
     override def create() = {
