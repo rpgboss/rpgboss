@@ -11,16 +11,17 @@ case class AnimationImageMetadata()
 /**
  * This class specifies the resource only.
  */
-case class AnimationImage(proj: Project, 
-                          name: String, 
+case class AnimationImage(proj: Project,
+                          name: String,
                           metadata: AnimationImageMetadata)
   extends TiledImageResource[AnimationImage, AnimationImageMetadata] {
   def meta = AnimationImage
 
   val (tileH, tileW) = (192, 192)
+  lazy val xTiles = img.getWidth() / tileW
 }
 
-object AnimationImage 
+object AnimationImage
   extends MetaResource[AnimationImage, AnimationImageMetadata] {
   def rcType = "animation"
   def keyExts = Array("png")

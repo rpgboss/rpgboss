@@ -33,7 +33,7 @@ class AnimationsPanel(
       def newInstance() = AnimationVisual()
       def colHeaders = Array("Start", "End", "Animation File")
       def getRowStrings(visual: AnimationVisual) = {
-        Array(visual.startTime.toString, visual.endTime.toString,
+        Array(visual.start.time.toString, visual.end.time.toString,
           visual.animationImage)
       }
       def onUpdate() =
@@ -84,34 +84,26 @@ class AnimationVisualDialog(
 
   val model = Utils.deepCopy(initial)
 
-  val fStartTime =
-    new FloatSpinner(model.startTime, 0f, 30f, model.startTime = _, 0.1f)
-  val fEndTime =
-    new FloatSpinner(model.endTime, 0f, 30f, model.endTime = _, 0.1f)
-
   val fAnimationImage = new AnimationImageBrowseField(
     owner, sm, model.animationImage, model.animationImage = _)
 
-  val fStartFrame = new AnimationKeyframePanel(model.startFrame)
-  val fEndFrame = new AnimationKeyframePanel(model.endFrame)
+  val fStartFrame = new AnimationKeyframePanel(model.start)
+  val fEndFrame = new AnimationKeyframePanel(model.end)
 
   contents = new DesignGridPanel {
-    row().grid(leftLabel("Start time:")).add(fStartTime)
-    row().grid(leftLabel("End time:")).add(fEndTime)
+    row().grid(leftLabel("Image:")).add(fAnimationImage)
 
-    row().grid(leftLabel("Animation image:")).add(fAnimationImage)
-
-    row().grid(leftLabel("Start frame:")).add(fStartFrame)
-    row().grid(leftLabel("End frame:")).add(fEndFrame)
+    row().grid(leftLabel("Start:")).add(fStartFrame)
+    row().grid(leftLabel("End:")).add(fEndFrame)
 
     addButtons(cancelBtn, okBtn)
   }
 
   def okFunc() = {
-    val start = model.startTime
-    val end = model.endTime
-    model.startTime = math.min(start, end)
-    model.endTime = math.max(start, end)
+    val start = model.start.time
+    val end = model.end.time
+    model.start.time = math.min(start, end)
+    model.end.time = math.max(start, end)
 
     onOk(model)
     close()
@@ -122,11 +114,14 @@ class AnimationVisualDialog(
  * Modifies |model| in-place.
  */
 class AnimationKeyframePanel(model: AnimationKeyframe) extends DesignGridPanel {
+  val fStartTime =
+    new FloatSpinner(model.time, 0f, 30f, model.time = _, 0.1f)
   val fFrameIndex =
     new NumberSpinner(model.frameIndex, 0, 100, model.frameIndex = _)
   val fX = new NumberSpinner(model.x, -999, 999, model.x = _)
   val fY = new NumberSpinner(model.y, -999, 999, model.y = _)
 
+  row().grid(leftLabel("Time:")).add(fStartTime)
   row().grid(leftLabel("Frame index:")).add(fFrameIndex, 2)
   row().grid(leftLabel("x:")).add(fX).grid(leftLabel("y:")).add(fY)
 }

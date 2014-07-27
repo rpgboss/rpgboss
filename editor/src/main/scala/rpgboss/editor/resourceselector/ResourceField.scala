@@ -11,6 +11,7 @@ import rpgboss.editor.uibase.ImagePanel
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.uibase.DesignGridPanel
+import rpgboss.editor.imageset.selector.AnimationImageFrameSelector
 
 class StringSpecSelectDialog[M, MT](
   owner: Window,
@@ -28,7 +29,7 @@ class StringSpecSelectDialog[M, MT](
   override def specToResourceName(spec: String): String = spec
   override def newRcNameToSpec(name: String, prevSpec: Option[String]): String =
     name
-    
+
   override def onSuccess(result: Option[String]) = onSuccessF(result)
 }
 
@@ -45,8 +46,9 @@ class AnimationImageSelectDialog(
     AnimationImage,
     onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
-    val img = AnimationImage.readFromDisk(sm.getProj, selection)
-    new ImagePanel(img.img) with ResourceRightPane
+    val animationImage = AnimationImage.readFromDisk(sm.getProj, selection)
+    new AnimationImageFrameSelector(
+      animationImage, AnimationKeyframe(), _ => Unit /* unused */)
   }
 }
 
@@ -112,9 +114,9 @@ class MapLocSelectDialog(
   onSuccessF: MapLoc => Unit)
   extends StdDialog(owner, "Select Map")
   with LazyLogging {
-  
+
   val locPanel = new MapLocPanel(this, sm, initialLoc, selectMapOnly)
-  
+
   def okFunc(): Unit = {
     onSuccessF(locPanel.loc)
     close()
@@ -132,21 +134,21 @@ abstract class BrowseField[SpecType](
   initial: Option[SpecType],
   onUpdate: Option[SpecType] => Unit)
   extends BoxPanel(Orientation.Horizontal) with LazyLogging {
-  
+
   var model = initial
-  
+
   val textField = new TextField {
     editable = false
     enabled = true
   }
-  
+
   def modelToString(m: SpecType): String = m.toString
-  
+
   def updateWidgets() =
     textField.text = model.map(modelToString).getOrElse("<None>")
-  
+
   updateWidgets()
-  
+
   def doBrowse()
 
   val browseBtn = new Button(Action("...") {
@@ -155,7 +157,7 @@ abstract class BrowseField[SpecType](
     updateWidgets()
     onUpdate(model)
   })
-  
+
   listenTo(textField.mouse.clicks)
 
   reactions += {
@@ -248,7 +250,7 @@ class MapField(
   initial: String,
   onUpdate: String => Unit)
   extends StringBrowseField(owner, sm, initial, onUpdate) {
-  override def modelToString(m: String) = 
+  override def modelToString(m: String) =
     sm.getMap(m).map(_.displayId).getOrElse("[None]")
 
   def doBrowse() = {

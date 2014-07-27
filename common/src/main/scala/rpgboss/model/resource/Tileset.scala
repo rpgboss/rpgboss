@@ -33,8 +33,8 @@ case class Tileset(proj: Project,
 
   def tileH = tilesize
   def tileW = tilesize
-  val xTiles = img.getWidth() / tileW
-  val yTiles = img.getHeight() / tileH
+  lazy val xTiles = img.getWidth() / tileW
+  lazy val yTiles = img.getHeight() / tileH
 }
 
 object Tileset extends MetaResource[Tileset, TilesetMetadata] {
