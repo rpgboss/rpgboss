@@ -20,7 +20,7 @@ case class AnimationPlayerStatus(
 class AnimationPlayerGdxPanel(
   project: Project,
   onStatusUpdate: AnimationPlayerStatus => Unit)
-  extends GdxPanel(AnimationPlayerGdxPanel.width,
+  extends GdxPanel(project, AnimationPlayerGdxPanel.width,
     AnimationPlayerGdxPanel.height) {
   override lazy val gdxListener = new ApplicationAdapter {
     var status = AnimationPlayerStatus(false, 0, 0)

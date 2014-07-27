@@ -7,8 +7,10 @@ import scala.swing.event._
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.backends.lwjgl.audio.OpenALAudio
+import rpgboss.model.resource.RpgAssetManager
+import rpgboss.model.Project
 
-class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
+class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
   extends Component
   with LazyLogging
   with Disposable {
@@ -18,6 +20,8 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
   }
 
   preferredSize = new Dimension(canvasW, canvasH)
+
+  val assets = new RpgAssetManager(project)
 
   // lazy val, otherwise an NPE crash due to wonky order of initialization
   lazy val gdxListener = new ApplicationAdapter {
@@ -77,6 +81,7 @@ class GdxPanel(canvasW: Int = 10, canvasH: Int = 10)
   def dispose() = {
     logger.debug("Destroying GdxPanel")
     gdxCanvas.stop()
+    assets.dispose()
     if (Gdx.audio != null) {
       Gdx.audio.asInstanceOf[OpenALAudio].dispose()
       Gdx.audio = null

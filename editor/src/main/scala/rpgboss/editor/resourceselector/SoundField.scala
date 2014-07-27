@@ -68,7 +68,7 @@ abstract class SoundSelectDialog(
         super.dispose()
       }
 
-      val gdxPanel = new GdxPanel()
+      val gdxPanel = new GdxPanel(sm.getProj)
 
       val volumeSlider = floatSlider(
         selection.volume, 0f, 1f, 100, 5, 25,
@@ -128,7 +128,7 @@ abstract class MusicSelectDialog(
         v => updateSelectionF(
           selection.copy(volume = v)))
 
-      val gdxPanel = new GdxPanel()
+      val gdxPanel = new GdxPanel(sm.getProj)
 
       val resource = Music.readFromDisk(sm.getProj, selection.sound)
 

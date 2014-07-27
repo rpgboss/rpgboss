@@ -13,6 +13,9 @@ trait ResourceRightPane extends Component {
   def dispose() = {}
 }
 
+// TODO: Refactor this class. It's used for both choosing a resource, in
+// addition to specifying usage of the resource, i.e. volume and pitch for
+// a sound effect. It's becoming pretty incomprehensible.
 abstract class ResourceSelectPanel[SpecType, T, MT](
   sm: StateMaster,
   initialSelectionOpt: Option[SpecType],
@@ -61,6 +64,8 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
     currentRightPane.map(_.dispose())
     rightPaneContainer.contents.clear()
     curSelection.map { spriteSpec =>
+      // TODO: Do we really want to create a whole new right pane every time
+      // we modify some aspect of the current selection? i.e. volume on a sfx.
       val newPane = rightPaneFor(spriteSpec, x => curSelection = Some(x))
       rightPaneContainer.contents += newPane
       currentRightPane = Some(newPane)

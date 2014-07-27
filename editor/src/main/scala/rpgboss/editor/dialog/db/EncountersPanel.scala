@@ -26,7 +26,7 @@ object EncounterFieldGdxPanel {
 }
 
 class EncounterFieldGdxPanel(project: Project, initial: Encounter)
-  extends GdxPanel(EncounterFieldGdxPanel.width,
+  extends GdxPanel(project, EncounterFieldGdxPanel.width,
                    EncounterFieldGdxPanel.height) {
   var battleScreen: BattleScreen = null
   var atlasSprites: TextureAtlas = null
@@ -59,7 +59,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
       battleScreen = new BattleScreen(
         None,
-        new RpgAssetManager(project),
+        assets,
         atlasSprites,
         project,
         EncounterFieldGdxPanel.width,
