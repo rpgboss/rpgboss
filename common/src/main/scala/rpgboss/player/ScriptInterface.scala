@@ -10,6 +10,7 @@ import rpgboss.model.battle._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import Predef._
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -65,7 +66,8 @@ class ScriptInterface(
   game: RpgGame,
   activeScreen: RpgScreen)
   extends HasScriptConstants
-  with ThreadChecked {
+  with ThreadChecked
+  with LazyLogging {
   assume(activeScreen != null)
 
   private def mapScreen = game.mapScreen
@@ -338,6 +340,10 @@ class ScriptInterface(
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
     val eventOpt = mapScreen.eventEntities.get(id)
+
+    if (eventOpt.isEmpty)
+      logger.error("Could not activate event id: %d".format(id))
+
     val scriptOpt = eventOpt.flatMap(_.activate(SpriteSpec.Directions.NONE))
 
     if (awaitFinish)
@@ -354,6 +360,12 @@ class ScriptInterface(
       moveEntity(entity, dx, dy, affixDirection, async)
     }
     entityOpt.isDefined
+  }
+
+  def setEventState(id: Int, newState: Int) = syncRun {
+    mapScreen.playerEntity.mapName.map { mapName =>
+      persistent.setEventState(mapName, id, newState)
+    }
   }
 
   private def moveEntity(entity: Entity, dx: Float, dy: Float,

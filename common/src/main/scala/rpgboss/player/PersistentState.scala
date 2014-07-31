@@ -69,6 +69,7 @@ class PersistentState
   def setEventState(mapName: String, eventId: Int, newState: Int) = {
     assertOnBoundThread()
     eventStates.update((mapName, eventId), newState)
+    publish(EventStateChange((mapName, eventId), newState))
   }
 }
 

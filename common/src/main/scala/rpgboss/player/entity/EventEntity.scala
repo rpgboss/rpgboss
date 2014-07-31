@@ -22,7 +22,7 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
     new Subscriber[PersistentStateUpdate, PersistentState#Pub] {
     def notify(pub: PersistentState#Pub, evt: PersistentStateUpdate) =
       evt match {
-        case EventStateChange(mapName, id) => updateState()
+        case EventStateChange((mapName, id), _) => updateState()
         case _ => Unit
       }
     game.persistent.subscribe(this)

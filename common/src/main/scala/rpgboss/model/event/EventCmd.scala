@@ -134,7 +134,7 @@ case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
 }
 
 case class SetEvtState(state: Int = 0) extends EventCmd {
-  def sections = singleCall("game.setEvtState", RawJs("event.idx()"), state)
+  def sections = singleCall("game.setEventState", RawJs("event.id()"), state)
 }
 
 case class MoveEvent(

@@ -54,7 +54,7 @@ class EventCmdSpec extends UnitSpec {
 
   "EventCmd" should "produce correct script for SetEvtState" in {
     SetEvtState(5).toJs should deepEqual(
-      Array("game.setEvtState(event.idx(), 5);"))
+      Array("game.setEventState(event.id(), 5);"))
   }
 
   "EventCmd" should "produce correct script for MoveEvent" in {
