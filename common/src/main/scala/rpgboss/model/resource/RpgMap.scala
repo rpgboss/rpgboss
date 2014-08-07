@@ -100,8 +100,11 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
    * Generates an array made the seed bytes, repeated
    */
   def makeRowArray(nTiles: Int, seed: Array[Byte]) = {
-    Array.tabulate[Byte](nTiles * bytesPerTile)(
+    assert(seed.length == bytesPerTile)
+    val newArray = Array.tabulate[Byte](nTiles * bytesPerTile)(
       i => seed(i % bytesPerTile))
+    assert(newArray.length == nTiles * bytesPerTile)
+    newArray
   }
 
   def generateName(id: Int) =

@@ -19,6 +19,25 @@ class RpgMapSpec extends UnitSpec {
     md.midLayer should not be theSameInstanceAs(md.topLayer)
   }
 
+  "RpgMapData" should "resize correctly" in {
+    val md = RpgMap.defaultMapData()
+
+    def testDimension(data: RpgMapData, expectedW: Int, expectedH: Int) = {
+      for (layer <- data.drawOrder) {
+        layer.length should equal(expectedH)
+        for (row <- layer) {
+          row.length should equal(expectedW * RpgMap.bytesPerTile)
+        }
+      }
+    }
+
+    testDimension(md, RpgMap.initXSize, RpgMap.initYSize)
+    testDimension(md.resized(10, 20), 10, 20)
+    testDimension(md.resized(50, RpgMap.initYSize), 50, RpgMap.initYSize)
+    testDimension(md.resized(RpgMap.initXSize, 50), RpgMap.initXSize, 50)
+    testDimension(md.resized(120, 160), 120, 160)
+  }
+
   "RpgMapData" should "be persistable" in {
     val testMapName = "TestMap.rpgmap"
     val test = new ProjectTest
