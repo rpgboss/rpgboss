@@ -23,7 +23,7 @@ class SpriteSelector(
     (initialSpec.spriteIndex % nSpritesInSetX) * spriteXTiles + initialSpec.step
   def initialY =
     (initialSpec.spriteIndex / nSpritesInSetX) * spriteYTiles + initialSpec.dir
-    
+
   // Set up image selector contents
   contents += new ImageTileSelector(
     spriteset.img,
@@ -31,13 +31,13 @@ class SpriteSelector(
     tilesizeY = spriteset.tileH,
     xTilesVisible = spriteXTiles * nSpritesInSetX,
     allowMultiselect = false,
-    initialSelection = Some((initialX, initialY))) {
+    initialSelection = Some(((initialX, initialY), (initialX, initialY)))) {
 
     def selectTileF(button: Int, selectedTiles: Array[Array[(Int, Int)]]) = {
       // Since we are selecting only one, we only care about first element
       val (x1, y1) = selectedTiles.head.head
 
-      // Compute the sprite index from the selected tile 
+      // Compute the sprite index from the selected tile
       val spriteIdxX = x1 / spriteXTiles
       val spriteIdxY = y1 / spriteYTiles
       val spriteIdx = spriteIdxY * spriteset.xSprites + spriteIdxX

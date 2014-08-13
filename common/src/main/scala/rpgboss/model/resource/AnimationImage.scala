@@ -17,14 +17,15 @@ case class AnimationImage(proj: Project,
   extends TiledImageResource[AnimationImage, AnimationImageMetadata] {
   def meta = AnimationImage
 
-  val (tileH, tileW) = (192, 192)
-  lazy val xTiles = img.getWidth() / tileW
+  val (tileH, tileW) = (AnimationImage.tilesize, AnimationImage.tilesize)
 }
 
 object AnimationImage
   extends MetaResource[AnimationImage, AnimationImageMetadata] {
   def rcType = "animation"
   def keyExts = Array("png")
+
+  def tilesize = 192
 
   def defaultInstance(proj: Project, name: String) =
     AnimationImage(proj, name, AnimationImageMetadata())

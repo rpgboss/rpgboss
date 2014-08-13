@@ -13,6 +13,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   def tileH: Int
   def tileW: Int
+
+  lazy val xTiles = img.getWidth() / tileW
+  lazy val yTiles = img.getHeight() / tileH
+
   def name: String
 
   def drawTileAt(ti: Int, tj: Int, g: Graphics, dstX: Int, dstY: Int) = {

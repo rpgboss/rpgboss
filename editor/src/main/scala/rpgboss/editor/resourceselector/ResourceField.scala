@@ -48,7 +48,7 @@ class AnimationImageSelectDialog(
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val animationImage = AnimationImage.readFromDisk(sm.getProj, selection)
     new AnimationImageFrameSelector(
-      animationImage, AnimationKeyframe(), _ => Unit /* unused */)
+      animationImage, AnimationVisual(), _ => Unit /* unused */)
   }
 }
 
