@@ -90,11 +90,22 @@ class AnimationVisualDialog(
 
   val model = Utils.deepCopy(initial)
 
-  val fAnimationImage = new AnimationImageBrowseField(
-    owner, sm, model.animationImage, model.animationImage = _)
-
+  // These are declared first because fAnimationImage refers to these
   val fStartFrame = new AnimationKeyframePanel(model.start)
   val fEndFrame = new AnimationKeyframePanel(model.end)
+
+  val fAnimationImage = new AnimationImageField(
+    owner,
+    sm,
+    if (initial.animationImage.isEmpty) None else Some(initial),
+    newSelectionOpt => {
+      newSelectionOpt.map { newSelection =>
+        fStartFrame.fFrameIndex.setValue(newSelection.start.frameIndex)
+        fEndFrame.fFrameIndex.setValue(newSelection.end.frameIndex)
+
+        model.animationImage = newSelection.animationImage
+      }
+    })
 
   contents = new DesignGridPanel {
     row().grid(leftLabel("Image:")).add(fAnimationImage)

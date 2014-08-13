@@ -18,6 +18,16 @@ case class AnimationImage(proj: Project,
   def meta = AnimationImage
 
   val (tileH, tileW) = (AnimationImage.tilesize, AnimationImage.tilesize)
+
+  def getImageForFrame(frameIndex: Int) = {
+    assume(frameIndex >= 0)
+
+    val ti = frameIndex % xTiles
+    val tj = frameIndex / yTiles
+    assert(ti < xTiles)
+    assert(tj < yTiles)
+    getTileImage(ti, tj)
+  }
 }
 
 object AnimationImage

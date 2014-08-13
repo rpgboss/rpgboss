@@ -84,7 +84,7 @@ trait ImageResource[T, MT <: AnyRef]
   with RpgGdxAsset[Texture] {
   // TODO: Refactor or eliminate this method, since it's unpredictable
   lazy val img = Option(ImageIO.read(newDataStream)) getOrElse {
-    throw ResourceException("Can't load window skin: %s".format(name))
+    throw ResourceException("Can't load image: %s".format(name))
   }
 }
 

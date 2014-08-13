@@ -42,7 +42,8 @@ class AnimationImageFrameSelector(
 
       val newStart = initial.start.copy(frameIndex = y1)
       val newEnd = initial.end.copy(frameIndex = y2)
-      selectFunction(initial.copy(start = newStart, end = newEnd))
+      val newModel = initial.copy(start = newStart, end = newEnd)
+      selectFunction(newModel)
     }
   }
 }

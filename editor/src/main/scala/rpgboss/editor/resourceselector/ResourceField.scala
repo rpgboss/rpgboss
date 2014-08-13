@@ -12,6 +12,7 @@ import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.editor.imageset.selector.AnimationImageFrameSelector
+import rpgboss.lib.Utils
 
 class StringSpecSelectDialog[M, MT](
   owner: Window,
@@ -36,20 +37,43 @@ class StringSpecSelectDialog[M, MT](
 class AnimationImageSelectDialog(
   owner: Window,
   sm: StateMaster,
-  initialSelectionOpt: Option[String],
-  onSuccessF: (Option[String]) => Unit)
-  extends StringSpecSelectDialog(
+  initialSelectionOpt: Option[AnimationVisual],
+  onSuccessF: (Option[AnimationVisual]) => Unit)
+  extends ResourceSelectDialog(
     owner,
     sm,
     initialSelectionOpt,
     false,
-    AnimationImage,
-    onSuccessF) {
-  override def rightPaneFor(selection: String, unused: String => Unit) = {
-    val animationImage = AnimationImage.readFromDisk(sm.getProj, selection)
-    new AnimationImageFrameSelector(
-      animationImage, AnimationVisual(), _ => Unit /* unused */)
+    AnimationImage) {
+  override def specToResourceName(spec: AnimationVisual): String = 
+    spec.animationImage
+  override def newRcNameToSpec(
+    name: String, 
+    prevSpecOpt: Option[AnimationVisual]): AnimationVisual = {
+    
+    val newSpec = Utils.deepCopy(prevSpecOpt.getOrElse(AnimationVisual()))
+    val newAnimationImage = AnimationImage.readFromDisk(sm.getProj, name)
+    
+    val maxFrameIndex = newAnimationImage.xTiles * newAnimationImage.yTiles - 1
+    
+    newSpec.animationImage = name
+    newSpec.start.frameIndex =
+      math.min(newSpec.start.frameIndex, maxFrameIndex)
+    newSpec.end.frameIndex = 
+      math.min(newSpec.end.frameIndex, maxFrameIndex)
+    
+    newSpec
   }
+  
+  override def rightPaneFor(
+    selection: AnimationVisual,
+    updateF: AnimationVisual => Unit) = {
+    val animationImage = 
+      AnimationImage.readFromDisk(sm.getProj, selection.animationImage)
+    new AnimationImageFrameSelector(animationImage, selection, updateF)
+  }
+  
+  override def onSuccess(result: Option[AnimationVisual]) = onSuccessF(result)
 }
 
 class BattleBackgroundSelectDialog(
@@ -189,18 +213,6 @@ class WindowskinField(
   override def doBrowse() = {
     val diag = new WindowskinSelectDialog(
       owner, sm, model, model = _)
-    diag.open()
-  }
-}
-
-class AnimationImageBrowseField(
-  owner: Window,
-  sm: StateMaster,
-  initial: String,
-  onUpdate: String => Unit)
-  extends StringBrowseField(owner, sm, initial, onUpdate) {
-  override def doBrowse() = {
-    val diag = new AnimationImageSelectDialog(owner, sm, model, model = _)
     diag.open()
   }
 }
