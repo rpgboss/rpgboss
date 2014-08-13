@@ -106,11 +106,19 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
     }
 
     for (i <- 0 until imageSlices) {
+      val sx1 = i * xTilesVisible * tilesizeX
+      val dx2 = math.min(
+        xTilesVisible * tilesizeX,
+        img.getWidth - sx1)
+      val sx2 = math.min(
+        (i + 1) * xTilesVisible * tilesizeX,
+        img.getWidth)
+
       g.drawImage(img,
         0, i * img.getHeight,
-        xTilesVisible * tilesizeX, (i + 1) * img.getHeight,
-        i * xTilesVisible * tilesizeX, 0,
-        (i + 1) * xTilesVisible * tilesizeX, img.getHeight,
+        dx2, (i + 1) * img.getHeight,
+        sx1, 0,
+        sx2, img.getHeight,
         null)
     }
 
