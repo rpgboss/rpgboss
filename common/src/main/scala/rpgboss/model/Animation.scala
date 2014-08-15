@@ -20,7 +20,7 @@ case class AnimationSound(
   var sound: SoundSpec = SoundSpec())
 
 case class Animation(
-  var name: String = "Animation",
+  var name: String = "",
   var visuals: Array[AnimationVisual] = Array(),
   var sounds: Array[AnimationSound] = Array()) extends HasName {
 

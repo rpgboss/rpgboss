@@ -26,6 +26,11 @@ class AnimationsPanel(
   def newDefaultInstance() = new Animation()
 
   def editPaneForItem(idx: Int, model: Animation) = {
+    val fName = textField(model.name, v => {
+      model.name = v
+      refreshModel()
+    })
+
     val fVisuals = new TableEditor[AnimationVisual]() {
       val buffer = ArrayBuffer(model.visuals: _*)
       def title = "Visuals"
@@ -66,6 +71,9 @@ class AnimationsPanel(
     val animationPlayerPanel = new AnimationPlayerPanel(sm.getProj, model)
 
     new BoxPanel(Orientation.Vertical) {
+      contents += new DesignGridPanel {
+        row().grid(lbl("Name:")).add(fName)
+      }
       contents += new BoxPanel(Orientation.Horizontal) {
         contents += fVisuals
         contents += fSounds
