@@ -10,6 +10,11 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import java.awt.{ Font, Color }
 import scala.swing.ListView.Renderer
 import scala.collection.mutable.ArrayBuffer
+import com.badlogic.gdx.utils.Disposable
+
+trait DisposableComponent extends Component with Disposable {
+  def dispose() = {}
+}
 
 class ArrayListView[T](initialAry: Array[T]) extends ListView(initialAry) {
 
@@ -31,13 +36,17 @@ abstract class ArrayEditingPanel[T <: AnyRef](
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends DesignGridPanel
-  with HasEnhancedListView[T] {
+  with HasEnhancedListView[T]
+  with Disposable {
   def newDefaultInstance(): T
   def label(a: T): String
 
+  var currentEditPane: Option[DisposableComponent] = None
+  def dispose() = currentEditPane.map(_.dispose())
+
   val editPaneContainer = new BoxPanel(Orientation.Vertical)
-  def editPaneForItem(idx: Int, item: T): Component
-  def editPaneEmpty: Component
+  def editPaneForItem(idx: Int, item: T): DisposableComponent
+  def editPaneEmpty: DisposableComponent
 
   def dataAsArray : Array[T] = {
     listView.listData.toArray
@@ -55,16 +64,16 @@ abstract class ArrayEditingPanel[T <: AnyRef](
 
     override def onListSelectionChanged() = {
       editPaneContainer.contents.clear()
+      currentEditPane.map(_.dispose())
 
-      if (selection.indices.isEmpty) {
-        editPaneContainer.contents += editPaneEmpty
+      val editPane = if (selection.indices.isEmpty) {
+        editPaneEmpty
       } else {
-        val editPane = editPaneForItem(
-          selection.indices.head,
-          selection.items.head)
-
-        editPaneContainer.contents += editPane
+        editPaneForItem(selection.indices.head, selection.items.head)
       }
+      editPaneContainer.contents += editPane
+
+      currentEditPane = Some(editPane)
 
       editPaneContainer.revalidate()
       editPaneContainer.repaint()
@@ -165,7 +174,7 @@ class StringArrayEditingPanel(
   def label(a: String) = a
 
   def editPaneForItem(idx: Int, item: String) = {
-    new TextField {
+    new TextField with DisposableComponent {
       text = item
 
       reactions += {
@@ -174,7 +183,7 @@ class StringArrayEditingPanel(
       }
     }
   }
-  def editPaneEmpty = new TextField {
+  def editPaneEmpty = new TextField with DisposableComponent {
     enabled = false
     text = "Select an item to edit"
   }
@@ -202,7 +211,8 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
     initialAry,
     minElems,
     maxElems)(m) {
-  def editPaneEmpty = new BoxPanel(Orientation.Vertical)
+  def editPaneEmpty =
+    new BoxPanel(Orientation.Vertical) with DisposableComponent
 
   val bigLbl = new Label {
     text = label

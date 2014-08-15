@@ -59,13 +59,12 @@ abstract class SoundSelectDialog(
   override def rightPaneFor(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit) = {
-    new DesignGridPanel with ResourceRightPane {
+    new DesignGridPanel with DisposableComponent {
       import rpgboss.editor.uibase.SwingUtils._
 
       override def dispose() = {
         currentSound.dispose()
         gdxPanel.dispose()
-        super.dispose()
       }
 
       val gdxPanel = new GdxPanel(sm.getProj)
@@ -111,7 +110,7 @@ abstract class MusicSelectDialog(
   override def rightPaneFor(
     selection: SoundSpec,
     updateSelectionF: SoundSpec => Unit) = {
-    new DesignGridPanel with ResourceRightPane {
+    new DesignGridPanel with DisposableComponent {
       import rpgboss.editor.uibase.SwingUtils._
 
       val assets = new RpgAssetManager(sm.getProj)
@@ -120,7 +119,6 @@ abstract class MusicSelectDialog(
         currentMusic.map(_.dispose())
         gdxPanel.dispose()
         assets.dispose()
-        super.dispose()
       }
 
       val volumeSlider = floatSlider(

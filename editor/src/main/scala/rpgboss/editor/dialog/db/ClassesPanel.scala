@@ -30,7 +30,7 @@ class ClassesPanel(
       model.name,
       model.name = _,
       Some(refreshModel))
-      
+
     val fUnarmedAttackSkillId = indexedCombo(
       dbDiag.model.enums.skills,
       model.unarmedAttackSkillId,
@@ -40,31 +40,31 @@ class ClassesPanel(
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
 
     logger.info("constructing new array multiselect panel %s".format(model.canUseItems) )
-    
+
     val fCanEquip = new ArrayMultiselectPanel(
       owner,
       "Can equip",
       dbDiag.model.enums.items,
       model.canUseItems,
       model.canUseItems = _)
-    
+
     val fLearnedSkills = new LearnedSkillPanel(
-      owner, 
-      dbDiag, 
-      model.learnedSkills, 
+      owner,
+      dbDiag,
+      model.learnedSkills,
       model.learnedSkills = _)
 
     val mainFields = new DesignGridPanel {
       row().grid(leftLabel("Name:")).add(fName)
       row().grid(leftLabel("Unarmed attack:")).add(fUnarmedAttackSkillId)
     }
-    
+
     val rightFields = new GridPanel(2, 1) {
       contents += fCanEquip
       contents += fLearnedSkills
     }
 
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += mainFields
       contents += fEffects
       contents += rightFields

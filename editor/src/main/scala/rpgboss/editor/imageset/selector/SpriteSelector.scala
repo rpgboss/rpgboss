@@ -5,7 +5,7 @@ import scala.swing.event._
 import rpgboss.model.resource._
 import java.awt.image.BufferedImage
 import rpgboss.model.SpriteSpec
-import rpgboss.editor.resourceselector.ResourceRightPane
+import rpgboss.editor.uibase._
 
 /**
  * *
@@ -15,7 +15,7 @@ class SpriteSelector(
   spriteset: Spriteset,
   initialSpec: SpriteSpec,
   selectFunction: SpriteSpec => Any)
-  extends BoxPanel(Orientation.Vertical) with ResourceRightPane {
+  extends BoxPanel(Orientation.Vertical) with DisposableComponent {
 
   import Spriteset._
 

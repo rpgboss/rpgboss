@@ -70,7 +70,7 @@ class BattlerSelector(
   proj: Project,
   initial: BattlerSpec,
   selectFunction: BattlerSpec => Any)
-  extends DesignGridPanel with ResourceRightPane {
+  extends DesignGridPanel with DisposableComponent {
   
   def updateModel(spec: BattlerSpec) = {
     fPreview.setImage(BattlerField.getImage(spec, proj))

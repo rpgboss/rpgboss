@@ -87,7 +87,7 @@ class EnemiesPanel(
       model.skillIds,
       model.skillIds = _)
 
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += bioFields
       contents += new GridPanel(2, 1) {
         contents += fEffects

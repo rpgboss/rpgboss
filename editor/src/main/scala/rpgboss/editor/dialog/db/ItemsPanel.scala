@@ -17,18 +17,18 @@ class ItemsPanel(
   sm: StateMaster,
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
-    owner, 
-    "Items", 
+    owner,
+    "Items",
     dbDiag.model.enums.items)
   with DatabasePanel {
   def panelName = "Items/Equipment"
   def newDefaultInstance() = new Item()
 
   def editPaneForItem(idx: Int, model: Item) = {
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       val leftPane = new DesignGridPanel {
         import HasName._
-        
+
         val fName = textField(model.name, v => {
           model.name = v
           refreshModel()
@@ -37,9 +37,9 @@ class ItemsPanel(
         val fDesc = textField(model.desc, model.desc = _)
 
         val fSellable: CheckBox = boolField(
-          "", 
-          model.sellable, 
-          model.sellable = _, 
+          "",
+          model.sellable,
+          model.sellable = _,
           Some(setEnabledFields _))
 
         val fPrice = new NumberSpinner(
@@ -64,26 +64,26 @@ class ItemsPanel(
           model.equipType,
           model.equipType = _,
           Some(setEnabledFields _))
-          
+
         val fUseOnAttack = boolField(
           "Use on Attack",
-          model.useOnAttack, 
+          model.useOnAttack,
           model.useOnAttack = _,
           Some(setEnabledFields _))
-          
+
         val fOnUseSkillId = indexedCombo(
           dbDiag.model.enums.skills,
           model.onUseSkillId,
           model.onUseSkillId = _)
-          
+
         def setEnabledFields(): Unit = {
           fPrice.enabled = fSellable.selected
 
           fScope.enabled = model.itemType != ItemType.Equipment.id
           fAccess.enabled = model.itemType != ItemType.Equipment.id
-          
+
           fEquipType.enabled = model.itemType == ItemType.Equipment.id
-          
+
           fUseOnAttack.enabled = model.itemType == ItemType.Equipment.id
           fOnUseSkillId.enabled =
             model.itemType == ItemType.Equipment.id && model.useOnAttack
@@ -103,7 +103,7 @@ class ItemsPanel(
         row()
           .grid(lbl("Effect scope:")).add(fScope)
           .grid(lbl("Item access:")).add(fAccess)
-        
+
         row()
           .grid(lbl("Equip type:")).add(fEquipType)
         row().grid().add(fUseOnAttack)
@@ -111,7 +111,7 @@ class ItemsPanel(
           .grid(lbl("On use skill:")).add(fOnUseSkillId)
       }
 
-      val rightPane = 
+      val rightPane =
         new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
 
       contents += leftPane

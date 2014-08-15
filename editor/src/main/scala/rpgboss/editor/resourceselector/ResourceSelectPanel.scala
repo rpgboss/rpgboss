@@ -9,10 +9,6 @@ import scala.swing._
 import scala.swing.event.ListSelectionChanged
 import com.badlogic.gdx.utils.Disposable
 
-trait ResourceRightPane extends Component {
-  def dispose() = {}
-}
-
 // TODO: Refactor this class. It's used for both choosing a resource, in
 // addition to specifying usage of the resource, i.e. volume and pitch for
 // a sound effect. It's becoming pretty incomprehensible.
@@ -28,14 +24,14 @@ abstract class ResourceSelectPanel[SpecType, T, MT](
   def specToResourceName(spec: SpecType): String
   def newRcNameToSpec(name: String, prevSpec: Option[SpecType]): SpecType
 
-  var currentRightPane: Option[ResourceRightPane] = None
+  var currentRightPane: Option[DisposableComponent] = None
 
   def dispose() = currentRightPane.map(_.dispose())
 
   def rightPaneFor(
     selection: SpecType,
-    updateSelectionF: SpecType => Unit): ResourceRightPane =
-      new BoxPanel(Orientation.Vertical) with ResourceRightPane
+    updateSelectionF: SpecType => Unit): DisposableComponent =
+      new BoxPanel(Orientation.Vertical) with DisposableComponent
 
   val allResources = metaResource.list(sm.getProj)
 

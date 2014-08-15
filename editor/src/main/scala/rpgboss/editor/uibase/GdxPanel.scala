@@ -82,11 +82,6 @@ class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
     logger.debug("Destroying GdxPanel")
     gdxCanvas.stop()
     assets.dispose()
-    if (Gdx.audio != null) {
-      Gdx.audio.asInstanceOf[OpenALAudio].dispose()
-      Gdx.audio = null
-      logger.debug("Destroying gdx audio from GdxPanel")
-    }
   }
 
   def getAudio() = gdxCanvas.getAudio()

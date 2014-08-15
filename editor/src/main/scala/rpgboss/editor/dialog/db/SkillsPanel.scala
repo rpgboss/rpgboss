@@ -24,7 +24,7 @@ class SkillsPanel(
   def newDefaultInstance() = Skill()
 
   def editPaneForItem(idx: Int, model: Skill) = {
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += new DesignGridPanel {
         val fName = textField(
           model.name,

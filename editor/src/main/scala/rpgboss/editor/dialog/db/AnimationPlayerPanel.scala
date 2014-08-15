@@ -10,6 +10,7 @@ import rpgboss.lib._
 import scala.swing._
 import rpgboss.player.GdxGraphicsUtils
 import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.utils.Disposable
 
 object AnimationPlayerGdxPanel {
   def battleback = "sys/crownlesswish_rrr.jpg"
@@ -70,7 +71,10 @@ class AnimationPlayerGdxPanel(
     }
 
     override def dispose() = {
-      animationPlayer.dispose()
+      if (animationPlayer != null) {
+        animationPlayer.dispose()
+      }
+
       background.unloadAsset(assets)
       battler.unloadAsset(assets)
       super.dispose()
@@ -116,7 +120,7 @@ class AnimationPlayerGdxPanel(
 }
 
 class AnimationPlayerPanel(project: Project, animation: Animation)
-  extends BoxPanel(Orientation.Vertical){
+  extends BoxPanel(Orientation.Vertical) with Disposable {
 
   val gdxPanel = new AnimationPlayerGdxPanel(project, animation, onStatusUpdate)
   val btnPlay = new Button(Action("Play") { gdxPanel.play(animation) })
@@ -128,6 +132,10 @@ class AnimationPlayerPanel(project: Project, animation: Animation)
     btnPlay.text = if (status.playing) "Playing" else "Play"
 
     lblStatus.text = "%f / %f s".format(status.currentTime, status.totalTime)
+  }
+
+  def dispose() = {
+    gdxPanel.dispose()
   }
 
   contents += new BoxPanel(Orientation.Horizontal) {

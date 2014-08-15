@@ -5,7 +5,7 @@ import scala.swing.event._
 import rpgboss.model.resource._
 import java.awt.image.BufferedImage
 import rpgboss.model._
-import rpgboss.editor.resourceselector.ResourceRightPane
+import rpgboss.editor.uibase._
 import rpgboss.editor.misc.TileUtils
 
 /**
@@ -15,7 +15,7 @@ class AnimationImageFrameSelector(
   animationImage: AnimationImage,
   initial: AnimationVisual,
   selectFunction: AnimationVisual => Any)
-  extends BoxPanel(Orientation.Vertical) with ResourceRightPane {
+  extends BoxPanel(Orientation.Vertical) with DisposableComponent {
 
   import Spriteset._
 

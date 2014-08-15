@@ -165,7 +165,7 @@ class EncountersPanel(
       }
     })
 
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {
           row().grid(lbl("Encounter Name:")).add(fName)
@@ -181,6 +181,11 @@ class EncountersPanel(
         contents += new ScrollPane(fEnemySelector) {
           preferredSize = new Dimension(200, 320)
         }
+      }
+
+      override def dispose() = {
+        fDisplay.dispose()
+        super.dispose()
       }
     }
   }

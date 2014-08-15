@@ -7,10 +7,8 @@ import rpgboss.model._
 import scala.swing.event.MouseClicked
 import scala.swing.event.EditDone
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import rpgboss.editor.uibase.ImagePanel
-import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.misc.MapLocPanel
-import rpgboss.editor.uibase.DesignGridPanel
+import rpgboss.editor.uibase._
 import rpgboss.editor.imageset.selector.AnimationImageFrameSelector
 import rpgboss.lib.Utils
 
@@ -90,7 +88,7 @@ class BattleBackgroundSelectDialog(
     onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = BattleBackground.readFromDisk(sm.getProj, selection)
-    new ImagePanel(img.img) with ResourceRightPane
+    new ImagePanel(img.img) with DisposableComponent
   }
 }
 
@@ -108,7 +106,7 @@ class PictureSelectDialog(
     onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Picture.readFromDisk(sm.getProj, selection)
-    new ImagePanel(img.img) with ResourceRightPane
+    new ImagePanel(img.img) with DisposableComponent
   }
 }
 
@@ -126,7 +124,7 @@ class WindowskinSelectDialog(
     onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
     val img = Windowskin.readFromDisk(sm.getProj, selection)
-    new ImagePanel(img.img) with ResourceRightPane
+    new ImagePanel(img.img) with DisposableComponent
   }
 }
 

@@ -80,7 +80,7 @@ class CharactersPanel(
 
     val progressionFields = new StatProgressionPanel(model.progressions)
 
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += bioFields
       contents += progressionFields
     }

@@ -26,6 +26,7 @@ class AnimationsPanel(
   def newDefaultInstance() = new Animation()
 
   def editPaneForItem(idx: Int, model: Animation) = {
+    logger.debug("New edit pane for animationId=%d".format(idx))
     val fName = textField(model.name, v => {
       model.name = v
       refreshModel()
@@ -70,7 +71,7 @@ class AnimationsPanel(
 
     val animationPlayerPanel = new AnimationPlayerPanel(sm.getProj, model)
 
-    new BoxPanel(Orientation.Vertical) {
+    new BoxPanel(Orientation.Vertical) with DisposableComponent {
       contents += new DesignGridPanel {
         row().grid(lbl("Name:")).add(fName)
       }
@@ -80,6 +81,11 @@ class AnimationsPanel(
       }
 
       contents += animationPlayerPanel
+
+      override def dispose() = {
+        animationPlayerPanel.dispose()
+        super.dispose()
+      }
     }
   }
 
