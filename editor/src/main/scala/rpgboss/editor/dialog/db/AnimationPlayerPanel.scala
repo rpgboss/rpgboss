@@ -43,6 +43,9 @@ class AnimationPlayerGdxPanel(
     var batch: SpriteBatch = null
 
     def updateAnimation(animation: Animation) = {
+      if (animationPlayer != null)
+        animationPlayer.dispose()
+
       animationPlayer = new AnimationPlayer(project, animation, assets)
       status.totalTime = animation.totalTime
     }
@@ -67,6 +70,7 @@ class AnimationPlayerGdxPanel(
     }
 
     override def dispose() = {
+      animationPlayer.dispose()
       background.unloadAsset(assets)
       battler.unloadAsset(assets)
       super.dispose()
