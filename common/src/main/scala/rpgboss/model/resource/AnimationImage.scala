@@ -23,7 +23,10 @@ case class AnimationImage(proj: Project,
     assume(frameIndex >= 0)
 
     val ti = frameIndex % xTiles
-    val tj = frameIndex / yTiles
+    val tj = frameIndex / xTiles
+
+    logger.debug("name=%s, xTiles=%d, yTiles=%d".format(name, xTiles, yTiles))
+    logger.debug("frameIndex=%d, ti=%d, tj=%d".format(frameIndex, ti, tj))
     assert(ti < xTiles)
     assert(tj < yTiles)
     getTileImage(ti, tj)
