@@ -63,8 +63,8 @@ abstract class ArrayEditingPanel[T <: AnyRef](
     override def label(a: T) = ArrayEditingPanel.this.label(a)
 
     override def onListSelectionChanged() = {
-      editPaneContainer.contents.clear()
       currentEditPane.map(_.dispose())
+      editPaneContainer.contents.clear()
 
       val editPane = if (selection.indices.isEmpty) {
         editPaneEmpty
@@ -247,9 +247,12 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
   // Specifically, this is to fix the bug with the Battlers field being painted
   // over the other tabs.
   listenTo(this)
+  // Event seems to be published twice.
+  private var uiElementShownAlready = false
   reactions += {
-    case UIElementShown(_) => {
+    case UIElementShown(_) if !uiElementShownAlready => {
       listView.selectIndices(0)
+      uiElementShownAlready = true
     }
   }
 }

@@ -34,6 +34,7 @@ class AnimationPlayerGdxPanel(
    * Constructor runs on the Swing main thread. Methods run on the Gdx thread.
    */
   override lazy val gdxListener = new ApplicationAdapter {
+    var assets: RpgAssetManager = null
     var status = AnimationPlayerStatus(false, 0, 0)
     var animationPlayer: AnimationPlayer = null
 
@@ -57,6 +58,7 @@ class AnimationPlayerGdxPanel(
     }
 
     override def create() = {
+      assets = new RpgAssetManager(project)
       background.loadAsset(assets)
       battler.loadAsset(assets)
 
@@ -77,6 +79,10 @@ class AnimationPlayerGdxPanel(
 
       background.unloadAsset(assets)
       battler.unloadAsset(assets)
+
+      if (assets != null) {
+        assets.dispose()
+      }
       super.dispose()
     }
 
