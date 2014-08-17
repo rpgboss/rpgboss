@@ -13,9 +13,93 @@ import scala.swing.event._
 import rpgboss.editor.uibase._
 import rpgboss.editor.dialog.MapPropertiesDialog
 import java.awt.event.MouseEvent
+import java.awt.datatransfer.DataFlavor
+import javax.swing.DropMode
+import javax.swing.TransferHandler
+import javax.swing.JTree
+import javax.swing.JComponent
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.StringSelection
+import javax.activation.DataHandler
 
 class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
   extends MapSelector(sm) {
+  /*
+   * Enable dragging and set drag handler.
+   */
+  tree.dragEnabled = true
+  tree.peer.setDropMode(DropMode.ON)
+  tree.peer.setTransferHandler(new javax.swing.TransferHandler {
+    override def canImport(
+      support: TransferHandler.TransferSupport): Boolean = {
+      if (!support.isDataFlavorSupported(DataFlavor.stringFlavor) ||
+          !support.isDrop()) {
+        return false
+      }
+
+      if (support.getComponent() != tree.peer) {
+        return false
+      }
+
+      val dropLocation =
+        support.getDropLocation().asInstanceOf[JTree.DropLocation]
+
+      return dropLocation.getPath() != null
+    }
+
+    override def getSourceActions(c: JComponent): Int = TransferHandler.MOVE
+
+    override def createTransferable(c: JComponent): Transferable = {
+      tree.selection.paths.headOption.map { path =>
+        new StringSelection(path.last.mapName)
+      }.orNull
+    }
+
+    override def importData(
+      support: TransferHandler.TransferSupport): Boolean = {
+      if (!canImport(support)) {
+        println("Can't import")
+        return false;
+      }
+
+      val dropLocation =
+        support.getDropLocation().asInstanceOf[JTree.DropLocation]
+
+      val dropPath = dropLocation.getPath()
+      val dropPathScala = tree.treePathToPath(dropPath)
+      val dropNode = dropPathScala.last
+
+      val transferable = support.getTransferable();
+
+      try {
+        val sourceMapName = transferable.getTransferData(
+          DataFlavor.stringFlavor).toString()
+
+        assert(allNodes.contains(sourceMapName))
+        val oldNode = allNodes.get(sourceMapName).get
+        removeNode(oldNode)
+
+        assert(allNodes.contains(dropNode.mapName))
+
+        val newNode =
+          new Node(oldNode.displayName, oldNode.mapName, dropPathScala)
+        tree.model.insertUnder(dropPathScala, newNode, 0)
+
+        val origMap = sm.getMap(sourceMapName).get
+        origMap.metadata.parent = dropNode.mapName
+        sm.setMap(sourceMapName, origMap, markDirty = true)
+
+        highlightWithoutEvent(newNode)
+      } catch {
+        case e: Throwable =>
+          println(e.getMessage())
+          return false
+      }
+
+      return true;
+    }
+  })
+
   /*
    * Popup actions
    */
@@ -35,24 +119,6 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
             (updatedMap, updatedMapData) => {
               sm.setMap(origMap.name, updatedMap)
               sm.setMapData(origMap.name, updatedMapData)
-
-              val origNode = allNodes.get(origMap.name).get
-              val newParentNode = allNodes.get(updatedMap.metadata.parent).get
-
-              val newIdx = if (newParentNode.path == origNode.path.init) {
-                // Same parent as before... Will find among siblings
-                val siblings = tree.model.getChildrenOf(origNode.path.init)
-                siblings.indexOf(origNode)
-              } else {
-                // Insert at end of list
-                tree.model.getChildrenOf(newParentNode.path).length
-              }
-
-              removeNode(origNode)
-
-              val newNode = Node(updatedMap, newParentNode.path)
-              tree.model.insertUnder(newParentNode.path, newNode, newIdx)
-              highlightWithoutEvent(newNode)
 
               // Select map again to refresh the map view and tileset selector
               projPanel.selectMap(Some(updatedMap))
