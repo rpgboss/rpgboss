@@ -75,21 +75,23 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
         val sourceMapName = transferable.getTransferData(
           DataFlavor.stringFlavor).toString()
 
-        assert(allNodes.contains(sourceMapName))
-        val oldNode = allNodes.get(sourceMapName).get
-        removeNode(oldNode)
+        if (sourceMapName != dropNode.mapName) {
+          assert(allNodes.contains(sourceMapName))
+          val oldNode = allNodes.get(sourceMapName).get
+          removeNode(oldNode)
 
-        assert(allNodes.contains(dropNode.mapName))
+          assert(allNodes.contains(dropNode.mapName))
 
-        val newNode =
-          new Node(oldNode.displayName, oldNode.mapName, dropPathScala)
-        tree.model.insertUnder(dropPathScala, newNode, 0)
+          val newNode =
+            new Node(oldNode.displayName, oldNode.mapName, dropPathScala)
+          tree.model.insertUnder(dropPathScala, newNode, 0)
 
-        val origMap = sm.getMap(sourceMapName).get
-        origMap.metadata.parent = dropNode.mapName
-        sm.setMap(sourceMapName, origMap, markDirty = true)
+          val origMap = sm.getMap(sourceMapName).get
+          origMap.metadata.parent = dropNode.mapName
+          sm.setMap(sourceMapName, origMap, markDirty = true)
 
-        highlightWithoutEvent(newNode)
+          highlightWithoutEvent(newNode)
+        }
       } catch {
         case e: Throwable =>
           println(e.getMessage())
