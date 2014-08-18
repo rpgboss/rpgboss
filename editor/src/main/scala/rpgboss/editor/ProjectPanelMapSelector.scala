@@ -51,8 +51,13 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
 
     override def createTransferable(c: JComponent): Transferable = {
       tree.selection.paths.headOption.map { path =>
-        new StringSelection(path.last.mapName)
-      }.orNull
+        if (path.last.mapName.isEmpty())
+          return null
+
+        return new StringSelection(path.last.mapName)
+      }
+
+      return null
     }
 
     override def importData(
@@ -71,36 +76,35 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
 
       val transferable = support.getTransferable();
 
-      try {
-        val sourceMapName = transferable.getTransferData(
-          DataFlavor.stringFlavor).toString()
+      val sourceMapName = transferable.getTransferData(
+        DataFlavor.stringFlavor).toString()
 
-        if (sourceMapName != dropNode.mapName) {
-          assert(allNodes.contains(sourceMapName))
-          val oldNode = allNodes.get(sourceMapName).get
-          removeNode(oldNode)
+      val origMap = sm.getMap(sourceMapName).get
+      // Don't allow dropping on itself or its existing parent.
+      if (sourceMapName != dropNode.mapName &&
+          origMap.metadata.parent != dropNode.mapName) {
+        assert(allNodes.contains(sourceMapName))
 
-          assert(allNodes.contains(dropNode.mapName))
+        val node = allNodes.get(sourceMapName).get
 
-          val newNode =
-            new Node(oldNode.displayName, oldNode.mapName, dropPathScala)
-          tree.model.insertUnder(dropPathScala, newNode, 0)
+        tree.model.remove(node.getPath())
 
-          val origMap = sm.getMap(sourceMapName).get
-          origMap.metadata.parent = dropNode.mapName
-          sm.setMap(sourceMapName, origMap, markDirty = true)
+        assert(allNodes.contains(dropNode.mapName))
+        tree.model.insertUnder(dropPathScala, node, 0)
 
-          highlightWithoutEvent(newNode)
-        }
-      } catch {
-        case e: Throwable =>
-          println(e.getMessage())
-          return false
+        origMap.metadata.parent = dropNode.mapName
+        sm.setMap(sourceMapName, origMap, markDirty = true)
+
+        highlightWithoutEvent(node)
       }
 
       return true;
     }
   })
+
+  def recursiveMoveNodes(sourceNode: Node, newParent: Node) = {
+
+  }
 
   /*
    * Popup actions
@@ -164,9 +168,10 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
               lastCreatedMapId = p.data.lastCreatedMapId + 1))
 
             val parentNode = allNodes.get(newMap.metadata.parent).get
-            val newNode = Node(newMap, parentNode.path)
-            val idx = tree.model.getChildrenOf(parentNode.path).length
-            tree.model.insertUnder(parentNode.path, newNode, idx)
+            val newNode = Node(newMap)
+            val parentPath = parentNode.getPath()
+            val idx = tree.model.getChildrenOf(parentPath).length
+            tree.model.insertUnder(parentPath, newNode, idx)
             highlightWithoutEvent(newNode)
 
             // Add to the state master. Don't actually write it ourselves

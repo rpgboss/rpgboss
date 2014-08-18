@@ -13,36 +13,42 @@ class MapSelector(sm: StateMaster)
   extends ScrollPane {
   val allNodes = collection.mutable.Map[String, Node]()
 
-  /* 
+  /*
    * TODO: Currently assume no map will be "orphaned". Add code to
    * handle orphans later
    */
   class Node(
     val displayName: String,
-    val mapName: String,
-    ancestors: Path[Node]) {
+    val mapName: String) {
     def children: Seq[Node] =
       sm.getMapMetas
         .filter(_.metadata.parent == mapName)
-        .map(Node.apply(_, path))
+        .map(Node.apply(_))
 
     // XXX: Should the allNodes addition really be in the constructor? Shady.
     allNodes.put(mapName, this)
 
-    val path = ancestors :+ this
+    def getPath(): Path[Node] = {
+      if (mapName.isEmpty()) {
+        Path(this)
+      } else {
+        val parentMap = sm.getMap(mapName).get.metadata.parent
+        val parentNode = allNodes(parentMap)
+        parentNode.getPath() ++ Path(this)
+      }
+    }
   }
 
   object Node {
-    def apply(m: RpgMap, path: Path[Node]) =
-      new Node(m.displayName, m.name, path)
+    def apply(m: RpgMap) = new Node(m.displayName, m.name)
   }
 
   def removeNode(n: Node) = {
     allNodes.remove(n.mapName)
-    tree.model.remove(n.path)
+    tree.model.remove(n.getPath())
   }
 
-  val projectRoot = new Node(sm.getProj.data.title, "", Path())
+  val projectRoot = new Node(sm.getProj.data.title, "")
 
   minimumSize = new Dimension(8 * 32, 200)
   preferredSize = new Dimension(8 * 32, 200)
@@ -77,8 +83,9 @@ class MapSelector(sm: StateMaster)
   }
 
   def selectNode(node: Node) = {
-    tree.expandPath(node.path)
-    tree.selectPaths(node.path)
+    val path = node.getPath()
+    tree.expandPath(path)
+    tree.selectPaths(path)
   }
 
   contents = tree
