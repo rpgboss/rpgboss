@@ -167,6 +167,11 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
               sm.setMap(origMap.name, updatedMap)
               sm.setMapData(origMap.name, updatedMapData)
 
+              // Update tree view in case title changed.
+              val oldNode = allNodes.apply(updatedMap.name)
+              val newNode = Node.apply(updatedMap)
+              tree.model.update(oldNode.getPath(), newNode)
+
               // Select map again to refresh the map view and tileset selector
               projPanel.selectMap(Some(updatedMap))
             })
