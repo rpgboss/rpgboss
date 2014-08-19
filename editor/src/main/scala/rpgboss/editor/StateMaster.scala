@@ -101,16 +101,16 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project) {
     dirty: Dirtiness.Value) = {
     mapStates.put(map.name, MapState(map, dirty, mapDataOpt))
   }
-  
+
   def removeMap(mapName: String) = {
     for (mapState <- mapStates.get(mapName)) {
       mapStates.update(mapName, mapState.copy(dirty = Dirtiness.Deleted))
     }
   }
-  
+
   def getMapStates = mapStates
 
-  def getMapMetas = mapStates.values.map(_.map).toSeq
+  def getMapMetas = mapStates.values.map(_.map).toSeq.sortBy(_.name)
 
   // Must be sure that mapId exists and map data loaded to call
   def getMap(mapName: String) =

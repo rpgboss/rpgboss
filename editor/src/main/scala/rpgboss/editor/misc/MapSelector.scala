@@ -32,8 +32,8 @@ class MapSelector(sm: StateMaster)
       if (mapName.isEmpty()) {
         Path(this)
       } else {
-        val parentMap = sm.getMap(mapName).get.metadata.parent
-        val parentNode = allNodes(parentMap)
+        val parentMapName = sm.getMap(mapName).get.metadata.parent
+        val parentNode = allNodes(parentMapName)
         parentNode.getPath() ++ Path(this)
       }
     }
@@ -78,7 +78,15 @@ class MapSelector(sm: StateMaster)
 
   def highlightWithoutEvent(node: Node) = {
     deafTo(tree.selection)
+
+    val nodePath = node.getPath()
+    val wasCollapsed = tree.isCollapsed(nodePath)
+
     selectNode(node)
+
+    if (wasCollapsed)
+      tree.collapsePath(nodePath)
+
     listenTo(tree.selection)
   }
 
