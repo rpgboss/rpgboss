@@ -2,7 +2,8 @@ package rpgboss.model.battle
 
 import rpgboss.model._
 
-case class Hit(hitActor: BattleStatus, damages: Array[TakenDamage])
+case class Hit(hitActor: BattleStatus, damages: Array[TakenDamage],
+               animationIds: Array[Int])
 
 /**
  * A BattleAction is an action taken by an entity in the battle. It consumes
@@ -44,7 +45,13 @@ case class AttackAction(actor: BattleStatus, targets: Array[BattleStatus])
 
       target.hp -= math.min(target.hp, damages.map(_.value).sum)
 
-      Hit(target, damages)
+      val animations = actor.onAttackSkillIds.map(skillId => {
+        assert(skillId < battle.pData.enums.skills.length)
+        val skill = battle.pData.enums.skills(skillId)
+        skill.animationId
+      })
+
+      Hit(target, damages, animations)
     }
 
     hitOption.toArray
@@ -75,7 +82,7 @@ case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
       else if (target.hp > target.stats.mhp)
         target.hp = target.stats.mhp
 
-      Hit(target, damages)
+      Hit(target, damages, Array(skill.animationId))
     }
   }
 }

@@ -20,6 +20,8 @@ trait RpgScreen extends Screen with ThreadChecked {
   val musics = Array.fill[Option[MusicPlayer]](8)(None)
   val windowManager = createWindowManager()
 
+  val animationManager = new AnimationManager()
+
   val tweenManager = new TweenManager()
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
@@ -62,6 +64,8 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   override def dispose() = {
     windowManager.dispose()
+
+    animationManager.dispose()
 
     musics.foreach(_.map(music => {
       music.stop()

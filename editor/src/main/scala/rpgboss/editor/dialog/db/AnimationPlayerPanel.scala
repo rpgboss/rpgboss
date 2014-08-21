@@ -48,7 +48,9 @@ class AnimationPlayerGdxPanel(
       if (animationPlayer != null)
         animationPlayer.dispose()
 
-      animationPlayer = new AnimationPlayer(project, animation, assets)
+      animationPlayer =
+        new AnimationPlayer(project, animation, assets, dstXOffset = 0,
+          dstYOffset = 0)
       status.totalTime = animation.totalTime
     }
 
@@ -68,7 +70,7 @@ class AnimationPlayerGdxPanel(
       // Again, setting the projection matrix because it seems to work...
       val matrix = batch.getTransformMatrix()
       matrix.trn(AnimationPlayerGdxPanel.width / 2,
-          AnimationPlayerGdxPanel.height / 2, 0)
+        AnimationPlayerGdxPanel.height / 2, 0)
       batch.setTransformMatrix(matrix)
     }
 
