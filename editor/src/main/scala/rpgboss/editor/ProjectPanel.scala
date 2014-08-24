@@ -6,12 +6,14 @@ import rpgboss.editor.imageset.selector._
 import rpgboss.editor.misc._
 import scala.swing._
 import scala.swing.event._
+import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.LifecycleListener
 import org.lwjgl.opengl.Display
 import java.io._
 import java.util.Scanner
+import javax.swing.ImageIcon
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -49,15 +51,23 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
       action = Action("Project \u25BC") {
         projMenu.show(btn, 0, btn.bounds.height)
       }
+      icon = new ImageIcon(Utils.readClasspathImage(
+        "crystal_project/16x16/devices/blockdevice.png"))
     }
     contents += new Button(Action("Database...") {
       val d = new DatabaseDialog(mainP.topWin, sm)
       d.open()
-    })
+    }) {
+      icon = new ImageIcon(Utils.readClasspathImage(
+        "crystal_project/16x16/apps/database.png"))
+    }
     contents += new Button(Action("Resources...") {
       val d = new ResourcesDialog(mainP.topWin, sm)
       d.open()
-    })
+    }) {
+      icon = new ImageIcon(Utils.readClasspathImage(
+        "crystal_project/16x16/filesystems/folder_images.png"))
+    }
     contents += new Button(Action("Play...") {
       if (sm.askSaveUnchanged(this)) {
         val projPath = sm.getProj.dir.getCanonicalPath()
@@ -109,7 +119,10 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
         process.waitFor();
       }
-    })
+    }) {
+      icon = new ImageIcon(Utils.readClasspathImage(
+        "crystal_project/16x16/actions/player_play.png"))
+    }
   }
 
   val sidePane =
