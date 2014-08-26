@@ -24,7 +24,7 @@ class AnimationManager extends ThreadChecked with Disposable {
     for (animation <- animations) {
       animation.update(delta)
 
-      if (animation.done)
+      if (animation.expired)
         toRemove += animation
     }
 

@@ -95,7 +95,7 @@ class AnimationPlayerGdxPanel(
 
         // Send status update to the Swing thread
         status.playing = animationPlayer.playing
-        status.currentTime = animationPlayer.time
+        status.currentTime = if (status.playing) animationPlayer.time else 0
 
         val statusCopy = status.copy()
         Swing.onEDT({ onStatusUpdate(statusCopy) })

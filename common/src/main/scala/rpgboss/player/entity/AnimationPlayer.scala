@@ -15,6 +15,26 @@ class AnimationPlayer(
   dstXOffset: Float, dstYOffset: Float)
   extends Disposable {
 
+  object States {
+    val Idle = 0
+
+    val Playing = 1
+
+    /**
+     * When all the visuals are done displaying and we can move onto the next
+     * animation.
+     */
+    val VisualsDone = 2
+
+    /**
+     * When we can assume all the sounds are done playing and the resources can
+     * be disposed.
+     */
+    val Expired = 3
+  }
+
+  import States._
+
   case class SoundState(
     animationSound: AnimationSound, resource: Sound, var played: Boolean)
 
@@ -35,7 +55,11 @@ class AnimationPlayer(
    */
 
   private var _time = 0.0f
-  private var _playing = false
+  private var _state = Idle
+
+  def playing = _state == Playing
+  def visualsDone = _state == VisualsDone || _state == Expired
+  def expired = _state == Expired
 
   def allResourcesLoaded = {
     animationImages.forall(_.isLoaded(assets)) &&
@@ -43,22 +67,32 @@ class AnimationPlayer(
   }
 
   def time = _time
-  def playing = _playing
 
-  def play() = _playing = true
+  def reset() = {
+    _time = 0
+    _state = Idle
+    animationSounds.map(_.played = false)
+  }
 
-  var done = false
+  def play() = {
+    reset()
+    _state = Playing
+  }
 
   def update(delta: Float): Unit = {
     if (!allResourcesLoaded)
       return
 
-    if (_playing) {
+    if (_state != Idle) {
       _time += delta
-      if (_time >= animation.totalTime) {
-        _time = 0f
-        _playing = false
-        done = true
+
+      _state match {
+        case Playing if _time >= animation.totalTime =>
+          _state = VisualsDone
+        case VisualsDone if _time >= animation.totalTime + 30 =>
+          _state = Expired
+        case _ =>
+          Unit
       }
     }
   }
@@ -66,7 +100,10 @@ class AnimationPlayer(
   /**
    * Assumes |batch| is already centered on the animation origin.
    */
-  def render(batch: SpriteBatch) = {
+  def render(batch: SpriteBatch): Unit = {
+    if (_state != Playing)
+      return
+
     import TweenUtils._
     for ((visual, image) <- animation.visuals zip animationImages) {
       if (visual.within(time) && image.isLoaded(assets)) {
@@ -85,7 +122,7 @@ class AnimationPlayer(
     }
 
     for (soundState <- animationSounds) {
-      if (!soundState.played && soundState.animationSound.time >= time &&
+      if (!soundState.played && time >= soundState.animationSound.time &&
           soundState.resource.isLoaded(assets)) {
         val soundSpec = soundState.animationSound.sound
         soundState.resource.getAsset(assets).play(
@@ -96,10 +133,6 @@ class AnimationPlayer(
   }
 
   def dispose() = {
-    // TODO: Sounds are currently cut off due to AnimationPlayer being disposed
-    // prematurely, since there is no way to tell if a sound is finished playing
-    // or not...
-
     animationImages.map(_.unloadAsset(assets))
     animationSounds.map(_.resource.unloadAsset(assets))
   }

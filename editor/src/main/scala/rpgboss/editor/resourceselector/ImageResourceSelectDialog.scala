@@ -58,7 +58,7 @@ abstract class BattlerSelectDialog(
   def specToResourceName(spec: BattlerSpec): String = spec.name
   def newRcNameToSpec(name: String, prevSpec: Option[BattlerSpec]) =
     prevSpec.map(_.copy(name = name)).getOrElse(BattlerSpec(name))
-  
+
   override def rightPaneFor(
     selection: BattlerSpec,
     updateSelectionF: BattlerSpec => Unit) = {
@@ -71,20 +71,20 @@ class BattlerSelector(
   initial: BattlerSpec,
   selectFunction: BattlerSpec => Any)
   extends DesignGridPanel with DisposableComponent {
-  
+
   def updateModel(spec: BattlerSpec) = {
     fPreview.setImage(BattlerField.getImage(spec, proj))
     selectFunction(spec)
   }
-  
+
   val fPreview = new Panel {
     private var _img: BufferedImage = null
-    
+
     def setImage(img: BufferedImage) = {
       _img = img
       repaint()
     }
-    
+
     preferredSize = new Dimension(240, 240)
 
     override def paintComponent(g: Graphics2D) = {
@@ -92,16 +92,16 @@ class BattlerSelector(
       if (_img != null) g.drawImage(_img, 0, 0, null)
     }
   }
-  
-  val fScale = new DoubleSpinner(
+
+  val fScale = new FloatSpinner(
     initial.scale,
-    0.1,
-    10.0,
+    0.1f,
+    10.0f,
     v => updateModel(initial.copy(scale = v)),
-    0.1)
-  
+    0.1f)
+
   updateModel(initial)
-  
+
   import SwingUtils._
   row().grid(leftLabel("Preview:")).add(fPreview)
   row().grid(leftLabel("Scale:")).add(fScale)

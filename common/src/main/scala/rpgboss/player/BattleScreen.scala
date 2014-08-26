@@ -265,7 +265,8 @@ class BattleScreen(
     windows: Seq[Window],
     animations: Seq[AnimationPlayer]) {
     def done =
-      windows.forall(_.state == Window.Closed) && animations.forall(_.done)
+      windows.forall(_.state == Window.Closed) &&
+      animations.forall(_.visualsDone)
   }
   var currentNotificationDisplay: Option[NotificationDisplay] = None
 
@@ -547,7 +548,7 @@ class BattleScreen(
 
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
                   val player = new AnimationPlayer(project, animation, assets,
-                    box.x, box.y)
+                    box.xCenter, box.yCenter)
                   player.play()
                   animationManager.addAnimation(player)
                   player

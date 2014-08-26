@@ -10,6 +10,9 @@ trait BoxLike {
   def w: Int
   def h: Int
 
+  def xCenter = x + w / 2
+  def yCenter = y + h / 2
+
   def getIntRect() = IntRect(x, y, w, h)
 }
 

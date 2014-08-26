@@ -14,7 +14,7 @@ class NumberSpinner(
   step: Int = 1)
   extends BoxPanel(Orientation.Horizontal) {
   val normalizedInitial = math.min(math.max(initial, min), max)
-  
+
   val model = new SpinnerNumberModel(normalizedInitial, min, max, step)
 
   val spinner = new JSpinner(model)
@@ -35,35 +35,6 @@ class NumberSpinner(
   }
 }
 
-class DoubleSpinner(
-  initial: Double,
-  min: Double,
-  max: Double,
-  onUpdate: ((Double) => Unit) = (v) => {},
-  step: Double)
-  extends BoxPanel(Orientation.Horizontal) {
-  val normalizedInitial = math.min(math.max(initial, min), max)
-  
-  val model = new SpinnerNumberModel(normalizedInitial, min, max, step)
-
-  val spinner = new JSpinner(model)
-
-  spinner.addChangeListener(new ChangeListener() {
-    override def stateChanged(e: ChangeEvent) {
-      onUpdate(getValue)
-    }
-  })
-  contents += Component.wrap(spinner)
-
-  def getValue = model.getNumber().doubleValue()
-  def setValue(v: Double) = model.setValue(v)
-
-  override def enabled_=(b: Boolean) = {
-    super.enabled_=(b)
-    spinner.setEnabled(b)
-  }
-}
-
 class FloatSpinner(
   initial: Float,
   min: Float,
@@ -72,8 +43,11 @@ class FloatSpinner(
   step: Float)
   extends BoxPanel(Orientation.Horizontal) {
   val normalizedInitial = math.min(math.max(initial, min), max)
-  
-  val model = new SpinnerNumberModel(normalizedInitial, min, max, step)
+
+  // TODO: Can't press down button to get to the minimum due to floating point
+  // math business. Need to implement an epsilon compare or something.
+  val model =
+    new SpinnerNumberModel(normalizedInitial, min, max, step)
 
   val spinner = new JSpinner(model)
 
