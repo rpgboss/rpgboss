@@ -160,6 +160,9 @@ object ResourceConstants {
     titleMusic =
       Some(SoundSpec("sys/Journey to the East - Town of Legend.mid")),
 
+    screenW = 640,
+    screenH = 480,
+
     windowskin = "sys/LastPhantasmScanlines.png",
     msgfont = "sys/VeraMono.ttf",
     fontsize = 24,

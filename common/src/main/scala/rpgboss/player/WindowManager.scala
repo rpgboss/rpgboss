@@ -161,7 +161,7 @@ class WindowManager(
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 
       shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
-      shapeRenderer.rect(0, 0, 640, 480)
+      shapeRenderer.rect(0, 0, screenW, screenH)
       shapeRenderer.end()
     }
   }

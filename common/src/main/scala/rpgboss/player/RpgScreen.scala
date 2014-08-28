@@ -5,8 +5,7 @@ import com.badlogic.gdx.Gdx
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.SoundSpec
 import aurelienribon.tweenengine._
-import rpgboss.model.resource.{Music, MusicPlayer}
-
+import rpgboss.model.resource.{ Music, MusicPlayer }
 
 trait RpgScreen extends Screen with ThreadChecked {
   def game: RpgGame
@@ -15,7 +14,11 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   val inputs = new InputMultiplexer()
   def createWindowManager(): WindowManager =
-    new WindowManager(game.assets, game.project, game.screenWPx, game.screenHPx)
+    new WindowManager(
+      game.assets,
+      game.project,
+      game.project.data.startup.screenW,
+      game.project.data.startup.screenH)
 
   val musics = Array.fill[Option[MusicPlayer]](8)(None)
   val windowManager = createWindowManager()

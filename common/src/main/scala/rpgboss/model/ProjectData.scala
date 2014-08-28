@@ -11,6 +11,9 @@ case class ProjectDataStartup(
   var titlePic: String,
   var titleMusic: Option[SoundSpec],
 
+  var screenW: Int,
+  var screenH: Int,
+
   var windowskin: String,
   var msgfont: String,
   var fontsize: Int,

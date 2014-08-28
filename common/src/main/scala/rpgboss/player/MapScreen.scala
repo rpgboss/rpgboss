@@ -22,8 +22,8 @@ class MapScreen(val game: RpgGame)
   def project = game.project
   val batch = new SpriteBatch()
 
-  var screenW = 20.0
-  var screenH = 15.0
+  var screenW: Float = project.data.startup.screenW / Tileset.tilesize
+  var screenH: Float = project.data.startup.screenH / Tileset.tilesize
 
   var cameraL: Double = 0
   var cameraR: Double = 0
@@ -123,11 +123,11 @@ class MapScreen(val game: RpgGame)
   def update(delta: Float): Unit = {
     windowManager.update(delta)
     camera.update(delta)
-    
+
     // We want the camera and window manager to update, but not anything else.
     if (windowManager.inTransition)
       return
-    
+
     // Update events, including player event
     eventEntities.values.foreach(_.update(delta))
     playerEntity.update(delta)
@@ -211,16 +211,16 @@ class MapScreen(val game: RpgGame)
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL20.GL_BLEND)
-    
+
     windowManager.preMapRender()
     renderMap()
     windowManager.render()
   }
-  
+
   override def dispose() = {
     mapAndAssetsOption.map(_.dispose())
     batch.dispose()
-    
+
     super.dispose()
   }
 }

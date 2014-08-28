@@ -31,33 +31,43 @@ class SystemPanel(
     }
   }
 
-  val fTitlepic = new PictureField(owner, sm, model.startup.titlePic, 
+  val fTitlepic = new PictureField(owner, sm, model.startup.titlePic,
       model.startup.titlePic = _)
-  
-  val fTitleMusic = new MusicField(owner, sm, model.startup.titleMusic, 
+
+  val fTitleMusic = new MusicField(owner, sm, model.startup.titleMusic,
 	  model.startup.titleMusic = _)
-  
-  val fWindowskin = new WindowskinField(owner, sm, model.startup.windowskin, 
+
+  val fScreenW = new NumberSpinner(model.startup.screenW, 640, 1920,
+      model.startup.screenW = _)
+
+  val fScreenH = new NumberSpinner(model.startup.screenH, 480, 1080,
+      model.startup.screenH = _)
+
+  val fWindowskin = new WindowskinField(owner, sm, model.startup.windowskin,
       model.startup.windowskin = _)
 
   val fMsgfont = new MsgfontField(owner, sm, model.startup.msgfont,
       model.startup.msgfont = _)
 
-  val fFontsize = new NumberSpinner(model.startup.fontsize, 12, 48, 
+  val fFontsize = new NumberSpinner(model.startup.fontsize, 12, 48,
       model.startup.fontsize = _)
 
-  val fSoundCursor = new SoundField(owner, sm, model.startup.soundCursor, 
+  val fSoundCursor = new SoundField(owner, sm, model.startup.soundCursor,
       model.startup.soundCursor = _)
-  val fSoundSelect = new SoundField(owner, sm, model.startup.soundSelect, 
+  val fSoundSelect = new SoundField(owner, sm, model.startup.soundSelect,
 	  model.startup.soundSelect = _)
-  val fSoundCancel = new SoundField(owner, sm, model.startup.soundCancel, 
+  val fSoundCancel = new SoundField(owner, sm, model.startup.soundCancel,
       model.startup.soundCancel = _)
-  val fSoundCannot = new SoundField(owner, sm, model.startup.soundCannot, 
+  val fSoundCannot = new SoundField(owner, sm, model.startup.soundCannot,
       model.startup.soundCannot = _)
 
   row().grid(lbl("Game title:")).add(fGameTitle)
   row().grid(lbl("Title picture:")).add(fTitlepic)
   row().grid(lbl("Title music:")).add(fTitleMusic)
+
+  row().grid(lbl("X Resolution:")).add(fScreenW)
+  row().grid(lbl("Y Resolution:")).add(fScreenH)
+
   row().grid(lbl("Windowskin:")).add(fWindowskin)
   row().grid(lbl("Message font:")).add(fMsgfont)
   row().grid(lbl("Font size:")).add(fFontsize)
