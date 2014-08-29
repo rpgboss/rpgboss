@@ -105,6 +105,7 @@ object Utils {
   // does ceil integer division, Number Conversion, Roland Backhouse, 2001
   // http://stackoverflow.com/questions/17944/
   def ceilIntDiv(n: Int, m: Int) = (n - 1) / m + 1
+  def ceilFloatDiv(n: Float, m: Int) = ceilIntDiv(n.ceil.toInt, m)
 
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m

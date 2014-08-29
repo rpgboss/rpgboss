@@ -219,7 +219,7 @@ class TextChoiceWindow(
 }
 
 /**
- * @param   choices     Is an Array[Set[IntRect]] to support some choices being
+ * @param   choices     Is an Array[Set[Rect]] to support some choices being
  *                      defined by multiple rectangles on screen. For instance,
  *                      selecting all the members of your party during a battle.
  */
@@ -227,7 +227,7 @@ class SpatialChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  choices: Array[Set[IntRect]] = Array(),
+  choices: Array[Set[Rect]] = Array(),
   defaultChoice: Int = 0)
   extends ChoiceWindow(persistent, manager, inputs, 0, 0, 0, 0,
                        invisible = true, defaultChoice, allowCancel = true) {

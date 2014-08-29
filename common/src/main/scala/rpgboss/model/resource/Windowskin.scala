@@ -17,39 +17,6 @@ case class Windowskin(proj: Project, name: String,
   def tileH = 16
   def tileW = 16
 
-  // in pixels
-  def windowImage(w: Int, h: Int) = {
-    val canvasImg = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR)
-    val g = canvasImg.getGraphics()
-
-    // paint stretch background 
-    val stretchBg = img.getSubimage(0, 0, 64, 64)
-    g.drawImage(stretchBg, 0, 0, w, h, null)
-
-    // paint tiled background
-    val tileBg = img.getSubimage(0, 64, 64, 64)
-    for (i <- 0 until ceilIntDiv(w, 64); j <- 0 until ceilIntDiv(h, 64))
-      g.drawImage(tileBg, i * 64, j * 64, null)
-
-    // paint borders
-    def subimg16(x: Int, y: Int, w: Int, h: Int) =
-      img.getSubimage(x * 16, y * 16, w * 16, h * 16)
-
-    g.drawImage(subimg16(4, 0, 1, 1), 0, 0, null) // NW
-    g.drawImage(subimg16(7, 0, 1, 1), w - 16, 0, null) // NE
-    g.drawImage(subimg16(4, 3, 1, 1), 0, h - 16, null) // SW
-    g.drawImage(subimg16(7, 3, 1, 1), w - 16, h - 16, null) // SE
-
-    g.drawImage(subimg16(5, 0, 2, 1), 16, 0, w - 32, 16, null) // N
-    g.drawImage(subimg16(5, 3, 2, 1), 16, h - 16, w - 32, 16, null) // S
-    g.drawImage(subimg16(4, 1, 1, 2), 0, 16, 16, h - 32, null) // E
-    g.drawImage(subimg16(7, 1, 1, 2), w - 16, 16, 16, h - 32, null) // W
-
-    g.dispose()
-
-    canvasImg
-  }
-
   /**
    * Draw the window using libgdx commands
    * @param batch     The SpriteBatch instance used to draw
@@ -62,8 +29,8 @@ case class Windowskin(proj: Project, name: String,
   def draw(
     batch: SpriteBatch,
     region: TextureRegion,
-    x: Int, y: Int,
-    w: Int, h: Int,
+    x: Float, y: Float,
+    w: Float, h: Float,
     bordersOnly: Boolean = false) = {
 
     import math._
@@ -76,7 +43,7 @@ case class Windowskin(proj: Project, name: String,
      */
     def drawSubimage(
       srcX: Int, srcY: Int, srcW: Int, srcH: Int,
-      dstX: Int, dstY: Int, dstW: Int, dstH: Int) = {
+      dstX: Float, dstY: Float, dstW: Float, dstH: Float) = {
       batch.draw(
         region.getTexture(),
         x + dstX, y + dstY, dstW, dstH,
@@ -91,7 +58,7 @@ case class Windowskin(proj: Project, name: String,
      */
     def drawSubimage16(
       srcXp: Int, srcYp: Int, srcWp: Int, srcHp: Int,
-      dstX: Int, dstY: Int, dstW: Int = 16, dstH: Int = 16) =
+      dstX: Float, dstY: Float, dstW: Float = 16, dstH: Float = 16) =
       drawSubimage(srcXp * 16, srcYp * 16, srcWp * 16, srcHp * 16,
         dstX, dstY, dstW, dstH)
 
@@ -99,10 +66,11 @@ case class Windowskin(proj: Project, name: String,
       // Draw the stretched background
       drawSubimage(0, 0, 64, 64, 0, 0, w, h)
 
-      // Draw the tiled background  
-      for (i <- 0 until ceilIntDiv(w, 64); j <- 0 until ceilIntDiv(h, 64)) {
-        val wToDraw = min(64, w - i * 64)
-        val hToDraw = min(64, h - j * 64)
+      // Draw the tiled background
+      for (i <- 0 until ceilFloatDiv(w.toInt, 64);
+           j <- 0 until ceilFloatDiv(h, 64)) {
+        val wToDraw = min(64, w - i * 64).round
+        val hToDraw = min(64, h - j * 64).round
         // Tiled background origin at (0, 64)
         drawSubimage(0, 64, wToDraw, hToDraw, i * 64, j * 64, wToDraw, hToDraw)
       }

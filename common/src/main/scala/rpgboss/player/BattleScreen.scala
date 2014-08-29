@@ -14,12 +14,12 @@ import com.badlogic.gdx.graphics.GL20
 import scala.collection.mutable.ArrayBuffer
 
 
-case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
-                        y: Int) extends BoxLike {
+case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Float,
+                        y: Float) extends BoxLike {
   val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
 
-  val w = spriteset.tileW
-  val h = spriteset.tileH
+  val w = spriteset.tileW.toFloat
+  val h = spriteset.tileH.toFloat
 }
 
 /**
@@ -200,9 +200,9 @@ class BattleScreen(
           case BattleEntityType.Party => _partyBattlers(status.id)
         }
 
-        // Convert each choice to a Set[IntRect]
-        val boxChoices: Array[Set[IntRect]] = choices.map { choice =>
-          choice.map(x => toBattler(x).getIntRect()).toSet
+        // Convert each choice to a Set[Rect]
+        val boxChoices: Array[Set[Rect]] = choices.map { choice =>
+          choice.map(x => toBattler(x).getRect()).toSet
         }.toArray
 
         val choiceIdx = scriptInterface.getSpatialChoice(
@@ -245,7 +245,7 @@ class BattleScreen(
 
   // Battle variables
   private var _battle: Option[Battle] = None
-  private val _enemyBattlers = new collection.mutable.ArrayBuffer[IntRect]
+  private val _enemyBattlers = new collection.mutable.ArrayBuffer[Rect]
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
 
   // How long to wait after being defeated.
@@ -402,7 +402,7 @@ class BattleScreen(
             battlerHeight))
 
         _enemyBattlers.append(
-          IntRect(battlerLeft, battlerTop, battlerWidth, battlerHeight))
+          Rect(battlerLeft, battlerTop, battlerWidth, battlerHeight))
       }
     }
 

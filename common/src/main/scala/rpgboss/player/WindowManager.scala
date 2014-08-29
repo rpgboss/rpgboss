@@ -75,8 +75,8 @@ class WindowManager(
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
-  def showPictureByName(slot: Int, name: String, x: Int, y: Int, w: Int,
-                        h: Int) = {
+  def showPictureByName(slot: Int, name: String, x: Float, y: Float, w: Float,
+                        h: Float) = {
     val picture = Picture.readFromDisk(project, name)
     showPicture(slot, TexturePicture(assets, picture, x, y, w, h))
   }
@@ -185,7 +185,7 @@ trait PictureLike {
  */
 case class TexturePicture[MT <: AnyRef](
   assets: RpgAssetManager, resource: ImageResource[_, MT],
-  x: Int, y: Int, w: Int, h: Int) extends PictureLike {
+  x: Float, y: Float, w: Float, h: Float) extends PictureLike {
 
   resource.loadAsset(assets)
   def dispose() = resource.unloadAsset(assets)
@@ -204,7 +204,7 @@ case class TexturePicture[MT <: AnyRef](
 case class TextureAtlasRegionPicture(
   atlasSprites: TextureAtlas,
   regionName: String,
-  x: Int, y: Int, w: Int, h: Int,
+  x: Float, y: Float, w: Float, h: Float,
   srcX: Int, srcY: Int, srcW: Int, srcH: Int) extends PictureLike {
 
   val region = atlasSprites.findRegion(regionName)

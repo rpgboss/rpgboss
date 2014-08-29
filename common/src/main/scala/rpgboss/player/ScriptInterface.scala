@@ -282,14 +282,14 @@ class ScriptInterface(
     }
 
     getSpatialChoice(
-      choices.map(x => Set(IntRect(x(0), x(1), x(2), x(3)))), defaultChoice)
+      choices.map(x => Set(Rect(x(0), x(1), x(2), x(3)))), defaultChoice)
   }
 
   /**
    * TODO: No idea how this would be called from Javascript, but it's convenient
    * from Scala.
    */
-  def getSpatialChoice(choices: Array[Set[IntRect]],
+  def getSpatialChoice(choices: Array[Set[Rect]],
                        defaultChoice: Int): Int = {
     assert(!choices.isEmpty)
 
