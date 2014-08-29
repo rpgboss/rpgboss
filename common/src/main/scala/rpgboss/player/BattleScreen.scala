@@ -1,6 +1,7 @@
 package rpgboss.player
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d._
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.utils.Logger
 import rpgboss.model._
 import rpgboss.model.battle._
@@ -12,12 +13,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import scala.collection.mutable.ArrayBuffer
 
-case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Int,
-                        y: Int) extends BoxLike {
+
+case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Float,
+                        y: Float) extends BoxLike {
   val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
 
-  val w = spriteset.tileW
-  val h = spriteset.tileH
+  val w = spriteset.tileW.toFloat
+  val h = spriteset.tileH.toFloat
 }
 
 /**
@@ -39,6 +41,16 @@ class BattleScreen(
   def game = gameOpt.orNull
 
   val logger = new Logger("BatleScreen", Logger.INFO)
+
+  val screenCamera: OrthographicCamera = new OrthographicCamera()
+  screenCamera.setToOrtho(true, screenW, screenH) // y points down
+  screenCamera.update()
+
+  val batch = new SpriteBatch()
+
+  batch.setProjectionMatrix(screenCamera.combined)
+  batch.enableBlending()
+  batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
   override def createWindowManager() =
     new WindowManager(assets, project, screenW, screenH)
@@ -188,9 +200,9 @@ class BattleScreen(
           case BattleEntityType.Party => _partyBattlers(status.id)
         }
 
-        // Convert each choice to a Set[IntRect]
-        val boxChoices: Array[Set[IntRect]] = choices.map { choice =>
-          choice.map(x => toBattler(x).getIntRect()).toSet
+        // Convert each choice to a Set[Rect]
+        val boxChoices: Array[Set[Rect]] = choices.map { choice =>
+          choice.map(x => toBattler(x).getRect()).toSet
         }.toArray
 
         val choiceIdx = scriptInterface.getSpatialChoice(
@@ -233,7 +245,7 @@ class BattleScreen(
 
   // Battle variables
   private var _battle: Option[Battle] = None
-  private val _enemyBattlers = new collection.mutable.ArrayBuffer[IntRect]
+  private val _enemyBattlers = new collection.mutable.ArrayBuffer[Rect]
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
 
   // How long to wait after being defeated.
@@ -250,8 +262,11 @@ class BattleScreen(
    */
   case class NotificationDisplay(
     notification: BattleActionNotification,
-    windows: Seq[Window]) {
-    def done = windows.forall(_.state == Window.Closed)
+    windows: Seq[Window],
+    animations: Seq[AnimationPlayer]) {
+    def done =
+      windows.forall(_.state == Window.Closed) &&
+      animations.forall(_.visualsDone)
   }
   var currentNotificationDisplay: Option[NotificationDisplay] = None
 
@@ -387,7 +402,7 @@ class BattleScreen(
             battlerHeight))
 
         _enemyBattlers.append(
-          IntRect(battlerLeft, battlerTop, battlerWidth, battlerHeight))
+          Rect(battlerLeft, battlerTop, battlerWidth, battlerHeight))
       }
     }
 
@@ -453,9 +468,14 @@ class BattleScreen(
   def update(delta: Float): Unit = {
     assertOnBoundThread()
 
+    if (!assets.update())
+      return
+
     windowManager.update(delta)
     if (windowManager.inTransition)
       return
+
+    animationManager.update(delta)
 
     // All these actions should not take place if this is an in-editor session.
     if (gameOpt.isDefined) {
@@ -520,6 +540,20 @@ class BattleScreen(
                       damage.value, box.x, box.y)
                 }
 
+              val animations =
+                for (hit <- notification.hits;
+                     animationId <- hit.animationIds) yield {
+                  assert(animationId < battle.pData.enums.animations.length)
+                  val animation = battle.pData.enums.animations(animationId)
+
+                  val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
+                  val player = new AnimationPlayer(project, animation, assets,
+                    box.xCenter, box.yCenter)
+                  player.play()
+                  animationManager.addAnimation(player)
+                  player
+                }
+
               notification.action match {
                 case action: AttackAction =>
                   val target = notification.action.targets.head
@@ -534,8 +568,9 @@ class BattleScreen(
                   postTextNotice("Not implemented yet.")
               }
 
-              val display = NotificationDisplay(notification, windows)
-                currentNotificationDisplay = Some(display)
+              val display =
+                NotificationDisplay(notification, windows, animations)
+              currentNotificationDisplay = Some(display)
             }
 
           }
@@ -556,6 +591,10 @@ class BattleScreen(
     Gdx.gl.glEnable(GL20.GL_BLEND)
 
     windowManager.render()
+
+    batch.begin()
+    animationManager.render(batch)
+    batch.end()
   }
 
   /**
@@ -563,6 +602,8 @@ class BattleScreen(
    */
   override def dispose() = {
     assertOnBoundThread()
+
+    batch.dispose()
 
     if (battleActive)
       endBattle()

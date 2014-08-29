@@ -10,6 +10,7 @@ import rpgboss.lib._
 import scala.swing._
 import rpgboss.player.GdxGraphicsUtils
 import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.utils.Disposable
 
 object AnimationPlayerGdxPanel {
   def battleback = "sys/crownlesswish_rrr.jpg"
@@ -33,6 +34,7 @@ class AnimationPlayerGdxPanel(
    * Constructor runs on the Swing main thread. Methods run on the Gdx thread.
    */
   override lazy val gdxListener = new ApplicationAdapter {
+    var assets: RpgAssetManager = null
     var status = AnimationPlayerStatus(false, 0, 0)
     var animationPlayer: AnimationPlayer = null
 
@@ -43,7 +45,12 @@ class AnimationPlayerGdxPanel(
     var batch: SpriteBatch = null
 
     def updateAnimation(animation: Animation) = {
-      animationPlayer = new AnimationPlayer(project, animation, assets)
+      if (animationPlayer != null)
+        animationPlayer.dispose()
+
+      animationPlayer =
+        new AnimationPlayer(project, animation, assets, dstXOffset = 0,
+          dstYOffset = 0)
       status.totalTime = animation.totalTime
     }
 
@@ -53,6 +60,7 @@ class AnimationPlayerGdxPanel(
     }
 
     override def create() = {
+      assets = new RpgAssetManager(project)
       background.loadAsset(assets)
       battler.loadAsset(assets)
 
@@ -62,13 +70,21 @@ class AnimationPlayerGdxPanel(
       // Again, setting the projection matrix because it seems to work...
       val matrix = batch.getTransformMatrix()
       matrix.trn(AnimationPlayerGdxPanel.width / 2,
-          AnimationPlayerGdxPanel.height / 2, 0)
+        AnimationPlayerGdxPanel.height / 2, 0)
       batch.setTransformMatrix(matrix)
     }
 
     override def dispose() = {
+      if (animationPlayer != null) {
+        animationPlayer.dispose()
+      }
+
       background.unloadAsset(assets)
       battler.unloadAsset(assets)
+
+      if (assets != null) {
+        assets.dispose()
+      }
       super.dispose()
     }
 
@@ -79,7 +95,7 @@ class AnimationPlayerGdxPanel(
 
         // Send status update to the Swing thread
         status.playing = animationPlayer.playing
-        status.currentTime = animationPlayer.time
+        status.currentTime = if (status.playing) animationPlayer.time else 0
 
         val statusCopy = status.copy()
         Swing.onEDT({ onStatusUpdate(statusCopy) })
@@ -112,7 +128,7 @@ class AnimationPlayerGdxPanel(
 }
 
 class AnimationPlayerPanel(project: Project, animation: Animation)
-  extends BoxPanel(Orientation.Vertical){
+  extends BoxPanel(Orientation.Vertical) with Disposable {
 
   val gdxPanel = new AnimationPlayerGdxPanel(project, animation, onStatusUpdate)
   val btnPlay = new Button(Action("Play") { gdxPanel.play(animation) })
@@ -124,6 +140,10 @@ class AnimationPlayerPanel(project: Project, animation: Animation)
     btnPlay.text = if (status.playing) "Playing" else "Play"
 
     lblStatus.text = "%f / %f s".format(status.currentTime, status.totalTime)
+  }
+
+  def dispose() = {
+    gdxPanel.dispose()
   }
 
   contents += new BoxPanel(Orientation.Horizontal) {

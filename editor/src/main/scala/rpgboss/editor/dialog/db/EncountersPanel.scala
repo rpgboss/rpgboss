@@ -32,6 +32,8 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
   var atlasSprites: TextureAtlas = null
 
   override lazy val gdxListener = new ApplicationAdapter {
+    var assets: RpgAssetManager = null
+
     def updateBattleScreen(encounter: Encounter) = {
       assume(battleScreen != null)
 
@@ -55,6 +57,9 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     }
 
     override def create() = {
+      logger.debug("Thread id = %d".format(Thread.currentThread().getId()))
+
+      assets = new RpgAssetManager(project)
       atlasSprites = GdxUtils.generateSpritesTextureAtlas(
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))
       battleScreen = new BattleScreen(
@@ -72,6 +77,13 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         battleScreen.update(Gdx.graphics.getDeltaTime())
         battleScreen.render()
       }
+    }
+
+    override def dispose() = {
+      if (assets != null) {
+        assets.dispose()
+      }
+      super.dispose()
     }
   }
 
@@ -165,7 +177,7 @@ class EncountersPanel(
       }
     })
 
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {
           row().grid(lbl("Encounter Name:")).add(fName)
@@ -181,6 +193,11 @@ class EncountersPanel(
         contents += new ScrollPane(fEnemySelector) {
           preferredSize = new Dimension(200, 320)
         }
+      }
+
+      override def dispose() = {
+        fDisplay.dispose()
+        super.dispose()
       }
     }
   }

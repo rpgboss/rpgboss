@@ -27,6 +27,7 @@ trait RpgGdxAsset[T] extends LazyLogging {
   }
 
   def unloadAsset(assets: RpgAssetManager): Unit = {
-    assets.unload(gdxPath)
+    if (assets.isLoaded(gdxPath))
+      assets.unload(gdxPath)
   }
 }

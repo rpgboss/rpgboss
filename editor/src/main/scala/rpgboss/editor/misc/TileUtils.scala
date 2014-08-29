@@ -31,6 +31,24 @@ object TileUtils {
   }
 
   /**
+   * Draw every frame into one big column.
+   */
+  def getColumnCollageImg(source: TiledImageResource[_, _]) = {
+    val totalTiles = source.xTiles * source.yTiles
+    val collageImage = new BufferedImage(
+      source.tileW, totalTiles * source.tileH, BufferedImage.TYPE_4BYTE_ABGR)
+    val g = collageImage.createGraphics()
+
+    for (ti <- 0 until source.xTiles; tj <- 0 until source.yTiles) {
+      g.drawImage(
+        source.getTileImage(ti, tj),
+        0, (ti + tj * source.xTiles) * source.tileH, null)
+    }
+
+    collageImage
+  }
+
+  /**
    * Computes essential information on which tiles need to be redrawn
    */
   def getTileBounds(

@@ -21,8 +21,6 @@ class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
 
   preferredSize = new Dimension(canvasW, canvasH)
 
-  val assets = new RpgAssetManager(project)
-
   // lazy val, otherwise an NPE crash due to wonky order of initialization
   lazy val gdxListener = new ApplicationAdapter {
     override def create() = {
@@ -73,7 +71,16 @@ class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
     }
 
     override def stop() = {
-      logger.debug("stop()")
+      // This is necessary because libgdx currently has a bug where it cannot
+      // dispose of textures associated with this canvas on disposal time.
+      if (getCanvas().isDisplayable()) {
+        makeCurrent()
+      } else {
+        throw new RuntimeException(
+          "GdxPanel's OpenGL context destroyed before ApplicationListener " +
+            "had a chance to dispose of its resources.")
+      }
+
       super.stop()
     }
   }
@@ -81,12 +88,6 @@ class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
   def dispose() = {
     logger.debug("Destroying GdxPanel")
     gdxCanvas.stop()
-    assets.dispose()
-    if (Gdx.audio != null) {
-      Gdx.audio.asInstanceOf[OpenALAudio].dispose()
-      Gdx.audio = null
-      logger.debug("Destroying gdx audio from GdxPanel")
-    }
   }
 
   def getAudio() = gdxCanvas.getAudio()

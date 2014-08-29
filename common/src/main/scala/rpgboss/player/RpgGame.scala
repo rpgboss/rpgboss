@@ -76,9 +76,6 @@ class RpgGame(gamepath: File)
 
   val assets = new RpgAssetManager(project)
 
-  def screenWPx = 640
-  def screenHPx = 480
-
   def create() = {
     rebindToCurrentThread()
 
@@ -91,7 +88,8 @@ class RpgGame(gamepath: File)
     // TODO: Make configurable screen pixel dimensions
     startScreen = new StartScreen(this)
     battleScreen =
-      new BattleScreen(Some(this), assets, atlasSprites, project, 640, 480)
+      new BattleScreen(Some(this), assets, atlasSprites, project,
+        project.data.startup.screenW, project.data.startup.screenH)
     mapScreen = new MapScreen(this)
 
     // Register accessors

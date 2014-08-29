@@ -36,8 +36,8 @@ object Window {
 class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
-  x: Int, y: Int,
-  val w: Int, val h: Int,
+  x: Float, y: Float,
+  val w: Float, val h: Float,
   invisible: Boolean = false)
   extends InputHandler with ThreadChecked with Disposable {
 
@@ -226,7 +226,7 @@ class DamageTextWindow(
   persistent: PersistentState,
   manager: WindowManager,
   damage: Int,
-  initialX: Int, initialY: Int)
+  initialX: Float, initialY: Float)
   // TODO: We pass 'null' as inputs here because we don't want to accept input.
   // Window has zeros for x, y, w, and h because the window itself is invisible.
   extends Window(manager, null, 0, 0, 0, 0,
@@ -257,7 +257,7 @@ class DamageTextWindow(
 
     textImage.updatePosition(
         initialX,
-        ((age / expiryTime * yDisplacement) + initialY).toInt)
+        ((age / expiryTime * yDisplacement) + initialY).toFloat)
 
     super.update(delta)
     textImage.update(delta)
@@ -279,7 +279,7 @@ class PrintingTextWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
-  x: Int, y: Int, w: Int, h: Int,
+  x: Float, y: Float, w: Float, h: Float,
   timePerChar: Float,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)

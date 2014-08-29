@@ -24,7 +24,7 @@ class SkillsPanel(
   def newDefaultInstance() = Skill()
 
   def editPaneForItem(idx: Int, model: Skill) = {
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += new DesignGridPanel {
         val fName = textField(
           model.name,
@@ -37,9 +37,15 @@ class SkillsPanel(
 
         val fCost = new NumberSpinner(model.cost, 0, 100, model.cost = _)
 
+        val fAnimationId = indexedCombo(
+          dbDiag.model.enums.animations,
+          model.animationId,
+          model.animationId = _)
+
         row().grid(lbl("Name:")).add(fName)
         row().grid(lbl("Scope:")).add(fScope)
         row().grid(lbl("Skill point cost:")).add(fCost)
+        row().grid(lbl("Animation:")).add(fAnimationId)
       }
 
       contents += new BoxPanel(Orientation.Vertical) {

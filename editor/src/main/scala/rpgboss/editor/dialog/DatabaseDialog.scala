@@ -13,11 +13,11 @@ import scala.swing.event._
 
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Database") {
-  
+
   preferredSize = new Dimension(1280, 800)
-  
+
   val model = Utils.deepCopy(sm.getProjData)
-  
+
   val animationsPane = new AnimationsPanel(owner, sm, this)
   val charPane = new CharactersPanel(owner, sm, this)
   val classesPane = new ClassesPanel(owner, sm, this)
@@ -30,7 +30,7 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   val enumPane = new EnumerationsPanel(owner, sm, this)
 
   val panels =
-    List(charPane, classesPane, enemiesPane, encountersPane, itemsPane, 
+    List(charPane, classesPane, enemiesPane, encountersPane, itemsPane,
          skillsPane, statusPane, animationsPane, sysPane, enumPane)
 
   def applyFunc() = {
@@ -62,6 +62,11 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
       applyFunc()
     }
   })
+
+  override def onClose() = {
+    panels.foreach(_.dispose())
+    super.onClose()
+  }
 
   contents = new DesignGridPanel {
     row().grid().add(tabPane)

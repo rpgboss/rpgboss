@@ -28,9 +28,9 @@ class StatusPanel(
   def newDefaultInstance() = new StatusEffect()
 
   def editPaneForItem(idx: Int, model: StatusEffect) = {
-    new BoxPanel(Orientation.Horizontal) {
+    new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       val leftPane = new DesignGridPanel {
-        val fName = textField(model.name, model.name = _, 
+        val fName = textField(model.name, model.name = _,
                               Some(() => updatePreserveSelection(idx, model)))
 
         val fReleaseOnBattleEnd = boolField("", model.releaseOnBattleEnd,
@@ -70,7 +70,7 @@ class StatusPanel(
         row().grid(lbl("Maximum stacks:")).add(fMaxStacks)
       }
 
-      val rightPane = 
+      val rightPane =
           new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
 
       contents += leftPane

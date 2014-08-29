@@ -26,6 +26,7 @@ import javax.swing.KeyStroke
 import java.awt.event.KeyEvent
 import java.awt.event.InputEvent
 import rpgboss.editor.imageset.selector.TabbedTileSelector
+import javax.swing.ImageIcon
 
 class MapEditor(
   projectPanel: ProjectPanel,
@@ -40,7 +41,7 @@ class MapEditor(
   def selectLayer(layer: MapLayers.Value) = {
     selectedLayer = layer
 
-    // Change display settings to make sense 
+    // Change display settings to make sense
     botAlpha = 0.5f
     midAlpha = 0.5f
     topAlpha = 0.5f
@@ -102,9 +103,15 @@ class MapEditor(
       .put(a, "UndoAction")
     peer
       .getActionMap.put("UndoAction", undoAction.peer)
+
+    icon = new ImageIcon(Utils.readClasspathImage(
+      "crystal_project/16x16/actions/undo.png"))
   }
 
+  toolbar.contents += Swing.HStrut(16)
   addBtnsAsGrp(toolbar.contents, layersBtns)
+
+  toolbar.contents += Swing.HStrut(16)
   addBtnsAsGrp(toolbar.contents, toolsBtns)
 
   override lazy val canvasPanel = new MapViewPanel {
@@ -199,7 +206,7 @@ class MapEditor(
     val event = selectedEvtId.map { id =>
       vs.nextMapData.events(id)
     } getOrElse {
-      // Need the +0.5f to offset into center of selected tile 
+      // Need the +0.5f to offset into center of selected tile
       RpgEvent.blank(
         vs.mapMeta.lastGeneratedEventId + 1,
         canvasPanel.cursorSquare.x1 + 0.5f,
@@ -216,7 +223,7 @@ class MapEditor(
             lastGeneratedEventId = vs.mapMeta.lastGeneratedEventId + 1)
         sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
         vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
-        
+
         commitVS(vs)
         repaintRegion(TileRect(e.x.toInt, e.y.toInt))
       },
@@ -289,7 +296,7 @@ class MapEditor(
       case (id, event) =>
         event.x.toInt == xTile0.toInt && event.y.toInt == yTile0.toInt
     }.map(_._1)
-    
+
     val button = e.peer.getButton()
 
     if (selectedLayer == Evt) {
@@ -300,8 +307,8 @@ class MapEditor(
           vs.begin()
 
           def onDrag(xTile1: Float, yTile1: Float, vs: MapViewState) = {
-            val evt = vs.nextMapData.events(selectedEvtId.get) 
-            evt.x = xTile1.toInt + 0.5f 
+            val evt = vs.nextMapData.events(selectedEvtId.get)
+            evt.x = xTile1.toInt + 0.5f
             evt.y = yTile1.toInt + 0.5f
             updateCursorSq(TileRect(xTile1, yTile1))
           }

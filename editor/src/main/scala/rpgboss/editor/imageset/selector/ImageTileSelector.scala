@@ -48,15 +48,18 @@ class TilesetTileSelector(
  *                              Same deal with y1 and y2.
  *
  * @param   allowMultiselect    Allow user to select multiple tiles.
- * @param   initialSelection    Defined in tileset space.
+ * @param   initialSelection    Defined in tileset space. First pair is the
+ *                              x and y of range starts. Second pair is the x
+ *                              and y of the range ends.
  */
-abstract class ImageTileSelector(srcImg: BufferedImage,
-                                 val tilesizeX: Int = 32,
-                                 val tilesizeY: Int = 32,
-                                 val xTilesVisible: Int = 8,
-                                 allowMultiselect: Boolean = true,
-                                 drawSelectionSq: Boolean = true,
-                                 initialSelection: Option[(Int, Int)] = None)
+abstract class ImageTileSelector(
+  srcImg: BufferedImage,
+  val tilesizeX: Int = 32,
+  val tilesizeY: Int = 32,
+  val xTilesVisible: Int = 8,
+  allowMultiselect: Boolean = true,
+  drawSelectionSq: Boolean = true,
+  initialSelection: Option[((Int, Int), (Int, Int))] = None)
   extends ScrollPane {
   horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
   verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
@@ -82,11 +85,18 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
   var yRngInSelectorSpace = 0 to 0
 
   initialSelection map { sel =>
-    val (xTS, yTS) = sel
-    val xSS = xTS % xTilesVisible
-    val ySS = yTS + xTS / xTilesVisible * yTilesInSlice
-    xRngInSelectorSpace = xSS to xSS
-    yRngInSelectorSpace = ySS to ySS
+    def toScreenSpace(xTilesetSpace: Int, yTilesetSpace: Int) = {
+      val xSS = xTilesetSpace % xTilesVisible
+      val ySS = yTilesetSpace + xTilesetSpace / xTilesVisible * yTilesInSlice
+      (xSS, ySS)
+    }
+
+    val (startPair, endPair) = sel
+    val (xSS1, ySS1) = toScreenSpace(startPair._1, startPair._2)
+    val (xSS2, ySS2) = toScreenSpace(endPair._1, endPair._2)
+
+    xRngInSelectorSpace = xSS1 to xSS2
+    yRngInSelectorSpace = ySS1 to ySS2
   }
 
   // Defined out here so that subclasses can override it
@@ -106,11 +116,19 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
     }
 
     for (i <- 0 until imageSlices) {
+      val sx1 = i * xTilesVisible * tilesizeX
+      val dx2 = math.min(
+        xTilesVisible * tilesizeX,
+        img.getWidth - sx1)
+      val sx2 = math.min(
+        (i + 1) * xTilesVisible * tilesizeX,
+        img.getWidth)
+
       g.drawImage(img,
         0, i * img.getHeight,
-        xTilesVisible * tilesizeX, (i + 1) * img.getHeight,
-        i * xTilesVisible * tilesizeX, 0,
-        (i + 1) * xTilesVisible * tilesizeX, img.getHeight,
+        dx2, (i + 1) * img.getHeight,
+        sx1, 0,
+        sx2, img.getHeight,
         null)
     }
 
@@ -147,6 +165,15 @@ abstract class ImageTileSelector(srcImg: BufferedImage,
     (tileX, tileY)
   }
 
+  /**
+   * @param     selectedTiles       This is a 2D array of tile indexes in
+   *                                tileset space. The outermost array is the
+   *                                rows from top to bottom. The inner arrays
+   *                                are from left to right.
+   *                                TODO: Simplify this and simply return the
+   *                                x and y ranges, since the selections are
+   *                                always rectangular.
+   */
   def selectTileF(button: Int, selectedTiles: Array[Array[(Int, Int)]])
 
   def mousePressed(button: Int, xTile: Int, yTile: Int, xInTile: Int,

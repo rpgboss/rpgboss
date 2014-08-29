@@ -9,6 +9,7 @@ import rpgboss.editor.imageset.selector.TilesetTileSelector
 import rpgboss.editor.uibase.IsEnhancedListView
 import rpgboss.editor.uibase.DesignGridPanel
 import scala.swing.event.MouseClicked
+import rpgboss.editor.uibase.DisposableComponent
 
 class TilesetArrayField(
   owner: Window,
@@ -70,12 +71,12 @@ abstract class TilesetSelectDialog(
 
   override def rightPaneFor(
     selection: String,
-    updateSelectionF: String => Unit): ResourceRightPane = {
+    updateSelectionF: String => Unit): DisposableComponent = {
     if (selection.isEmpty()) {
-      return new Label("No Tileset selected") with ResourceRightPane
+      return new Label("No Tileset selected") with DisposableComponent
     }
 
     val tileset = Tileset.readFromDisk(sm.getProj, selection)
-    new TilesetTileSelector(0, tileset, _ => Unit) with ResourceRightPane
+    new TilesetTileSelector(0, tileset, _ => Unit) with DisposableComponent
   }
 }

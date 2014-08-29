@@ -20,7 +20,7 @@ object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
   val nameCtrl = """\\[Nn]\[(\d+)\]""".r
   val variableCtrl = """\\[Vv]\[([a-zA-Z_$][\w_$]*)\]""".r
-  
+
   val NAME_OUT_OF_BOUNDS = "NAME_OUT_OF_BOUNDS"
 
   def nameReplace(raw: String, nameList: Array[String]) = {
@@ -29,22 +29,22 @@ object WindowText {
       if (index < nameList.length) nameList(index) else NAME_OUT_OF_BOUNDS
     })
   }
-    
+
   def variableReplace(raw: String, persistent: PersistentState) = {
     variableCtrl.replaceAllIn(raw, rMatch => {
       persistent.getInt(rMatch.group(1)).toString
     })
   }
-  
+
   def processText(text: Array[String], persistent: PersistentState) = {
     val newText = for(line <- text) yield {
       val namesProcessedLine = WindowText.nameReplace(
         line,
         persistent.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES))
-  
+
       WindowText.variableReplace(namesProcessedLine, persistent)
     }
-    
+
     newText.toArray
   }
 }
@@ -52,22 +52,22 @@ object WindowText {
 class WindowText(
   persistent: PersistentState,
   initialText: Array[String],
-  private var x: Int, private var y: Int, w: Int, h: Int,
+  private var x: Float, private var y: Float, w: Float, h: Float,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
   var lineHeight: Int = 32) extends ThreadChecked {
-  
-  protected var _text: Array[String] = 
+
+  protected var _text: Array[String] =
     WindowText.processText(initialText, persistent)
-  
+
   def setLineHeight(height: Int) =
     lineHeight = height
-    
-  def updatePosition(x: Int, y: Int) = {
+
+  def updatePosition(x: Float, y: Float) = {
     this.x = x
     this.y = y
   }
-  
+
   def updateText(newText: Array[String]) =
     _text = WindowText.processText(newText, persistent)
 
@@ -136,7 +136,7 @@ class WindowText(
 class PrintingWindowText(
   persistent: PersistentState,
   initialText: Array[String],
-  x: Int, y: Int, w: Int, h: Int,
+  x: Float, y: Float, w: Float, h: Float,
   skin: Windowskin,
   skinRegion: TextureRegion,
   fontbmp: BitmapFont,
@@ -157,7 +157,7 @@ class PrintingWindowText(
 
   private var _charI = 0
   private var _blockI = 0
-  
+
   /**
    * Game time since the last character was printed. This is usually left to be
    * non-zero after each frame, since we conceptually print characters between
@@ -167,13 +167,13 @@ class PrintingWindowText(
 
   def wholeBlockPrinted = _lineI >= (_blockI + 1) * linesPerBlock
   def allTextPrinted = !(_lineI < _text.length)
-  
+
   def awaitingInput = allTextPrinted || wholeBlockPrinted
-  
+
   def advanceBlock() = {
     _blockI += 1
     _timeSinceLastCharacter = 0
-    
+
     if (timePerChar == 0) {
       _lineI = math.min(_text.length, (_blockI + 1) * linesPerBlock)
     } else {
@@ -187,7 +187,7 @@ class PrintingWindowText(
    */
   def speedThrough() =
     _timeSinceLastCharacter += 1.0f
-  
+
   override def updateText(newText: Array[String]) = {
     super.updateText(newText)
 
@@ -200,17 +200,17 @@ class PrintingWindowText(
   override def update(delta: Float): Unit = {
     if (awaitingInput)
       return
-    
+
     _timeSinceLastCharacter += delta
-    
+
     // This loop advances at most one line per iteration.
-    while (!wholeBlockPrinted && !allTextPrinted && 
+    while (!wholeBlockPrinted && !allTextPrinted &&
            _timeSinceLastCharacter > timePerChar) {
       assert(_lineI <= _text.length)
       val line = _text(_lineI)
 
       val charsLeftInLine = line.length() - _charI
-      val charsWeHaveTimeToPrint = 
+      val charsWeHaveTimeToPrint =
         (_timeSinceLastCharacter / timePerChar).toInt
       val charsAdvanced = math.min(charsLeftInLine, charsWeHaveTimeToPrint)
 

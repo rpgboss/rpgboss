@@ -26,6 +26,12 @@ class AnimationsPanel(
   def newDefaultInstance() = new Animation()
 
   def editPaneForItem(idx: Int, model: Animation) = {
+    logger.debug("New edit pane for animationId=%d".format(idx))
+    val fName = textField(model.name, v => {
+      model.name = v
+      refreshModel()
+    })
+
     val fVisuals = new TableEditor[AnimationVisual]() {
       val buffer = ArrayBuffer(model.visuals: _*)
       def title = "Visuals"
@@ -65,13 +71,21 @@ class AnimationsPanel(
 
     val animationPlayerPanel = new AnimationPlayerPanel(sm.getProj, model)
 
-    new BoxPanel(Orientation.Vertical) {
+    new BoxPanel(Orientation.Vertical) with DisposableComponent {
+      contents += new DesignGridPanel {
+        row().grid(lbl("Name:")).add(fName)
+      }
       contents += new BoxPanel(Orientation.Horizontal) {
         contents += fVisuals
         contents += fSounds
       }
 
       contents += animationPlayerPanel
+
+      override def dispose() = {
+        animationPlayerPanel.dispose()
+        super.dispose()
+      }
     }
   }
 
@@ -90,11 +104,22 @@ class AnimationVisualDialog(
 
   val model = Utils.deepCopy(initial)
 
-  val fAnimationImage = new AnimationImageBrowseField(
-    owner, sm, model.animationImage, model.animationImage = _)
-
+  // These are declared first because fAnimationImage refers to these
   val fStartFrame = new AnimationKeyframePanel(model.start)
   val fEndFrame = new AnimationKeyframePanel(model.end)
+
+  val fAnimationImage = new AnimationImageField(
+    owner,
+    sm,
+    if (initial.animationImage.isEmpty) None else Some(initial),
+    newSelectionOpt => {
+      newSelectionOpt.map { newSelection =>
+        fStartFrame.fFrameIndex.setValue(newSelection.start.frameIndex)
+        fEndFrame.fFrameIndex.setValue(newSelection.end.frameIndex)
+
+        model.animationImage = newSelection.animationImage
+      }
+    })
 
   contents = new DesignGridPanel {
     row().grid(leftLabel("Image:")).add(fAnimationImage)

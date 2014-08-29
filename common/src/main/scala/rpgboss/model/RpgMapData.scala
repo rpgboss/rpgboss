@@ -85,19 +85,29 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
     import RpgMap._
 
     val newLayers = List(botLayer, midLayer, topLayer) map { layerAry =>
+      assert(!layerAry.isEmpty)
+      assert(layerAry.head.length % RpgMap.bytesPerTile == 0)
+      val oldXSize = layerAry.head.length / RpgMap.bytesPerTile
+      assert(layerAry.forall(_.length == oldXSize * RpgMap.bytesPerTile))
+      val oldYSize = layerAry.length
+
       // Expand or contract all the existing rows
       val newRowsSameYDim = layerAry.map { row =>
-        if (row.size > newXSize)
-          row.take(newXSize * bytesPerTile)
-        else
-          row ++ makeRowArray(newXSize - row.size, RpgMap.emptyTileSeed)
+        val newRow =
+          if (row.size > newXSize * bytesPerTile)
+            row.take(newXSize * bytesPerTile)
+          else
+            row ++ makeRowArray(newXSize - oldXSize, RpgMap.emptyTileSeed)
+
+        assert(newRow.length == newXSize * bytesPerTile)
+        newRow
       }
 
       // Generate or destroy new rows
       if (newYSize < layerAry.size) {
         newRowsSameYDim.take(newYSize)
       } else {
-        newRowsSameYDim ++ Array.fill(newYSize - layerAry.size)({
+        newRowsSameYDim ++ Array.fill(newYSize - oldYSize)({
           makeRowArray(newXSize, RpgMap.emptyTileSeed)
         })
       }

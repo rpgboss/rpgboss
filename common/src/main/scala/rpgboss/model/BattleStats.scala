@@ -1,6 +1,6 @@
 package rpgboss.model
 
-case class Curve(var base: Double, var perLevel: Double) {
+case class Curve(var base: Float, var perLevel: Float) {
   def apply(x: Int): Int = {
     (perLevel * (x - 1) + base).round.toInt
   }
@@ -91,7 +91,7 @@ object BattleStats {
 
     def addEffects(key: EffectKey.Value): Int =
       allEffects.filter(_.keyId == key.id).map(_.v1).sum
-      
+
     val elementResists = Array.fill(pData.enums.elements.size)(0)
     for (effect <- allEffects) {
       if (effect.keyId == EffectKey.ElementResist.id &&

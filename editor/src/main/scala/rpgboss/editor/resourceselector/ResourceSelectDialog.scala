@@ -37,8 +37,8 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
 
   def rightPaneFor(
     selection: SpecType,
-    updateSelectionF: SpecType => Unit): ResourceRightPane =
-      new BoxPanel(Orientation.Vertical) with ResourceRightPane
+    updateSelectionF: SpecType => Unit): DisposableComponent =
+      new BoxPanel(Orientation.Vertical) with DisposableComponent
 
   val resourceSelector = new ResourceSelectPanel[SpecType, T, MT](
     sm,

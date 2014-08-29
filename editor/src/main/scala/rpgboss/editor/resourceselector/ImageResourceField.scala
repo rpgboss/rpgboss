@@ -16,23 +16,23 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 
 abstract class ImageResourceField[SpecT](
-  owner: Window, 
-  sm: StateMaster, 
-  initial: Option[SpecT], 
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[SpecT],
   onUpdate: (Option[SpecT]) => Any)
   extends Component {
-  
+
   private var model: Option[SpecT] = None
   private var image: Option[BufferedImage] = None
 
   def getValue = model
-  
+
   // Implementing classes provide an image representation for the spec
   def getImage(s: SpecT): BufferedImage
   def componentW: Int
   def componentH: Int
   def getSelectDialog(): Dialog
-  
+
   /**
    * Updates the model and the representative image used to draw the component
    */
@@ -67,21 +67,41 @@ abstract class ImageResourceField[SpecT](
   }
 }
 
+class AnimationImageField(
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[AnimationVisual],
+  onUpdate: Option[AnimationVisual] => Any)
+  extends ImageResourceField(owner, sm, initial, onUpdate) {
+  def getImage(s: AnimationVisual) = {
+    val animationImage =
+      AnimationImage.readFromDisk(sm.getProj, s.animationImage)
+    animationImage.getImageForFrame(s.start.frameIndex)
+  }
+
+  def componentW = AnimationImage.tilesize
+  def componentH = AnimationImage.tilesize
+
+  def getSelectDialog() = {
+    new AnimationImageSelectDialog(owner, sm, getValue, updateModel _)
+  }
+}
+
 class SpriteField(
-  owner: Window, 
-  sm: StateMaster, 
-  initial: Option[SpriteSpec], 
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[SpriteSpec],
   onUpdate: (Option[SpriteSpec]) => Any)
   extends ImageResourceField(owner, sm, initial, onUpdate) {
-  
+
   def getImage(s: SpriteSpec): BufferedImage = {
     val spriteset = Spriteset.readFromDisk(sm.getProj, s.name)
     spriteset.srcTileImg(s)
   }
-  
+
   def componentW = tilesize * 2
   def componentH = tilesize * 3
-  
+
   def getSelectDialog() =
     new SpriteSelectDialog(owner, sm, getValue) {
       def onSuccess(result: Option[SpriteSpec]) =
@@ -102,18 +122,18 @@ object BattlerField {
 }
 
 class BattlerField(
-  owner: Window, 
-  sm: StateMaster, 
-  initial: Option[BattlerSpec], 
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[BattlerSpec],
   onUpdate: (Option[BattlerSpec]) => Any)
   extends ImageResourceField(owner, sm, initial, onUpdate) {
-  
+
   def componentW = 128
   def componentH = 128
-  
-  def getImage(m: BattlerSpec): BufferedImage = 
+
+  def getImage(m: BattlerSpec): BufferedImage =
     BattlerField.getImage(m, sm.getProj)
-    
+
   def getSelectDialog() =
     new BattlerSelectDialog(owner, sm, getValue) {
       def onSuccess(result: Option[BattlerSpec]) =

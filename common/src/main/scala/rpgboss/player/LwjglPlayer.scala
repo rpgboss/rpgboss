@@ -8,8 +8,8 @@ object LwjglPlayer {
   def launch(game: RpgGame) = {
     val conf = new LwjglApplicationConfiguration();
     conf.title = game.project.data.title;
-    conf.width = 32 * 20;
-    conf.height = 32 * 15;
+    conf.width = game.project.data.startup.screenW;
+    conf.height = game.project.data.startup.screenH;
     conf.forceExit = true;
 
     new LwjglApplication(game, conf);

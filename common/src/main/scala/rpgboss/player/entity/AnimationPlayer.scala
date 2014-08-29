@@ -11,39 +11,88 @@ import rpgboss.player.GdxGraphicsUtils
  * Can only be used from the Gdx thread.
  */
 class AnimationPlayer(
-  proj: Project, animation: Animation, assets: RpgAssetManager)
+  proj: Project, animation: Animation, assets: RpgAssetManager,
+  dstXOffset: Float, dstYOffset: Float)
   extends Disposable {
+
+  object States {
+    val Idle = 0
+
+    val Playing = 1
+
+    /**
+     * When all the visuals are done displaying and we can move onto the next
+     * animation.
+     */
+    val VisualsDone = 2
+
+    /**
+     * When we can assume all the sounds are done playing and the resources can
+     * be disposed.
+     */
+    val Expired = 3
+  }
+
+  import States._
+
+  case class SoundState(
+    animationSound: AnimationSound, resource: Sound, var played: Boolean)
 
   // Load all the assets used in this animation.
   val animationImages = animation.visuals.map(
     v => AnimationImage.readFromDisk(proj, v.animationImage))
-  val animationSounds = animation.sounds.map(
-    s => Sound.readFromDisk(proj, s.sound.sound))
+  val animationSounds = animation.sounds.map(s => {
+    val sound = Sound.readFromDisk(proj, s.sound.sound)
+    sound.loadAsset(assets)
+
+    SoundState(s, sound, false)
+  })
+
   animationImages.map(_.loadAsset(assets))
-  animationSounds.map(_.loadAsset(assets))
 
   /**
    *  Time of the previous update call.
    */
-  private var _prevTime = 0.0f
 
   private var _time = 0.0f
-  private var _playing = false
-  val totalTime = animation.totalTime
+  private var _state = Idle
+
+  def playing = _state == Playing
+  def visualsDone = _state == VisualsDone || _state == Expired
+  def expired = _state == Expired
+
+  def allResourcesLoaded = {
+    animationImages.forall(_.isLoaded(assets)) &&
+      animationSounds.forall(_.resource.isLoaded(assets))
+  }
 
   def time = _time
-  def playing = _playing
 
-  def play() = _playing = true
+  def reset() = {
+    _time = 0
+    _state = Idle
+    animationSounds.map(_.played = false)
+  }
+
+  def play() = {
+    reset()
+    _state = Playing
+  }
 
   def update(delta: Float): Unit = {
-    if (_playing) {
-      _prevTime = _time
+    if (!allResourcesLoaded)
+      return
+
+    if (_state != Idle) {
       _time += delta
-      if (_time >= totalTime) {
-        _prevTime = 0f
-        _time = 0f
-        _playing = false
+
+      _state match {
+        case Playing if _time >= animation.totalTime =>
+          _state = VisualsDone
+        case VisualsDone if _time >= animation.totalTime + 30 =>
+          _state = Expired
+        case _ =>
+          Unit
       }
     }
   }
@@ -51,15 +100,20 @@ class AnimationPlayer(
   /**
    * Assumes |batch| is already centered on the animation origin.
    */
-  def render(batch: SpriteBatch) = {
+  def render(batch: SpriteBatch): Unit = {
+    if (_state != Playing)
+      return
+
     import TweenUtils._
     for ((visual, image) <- animation.visuals zip animationImages) {
       if (visual.within(time) && image.isLoaded(assets)) {
         val alpha = tweenAlpha(visual.start.time, visual.end.time, time)
         val frameIndex = tweenIntInclusive(
           alpha, visual.start.frameIndex, visual.end.frameIndex)
-        val dstX = tweenFloat(alpha, visual.start.x, visual.end.x)
-        val dstY = tweenFloat(alpha, visual.start.y, visual.end.y)
+
+        val dstX = dstXOffset + tweenFloat(alpha, visual.start.x, visual.end.x)
+        val dstY = dstYOffset + tweenFloat(alpha, visual.start.y, visual.end.y)
+
         val xTile = frameIndex % image.xTiles
         val yTile = frameIndex / image.xTiles
 
@@ -67,17 +121,19 @@ class AnimationPlayer(
       }
     }
 
-    for ((animationSound, sound) <- animation.sounds zip animationSounds) {
-      if (animationSound.time >= _prevTime && animationSound.time < time &&
-          sound.isLoaded(assets)) {
-        val soundSpec = animationSound.sound
-        sound.getAsset(assets).play(soundSpec.volume, soundSpec.pitch, 0f)
+    for (soundState <- animationSounds) {
+      if (!soundState.played && time >= soundState.animationSound.time &&
+          soundState.resource.isLoaded(assets)) {
+        val soundSpec = soundState.animationSound.sound
+        soundState.resource.getAsset(assets).play(
+          soundSpec.volume, soundSpec.pitch, 0f)
+        soundState.played = true
       }
     }
   }
 
   def dispose() = {
     animationImages.map(_.unloadAsset(assets))
-    animationSounds.map(_.unloadAsset(assets))
+    animationSounds.map(_.resource.unloadAsset(assets))
   }
 }

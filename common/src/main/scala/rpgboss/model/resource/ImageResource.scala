@@ -13,6 +13,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   def tileH: Int
   def tileW: Int
+
+  lazy val xTiles = img.getWidth() / tileW
+  lazy val yTiles = img.getHeight() / tileH
+
   def name: String
 
   def drawTileAt(ti: Int, tj: Int, g: Graphics, dstX: Int, dstY: Int) = {
@@ -80,7 +84,7 @@ trait ImageResource[T, MT <: AnyRef]
   with RpgGdxAsset[Texture] {
   // TODO: Refactor or eliminate this method, since it's unpredictable
   lazy val img = Option(ImageIO.read(newDataStream)) getOrElse {
-    throw ResourceException("Can't load window skin: %s".format(name))
+    throw ResourceException("Can't load image: %s".format(name))
   }
 }
 
