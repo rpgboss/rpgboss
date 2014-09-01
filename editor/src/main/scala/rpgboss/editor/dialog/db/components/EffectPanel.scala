@@ -301,13 +301,6 @@ class EffectDialog(
     choicePercentEffect(RemoveStatusEffect, dbDiag.model.enums.statusEffects))
 
   val effectsStats = Array(
-    intEffect(MhpAdd),
-    intEffect(MmpAdd),
-    intEffect(SpdAdd),
-    intEffect(AtkAdd),
-    intEffect(MagAdd),
-    intEffect(ArmAdd),
-    intEffect(MreAdd),
     choicePointsEffect(ElementResist, dbDiag.model.enums.elements))
 
   val effectsOther = Array(
