@@ -75,9 +75,20 @@ object EffectKey extends RpgEnum {
     case _ => EffectHelp(false, "Doesn't do anything.")
   }
 
-  def onItemAndSkillUseOnlyHelp(context: EffectContext.Value) = context match {
+  def onItemAndSkillHelp(context: EffectContext.Value) = context match {
     case Item => EffectHelp(true, "One-time effect of item use.")
     case Skill => EffectHelp(true, "One-time effect of skill use.")
+    case _ => EffectHelp(false, "Doesn't do anything.")
+  }
+
+  def onItemOnlyHelp(context: EffectContext.Value) = context match {
+    case Item => EffectHelp(true, "One-time effect of item use.")
+    case _ => EffectHelp(false, "Doesn't do anything.")
+  }
+
+  def onItemAndEquipHelp(context: EffectContext.Value) = context match {
+    case Item => EffectHelp(true, "One-time effect of item use.")
+    case Equipment => EffectHelp(true, "Occurs once per hit.")
     case _ => EffectHelp(false, "Doesn't do anything.")
   }
 
@@ -106,11 +117,13 @@ object EffectKey extends RpgEnum {
   val ElementResist = Val("Resist Element", getEnumOfValue2(_.enums.elements),
       help = elementResistHelp)
 
-  val EscapeBattle = Val("Escape battle", help = onItemAndSkillUseOnlyHelp)
-  val UseSkill = Val("Use skill", getEnumOfValue1(_.enums.skills),
-      help = itemEquipSkillOnlyHelp)
+  val EscapeBattle = Val("Escape battle", help = onItemAndSkillHelp)
   val LearnSkill = Val("Learn skill", getEnumOfValue1(_.enums.skills),
-      help = onItemAndSkillUseOnlyHelp)
+      help = onItemOnlyHelp)
+
+
+  val UseSkill = Val("Use skill", getEnumOfValue1(_.enums.skills),
+      help = onItemAndEquipHelp)
 
   def default = RecoverHpAdd
 
