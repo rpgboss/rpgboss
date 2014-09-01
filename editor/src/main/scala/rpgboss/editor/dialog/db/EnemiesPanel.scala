@@ -78,7 +78,8 @@ class EnemiesPanel(
     }
 
     val fEffects =
-      new EffectPanel(owner, dbDiag, model.effects, model.effects = _, false)
+      new EffectPanel(owner, dbDiag, model.effects, model.effects = _,
+          EffectContext.CharacterClass)
 
     val fSkills = new ArrayMultiselectPanel(
       owner,

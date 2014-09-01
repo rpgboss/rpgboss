@@ -37,7 +37,8 @@ class ClassesPanel(
       model.unarmedAttackSkillId = _)
 
     val fEffects =
-      new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
+      new EffectPanel(owner, dbDiag, model.effects, model.effects = _,
+          EffectContext.CharacterClass)
 
     logger.info("constructing new array multiselect panel %s".format(model.canUseItems) )
 

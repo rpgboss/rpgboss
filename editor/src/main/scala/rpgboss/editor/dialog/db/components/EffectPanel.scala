@@ -23,14 +23,22 @@ class EffectPanel(
   dbDiag: DatabaseDialog,
   initial: Array[Effect],
   onUpdate: Array[Effect] => Unit,
-  includeStatEffects: Boolean)
+  private var context: EffectContext.Value)
   extends BoxPanel(Orientation.Vertical) {
-  
+
+  def includeStatEffects = context != EffectContext.Skill
+
+  def updateContext(newContext: EffectContext.Value) = {
+    context = newContext
+
+    statEffectsPanel.enabled = includeStatEffects
+  }
+
   if (includeStatEffects)
     preferredSize = new Dimension(250, 300)
   else
     preferredSize = new Dimension(250, 200)
-  
+
   import EffectKey._
 
   def isStatEffect(e: Effect) = {
@@ -44,7 +52,7 @@ class EffectPanel(
   }
 
   val statEffects: ArrayBuffer[Effect] =
-    ArrayBuffer(initial.filter(isStatEffect) : _*)
+    ArrayBuffer(initial.filter(isStatEffect): _*)
   val statEffectsPanel = new DesignGridPanel {
     def statSpinner(eKey: EffectKey.Value) = {
       def spinFunc(newValue: Int) = {
@@ -86,27 +94,28 @@ class EffectPanel(
       .grid()
   }
 
-  val miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)) : _*)
+  val miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)): _*)
   val miscEffectsTable = new TableEditor[Effect]() {
     def title = "Other Effects"
-    
+
     def modelArray = miscEffects
     def newInstance() = EffectKey.defaultEffect
     def onUpdate() = updateFromModel()
-    
+
     def colHeaders = Array("Description", "Key", "Value")
     def getRowStrings(effect: Effect) = {
       val effectKey = EffectKey(effect.keyId)
       Array(effectKey.desc, effectKey.toString,
-            effectKey.renderer(effect, dbDiag.model))
+        effectKey.renderer(effect, dbDiag.model))
     }
-    
+
     def showEditDialog(initial: Effect, okCallback: Effect => Unit) = {
       val diag = new EffectDialog(
         owner,
         dbDiag,
         initial,
-        okCallback)
+        okCallback,
+        context)
       diag.open()
     }
   }
@@ -125,7 +134,8 @@ class EffectDialog(
   owner: Window,
   dbDiag: DatabaseDialog,
   initial: Effect,
-  onOk: Effect => Unit)
+  onOk: Effect => Unit,
+  context: EffectContext.Value)
   extends StdDialog(owner, "Edit Effect") {
   case class EffectControls(
     key: EffectKey.Val,
@@ -138,6 +148,8 @@ class EffectDialog(
   var controls = Nil
   var selectedControls: EffectControls = null
 
+  val helpLabel = new Label
+
   def selectKey(key: EffectKey.Val) = {
     selectedControls = effectsMap.get(key.id).get
 
@@ -149,6 +161,12 @@ class EffectDialog(
 
     selectedControls.control.enabled = true
 
+    val helpResult = key.help(context)
+
+    helpLabel.foreground =
+      if (helpResult.valid) java.awt.Color.BLACK else java.awt.Color.RED
+    helpLabel.text = helpResult.helpMessage
+
     model = selectedControls.getVal()
   }
 
@@ -158,7 +176,7 @@ class EffectDialog(
     }
   }
 
-  def onCurControlChange() = {
+  def onValueChange() = {
     model = selectedControls.getVal()
   }
 
@@ -176,7 +194,7 @@ class EffectDialog(
       0,
       MINEFFECTARG,
       MAXEFFECTARG,
-      onUpdate = v => onCurControlChange())
+      onUpdate = v => onValueChange())
 
     val control = new BoxPanel(Orientation.Horizontal) {
       contents += spinner
@@ -203,7 +221,7 @@ class EffectDialog(
       0,
       -100,
       100,
-      onUpdate = v => onCurControlChange())
+      onUpdate = v => onValueChange())
 
     val control = new BoxPanel(Orientation.Horizontal) {
       contents += spinner
@@ -226,8 +244,8 @@ class EffectDialog(
   }
 
   def choiceEffect[T <: HasName](key: EffectKey.Val,
-                                 choices: Seq[T]): EffectControls = {
-    val combo = indexedCombo(choices, 0, i => onCurControlChange())
+    choices: Seq[T]): EffectControls = {
+    val combo = indexedCombo(choices, 0, i => onValueChange())
 
     EffectControls(
       key,
@@ -244,12 +262,12 @@ class EffectDialog(
     min: Int,
     max: Int,
     label: String): EffectControls = {
-    val combo = indexedCombo(choices, 0, i => onCurControlChange())
+    val combo = indexedCombo(choices, 0, i => onValueChange())
     val spinner = new NumberSpinner(
       initial,
       min,
       max,
-      onUpdate = v => onCurControlChange()) {
+      onUpdate = v => onValueChange()) {
       maximumSize = new Dimension(90, Int.MaxValue)
     }
 
@@ -279,14 +297,14 @@ class EffectDialog(
         spinner.setValue(e.v2)
       })
   }
-  
+
   def choicePercentEffect[T <: HasName](key: EffectKey.Val,
-                                        choices: Seq[T]): EffectControls = {
+    choices: Seq[T]): EffectControls = {
     choiceWithValueEffect(key, choices, 100, 0, 100, "%")
   }
-  
+
   def choicePointsEffect[T <% HasName](key: EffectKey.Val,
-                                       choices: Seq[T]): EffectControls = {
+    choices: Seq[T]): EffectControls = {
     choiceWithValueEffect(key, choices, 0, MINEFFECTARG, MAXEFFECTARG, "p")
   }
 
@@ -343,6 +361,7 @@ class EffectDialog(
     }
 
     row().grid().add(tabPane)
+    row().grid().add(helpLabel)
 
     addButtons(cancelBtn, okBtn)
   }

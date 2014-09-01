@@ -26,6 +26,16 @@ class ItemsPanel(
 
   def editPaneForItem(idx: Int, model: Item) = {
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
+      def effectContext =
+        if (model.itemType == ItemType.Equipment.id)
+          EffectContext.Equipment
+        else
+          EffectContext.Item
+
+      val effectPane =
+        new EffectPanel(owner, dbDiag, model.effects, model.effects = _,
+          effectContext)
+
       val leftPane = new DesignGridPanel {
         import HasName._
 
@@ -87,6 +97,8 @@ class ItemsPanel(
           fUseOnAttack.enabled = model.itemType == ItemType.Equipment.id
           fOnUseSkillId.enabled =
             model.itemType == ItemType.Equipment.id && model.useOnAttack
+
+          effectPane.updateContext(effectContext)
         }
 
         setEnabledFields()
@@ -111,11 +123,8 @@ class ItemsPanel(
           .grid(lbl("On use skill:")).add(fOnUseSkillId)
       }
 
-      val rightPane =
-        new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
-
       contents += leftPane
-      contents += rightPane
+      contents += effectPane
     }
   }
 
