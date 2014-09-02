@@ -2,10 +2,10 @@ package rpgboss.model
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.{ Context, ScriptableObject, Scriptable }
-import rpgboss.model.battle.BattleStatus
+import rpgboss.model.battle._
 
 object DamageType extends RpgEnum {
-  val Physical, Magic = Value
+  val Physical, Magic, MPDamage = Value
   def default = Physical
 }
 
@@ -69,12 +69,9 @@ case class Damage(
 }
 
 object Damage {
-  def getDamages(source: BattleStatus, target: BattleStatus, pData: ProjectData,
-                 skillId: Int): Array[TakenDamage] = {
+  def getDamages(source: BattleStatus, target: BattleStatus,
+                 skill: Skill): Array[TakenDamage] = {
     import DamageType._
-
-    assume(skillId < pData.enums.skills.length)
-    val skill = pData.enums.skills(skillId)
 
     for (damage <- skill.damages) yield {
       val armorOrMagicResist =
@@ -106,4 +103,35 @@ case class Skill(
   var cost: Int = 0,
   var damages: Array[Damage] = Array(Damage()),
   var effects: Array[Effect] = Array(),
-  var animationId: Int = 0) extends HasName
+  var animationId: Int = 0) extends HasName {
+  def applySkill(actor: BattleStatus, target: BattleStatus) = {
+    import EffectKey._
+
+    val hits = new collection.mutable.ArrayBuffer[Hit]
+
+    // Apply damages
+    val damages = Damage.getDamages(actor, target, this)
+    if (!damages.isEmpty) {
+      hits.append(Hit(target, damages, animationId))
+
+      target.hp -= damages.map(_.value).sum
+    }
+
+    // Apply other effects
+    for (effect <- effects) {
+      if (effect.keyId == RecoverHpAdd.id && target.hp > 0) {
+        target.hp += effect.v1
+        hits.append(
+          Hit(target, Array(TakenDamage(DamageType.Magic, 0, -effect.v1)),
+              animationId))
+      }
+    }
+
+    if (target.hp < 0)
+      target.hp = 0
+    else if (target.hp > target.stats.mhp)
+      target.hp = target.stats.mhp
+
+    hits
+  }
+}

@@ -97,7 +97,6 @@ object EffectKey extends RpgEnum {
   val RecoverMpAdd = Val("Recover MP", help = recoveryHelp)
   val RecoverMpMul = Val("Recover percentage of MP", help = recoveryHelp)
 
-
   val AddStatusEffect =
     Val("Add status effect", getEnumOfValue1(_.enums.statusEffects),
         help = itemEquipSkillOnlyHelp)
