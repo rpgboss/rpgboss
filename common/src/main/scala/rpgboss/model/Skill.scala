@@ -3,6 +3,7 @@ package rpgboss.model
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.{ Context, ScriptableObject, Scriptable }
 import rpgboss.model.battle._
+import rpgboss.lib._
 
 object DamageType extends RpgEnum {
   val Physical, Magic, MPDamage = Value
@@ -119,18 +120,37 @@ case class Skill(
 
     // Apply other effects
     for (effect <- effects) {
-      if (effect.keyId == RecoverHpAdd.id && target.hp > 0) {
-        target.hp += effect.v1
+      def recoverHp(amount: Int) = {
+        target.hp += amount
         hits.append(
-          Hit(target, Array(TakenDamage(DamageType.Magic, 0, -effect.v1)),
+          Hit(target, Array(TakenDamage(DamageType.Magic, 0, -amount)),
               animationId))
+      }
+
+      def recoverMp(amount: Int) = {
+        target.mp += amount
+        hits.append(
+          Hit(target, Array(TakenDamage(DamageType.MPDamage, 0, -amount)),
+              animationId))
+      }
+
+      if (target.hp > 0) {
+        if (effect.keyId == RecoverHpAdd.id) {
+          recoverHp(effect.v1)
+        } else if (effect.keyId == RecoverHpMul.id) {
+          recoverHp((effect.v1 * 0.01 * target.stats.mhp).round.toInt)
+        }
+      }
+
+      if (effect.keyId == RecoverMpAdd.id) {
+        recoverMp(effect.v1)
+      } else if (effect.keyId == RecoverMpMul.id) {
+        recoverMp((effect.v1 * 0.01 * target.stats.mmp).round.toInt)
       }
     }
 
-    if (target.hp < 0)
-      target.hp = 0
-    else if (target.hp > target.stats.mhp)
-      target.hp = target.stats.mhp
+    target.hp = Utils.clamped(target.hp, 0, target.stats.mhp)
+    target.mp = Utils.clamped(target.mp, 0, target.stats.mmp)
 
     hits
   }

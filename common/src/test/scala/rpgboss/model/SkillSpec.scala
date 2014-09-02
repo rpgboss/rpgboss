@@ -37,4 +37,46 @@ class SkillSpec extends UnitSpec {
 
     f.status.hp should equal (40)
   }
+
+  "Skill" should "use RecoverHpAddMul effects" in {
+    val f = fixture
+    f.status.hp = 1
+
+    val skill = Skill(damages = Array(),
+                      effects = Array(Effect(RecoverHpMul.id, 10, 0)))
+    val hits = skill.applySkill(f.status, f.status)
+    hits.length should equal (1)
+    hits.head.damages.length should equal (1)
+    hits.head.damages.head.value should equal (-5)
+
+    f.status.hp should equal (6)
+  }
+
+  "Skill" should "use RecoverMpAdd effects" in {
+    val f = fixture
+    f.status.mp = 1
+
+    val skill = Skill(damages = Array(),
+                      effects = Array(Effect(RecoverMpAdd.id, 10, 0)))
+    val hits = skill.applySkill(f.status, f.status)
+    hits.length should equal (1)
+    hits.head.damages.length should equal (1)
+    hits.head.damages.head.value should equal (-10)
+
+    f.status.mp should equal (11)
+  }
+
+  "Skill" should "use RecoverMpAddMul effects" in {
+    val f = fixture
+    f.status.mp = 1
+
+    val skill = Skill(damages = Array(),
+                      effects = Array(Effect(RecoverMpMul.id, 20, 0)))
+    val hits = skill.applySkill(f.status, f.status)
+    hits.length should equal (1)
+    hits.head.damages.length should equal (1)
+    hits.head.damages.head.value should equal (-4)
+
+    f.status.mp should equal (5)
+  }
 }
