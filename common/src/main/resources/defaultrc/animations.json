@@ -1,14 +1,881 @@
 [
   {
-    "name":"Animation",
-    "framesTiles":[
+    "name":"Fire",
+    "visuals":[
       {
-        "tiles":[
-          
-        ]
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":1,
+          "y":-20
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":0,
+          "x":0,
+          "y":-20
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.5,
+          "frameIndex":23,
+          "x":-1,
+          "y":-20
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":23,
+          "x":1,
+          "y":-20
+        }
       }
     ],
-    "effects":[
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Flame",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":4,
+          "x":-1,
+          "y":0
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":4,
+          "x":1,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.5,
+          "frameIndex":22,
+          "x":1,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":22,
+          "x":-1,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Fireblast",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":18,
+          "x":0,
+          "y":-50
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":18,
+          "x":0,
+          "y":-50
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":4,
+          "x":0,
+          "y":50
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":4,
+          "x":0,
+          "y":50
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.5,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.5,
+          "frameIndex":5,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":5,
+          "x":0,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":1.0,
+          "frameIndex":20,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.25,
+          "frameIndex":20,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Firestorm",
+    "visuals":[
+      {
+        "animationImage":"firestream.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":400
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":-400,
+          "y":-400
+        }
+      },
+      {
+        "animationImage":"firestream.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":-400,
+          "y":-400
+        }
+      },
+      {
+        "animationImage":"firestream.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":200
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":-400,
+          "y":-400
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Scorch",
+    "visuals":[
+      {
+        "animationImage":"Scorch.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":0
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":0,
+          "x":-400,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"Scorch.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":450,
+          "y":50
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":0,
+          "x":-400,
+          "y":50
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
       
     ]
   }
