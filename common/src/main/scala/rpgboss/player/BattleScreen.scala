@@ -541,10 +541,9 @@ class BattleScreen(
                 }
 
               val animations =
-                for (hit <- notification.hits;
-                     animationId <- hit.animationIds) yield {
-                  assert(animationId < battle.pData.enums.animations.length)
-                  val animation = battle.pData.enums.animations(animationId)
+                for (hit <- notification.hits) yield {
+                  assert(hit.animationId < battle.pData.enums.animations.length)
+                  val animation = battle.pData.enums.animations(hit.animationId)
 
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
                   val player = new AnimationPlayer(project, animation, assets,

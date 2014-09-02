@@ -71,7 +71,8 @@ class StatusPanel(
       }
 
       val rightPane =
-          new EffectPanel(owner, dbDiag, model.effects, model.effects = _, true)
+          new EffectPanel(owner, dbDiag, model.effects, model.effects = _,
+              EffectContext.StatusEffect)
 
       contents += leftPane
       contents += rightPane

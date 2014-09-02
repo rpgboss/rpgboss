@@ -107,6 +107,9 @@ object Utils {
   def ceilIntDiv(n: Int, m: Int) = (n - 1) / m + 1
   def ceilFloatDiv(n: Float, m: Int) = ceilIntDiv(n.ceil.toInt, m)
 
+  def clamped(orig: Int, min: Int, max: Int) =
+    math.min(max, math.max(min, orig))
+
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m
 

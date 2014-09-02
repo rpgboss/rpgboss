@@ -3,7 +3,7 @@ package rpgboss.model.battle
 import rpgboss.model._
 
 case class Hit(hitActor: BattleStatus, damages: Array[TakenDamage],
-               animationIds: Array[Int])
+               animationId: Int)
 
 /**
  * A BattleAction is an action taken by an entity in the battle. It consumes
@@ -36,25 +36,14 @@ case class AttackAction(actor: BattleStatus, targets: Array[BattleStatus])
       else
         battle.randomAliveOf(desiredTarget.entityType)
 
-    val hitOption = for (target <- actualTargets) yield {
-      val damages =
-        actor.onAttackSkillIds
-          .map(skillId =>
-            Damage.getDamages(actor, target, battle.pData, skillId))
-          .flatten
-
-      target.hp -= math.min(target.hp, damages.map(_.value).sum)
-
-      val animations = actor.onAttackSkillIds.map(skillId => {
-        assert(skillId < battle.pData.enums.skills.length)
-        val skill = battle.pData.enums.skills(skillId)
-        skill.animationId
-      })
-
-      Hit(target, damages, animations)
+    val hits = new collection.mutable.ArrayBuffer[Hit]
+    for (target <- actualTargets; skillId <- actor.onAttackSkillIds) {
+      assume(skillId < battle.pData.enums.skills.length)
+      val skill = battle.pData.enums.skills(skillId)
+      hits ++= skill.applySkill(actor, target)
     }
 
-    hitOption.toArray
+    hits.toArray
   }
 }
 
@@ -62,9 +51,9 @@ case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
                        skillId: Int)
   extends BattleAction {
   def process(battle: Battle) = {
-    if (skillId < battle.pData.enums.skills.length)
-      Array()
+    import EffectKey._
 
+    assume(skillId < battle.pData.enums.skills.length)
     val skill = battle.pData.enums.skills(skillId)
     if (actor.mp < skill.cost)
       Array()
@@ -73,17 +62,12 @@ case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
 
     assert(targets.length >= 1)
 
-    for (target <- targets) yield {
-      val damages = Damage.getDamages(actor, target, battle.pData, skillId)
-      target.hp -= damages.map(_.value).sum
-
-      if (target.hp < 0)
-        target.hp = 0
-      else if (target.hp > target.stats.mhp)
-        target.hp = target.stats.mhp
-
-      Hit(target, damages, Array(skill.animationId))
+    val hits = new collection.mutable.ArrayBuffer[Hit]
+    for (target <- targets) {
+      hits ++= skill.applySkill(actor, target)
     }
+
+    hits.toArray
   }
 }
 

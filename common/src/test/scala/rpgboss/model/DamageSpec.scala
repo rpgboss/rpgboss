@@ -63,12 +63,12 @@ class DamageSpec extends UnitSpec {
   "Damage" should "work correctly in a skill, handling armor, magic res." in {
     val f = fixture
 
-    f.pData.enums.elements = Array("Blunt", "Fire")
-    f.pData.enums.skills = Array(Skill(damages = Array(
+    val skill = Skill(damages = Array(
       Damage(DamageType.Physical.id, 0, "a.atk"),
-      Damage(DamageType.Magic.id, 1, "a.mag"))))
+      Damage(DamageType.Magic.id, 1, "a.mag")))
 
-    val takenDamages = Damage.getDamages(f.status, f.status, f.pData, 0)
+    val takenDamages =
+      Damage.getDamages(f.status, f.status, skill)
 
     takenDamages.length should equal(2)
     takenDamages(0) should equal(TakenDamage(DamageType.Physical, 0, 5))

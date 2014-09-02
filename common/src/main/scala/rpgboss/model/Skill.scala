@@ -2,10 +2,11 @@ package rpgboss.model
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.{ Context, ScriptableObject, Scriptable }
-import rpgboss.model.battle.BattleStatus
+import rpgboss.model.battle._
+import rpgboss.lib._
 
 object DamageType extends RpgEnum {
-  val Physical, Magic = Value
+  val Physical, Magic, MPDamage = Value
   def default = Physical
 }
 
@@ -69,12 +70,9 @@ case class Damage(
 }
 
 object Damage {
-  def getDamages(source: BattleStatus, target: BattleStatus, pData: ProjectData,
-                 skillId: Int): Array[TakenDamage] = {
+  def getDamages(source: BattleStatus, target: BattleStatus,
+                 skill: Skill): Array[TakenDamage] = {
     import DamageType._
-
-    assume(skillId < pData.enums.skills.length)
-    val skill = pData.enums.skills(skillId)
 
     for (damage <- skill.damages) yield {
       val armorOrMagicResist =
@@ -106,4 +104,54 @@ case class Skill(
   var cost: Int = 0,
   var damages: Array[Damage] = Array(Damage()),
   var effects: Array[Effect] = Array(),
-  var animationId: Int = 0) extends HasName
+  var animationId: Int = 0) extends HasName {
+  def applySkill(actor: BattleStatus, target: BattleStatus) = {
+    import EffectKey._
+
+    val hits = new collection.mutable.ArrayBuffer[Hit]
+
+    // Apply damages
+    val damages = Damage.getDamages(actor, target, this)
+    if (!damages.isEmpty) {
+      hits.append(Hit(target, damages, animationId))
+
+      target.hp -= damages.map(_.value).sum
+    }
+
+    // Apply other effects
+    for (effect <- effects) {
+      def recoverHp(amount: Int) = {
+        target.hp += amount
+        hits.append(
+          Hit(target, Array(TakenDamage(DamageType.Magic, 0, -amount)),
+              animationId))
+      }
+
+      def recoverMp(amount: Int) = {
+        target.mp += amount
+        hits.append(
+          Hit(target, Array(TakenDamage(DamageType.MPDamage, 0, -amount)),
+              animationId))
+      }
+
+      if (target.hp > 0) {
+        if (effect.keyId == RecoverHpAdd.id) {
+          recoverHp(effect.v1)
+        } else if (effect.keyId == RecoverHpMul.id) {
+          recoverHp((effect.v1 * 0.01 * target.stats.mhp).round.toInt)
+        }
+      }
+
+      if (effect.keyId == RecoverMpAdd.id) {
+        recoverMp(effect.v1)
+      } else if (effect.keyId == RecoverMpMul.id) {
+        recoverMp((effect.v1 * 0.01 * target.stats.mmp).round.toInt)
+      }
+    }
+
+    target.hp = Utils.clamped(target.hp, 0, target.stats.mhp)
+    target.mp = Utils.clamped(target.mp, 0, target.stats.mmp)
+
+    hits
+  }
+}

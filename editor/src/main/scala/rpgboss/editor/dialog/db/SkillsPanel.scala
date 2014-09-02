@@ -50,7 +50,8 @@ class SkillsPanel(
 
       contents += new BoxPanel(Orientation.Vertical) {
         val effectPanel = new EffectPanel(owner, dbDiag, model.effects,
-                                          model.effects = _, false)
+                                          model.effects = _,
+                                          EffectContext.Skill)
         val damagePanel =
           new DamageArrayPanel(dbDiag, model.damages, model.damages = _)
 
