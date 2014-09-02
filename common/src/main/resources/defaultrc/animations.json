@@ -159,53 +159,9 @@
     ]
   },
   {
-    "name":"Firestorm",
+    "name":"",
     "visuals":[
-      {
-        "animationImage":"firestream.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":0,
-          "x":400,
-          "y":400
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":0,
-          "x":-400,
-          "y":-400
-        }
-      },
-      {
-        "animationImage":"firestream.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":0,
-          "x":400,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":0,
-          "x":-400,
-          "y":-400
-        }
-      },
-      {
-        "animationImage":"firestream.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":0,
-          "x":400,
-          "y":200
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":0,
-          "x":-400,
-          "y":-400
-        }
-      }
+      
     ],
     "sounds":[
       
@@ -215,7 +171,7 @@
     "name":"Scorch",
     "visuals":[
       {
-        "animationImage":"Scorch.png",
+        "animationImage":"Scorchtrail.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -223,612 +179,102 @@
           "y":0
         },
         "end":{
-          "time":0.5,
+          "time":1.0,
           "frameIndex":0,
-          "x":-400,
+          "x":200,
           "y":0
         }
       },
       {
-        "animationImage":"Scorch.png",
+        "animationImage":"Scorchtrail.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
-          "x":450,
-          "y":50
+          "x":400,
+          "y":0
         },
         "end":{
-          "time":0.5,
+          "time":1.0,
           "frameIndex":0,
-          "x":-400,
-          "y":50
+          "x":0,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"Scorchtrail.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":300,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"Scorchtrail.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":100,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"Scorchtrail.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":-100,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"Scorchtrail.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":-200,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"Scorchtrail.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":400,
+          "y":-150
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":-200,
+          "y":-150
         }
       }
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
     ],
     "sounds":[
       
