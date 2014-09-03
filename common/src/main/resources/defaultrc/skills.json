@@ -293,7 +293,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":3
   },
   {
     "name":"FireTen",
@@ -303,13 +303,13 @@
       {
         "typeId":1,
         "elementId":4,
-        "formula":"a.mag*1"
+        "formula":"a.mag*1.2"
       }
     ],
     "effects":[
       
     ],
-    "animationId":3
+    "animationId":8
   },
   {
     "name":"",
@@ -948,7 +948,7 @@
     "animationId":0
   },
   {
-    "name":"Gravelblast",
+    "name":"Gravel Blast",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -1108,7 +1108,7 @@
     "animationId":0
   },
   {
-    "name":"Thunderoutburst",
+    "name":"Thunder Outburst",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -1180,6 +1180,166 @@
         "typeId":1,
         "elementId":6,
         "formula":"a.mag*1.75"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"Heal",
+    "scopeId":4,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":"-a.mag"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":5
+  },
+  {
+    "name":"Cure",
+    "scopeId":4,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"Cure All",
+    "scopeId":5,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"Heal All",
+    "scopeId":5,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":"-a.mag"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"Revive",
+    "scopeId":4,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":7
+  },
+  {
+    "name":"Regen",
+    "scopeId":4,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":"-a.mag*.5"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":6
+  },
+  {
+    "name":"Recover",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":0,
+        "formula":"-a.mag"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"Revive All",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
       }
     ],
     "effects":[
