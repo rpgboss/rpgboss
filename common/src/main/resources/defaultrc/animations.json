@@ -11,24 +11,9 @@
           "y":-20
         },
         "end":{
-          "time":0.5,
-          "frameIndex":0,
-          "x":0,
-          "y":-20
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":23,
-          "x":-1,
-          "y":-20
-        },
-        "end":{
           "time":1.0,
-          "frameIndex":23,
-          "x":1,
+          "frameIndex":10,
+          "x":0,
           "y":-20
         }
       }
@@ -44,29 +29,14 @@
         "animationImage":"sys/animation_fire002.png",
         "start":{
           "time":0.0,
-          "frameIndex":4,
+          "frameIndex":11,
           "x":-1,
-          "y":0
-        },
-        "end":{
-          "time":0.5,
-          "frameIndex":4,
-          "x":1,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":22,
-          "x":1,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":22,
-          "x":-1,
+          "frameIndex":23,
+          "x":1,
           "y":0
         }
       }
@@ -82,13 +52,13 @@
         "animationImage":"sys/animation_fire002.png",
         "start":{
           "time":0.0,
-          "frameIndex":18,
+          "frameIndex":20,
           "x":0,
           "y":-50
         },
         "end":{
-          "time":0.5,
-          "frameIndex":18,
+          "time":1.0,
+          "frameIndex":23,
           "x":0,
           "y":-50
         }
@@ -97,60 +67,45 @@
         "animationImage":"sys/animation_fire002.png",
         "start":{
           "time":0.0,
-          "frameIndex":4,
+          "frameIndex":20,
+          "x":50,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":23,
+          "x":50,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":20,
+          "x":-50,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":23,
+          "x":-50,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":20,
           "x":0,
           "y":50
         },
         "end":{
-          "time":0.5,
-          "frameIndex":4,
+          "time":1.0,
+          "frameIndex":22,
           "x":0,
           "y":50
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":4,
-          "x":0,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":4,
-          "x":0,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":5,
-          "x":0,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":5,
-          "x":0,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":1.0,
-          "frameIndex":20,
-          "x":0,
-          "y":0
-        },
-        "end":{
-          "time":1.25,
-          "frameIndex":20,
-          "x":0,
-          "y":0
         }
       }
     ],
@@ -159,9 +114,38 @@
     ]
   },
   {
-    "name":"",
+    "name":"Flare",
     "visuals":[
-      
+      {
+        "animationImage":"Flare3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":1.0,
+          "frameIndex":22,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.2,
+          "frameIndex":22,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
@@ -281,27 +265,145 @@
     ]
   },
   {
-    "name":"",
+    "name":"Heal",
     "visuals":[
-      
+      {
+        "animationImage":"sys/animation_heal008.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
     ]
   },
   {
-    "name":"",
+    "name":"Regen",
     "visuals":[
-      
+      {
+        "animationImage":"sys/animation_heal005.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":10,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
     ]
   },
   {
-    "name":"",
+    "name":"Revive",
     "visuals":[
+      {
+        "animationImage":"sys/animation_heal005.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":12,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
       
+    ]
+  },
+  {
+    "name":"FireTen",
+    "visuals":[
+      {
+        "animationImage":"flare1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Firestorm",
+    "visuals":[
+      {
+        "animationImage":"firestorm.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":-200,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":200,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"firestorm.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":-200,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"firestorm.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":-80,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":50,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
