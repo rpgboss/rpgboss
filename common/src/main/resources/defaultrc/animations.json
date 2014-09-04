@@ -357,6 +357,68 @@
     ]
   },
   {
+    "name":"Firestorm",
+    "visuals":[
+      {
+        "animationImage":"firestorm.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":-200,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":200,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"firestorm.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":-200,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"firestorm.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":-80,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":50,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
     "name":"",
     "visuals":[
       
