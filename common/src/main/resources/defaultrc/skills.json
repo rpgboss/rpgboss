@@ -149,7 +149,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":10
   },
   {
     "name":"Fire",
@@ -197,7 +197,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":2
   },
   {
     "name":"Infernofire",
@@ -213,7 +213,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":12
   },
   {
     "name":"Firestorm",
@@ -245,7 +245,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":13
   },
   {
     "name":"Scorch",
@@ -277,7 +277,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":11
   },
   {
     "name":"Flare",
@@ -517,7 +517,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":21
   },
   {
     "name":"Ice",
@@ -533,7 +533,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":14
   },
   {
     "name":"Glaciers",
@@ -565,7 +565,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":15
   },
   {
     "name":"Icicles",
@@ -629,7 +629,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":16
   },
   {
     "name":"Glacierstorm",
@@ -705,7 +705,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":22
   },
   {
     "name":"Hurricane",
@@ -801,7 +801,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":23
   },
   {
     "name":"Whirlwind",
@@ -833,7 +833,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":24
   },
   {
     "name":"",
@@ -881,7 +881,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":18
   },
   {
     "name":"Stone",
@@ -897,7 +897,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":20
   },
   {
     "name":"Boulder",
@@ -913,7 +913,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":19
   },
   {
     "name":"Earth",
@@ -993,7 +993,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":17
   },
   {
     "name":"Earthquake",
