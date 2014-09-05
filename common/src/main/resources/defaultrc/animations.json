@@ -11,24 +11,9 @@
           "y":-20
         },
         "end":{
-          "time":0.5,
-          "frameIndex":0,
-          "x":0,
-          "y":-20
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":23,
-          "x":-1,
-          "y":-20
-        },
-        "end":{
           "time":1.0,
-          "frameIndex":23,
-          "x":1,
+          "frameIndex":10,
+          "x":0,
           "y":-20
         }
       }
@@ -44,29 +29,14 @@
         "animationImage":"sys/animation_fire002.png",
         "start":{
           "time":0.0,
-          "frameIndex":4,
+          "frameIndex":11,
           "x":-1,
-          "y":0
-        },
-        "end":{
-          "time":0.5,
-          "frameIndex":4,
-          "x":1,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":22,
-          "x":1,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":22,
-          "x":-1,
+          "frameIndex":23,
+          "x":1,
           "y":0
         }
       }
@@ -82,13 +52,13 @@
         "animationImage":"sys/animation_fire002.png",
         "start":{
           "time":0.0,
-          "frameIndex":18,
+          "frameIndex":20,
           "x":0,
           "y":-50
         },
         "end":{
-          "time":0.5,
-          "frameIndex":18,
+          "time":1.0,
+          "frameIndex":23,
           "x":0,
           "y":-50
         }
@@ -97,60 +67,45 @@
         "animationImage":"sys/animation_fire002.png",
         "start":{
           "time":0.0,
-          "frameIndex":4,
+          "frameIndex":20,
+          "x":50,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":23,
+          "x":50,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":20,
+          "x":-50,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":23,
+          "x":-50,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":20,
           "x":0,
           "y":50
         },
         "end":{
-          "time":0.5,
-          "frameIndex":4,
+          "time":1.0,
+          "frameIndex":22,
           "x":0,
           "y":50
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":4,
-          "x":0,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":4,
-          "x":0,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.5,
-          "frameIndex":5,
-          "x":0,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":5,
-          "x":0,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":1.0,
-          "frameIndex":20,
-          "x":0,
-          "y":0
-        },
-        "end":{
-          "time":1.25,
-          "frameIndex":20,
-          "x":0,
-          "y":0
         }
       }
     ],
@@ -159,9 +114,38 @@
     ]
   },
   {
-    "name":"",
+    "name":"Flare",
     "visuals":[
-      
+      {
+        "animationImage":"sys/animation_firepack2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":7,
+          "x":0,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_fire002.png",
+        "start":{
+          "time":1.0,
+          "frameIndex":22,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.2,
+          "frameIndex":22,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
@@ -171,108 +155,508 @@
     "name":"Scorch",
     "visuals":[
       {
-        "animationImage":"Scorchtrail.png",
+        "animationImage":"sys/animation_firepack2.png",
         "start":{
           "time":0.0,
-          "frameIndex":0,
-          "x":400,
+          "frameIndex":8,
+          "x":200,
           "y":0
         },
         "end":{
           "time":1.0,
+          "frameIndex":11,
+          "x":-400,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Heal",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_heal008.png",
+        "start":{
+          "time":0.0,
           "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Regen",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_heal005.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":10,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Revive",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_heal005.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":12,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"FireTen",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_firepack2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Firestorm",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_firepack1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":12,
+          "x":-200,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":15,
           "x":200,
           "y":0
         }
       },
       {
-        "animationImage":"Scorchtrail.png",
+        "animationImage":"sys/animation_firepack1.png",
         "start":{
           "time":0.0,
-          "frameIndex":0,
-          "x":400,
+          "frameIndex":12,
+          "x":200,
           "y":0
         },
         "end":{
           "time":1.0,
+          "frameIndex":15,
+          "x":-200,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/animation_firepack1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":12,
+          "x":-80,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":15,
+          "x":50,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Fireball",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_firepack1.png",
+        "start":{
+          "time":0.0,
           "frameIndex":0,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":3,
           "x":0,
           "y":0
         }
-      },
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Blaze",
+    "visuals":[
       {
-        "animationImage":"Scorchtrail.png",
+        "animationImage":"sys/animation_firepack1.png",
         "start":{
           "time":0.0,
-          "frameIndex":0,
-          "x":400,
+          "frameIndex":4,
+          "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":0,
-          "x":300,
+          "frameIndex":7,
+          "x":0,
           "y":0
         }
-      },
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Infernofire",
+    "visuals":[
       {
-        "animationImage":"Scorchtrail.png",
+        "animationImage":"sys/animation_fire004.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
-          "x":400,
+          "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
+          "frameIndex":19,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Heat",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_firepack1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":8,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":11,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Ice",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_ice005.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":5,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":9,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Freeze",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_ice005.png",
+        "start":{
+          "time":0.0,
           "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Iceball",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_ice005.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":9,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Upheavel",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_stone001.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Rock",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_stone001.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":10,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":11,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Boulder",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_stone001.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":19,
           "x":100,
+          "y":100
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":19,
+          "x":0,
           "y":0
         }
-      },
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Stone",
+    "visuals":[
       {
-        "animationImage":"Scorchtrail.png",
+        "animationImage":"sys/animation_stone001.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":15,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":15,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Hail",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_light002.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
-          "x":400,
+          "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":0,
-          "x":-100,
+          "frameIndex":9,
+          "x":0,
           "y":0
         }
-      },
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Gale",
+    "visuals":[
       {
-        "animationImage":"Scorchtrail.png",
+        "animationImage":"sys/animation_wind002.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
-          "x":400,
+          "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":0,
-          "x":-200,
+          "frameIndex":5,
+          "x":0,
           "y":0
         }
-      },
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Gust",
+    "visuals":[
       {
-        "animationImage":"Scorchtrail.png",
+        "animationImage":"sys/animation_wind004.png",
         "start":{
           "time":0.0,
-          "frameIndex":0,
-          "x":400,
-          "y":-150
+          "frameIndex":11,
+          "x":0,
+          "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":0,
-          "x":-200,
-          "y":-150
+          "frameIndex":18,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Wind",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_wind002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":6,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":11,
+          "x":0,
+          "y":0
         }
       }
     ],
@@ -283,43 +667,21 @@
   {
     "name":"",
     "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "visuals":[
-      
+      {
+        "animationImage":"sys/animation_light002.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":20,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":24,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
