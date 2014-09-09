@@ -328,7 +328,7 @@
     "animationId":0
   },
   {
-    "name":"Aqua",
+    "name":"Aquaball",
     "scopeId":2,
     "cost":0,
     "damages":[
@@ -341,7 +341,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":26
   },
   {
     "name":"Water",
@@ -357,7 +357,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":27
   },
   {
     "name":"Rainstorm",
@@ -488,7 +488,7 @@
     "animationId":0
   },
   {
-    "name":"",
+    "name":"Splash",
     "scopeId":2,
     "cost":0,
     "damages":[
@@ -501,7 +501,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":28
   },
   {
     "name":"Hail",

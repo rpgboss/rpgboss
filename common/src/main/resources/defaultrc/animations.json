@@ -686,5 +686,83 @@
     "sounds":[
       
     ]
+  },
+  {
+    "name":"Aquaball",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_waterpack1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":13,
+          "x":100,
+          "y":0
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":15,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Water",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_waterpack1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":5,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Splash",
+    "visuals":[
+      {
+        "animationImage":"sys/animation_waterpack1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":6,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":12,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
   }
 ]
