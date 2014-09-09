@@ -179,7 +179,7 @@ class TextWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
-  x: Int, y: Int, w: Int, h: Int,
+  x: Float, y: Float, w: Int, h: Int,
   justification: Int = Window.Left,
   stayOpenTime: Double = 0.0)
   extends Window(manager, inputs, x, y, w, h) {

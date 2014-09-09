@@ -50,6 +50,7 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
     curThread = Some(ScriptThread.fromEventEntity(
       game,
+      game.mapScreen,
       game.mapScreen.scriptInterface,
       this, evtStateIdx,
       onFinish = Some(() => {

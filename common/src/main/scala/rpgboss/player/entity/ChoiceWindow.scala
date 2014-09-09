@@ -19,7 +19,7 @@ abstract class ChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  x: Int, y: Int, w: Int, h: Int,
+  x: Float, y: Float, w: Int, h: Int,
   invisible: Boolean = false,
   defaultChoice: Int = 0,
   allowCancel: Boolean = true)
@@ -73,7 +73,7 @@ class TextChoiceWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   lines: Array[String] = Array(),
-  x: Int, y: Int, w: Int, h: Int,
+  x: Float, y: Float, w: Int, h: Int,
   justification: Int = Window.Left,
   defaultChoice: Int = 0,
   // Choices displayed in a row-major way.

@@ -20,6 +20,10 @@ trait RpgScreen extends Screen with ThreadChecked {
       game.project.data.startup.screenW,
       game.project.data.startup.screenH)
 
+  val positions = new PositionProvider(
+      game.project.data.startup.screenW,
+      game.project.data.startup.screenH)
+
   val musics = Array.fill[Option[MusicPlayer]](8)(None)
   val windowManager = createWindowManager()
 
