@@ -213,8 +213,11 @@ class ScriptInterface(
     }
   }
 
-  def showPicture(slot: Int, name: String, x: Int, y: Int, w: Int,
+  def showPicture(slot: Int, name: String, pos: Position, w: Int,
                   h: Int) = syncRun {
+    // TODO: Convert all positions to center positions
+    val x = pos.x - w / 2
+    val y = pos.y - h / 2
     activeScreen.windowManager.showPictureByName(slot, name, x, y, w, h)
   }
 
@@ -240,11 +243,14 @@ class ScriptInterface(
    */
   def newChoiceWindowWithOptions(
     lines: Array[String],
-    x: Int, y: Int, w: Int, h: Int,
+    pos: Position, w: Int, h: Int,
     justification: Int = Window.Left,
     columns: Int = 1,
     displayedLines: Int = 0,
     allowCancel: Boolean = false) = {
+    // TODO: Convert all positions to center positions
+    val x = pos.x - w / 2
+    val y = pos.y - h / 2
     val window = syncRun {
       new TextChoiceWindow(
         game.persistent,
@@ -263,8 +269,8 @@ class ScriptInterface(
 
   def newChoiceWindow(
     choices: Array[String],
-    x: Int, y: Int, w: Int, h: Int): ChoiceWindow#ChoiceWindowScriptInterface =
-    newChoiceWindowWithOptions(choices, x, y, w, h)
+    pos: Position, w: Int, h: Int): ChoiceWindow#ChoiceWindowScriptInterface =
+    newChoiceWindowWithOptions(choices, pos, w, h)
 
   /**
    * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
@@ -307,8 +313,11 @@ class ScriptInterface(
     choice
   }
 
-  def showText(text: Array[String], x: Int, y: Int, w: Int, h: Int,
+  def showText(text: Array[String], pos: Position, w: Int, h: Int,
                timePerChar: Float) = {
+    // TODO: Convert all positions to center positions
+    val x = pos.x - w / 2
+    val y = pos.y - h / 2
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
@@ -322,7 +331,8 @@ class ScriptInterface(
   }
 
   def showText(text: Array[String]): Unit =
-    showText(text, x = 0, y = 300, w = 640, h = 180, timePerChar = 0.02f)
+    showText(text, activeScreen.positions.south(640, 180), w = 640, h = 180,
+      timePerChar = 0.02f)
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {
     EntityInfo(mapScreen.playerEntity)

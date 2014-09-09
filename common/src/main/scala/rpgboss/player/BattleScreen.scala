@@ -98,7 +98,7 @@ class BattleScreen(
             }
 
             val skillWindow = scriptInterface.newChoiceWindowWithOptions(
-              skillChoices.map(_.name), 0, 300, 640, 180,
+              skillChoices.map(_.name), positions.south(640, 180), 640, 180,
               columns = 2, allowCancel = true)
 
             while (true) {
@@ -143,7 +143,8 @@ class BattleScreen(
           currentOpt = Some(this)
 
           _window = scriptInterface.newChoiceWindowWithOptions(
-            Array("Attack", "Skill"), 100, 300, 140, 180, allowCancel = true)
+            Array("Attack", "Skill"), positions.south(140, 180), 140, 180,
+            allowCancel = true)
         }
 
         var done = false
@@ -351,32 +352,38 @@ class BattleScreen(
     _battle = Some(battle)
 
     enemyListWindow = {
+      // TODO: Make Windows take positions
+      val pos = positions.southWest(200, 180)
       new TextWindow(
         persistentState,
         windowManager,
         null,
         Array(),
-        0, 300, 200, 180) {
+        pos.x - 200 / 2, pos.y - 180 / 2, 200, 180) {
         override def openCloseTime = 0
       }
     }
 
     partyListWindow = {
+      // TODO: Make Windows take positions
+      val pos = positions.southEast(440, 180)
       new TextWindow(
         persistentState,
         windowManager,
         null,
         Array(),
-        200, 300, 440, 180) {
+        pos.x - 440 / 2, pos.y - 180 / 2, 440, 180) {
         override def openCloseTime = 0
       }
     }
 
     if (!battleBackground.isEmpty) {
       val bg = BattleBackground.readFromDisk(project, battleBackground)
+      // TODO: Make windows take centered positions
+      val pos = positions.north(640, 320)
       windowManager.showPicture(
         PictureSlots.BATTLE_BACKGROUND,
-        TexturePicture(assets, bg, 0, 0, 640, 320))
+        TexturePicture(assets, bg, pos.x - 640 / 2, pos.y - 320 / 2, 640, 320))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -457,8 +464,10 @@ class BattleScreen(
   }
 
   def postTextNotice(msg: String) = {
+    // TODO: Make Windows take positions
+    val pos = positions.north(640, 60)
     new TextWindow(gameOpt.get.persistent, windowManager, null, Array(msg),
-        0, 0, 640, 60) {
+        pos.x - 640 / 2, pos.y - 60 / 2, 640, 60) {
       override def openCloseTime = 0.0
 
       override def ypad = 20

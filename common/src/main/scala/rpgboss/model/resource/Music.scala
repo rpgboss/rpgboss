@@ -87,7 +87,7 @@ class MidiMusicPlayer(music: Music) extends MusicPlayer with LazyLogging {
   }
 
   def setVolume(newVolume: Float) = {
-    logger.warn("MIDI setVolume() not implemented.")
+//    logger.warn("MIDI setVolume() not implemented.")
   }
 
   def pause() = {

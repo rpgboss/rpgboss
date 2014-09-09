@@ -25,6 +25,7 @@ import rpgboss.model.resource.ResourceConstants
  */
 class ScriptThread(
   game: RpgGame,
+  screen: RpgScreen,
   scriptInterface: ScriptInterface,
   scriptName: String,
   scriptBody: String,
@@ -35,6 +36,9 @@ class ScriptThread(
 
     ScriptableObject.putProperty(jsScope, "game",
       Context.javaToJS(scriptInterface, jsScope))
+    ScriptableObject.putProperty(jsScope, "positions",
+      Context.javaToJS(screen.positions, jsScope))
+
     ScriptableObject.putProperty(jsScope, "project",
       Context.javaToJS(game.project, jsScope))
 
@@ -122,6 +126,7 @@ class ScriptThread(
 object ScriptThread {
   def fromFile(
     game: RpgGame,
+    screen: RpgScreen,
     scriptInterface: ScriptInterface,
     scriptName: String,
     fnToRun: String = "",
@@ -129,6 +134,7 @@ object ScriptThread {
     val script = Script.readFromDisk(game.project, scriptName)
     new ScriptThread(
       game,
+      screen,
       scriptInterface,
       script.name,
       script.readAsString,
@@ -138,6 +144,7 @@ object ScriptThread {
 
   def fromEventEntity(
     game: RpgGame,
+    screen: RpgScreen,
     scriptInterface: ScriptInterface,
     entity: EventEntity,
     state: Int,
@@ -147,6 +154,7 @@ object ScriptThread {
       entity.mapEvent.states(state).cmds.flatMap(_.toJs).mkString("\n");
     new ScriptThread(
       game,
+      screen,
       scriptInterface,
       scriptName,
       scriptBody,

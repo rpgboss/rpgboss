@@ -11,12 +11,10 @@ function newGame() {
 }
 
 function showStartDialog() {
-  var winW = 200;
-  
   while (true) {
     var choiceWin = game.newChoiceWindowWithOptions(
       ["New Game", "Load Game", "Quit"],
-      320-winW/2, 280, winW, 130,
+      positions.centered(200, 130), 200, 130,
       game.CENTER(),
       1 /* columns */,
       0 /* displayedLines */,
@@ -38,7 +36,8 @@ function showStartDialog() {
 function start() {
   game.setTransition(1, 0, 0.4);
   game.playMusic(0, project.data().startup().titleMusic(), true, 2.0);
-  game.showPicture(0, project.data().startup().titlePic(), 0, 0, 640, 480);
+  game.showPicture(0, project.data().startup().titlePic(), 
+    positions.centered(640, 480), 640, 480);
   
   showStartDialog();
 }

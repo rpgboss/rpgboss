@@ -105,6 +105,7 @@ class RpgGame(gamepath: File)
 
     ScriptThread.fromFile(
       this,
+      startScreen,
       startScreen.scriptInterface,
       ResourceConstants.systemStartScript,
       ResourceConstants.systemStartCall).run()
