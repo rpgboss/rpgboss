@@ -122,6 +122,7 @@ Material
 Animations are in the same format as RPG Maker VX and XP. They should be comprised of square tiles 192px wide and tall. Each row may have up to 5 tiles. There may be up to 16 rows.
 
 http://spieralwind.tuzikaze.com/main/index.html
+Splash animation by Julien Jorge http://opengameart.org/content/water-splash
 
 ### Autotiles, Spritesets, Tilesets
 
