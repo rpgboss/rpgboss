@@ -123,6 +123,10 @@ Animations are in the same format as RPG Maker VX and XP. They should be compris
 
 http://spieralwind.tuzikaze.com/main/index.html
 
+Splash animation by Julien Jorge http://opengameart.org/content/water-splash under CC-BY-SA 3.0
+
+firepack1, firepack2, waterpack1 (splash by julien jorge) by Julian Xin
+
 ### Autotiles, Spritesets, Tilesets
 
 http://www.tekepon.net/fsm/
