@@ -125,7 +125,7 @@ http://spieralwind.tuzikaze.com/main/index.html
 
 Splash animation by Julien Jorge http://opengameart.org/content/water-splash (CC-BY-SA 3.0)
 
-Julian Xin ravedragon3@yahoo.com
+Julian Xin raveolutionx@gmail.com
 
 Firepack (most from SPIERAL WIND), Waterpack (splash by julien jorge) created and packaged by Julian Xin (CC-BY-SA 4.0)
 
