@@ -318,7 +318,7 @@
     "damages":[
       {
         "typeId":0,
-        "elementId":0,
+        "elementId":16,
         "formula":""
       }
     ],
@@ -373,7 +373,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":31
   },
   {
     "name":"Flood",
@@ -568,7 +568,7 @@
     "animationId":15
   },
   {
-    "name":"Icicles",
+    "name":"Icicleblast",
     "scopeId":2,
     "cost":0,
     "damages":[
@@ -581,7 +581,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":25
   },
   {
     "name":"Snowstorm",
@@ -1089,7 +1089,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":29
   },
   {
     "name":"Thunderbolt",
@@ -1156,7 +1156,7 @@
     "animationId":0
   },
   {
-    "name":"Spark",
+    "name":"Plasmaball",
     "scopeId":2,
     "cost":0,
     "damages":[
