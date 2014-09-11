@@ -616,15 +616,15 @@
     "name":"Aquaball",
     "visuals":[
       {
-        "animationImage":"sys/animation_waterpack1.png",
+        "animationImage":"sys/Waterpack.png",
         "start":{
           "time":0.0,
           "frameIndex":13,
-          "x":100,
+          "x":200,
           "y":0
         },
         "end":{
-          "time":0.5,
+          "time":1.0,
           "frameIndex":15,
           "x":0,
           "y":0
@@ -639,7 +639,7 @@
     "name":"Water",
     "visuals":[
       {
-        "animationImage":"sys/animation_waterpack1.png",
+        "animationImage":"sys/Waterpack.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -662,7 +662,7 @@
     "name":"Splash",
     "visuals":[
       {
-        "animationImage":"sys/animation_waterpack1.png",
+        "animationImage":"sys/Waterpack.png",
         "start":{
           "time":0.0,
           "frameIndex":6,
@@ -701,6 +701,208 @@
   },
   {
     "name":"Rainstorm",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":32,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":36,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Flood",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":21,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":30,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Waterjet",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":65,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":69,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Stream",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":75,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":79,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Waterblast",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":42,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":47,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Torrent",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":48,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":52,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Cyclone",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":53,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":64,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Tsunami",
+    "visuals":[
+      {
+        "animationImage":"sys/Waterpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":70,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":74,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "visuals":[
+      
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"",
     "visuals":[
       
     ],

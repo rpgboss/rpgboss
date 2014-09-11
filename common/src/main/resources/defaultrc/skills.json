@@ -389,7 +389,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":32
   },
   {
     "name":"Waterjet",
@@ -405,7 +405,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":33
   },
   {
     "name":"Stream",
@@ -421,10 +421,10 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":34
   },
   {
-    "name":"Waveblast",
+    "name":"Waterblast",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -437,7 +437,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":35
   },
   {
     "name":"Torrent",
@@ -453,10 +453,10 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":36
   },
   {
-    "name":"Tidelwave",
+    "name":"Cyclone",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -469,7 +469,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":37
   },
   {
     "name":"Tsunami",
@@ -485,7 +485,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":38
   },
   {
     "name":"Splash",
