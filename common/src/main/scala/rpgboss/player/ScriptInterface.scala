@@ -213,12 +213,8 @@ class ScriptInterface(
     }
   }
 
-  def showPicture(slot: Int, name: String, pos: Position, w: Int,
-                  h: Int) = syncRun {
-    // TODO: Convert all positions to center positions
-    val x = pos.x - w / 2
-    val y = pos.y - h / 2
-    activeScreen.windowManager.showPictureByName(slot, name, x, y, w, h)
+  def showPicture(slot: Int, name: String, rect: Rect) = syncRun {
+    activeScreen.windowManager.showPictureByName(slot, name, rect)
   }
 
   def hidePicture(slot: Int) = syncRun {
@@ -243,21 +239,18 @@ class ScriptInterface(
    */
   def newChoiceWindowWithOptions(
     lines: Array[String],
-    pos: Position, w: Int, h: Int,
+    rect: Rect,
     justification: Int = Window.Left,
     columns: Int = 1,
     displayedLines: Int = 0,
     allowCancel: Boolean = false) = {
-    // TODO: Convert all positions to center positions
-    val x = pos.x - w / 2
-    val y = pos.y - h / 2
     val window = syncRun {
       new TextChoiceWindow(
         game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
         lines,
-        x, y, w, h,
+        rect,
         justification = justification,
         columns = columns,
         displayedLines = displayedLines,
@@ -269,8 +262,8 @@ class ScriptInterface(
 
   def newChoiceWindow(
     choices: Array[String],
-    pos: Position, w: Int, h: Int): ChoiceWindow#ChoiceWindowScriptInterface =
-    newChoiceWindowWithOptions(choices, pos, w, h)
+    rect: Rect): ChoiceWindow#ChoiceWindowScriptInterface =
+    newChoiceWindowWithOptions(choices, rect)
 
   /**
    * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
@@ -313,25 +306,23 @@ class ScriptInterface(
     choice
   }
 
-  def showText(text: Array[String], pos: Position, w: Int, h: Int,
-               timePerChar: Float) = {
-    // TODO: Convert all positions to center positions
-    val x = pos.x - w / 2
-    val y = pos.y - h / 2
+  def showText(text: Array[String], rect: Rect, timePerChar: Float) = {
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
         text,
-        x, y, w, h,
+        rect,
         timePerChar)
     }
     window.scriptInterface.awaitClose()
   }
 
   def showText(text: Array[String]): Unit =
-    showText(text, activeScreen.positions.south(640, 180), w = 640, h = 180,
+    showText(
+      text,
+      activeScreen.layout.south(640, 180),
       timePerChar = 0.02f)
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {

@@ -12,6 +12,7 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import rpgboss.lib.ThreadChecked
+import rpgboss.lib.Rect
 
 /**
  * This class renders stuff on the screen.
@@ -75,10 +76,9 @@ class WindowManager(
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
-  def showPictureByName(slot: Int, name: String, x: Float, y: Float, w: Float,
-                        h: Float) = {
+  def showPictureByName(slot: Int, name: String, rect: Rect) = {
     val picture = Picture.readFromDisk(project, name)
-    showPicture(slot, TexturePicture(assets, picture, x, y, w, h))
+    showPicture(slot, TexturePicture(assets, picture, rect))
   }
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
@@ -185,7 +185,7 @@ trait PictureLike {
  */
 case class TexturePicture[MT <: AnyRef](
   assets: RpgAssetManager, resource: ImageResource[_, MT],
-  x: Float, y: Float, w: Float, h: Float) extends PictureLike {
+  rect: Rect) extends PictureLike {
 
   resource.loadAsset(assets)
   def dispose() = resource.unloadAsset(assets)
@@ -194,7 +194,7 @@ case class TexturePicture[MT <: AnyRef](
     if (resource.isLoaded(assets)) {
       val texture = resource.getAsset(assets)
       batch.draw(texture,
-        x, y, w, h,
+        rect.left, rect.top, rect.w, rect.h,
         0, 0, texture.getWidth(), texture.getHeight(),
         false, true)
     }
