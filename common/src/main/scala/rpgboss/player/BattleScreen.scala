@@ -98,7 +98,7 @@ class BattleScreen(
             }
 
             val skillWindow = scriptInterface.newChoiceWindowWithOptions(
-              skillChoices.map(_.name), positions.south(640, 180), 640, 180,
+              skillChoices.map(_.name), layout.south(640, 180),
               columns = 2, allowCancel = true)
 
             while (true) {
@@ -143,7 +143,7 @@ class BattleScreen(
           currentOpt = Some(this)
 
           _window = scriptInterface.newChoiceWindowWithOptions(
-            Array("Attack", "Skill"), positions.south(140, 180), 140, 180,
+            Array("Attack", "Skill"), layout.south(140, 180),
             allowCancel = true)
         }
 
@@ -352,38 +352,32 @@ class BattleScreen(
     _battle = Some(battle)
 
     enemyListWindow = {
-      // TODO: Make Windows take positions
-      val pos = positions.southWest(200, 180)
       new TextWindow(
         persistentState,
         windowManager,
         null,
         Array(),
-        pos.x - 200 / 2, pos.y - 180 / 2, 200, 180) {
+        layout.southWest(200, 180)) {
         override def openCloseTime = 0
       }
     }
 
     partyListWindow = {
-      // TODO: Make Windows take positions
-      val pos = positions.southEast(440, 180)
       new TextWindow(
         persistentState,
         windowManager,
         null,
         Array(),
-        pos.x - 440 / 2, pos.y - 180 / 2, 440, 180) {
+        layout.southEast(440, 180)) {
         override def openCloseTime = 0
       }
     }
 
     if (!battleBackground.isEmpty) {
       val bg = BattleBackground.readFromDisk(project, battleBackground)
-      // TODO: Make windows take centered positions
-      val pos = positions.north(640, 320)
       windowManager.showPicture(
         PictureSlots.BATTLE_BACKGROUND,
-        TexturePicture(assets, bg, pos.x - 640 / 2, pos.y - 320 / 2, 640, 320))
+        TexturePicture(assets, bg, layout.north(640, 320)))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -398,18 +392,15 @@ class BattleScreen(
         val battlerLeft = unit.x - battlerWidth / 2
         val battlerTop = unit.y - battlerHeight / 2
 
+        val rect = Rect(unit.x, unit.y, battlerWidth, battlerHeight)
         windowManager.showPicture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           TexturePicture(
             assets,
             battler,
-            battlerLeft,
-            battlerTop,
-            battlerWidth,
-            battlerHeight))
+            rect))
 
-        _enemyBattlers.append(
-          Rect(battlerLeft, battlerTop, battlerWidth, battlerHeight))
+        _enemyBattlers.append(rect)
       }
     }
 
@@ -464,10 +455,8 @@ class BattleScreen(
   }
 
   def postTextNotice(msg: String) = {
-    // TODO: Make Windows take positions
-    val pos = positions.north(640, 60)
     new TextWindow(gameOpt.get.persistent, windowManager, null, Array(msg),
-        pos.x - 640 / 2, pos.y - 60 / 2, 640, 60) {
+        layout.north(640, 60)) {
       override def openCloseTime = 0.0
 
       override def ypad = 20
@@ -556,7 +545,7 @@ class BattleScreen(
 
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
                   val player = new AnimationPlayer(project, animation, assets,
-                    box.xCenter, box.yCenter)
+                    box.x, box.y)
                   player.play()
                   animationManager.addAnimation(player)
                   player

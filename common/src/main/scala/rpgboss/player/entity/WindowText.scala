@@ -1,5 +1,6 @@
 package rpgboss.player.entity
 
+import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import java.awt._
@@ -14,7 +15,6 @@ import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.player._
-import rpgboss.lib.ThreadChecked
 
 object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
@@ -52,7 +52,7 @@ object WindowText {
 class WindowText(
   persistent: PersistentState,
   initialText: Array[String],
-  private var x: Float, private var y: Float, w: Float, h: Float,
+  private var rect: Rect,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
   var lineHeight: Int = 32) extends ThreadChecked {
@@ -64,8 +64,7 @@ class WindowText(
     lineHeight = height
 
   def updatePosition(x: Float, y: Float) = {
-    this.x = x
-    this.y = y
+    rect = rect.copy(x = x, y = y)
   }
 
   def updateText(newText: Array[String]) =
@@ -87,10 +86,11 @@ class WindowText(
 
     // Draw shadow
     fontbmp.setColor(Color.BLACK)
-    fontbmp.drawMultiLine(b, line,
-      x + xOffset + 2,
-      y + yOffset + 2,
-           w, fontAlign)
+    fontbmp.drawMultiLine(
+      b, line,
+      rect.left + xOffset + 2,
+      rect.top + yOffset + 2,
+      rect.w, fontAlign)
 
     fontbmp.setColor(Color.WHITE)
 
@@ -108,14 +108,14 @@ class WindowText(
       val textBounds =
         fontbmp.drawMultiLine(b, textToPrintNow,
           xStart,
-          y + yOffset,
-                   w, fontAlign)
+          rect.top + yOffset,
+          rect.w, fontAlign)
 
       printUntilColorTokenOrEnd(rMatchOption.map(_.after).getOrElse(""),
                                 xStart + textBounds.width)
     }
 
-    printUntilColorTokenOrEnd(line, x + xOffset)
+    printUntilColorTokenOrEnd(line, rect.left + xOffset)
   }
 
   def update(delta: Float) = {}
@@ -136,7 +136,7 @@ class WindowText(
 class PrintingWindowText(
   persistent: PersistentState,
   initialText: Array[String],
-  x: Float, y: Float, w: Float, h: Float,
+  rect: Rect,
   skin: Windowskin,
   skinRegion: TextureRegion,
   fontbmp: BitmapFont,
@@ -144,7 +144,7 @@ class PrintingWindowText(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
   extends WindowText(
-    persistent, initialText, x, y, w, h, fontbmp, justification) {
+    persistent, initialText, rect, fontbmp, justification) {
   assume(timePerChar >= 0)
 
   def drawAwaitingArrow = true
@@ -240,7 +240,7 @@ class PrintingWindowText(
 
     // If waiting for user input to finish, draw the arrow
     if (awaitingInput) {
-      skin.drawArrow(b, skinRegion, x + w / 2 - 8, y + h, 16, 16)
+      skin.drawArrow(b, skinRegion, rect.x - 8, rect.bot, 16, 16)
     }
   }
 }

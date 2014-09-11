@@ -36,9 +36,7 @@ object Window {
 class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
-  x: Float, y: Float,
-  val w: Float, val h: Float,
-  invisible: Boolean = false)
+  rect: Rect, invisible: Boolean = false)
   extends InputHandler with ThreadChecked with Disposable {
 
   def openCloseTime: Double = 0.25
@@ -94,19 +92,19 @@ class Window(
 
     state match {
         case Window.Open => {
-        skin.draw(b, skinRegion, x, y, w, h)
+        skin.draw(b, skinRegion, rect.left, rect.top, rect.w, rect.h)
       }
       case Window.Opening => {
         val hVisible =
-          math.max(32 + (stateAge / openCloseTime * (h - 32)).toInt, 32)
+          math.max(32 + (stateAge / openCloseTime * (rect.h - 32)).toInt, 32)
 
-        skin.draw(b, skinRegion, x, y, w, hVisible)
+        skin.draw(b, skinRegion, rect.left, rect.top, rect.w, hVisible)
       }
       case Window.Closing => {
-        val hVisible =
-          math.max(h - (stateAge / openCloseTime * (h - 32)).toInt, 32)
+        val hVisible = math.max(
+          rect.h - (stateAge / openCloseTime * (rect.h - 32)).toInt, 32)
 
-        skin.draw(b, skinRegion, x, y, w, hVisible)
+        skin.draw(b, skinRegion, rect.left, rect.top, rect.w, hVisible)
       }
       case _ => Unit
     }
@@ -179,10 +177,10 @@ class TextWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
-  x: Float, y: Float, w: Int, h: Int,
+  rect: Rect,
   justification: Int = Window.Left,
   stayOpenTime: Double = 0.0)
-  extends Window(manager, inputs, x, y, w, h) {
+  extends Window(manager, inputs, rect) {
 
   def xpad = 24
   def ypad = 24
@@ -192,10 +190,7 @@ class TextWindow(
   val textImage = new WindowText(
     persistent,
     text,
-    x + xpad,
-    y + ypad,
-    w - 2*xpad,
-    h - 2*ypad,
+    rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad),
     manager.fontbmp,
     justification)
 
@@ -229,7 +224,7 @@ class DamageTextWindow(
   initialX: Float, initialY: Float)
   // TODO: We pass 'null' as inputs here because we don't want to accept input.
   // Window has zeros for x, y, w, and h because the window itself is invisible.
-  extends Window(manager, null, 0, 0, 0, 0,
+  extends Window(manager, null, Rect(0, 0, 0, 0),
     invisible = true) {
 
   private val expiryTime = 0.8
@@ -240,10 +235,7 @@ class DamageTextWindow(
   val textImage = new WindowText(
     persistent,
     initialText = Array(damage.toString()),
-    x = initialX,
-    y = initialY,
-    w = 20,
-    h = 20,
+    rect = Rect(initialX, initialY, 20, 20),
     fontbmp = manager.fontbmp,
     justification = Window.Center)
 
@@ -279,21 +271,18 @@ class PrintingTextWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
-  x: Float, y: Float, w: Float, h: Float,
+  rect: Rect,
   timePerChar: Float,
   linesPerBlock: Int = 4,
   justification: Int = Window.Left)
-  extends Window(manager, inputs, x, y, w, h) {
+  extends Window(manager, inputs, rect) {
   val xpad = 24
   val ypad = 24
 
   val textImage = new PrintingWindowText(
     persistent,
     text,
-    x + xpad,
-    y + ypad,
-    w - 2*xpad,
-    h - 2*ypad,
+    rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad),
     skin,
     skinRegion,
     manager.fontbmp,
