@@ -340,7 +340,7 @@
     "name":"Ice",
     "visuals":[
       {
-        "animationImage":"sys/animation_ice005.png",
+        "animationImage":"sys/Icepack.png",
         "start":{
           "time":0.0,
           "frameIndex":5,
@@ -363,7 +363,7 @@
     "name":"Freeze",
     "visuals":[
       {
-        "animationImage":"sys/animation_ice005.png",
+        "animationImage":"sys/Icepack.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -386,16 +386,16 @@
     "name":"Iceball",
     "visuals":[
       {
-        "animationImage":"sys/animation_ice005.png",
+        "animationImage":"sys/Icepack.png",
         "start":{
           "time":0.0,
-          "frameIndex":9,
-          "x":0,
+          "frameIndex":15,
+          "x":100,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":14,
+          "frameIndex":19,
           "x":0,
           "y":0
         }
@@ -501,16 +501,16 @@
     "name":"Hail",
     "visuals":[
       {
-        "animationImage":"sys/animation_light002.png",
+        "animationImage":"sys/Icepack.png",
         "start":{
           "time":0.0,
-          "frameIndex":0,
+          "frameIndex":20,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":9,
+          "frameIndex":24,
           "x":0,
           "y":0
         }
@@ -884,36 +884,92 @@
     ]
   },
   {
-    "name":"",
+    "name":"Glacier",
     "visuals":[
-      
+      {
+        "animationImage":"sys/Icepack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":40,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":44,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
     ]
   },
   {
-    "name":"",
+    "name":"Snowstorm",
     "visuals":[
-      
+      {
+        "animationImage":"sys/Icepack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":25,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":29,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
     ]
   },
   {
-    "name":"",
+    "name":"Iceberg",
     "visuals":[
-      
+      {
+        "animationImage":"sys/Icepack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":35,
+          "x":0,
+          "y":100
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":39,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
     ]
   },
   {
-    "name":"",
+    "name":"Icestorm",
     "visuals":[
-      
+      {
+        "animationImage":"sys/Icepack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":30,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":34,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       

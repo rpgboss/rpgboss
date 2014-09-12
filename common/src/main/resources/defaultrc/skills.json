@@ -536,7 +536,7 @@
     "animationId":14
   },
   {
-    "name":"Glaciers",
+    "name":"Glacier",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -549,7 +549,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":39
   },
   {
     "name":"Freeze",
@@ -597,7 +597,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":40
   },
   {
     "name":"Iceberg",
@@ -613,7 +613,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":41
   },
   {
     "name":"Iceball",
@@ -632,7 +632,7 @@
     "animationId":16
   },
   {
-    "name":"Glacierstorm",
+    "name":"",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -648,7 +648,7 @@
     "animationId":0
   },
   {
-    "name":"Blizzard",
+    "name":"Icestorm",
     "scopeId":4,
     "cost":12,
     "damages":[
@@ -661,7 +661,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":42
   },
   {
     "name":"",
