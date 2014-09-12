@@ -34,33 +34,44 @@ case class Size(w: Float, h: Float)
 class LayoutProvider(screenW: Float, screenH: Float) {
   def proportional(xProportion: Float, yProportion: Float, w: Float, h: Float) =
     Rect(xProportion * screenW, yProportion * screenH, w, h)
+  def proportional(xProportion: Float, yProportion: Float, s: Size): Rect =
+    proportional(xProportion, yProportion, s.w, s.h)
 
   def north(w: Float, h: Float) =
     Rect(screenW / 2, h / 2, w, h)
+  def north(s: Size): Rect = north(s.w, s.h)
 
   def south(w: Float, h: Float) =
     Rect(screenW / 2, screenH - h / 2, w, h)
+  def south(s: Size): Rect = south(s.w, s.h)
 
   def east(w: Float, h: Float) =
     Rect(w / 2, screenH / 2, w, h)
+  def east(s: Size): Rect = east(s.w, s.h)
 
   def west(w: Float, h: Float) =
     Rect(screenW - w /2, screenH / 2, w, h)
+  def west(s: Size): Rect = west(s.w, s.h)
 
   def northEast(w: Float, h: Float) =
     Rect(screenW - w / 2, h / 2, w, h)
+  def northEast(s: Size): Rect = northEast(s.w, s.h)
 
   def northWest(w: Float, h: Float) =
     Rect(w / 2, h / 2, w, h)
+  def northWest(s: Size): Rect = northWest(s.w, s.h)
 
   def southEast(w: Float, h: Float) =
     Rect(screenW - w / 2, screenH - h / 2, w, h)
+  def southEast(s: Size): Rect = southEast(s.w, s.h)
 
   def southWest(w: Float, h: Float) =
     Rect(w / 2, screenH - h / 2, w, h)
+  def southWest(s: Size): Rect = southWest(s.w, s.h)
 
   def centered(w: Float, h: Float) =
     Rect(screenW / 2, screenH / 2, w, h)
+  def centered(s: Size): Rect = centered(s.w, s.h)
 }
 
 class SizeProvider(screenW: Float, screenH: Float) {

@@ -38,6 +38,8 @@ class ScriptThread(
       Context.javaToJS(scriptInterface, jsScope))
     ScriptableObject.putProperty(jsScope, "layout",
       Context.javaToJS(screen.layout, jsScope))
+    ScriptableObject.putProperty(jsScope, "sizer",
+      Context.javaToJS(screen.sizer, jsScope))
 
     ScriptableObject.putProperty(jsScope, "project",
       Context.javaToJS(game.project, jsScope))
