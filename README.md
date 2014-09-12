@@ -123,14 +123,18 @@ Animations are in the same format as RPG Maker VX and XP. They should be compris
 
 http://spieralwind.tuzikaze.com/main/index.html
 
-Splash animation by Julien Jorge http://opengameart.org/content/water-splash under CC-BY-SA 3.0
+Splash animation by Julien Jorge http://opengameart.org/content/water-splash (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
 
-firepack1, firepack2, waterpack1 (splash by julien jorge) by Julian Xin
+Julian Xin raveolutionx@gmail.com
+
+Firepack (most from SPIERAL WIND), Waterpack (splash by julien jorge, and Most from SPIERAL WIND) created and packaged by Julian Xin (CC-BY-SA 4.0)  http://creativecommons.org/licenses/by-sa/4.0/
 
 ### Autotiles, Spritesets, Tilesets
 
 http://www.tekepon.net/fsm/
 http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
+
+USE Internet Archieve for Dead website links!
 
 ### Battlers
 
