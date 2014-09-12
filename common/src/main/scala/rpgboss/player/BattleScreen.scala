@@ -377,7 +377,7 @@ class BattleScreen(
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       windowManager.showPicture(
         PictureSlots.BATTLE_BACKGROUND,
-        TexturePicture(assets, bg, layout.north(640, 320)))
+        TexturePicture(assets, bg, layout.north(sizer.fit(640, 320))))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -388,9 +388,6 @@ class BattleScreen(
 
         val battlerWidth = (battler.img.getWidth() * battlerSpec.scale).toInt
         val battlerHeight = (battler.img.getHeight() * battlerSpec.scale).toInt
-
-        val battlerLeft = unit.x - battlerWidth / 2
-        val battlerTop = unit.y - battlerHeight / 2
 
         val rect = Rect(unit.x, unit.y, battlerWidth, battlerHeight)
         windowManager.showPicture(

@@ -37,7 +37,7 @@ function start() {
   game.setTransition(1, 0, 0.4);
   game.playMusic(0, project.data().startup().titleMusic(), true, 2.0);
   game.showPicture(0, project.data().startup().titlePic(), 
-    layout.centered(640, 480));
+    layout.centered(sizer.fit(640, 480)));
   
   showStartDialog();
 }
