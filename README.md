@@ -127,7 +127,7 @@ Splash animation by Julien Jorge http://opengameart.org/content/water-splash (CC
 
 Julian Xin raveolutionx@gmail.com
 
-Firepack (Julian Xin, SPIERAL WIND), Waterpack (splash by julien jorge, SPIERAL WIND, Julian Xin), Icepack (Julian Xin, SPIERAL WIND) created and packaged by Julian Xin (CC-BY-SA 4.0)  http://creativecommons.org/licenses/by-sa/4.0/
+Firepack (Julian Xin, SPIERAL WIND), Waterpack (splash by julien jorge, SPIERAL WIND, Julian Xin), Icepack (Julian Xin, SPIERAL WIND) Windpack (Julian Xin, SPIERAL WIND) created and packaged by Julian Xin (CC-BY-SA 4.0)  http://creativecommons.org/licenses/by-sa/4.0/
 
 ### Autotiles, Spritesets, Tilesets
 
