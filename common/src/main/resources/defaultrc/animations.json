@@ -524,16 +524,16 @@
     "name":"Gale",
     "visuals":[
       {
-        "animationImage":"sys/animation_wind002.png",
+        "animationImage":"sys/Windpack.png",
         "start":{
           "time":0.0,
-          "frameIndex":0,
+          "frameIndex":18,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":5,
+          "frameIndex":22,
           "x":0,
           "y":0
         }
@@ -547,16 +547,16 @@
     "name":"Gust",
     "visuals":[
       {
-        "animationImage":"sys/animation_wind004.png",
+        "animationImage":"sys/Windpack.png",
         "start":{
           "time":0.0,
-          "frameIndex":11,
+          "frameIndex":10,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":18,
+          "frameIndex":17,
           "x":0,
           "y":0
         }
@@ -570,16 +570,16 @@
     "name":"Wind",
     "visuals":[
       {
-        "animationImage":"sys/animation_wind002.png",
+        "animationImage":"sys/Windpack.png",
         "start":{
           "time":0.0,
-          "frameIndex":6,
+          "frameIndex":23,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":11,
+          "frameIndex":31,
           "x":0,
           "y":0
         }
@@ -966,6 +966,121 @@
         "end":{
           "time":1.0,
           "frameIndex":34,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Tornado",
+    "visuals":[
+      {
+        "animationImage":"sys/Windpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":41,
+          "x":100,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":45,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Hurricane",
+    "visuals":[
+      {
+        "animationImage":"sys/Windpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":55,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":59,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Twister",
+    "visuals":[
+      {
+        "animationImage":"sys/Windpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":47,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":50,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Typhoon",
+    "visuals":[
+      {
+        "animationImage":"sys/Windpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":51,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":54,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Whirlwind",
+    "visuals":[
+      {
+        "animationImage":"sys/Windpack.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":9,
           "x":0,
           "y":0
         }

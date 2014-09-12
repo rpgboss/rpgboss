@@ -639,7 +639,7 @@
       {
         "typeId":1,
         "elementId":5,
-        "formula":"a.mag*3"
+        "formula":""
       }
     ],
     "effects":[
@@ -689,7 +689,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":43
   },
   {
     "name":"Gale",
@@ -721,7 +721,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":44
   },
   {
     "name":"Twister",
@@ -737,7 +737,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":45
   },
   {
     "name":"Typhoon",
@@ -753,17 +753,17 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":46
   },
   {
-    "name":"Tempest",
+    "name":"",
     "scopeId":3,
     "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":13,
-        "formula":"a.mag*1.6"
+        "formula":""
       }
     ],
     "effects":[
@@ -772,14 +772,14 @@
     "animationId":0
   },
   {
-    "name":"Cyclone",
+    "name":"",
     "scopeId":3,
     "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":13,
-        "formula":"a.mag*1.7"
+        "formula":""
       }
     ],
     "effects":[
@@ -817,7 +817,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":47
   },
   {
     "name":"Wind",
