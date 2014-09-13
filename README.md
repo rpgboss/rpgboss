@@ -55,7 +55,7 @@ Automated tests are how rpgboss verifies that changes don't break existing funct
 
 1. Run automated tests with:
     ```
-    $ sbt "project common" test
+    $ sbt test
     ```
 
 Packaging into binaries
