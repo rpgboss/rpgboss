@@ -29,7 +29,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":10
   },
   {
     "name":"Flame",
@@ -45,7 +45,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":1
   },
   {
     "name":"Fireblast",
@@ -61,7 +61,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":2
   },
   {
     "name":"Infernofire",
@@ -77,7 +77,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":12
   },
   {
     "name":"Firestorm",
@@ -93,7 +93,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":9
   },
   {
     "name":"Heat",
@@ -109,7 +109,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":13
   },
   {
     "name":"Scorch",
@@ -129,7 +129,7 @@
         "v2":0
       }
     ],
-    "animationId":1
+    "animationId":4
   },
   {
     "name":"Blaze",
@@ -145,7 +145,7 @@
     "effects":[
       
     ],
-    "animationId":10
+    "animationId":11
   },
   {
     "name":"Flare",
@@ -161,7 +161,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":3
   },
   {
     "name":"FireTen",
@@ -177,7 +177,7 @@
     "effects":[
       
     ],
-    "animationId":1
+    "animationId":8
   },
   {
     "name":"Aquaball",
@@ -193,7 +193,7 @@
     "effects":[
       
     ],
-    "animationId":2
+    "animationId":26
   },
   {
     "name":"Water",
@@ -209,7 +209,7 @@
     "effects":[
       
     ],
-    "animationId":12
+    "animationId":27
   },
   {
     "name":"Rainstorm",
@@ -225,7 +225,7 @@
     "effects":[
       
     ],
-    "animationId":9
+    "animationId":31
   },
   {
     "name":"Flood",
@@ -241,7 +241,7 @@
     "effects":[
       
     ],
-    "animationId":13
+    "animationId":32
   },
   {
     "name":"Waterjet",
@@ -257,7 +257,7 @@
     "effects":[
       
     ],
-    "animationId":4
+    "animationId":33
   },
   {
     "name":"Stream",
@@ -273,7 +273,7 @@
     "effects":[
       
     ],
-    "animationId":11
+    "animationId":34
   },
   {
     "name":"Waterblast",
@@ -289,7 +289,7 @@
     "effects":[
       
     ],
-    "animationId":3
+    "animationId":35
   },
   {
     "name":"Torrent",
@@ -305,7 +305,7 @@
     "effects":[
       
     ],
-    "animationId":8
+    "animationId":36
   },
   {
     "name":"Cyclone",
@@ -321,7 +321,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":37
   },
   {
     "name":"Tsunami",
@@ -337,7 +337,7 @@
     "effects":[
       
     ],
-    "animationId":26
+    "animationId":38
   },
   {
     "name":"Splash",
@@ -353,7 +353,7 @@
     "effects":[
       
     ],
-    "animationId":27
+    "animationId":28
   },
   {
     "name":"Hail",
@@ -369,7 +369,7 @@
     "effects":[
       
     ],
-    "animationId":31
+    "animationId":21
   },
   {
     "name":"Ice",
@@ -385,7 +385,7 @@
     "effects":[
       
     ],
-    "animationId":32
+    "animationId":14
   },
   {
     "name":"Glacier",
@@ -401,7 +401,7 @@
     "effects":[
       
     ],
-    "animationId":33
+    "animationId":39
   },
   {
     "name":"Freeze",
@@ -417,7 +417,7 @@
     "effects":[
       
     ],
-    "animationId":34
+    "animationId":15
   },
   {
     "name":"Icicleblast",
@@ -433,7 +433,7 @@
     "effects":[
       
     ],
-    "animationId":35
+    "animationId":25
   },
   {
     "name":"Snowstorm",
@@ -449,7 +449,7 @@
     "effects":[
       
     ],
-    "animationId":36
+    "animationId":40
   },
   {
     "name":"Iceberg",
@@ -465,7 +465,7 @@
     "effects":[
       
     ],
-    "animationId":37
+    "animationId":41
   },
   {
     "name":"Iceball",
@@ -481,7 +481,7 @@
     "effects":[
       
     ],
-    "animationId":38
+    "animationId":16
   },
   {
     "name":"Icestorm",
@@ -497,7 +497,7 @@
     "effects":[
       
     ],
-    "animationId":28
+    "animationId":42
   },
   {
     "name":"Tornado",
@@ -513,7 +513,7 @@
     "effects":[
       
     ],
-    "animationId":21
+    "animationId":43
   },
   {
     "name":"Gale",
@@ -529,7 +529,7 @@
     "effects":[
       
     ],
-    "animationId":14
+    "animationId":22
   },
   {
     "name":"Hurricane",
@@ -545,7 +545,7 @@
     "effects":[
       
     ],
-    "animationId":39
+    "animationId":44
   },
   {
     "name":"Twister",
@@ -561,7 +561,7 @@
     "effects":[
       
     ],
-    "animationId":15
+    "animationId":45
   },
   {
     "name":"Typhoon",
@@ -577,7 +577,7 @@
     "effects":[
       
     ],
-    "animationId":25
+    "animationId":46
   },
   {
     "name":"Gust",
@@ -593,7 +593,7 @@
     "effects":[
       
     ],
-    "animationId":40
+    "animationId":23
   },
   {
     "name":"Whirlwind",
@@ -609,7 +609,7 @@
     "effects":[
       
     ],
-    "animationId":41
+    "animationId":47
   },
   {
     "name":"Wind",
@@ -625,7 +625,7 @@
     "effects":[
       
     ],
-    "animationId":16
+    "animationId":24
   },
   {
     "name":"",
