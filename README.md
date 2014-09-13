@@ -35,7 +35,6 @@ Build instructions:
 3. Run sbt. You will be put in the editor subproject by default. Compile and package it.
     ```
     $ sbt
-    > compile
     > package
     ```
 
