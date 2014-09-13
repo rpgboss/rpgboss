@@ -123,11 +123,15 @@ Animations are in the same format as RPG Maker VX and XP. They should be compris
 
 http://spieralwind.tuzikaze.com/main/index.html
 
+fire(7,8,9,10) ice(1,2,3,4,7) water(4,5,6,8,11) wind(1,2,3)
+
 Splash animation by Julien Jorge http://opengameart.org/content/water-splash (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
 
-Julian Xin raveolutionx@gmail.com
+water(2)
 
-Firepack (Julian Xin, SPIERAL WIND), Waterpack (splash by julien jorge, SPIERAL WIND, Julian Xin), Icepack (Julian Xin, SPIERAL WIND) Windpack (Julian Xin, SPIERAL WIND) created and packaged by Julian Xin (CC-BY-SA 4.0)  http://creativecommons.org/licenses/by-sa/4.0/
+Julian Xin raveolutionx@gmail.com (CC-BY-SA 4.0)  http://creativecommons.org/licenses/by-sa/4.0/
+
+fire(1,2,3,4,5.6) ice(5,6,8) water(1,3,7,9,10) wind(4,5,6,7)
 
 ### Autotiles, Spritesets, Tilesets
 
