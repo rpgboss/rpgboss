@@ -628,67 +628,79 @@
     "animationId":24
   },
   {
-    "name":"",
+    "name":"Rock",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*1"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":18
+  },
+  {
+    "name":"Stone",
+    "scopeId":2,
+    "cost":12,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*.5"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":20
+  },
+  {
+    "name":"Boulder",
+    "scopeId":4,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*1.25"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":19
+  },
+  {
+    "name":"Landslide",
     "scopeId":3,
     "cost":0,
     "damages":[
       {
         "typeId":1,
-        "elementId":5,
-        "formula":""
+        "elementId":7,
+        "formula":"a.mag*1.3"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":49
   },
   {
-    "name":"",
-    "scopeId":0,
-    "cost":12,
-    "damages":[
-      {
-        "typeId":1,
-        "elementId":5,
-        "formula":"a.mag*1.5"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":42
-  },
-  {
-    "name":"",
-    "scopeId":4,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
+    "name":"Rubble",
     "scopeId":2,
     "cost":0,
     "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":43
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*1.1"
+      }
     ],
     "effects":[
       
@@ -696,64 +708,84 @@
     "animationId":22
   },
   {
-    "name":"",
-    "scopeId":0,
+    "name":"Gravelblast",
+    "scopeId":2,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*1"
+      }
     ],
     "effects":[
       
     ],
-    "animationId":44
+    "animationId":51
   },
   {
-    "name":"",
-    "scopeId":0,
+    "name":"Fissure",
+    "scopeId":3,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*2"
+      }
     ],
     "effects":[
       
     ],
-    "animationId":45
+    "animationId":52
   },
   {
-    "name":"",
-    "scopeId":0,
+    "name":"Upheaval",
+    "scopeId":3,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*1.4"
+      }
     ],
     "effects":[
       
     ],
-    "animationId":46
+    "animationId":17
   },
   {
-    "name":"",
-    "scopeId":0,
+    "name":"Earthquake",
+    "scopeId":3,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*1.75"
+      }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":53
   },
   {
-    "name":"",
-    "scopeId":0,
+    "name":"Tremor",
+    "scopeId":3,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":7,
+        "formula":"a.mag*.75"
+      }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":48
   },
   {
     "name":"",
@@ -816,15 +848,11 @@
     "animationId":0
   },
   {
-    "name":"Rock",
-    "scopeId":2,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*1"
-      }
+      
     ],
     "effects":[
       
@@ -832,15 +860,11 @@
     "animationId":18
   },
   {
-    "name":"Stone",
-    "scopeId":2,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*.5"
-      }
+      
     ],
     "effects":[
       
@@ -848,15 +872,11 @@
     "animationId":20
   },
   {
-    "name":"Boulder",
-    "scopeId":2,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*1.25"
-      }
+      
     ],
     "effects":[
       
@@ -864,15 +884,11 @@
     "animationId":19
   },
   {
-    "name":"Earth",
-    "scopeId":2,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*1.3"
-      }
+      
     ],
     "effects":[
       
@@ -880,15 +896,11 @@
     "animationId":0
   },
   {
-    "name":"Rubble",
-    "scopeId":2,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*1.1"
-      }
+      
     ],
     "effects":[
       
@@ -896,15 +908,11 @@
     "animationId":0
   },
   {
-    "name":"Gravel Blast",
-    "scopeId":3,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*1"
-      }
+      
     ],
     "effects":[
       
@@ -912,15 +920,11 @@
     "animationId":0
   },
   {
-    "name":"Crust",
-    "scopeId":3,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*2"
-      }
+      
     ],
     "effects":[
       
@@ -928,15 +932,11 @@
     "animationId":0
   },
   {
-    "name":"Upheaval",
-    "scopeId":3,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*1.75"
-      }
+      
     ],
     "effects":[
       
@@ -944,15 +944,11 @@
     "animationId":17
   },
   {
-    "name":"Earthquake",
-    "scopeId":3,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*1.5"
-      }
+      
     ],
     "effects":[
       
@@ -960,15 +956,11 @@
     "animationId":0
   },
   {
-    "name":"Tremor",
-    "scopeId":3,
+    "name":"",
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":7,
-        "formula":"a.mag*.75"
-      }
+      
     ],
     "effects":[
       
