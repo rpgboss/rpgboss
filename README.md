@@ -64,6 +64,10 @@ Packaging into binaries
 Prerequisites:
 
 + launch4j
+  + launch4j may require 32-bit libraries installed. On Ubuntu 14.04:
+    ```
+    sudo apt-get install lib32z1 lib32ncurses5 lib32bz2-1.0 lib32stdc++6
+    ```
 
 Instructions:
 
