@@ -409,7 +409,7 @@
     "name":"Upheavel",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth2.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -432,16 +432,16 @@
     "name":"Rock",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth1.png",
         "start":{
           "time":0.0,
-          "frameIndex":10,
-          "x":200,
+          "frameIndex":5,
+          "x":0,
           "y":0
         },
         "end":{
-          "time":0.5,
-          "frameIndex":11,
+          "time":1.0,
+          "frameIndex":7,
           "x":0,
           "y":0
         }
@@ -455,16 +455,16 @@
     "name":"Boulder",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth1.png",
         "start":{
           "time":0.0,
-          "frameIndex":19,
-          "x":100,
-          "y":100
+          "frameIndex":4,
+          "x":50,
+          "y":50
         },
         "end":{
           "time":1.0,
-          "frameIndex":19,
+          "frameIndex":4,
           "x":0,
           "y":0
         }
@@ -478,16 +478,16 @@
     "name":"Stone",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth1.png",
         "start":{
           "time":0.0,
-          "frameIndex":15,
+          "frameIndex":10,
           "x":200,
           "y":0
         },
         "end":{
           "time":0.5,
-          "frameIndex":15,
+          "frameIndex":10,
           "x":0,
           "y":0
         }
@@ -1091,9 +1091,138 @@
     ]
   },
   {
-    "name":"",
+    "name":"Tremor",
     "visuals":[
+      {
+        "animationImage":"sys/earth3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
       
+    ]
+  },
+  {
+    "name":"Landslide",
+    "visuals":[
+      {
+        "animationImage":"sys/earth4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Rubble",
+    "visuals":[
+      {
+        "animationImage":"sys/earth1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":11,
+          "x":50,
+          "y":50
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Gravelblast",
+    "visuals":[
+      {
+        "animationImage":"sys/earth1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":15,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":19,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Fissure",
+    "visuals":[
+      {
+        "animationImage":"sys/earth5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Earthquake",
+    "visuals":[
+      {
+        "animationImage":"sys/earth6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
