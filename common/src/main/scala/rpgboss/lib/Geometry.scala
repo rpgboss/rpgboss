@@ -53,21 +53,21 @@ class LayoutProvider(screenW: Float, screenH: Float) {
     Rect(screenW - w /2, screenH / 2, w, h)
   def west(s: Size): Rect = west(s.w, s.h)
 
-  def northEast(w: Float, h: Float) =
+  def northeast(w: Float, h: Float) =
     Rect(screenW - w / 2, h / 2, w, h)
-  def northEast(s: Size): Rect = northEast(s.w, s.h)
+  def northeast(s: Size): Rect = northeast(s.w, s.h)
 
-  def northWest(w: Float, h: Float) =
+  def northwest(w: Float, h: Float) =
     Rect(w / 2, h / 2, w, h)
-  def northWest(s: Size): Rect = northWest(s.w, s.h)
+  def northwest(s: Size): Rect = northwest(s.w, s.h)
 
-  def southEast(w: Float, h: Float) =
+  def southeast(w: Float, h: Float) =
     Rect(screenW - w / 2, screenH - h / 2, w, h)
-  def southEast(s: Size): Rect = southEast(s.w, s.h)
+  def southeast(s: Size): Rect = southeast(s.w, s.h)
 
-  def southWest(w: Float, h: Float) =
+  def southwest(w: Float, h: Float) =
     Rect(w / 2, screenH - h / 2, w, h)
-  def southWest(s: Size): Rect = southWest(s.w, s.h)
+  def southwest(s: Size): Rect = southwest(s.w, s.h)
 
   def centered(w: Float, h: Float) =
     Rect(screenW / 2, screenH / 2, w, h)
@@ -76,6 +76,9 @@ class LayoutProvider(screenW: Float, screenH: Float) {
 
 class SizeProvider(screenW: Float, screenH: Float) {
   def fixed(w: Float, h: Float) = Size(w, h)
+  
+  def prop(xProportion: Float, yProportion: Float) =
+    Size(xProportion * screenW, yProportion * screenH)
 
   /**
    * Fills whole screen. May cause some portions of image to be beyond the

@@ -357,7 +357,7 @@ class BattleScreen(
         windowManager,
         null,
         Array(),
-        layout.southWest(200, 180)) {
+        layout.southwest(200, 180)) {
         override def openCloseTime = 0
       }
     }
@@ -368,7 +368,7 @@ class BattleScreen(
         windowManager,
         null,
         Array(),
-        layout.southEast(440, 180)) {
+        layout.southeast(440, 180)) {
         override def openCloseTime = 0
       }
     }
