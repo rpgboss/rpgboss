@@ -1,9 +1,6 @@
 animation/sys/animation_attack001bite.png
-animation/sys/animation_fire002.png
-animation/sys/animation_fire004.png
 animation/sys/animation_heal005.png
 animation/sys/animation_heal008.png
-animation/sys/animation_ice005.png
 animation/sys/animation_light002.png
 animation/sys/animation_stone001.png
 animation/sys/animation_weapon001sword1.png
@@ -12,8 +9,42 @@ animation/sys/animation_weapon006shock.png
 animation/sys/animation_weapon008rapier.png
 animation/sys/animation_weapon010arrow.png
 animation/sys/animation_weapon015rance.png
-animation/sys/animation_wind002.png
-animation/sys/animation_wind004.png
+animation/sys/fire1.png
+animation/sys/fire10.png
+animation/sys/fire2.png
+animation/sys/fire3.png
+animation/sys/fire4.png
+animation/sys/fire5.png
+animation/sys/fire6.png
+animation/sys/fire7.png
+animation/sys/fire8.png
+animation/sys/fire9.png
+animation/sys/ice1.png
+animation/sys/ice2.png
+animation/sys/ice3.png
+animation/sys/ice4.png
+animation/sys/ice5.png
+animation/sys/ice6.png
+animation/sys/ice7.png
+animation/sys/ice8.png
+animation/sys/water1.png
+animation/sys/water10.png
+animation/sys/water11.png
+animation/sys/water2.png
+animation/sys/water3.png
+animation/sys/water4.png
+animation/sys/water5.png
+animation/sys/water6.png
+animation/sys/water7.png
+animation/sys/water8.png
+animation/sys/water9.png
+animation/sys/wind1.png
+animation/sys/wind2.png
+animation/sys/wind3.png
+animation/sys/wind4.png
+animation/sys/wind5.png
+animation/sys/wind6.png
+animation/sys/wind7.png
 animations.json
 autotile/sys/Refmap-A1-0-0-A.png
 autotile/sys/Refmap-A1-0-0-A.png.metadata.json
@@ -342,10 +373,31 @@ msgfont/sys/Vera.ttf
 msgfont/sys/VeraMono-Bold.ttf
 msgfont/sys/VeraMono-Italic.ttf
 msgfont/sys/VeraMono.ttf
+music/sys/A Midsummer Night's Dream - A Duel Comences.mid
 music/sys/A Midsummer Night's Dream - A Forest People.mid
+music/sys/A Midsummer Night's Dream - Cue 1.mid
+music/sys/A Midsummer Night's Dream - Cue 2.mid
+music/sys/A Midsummer Night's Dream - Magic and Wonder.mid
+music/sys/A Midsummer Night's Dream - They Tried to Love and They Could Not.mid
+music/sys/Journey to the East - Cue 1.mid
+music/sys/Journey to the East - Cue 2.mid
+music/sys/Journey to the East - Ghost Dance.mid
+music/sys/Journey to the East - Lost in the Fog.mid
+music/sys/Journey to the East - Things in the Light.mid
 music/sys/Journey to the East - Town of Legend.mid
+music/sys/Macbeth - A Drowning King.mid
+music/sys/Macbeth - A Wheeping Kingdom.mid
+music/sys/Macbeth - Cue 1.mid
+music/sys/Macbeth - Cue 2.mid
+music/sys/Macbeth - The Wrath of Fate.mid
 music/sys/Macbeth - To War.mid
+music/sys/Titus Andronicus - An Affinity for Blood (piano version).mid
+music/sys/Titus Andronicus - An Affinity for Blood.mid
+music/sys/Titus Andronicus - Cue 1.mid
+music/sys/Titus Andronicus - Cue 2.mid
+music/sys/Titus Andronicus - Madness Reigns.mid
 music/sys/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
+music/sys/Titus Andronicus - Who Is Burried Here.mid
 picture/sys/LordSpirit.jpg
 script/sys/globals.js
 script/sys/menu.js
