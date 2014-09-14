@@ -1,14 +1,15 @@
 import sbt._
 
 import Keys._
-import ProguardPlugin._
+import sbtassembly.Plugin._
+import AssemblyKeys._
 import scala.sys.process.{Process => SysProcess}
 
 object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     fork := true, // For natives loading.
     version := "0.1",
-    scalaVersion := "2.11.1",
+    scalaVersion := "2.11.2",
     scalacOptions ++= List("-deprecation", "-unchecked"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
@@ -39,7 +40,7 @@ object Settings {
     Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("update-libs")
    )
 
-  lazy val editor = Settings.common ++ editorLibs ++ editorProguard
+  lazy val editor = Settings.common ++ editorLibs ++ assemblySettings
   
   lazy val editorLibs = Seq(
     scalaVersion := "2.11.1",
@@ -56,31 +57,6 @@ object Settings {
     },
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
     scalacOptions ++= List("-deprecation", "-unchecked"))
-
-  lazy val editorProguard = proguardSettings ++ Seq(
-    proguardOptions := Seq(
-//      "-optimizationpasses 5",
-      "-dontwarn",
-      // Doesn't seem to refresh the minified JAR appropriately without this.
-      // "-forceprocessing",
-//      "-dontwarn scala.**",
-//      "-dontusemixedcaseclassnames",
-//      "-dontskipnonpubliclibraryclasses",
-//      "-keep class rpgboss.** { *; }",
-//      "-keep class scala.tools.scalap.scalax.rules.scalasig.ClassFileParser { *; }", // for json4s
-//      "-keep class scala.tools.scalap.scalax.rules.*Rule* { *; }", // for json4s
-//      "-keep class scala.reflect.** { *; }", // for json4s
-//      "-keep class scalaswingcontrib.tree.** { *; }",
-//      "-keep class com.badlogic.gdx.backends.** { *; }",
-//      "-keep class ** { *** getPointer(...); }",
-//      "-keep class org.lwjgl.openal.** { *; }",
-//      "-keep class org.lwjgl.opengl.** { *; }",
-//      "-keep class org.mozilla.javascript.optimizer.OptRuntime { *; }",
-//      "-keepclasseswithmembernames class * { native <methods>; }",
-//      keepMain("rpgboss.editor.RpgDesktop"),
-      "-dontshrink",
-      "-dontobfuscate"
-  ))
 
   val updateLibs = TaskKey[Unit]("update-libs", "Updates libs")
   
@@ -155,11 +131,21 @@ object LibgdxBuild extends Build {
     settings = Settings.common
   )
 
-  // TODO: Fix this hack. Name "editor" "Aeditor" so it's lexographically first 
-  // and thus loaded by sbt as the default project.
-  lazy val Aeditor = Project (
+  lazy val editor = Project (
     "editor",
     file("editor"),
     settings = Settings.editor
   ) dependsOn common
+
+  lazy val root = Project("root", file("."))
+    .aggregate(common, editor)
+    .settings(
+      run := {
+        (run in editor in Compile).evaluated
+      }//,
+//      test := {
+//        (test in common)
+//      }
+    )
+
 }

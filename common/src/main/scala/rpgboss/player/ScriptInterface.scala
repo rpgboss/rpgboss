@@ -72,7 +72,7 @@ class ScriptInterface(
 
   private def mapScreen = game.mapScreen
   private def persistent = game.persistent
-  private def project = game.project
+  def project = game.project
 
   def syncRun[T](op: => T): T = {
     assertOnDifferentThread()

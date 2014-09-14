@@ -59,6 +59,8 @@ class ProjectTest extends ShouldMatchers {
 }
 
 abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
+  def dismissWaiterAtEndOfTestScript = true
+  
   def setup() = {
     val map = RpgMap.readFromDisk(project, mapName)
     val mapData = map.readMapData().get
@@ -84,7 +86,9 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
       // Run this asynchronously so it doesn't block the main render thread.
       Future {
         testScript()
-        waiter.dismiss()
+        
+        if(dismissWaiterAtEndOfTestScript)
+          waiter.dismiss()
       }
     }
 
@@ -95,6 +99,10 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
       GdxUtils.syncRun { mapScreen.inputs.myKeyDown(key) }
       Thread.sleep((duration * 1000).toLong)
       GdxUtils.syncRun { mapScreen.inputs.myKeyUp(key) }
+    }
+    
+    def mapScreenKeyPress(key: Int): Unit = {
+      mapScreenKeyPress(key, 0.1f)
     }
   }
 
