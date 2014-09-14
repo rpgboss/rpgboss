@@ -106,6 +106,7 @@ class ScriptThread(
 
   def run() = {
     thread.start()
+    this
   }
 
   def isFinished = finishPromise.isCompleted
