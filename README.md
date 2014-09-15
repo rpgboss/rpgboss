@@ -136,6 +136,10 @@ Julian Xin raveolutionx@gmail.com (CC-BY-SA 4.0)  http://creativecommons.org/lic
 
 fire(1,2,3,4,5.6) ice(5,6,8) water(1,3,7,9,10) wind(4,5,6,7) earth(3,4,5,6)
 
+Martin Jelinek (jelinek.cz@gmail.com) | www.nyrthos.com
+
+electric(3)
+
 ### Autotiles, Spritesets, Tilesets
 
 http://www.tekepon.net/fsm/
