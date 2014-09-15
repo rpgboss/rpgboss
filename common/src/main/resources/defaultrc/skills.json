@@ -788,204 +788,8 @@
     "animationId":48
   },
   {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":23
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":47
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":24
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":18
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":20
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":19
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":17
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":0,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
     "name":"Thunder",
-    "scopeId":2,
+    "scopeId":3,
     "cost":0,
     "damages":[
       {
@@ -997,23 +801,7 @@
     "effects":[
       
     ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
+    "animationId":55
   },
   {
     "name":"Discharge",
@@ -1045,10 +833,10 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":56
   },
   {
-    "name":"Thunder Outburst",
+    "name":"Electic Outburst",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -1061,7 +849,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":58
   },
   {
     "name":"Lightning",
@@ -1071,13 +859,13 @@
       {
         "typeId":1,
         "elementId":6,
-        "formula":"a.mag*1.5"
+        "formula":"a.mag*1.25"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":54
   },
   {
     "name":"Thunderstorm",
@@ -1087,13 +875,13 @@
       {
         "typeId":1,
         "elementId":6,
-        "formula":"a.mag*2"
+        "formula":"Thunderstorm"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":57
   },
   {
     "name":"Plasmaball",
@@ -1109,39 +897,7 @@
     "effects":[
       
     ],
-    "animationId":0
-  },
-  {
-    "name":"Thundercloud",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":1,
-        "elementId":6,
-        "formula":"a.mag*1.75"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
+    "animationId":30
   },
   {
     "name":"Heal",
@@ -1161,35 +917,27 @@
   },
   {
     "name":"Cure",
-    "scopeId":4,
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":8,
-        "formula":""
-      }
+      
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":59
   },
   {
     "name":"Cure All",
-    "scopeId":5,
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":8,
-        "formula":""
-      }
+      
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":59
   },
   {
     "name":"Heal All",
@@ -1205,18 +953,14 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":5
   },
   {
     "name":"Revive",
-    "scopeId":4,
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":8,
-        "formula":""
-      }
+      
     ],
     "effects":[
       
@@ -1246,30 +990,150 @@
     "damages":[
       {
         "typeId":1,
-        "elementId":0,
+        "elementId":8,
         "formula":"-a.mag"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":60
   },
   {
     "name":"Revive All",
+    "scopeId":0,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":7
+  },
+  {
+    "name":"Sword",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":61
+  },
+  {
+    "name":"Blade",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":62
+  },
+  {
+    "name":"Hammer",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":63
+  },
+  {
+    "name":"Staff",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":64
+  },
+  {
+    "name":"Arrow",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":65
+  },
+  {
+    "name":"Slash",
     "scopeId":2,
     "cost":0,
     "damages":[
       {
-        "typeId":1,
-        "elementId":8,
+        "typeId":0,
+        "elementId":0,
         "formula":""
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":66
+  },
+  {
+    "name":"Swing",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":67
+  },
+  {
+    "name":"Blast",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":68
+  },
+  {
+    "name":"Cut",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":69
   },
   {
     "name":"",
