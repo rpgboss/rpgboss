@@ -133,7 +133,7 @@
     "name":"Heal",
     "visuals":[
       {
-        "animationImage":"sys/animation_heal008.png",
+        "animationImage":"sys/life1.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -142,7 +142,7 @@
         },
         "end":{
           "time":1.0,
-          "frameIndex":14,
+          "frameIndex":2,
           "x":0,
           "y":0
         }
@@ -156,7 +156,7 @@
     "name":"Regen",
     "visuals":[
       {
-        "animationImage":"sys/animation_heal005.png",
+        "animationImage":"sys/life2.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -165,7 +165,7 @@
         },
         "end":{
           "time":1.0,
-          "frameIndex":10,
+          "frameIndex":9,
           "x":0,
           "y":0
         }
@@ -179,16 +179,16 @@
     "name":"Revive",
     "visuals":[
       {
-        "animationImage":"sys/animation_heal005.png",
+        "animationImage":"sys/life5.png",
         "start":{
           "time":0.0,
-          "frameIndex":12,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":14,
+          "frameIndex":8,
           "x":0,
           "y":0
         }
@@ -593,16 +593,16 @@
     "name":"Icicleblast",
     "visuals":[
       {
-        "animationImage":"sys/animation_light002.png",
+        "animationImage":"sys/ice9.png",
         "start":{
           "time":0.0,
-          "frameIndex":20,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":24,
+          "frameIndex":4,
           "x":0,
           "y":0
         }
@@ -684,7 +684,21 @@
   {
     "name":"Discharge",
     "visuals":[
-      
+      {
+        "animationImage":"sys/electric3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
@@ -693,7 +707,21 @@
   {
     "name":"Plasmaball",
     "visuals":[
-      
+      {
+        "animationImage":"sys/electric4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":100,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
@@ -1229,9 +1257,383 @@
     ]
   },
   {
-    "name":"",
+    "name":"Lightning",
     "visuals":[
+      {
+        "animationImage":"sys/electric1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/electric1.png",
+        "start":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.5,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
       
+    ]
+  },
+  {
+    "name":"Thunder",
+    "visuals":[
+      {
+        "animationImage":"sys/electric2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Thunderbolt",
+    "visuals":[
+      {
+        "animationImage":"sys/electric5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Thunderstorm",
+    "visuals":[
+      {
+        "animationImage":"sys/electric6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":50,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":-50,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Electric Outburst",
+    "visuals":[
+      {
+        "animationImage":"sys/electric7.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Cure",
+    "visuals":[
+      {
+        "animationImage":"sys/life3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":11,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Recover",
+    "visuals":[
+      {
+        "animationImage":"sys/life4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Sword",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Blade",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Hammer",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Staff",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":1,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Arrow",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon8.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Slash",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Swing",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Blast",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon7.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Cut",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
     ],
     "sounds":[
       
