@@ -490,8 +490,7 @@ class BattleScreen(
             _victorySequenceStarted = true
 
             val exp = _battle.get.victoryExperience
-            val leveled = PersistentStateUtil.givePartyExperience(
-              gameOpt.get.persistent,
+            val leveled = gameOpt.get.persistent.givePartyExperience(
               _battle.get.pData.enums.characters,
               _battle.get.partyIds,
               exp)

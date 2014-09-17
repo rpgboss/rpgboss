@@ -2,13 +2,15 @@ function itemsMenu() {
   var kItemsDisplayedItems = 10;
 	
   function generateItemsWinChoices() {
-    var inventoryIdxs = game.getIntArray(game.INVENTORY_IDXS());
+    var inventoryItemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
     var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
     
     var choiceLines = [];
     var items = project.data().enums().items();
-    for (var i = 0; i < inventoryIdxs.length && i < inventoryQtys.length; ++i) {
-      if (inventoryIdxs < 0) {
+    for (var i = 0; 
+         i < inventoryItemIds.length && i < inventoryQtys.length; 
+         ++i) {
+      if (inventoryItemIds < 0) {
         choiceLines.append("");
         continue;
       }

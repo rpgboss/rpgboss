@@ -2,9 +2,8 @@ package rpgboss.player
 
 import rpgboss.UnitSpec
 import rpgboss.model._
-import rpgboss.player.PersistentStateUtil._
 
-class PersistentStateUtilSpec extends UnitSpec {
+class PersistentStateSpec extends UnitSpec {
   def fixture(level1: Int, level2: Int, exp1: Int, exp2: Int) = new {
     val character1 = 
       Character(progressions = StatProgressions(exp = Curve(300, 100)))
@@ -27,7 +26,7 @@ class PersistentStateUtilSpec extends UnitSpec {
   
   "PersistentStateUtil" should "level up specified character only" in {
     val f = fixture(1, 1, 0, 0)
-    val leveled = givePartyExperience(f.persistent, f.characters, Array(1), 700)
+    val leveled = f.persistent.givePartyExperience(f.characters, Array(1), 700)
     val state = f.getState()
     
     leveled should deepEqual (Array(1))
@@ -38,7 +37,7 @@ class PersistentStateUtilSpec extends UnitSpec {
   "PersistentStateUtil" should "level up both characters" in {
     val f = fixture(1, 1, 0, 0)
     val leveled = 
-      givePartyExperience(f.persistent, f.characters, Array(0, 1), 600)
+      f.persistent.givePartyExperience(f.characters, Array(0, 1), 600)
     val state = f.getState()
     
     leveled should deepEqual (Array(0, 1))
@@ -49,7 +48,7 @@ class PersistentStateUtilSpec extends UnitSpec {
   "PersistentStateUtil" should "level up through multiple levels" in {
     val f = fixture(1, 1, 0, 0)
     val leveled = 
-      givePartyExperience(f.persistent, f.characters, Array(0, 1), 700)
+      f.persistent.givePartyExperience(f.characters, Array(0, 1), 700)
     val state = f.getState()
     
     leveled should deepEqual (Array(0, 1))

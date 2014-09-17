@@ -1,6 +1,6 @@
 package rpgboss.player
 import collection.mutable._
-import collection.mutable.{HashMap => MutableHashMap}
+import collection.mutable.{ HashMap => MutableHashMap }
 import rpgboss.lib.ThreadChecked
 
 trait PersistentStateUpdate
@@ -14,7 +14,8 @@ case class EventStateChange(key: (String, Int), value: Int)
  */
 class PersistentState
   extends ThreadChecked
-  with Publisher[PersistentStateUpdate] {
+  with Publisher[PersistentStateUpdate]
+  with HasScriptConstants {
   private val globalInts = new MutableHashMap[String, Int]
   private val intArrays = new MutableHashMap[String, Array[Int]]
   private val stringArrays = new MutableHashMap[String, Array[String]]
@@ -71,18 +72,16 @@ class PersistentState
     eventStates.update((mapName, eventId), newState)
     publish(EventStateChange((mapName, eventId), newState))
   }
-}
-
-object PersistentStateUtil extends HasScriptConstants {
+  
   /**
-   * Returns list of characters that leveled up by their character index.
+   * @return  the list of characters that leveled up by their character index.
    */
-  def givePartyExperience(persistent: PersistentState,
-                          characters: Array[rpgboss.model.Character],
-                          partyIds: Array[Int],
-                          experience: Int) = {
-    val levels = persistent.getIntArray(CHARACTER_LEVELS)
-    val exps = persistent.getIntArray(CHARACTER_EXPS)
+  def givePartyExperience(
+    characters: Array[rpgboss.model.Character],
+    partyIds: Array[Int],
+    experience: Int) = {
+    val levels = getIntArray(CHARACTER_LEVELS)
+    val exps = getIntArray(CHARACTER_EXPS)
 
     assert(levels.length == characters.length)
     assert(exps.length == characters.length)
@@ -100,14 +99,60 @@ object PersistentStateUtil extends HasScriptConstants {
         leveled = true
       }
 
-      if (leveled) {character.expToLevel(levels(i))
+      if (leveled) {
+        character.expToLevel(levels(i))
         leveledBuffer += i
       }
     }
 
-    persistent.setIntArray(CHARACTER_LEVELS, levels)
-    persistent.setIntArray(CHARACTER_EXPS, exps)
+    setIntArray(CHARACTER_LEVELS, levels)
+    setIntArray(CHARACTER_EXPS, exps)
 
     leveledBuffer.toArray
+  }
+  
+  /**
+   * Adds or removes items. If we try to remove a greater quantity of an itemId
+   * than exists in the inventory, nothing happens and we return false.
+   * @return  Whether the items were successfully added or removed.
+   */
+  def addRemoveItem(itemId: Int, qtyDelta: Int): Boolean = {
+    assert(qtyDelta != 0)
+    
+    val itemQtys = getIntArray(INVENTORY_QTYS)
+    val itemIds = getIntArray(INVENTORY_ITEM_IDS)
+    
+    val idxOfItem = itemIds.indexOf(itemId)
+    val itemExistsInInventory = idxOfItem != -1
+    
+    if (qtyDelta > 0) {
+      if (itemExistsInInventory) {
+        itemQtys(idxOfItem) += qtyDelta
+        setIntArray(INVENTORY_QTYS, itemQtys)
+      } else {
+        setIntArray(INVENTORY_QTYS, itemQtys ++ Array(qtyDelta))
+        setIntArray(INVENTORY_ITEM_IDS, itemIds ++ Array(itemId))
+      }
+    } else {
+      if (!itemExistsInInventory)
+        return false
+      if (itemQtys(itemId) < -qtyDelta)
+        return false 
+        
+      // Adding because qtyDelta is negative.
+      itemQtys(idxOfItem) += qtyDelta
+      
+      // Trim items on the right side that have zero quantity. Also trim the 
+      // associated item ids.
+      if (itemQtys(idxOfItem) == 0) {
+        setIntArray(INVENTORY_QTYS, itemQtys.reverse.dropWhile(_ <= 0).reverse)
+        setIntArray(INVENTORY_ITEM_IDS, itemIds.take(itemQtys.size))
+      } else {
+        setIntArray(INVENTORY_QTYS, itemQtys)
+        setIntArray(INVENTORY_ITEM_IDS, itemIds)
+      }
+    }
+    
+    return true
   }
 }

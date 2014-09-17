@@ -30,7 +30,7 @@ trait HasScriptConstants {
   val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
 
   val PARTY = "party"
-  val INVENTORY_IDXS = "inventoryIdxs"
+  val INVENTORY_ITEM_IDS = "inventoryIdxs"
   val INVENTORY_QTYS = "inventoryQtys"
   val CHARACTER_NAMES = "characterNames"
   val CHARACTER_LEVELS = "characterLevels"
