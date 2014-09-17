@@ -1,6 +1,6 @@
 package rpgboss.player
 import collection.mutable._
-import collection.mutable.{HashMap => MutableHashMap}
+import collection.mutable.{ HashMap => MutableHashMap }
 import rpgboss.lib.ThreadChecked
 
 trait PersistentStateUpdate
@@ -14,7 +14,8 @@ case class EventStateChange(key: (String, Int), value: Int)
  */
 class PersistentState
   extends ThreadChecked
-  with Publisher[PersistentStateUpdate] {
+  with Publisher[PersistentStateUpdate]
+  with HasScriptConstants {
   private val globalInts = new MutableHashMap[String, Int]
   private val intArrays = new MutableHashMap[String, Array[Int]]
   private val stringArrays = new MutableHashMap[String, Array[String]]
@@ -71,18 +72,16 @@ class PersistentState
     eventStates.update((mapName, eventId), newState)
     publish(EventStateChange((mapName, eventId), newState))
   }
-}
-
-object PersistentStateUtil extends HasScriptConstants {
+  
   /**
    * Returns list of characters that leveled up by their character index.
    */
-  def givePartyExperience(persistent: PersistentState,
-                          characters: Array[rpgboss.model.Character],
-                          partyIds: Array[Int],
-                          experience: Int) = {
-    val levels = persistent.getIntArray(CHARACTER_LEVELS)
-    val exps = persistent.getIntArray(CHARACTER_EXPS)
+  def givePartyExperience(
+    characters: Array[rpgboss.model.Character],
+    partyIds: Array[Int],
+    experience: Int) = {
+    val levels = getIntArray(CHARACTER_LEVELS)
+    val exps = getIntArray(CHARACTER_EXPS)
 
     assert(levels.length == characters.length)
     assert(exps.length == characters.length)
@@ -100,13 +99,14 @@ object PersistentStateUtil extends HasScriptConstants {
         leveled = true
       }
 
-      if (leveled) {character.expToLevel(levels(i))
+      if (leveled) {
+        character.expToLevel(levels(i))
         leveledBuffer += i
       }
     }
 
-    persistent.setIntArray(CHARACTER_LEVELS, levels)
-    persistent.setIntArray(CHARACTER_EXPS, exps)
+    setIntArray(CHARACTER_LEVELS, levels)
+    setIntArray(CHARACTER_EXPS, exps)
 
     leveledBuffer.toArray
   }
