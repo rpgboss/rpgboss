@@ -1,5 +1,231 @@
 [
   {
+    "name":"Minor Strenght",
+    "effects":[
+      {
+        "keyId":8,
+        "v1":15,
+        "v2":0
+      }
+    ],
+    "releaseOnBattleEnd":true,
+    "releaseTime":5,
+    "releaseChance":1,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"Minor Magic",
+    "effects":[
+      {
+        "keyId":10,
+        "v1":15,
+        "v2":0
+      }
+    ],
+    "releaseOnBattleEnd":true,
+    "releaseTime":5,
+    "releaseChance":1,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"Minor Body",
+    "effects":[
+      {
+        "keyId":11,
+        "v1":10,
+        "v2":0
+      },
+      {
+        "keyId":12,
+        "v1":10,
+        "v2":0
+      }
+    ],
+    "releaseOnBattleEnd":true,
+    "releaseTime":5,
+    "releaseChance":1,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"Ablaze",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"Burn",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
+    "name":"",
+    "effects":[
+      
+    ],
+    "releaseOnBattleEnd":false,
+    "releaseTime":0,
+    "releaseChance":0,
+    "releaseDmgChance":0,
+    "maxStacks":1
+  },
+  {
     "name":"",
     "effects":[
       

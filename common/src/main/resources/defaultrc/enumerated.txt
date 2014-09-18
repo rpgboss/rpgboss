@@ -54,6 +54,9 @@ animation/sys/weapon5.png
 animation/sys/weapon6.png
 animation/sys/weapon7.png
 animation/sys/weapon8.png
+animation/sys/weapon9.png
+animation/sys/weapon10.png
+animation/sys/weapon11.png
 animation/sys/wind1.png
 animation/sys/wind2.png
 animation/sys/wind3.png
