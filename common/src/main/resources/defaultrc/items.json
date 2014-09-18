@@ -1,7 +1,7 @@
 [
   {
-    "name":"Wooden Sword",
-    "desc":"A simple wooden sword.",
+    "name":"Damaged Sword",
+    "desc":"A beginner sword.",
     "effects":[
       {
         "keyId":8,
@@ -15,409 +15,445 @@
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":3
+    "useOnAttack":false,
+    "onUseSkillId":0
   },
   {
-    "name":"Iron Sword",
-    "desc":"A simple iron sword.",
+    "name":"Damaged Glove",
+    "desc":"A beginner glove",
     "effects":[
       {
-        "keyId":8,
-        "v1":10,
+        "keyId":11,
+        "v1":1,
         "v2":0
       }
     ],
     "sellable":true,
-    "price":300,
+    "price":100,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
-    "equipType":0,
-    "useOnAttack":true,
+    "equipType":5,
+    "useOnAttack":false,
     "onUseSkillId":3
   },
   {
-    "name":"Steel Sword",
-    "desc":"A forged steel sword.",
+    "name":"Damaged Pant",
+    "desc":"A beginner pant",
     "effects":[
       {
-        "keyId":8,
-        "v1":17,
+        "keyId":11,
+        "v1":1,
         "v2":0
       }
     ],
     "sellable":true,
-    "price":600,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":7,
+    "useOnAttack":false,
+    "onUseSkillId":3
+  },
+  {
+    "name":"Damaged Helmet",
+    "desc":"A beginner helmet",
+    "effects":[
+      {
+        "keyId":11,
+        "v1":1,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":3,
+    "useOnAttack":false,
+    "onUseSkillId":3
+  },
+  {
+    "name":"Damaged Legging",
+    "desc":"A beginner legging",
+    "effects":[
+      {
+        "keyId":11,
+        "v1":1,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":8,
+    "useOnAttack":false,
+    "onUseSkillId":3
+  },
+  {
+    "name":"Damaged Chestplate",
+    "desc":"A beginner chestplate",
+    "effects":[
+      {
+        "keyId":11,
+        "v1":2,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":2,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Damaged Shield",
+    "desc":"A beginner shield",
+    "effects":[
+      {
+        "keyId":11,
+        "v1":1,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":1,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Damaged Staff",
+    "desc":"A beginner staff",
+    "effects":[
+      {
+        "keyId":10,
+        "v1":3,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":3
+    "useOnAttack":false,
+    "onUseSkillId":0
   },
   {
-    "name":"Frost Sword",
-    "desc":"An enchanted frost sword.",
+    "name":"Damaged Bow",
+    "desc":"A beginner bow",
+    "effects":[
+      {
+        "keyId":8,
+        "v1":3,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Damaged Dagger",
+    "desc":"A beginner dagger",
+    "effects":[
+      {
+        "keyId":9,
+        "v1":1,
+        "v2":0
+      },
+      {
+        "keyId":8,
+        "v1":2,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":100,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Weak Ice Bomb",
+    "desc":"A bomb that does 100 ice damage",
+    "effects":[
+      {
+        "keyId":16,
+        "v1":74,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":10,
+    "itemType":0,
+    "accessId":2,
+    "scopeId":2,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Weak Fire Bomb",
+    "desc":"A bomb that does 100 fire damage",
+    "effects":[
+      {
+        "keyId":16,
+        "v1":73,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":10,
+    "itemType":0,
+    "accessId":2,
+    "scopeId":2,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Weak Earth Bomb",
+    "desc":"A bomb that does 100 earth damage",
+    "effects":[
+      {
+        "keyId":16,
+        "v1":76,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":10,
+    "itemType":0,
+    "accessId":2,
+    "scopeId":2,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Weak Wind Bomb",
+    "desc":"A bomb that does 100 wind damage",
+    "effects":[
+      {
+        "keyId":16,
+        "v1":75,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":10,
+    "itemType":0,
+    "accessId":2,
+    "scopeId":2,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Rein Fire Sword",
+    "desc":"A sword with the power of fire",
     "effects":[
       {
         "keyId":8,
         "v1":20,
         "v2":0
-      },
-      {
-        "keyId":14,
-        "v1":5,
-        "v2":0
       }
     ],
     "sellable":true,
-    "price":1400,
+    "price":100,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
     "useOnAttack":true,
-    "onUseSkillId":3
+    "onUseSkillId":77
   },
   {
-    "name":"Flaming Sword",
-    "desc":"An enchanted flaming sword.",
+    "name":"Rein Ice Sword",
+    "desc":"A sword with the power of ice",
     "effects":[
       {
         "keyId":8,
-        "v1":22,
-        "v2":0
-      },
-      {
-        "keyId":14,
-        "v1":6,
+        "v1":20,
         "v2":0
       }
     ],
     "sellable":true,
-    "price":1400,
+    "price":1000,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
     "useOnAttack":true,
-    "onUseSkillId":3
+    "onUseSkillId":78
   },
   {
-    "name":"Void Sword",
-    "desc":"A sword made of pure energy.",
+    "name":"Rein Earth Sword",
+    "desc":"",
     "effects":[
       {
         "keyId":8,
-        "v1":40,
+        "v1":20,
         "v2":0
       }
     ],
     "sellable":true,
-    "price":3000,
+    "price":1000,
     "itemType":2,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
     "useOnAttack":true,
-    "onUseSkillId":0
+    "onUseSkillId":79
   },
   {
-    "name":"",
+    "name":"Rein Wind Sword",
     "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"Basic Staff",
-    "desc":"A basic wooden staff.",
     "effects":[
       {
         "keyId":8,
-        "v1":3,
+        "v1":20,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":1000,
+    "itemType":2,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":true,
+    "onUseSkillId":80
+  },
+  {
+    "name":"Minor Health Potion",
+    "desc":"A potion that heal 100 hp",
+    "effects":[
+      {
+        "keyId":0,
+        "v1":100,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":20,
+    "itemType":0,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Health Potion",
+    "desc":"A Potion that heal 250 hp",
+    "effects":[
+      {
+        "keyId":0,
+        "v1":250,
         "v2":0
       }
     ],
     "sellable":true,
     "price":100,
-    "itemType":2,
+    "itemType":0,
     "accessId":0,
     "scopeId":4,
+    "equipType":0,
+    "useOnAttack":false,
+    "onUseSkillId":0
+  },
+  {
+    "name":"Orb of Fire",
+    "desc":"A orb that drain a user mp in exchange for casting fire",
+    "effects":[
+      {
+        "keyId":16,
+        "v1":0,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":1000,
+    "itemType":1,
+    "accessId":0,
+    "scopeId":2,
     "equipType":0,
     "useOnAttack":true,
     "onUseSkillId":1
   },
   {
-    "name":"Apprentice Staff",
-    "desc":"A basic magic staff.",
+    "name":"Orb of Ice",
+    "desc":"A orb that drain a user mp in exchange for casting fire",
     "effects":[
       {
-        "keyId":8,
-        "v1":3,
-        "v2":0
-      },
-      {
-        "keyId":10,
-        "v1":6,
-        "v2":0
-      }
-    ],
-    "sellable":true,
-    "price":400,
-    "itemType":2,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":1
-  },
-  {
-    "name":"Focus Staff",
-    "desc":"A staff that helps one focus on casting spells.",
-    "effects":[
-      {
-        "keyId":8,
-        "v1":3,
-        "v2":0
-      },
-      {
-        "keyId":10,
-        "v1":16,
-        "v2":0
-      }
-    ],
-    "sellable":true,
-    "price":800,
-    "itemType":2,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":1
-  },
-  {
-    "name":"Ice Staff",
-    "desc":"A staff always cold to the touch.",
-    "effects":[
-      {
-        "keyId":8,
-        "v1":3,
-        "v2":0
-      },
-      {
-        "keyId":10,
+        "keyId":16,
         "v1":23,
         "v2":0
       }
     ],
     "sellable":true,
-    "price":1400,
-    "itemType":2,
+    "price":1000,
+    "itemType":1,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":true,
+    "onUseSkillId":1
+  },
+  {
+    "name":"Orb of Earth",
+    "desc":"A orb that drain a user mp in exchange for casting earth",
+    "effects":[
+      {
+        "keyId":16,
+        "v1":39,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":1000,
+    "itemType":1,
+    "accessId":0,
+    "scopeId":4,
+    "equipType":0,
+    "useOnAttack":true,
+    "onUseSkillId":1
+  },
+  {
+    "name":"Orb of Wind",
+    "desc":"A orb that drain a user mp in exchange for casting wind",
+    "effects":[
+      {
+        "keyId":16,
+        "v1":38,
+        "v2":0
+      }
+    ],
+    "sellable":true,
+    "price":1000,
+    "itemType":1,
     "accessId":0,
     "scopeId":4,
     "equipType":0,
@@ -425,324 +461,73 @@
     "onUseSkillId":5
   },
   {
-    "name":"Elementalist Staff",
-    "desc":"A staff for advanced practicioners.",
+    "name":"Minor Strenght Potion",
+    "desc":"A potion that temproary boost Attack",
     "effects":[
       {
-        "keyId":8,
-        "v1":3,
-        "v2":0
-      },
-      {
-        "keyId":10,
-        "v1":34,
-        "v2":0
-      },
-      {
-        "keyId":12,
-        "v1":3,
-        "v2":0
-      },
-      {
-        "keyId":14,
-        "v1":6,
-        "v2":0
+        "keyId":4,
+        "v1":0,
+        "v2":100
       }
     ],
     "sellable":true,
-    "price":1600,
-    "itemType":2,
-    "accessId":0,
+    "price":50,
+    "itemType":0,
+    "accessId":2,
     "scopeId":4,
     "equipType":0,
     "useOnAttack":true,
     "onUseSkillId":5
   },
   {
-    "name":"Staff of Healing",
-    "desc":"Heals those hit by the staff.",
+    "name":"Minor Magic Potion",
+    "desc":"A potion that temproary boost Magic",
     "effects":[
       {
-        "keyId":10,
-        "v1":16,
-        "v2":0
+        "keyId":4,
+        "v1":1,
+        "v2":100
       }
     ],
     "sellable":true,
-    "price":1400,
-    "itemType":2,
-    "accessId":0,
+    "price":50,
+    "itemType":0,
+    "accessId":2,
     "scopeId":4,
     "equipType":0,
     "useOnAttack":true,
     "onUseSkillId":39
   },
   {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"Rusty Shiv",
-    "desc":"Found in a dusty alley.",
+    "name":"Minor Body Potion",
+    "desc":"A potion that temproary boost Armor and Mag Res",
     "effects":[
       {
-        "keyId":8,
-        "v1":1,
-        "v2":0
-      },
-      {
-        "keyId":9,
-        "v1":3,
-        "v2":0
+        "keyId":4,
+        "v1":2,
+        "v2":100
       }
     ],
     "sellable":true,
-    "price":100,
-    "itemType":2,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":2
-  },
-  {
-    "name":"Steel Dagger",
-    "desc":"A shiny dagger.",
-    "effects":[
-      {
-        "keyId":8,
-        "v1":3,
-        "v2":0
-      },
-      {
-        "keyId":9,
-        "v1":6,
-        "v2":0
-      }
-    ],
-    "sellable":true,
-    "price":250,
-    "itemType":2,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":2
-  },
-  {
-    "name":"Dagger of Speed",
-    "desc":"Your arm is moving faster.",
-    "effects":[
-      {
-        "keyId":9,
-        "v1":20,
-        "v2":0
-      }
-    ],
-    "sellable":true,
-    "price":1800,
-    "itemType":2,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":2
-  },
-  {
-    "name":"Cold Dagger",
-    "desc":"A blade always ice cold to the touch.",
-    "effects":[
-      {
-        "keyId":8,
-        "v1":8,
-        "v2":0
-      },
-      {
-        "keyId":9,
-        "v1":11,
-        "v2":0
-      },
-      {
-        "keyId":14,
-        "v1":5,
-        "v2":0
-      }
-    ],
-    "sellable":true,
-    "price":2200,
-    "itemType":2,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":true,
-    "onUseSkillId":2
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      {
-        "keyId":8,
-        "v1":1,
-        "v2":0
-      },
-      {
-        "keyId":9,
-        "v1":3,
-        "v2":0
-      }
-    ],
-    "sellable":true,
-    "price":100,
+    "price":50,
     "itemType":0,
-    "accessId":0,
+    "accessId":2,
     "scopeId":4,
     "equipType":0,
     "useOnAttack":false,
-    "onUseSkillId":2
+    "onUseSkillId":0
   },
   {
-    "name":"",
-    "desc":"",
+    "name":"Small Key",
+    "desc":"A small key?",
     "effects":[
       
     ],
-    "sellable":true,
+    "sellable":false,
     "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
+    "itemType":3,
+    "accessId":1,
+    "scopeId":0,
     "equipType":0,
     "useOnAttack":false,
     "onUseSkillId":0
@@ -753,131 +538,11 @@
     "effects":[
       
     ],
-    "sellable":true,
+    "sellable":false,
     "price":100,
     "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
-    "equipType":0,
-    "useOnAttack":false,
-    "onUseSkillId":0
-  },
-  {
-    "name":"",
-    "desc":"",
-    "effects":[
-      
-    ],
-    "sellable":true,
-    "price":100,
-    "itemType":0,
-    "accessId":0,
-    "scopeId":4,
+    "accessId":3,
+    "scopeId":0,
     "equipType":0,
     "useOnAttack":false,
     "onUseSkillId":0

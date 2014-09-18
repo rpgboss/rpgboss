@@ -1136,6 +1136,166 @@
     "animationId":69
   },
   {
+    "name":"Weak Fire Bomb",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":2,
+        "elementId":4,
+        "formula":"a.100"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":68
+  },
+  {
+    "name":"Weak Ice Bomb",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":2,
+        "elementId":5,
+        "formula":"a.100"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":25
+  },
+  {
+    "name":"Weak Wind Bomb",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":2,
+        "elementId":13,
+        "formula":"a.100"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":23
+  },
+  {
+    "name":"Weak Earth Bomb",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":2,
+        "elementId":7,
+        "formula":"a.100"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":51
+  },
+  {
+    "name":"Rein Fire Sword",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":4,
+        "formula":"a.atk"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":66
+  },
+  {
+    "name":"Rein Ice Sword",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":5,
+        "formula":"a.atk"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":70
+  },
+  {
+    "name":"Rein Earth Sword",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":7,
+        "formula":"a.atk"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":71
+  },
+  {
+    "name":"Rein Wind Slash",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":13,
+        "formula":"a.atk"
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":72
+  },
+  {
+    "name":"",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
+    "name":"",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":0
+  },
+  {
     "name":"",
     "scopeId":2,
     "cost":0,
