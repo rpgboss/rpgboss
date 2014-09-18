@@ -6,6 +6,7 @@ import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.editor.StateMaster
 import rpgboss.model.RpgEnum
+import rpgboss.model.AddOrRemove
 
 class ModifyPartyCmdDialog(
   owner: Window,

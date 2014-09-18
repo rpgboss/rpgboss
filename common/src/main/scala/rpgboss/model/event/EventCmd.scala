@@ -12,7 +12,7 @@ trait EventCmd extends HasScriptConstants {
    *  in section |sectionI|.
    */
   def copyWithNewInnerCmds(sectionI: Int,
-                           newInnerCmds: Array[EventCmd]): EventCmd = {
+    newInnerCmds: Array[EventCmd]): EventCmd = {
     throw new NotImplementedError
   }
 
@@ -30,11 +30,11 @@ object EventCmd {
   }
 
   case class CommandList(cmds: Array[EventCmd],
-                         indent: Int) extends CodeSection {
+    indent: Int) extends CodeSection {
     def toJs = cmds
       .map(_.toJs) // Convert to JS
       .flatten
-      .map(("  " * indent) + _)  // Indent by 2 spaces
+      .map(("  " * indent) + _) // Indent by 2 spaces
   }
 
   def types = List(
@@ -110,12 +110,11 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
       RawJs("} finally {").exp,
       jsStatement("  game.setInt", PLAYER_MOVEMENT_LOCKS,
         RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " - 1")),
-      RawJs("}").exp))
-  )
+      RawJs("}").exp)))
 
   override def copyWithNewInnerCmds(sectionI: Int,
-                                    newInnerCmds: Array[EventCmd]): EventCmd = {
-    assert (sectionI == 1)
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    assert(sectionI == 1)
     copy(body = newInnerCmds)
   }
 }
@@ -125,7 +124,9 @@ case class ModifyParty(add: Boolean = true, characterId: Int = 0)
   def sections = singleCall("game.modifyParty", add, characterId)
 }
 
-case class AddRemoveItem(itemId: Int, add: Boolean, qty: Int) extends EventCmd {
+case class AddRemoveItem(
+  var itemId: Int = 0, var add: Boolean = true, var qty: Int = 1)
+  extends EventCmd {
   def qtyDelta = (if (add) 1 else -1) * qty
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
 }
@@ -170,7 +171,7 @@ case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {
-  def sections = Array(PlainLines(Array(scriptBody.split("\n") : _*)))
+  def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
 }
 
 case class SetInt(key: String, value: Int) extends EventCmd {
