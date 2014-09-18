@@ -72,7 +72,7 @@ class PersistentState
     eventStates.update((mapName, eventId), newState)
     publish(EventStateChange((mapName, eventId), newState))
   }
-  
+
   /**
    * @return  the list of characters that leveled up by their character index.
    */
@@ -110,7 +110,7 @@ class PersistentState
 
     leveledBuffer.toArray
   }
-  
+
   /**
    * Adds or removes items. If we try to remove a greater quantity of an itemId
    * than exists in the inventory, nothing happens and we return false.
@@ -118,13 +118,13 @@ class PersistentState
    */
   def addRemoveItem(itemId: Int, qtyDelta: Int): Boolean = {
     assert(qtyDelta != 0)
-    
+
     val itemQtys = getIntArray(INVENTORY_QTYS)
     val itemIds = getIntArray(INVENTORY_ITEM_IDS)
-    
+
     val idxOfItem = itemIds.indexOf(itemId)
     val itemExistsInInventory = idxOfItem != -1
-    
+
     if (qtyDelta > 0) {
       if (itemExistsInInventory) {
         itemQtys(idxOfItem) += qtyDelta
@@ -136,23 +136,24 @@ class PersistentState
     } else {
       if (!itemExistsInInventory)
         return false
-      if (itemQtys(itemId) < -qtyDelta)
-        return false 
-        
+      if (itemQtys(idxOfItem) < -qtyDelta)
+        return false
+
       // Adding because qtyDelta is negative.
       itemQtys(idxOfItem) += qtyDelta
-      
-      // Trim items on the right side that have zero quantity. Also trim the 
+
+      // Trim items on the right side that have zero quantity. Also trim the
       // associated item ids.
       if (itemQtys(idxOfItem) == 0) {
-        setIntArray(INVENTORY_QTYS, itemQtys.reverse.dropWhile(_ <= 0).reverse)
-        setIntArray(INVENTORY_ITEM_IDS, itemIds.take(itemQtys.size))
+        val newItemQtys = itemQtys.reverse.dropWhile(_ <= 0).reverse
+        setIntArray(INVENTORY_QTYS, newItemQtys)
+        setIntArray(INVENTORY_ITEM_IDS, itemIds.take(newItemQtys.size))
       } else {
         setIntArray(INVENTORY_QTYS, itemQtys)
         setIntArray(INVENTORY_ITEM_IDS, itemIds)
       }
     }
-    
+
     return true
   }
 }
