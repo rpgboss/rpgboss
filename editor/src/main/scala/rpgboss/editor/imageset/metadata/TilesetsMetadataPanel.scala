@@ -29,8 +29,7 @@ case class TilesetListItem(autotiles: Boolean, text: String, tilesetIdx: Int) {
 }
 
 class TilesetsMetadataPanel(sm: StateMaster)
-  extends BoxPanel(Orientation.Horizontal)
-  with TileMetadataPanelOwner {
+  extends BoxPanel(Orientation.Horizontal) {
 
   // A mutable array that we update as we modify things
   val autotiles =
@@ -48,7 +47,13 @@ class TilesetsMetadataPanel(sm: StateMaster)
   var autotilesSelected = true
   var tilesetIdx = -1
 
-  // tilesetIdx is always going to be valid when this is called
+  var metadataMode = MetadataMode.default
+
+  /**
+   * Returns a tuple of metadata i.e. Some((blockedDirs)) if tile exists
+   * tilesetIdx is always going to be valid when this is called
+   * Return None if (xTile, yTile) is invalid
+   */
   def getTileMeta(x: Int, y: Int) = {
     if (autotilesSelected) {
       val idx = x
@@ -64,7 +69,19 @@ class TilesetsMetadataPanel(sm: StateMaster)
     }
   }
 
-  // tilesetIdx is always going to be valid when this is called
+  def inBounds(xTile: Int, yTile: Int): Boolean = {
+    if (autotilesSelected) {
+      true
+    } else {
+      val tileset = tilesets(tilesetIdx)
+      tileset.inBounds(xTile, yTile)
+    }
+  }
+
+  /**
+   * User clicks this tile. Not required to do anything.
+   * tilesetIdx is always going to be valid when this is called
+   */
   def updateTileMeta(x: Int, y: Int, newMetadata: TileMetadata) = {
     if (autotilesSelected) {
       val (newBlockedDirs) = newMetadata
