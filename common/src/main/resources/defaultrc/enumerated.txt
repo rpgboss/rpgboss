@@ -1,4 +1,3 @@
-
 animation/sys/earth1.png
 animation/sys/earth2.png
 animation/sys/earth3.png

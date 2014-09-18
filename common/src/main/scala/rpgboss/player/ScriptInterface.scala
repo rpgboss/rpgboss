@@ -417,6 +417,10 @@ class ScriptInterface(
     syncRun { f() }
   }
 
+  def addRemoveItem(itemId: Int, qtyDelta: Int) = syncRun {
+    persistent.addRemoveItem(itemId, qtyDelta)
+  }
+
   def getInt(key: String): Int = syncRun {
     persistent.getInt(key)
   }

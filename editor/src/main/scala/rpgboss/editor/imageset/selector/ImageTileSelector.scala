@@ -71,6 +71,8 @@ abstract class ImageTileSelector(
     min(255 * tilesizeX, srcImg.getWidth),
     min(255 * tilesizeY, srcImg.getHeight))
 
+  val xTilesInTilesetSpace = img.getWidth / tilesizeX
+
   val imageSlices = ceilIntDiv(img.getWidth / tilesizeX, xTilesVisible)
   val yTilesInSlice = img.getHeight / tilesizeY
 
