@@ -41,6 +41,7 @@ object EventCmd {
     classOf[EndOfScript],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
+    classOf[AddRemoveItem],
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEvtState],
@@ -122,6 +123,11 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
 case class ModifyParty(add: Boolean = true, characterId: Int = 0)
   extends EventCmd {
   def sections = singleCall("game.modifyParty", add, characterId)
+}
+
+case class AddRemoveItem(itemId: Int, add: Boolean, qty: Int) extends EventCmd {
+  def qtyDelta = (if (add) 1 else -1) * qty
+  def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
