@@ -35,7 +35,6 @@ Build instructions:
 3. Run sbt. You will be put in the editor subproject by default. Compile and package it.
     ```
     $ sbt
-    > compile
     > package
     ```
 
@@ -56,7 +55,7 @@ Automated tests are how rpgboss verifies that changes don't break existing funct
 
 1. Run automated tests with:
     ```
-    $ sbt "project common" test
+    $ sbt test
     ```
 
 Packaging into binaries
@@ -65,6 +64,10 @@ Packaging into binaries
 Prerequisites:
 
 + launch4j
+  + launch4j may require 32-bit libraries installed. On Ubuntu 14.04:
+    ```
+    sudo apt-get install lib32z1 lib32ncurses5 lib32bz2-1.0 lib32stdc++6
+    ```
 
 Instructions:
 
@@ -124,10 +127,26 @@ Animations are in the same format as RPG Maker VX and XP. They should be compris
 http://spieralwind.tuzikaze.com/main/index.html
 Splash animation by Julien Jorge http://opengameart.org/content/water-splash
 
+fire(7,8,9,10) ice(1,2,3,4,7,9) water(4,5,6,8,11) wind(1,2,3) earth(1,2) electric(1,2,5) life(1,2,3,4,5) weapon(1,2,3,5,6,7,8)
+
+Julien Jorge http://opengameart.org/content/water-splash (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+water(2)
+
+Julian Xin raveolutionx@gmail.com (CC-BY-SA 4.0)  http://creativecommons.org/licenses/by-sa/4.0/
+
+fire(1,2,3,4,5.6) ice(5,6,8) water(1,3,7,9,10) wind(4,5,6,7) earth(3,4,5,6) electric(4,6,7) weapon(4)
+
+Martin Jelinek (jelinek.cz@gmail.com) | www.nyrthos.com
+
+electric(3)
+
 ### Autotiles, Spritesets, Tilesets
 
 http://www.tekepon.net/fsm/
 http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
+
+USE Internet Archieve for Dead website links!
 
 ### Battlers
 

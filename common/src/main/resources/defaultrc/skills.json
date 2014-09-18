@@ -1,139 +1,19 @@
 [
   {
-    "name":"Melee",
+    "name":"Fire",
     "scopeId":2,
     "cost":0,
     "damages":[
       {
-        "typeId":0,
-        "elementId":0,
-        "formula":"a.atk"
+        "typeId":1,
+        "elementId":4,
+        "formula":"a.mag*1"
       }
     ],
     "effects":[
       
     ],
     "animationId":0
-  },
-  {
-    "name":"Pierce",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":2,
-        "formula":"a.atk"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Magicblast",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":2,
-        "formula":"a.atk / 2 + a.spd / 2"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Slash",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":3,
-        "formula":"a.atk"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Hand Combat",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Poison",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":"a.atk*20"
-      }
-    ],
-    "effects":[
-      {
-        "keyId":4,
-        "v1":1,
-        "v2":100
-      }
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Chop",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":1,
-        "formula":"a.mag*5"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Smash",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":"100"
-      }
-    ],
-    "effects":[
-      {
-        "keyId":10,
-        "v1":100,
-        "v2":0
-      }
-    ],
-    "animationId":1
   },
   {
     "name":"Fireball",
@@ -150,22 +30,6 @@
       
     ],
     "animationId":10
-  },
-  {
-    "name":"Fire",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":1,
-        "elementId":4,
-        "formula":"a.mag*1"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
   },
   {
     "name":"Flame",
@@ -259,7 +123,11 @@
       }
     ],
     "effects":[
-      
+      {
+        "keyId":10,
+        "v1":100,
+        "v2":0
+      }
     ],
     "animationId":4
   },
@@ -312,23 +180,7 @@
     "animationId":8
   },
   {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Aqua",
+    "name":"Aquaball",
     "scopeId":2,
     "cost":0,
     "damages":[
@@ -341,7 +193,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":26
   },
   {
     "name":"Water",
@@ -357,7 +209,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":27
   },
   {
     "name":"Rainstorm",
@@ -373,7 +225,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":31
   },
   {
     "name":"Flood",
@@ -389,7 +241,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":32
   },
   {
     "name":"Waterjet",
@@ -405,11 +257,11 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":33
   },
   {
     "name":"Stream",
-    "scopeId":2,
+    "scopeId":3,
     "cost":0,
     "damages":[
       {
@@ -421,11 +273,11 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":34
   },
   {
-    "name":"Waveblast",
-    "scopeId":3,
+    "name":"Waterblast",
+    "scopeId":2,
     "cost":0,
     "damages":[
       {
@@ -437,27 +289,27 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":35
   },
   {
     "name":"Torrent",
-    "scopeId":3,
+    "scopeId":2,
     "cost":0,
     "damages":[
       {
         "typeId":1,
-        "elementId":12,
+        "elementId":4,
         "formula":"a.mag*2"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":36
   },
   {
-    "name":"Tidelwave",
-    "scopeId":3,
+    "name":"Cyclone",
+    "scopeId":2,
     "cost":0,
     "damages":[
       {
@@ -469,7 +321,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":37
   },
   {
     "name":"Tsunami",
@@ -485,27 +337,27 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":38
   },
   {
-    "name":"",
+    "name":"Splash",
     "scopeId":2,
     "cost":0,
     "damages":[
       {
         "typeId":1,
-        "elementId":5,
+        "elementId":12,
         "formula":"a.mag"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":28
   },
   {
     "name":"Hail",
-    "scopeId":2,
+    "scopeId":3,
     "cost":0,
     "damages":[
       {
@@ -521,7 +373,7 @@
   },
   {
     "name":"Ice",
-    "scopeId":3,
+    "scopeId":2,
     "cost":0,
     "damages":[
       {
@@ -536,20 +388,20 @@
     "animationId":14
   },
   {
-    "name":"Glaciers",
+    "name":"Glacier",
     "scopeId":3,
     "cost":0,
     "damages":[
       {
         "typeId":1,
         "elementId":5,
-        "formula":"a.mag*1.5"
+        "formula":"a.mag*3"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":39
   },
   {
     "name":"Freeze",
@@ -568,7 +420,7 @@
     "animationId":15
   },
   {
-    "name":"Icicles",
+    "name":"Icicleblast",
     "scopeId":2,
     "cost":0,
     "damages":[
@@ -581,7 +433,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":25
   },
   {
     "name":"Snowstorm",
@@ -597,7 +449,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":40
   },
   {
     "name":"Iceberg",
@@ -613,7 +465,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":41
   },
   {
     "name":"Iceball",
@@ -632,25 +484,9 @@
     "animationId":16
   },
   {
-    "name":"Glacierstorm",
+    "name":"Icestorm",
     "scopeId":3,
     "cost":0,
-    "damages":[
-      {
-        "typeId":1,
-        "elementId":5,
-        "formula":"a.mag*3"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Blizzard",
-    "scopeId":4,
-    "cost":12,
     "damages":[
       {
         "typeId":1,
@@ -661,19 +497,7 @@
     "effects":[
       
     ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":4,
-    "cost":0,
-    "damages":[
-      
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
+    "animationId":42
   },
   {
     "name":"Tornado",
@@ -689,7 +513,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":43
   },
   {
     "name":"Gale",
@@ -721,7 +545,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":44
   },
   {
     "name":"Twister",
@@ -737,7 +561,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":45
   },
   {
     "name":"Typhoon",
@@ -753,39 +577,7 @@
     "effects":[
       
     ],
-    "animationId":0
-  },
-  {
-    "name":"Tempest",
-    "scopeId":3,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":1,
-        "elementId":13,
-        "formula":"a.mag*1.6"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"Cyclone",
-    "scopeId":3,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":1,
-        "elementId":13,
-        "formula":"a.mag*1.7"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
+    "animationId":46
   },
   {
     "name":"Gust",
@@ -795,7 +587,7 @@
       {
         "typeId":1,
         "elementId":13,
-        "formula":"a.mag*1"
+        "formula":"a.mag"
       }
     ],
     "effects":[
@@ -817,7 +609,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":47
   },
   {
     "name":"Wind",
@@ -827,45 +619,13 @@
       {
         "typeId":1,
         "elementId":13,
-        "formula":"a.mag*1"
+        "formula":"a.mag"
       }
     ],
     "effects":[
       
     ],
     "animationId":24
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
   },
   {
     "name":"Rock",
@@ -886,7 +646,7 @@
   {
     "name":"Stone",
     "scopeId":2,
-    "cost":0,
+    "cost":12,
     "damages":[
       {
         "typeId":1,
@@ -901,7 +661,7 @@
   },
   {
     "name":"Boulder",
-    "scopeId":2,
+    "scopeId":4,
     "cost":0,
     "damages":[
       {
@@ -916,8 +676,8 @@
     "animationId":19
   },
   {
-    "name":"Earth",
-    "scopeId":2,
+    "name":"Landslide",
+    "scopeId":3,
     "cost":0,
     "damages":[
       {
@@ -929,7 +689,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":49
   },
   {
     "name":"Rubble",
@@ -945,11 +705,11 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":22
   },
   {
-    "name":"Gravel Blast",
-    "scopeId":3,
+    "name":"Gravelblast",
+    "scopeId":2,
     "cost":0,
     "damages":[
       {
@@ -961,10 +721,10 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":51
   },
   {
-    "name":"Crust",
+    "name":"Fissure",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -977,7 +737,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":52
   },
   {
     "name":"Upheaval",
@@ -987,7 +747,7 @@
       {
         "typeId":1,
         "elementId":7,
-        "formula":"a.mag*1.75"
+        "formula":"a.mag*1.4"
       }
     ],
     "effects":[
@@ -1003,13 +763,13 @@
       {
         "typeId":1,
         "elementId":7,
-        "formula":"a.mag*1.5"
+        "formula":"a.mag*1.75"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":53
   },
   {
     "name":"Tremor",
@@ -1025,27 +785,11 @@
     "effects":[
       
     ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
+    "animationId":48
   },
   {
     "name":"Thunder",
-    "scopeId":2,
+    "scopeId":3,
     "cost":0,
     "damages":[
       {
@@ -1057,23 +801,7 @@
     "effects":[
       
     ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
+    "animationId":55
   },
   {
     "name":"Discharge",
@@ -1089,7 +817,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":29
   },
   {
     "name":"Thunderbolt",
@@ -1105,10 +833,10 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":56
   },
   {
-    "name":"Thunder Outburst",
+    "name":"Electic Outburst",
     "scopeId":3,
     "cost":0,
     "damages":[
@@ -1121,7 +849,7 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":58
   },
   {
     "name":"Lightning",
@@ -1131,13 +859,13 @@
       {
         "typeId":1,
         "elementId":6,
-        "formula":"a.mag*1.5"
+        "formula":"a.mag*1.25"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":54
   },
   {
     "name":"Thunderstorm",
@@ -1147,16 +875,16 @@
       {
         "typeId":1,
         "elementId":6,
-        "formula":"a.mag*2"
+        "formula":"Thunderstorm"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":57
   },
   {
-    "name":"Spark",
+    "name":"Plasmaball",
     "scopeId":2,
     "cost":0,
     "damages":[
@@ -1169,39 +897,7 @@
     "effects":[
       
     ],
-    "animationId":0
-  },
-  {
-    "name":"Thundercloud",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":1,
-        "elementId":6,
-        "formula":"a.mag*1.75"
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
-  },
-  {
-    "name":"",
-    "scopeId":2,
-    "cost":0,
-    "damages":[
-      {
-        "typeId":0,
-        "elementId":0,
-        "formula":""
-      }
-    ],
-    "effects":[
-      
-    ],
-    "animationId":0
+    "animationId":30
   },
   {
     "name":"Heal",
@@ -1221,35 +917,27 @@
   },
   {
     "name":"Cure",
-    "scopeId":4,
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":8,
-        "formula":""
-      }
+      
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":59
   },
   {
     "name":"Cure All",
-    "scopeId":5,
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":8,
-        "formula":""
-      }
+      
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":59
   },
   {
     "name":"Heal All",
@@ -1265,18 +953,14 @@
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":5
   },
   {
     "name":"Revive",
-    "scopeId":4,
+    "scopeId":0,
     "cost":0,
     "damages":[
-      {
-        "typeId":1,
-        "elementId":8,
-        "formula":""
-      }
+      
     ],
     "effects":[
       
@@ -1306,30 +990,150 @@
     "damages":[
       {
         "typeId":1,
-        "elementId":0,
+        "elementId":8,
         "formula":"-a.mag"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":60
   },
   {
     "name":"Revive All",
+    "scopeId":0,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":7
+  },
+  {
+    "name":"Sword",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":61
+  },
+  {
+    "name":"Blade",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":62
+  },
+  {
+    "name":"Hammer",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":63
+  },
+  {
+    "name":"Staff",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":64
+  },
+  {
+    "name":"Arrow",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      
+    ],
+    "effects":[
+      
+    ],
+    "animationId":65
+  },
+  {
+    "name":"Slash",
     "scopeId":2,
     "cost":0,
     "damages":[
       {
-        "typeId":1,
-        "elementId":8,
+        "typeId":0,
+        "elementId":0,
         "formula":""
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":66
+  },
+  {
+    "name":"Swing",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":67
+  },
+  {
+    "name":"Blast",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":68
+  },
+  {
+    "name":"Cut",
+    "scopeId":2,
+    "cost":0,
+    "damages":[
+      {
+        "typeId":0,
+        "elementId":0,
+        "formula":""
+      }
+    ],
+    "effects":[
+      
+    ],
+    "animationId":69
   },
   {
     "name":"",

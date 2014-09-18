@@ -19,11 +19,11 @@ abstract class ChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  x: Float, y: Float, w: Int, h: Int,
+  rect: Rect,
   invisible: Boolean = false,
   defaultChoice: Int = 0,
   allowCancel: Boolean = true)
-  extends Window(manager, inputs, x, y, w, h, invisible)
+  extends Window(manager, inputs, rect, invisible)
   with ChoiceInputHandler {
 
   protected var curChoice = defaultChoice
@@ -72,8 +72,8 @@ class TextChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  lines: Array[String] = Array(),
-  x: Float, y: Float, w: Int, h: Int,
+  lines: Array[String],
+  rect: Rect,
   justification: Int = Window.Left,
   defaultChoice: Int = 0,
   // Choices displayed in a row-major way.
@@ -81,13 +81,13 @@ class TextChoiceWindow(
   // 0 shows all the lines. Positive numbers for scrolling.
   displayedLines: Int = 0,
   allowCancel: Boolean = true)
-  extends ChoiceWindow(persistent, manager, inputs, x, y, w, h,
+  extends ChoiceWindow(persistent, manager, inputs, rect,
                        invisible = false,
                        defaultChoice, allowCancel) {
   val xpad = 24
   val ypad = 24
-  val textWTotal = w - 2*xpad
-  val textHTotal = h - 2*ypad
+  val textWTotal = rect.w - 2*xpad
+  val textHTotal = rect.h - 2*ypad
   val textColW = textWTotal / columns
 
   def wrapChoices = displayedLines == 0
@@ -100,16 +100,18 @@ class TextChoiceWindow(
       columnChoicesAry(i % columns).append(lines(i))
     }
 
-    val windowTexts = for (i <- 0 until columns) yield new WindowText(
-      persistent,
-      columnChoicesAry(i).toArray,
-      x + xpad + textColW*i,
-      y + ypad,
-      textColW,
-      textHTotal,
-      manager.fontbmp,
-      justification
-    )
+    val windowTexts = for (i <- 0 until columns) yield {
+      val newRectX = rect.left + xpad + textColW*i + textColW / 2
+      val windowTextRect = Rect(newRectX, rect.y, textColW, textHTotal)
+      new WindowText(
+        persistent,
+        columnChoicesAry(i).toArray,
+        windowTextRect,
+        manager.fontbmp,
+        justification
+      )
+    }
+
 
     windowTexts.toArray
   }
@@ -198,11 +200,11 @@ class TextChoiceWindow(
 
       // Now draw the cursor if not completed
       if (state == Window.Open && inputs.hasFocus(this)) {
-        val cursorX =
-          x + xpad + (curChoice % columns)*textColW - 32
-        val cursorY =
-          y + ypad + (curChoice / columns)*textImages(0).lineHeight - 8
-        skin.drawCursor(b, skinRegion, cursorX, cursorY, 32f, 32f)
+        val cursorLeft =
+          rect.left + xpad + (curChoice % columns)*textColW - 32
+        val cursorTop =
+          rect.top + ypad + (curChoice / columns)*textImages(0).lineHeight - 8
+        skin.drawCursor(b, skinRegion, cursorLeft, cursorTop, 32f, 32f)
       }
     }
   }
@@ -229,7 +231,7 @@ class SpatialChoiceWindow(
   inputs: InputMultiplexer,
   choices: Array[Set[Rect]] = Array(),
   defaultChoice: Int = 0)
-  extends ChoiceWindow(persistent, manager, inputs, 0, 0, 0, 0,
+  extends ChoiceWindow(persistent, manager, inputs, Rect(0, 0, 0, 0),
                        invisible = true, defaultChoice, allowCancel = true) {
   def keyActivate(key: Int): Unit = {
     import MyKeys._
@@ -270,7 +272,7 @@ class SpatialChoiceWindow(
 
     for (choiceRect <- choices(curChoice)) {
       skin.draw(b, skinRegion,
-                choiceRect.x, choiceRect.y, choiceRect.w, choiceRect.h,
+                choiceRect.left, choiceRect.top, choiceRect.w, choiceRect.h,
                 bordersOnly = true)
     }
   }

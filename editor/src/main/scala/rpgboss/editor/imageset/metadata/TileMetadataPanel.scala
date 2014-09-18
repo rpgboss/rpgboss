@@ -63,22 +63,7 @@ case class TileMetadata(blockedDirs: Byte, height: Byte) {
   }
 }
 
-trait TileMetadataPanelOwner {
-  /**
-   * Returns a tuple of metadata i.e. Some((blockedDirs)) if tile exists
-   * Return None if (xTile, yTile) is invalid
-   */
-  def getTileMeta(xTile: Int, yTile: Int): Option[TileMetadata]
-
-  /**
-   * User clicks this tile. Not required to do anything.
-   */
-  def updateTileMeta(xTile: Int, yTile: Int, newMetadata: TileMetadata): Unit
-
-  var metadataMode = MetadataMode.default
-}
-
-class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
+class TileMetadataPanel(srcImg: BufferedImage, owner: TilesetsMetadataPanel)
   extends BoxPanel(Orientation.Horizontal) {
   import MetadataMode._
 
@@ -113,8 +98,11 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
 
     override def mousePressed(button: Int, xTile: Int, yTile: Int, xInTile: Int,
                               yInTile: Int) = {
-      val newMetadata = updatedMetadata(button, xTile, yTile, xInTile, yInTile)
-      owner.updateTileMeta(xTile, yTile, newMetadata)
+      if (owner.inBounds(xTile, yTile)) {
+        val newMetadata =
+          updatedMetadata(button, xTile, yTile, xInTile, yInTile)
+        owner.updateTileMeta(xTile, yTile, newMetadata)
+      }
     }
 
     def loadIcon(path: String) = rpgboss.lib.Utils.readClasspathImage(path)
@@ -194,6 +182,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TileMetadataPanelOwner)
         yTile <- minYTile to maxYTile;
         xTile <- minXTile to maxXTile;
         (xTileTS, yTileTS) = toTilesetSpace(xTile, yTile);
+        if (owner.inBounds(xTileTS, yTileTS));
         metadata <- owner.getTileMeta(xTileTS, yTileTS)
       ) {
 

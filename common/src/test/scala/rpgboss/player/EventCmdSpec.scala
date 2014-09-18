@@ -21,6 +21,19 @@ class EventCmdSpec extends UnitSpec {
     ))
   }
 
+  "EventCmd" should "produce correct script for ModifyParty" in {
+    ModifyParty(true, 5).toJs should deepEqual(
+      Array("game.modifyParty(true, 5);"))
+  }
+
+  "EventCmd" should "produce correct script for AddRemoveItem" in {
+    AddRemoveItem(1, true, 5).toJs should deepEqual(
+      Array("game.addRemoveItem(1, 5);"))
+
+    AddRemoveItem(12, false, 25).toJs should deepEqual(
+      Array("game.addRemoveItem(12, -25);"))
+  }
+
   "EventCmd" should "produce correct script for ShowText" in {
     val e1 = ShowText(Array("Hello"))
     e1.toJs should deepEqual (Array(

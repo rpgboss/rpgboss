@@ -2,7 +2,7 @@ package rpgboss.player
 
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.Gdx
-import rpgboss.lib.ThreadChecked
+import rpgboss.lib._
 import rpgboss.model.SoundSpec
 import aurelienribon.tweenengine._
 import rpgboss.model.resource.{ Music, MusicPlayer }
@@ -20,7 +20,10 @@ trait RpgScreen extends Screen with ThreadChecked {
       game.project.data.startup.screenW,
       game.project.data.startup.screenH)
 
-  val positions = new PositionProvider(
+  val layout = new LayoutProvider(
+      game.project.data.startup.screenW,
+      game.project.data.startup.screenH)
+  val sizer = new SizeProvider(
       game.project.data.startup.screenW,
       game.project.data.startup.screenH)
 

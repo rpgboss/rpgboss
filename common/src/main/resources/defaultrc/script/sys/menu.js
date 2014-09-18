@@ -1,19 +1,16 @@
-var kRootMenuWidth = 150;
-var kLeftPaneWidth = 640 - kRootMenuWidth;
-
 function itemsMenu() {
-  var kItemsTopBarHeight = 64;
-  var kItemsMainPanelHeight = 480 - kItemsTopBarHeight;
   var kItemsDisplayedItems = 10;
-  
+	
   function generateItemsWinChoices() {
-    var inventoryIdxs = game.getIntArray(game.INVENTORY_IDXS());
+    var inventoryItemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
     var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
     
     var choiceLines = [];
     var items = project.data().enums().items();
-    for (var i = 0; i < inventoryIdxs.length && i < inventoryQtys.length; ++i) {
-      if (inventoryIdxs < 0) {
+    for (var i = 0; 
+         i < inventoryItemIds.length && i < inventoryQtys.length; 
+         ++i) {
+      if (inventoryItemIds < 0) {
         choiceLines.append("");
         continue;
       }
@@ -25,9 +22,9 @@ function itemsMenu() {
   }
   
   function generateItemsWin() {
-    return game.newChoiceWindow(
+    return game.newChoiceWindowWithOptions(
         generateItemsWinChoices(),
-        0, kItemsTopBarHeight, kLeftPaneWidth, kItemsMainPanelHeight,
+        layout.southwest(sizer.prop(1.0, 0.9)),
         game.LEFT(),
         1 /* columns */,
         kItemsDisplayedItems /* displayedLines */,
@@ -52,9 +49,9 @@ function itemsMenu() {
   }
 
   var itemsMainWin = generateItemsWin();
-  var itemsTopWin = game.newChoiceWindow(
+  var itemsTopWin = game.newChoiceWindowWithOptions(
       ["Use", "Organize"],
-      0, 0, kLeftPaneWidth, kItemsTopBarHeight,
+      layout.northwest(sizer.prop(1.0, 0.1)),
       game.CENTER(),
       2 /* columns */,
       0 /* displayedLines */,
@@ -105,11 +102,7 @@ function makeStatusWin() {
   
   var statusWin = game.newChoiceWindow(
     lines,
-    0, 0, kLeftPaneWidth, 480,
-    game.LEFT(),
-    1 /* columns */,
-    0 /* displayedLines */,
-    true /* allowCancel */);
+    layout.northwest(sizer.prop(0.8, 1.0)));
   
   statusWin.setLineHeight(27);
   
@@ -118,9 +111,9 @@ function makeStatusWin() {
 
 function menu() {
   var statusWin = makeStatusWin();
-  var rootMenuWin = game.newChoiceWindow(
+  var rootMenuWin = game.newChoiceWindowWithOptions(
     ["Item", "Skills", "Equip", "Status", "Save"],
-    640-kRootMenuWidth, 0, kRootMenuWidth, 480,
+    layout.northeast(sizer.prop(0.2, 0.8)),
     game.CENTER(),
     1 /* columns */,
     0 /* displayedLines */,

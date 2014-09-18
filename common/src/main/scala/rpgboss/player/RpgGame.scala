@@ -98,7 +98,7 @@ class RpgGame(gamepath: File)
     beginGame()
   }
 
-  def beginGame() = {
+  def beginGame(): Unit = {
     assertOnBoundThread()
 
     setScreen(startScreen)

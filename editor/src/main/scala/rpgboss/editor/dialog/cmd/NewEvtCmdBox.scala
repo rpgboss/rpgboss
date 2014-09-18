@@ -62,6 +62,7 @@ class NewEvtCmdBox(
 
     row().grid().add(leftLabel("Party:"))
     row().grid().add(btnEvtCmd("Modify Party...", ModifyParty()))
+    row().grid().add(btnEvtCmd("Add/Remove Item...", AddRemoveItem()))
 
     row().grid().add(leftLabel("Other:"))
     row().grid().add(btnEvtCmd("Change event state...", SetEvtState()))

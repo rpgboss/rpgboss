@@ -17,6 +17,9 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
   lazy val xTiles = img.getWidth() / tileW
   lazy val yTiles = img.getHeight() / tileH
 
+  def inBounds(xTile: Int, yTile: Int) =
+    xTile >= 0 && xTile < xTiles && yTile >= 0 && yTile < yTiles
+
   def name: String
 
   def drawTileAt(ti: Int, tj: Int, g: Graphics, dstX: Int, dstY: Int) = {

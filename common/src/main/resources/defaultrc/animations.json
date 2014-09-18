@@ -3,18 +3,18 @@
     "name":"Fire",
     "visuals":[
       {
-        "animationImage":"sys/animation_fire002.png",
+        "animationImage":"sys/fire8.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
-          "x":1,
-          "y":-20
+          "x":0,
+          "y":0
         },
         "end":{
           "time":1.0,
           "frameIndex":10,
           "x":0,
-          "y":-20
+          "y":0
         }
       }
     ],
@@ -26,17 +26,17 @@
     "name":"Flame",
     "visuals":[
       {
-        "animationImage":"sys/animation_fire002.png",
+        "animationImage":"sys/fire8.png",
         "start":{
           "time":0.0,
           "frameIndex":11,
-          "x":-1,
+          "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
           "frameIndex":23,
-          "x":1,
+          "x":0,
           "y":0
         }
       }
@@ -49,63 +49,18 @@
     "name":"Fireblast",
     "visuals":[
       {
-        "animationImage":"sys/animation_fire002.png",
+        "animationImage":"sys/fire10.png",
         "start":{
           "time":0.0,
-          "frameIndex":20,
+          "frameIndex":0,
           "x":0,
-          "y":-50
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":23,
-          "x":0,
-          "y":-50
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":20,
-          "x":50,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":23,
-          "x":50,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":20,
-          "x":-50,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":23,
-          "x":-50,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_fire002.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":20,
+          "frameIndex":4,
           "x":0,
-          "y":50
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":22,
-          "x":0,
-          "y":50
+          "y":0
         }
       }
     ],
@@ -117,31 +72,31 @@
     "name":"Flare",
     "visuals":[
       {
-        "animationImage":"sys/animation_firepack2.png",
+        "animationImage":"sys/fire6.png",
         "start":{
           "time":0.0,
-          "frameIndex":4,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":7,
+          "frameIndex":3,
           "x":0,
           "y":0
         }
       },
       {
-        "animationImage":"sys/animation_fire002.png",
+        "animationImage":"sys/fire10.png",
         "start":{
           "time":1.0,
-          "frameIndex":22,
+          "frameIndex":3,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.2,
-          "frameIndex":22,
+          "frameIndex":4,
           "x":0,
           "y":0
         }
@@ -155,17 +110,17 @@
     "name":"Scorch",
     "visuals":[
       {
-        "animationImage":"sys/animation_firepack2.png",
+        "animationImage":"sys/fire7.png",
         "start":{
           "time":0.0,
-          "frameIndex":8,
-          "x":200,
+          "frameIndex":0,
+          "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":11,
-          "x":-400,
+          "frameIndex":5,
+          "x":0,
           "y":0
         }
       }
@@ -178,7 +133,7 @@
     "name":"Heal",
     "visuals":[
       {
-        "animationImage":"sys/animation_heal008.png",
+        "animationImage":"sys/life1.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -187,7 +142,7 @@
         },
         "end":{
           "time":1.0,
-          "frameIndex":14,
+          "frameIndex":2,
           "x":0,
           "y":0
         }
@@ -201,7 +156,7 @@
     "name":"Regen",
     "visuals":[
       {
-        "animationImage":"sys/animation_heal005.png",
+        "animationImage":"sys/life2.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -210,7 +165,7 @@
         },
         "end":{
           "time":1.0,
-          "frameIndex":10,
+          "frameIndex":9,
           "x":0,
           "y":0
         }
@@ -224,16 +179,16 @@
     "name":"Revive",
     "visuals":[
       {
-        "animationImage":"sys/animation_heal005.png",
+        "animationImage":"sys/life5.png",
         "start":{
           "time":0.0,
-          "frameIndex":12,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":14,
+          "frameIndex":8,
           "x":0,
           "y":0
         }
@@ -247,7 +202,7 @@
     "name":"FireTen",
     "visuals":[
       {
-        "animationImage":"sys/animation_firepack2.png",
+        "animationImage":"sys/fire5.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -270,47 +225,17 @@
     "name":"Firestorm",
     "visuals":[
       {
-        "animationImage":"sys/animation_firepack1.png",
+        "animationImage":"sys/fire4.png",
         "start":{
           "time":0.0,
-          "frameIndex":12,
-          "x":-200,
+          "frameIndex":0,
+          "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":15,
-          "x":200,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_firepack1.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":12,
-          "x":200,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":15,
-          "x":-200,
-          "y":0
-        }
-      },
-      {
-        "animationImage":"sys/animation_firepack1.png",
-        "start":{
-          "time":0.0,
-          "frameIndex":12,
-          "x":-80,
-          "y":0
-        },
-        "end":{
-          "time":1.0,
-          "frameIndex":15,
-          "x":50,
+          "frameIndex":3,
+          "x":0,
           "y":0
         }
       }
@@ -323,7 +248,7 @@
     "name":"Fireball",
     "visuals":[
       {
-        "animationImage":"sys/animation_firepack1.png",
+        "animationImage":"sys/fire1.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -346,16 +271,16 @@
     "name":"Blaze",
     "visuals":[
       {
-        "animationImage":"sys/animation_firepack1.png",
+        "animationImage":"sys/fire2.png",
         "start":{
           "time":0.0,
-          "frameIndex":4,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":7,
+          "frameIndex":3,
           "x":0,
           "y":0
         }
@@ -369,7 +294,7 @@
     "name":"Infernofire",
     "visuals":[
       {
-        "animationImage":"sys/animation_fire004.png",
+        "animationImage":"sys/fire9.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -392,16 +317,16 @@
     "name":"Heat",
     "visuals":[
       {
-        "animationImage":"sys/animation_firepack1.png",
+        "animationImage":"sys/fire3.png",
         "start":{
           "time":0.0,
-          "frameIndex":8,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":11,
+          "frameIndex":3,
           "x":0,
           "y":0
         }
@@ -415,16 +340,16 @@
     "name":"Ice",
     "visuals":[
       {
-        "animationImage":"sys/animation_ice005.png",
+        "animationImage":"sys/ice2.png",
         "start":{
           "time":0.0,
-          "frameIndex":5,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":9,
+          "frameIndex":4,
           "x":0,
           "y":0
         }
@@ -438,7 +363,7 @@
     "name":"Freeze",
     "visuals":[
       {
-        "animationImage":"sys/animation_ice005.png",
+        "animationImage":"sys/ice1.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -461,16 +386,16 @@
     "name":"Iceball",
     "visuals":[
       {
-        "animationImage":"sys/animation_ice005.png",
+        "animationImage":"sys/ice3.png",
         "start":{
           "time":0.0,
-          "frameIndex":9,
-          "x":0,
+          "frameIndex":0,
+          "x":200,
           "y":0
         },
         "end":{
-          "time":1.0,
-          "frameIndex":14,
+          "time":0.5,
+          "frameIndex":4,
           "x":0,
           "y":0
         }
@@ -484,7 +409,7 @@
     "name":"Upheavel",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth2.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -507,16 +432,16 @@
     "name":"Rock",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth1.png",
         "start":{
           "time":0.0,
-          "frameIndex":10,
-          "x":200,
+          "frameIndex":5,
+          "x":0,
           "y":0
         },
         "end":{
-          "time":0.5,
-          "frameIndex":11,
+          "time":1.0,
+          "frameIndex":7,
           "x":0,
           "y":0
         }
@@ -530,16 +455,16 @@
     "name":"Boulder",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth1.png",
         "start":{
           "time":0.0,
-          "frameIndex":19,
-          "x":100,
-          "y":100
+          "frameIndex":4,
+          "x":50,
+          "y":50
         },
         "end":{
           "time":1.0,
-          "frameIndex":19,
+          "frameIndex":4,
           "x":0,
           "y":0
         }
@@ -553,16 +478,16 @@
     "name":"Stone",
     "visuals":[
       {
-        "animationImage":"sys/animation_stone001.png",
+        "animationImage":"sys/earth1.png",
         "start":{
           "time":0.0,
-          "frameIndex":15,
+          "frameIndex":10,
           "x":200,
           "y":0
         },
         "end":{
           "time":0.5,
-          "frameIndex":15,
+          "frameIndex":10,
           "x":0,
           "y":0
         }
@@ -576,7 +501,7 @@
     "name":"Hail",
     "visuals":[
       {
-        "animationImage":"sys/animation_light002.png",
+        "animationImage":"sys/ice4.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -585,7 +510,7 @@
         },
         "end":{
           "time":1.0,
-          "frameIndex":9,
+          "frameIndex":4,
           "x":0,
           "y":0
         }
@@ -599,7 +524,122 @@
     "name":"Gale",
     "visuals":[
       {
-        "animationImage":"sys/animation_wind002.png",
+        "animationImage":"sys/wind3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Gust",
+    "visuals":[
+      {
+        "animationImage":"sys/wind2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":7,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Wind",
+    "visuals":[
+      {
+        "animationImage":"sys/wind3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":20,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Icicleblast",
+    "visuals":[
+      {
+        "animationImage":"sys/ice9.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Aquaball",
+    "visuals":[
+      {
+        "animationImage":"sys/water3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":0.5,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Water",
+    "visuals":[
+      {
+        "animationImage":"sys/water1.png",
         "start":{
           "time":0.0,
           "frameIndex":0,
@@ -619,38 +659,222 @@
     ]
   },
   {
-    "name":"Gust",
+    "name":"Splash",
     "visuals":[
       {
-        "animationImage":"sys/animation_wind004.png",
+        "animationImage":"sys/water2.png",
         "start":{
           "time":0.0,
-          "frameIndex":11,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":18,
-          "x":0,
-          "y":0
-        }
-      }
-    ],
-    "sounds":[
-      
-    ]
-  },
-  {
-    "name":"Wind",
-    "visuals":[
-      {
-        "animationImage":"sys/animation_wind002.png",
-        "start":{
-          "time":0.0,
           "frameIndex":6,
           "x":0,
           "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Discharge",
+    "visuals":[
+      {
+        "animationImage":"sys/electric3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Plasmaball",
+    "visuals":[
+      {
+        "animationImage":"sys/electric4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":100,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Rainstorm",
+    "visuals":[
+      {
+        "animationImage":"sys/water5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Flood",
+    "visuals":[
+      {
+        "animationImage":"sys/water4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":9,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Waterjet",
+    "visuals":[
+      {
+        "animationImage":"sys/water9.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Stream",
+    "visuals":[
+      {
+        "animationImage":"sys/water11.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Waterblast",
+    "visuals":[
+      {
+        "animationImage":"sys/water6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":5,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Torrent",
+    "visuals":[
+      {
+        "animationImage":"sys/water7.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Cyclone",
+    "visuals":[
+      {
+        "animationImage":"sys/water8.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
         },
         "end":{
           "time":1.0,
@@ -665,19 +889,747 @@
     ]
   },
   {
-    "name":"",
+    "name":"Tsunami",
     "visuals":[
       {
-        "animationImage":"sys/animation_light002.png",
+        "animationImage":"sys/water10.png",
         "start":{
           "time":0.0,
-          "frameIndex":20,
+          "frameIndex":0,
+          "x":200,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Glacier",
+    "visuals":[
+      {
+        "animationImage":"sys/ice8.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
           "x":0,
           "y":0
         },
         "end":{
           "time":1.0,
-          "frameIndex":24,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Snowstorm",
+    "visuals":[
+      {
+        "animationImage":"sys/ice5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Iceberg",
+    "visuals":[
+      {
+        "animationImage":"sys/ice7.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":50
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Icestorm",
+    "visuals":[
+      {
+        "animationImage":"sys/ice6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Tornado",
+    "visuals":[
+      {
+        "animationImage":"sys/wind4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Hurricane",
+    "visuals":[
+      {
+        "animationImage":"sys/wind7.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Twister",
+    "visuals":[
+      {
+        "animationImage":"sys/wind5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Typhoon",
+    "visuals":[
+      {
+        "animationImage":"sys/wind6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Whirlwind",
+    "visuals":[
+      {
+        "animationImage":"sys/wind1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":9,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Tremor",
+    "visuals":[
+      {
+        "animationImage":"sys/earth3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Landslide",
+    "visuals":[
+      {
+        "animationImage":"sys/earth4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Rubble",
+    "visuals":[
+      {
+        "animationImage":"sys/earth1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":11,
+          "x":50,
+          "y":50
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Gravelblast",
+    "visuals":[
+      {
+        "animationImage":"sys/earth1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":15,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":19,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Fissure",
+    "visuals":[
+      {
+        "animationImage":"sys/earth5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Earthquake",
+    "visuals":[
+      {
+        "animationImage":"sys/earth6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Lightning",
+    "visuals":[
+      {
+        "animationImage":"sys/electric1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      },
+      {
+        "animationImage":"sys/electric1.png",
+        "start":{
+          "time":1.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.5,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Thunder",
+    "visuals":[
+      {
+        "animationImage":"sys/electric2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Thunderbolt",
+    "visuals":[
+      {
+        "animationImage":"sys/electric5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Thunderstorm",
+    "visuals":[
+      {
+        "animationImage":"sys/electric6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":50,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":-50,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Electric Outburst",
+    "visuals":[
+      {
+        "animationImage":"sys/electric7.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":3,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Cure",
+    "visuals":[
+      {
+        "animationImage":"sys/life3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":11,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Recover",
+    "visuals":[
+      {
+        "animationImage":"sys/life4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":14,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Sword",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Blade",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon4.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Hammer",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon1.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Staff",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon2.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":1,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Arrow",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon8.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Slash",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon3.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":2,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Swing",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon5.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Blast",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon7.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
+          "x":0,
+          "y":0
+        }
+      }
+    ],
+    "sounds":[
+      
+    ]
+  },
+  {
+    "name":"Cut",
+    "visuals":[
+      {
+        "animationImage":"sys/weapon6.png",
+        "start":{
+          "time":0.0,
+          "frameIndex":0,
+          "x":0,
+          "y":0
+        },
+        "end":{
+          "time":1.0,
+          "frameIndex":4,
           "x":0,
           "y":0
         }

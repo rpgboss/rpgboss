@@ -45,6 +45,14 @@ object Scope extends RpgEnum {
   def default = OneAlly
 }
 
+object AddOrRemove extends RpgEnum {
+  val Add, Remove = Value
+  def default = Add
+
+  def fromBoolean(x: Boolean) = if (x) Add else Remove
+  def toBoolean(id: Int) = id == Add.id
+}
+
 // Specifies an entity: Either the player or an event on the current map.
 case class EntitySpec(
   var whichEntityId: Int = WhichEntity.default.id,
