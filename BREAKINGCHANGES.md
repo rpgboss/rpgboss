@@ -5,4 +5,8 @@ These changes may require you to manually edit the JSON files in existing projec
 
 v0.1.7
 ------
- - In "enemies.json". Enemy skills field has been renamed from "skills" to "skillIds".
+ - In "enemies.json", enemy skills field has been renamed from "skills" to "skillIds".
+
+v0.2.9
+------
+ - In "items.json", the item type field has been renamed from "itemType" to "itemTypeId".

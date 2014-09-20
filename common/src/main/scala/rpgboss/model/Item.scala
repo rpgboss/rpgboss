@@ -30,7 +30,7 @@ case class Item(
   var sellable: Boolean = true,
   var price: Int = 100,
 
-  var itemType: Int = ItemType.default.id,
+  var itemTypeId: Int = ItemType.default.id,
 
   var accessId: Int = ItemAccessibility.default.id,
   var scopeId: Int = Scope.default.id,
@@ -40,4 +40,19 @@ case class Item(
   var useOnAttack: Boolean = false,
   var onUseSkillId: Int = 0,
 
-  var icon: Option[IconSpec] = None) extends HasName
+  var icon: Option[IconSpec] = None) extends HasName {
+
+  def usableInMenu = usableIn(ItemAccessibility.MenuOnly)
+  def usableInBattle = usableIn(ItemAccessibility.BattleOnly)
+
+  private def usableIn(extraContext: ItemAccessibility.Value) = {
+    import ItemType._
+    import ItemAccessibility._
+
+    val itemType = ItemType(itemTypeId)
+    val access = ItemAccessibility(accessId)
+
+    (itemType == Consumable || itemType == Reusable || itemType == KeyItem) &&
+      (access == Always || access == extraContext)
+  }
+}

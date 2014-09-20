@@ -27,7 +27,7 @@ class ItemsPanel(
   def editPaneForItem(idx: Int, model: Item) = {
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       def effectContext =
-        if (model.itemType == ItemType.Equipment.id)
+        if (model.itemTypeId == ItemType.Equipment.id)
           EffectContext.Equipment
         else
           EffectContext.Item
@@ -59,8 +59,8 @@ class ItemsPanel(
           onUpdate = model.price = _)
 
         val fItemType = enumIdCombo(ItemType)(
-          model.itemType,
-          model.itemType = _,
+          model.itemTypeId,
+          model.itemTypeId = _,
           Some(setEnabledFields _))
 
         val fScope = enumIdCombo(Scope)(model.scopeId, model.scopeId = _)
@@ -89,14 +89,14 @@ class ItemsPanel(
         def setEnabledFields(): Unit = {
           fPrice.enabled = fSellable.selected
 
-          fScope.enabled = model.itemType != ItemType.Equipment.id
-          fAccess.enabled = model.itemType != ItemType.Equipment.id
+          fScope.enabled = model.itemTypeId != ItemType.Equipment.id
+          fAccess.enabled = model.itemTypeId != ItemType.Equipment.id
 
-          fEquipType.enabled = model.itemType == ItemType.Equipment.id
+          fEquipType.enabled = model.itemTypeId == ItemType.Equipment.id
 
-          fUseOnAttack.enabled = model.itemType == ItemType.Equipment.id
+          fUseOnAttack.enabled = model.itemTypeId == ItemType.Equipment.id
           fOnUseSkillId.enabled =
-            model.itemType == ItemType.Equipment.id && model.useOnAttack
+            model.itemTypeId == ItemType.Equipment.id && model.useOnAttack
 
           effectPane.updateContext(effectContext)
         }

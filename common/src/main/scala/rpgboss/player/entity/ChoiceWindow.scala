@@ -72,7 +72,7 @@ class TextChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  lines: Array[String],
+  var lines: Array[String],
   rect: Rect,
   justification: Int = Window.Left,
   defaultChoice: Int = 0,
@@ -92,8 +92,10 @@ class TextChoiceWindow(
 
   def wrapChoices = displayedLines == 0
 
-  var scrollXPosition = 0
-  val textImages: Array[WindowText] = {
+  var scrollTopLine = 0
+  var textImages: Array[WindowText] = null
+
+  private def updateTextImages() = {
     val columnChoicesAry =
       Array.fill(columns)(new collection.mutable.ArrayBuffer[String]())
     for (i <- 0 until lines.length) {
@@ -112,8 +114,22 @@ class TextChoiceWindow(
       )
     }
 
+    textImages = windowTexts.toArray
+  }
 
-    windowTexts.toArray
+  updateTextImages()
+
+  def updateLines(newLines: Array[String]) = {
+    lines = newLines
+    updateTextImages()
+    curChoice = math.max(curChoice, lines.length)
+    updateScrollPosition()
+  }
+
+  def updateScrollPosition() = {
+    if (displayedLines != 0) {
+      scrollTopLine = (curChoice / displayedLines) * displayedLines
+    }
   }
 
   override def update(delta: Float) = {
@@ -178,6 +194,8 @@ class TextChoiceWindow(
       }
     }
 
+    updateScrollPosition()
+
     if (key == OK) {
       soundSelect.map(_.getAsset(assets).play())
       choiceChannel.write(curChoice)
@@ -196,15 +214,31 @@ class TextChoiceWindow(
     if (state == Window.Open || state == Window.Opening) {
       val renderedLines =
         if (displayedLines == 0) lines.length else displayedLines
-      textImages.foreach(_.render(b, scrollXPosition, renderedLines))
+      textImages.foreach(_.render(b, scrollTopLine, renderedLines))
 
       // Now draw the cursor if not completed
       if (state == Window.Open && inputs.hasFocus(this)) {
         val cursorLeft =
           rect.left + xpad + (curChoice % columns)*textColW - 32
+
+        val yRowOffset = (curChoice / columns) - (scrollTopLine)
         val cursorTop =
-          rect.top + ypad + (curChoice / columns)*textImages(0).lineHeight - 8
-        skin.drawCursor(b, skinRegion, cursorLeft, cursorTop, 32f, 32f)
+          rect.top + ypad + yRowOffset * textImages(0).lineHeight - 8
+        skin.drawCursor(b, skinRegion, cursorLeft, cursorTop)
+      }
+
+      if (displayedLines != 0) {
+        val sections = lines.length / renderedLines
+        val currentSection = curChoice / displayedLines
+
+        val totalScrollbarLength = rect.h
+        val sectionLength = totalScrollbarLength / sections
+
+        skin.draw(
+          b, skinRegion,
+          rect.right - 16, rect.top + currentSection * sectionLength,
+          2, sectionLength,
+          bordersOnly = true)
       }
     }
   }

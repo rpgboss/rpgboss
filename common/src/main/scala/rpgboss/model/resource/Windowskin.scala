@@ -62,7 +62,8 @@ case class Windowskin(proj: Project, name: String,
       drawSubimage(srcXp * 16, srcYp * 16, srcWp * 16, srcHp * 16,
         dstX, dstY, dstW, dstH)
 
-    if (!bordersOnly) {
+    // Don't draw the background if it's an uber-small box.
+    if (!bordersOnly && w >= 32 && h >= 32) {
       // Draw the stretched background
       drawSubimage(0, 0, 64, 64, 0, 0, w, h)
 
@@ -77,22 +78,34 @@ case class Windowskin(proj: Project, name: String,
     }
 
     // paint borders
-    drawSubimage16(4, 0, 1, 1, 0, 0) // NW
-    drawSubimage16(7, 0, 1, 1, w - 16, 0) // NE
-    drawSubimage16(4, 3, 1, 1, 0, h - 16) // SW
-    drawSubimage16(7, 3, 1, 1, w - 16, h - 16) // SE
+    if (w >= 32 && h >= 32) {
+      drawSubimage16(4, 0, 1, 1, 0, 0) // NW
+      drawSubimage16(7, 0, 1, 1, w - 16, 0) // NE
+      drawSubimage16(4, 3, 1, 1, 0, h - 16) // SW
+      drawSubimage16(7, 3, 1, 1, w - 16, h - 16) // SE
+    }
 
-    drawSubimage16(5, 0, 2, 1, 16, 0, w - 32, 16) // N
-    drawSubimage16(5, 3, 2, 1, 16, h - 16, w - 32, 16) // S
-    drawSubimage16(4, 1, 1, 2, 0, 16, 16, h - 32) // E
-    drawSubimage16(7, 1, 1, 2, w - 16, 16, 16, h - 32) // W
+    if (w >= 32) {
+      drawSubimage16(5, 0, 2, 1, 16, 0, w - 32, 16) // N
 
+      if (h >= 16) {
+        drawSubimage16(5, 3, 2, 1, 16, h - 16, w - 32, 16) // S
+      }
+    }
+
+    if (h >= 32) {
+      drawSubimage16(4, 1, 1, 2, 0, 16, 16, h - 32) // E
+
+      if (w >= 16) {
+        drawSubimage16(7, 1, 1, 2, w - 16, 16, 16, h - 32) // W
+      }
+    }
   }
 
   /**
    * Draw a square block at srcXBlock and srcYBlock of size blockSize
    */
-  def drawBlock(
+  private def drawBlock(
     batch: SpriteBatch,
     region: TextureRegion,
     dstX: Float, dstY: Float,
@@ -112,16 +125,14 @@ case class Windowskin(proj: Project, name: String,
   def drawCursor(
     batch: SpriteBatch,
     region: TextureRegion,
-    dstX: Float, dstY: Float,
-    dstW: Float, dstH: Float) =
-    drawBlock(batch, region, dstX, dstY, dstW, dstH, 32, 2, 3)
+    dstX: Float, dstY: Float) =
+    drawBlock(batch, region, dstX, dstY, 32f, 32f, 32, 2, 3)
 
   def drawArrow(
     batch: SpriteBatch,
     region: TextureRegion,
-    dstX: Float, dstY: Float,
-    dstW: Float, dstH: Float) =
-    drawBlock(batch, region, dstX, dstY, dstW, dstH, 16, 6, 4)
+    dstX: Float, dstY: Float) =
+    drawBlock(batch, region, dstX, dstY, 16f, 16f, 16, 6, 4)
 }
 
 object Windowskin extends MetaResource[Windowskin, WindowskinMetadata] {

@@ -1,54 +1,60 @@
-function itemsMenu() {
+function newInventoryMenu() {
   var kItemsDisplayedItems = 10;
 	
-  function generateItemsWinChoices() {
-    var inventoryItemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
-    var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
-    
-    var choiceLines = [];
-    var items = project.data().enums().items();
-    for (var i = 0; 
-         i < inventoryItemIds.length && i < inventoryQtys.length; 
-         ++i) {
-      if (inventoryItemIds < 0) {
-        choiceLines.append("");
-        continue;
-      }
+  var inventoryItemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
+  var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
+  
+  var choiceLines = [];
+  var items = project.data().enums().items();
+  for (var i = 0; 
+       i < inventoryItemIds.length && i < inventoryQtys.length; 
+       ++i) {
+    var itemId = inventoryItemIds[i];
+    var itemQty = inventoryQtys[i];
+    if (itemId < 0 || itemQty <= 0) {
+      choiceLines.push("");
+    } else {
+      var item = items[itemId];
+      var usable = item.usableInMenu();
       
-      // TODO: add real inv lines code
+      var lineParts = [];
+      if (!usable) lineParts.push("\\c[1]");      
+      lineParts.push(rightPad(item.name(), 32));
+      lineParts.push(" : " + itemQty.toString());
+      if (!usable) lineParts.push("\\c[0]");
+      
+      choiceLines.push(lineParts.join(""));
     }
+  }
     
-    return choiceLines;
+	return game.newChoiceWindowWithOptions(
+	    choiceLines,
+	    layout.southwest(sizer.prop(1.0, 0.9)),
+	    game.LEFT(),
+	    1 /* columns */,
+	    kItemsDisplayedItems /* displayedLines */,
+	    true /* allowCancel */);
+}
+
+function enterItemsWindow(itemsTopWin, itemsMainWin) {
+  itemsMainWin.takeFocus();
+  
+  var choiceIdx;
+  while (true) {
+    choiceIdx = itemsMainWin.getChoice();
+    
+    if (choiceIdx == -1)
+      break;
   }
   
-  function generateItemsWin() {
-    return game.newChoiceWindowWithOptions(
-        generateItemsWinChoices(),
-        layout.southwest(sizer.prop(1.0, 0.9)),
-        game.LEFT(),
-        1 /* columns */,
-        kItemsDisplayedItems /* displayedLines */,
-        true /* allowCancel */);
-  }
-  
+  itemsTopWin.takeFocus();
+}
+
+function itemsMenu() {
   function organizeItems(itemsMainWin) {
   }
-  
-  function enterItemsWindow(itemsTopWin, itemsMainWin) {
-    itemsMainWin.takeFocus();
-    
-    var choiceIdx;
-    while (true) {
-      choiceIdx = itemsMainWin.getChoice();
-      
-      if (choiceIdx == -1)
-        break;
-    }
-    
-    itemsTopWin.takeFocus();
-  }
 
-  var itemsMainWin = generateItemsWin();
+  var itemsMainWin = newInventoryMenu();
   var itemsTopWin = game.newChoiceWindowWithOptions(
       ["Use", "Organize"],
       layout.northwest(sizer.prop(1.0, 0.1)),

@@ -1,17 +1,22 @@
 package rpgboss.player
 
-import org.mozilla.javascript.{ Context, ScriptableObject, Scriptable }
-import rpgboss.model.resource.Script
-import rpgboss.model.MapLoc
 import java.lang.Thread.UncaughtExceptionHandler
-import rpgboss.lib._
-import rpgboss.model.event.RpgEvent
-import rpgboss.model.Constants._
-import rpgboss.player.entity.EventEntity
-import scala.concurrent.Promise
+
 import scala.concurrent.Await
+import scala.concurrent.Promise
 import scala.concurrent.duration.Duration
+
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.ScriptableObject
+
+import rpgboss.lib.GdxUtils
+import rpgboss.model.Constants.Transitions
+import rpgboss.model.ItemAccessibility
+import rpgboss.model.ItemType
+import rpgboss.model.MapLoc
 import rpgboss.model.resource.ResourceConstants
+import rpgboss.model.resource.Script
+import rpgboss.player.entity.EventEntity
 
 /**
  * Thread used to run a javascript script...
