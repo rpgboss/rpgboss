@@ -5,6 +5,7 @@ import java.awt._
 import javax.imageio.ImageIO
 import org.json4s.{ DefaultFormats, Formats }
 import org.json4s.native.Serialization
+import org.mozilla.javascript.NativeObject
 
 class FileHelper(file: File) {
   import FileHelper._
@@ -186,6 +187,15 @@ object JsonUtils {
     } getOrElse false
   }
 
+  def nativeObjectToCaseClass[T](
+    jsObj: NativeObject)(implicit m: Manifest[T]) = {
+    import scala.collection.JavaConverters._
+    implicit val formats = DefaultFormats
+    val asScalaMap = jsObj.asScala.toMap
+    val json = Serialization.write[Map[_, _]](asScalaMap)
+
+    Serialization.read[T](json)
+  }
 }
 
 object TweenUtils {

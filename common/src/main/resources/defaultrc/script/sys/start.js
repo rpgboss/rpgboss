@@ -12,13 +12,10 @@ function newGame() {
 
 function showStartDialog() {
   while (true) {
-    var choiceWin = game.newChoiceWindowWithOptions(
+    var choiceWin = game.newChoiceWindow(
       ["New Game", "Load Game", "Quit"],
       layout.centered(200, 130),
-      game.CENTER(),
-      1 /* columns */,
-      0 /* displayedLines */,
-      false /* allowCancel */);
+      {justification: game.CENTER()});
     
     var choiceIdx = choiceWin.getChoice();
     choiceWin.close();
