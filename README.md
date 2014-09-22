@@ -149,7 +149,25 @@ USE Internet Archieve for Dead website links!
 
 ### Battlers
 
-http://opengameart.org/content/sideview-pixel-art-rpg-enemy-sprites under creative commons.
+Stephen "Redshrike" Challener http://opengameart.org/users/redshrike (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Redshrike)
+
+MrBeast http://opengameart.org/users/mrbeast (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(MrBeast)
+
+Minus Create http://silsec.sakura.ne.jp/WolfRPGEditor/BBS/BBS_patio.cgi?mode=view&no=94
+
+(MinusCreate)
+
+Normal Army http://silsec.sakura.ne.jp/WolfRPGEditor/BBS/BBS_patio.cgi?mode=view&no=94
+
+(NormalArmy)
+
+C+ http://silsec.sakura.ne.jp/WolfRPGEditor/BBS/BBS_patio.cgi?mode=view&no=94
+
+(C+)
 
 ### Iconsets
 
