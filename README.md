@@ -154,6 +154,22 @@ Stephen "Redshrike" Challener http://opengameart.org/users/redshrike (CC-BY 3.0)
 
 (Redshrike)
 
+Blarumyrran http://opengameart.org/content/rpg-enemies-11-dragons (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Blarumyrran)
+
+Sharm http://opengameart.org/content/rpg-enemies-11-dragons (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Sharm)
+
+Zabin http://opengameart.org/content/rpg-enemies-11-dragons (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Zabin)
+
+Surt http://opengameart.org/content/rpg-enemies-11-dragons (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Surt)
+
 MrBeast http://opengameart.org/users/mrbeast (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
 
 (MrBeast)

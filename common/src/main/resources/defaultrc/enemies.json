@@ -1344,7 +1344,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Frogtrident",
+    "battler":{
+      "name":"sys/Reshrike/frogtrident.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1363,7 +1367,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Blackcrow",
+    "battler":{
+      "name":"sys/Reshrike/blackcrow.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1382,7 +1390,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Hogaxe",
+    "battler":{
+      "name":"sys/Reshrike/hogaxe.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1401,7 +1413,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Skeltauren",
+    "battler":{
+      "name":"sys/Reshrike/skeltauren.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1420,7 +1436,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon1",
+    "battler":{
+      "name":"sys/Reshrike/dragon1.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1439,7 +1459,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon2",
+    "battler":{
+      "name":"sys/Reshrike/dragon2.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1458,7 +1482,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon3",
+    "battler":{
+      "name":"sys/Reshrike/dragon3.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1477,7 +1505,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon4",
+    "battler":{
+      "name":"sys/Reshrike/dragon4.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1496,7 +1528,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon5",
+    "battler":{
+      "name":"sys/Reshrike/dragon5.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1515,7 +1551,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon6",
+    "battler":{
+      "name":"sys/Surt/dragon6.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1534,7 +1574,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon7",
+    "battler":{
+      "name":"sys/Zabin/dragon7.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1553,7 +1597,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon8",
+    "battler":{
+      "name":"sys/Blarumyrran/dragon8.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1572,7 +1620,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon9",
+    "battler":{
+      "name":"sys/MrBeast/dragon9.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1591,7 +1643,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon10",
+    "battler":{
+      "name":"sys/Blarumyrran/dragon10.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1610,7 +1666,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Dragon11",
+    "battler":{
+      "name":"sys/Sharm/dragon11.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1629,7 +1689,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"KamaitachiGras1",
+    "battler":{
+      "name":"sys/NormalArmy/KamaitachiGras.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1648,7 +1712,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"KamaitachiGras2",
+    "battler":{
+      "name":"sys/NormalArmy/KamaitachiGras2.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1667,7 +1735,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"KamaitachiGras3",
+    "battler":{
+      "name":"sys/NormalArmy/KamaitachiGras3.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1686,7 +1758,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Streammonster1",
+    "battler":{
+      "name":"sys/Public/streammonster1.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1705,7 +1781,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Streammonster2",
+    "battler":{
+      "name":"sys/Public/streammonster2.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1724,7 +1804,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Streammonster3",
+    "battler":{
+      "name":"sys/Public/streammonster3.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1743,7 +1827,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Streammonster4",
+    "battler":{
+      "name":"sys/Public/streammonster4.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1762,7 +1850,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Streammonster5",
+    "battler":{
+      "name":"sys/Public/streammonster5.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
