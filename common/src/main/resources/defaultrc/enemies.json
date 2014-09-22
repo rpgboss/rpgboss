@@ -1,30 +1,34 @@
 [
   {
-    "name":"Goblin",
+    "name":"Basilisk",
     "battler":{
-      "name":"sys/sm/goblin.png",
+      "name":"sys/Public/basilisk.png",
       "scale":1.5
     },
-    "level":1,
-    "mhp":20,
+    "level":50,
+    "mhp":5000,
     "mmp":40,
-    "atk":8,
+    "atk":1,
     "spd":10,
-    "mag":6,
-    "arm":8,
-    "mre":10,
-    "expValue":40,
+    "mag":1,
+    "arm":1,
+    "mre":1,
+    "expValue":10,
+    "attackSkillId":64,
     "effects":[
       
     ],
     "skillIds":[
-      
+      52,
+      5,
+      3,
+      4
     ]
   },
   {
-    "name":"Goblin Commander",
+    "name":"Birdman",
     "battler":{
-      "name":"sys/sm/goblincmdr.png",
+      "name":"sys/Redshrike/birdman.png",
       "scale":1.5
     },
     "level":3,
@@ -36,6 +40,7 @@
     "arm":10,
     "mre":10,
     "expValue":80,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -44,9 +49,9 @@
     ]
   },
   {
-    "name":"Goblin Wizard",
+    "name":"Darklord",
     "battler":{
-      "name":"sys/sm/goblinwiz.png",
+      "name":"sys/Redshrike/darklord.png",
       "scale":1.3
     },
     "level":5,
@@ -58,6 +63,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -67,135 +73,170 @@
     ]
   },
   {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"Rat",
+    "name":"Darkoctopus",
     "battler":{
-      "name":"sys/md/ratswdshd.png",
+      "name":"sys/Redshrike/darkoctopus.png",
+      "scale":2.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":10000,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Eaglebadass",
+    "battler":{
+      "name":"sys/Redshrike/eaglebadass.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Floateye",
+    "battler":{
+      "name":"sys/Redshrike/floateye.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Fossilbird",
+    "battler":{
+      "name":"sys/Redshrike/fossilbird.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Fossilgator",
+    "battler":{
+      "name":"sys/Redshrike/fossilgator.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Fossilray",
+    "battler":{
+      "name":"sys/Redshrike/fossilray.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Fossilskel",
+    "battler":{
+      "name":"sys/Redshrike/fossilskel.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"FossilTrex",
+    "battler":{
+      "name":"sys/Redshrike/fossilTrex.png",
       "scale":1.3
     },
     "level":5,
@@ -207,6 +248,7 @@
     "arm":12,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -215,9 +257,9 @@
     ]
   },
   {
-    "name":"Rat Archer",
+    "name":"Fourarmedthing",
     "battler":{
-      "name":"sys/md/ratarcher.png",
+      "name":"sys/Redshrike/fourarmedthing.png",
       "scale":1.3
     },
     "level":5,
@@ -229,6 +271,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -237,10 +280,10 @@
     ]
   },
   {
-    "name":"Rat Thief",
+    "name":"Gargoyle",
     "battler":{
-      "name":"sys/md/rattheif.png",
-      "scale":1.2000000000000002
+      "name":"sys/Redshrike/gargoyle.png",
+      "scale":1.2
     },
     "level":5,
     "mhp":40,
@@ -251,6 +294,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -259,10 +303,10 @@
     ]
   },
   {
-    "name":"Rat Cleric",
+    "name":"Goblin",
     "battler":{
-      "name":"sys/md/ratcleric.png",
-      "scale":1.2999999999999998
+      "name":"sys/Redshrike/goblin.png",
+      "scale":1.3
     },
     "level":6,
     "mhp":60,
@@ -273,6 +317,7 @@
     "arm":10,
     "mre":10,
     "expValue":120,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -283,9 +328,9 @@
     ]
   },
   {
-    "name":"Rat King",
+    "name":"Goblinarmor",
     "battler":{
-      "name":"sys/md/ratcleric.png",
+      "name":"sys/Redshrike/goblinarmor.png",
       "scale":2.4
     },
     "level":8,
@@ -297,6 +342,7 @@
     "arm":19,
     "mre":10,
     "expValue":300,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -309,7 +355,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Goblincmdr",
+    "battler":{
+      "name":"sys/Redshrike/goblincmdr.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -319,6 +369,973 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Goblinninja",
+    "battler":{
+      "name":"sys/Redshrike/goblinninja.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Goblinrider",
+    "battler":{
+      "name":"sys/Redshrike/goblinrider.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Goblinshaman",
+    "battler":{
+      "name":"sys/Redshrike/goblinshaman.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Goblinswdsld",
+    "battler":{
+      "name":"sys/Redshrike/goblinswdsld.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Goblinwat",
+    "battler":{
+      "name":"sys/Redshrike/goblinwat.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Goblinwiz",
+    "battler":{
+      "name":"sys/Redshrike/goblinwiz.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Golem",
+    "battler":{
+      "name":"sys/Redshrike/golem.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Greenhunch",
+    "battler":{
+      "name":"sys/Redshrike/greenhunch.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Greenlizardlike",
+    "battler":{
+      "name":"sys/Redshrike/greenlizardlike.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Jack",
+    "battler":{
+      "name":"sys/Redshrike/jack.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Jackvines",
+    "battler":{
+      "name":"sys/Redshrike/jackvines.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Lionman",
+    "battler":{
+      "name":"sys/Redshrike/lionman.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Mushrooman",
+    "battler":{
+      "name":"sys/Redshrike/mushroomman.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Octoeye",
+    "battler":{
+      "name":"sys/Redshrike/octoeye.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Ooze",
+    "battler":{
+      "name":"sys/Redshrike/ooze.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Oozeskull",
+    "battler":{
+      "name":"sys/Redshrike/oozeskull.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Ratarcher",
+    "battler":{
+      "name":"sys/MrBeast/ratarcher.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Ratcleric",
+    "battler":{
+      "name":"sys/MrBeast/ratcleric.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Ratdoubleswd",
+    "battler":{
+      "name":"sys/MrBeast/ratdoubleswd.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Ratswdshd",
+    "battler":{
+      "name":"sys/MrBeast/ratswdshd.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Ratthief",
+    "battler":{
+      "name":"sys/MrBeast/rattheif.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skel",
+    "battler":{
+      "name":"sys/Redshrike/skel.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skelball",
+    "battler":{
+      "name":"sys/Redshrike/skelball.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skelflam",
+    "battler":{
+      "name":"sys/Redshrike/skelflam.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skelhelm",
+    "battler":{
+      "name":"sys/Redshrike/skelhelm.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skelhelmsld",
+    "battler":{
+      "name":"sys/Redshrike/skelhelmshld.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skelswdsld",
+    "battler":{
+      "name":"sys/Redshrike/skelswdsld.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skeltail",
+    "battler":{
+      "name":"sys/Redshrike/skeltail.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Skelwiz",
+    "battler":{
+      "name":"sys/Redshrike/skelwiz.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Spider",
+    "battler":{
+      "name":"sys/Redshrike/spider.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Turtlespike",
+    "battler":{
+      "name":"sys/Redshrike/turtlespike.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Wasp",
+    "battler":{
+      "name":"sys/Redshrike/wasp.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Wizard",
+    "battler":{
+      "name":"sys/Public/wizard.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Alien1",
+    "battler":{
+      "name":"sys/C+/Alien.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Alien2",
+    "battler":{
+      "name":"sys/C+/Alien2.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Alien3",
+    "battler":{
+      "name":"sys/C+/Alien3.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"TokaTokaReis1",
+    "battler":{
+      "name":"sys/MinusCreate/TokaTokaReis.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"TokaTokaReis2",
+    "battler":{
+      "name":"sys/MinusCreate/TokaTokaReis2.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"TokaTokaReis3",
+    "battler":{
+      "name":"sys/MinusCreate/TokaTokaReis3.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Unknown1",
+    "battler":{
+      "name":"sys/MinusCreate/Unknown.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Unknown2",
+    "battler":{
+      "name":"sys/MinusCreate/Unknown2.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Unknown3",
+    "battler":{
+      "name":"sys/MinusCreate/Unknown3.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -337,6 +1354,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -355,6 +1373,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -373,6 +1392,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -391,6 +1411,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -409,6 +1430,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -427,6 +1449,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -445,6 +1468,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -463,6 +1487,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -481,6 +1506,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -499,6 +1525,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -517,6 +1544,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -535,6 +1563,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -553,6 +1582,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -571,6 +1601,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -589,6 +1620,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -607,6 +1639,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -625,6 +1658,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -643,6 +1677,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -661,6 +1696,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -679,6 +1715,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -697,6 +1734,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -715,6 +1753,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -733,6 +1772,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -751,6 +1791,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -769,6 +1810,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -787,6 +1829,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -805,6 +1848,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -823,6 +1867,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -841,6 +1886,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -859,6 +1905,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -877,6 +1924,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -895,6 +1943,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -913,6 +1962,7 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
@@ -931,6 +1981,159 @@
     "arm":10,
     "mre":10,
     "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
     "effects":[
       
     ],
