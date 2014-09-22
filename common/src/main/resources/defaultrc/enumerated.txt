@@ -322,6 +322,8 @@ autotile/sys/Refmap-A4-5-6.png.metadata.json
 autotile/sys/Refmap-A4-5-7.png
 autotile/sys/Refmap-A4-5-7.png.metadata.json
 battlebg/sys/crownlesswish_rrr.jpg
+battler/sys/Blarumyrran/dragon8.png
+battler/sys/Blarumyrran/dragon10.png
 battler/sys/C+/Alien.png
 battler/sys/C+/Alien2.png
 battler/sys/C+/Alien3.png
@@ -335,6 +337,7 @@ battler/sys/MinusCreate/UnknownPig.png
 battler/sys/MinusCreate/UnknownPig2.png
 battler/sys/MinusCreate/UnknownPig3.png
 battler/sys/Momothecat/Sadmermaid.png
+battler/sys/MrBeast/dragon9.png
 battler/sys/MrBeast/ratarcher.png
 battler/sys/MrBeast/ratcleric.png
 battler/sys/MrBeast/ratdoubleswd.png
@@ -351,8 +354,14 @@ battler/sys/Public/streammonster4.png
 battler/sys/Public/streammonster5.png
 battler/sys/Public/wizard.png
 battler/sys/Redshrike/birdman.png
+battler/sys/Redshrike/blackcrow.png
 battler/sys/Redshrike/darklord.png
 battler/sys/Redshrike/darkoctopus.png
+battler/sys/Redshrike/dragon1.png
+battler/sys/Redshrike/dragon2.png
+battler/sys/Redshrike/dragon3.png
+battler/sys/Redshrike/dragon4.png
+battler/sys/Redshrike/dragon5.png
 battler/sys/Redshrike/eaglebadass.png
 battler/sys/Redshrike/eelhelm.png
 battler/sys/Redshrike/floateye.png
@@ -362,6 +371,7 @@ battler/sys/Redshrike/fossilray.png
 battler/sys/Redshrike/fossilskel.png
 battler/sys/Redshrike/fossilTrex.png
 battler/sys/Redshrike/fourarmedthing.png
+battler/sys/Redshrike/frogtrident.png
 battler/sys/Redshrike/gargoyle.png
 battler/sys/Redshrike/goblin.png
 battler/sys/Redshrike/goblinarmor.png
@@ -378,6 +388,7 @@ battler/sys/Redshrike/greenlizardlike.png
 battler/sys/Redshrike/harlequinepicycle.png
 battler/sys/Redshrike/harlequinepicycle2.png
 battler/sys/Redshrike/harlequinepicycle3.png
+battler/sys/Redshrike/hogaxe.png
 battler/sys/Redshrike/jack.png
 battler/sys/Redshrike/jackvines.png
 battler/sys/Redshrike/lionman.png
@@ -396,11 +407,15 @@ battler/sys/Redshrike/skelhelm.png
 battler/sys/Redshrike/skelhelmshld.png
 battler/sys/Redshrike/skelswdsld.png
 battler/sys/Redshrike/skeltail.png
+battler/sys/Redshrike/skeltauren.png
 battler/sys/Redshrike/skelwiz.png
 battler/sys/Redshrike/spider.png
 battler/sys/Redshrike/squidhelm.png
 battler/sys/Redshrike/turtlespike.png
 battler/sys/Redshrike/wasp.png
+battler/sys/Sharm/dragon11.png
+battler/sys/Surt/dragon6.png
+battler/sys/Zabin/dragon7.png
 characters.json
 classes.json
 elements.json
