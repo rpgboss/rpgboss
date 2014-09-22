@@ -97,9 +97,9 @@ class BattleScreen(
               battle.pData.enums.skills(skillId)
             }
 
-            val skillWindow = scriptInterface.newChoiceWindowWithOptions(
+            val skillWindow = scriptInterface.newChoiceWindow(
               skillChoices.map(_.name), layout.south(640, 180),
-              columns = 2, allowCancel = true)
+              TextChoiceWindowOptions(columns = 2, allowCancel = true))
 
             while (true) {
               val idxInChoiceBox = skillWindow.getChoice()
@@ -142,9 +142,9 @@ class BattleScreen(
         PlayerActionWindow.synchronized {
           currentOpt = Some(this)
 
-          _window = scriptInterface.newChoiceWindowWithOptions(
+          _window = scriptInterface.newChoiceWindow(
             Array("Attack", "Skill"), layout.south(140, 180),
-            allowCancel = true)
+            TextChoiceWindowOptions(allowCancel = true))
         }
 
         var done = false

@@ -27,13 +27,10 @@ function newInventoryMenu() {
     }
   }
     
-	return game.newChoiceWindowWithOptions(
+	return game.newChoiceWindow(
 	    choiceLines,
 	    layout.southwest(sizer.prop(1.0, 0.9)),
-	    game.LEFT(),
-	    1 /* columns */,
-	    kItemsDisplayedItems /* displayedLines */,
-	    true /* allowCancel */);
+	    {displayedItems: kItemsDisplayedItems, allowCancel: true});
 }
 
 function enterItemsWindow(itemsTopWin, itemsMainWin) {
@@ -55,13 +52,10 @@ function itemsMenu() {
   }
 
   var itemsMainWin = newInventoryMenu();
-  var itemsTopWin = game.newChoiceWindowWithOptions(
+  var itemsTopWin = game.newChoiceWindow(
       ["Use", "Organize"],
       layout.northwest(sizer.prop(1.0, 0.1)),
-      game.CENTER(),
-      2 /* columns */,
-      0 /* displayedLines */,
-      true /* allowCancel */);
+      {justification: game.CENTER(), columns: 2, allowCancel: true});
   
   var choiceIdx = 0;
   
@@ -108,7 +102,8 @@ function makeStatusWin() {
   
   var statusWin = game.newChoiceWindow(
     lines,
-    layout.northwest(sizer.prop(0.8, 1.0)));
+    layout.northwest(sizer.prop(0.8, 1.0)),
+    {});
   
   statusWin.setLineHeight(27);
   
@@ -117,13 +112,10 @@ function makeStatusWin() {
 
 function menu() {
   var statusWin = makeStatusWin();
-  var rootMenuWin = game.newChoiceWindowWithOptions(
+  var rootMenuWin = game.newChoiceWindow(
     ["Item", "Skills", "Equip", "Status", "Save"],
     layout.northeast(sizer.prop(0.2, 0.8)),
-    game.CENTER(),
-    1 /* columns */,
-    0 /* displayedLines */,
-    true /* allowCancel */);
+    {justification: game.CENTER(), allowCancel: true});
   
   while (true) {
     var choiceIdx = rootMenuWin.getChoice();

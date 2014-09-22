@@ -17,9 +17,9 @@ object Settings {
       "com.google.guava" % "guava" % "17.0",
       "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
-      "org.json4s" %% "json4s-native" % "3.2.9" withSources(),
+      "org.json4s" %% "json4s-native" % "3.2.10" withSources(),
       "org.scalatest" %% "scalatest" % "2.1.5" % "test",
-      "rhino" % "js" % "1.7R2"
+      "org.mozilla" % "rhino" % "1.7R4"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")

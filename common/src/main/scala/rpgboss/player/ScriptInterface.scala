@@ -11,6 +11,7 @@ import rpgboss.model.resource._
 import rpgboss.player.entity._
 import Predef._
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.mozilla.javascript.NativeObject
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -102,7 +103,7 @@ class ScriptInterface(
       mapScreen.playerEntity.y = loc.y
       mapScreen.playerEntity.mapName = Some(loc.map)
 
-      mapScreen.updateMapAssets(if(loc.map.isEmpty) None else Some(loc.map))
+      mapScreen.updateMapAssets(if (loc.map.isEmpty) None else Some(loc.map))
     }
   }
 
@@ -222,7 +223,7 @@ class ScriptInterface(
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
-    loop: Boolean, fadeDuration: Float) = syncRun {
+                loop: Boolean, fadeDuration: Float) = syncRun {
     activeScreen.playMusic(slot, specOpt, loop, fadeDuration)
   }
 
@@ -237,13 +238,10 @@ class ScriptInterface(
    * TODO: This is named different currently to allow newChoiceWindow to call
    * into this and use its default arguments. This should be renamed.
    */
-  def newChoiceWindowWithOptions(
+  def newChoiceWindow(
     lines: Array[String],
     rect: Rect,
-    justification: Int = Window.Left,
-    columns: Int = 1,
-    displayedLines: Int = 0,
-    allowCancel: Boolean = false) = {
+    options: NativeObject) = {
     val window = syncRun {
       new TextChoiceWindow(
         game.persistent,
@@ -251,19 +249,28 @@ class ScriptInterface(
         activeScreen.inputs,
         lines,
         rect,
-        justification = justification,
-        columns = columns,
-        displayedLines = displayedLines,
-        allowCancel = allowCancel)
+        JsonUtils.nativeObjectToCaseClass[TextChoiceWindowOptions](options))
     }
 
     window.scriptInterface
   }
 
   def newChoiceWindow(
-    choices: Array[String],
-    rect: Rect): ChoiceWindow#ChoiceWindowScriptInterface =
-    newChoiceWindowWithOptions(choices, rect)
+    lines: Array[String],
+    rect: Rect,
+    options: TextChoiceWindowOptions): ChoiceWindow#ChoiceWindowScriptInterface = {
+    val window = syncRun {
+      new TextChoiceWindow(
+        game.persistent,
+        activeScreen.windowManager,
+        activeScreen.inputs,
+        lines,
+        rect,
+        options)
+    }
+
+    window.scriptInterface
+  }
 
   /**
    * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
@@ -378,8 +385,7 @@ class ScriptInterface(
         val direction =
           if (math.abs(dx) > math.abs(dy))
             if (dx > 0) EAST else WEST
-          else
-            if (dy > 0) SOUTH else NORTH
+          else if (dy > 0) SOUTH else NORTH
         syncRun { entity.enqueueMove(EntityFaceDirection(direction)) }
       }
 
