@@ -15,11 +15,28 @@ import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.player._
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
   val nameCtrl = """\\[Nn]\[(\d+)\]""".r
   val variableCtrl = """\\[Vv]\[([a-zA-Z_$][\w_$]*)\]""".r
+
+  // Provide 12 default colors. TODO: Make this customizable
+  val colorSet = Array(
+    Color.WHITE,
+    Color.GRAY,
+    Color.DARK_GRAY,
+    Color.BLACK,
+    Color.RED,
+    Color.ORANGE,
+    Color.YELLOW,
+    Color.GREEN,
+    Color.BLUE,
+    Color.PURPLE,
+    Color.MAGENTA,
+    Color.PINK
+  )
 
   val NAME_OUT_OF_BOUNDS = "NAME_OUT_OF_BOUNDS"
 
@@ -55,7 +72,7 @@ class WindowText(
   private var rect: Rect,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
-  var lineHeight: Int = 32) extends ThreadChecked {
+  var lineHeight: Int = 32) extends ThreadChecked with LazyLogging {
 
   protected var _text: Array[String] =
     WindowText.processText(initialText, persistent)
@@ -73,7 +90,7 @@ class WindowText(
   def drawLine(b: SpriteBatch, line: String, xOffset: Float, yOffset: Float) = {
     val colorCodesExist = WindowText.colorCtrl.findFirstIn(line).isDefined
 
-    // Make left-aligned if color codes exist
+    // Force left-aligned if color codes exist.
     val fontAlign = if (colorCodesExist) {
       HAlignment.LEFT
     } else {
@@ -83,16 +100,6 @@ class WindowText(
         case Window.Right => HAlignment.RIGHT
       }
     }
-
-    // Draw shadow
-    fontbmp.setColor(Color.BLACK)
-    fontbmp.drawMultiLine(
-      b, line,
-      rect.left + xOffset + 2,
-      rect.top + yOffset + 2,
-      rect.w, fontAlign)
-
-    fontbmp.setColor(Color.WHITE)
 
     // Finds first color token, prints everything behind it, sets the color
     // and then does it again with the remaining text.
@@ -105,17 +112,44 @@ class WindowText(
       val rMatchOption = WindowText.colorCtrl.findFirstMatchIn(remainingText)
       val textToPrintNow = rMatchOption.map(_.before).getOrElse(remainingText)
 
-      val textBounds =
-        fontbmp.drawMultiLine(b, textToPrintNow,
-          xStart,
-          rect.top + yOffset,
-          rect.w, fontAlign)
+      // Draw Shadow
+      val origColor = fontbmp.getColor()
+      fontbmp.setColor(Color.BLACK)
+      fontbmp.drawMultiLine(b, textToPrintNow, xStart,
+        rect.top + yOffset + 2,
+        rect.w + 2, fontAlign)
+      fontbmp.setColor(origColor)
+
+      val textBounds = fontbmp.drawMultiLine(b, textToPrintNow, xStart,
+        rect.top + yOffset,
+        rect.w, fontAlign)
+
+      // Set color to the desired one...
+      rMatchOption.map { rMatch =>
+        val groupOne = rMatch.group(1)
+        try {
+          val colorId = groupOne.toInt
+          if (colorId < WindowText.colorSet.length) {
+            fontbmp.setColor(WindowText.colorSet(colorId))
+          } else {
+            logger.warn("Color code out of bounds: %s".format(colorId))
+            fontbmp.setColor(Color.WHITE)
+          }
+        } catch {
+          case e: Exception =>
+            logger.warn("Could not interpret color code: %s".format(
+              rMatch.matched))
+            fontbmp.setColor(Color.WHITE)
+        }
+      }
 
       printUntilColorTokenOrEnd(rMatchOption.map(_.after).getOrElse(""),
                                 xStart + textBounds.width)
     }
 
     printUntilColorTokenOrEnd(line, rect.left + xOffset)
+
+    fontbmp.setColor(Color.WHITE)
   }
 
   def update(delta: Float) = {}
@@ -240,7 +274,7 @@ class PrintingWindowText(
 
     // If waiting for user input to finish, draw the arrow
     if (awaitingInput) {
-      skin.drawArrow(b, skinRegion, rect.x - 8, rect.bot, 16, 16)
+      skin.drawArrow(b, skinRegion, rect.x - 8, rect.bot)
     }
   }
 }

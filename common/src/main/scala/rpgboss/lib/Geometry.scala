@@ -11,6 +11,7 @@ trait BoxLike {
   def h: Float
 
   def left = x - w / 2
+  def right = x + w / 2
   def top = y - h / 2
   def bot = y + h / 2
 
@@ -76,7 +77,7 @@ class LayoutProvider(screenW: Float, screenH: Float) {
 
 class SizeProvider(screenW: Float, screenH: Float) {
   def fixed(w: Float, h: Float) = Size(w, h)
-  
+
   def prop(xProportion: Float, yProportion: Float) =
     Size(xProportion * screenW, yProportion * screenH)
 
