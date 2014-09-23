@@ -1872,8 +1872,35 @@
       
     ]
   },
-  {
-    "name":"",
+    {
+    "name":"Griffin",
+    "battler":{
+      "name":"sys/Momothecat/mohrthegriffin.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+ {
+    "name":"Cyberhound",
+    "battler":{
+      "name":"sys/AncientBeast/cyberhound.png",
+      "scale":0.3
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1892,7 +1919,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Theexecutor",
+    "battler":{
+      "name":"sys/Isaacbird/theexecutor.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1911,7 +1942,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Warlock",
+    "battler":{
+      "name":"sys/Isaacbird/warlock.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1930,7 +1965,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Blade",
+    "battler":{
+      "name":"sys/Isaacbird/blade.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1949,7 +1988,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Goldenwyrm",
+    "battler":{
+      "name":"sys/Katarzyna/goldenwyrm.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1968,7 +2011,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Magmaspawn",
+    "battler":{
+      "name":"sys/Katarzyna/magmaspawn.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -1987,7 +2034,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Volpyr",
+    "battler":{
+      "name":"sys/Katarzyna/volpyr.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2006,7 +2057,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Impaler",
+    "battler":{
+      "name":"sys/Katarzyna/impaler.png",
+      "scale":0.5
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2025,7 +2080,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Akhorthegriffin",
+    "battler":{
+      "name":"sys/Momothecat/akhorthegriffin.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2044,7 +2103,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Robot1",
+    "battler":{
+      "name":"sys/Redshrike/robot1.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2063,7 +2126,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Robot2",
+    "battler":{
+      "name":"sys/Redshrike/robot2.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2082,7 +2149,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Robot3",
+    "battler":{
+      "name":"sys/Redshrike/robot3.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2101,7 +2172,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Lacriatura",
+    "battler":{
+      "name":"sys/Public/Lacriatura.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2120,7 +2195,11 @@
     ]
   },
   {
-    "name":"",
+    "name":"Strangecreature1",
+    "battler":{
+      "name":"sys/Ramtam/strangecreature1.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
@@ -2139,26 +2218,11 @@
     ]
   },
   {
-    "name":"",
-    "level":5,
-    "mhp":40,
-    "mmp":40,
-    "atk":10,
-    "spd":10,
-    "mag":10,
-    "arm":10,
-    "mre":10,
-    "expValue":100,
-    "attackSkillId":0,
-    "effects":[
-      
-    ],
-    "skillIds":[
-      
-    ]
-  },
-  {
-    "name":"",
+    "name":"Strangecreature2",
+    "battler":{
+      "name":"sys/Ramtam/strangecreature2.png",
+      "scale":1.0
+    },
     "level":5,
     "mhp":40,
     "mmp":40,
