@@ -28,7 +28,7 @@ Build instructions:
 
 2. Clone this repo and enter it.
     ```
-    $ git clone https://github.com/tommycli/rpgboss.git
+    $ git clone https://github.com/rpgboss/rpgboss.git
     $ cd rpgboss
     ```
 
