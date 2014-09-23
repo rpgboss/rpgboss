@@ -150,6 +150,22 @@ USE Internet Archieve for Dead website links!
 
 ### Battlers
 
+ramtam http://opengameart.org/content/creature-sprites (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(Ramtam)
+
+Isaac Bird http://nobody00000000.deviantart.com/gallery/ (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(IsaacBird)
+
+Ancient Beast  http://www.ancientbeast.com/ (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(AncientBeast)
+
+Katarzyna Zalecka http://www.ancientbeast.com/ (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(Katarzyna)
+
 Stephen "Redshrike" Challener http://opengameart.org/users/redshrike (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
 
 (Redshrike)
