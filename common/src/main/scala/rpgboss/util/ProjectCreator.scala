@@ -1,6 +1,7 @@
 package rpgboss.util
 
 import com.google.common.io.Files
+import com.google.common.io.Resources
 import java.io._
 import rpgboss.model._
 import rpgboss.model.resource._
@@ -29,22 +30,14 @@ object ProjectCreator {
       for (resourceName <- ResourceConstants.defaultRcList;
            if resourceName.endsWith(Resource.jsonSuffix)) {
 
-        val target = new File(projRcDir, resourceName)
+        val source = Resources.asByteSource(
+            Resources.getResource("%s/%s".format(
+                ResourceConstants.defaultRcDir, resourceName)))
 
+        val target = new File(projRcDir, resourceName)
         target.getParentFile.mkdirs()
 
-        val fos = new FileOutputStream(target)
-
-        val buffer = new Array[Byte](1024 * 32)
-
-        val sourceStream =
-          cl.getResourceAsStream("%s/%s".format(
-            ResourceConstants.defaultRcDir, resourceName))
-
-        Iterator.continually(sourceStream.read(buffer))
-          .takeWhile(_ != -1).foreach(fos.write(buffer, 0, _))
-
-        fos.close()
+        source.copyTo(Files.asByteSink(target))
       }
 
       true
