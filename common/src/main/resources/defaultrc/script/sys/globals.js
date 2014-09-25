@@ -42,10 +42,8 @@ function makeStatusWin() {
       1.0)), {
     allowCancel : true,
     linesPerChoice : 4,
-    displayedLines : 8
+    lineHeight: 27
   });
-
-  statusWin.setLineHeight(27);
 
   return statusWin;
 }
