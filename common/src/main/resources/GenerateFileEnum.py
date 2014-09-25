@@ -1,10 +1,10 @@
 import os
 import sys
 
-fileList = []
 enumFn = "enumerated.txt"
 
 def doDir(rootdir):
+  fileList = []
   for root, subFolders, files in os.walk(rootdir):
     abridgedRoot = root[len(rootdir)+1:]
     for file in files:
