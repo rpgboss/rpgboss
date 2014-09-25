@@ -17,6 +17,36 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import rpgboss.util.ProjectCreator
+import org.mozilla.javascript.ScriptableObject
+import org.mozilla.javascript.Context
+
+object TestScriptThread {
+  def fromTestScript(
+    game: RpgGame,
+    screen: RpgScreen,
+    scriptInterface: ScriptInterface,
+    scriptName: String,
+    fnToRun: String = "",
+    waiter: Waiter) = {
+    val script = Script.readFromDisk(game.project, scriptName)
+    new ScriptThread(
+      game,
+      screen,
+      scriptInterface,
+      script.name,
+      script.readAsString,
+      fnToRun) {
+      override def initScope(jsScope: ScriptableObject) = {
+        super.initScope(jsScope)
+
+        // Bind 'event' to the EventEntity so that we can control its movement
+        ScriptableObject.putProperty(jsScope, "waiter",
+          Context.javaToJS(waiter, jsScope))
+      }
+    }
+  }
+}
 
 class ProjectTest extends ShouldMatchers {
   def paint(array: Array[Array[Byte]], x: Int, y: Int,
@@ -42,16 +72,18 @@ class ProjectTest extends ShouldMatchers {
     val sprite = ResourceConstants.defaultSpriteSpec
     val states = Array(RpgEventState(sprite = Some(sprite), cmds = Array(cmd)))
     Map(
-      1->RpgEvent(1, "Testevent", x, y, states)
-    )
+      1 -> RpgEvent(1, "Testevent", x, y, states))
   }
 
-  val tempDir = Files.createTempDir()
-  val projectOption = rpgboss.util.ProjectCreator.create("test", tempDir)
-
+  val projectDirectory = Files.createTempDir()
+  val projectOption = ProjectCreator.create("test", projectDirectory)
   val project = projectOption.get
 
-  val projectDirectory = tempDir
+  ProjectCreator.copyResources(
+    ResourceConstants.testRcDir,
+    ResourceConstants.testRcList,
+    projectDirectory)
+
   val mapName = RpgMap.generateName(project.data.lastCreatedMapId)
 
   // Used to move assertions to the test thread
@@ -65,7 +97,7 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
     val map = RpgMap.readFromDisk(project, mapName)
     val mapData = map.readMapData().get
     setupMapData(mapData)
-    map.saveMapData(mapData) should be (true)
+    map.saveMapData(mapData) should be(true)
   }
 
   def setupMapData(mapData: RpgMapData) = {
@@ -87,23 +119,12 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
       Future {
         testScript()
 
-        if(dismissWaiterAtEndOfTestScript)
+        if (dismissWaiterAtEndOfTestScript)
           waiter.dismiss()
       }
     }
 
     def setup() = MapScreenTest.this.setup()
-
-    // Should only be run on scripting thread. |key| is an internal key.
-    def mapScreenKeyPress(key: Int, duration: Float) = {
-      GdxUtils.syncRun { mapScreen.inputs.myKeyDown(key) }
-      Thread.sleep((duration * 1000).toLong)
-      GdxUtils.syncRun { mapScreen.inputs.myKeyUp(key) }
-    }
-
-    def mapScreenKeyPress(key: Int): Unit = {
-      mapScreenKeyPress(key, 0.1f)
-    }
   }
 
   def scriptInterface = game.mapScreen.scriptInterface

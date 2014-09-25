@@ -1,14 +1,11 @@
 package rpgboss.player
 
 import java.lang.Thread.UncaughtExceptionHandler
-
 import scala.concurrent.Await
 import scala.concurrent.Promise
 import scala.concurrent.duration.Duration
-
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
-
 import rpgboss.lib.GdxUtils
 import rpgboss.model.Constants.Transitions
 import rpgboss.model.ItemAccessibility
@@ -57,6 +54,8 @@ class ScriptThread(
       Context.javaToJS(MapLoc, jsScope))
     ScriptableObject.putProperty(jsScope, "Transitions",
       Context.javaToJS(Transitions, jsScope))
+    ScriptableObject.putProperty(jsScope, "Keys",
+      Context.javaToJS(MyKeys, jsScope))
 
     ScriptableObject.putProperty(jsScope, "None",
       Context.javaToJS(None, jsScope))

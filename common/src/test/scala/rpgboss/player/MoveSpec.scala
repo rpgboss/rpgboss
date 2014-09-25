@@ -19,9 +19,9 @@ class MoveSpec extends UnitSpec {
       def testScript() = {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
         scriptInterface.movePlayer(1f, 0)
-        
+
         val player = scriptInterface.getPlayerEntityInfo()
-        
+
         waiter {
           val epsilon = 0.05f
           player.x should be (1.5f +- epsilon)
@@ -29,18 +29,18 @@ class MoveSpec extends UnitSpec {
         }
       }
     }
-    
+
     test.runTest()
   }
-  
+
   "Move" should "should work in reponse to key press" in {
     val test = new MapScreenTest {
       def testScript() = {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
-        game.mapScreenKeyPress(MyKeys.Right, 5f / game.mapScreen.playerEntity.speed)
-        
+        scriptInterface.mapScreenKeyPress(MyKeys.Right, 5f / game.mapScreen.playerEntity.speed)
+
         val player = scriptInterface.getPlayerEntityInfo()
-        
+
         waiter {
           val epsilon = 1.0f // slack because of sloppy key press simulation
           player.x should be (5.5f +- epsilon)
@@ -48,10 +48,10 @@ class MoveSpec extends UnitSpec {
         }
       }
     }
-    
+
     test.runTest()
   }
-  
+
   "MoveEvent" should "work with THIS_EVENT" in {
     val test = new MapScreenTest {
       override def setupMapData(mapData: RpgMapData) = {
@@ -61,18 +61,18 @@ class MoveSpec extends UnitSpec {
           2f,
           2f)
       }
-      
+
       def testScript() = {
         scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
         scriptInterface.activateEvent(1, true)
-        
+
         val entityInfoOpt = scriptInterface.getEventEntityInfo(1)
-        
+
         waiter {
           val epsilon = 0.05f
-          
+
           entityInfoOpt.isDefined should equal (true)
-          
+
           entityInfoOpt map { e =>
             e.x should be (2f +- epsilon)
             e.y should be (4f +- epsilon)
@@ -80,7 +80,7 @@ class MoveSpec extends UnitSpec {
         }
       }
     }
-    
+
     test.runTest()
   }
 }

@@ -53,7 +53,7 @@ function makeStatusWin() {
 // onChoice is a callback that takes parameter (choiceId) and should
 // return whether or not to select again.
 // choiceId denotes the index inside the PARTY array, not the character id.
-function getPartyChoice(onChoice) {
+function loopPartyStatusChoice(onChoice) {
   var window = makeStatusWin();
   while (true) {
     var choiceIdx = window.getChoice();
@@ -68,4 +68,14 @@ function getPartyChoice(onChoice) {
     window.updateLines(getStatusLines());
   }
   window.close();
+}
+
+function assert(condition, message) {
+  if (!condition) {
+    message = message || "Assertion failed";
+    if (typeof Error !== "undefined") {
+      throw new Error(message);
+    }
+    throw message; // Fallback
+  }
 }

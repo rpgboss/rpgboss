@@ -452,6 +452,19 @@ class ScriptInterface(
   def quit() = syncRun {
     game.quit()
   }
+
+  /**
+   * Should be used for testing only
+   */
+  def mapScreenKeyPress(key: Int, duration: Float) = {
+    GdxUtils.syncRun { mapScreen.inputs.myKeyDown(key) }
+    sleep(duration)
+    GdxUtils.syncRun { mapScreen.inputs.myKeyUp(key) }
+  }
+
+  def mapScreenKeyPress(key: Int): Unit = {
+    mapScreenKeyPress(key, 0.1f)
+  }
 }
 
 object ScriptInterfaceConstants extends HasScriptConstants {
