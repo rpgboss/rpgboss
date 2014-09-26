@@ -19,6 +19,7 @@ object ResourceConstants {
   def systemStartCall = "start()"
 
   def editorBattleback = "sys/crownlesswish_rrr.jpg"
+  def battlerTarget = "sys/Redshrike/goblinrider.png"
 
   def defaultTilesets = Array(
     "sys/Refmap-TileA5.png",

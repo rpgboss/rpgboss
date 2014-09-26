@@ -6,26 +6,23 @@ import rpgboss.lib._
 import rpgboss.model.SoundSpec
 import aurelienribon.tweenengine._
 import rpgboss.model.resource.{ Music, MusicPlayer }
+import rpgboss.model.Project
+import rpgboss.model.resource.RpgAssetManager
 
 trait RpgScreen extends Screen with ThreadChecked {
-  def game: RpgGame
+  def project: Project
+  def assets: RpgAssetManager
+  def screenW: Float
+  def screenH: Float
 
-  val scriptInterface = new ScriptInterface(game, this)
+  def scriptInterface: ScriptInterface
 
   val inputs = new InputMultiplexer()
   def createWindowManager(): WindowManager =
-    new WindowManager(
-      game.assets,
-      game.project,
-      game.project.data.startup.screenW,
-      game.project.data.startup.screenH)
+    new WindowManager(assets, project, screenW, screenH)
 
-  val layout = new LayoutProvider(
-      game.project.data.startup.screenW,
-      game.project.data.startup.screenH)
-  val sizer = new SizeProvider(
-      game.project.data.startup.screenW,
-      game.project.data.startup.screenH)
+  val layout = new LayoutProvider(screenW, screenH)
+  val sizer = new SizeProvider(screenW, screenH)
 
   val musics = Array.fill[Option[MusicPlayer]](8)(None)
   val windowManager = createWindowManager()
@@ -51,8 +48,8 @@ trait RpgScreen extends Screen with ThreadChecked {
     })
 
     musics(slot) = specOpt.map { spec =>
-      val resource = Music.readFromDisk(game.project, spec.sound)
-      val newMusic = resource.newPlayer(game.assets)
+      val resource = Music.readFromDisk(project, spec.sound)
+      val newMusic = resource.newPlayer(assets)
 
       // Start at zero volume and fade to desired volume
       newMusic.stop()
@@ -119,4 +116,14 @@ trait RpgScreen extends Screen with ThreadChecked {
     Gdx.input.setInputProcessor(inputs)
     musics.foreach(_.map(_.play()))
   }
+}
+
+trait RpgScreenWithGame extends RpgScreen {
+  def game: RpgGame
+
+  def project = game.project
+  def screenW = project.data.startup.screenW
+  def screenH = project.data.startup.screenH
+  def assets = game.assets
+  val scriptInterface = new ScriptInterface(game, this)
 }
