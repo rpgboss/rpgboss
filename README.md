@@ -181,11 +181,11 @@ Zabin http://opengameart.org/content/rpg-enemies-11-dragons (CC-BY 3.0) http://c
 
 (Zabin)
 
-Surt http://opengameart.org/content/rpg-enemies-11-dragons (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+Surt http://opengameart.org/users/surt (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
 
 (Surt)
 
-MrBeast http://opengameart.org/users/mrbeast (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+MrBeast http://opengameart.org/users/MrBeast (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
 
 (MrBeast)
 
