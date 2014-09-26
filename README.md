@@ -162,6 +162,7 @@ Ancient Beast  http://www.ancientbeast.com/ (CC-BY-SA 3.0) http://creativecommon
 (AncientBeast)
 
 Katarzyna Zalecka http://www.ancientbeast.com/ (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+http://kasia88.deviantart.com; Gabriel Verdon (Magmaspawn) http://www.gabrielverdon.com
 
 (Katarzyna)
 
