@@ -72,13 +72,10 @@ class WindowText(
   private var rect: Rect,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
-  var lineHeight: Int = 32) extends ThreadChecked with LazyLogging {
+  val lineHeight: Int = 32) extends ThreadChecked with LazyLogging {
 
   protected var _text: Array[String] =
     WindowText.processText(initialText, persistent)
-
-  def setLineHeight(height: Int) =
-    lineHeight = height
 
   def updatePosition(x: Float, y: Float) = {
     rect = rect.copy(x = x, y = y)

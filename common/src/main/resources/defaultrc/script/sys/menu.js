@@ -1,14 +1,12 @@
 function newInventoryMenu() {
   var kItemsDisplayedItems = 10;
-	
+
   var inventoryItemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
   var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
-  
+
   var choiceLines = [];
   var items = project.data().enums().items();
-  for (var i = 0; 
-       i < inventoryItemIds.length && i < inventoryQtys.length; 
-       ++i) {
+  for (var i = 0; i < inventoryItemIds.length && i < inventoryQtys.length; ++i) {
     var itemId = inventoryItemIds[i];
     var itemQty = inventoryQtys[i];
     if (itemId < 0 || itemQty <= 0) {
@@ -16,34 +14,37 @@ function newInventoryMenu() {
     } else {
       var item = items[itemId];
       var usable = item.usableInMenu();
-      
+
       var lineParts = [];
-      if (!usable) lineParts.push("\\c[1]");      
+      if (!usable)
+        lineParts.push("\\c[1]");
       lineParts.push(rightPad(item.name(), 32));
       lineParts.push(" : " + itemQty.toString());
-      if (!usable) lineParts.push("\\c[0]");
-      
+      if (!usable)
+        lineParts.push("\\c[0]");
+
       choiceLines.push(lineParts.join(""));
     }
   }
-    
-	return game.newChoiceWindow(
-	    choiceLines,
-	    layout.southwest(sizer.prop(1.0, 0.9)),
-	    {displayedItems: kItemsDisplayedItems, allowCancel: true});
+
+  return game.newChoiceWindow(choiceLines, layout.southwest(sizer
+      .prop(1.0, 0.9)), {
+    displayedItems : kItemsDisplayedItems,
+    allowCancel : true
+  });
 }
 
 function enterItemsWindow(itemsTopWin, itemsMainWin) {
   itemsMainWin.takeFocus();
-  
+
   var choiceIdx;
   while (true) {
     choiceIdx = itemsMainWin.getChoice();
-    
+
     if (choiceIdx == -1)
       break;
   }
-  
+
   itemsTopWin.takeFocus();
 }
 
@@ -52,80 +53,52 @@ function itemsMenu() {
   }
 
   var itemsMainWin = newInventoryMenu();
-  var itemsTopWin = game.newChoiceWindow(
-      ["Use", "Organize"],
-      layout.northwest(sizer.prop(1.0, 0.1)),
-      {justification: game.CENTER(), columns: 2, allowCancel: true});
-  
+  var itemsTopWin = game.newChoiceWindow([ "Use", "Organize" ], layout
+      .northwest(sizer.prop(1.0, 0.1)), {
+    justification : game.CENTER(),
+    columns : 2,
+    allowCancel : true
+  });
+
   var choiceIdx = 0;
-  
+
   while (true) {
     switch (choiceIdx) {
-      case 0:
-        enterItemsWindow(itemsTopWin, itemsMainWin);
-        break;
-      case 1:
-        organizeItems(itemsMainWin);
-        break;
+    case 0:
+      enterItemsWindow(itemsTopWin, itemsMainWin);
+      break;
+    case 1:
+      organizeItems(itemsMainWin);
+      break;
     }
-    
+
     choiceIdx = itemsTopWin.getChoice();
-    
+
     if (choiceIdx == -1)
       break;
   }
-  
+
   itemsMainWin.close();
   itemsTopWin.close();
 }
 
-function makeStatusWin() {
-  var lines = [];
-  var party = game.getIntArray(game.PARTY());
-  var characters = project.data().enums().characters();
-  var characterNames = game.getStringArray(game.CHARACTER_NAMES());
-  var characterLevels = game.getIntArray(game.CHARACTER_LEVELS());
-  var characterHps = game.getIntArray(game.CHARACTER_HPS());
-  var characterMps = game.getIntArray(game.CHARACTER_MPS());
-  var characterMaxHps = game.getIntArray(game.CHARACTER_MAX_HPS());
-  var characterMaxMps = game.getIntArray(game.CHARACTER_MAX_MPS());
-  
-  for (var i = 0; i < party.length; ++i) {
-    lines.push(rightPad(characterNames[i], 10) + 
-               leftPad(characters[i].subtitle(), 20));
-    lines.push(" LVL " + leftPad(characterLevels[i].toString(), 3));
-    lines.push("  HP " + leftPad(characterHps[i].toString(), 4) +
-               " / " + leftPad(characterMaxHps[i].toString(), 4));
-    lines.push("  MP " + leftPad(characterMps[i].toString(), 4) +
-               " / " + leftPad(characterMaxMps[i].toString(), 4));
-  }
-  
-  var statusWin = game.newChoiceWindow(
-    lines,
-    layout.northwest(sizer.prop(0.8, 1.0)),
-    {});
-  
-  statusWin.setLineHeight(27);
-  
-  return statusWin;
-}
-
 function menu() {
   var statusWin = makeStatusWin();
-  var rootMenuWin = game.newChoiceWindow(
-    ["Item", "Skills", "Equip", "Status", "Save"],
-    layout.northeast(sizer.prop(0.2, 0.8)),
-    {justification: game.CENTER(), allowCancel: true});
-  
+  var rootMenuWin = game.newChoiceWindow([ "Item", "Skills", "Equip", "Status",
+      "Save" ], layout.northeast(sizer.prop(0.2, 0.8)), {
+    justification : game.CENTER(),
+    allowCancel : true
+  });
+
   while (true) {
     var choiceIdx = rootMenuWin.getChoice();
-    
+
     switch (choiceIdx) {
     case 0:
       itemsMenu();
       break;
     }
-    
+
     if (choiceIdx == -1)
       break;
   }

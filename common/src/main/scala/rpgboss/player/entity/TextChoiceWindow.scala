@@ -62,7 +62,8 @@ class TextChoiceWindow(
         columnChoicesAry(i).toArray,
         windowTextRect,
         manager.fontbmp,
-        options.justification
+        options.justification,
+        options.lineHeight
       )
     }
 
@@ -74,7 +75,7 @@ class TextChoiceWindow(
   def updateLines(newLines: Array[String]) = {
     lines = newLines
     updateTextImages()
-    curChoice = math.max(curChoice, lines.length)
+    curChoice = math.min(curChoice, lines.length / linesPerChoice)
     updateScrollPosition()
   }
 
@@ -176,7 +177,7 @@ class TextChoiceWindow(
         val yRowOffset =
           ((curChoice * linesPerChoice) / columns) - (scrollTopLine)
         val cursorTop =
-          rect.top + ypad + yRowOffset * textImages(0).lineHeight - 8
+          rect.top + ypad + yRowOffset * options.lineHeight - 8
         skin.drawCursor(b, skinRegion, cursorLeft, cursorTop)
       }
 
@@ -197,10 +198,6 @@ class TextChoiceWindow(
   }
 
   class TextChoiceWindowScriptInterface extends ChoiceWindowScriptInterface {
-    def setLineHeight(height: Int) = syncRun {
-      textImages.foreach(_.setLineHeight(height))
-    }
-
     def updateLines(lines: Array[String]) = syncRun {
       TextChoiceWindow.this.updateLines(lines)
     }
@@ -210,12 +207,13 @@ class TextChoiceWindow(
 }
 
 case class TextChoiceWindowOptions(
-  var justification: Int = Window.Left,
-  var defaultChoice: Int = 0,
+  justification: Int = Window.Left,
+  defaultChoice: Int = 0,
   // Choices displayed in a row-major way.
-  var columns: Int = 1,
+  columns: Int = 1,
   // 0 shows all the lines. Positive numbers for scrolling.
-  var displayedLines: Int = 0,
+  displayedLines: Int = 0,
   // 1 means each choice occupies one line.
-  var linesPerChoice: Int = 1,
-  var allowCancel: Boolean = true)
+  linesPerChoice: Int = 1,
+  allowCancel: Boolean = true,
+  lineHeight: Int = 32)

@@ -4,11 +4,16 @@ import rpgboss.model._
 
 object ResourceConstants {
   def defaultRcDir = "defaultrc"
-  lazy val defaultRcList =  {
-    val rcStream =
-      getClass.getClassLoader.getResourceAsStream("defaultrc/enumerated.txt")
+  def testRcDir = "testrc"
+
+  def getRcList(dirname: String) = {
+    val rcStream = getClass.getClassLoader.getResourceAsStream(
+        "%s/enumerated.txt".format(dirname))
     io.Source.fromInputStream(rcStream).getLines().toList
   }
+
+  lazy val defaultRcList = getRcList("defaultrc")
+  lazy val testRcList = getRcList("testrc")
 
   def systemStartScript = "sys/start.js"
   def systemStartCall = "start()"

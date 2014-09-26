@@ -1,11 +1,28 @@
 package rpgboss.util
 
 import com.google.common.io.Files
+import com.google.common.io.Resources
 import java.io._
 import rpgboss.model._
 import rpgboss.model.resource._
+import rpgboss.lib._
+import java.util.Arrays
 
 object ProjectCreator {
+  def copyResources(resourceDirectoryName: String,
+                    resourceList: Seq[String], targetRcDirectory: File) = {
+    for (resourceName <- resourceList) {
+      val source = Resources.asByteSource(
+        Resources.getResource("%s/%s".format(
+          resourceDirectoryName, resourceName)))
+
+      val target = new File(targetRcDirectory, resourceName)
+      target.getParentFile.mkdirs()
+
+      source.copyTo(Files.asByteSink(target))
+    }
+  }
+
   // Returns true if project has been created and all default resources copied
   def create(shortname: String, projectDirectory: File): Option[Project] = {
     val projectStub = Project.startingProject(shortname, projectDirectory)
@@ -18,39 +35,18 @@ object ProjectCreator {
 
     val allSavedOkay =
       projectStub.data.writeRootWithoutEnums(projectStub.dir) &&
-      RpgMap.defaultMapData.writeToFile(projectStub, mapName) &&
-      RpgMap.defaultInstance(projectStub, mapName).writeMetadata()
+        RpgMap.defaultMapData.writeToFile(projectStub, mapName) &&
+        RpgMap.defaultInstance(projectStub, mapName).writeMetadata()
 
     val cl = getClass.getClassLoader
+    val projRcDir = projectStub.rcDir
 
-    val copiedAllResources = {
-      val projRcDir = projectStub.rcDir
+    copyResources(
+      ResourceConstants.defaultRcDir,
+      ResourceConstants.defaultRcList.filter(_.endsWith(Resource.jsonSuffix)),
+      projRcDir)
 
-      for (resourceName <- ResourceConstants.defaultRcList;
-           if resourceName.endsWith(Resource.jsonSuffix)) {
-
-        val target = new File(projRcDir, resourceName)
-
-        target.getParentFile.mkdirs()
-
-        val fos = new FileOutputStream(target)
-
-        val buffer = new Array[Byte](1024 * 32)
-
-        val sourceStream =
-          cl.getResourceAsStream("%s/%s".format(
-            ResourceConstants.defaultRcDir, resourceName))
-
-        Iterator.continually(sourceStream.read(buffer))
-          .takeWhile(_ != -1).foreach(fos.write(buffer, 0, _))
-
-        fos.close()
-      }
-
-      true
-    }
-
-    if (allSavedOkay && copiedAllResources) {
+    if (allSavedOkay) {
       Project.readFromDisk(projectStub.dir)
     } else {
       None
