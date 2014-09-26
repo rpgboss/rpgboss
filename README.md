@@ -185,7 +185,7 @@ Surt http://opengameart.org/content/rpg-enemies-11-dragons (CC-BY 3.0) http://cr
 
 (Surt)
 
-MrBeast http://opengameart.org/users/mrbeast (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+MrBeast http://opengameart.org/users/surt (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
 
 (MrBeast)
 
