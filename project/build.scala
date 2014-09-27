@@ -40,7 +40,7 @@ object Settings {
     Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("update-libs")
    )
 
-  lazy val editor = Settings.common ++ editorLibs ++ assemblySettings
+  lazy val editor = Settings.common ++ editorLibs ++ editorAssembly
   
   lazy val editorLibs = Seq(
     scalaVersion := "2.11.1",
@@ -57,6 +57,16 @@ object Settings {
     },
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
     scalacOptions ++= List("-deprecation", "-unchecked"))
+
+  lazy val editorAssembly = assemblySettings ++ Seq(
+    mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
+      {
+        case PathList("scala", "reflect", "internal", _ @ _*) => MergeStrategy.discard
+        case PathList("scala", "tools", "nsc", _ @ _*) => MergeStrategy.discard
+        case x => old(x)
+      }
+    }
+  )
 
   val updateLibs = TaskKey[Unit]("update-libs", "Updates libs")
   
