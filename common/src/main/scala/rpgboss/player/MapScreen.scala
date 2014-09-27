@@ -18,12 +18,11 @@ import rpgboss.player.entity._
  * ApplicationListener.
  */
 class MapScreen(val game: RpgGame)
-  extends RpgScreen {
-  def project = game.project
+  extends RpgScreenWithGame {
   val batch = new SpriteBatch()
 
-  var screenW: Float = project.data.startup.screenW / Tileset.tilesize
-  var screenH: Float = project.data.startup.screenH / Tileset.tilesize
+  var screenWTiles: Float = screenW / Tileset.tilesize
+  var screenHTiles: Float = screenH / Tileset.tilesize
 
   var cameraL: Double = 0
   var cameraR: Double = 0
@@ -31,7 +30,7 @@ class MapScreen(val game: RpgGame)
   var cameraB: Double = 0
 
   val tileCamera: OrthographicCamera = new OrthographicCamera()
-  tileCamera.setToOrtho(true, screenW.toFloat, screenH.toFloat) // y points down
+  tileCamera.setToOrtho(true, screenWTiles, screenHTiles) // y points down
 
   // current map
   var mapAndAssetsOption: Option[MapAndAssets] = None
@@ -63,10 +62,10 @@ class MapScreen(val game: RpgGame)
   }
 
   def updateCameraLoc() = {
-    cameraL = camera.x - screenW / 2
-    cameraR = camera.x + screenW / 2
-    cameraT = camera.y - screenH / 2
-    cameraB = camera.y + screenH / 2
+    cameraL = camera.x - screenWTiles / 2
+    cameraR = camera.x + screenWTiles / 2
+    cameraT = camera.y - screenHTiles / 2
+    cameraB = camera.y + screenHTiles / 2
     tileCamera.position.x = camera.x
     tileCamera.position.y = camera.y
     tileCamera.update()

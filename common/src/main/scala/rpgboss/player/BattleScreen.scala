@@ -29,16 +29,16 @@ case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Float,
  */
 class BattleScreen(
   gameOpt: Option[RpgGame],
-  assets: RpgAssetManager,
+  val assets: RpgAssetManager,
   atlasSprites: TextureAtlas,
-  project: Project,
-  screenW: Int,
-  screenH: Int)
+  val project: Project,
+  val screenW: Float,
+  val screenH: Float)
   extends ThreadChecked
   with RpgScreen {
   assume(atlasSprites != null)
 
-  def game = gameOpt.orNull
+  val scriptInterface = gameOpt.map(new ScriptInterface(_, this)).orNull
 
   val logger = new Logger("BatleScreen", Logger.INFO)
 

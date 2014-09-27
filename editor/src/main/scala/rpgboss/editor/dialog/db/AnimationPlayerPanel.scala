@@ -13,9 +13,6 @@ import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Disposable
 
 object AnimationPlayerGdxPanel {
-  def battleback = "sys/crownlesswish_rrr.jpg"
-  def battlerTarget = "sys/lg/goblinrider.png"
-
   def width = 640
   def height = 320
 }
@@ -39,9 +36,9 @@ class AnimationPlayerGdxPanel(
     var animationPlayer: AnimationPlayer = null
 
     val background =
-      BattleBackground.readFromDisk(project, AnimationPlayerGdxPanel.battleback)
+      BattleBackground.readFromDisk(project, ResourceConstants.editorBattleback)
     val battler =
-      Battler.readFromDisk(project, AnimationPlayerGdxPanel.battlerTarget)
+      Battler.readFromDisk(project, ResourceConstants.battlerTarget)
     var batch: SpriteBatch = null
 
     def updateAnimation(animation: Animation) = {

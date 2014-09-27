@@ -57,8 +57,6 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
     }
 
     override def create() = {
-      logger.debug("Thread id = %d".format(Thread.currentThread().getId()))
-
       assets = new RpgAssetManager(project)
       atlasSprites = GdxUtils.generateSpritesTextureAtlas(
         Spriteset.list(project).map(Spriteset.readFromDisk(project, _)))

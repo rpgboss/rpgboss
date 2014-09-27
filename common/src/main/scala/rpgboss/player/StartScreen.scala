@@ -1,6 +1,6 @@
 package rpgboss.player
 
-class StartScreen(val game: RpgGame) extends RpgScreen {
+class StartScreen(val game: RpgGame) extends RpgScreenWithGame {
   override def render(): Unit = {
     if (!game.assets.update())
       return

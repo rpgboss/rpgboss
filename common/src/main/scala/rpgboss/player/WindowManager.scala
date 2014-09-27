@@ -25,8 +25,8 @@ import rpgboss.lib.Rect
 class WindowManager(
   val assets: RpgAssetManager,
   val project: Project,
-  screenW: Int,
-  screenH: Int) extends ThreadChecked {
+  screenW: Float,
+  screenH: Float) extends ThreadChecked {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
 
