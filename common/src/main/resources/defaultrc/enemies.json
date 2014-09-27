@@ -3228,5 +3228,373 @@
     "skillIds":[
       
     ]
+  },
+  {
+    "name":"Bigrat",
+    "battler":{
+      "name":"sys/Godlesshenk/Bigrat.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Charon",
+    "battler":{
+      "name":"sys/JustinNichol/Charon.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Deadlyalienbug",
+    "battler":{
+      "name":"sys/Godlesshenk/Deadlyalienbug.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Gohomewithenemyhead",
+    "battler":{
+      "name":"sys/Godlesshenk/Gohomewithenemyhead.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Newdron",
+    "battler":{
+      "name":"sys/Killoverdrive/Newdron.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Overweightgnarl",
+    "battler":{
+      "name":"sys/Buch/Overweightgnarl.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"TheImp",
+    "battler":{
+      "name":"sys/JustinNichol/TheImp.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"TheKappa",
+    "battler":{
+      "name":"sys/JustinNichol/TheKappa.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"TheKraken",
+    "battler":{
+      "name":"sys/JustinNichol/TheKraken.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"TheWisp",
+    "battler":{
+      "name":"sys/JustinNichol/TheWisp.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Trex",
+    "battler":{
+      "name":"sys/Richtaur/Trex.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"reaper",
+    "battler":{
+      "name":"sys/P0ss/reaper.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"templar",
+    "battler":{
+      "name":"sys/Killoverdrive/templar.png",
+      "scale":0.15
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"firecreature",
+    "battler":{
+      "name":"sys/Benalene/firecreature.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"icecreature",
+    "battler":{
+      "name":"sys/Benalene/icecreature.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+ },
+  {
+    "name":"dogun",
+    "battler":{
+      "name":"sys/Killoverdrive/dogun.png",
+      "scale":0.25
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
   }
 ]
