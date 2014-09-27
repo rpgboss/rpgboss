@@ -8,7 +8,11 @@ object BattleEntityType extends Enumeration {
 }
 
 /**
- * @param id                    Used to keep track of which index in the list of
+ * This class is used within Battle to keep track of the state of entities
+ * within battle. It may be also used outside of battle when applying item
+ * effects from the menu.
+ *
+ * @param index                 Used to keep track of which index in the list of
  *                              BattleStatus's for a given Battle.
  * @param entityIndex           Is the character index or enemy index within
  *                              the project's list of characters/enemies.
@@ -18,10 +22,10 @@ object BattleEntityType extends Enumeration {
  *                              are undefined.
  */
 class BattleStatus(
-  val id: Int,
+  val index: Int,
   pData: ProjectData,
   val entityType: BattleEntityType.Value,
-  val entityIndex: Int,
+  val entityId: Int,
   var hp: Int,
   var mp: Int,
   val baseStats: BaseStats,
@@ -50,7 +54,13 @@ class BattleStatus(
 
   def stats = _stats
 
-  override def toString = "BattleStatus(%s, %d)".format(entityType, id)
+  override def toString = "BattleStatus(%s, %d)".format(entityType, index)
+}
+
+object BattleStatus {
+  def apply(pData: ProjectData, entityIndex: Int, id: Int) = {
+
+  }
 }
 
 trait BattleAI {
@@ -73,8 +83,8 @@ class RandomEnemyAI extends BattleAI {
 
       val useSkill = util.Random.nextDouble() < 0.5
       if (useSkill) {
-        assert(enemyStatus.entityIndex < battle.pData.enums.enemies.length)
-        val enemy = battle.pData.enums.enemies(enemyStatus.entityIndex)
+        assert(enemyStatus.entityId < battle.pData.enums.enemies.length)
+        val enemy = battle.pData.enums.enemies(enemyStatus.entityId)
 
         val skillIds = enemy.skillIds
         assert(enemy.skillIds.forall(i => i < battle.pData.enums.skills.length))
@@ -139,7 +149,7 @@ class Battle(
 
   def victoryExperience = {
     enemyStatus
-      .map(status => pData.enums.enemies.apply(status.entityIndex).expValue)
+      .map(status => pData.enums.enemies.apply(status.entityId).expValue)
       .sum
   }
 
