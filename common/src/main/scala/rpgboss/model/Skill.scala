@@ -105,7 +105,7 @@ case class Skill(
   var damages: Array[Damage] = Array(Damage()),
   var effects: Array[Effect] = Array(),
   var animationId: Int = 0) extends HasName {
-  def applySkill(actor: BattleStatus, target: BattleStatus) = {
+  def applySkill(actor: BattleStatus, target: BattleStatus): Seq[Hit] = {
     import EffectKey._
 
     val hits = new collection.mutable.ArrayBuffer[Hit]
