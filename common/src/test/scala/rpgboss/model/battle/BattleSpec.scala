@@ -26,12 +26,13 @@ object BattleTest {
     val battle = new Battle(
       pData = pData,
       partyIds = Array(0, 1),
-      characterLevels = Array(1, 1),
-      initialCharacterHps = initialCharacterHps,
-      initialCharacterMps = Array(1, 1),
-      characterEquip = Array(Array(), Array()),
-      initialCharacterTempStatusEffects = Array(Array(), Array()),
-      characterRows = Array(0, 0),
+      PartyParameters(
+        characterLevels = Array(1, 1),
+        initialCharacterHps = initialCharacterHps,
+        initialCharacterMps = Array(1, 1),
+        characterEquip = Array(Array(), Array()),
+        initialCharacterTempStatusEffects = Array(Array(), Array()),
+        characterRows = Array(0, 0)),
       encounter = encounter,
       aiOpt = aiOpt)
   }

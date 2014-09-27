@@ -19,6 +19,7 @@ import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import rpgboss.model.battle.Battle
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import rpgboss.model.battle.PartyParameters
 
 object EncounterFieldGdxPanel {
   val width = 640
@@ -41,12 +42,13 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
       val battle = new Battle(
         project.data,
         project.data.startup.startingParty,
-        project.data.enums.characters.map(v => 1),
-        project.data.enums.characters.map(v => 1),
-        project.data.enums.characters.map(v => 1),
-        project.data.enums.characters.map(v => Array[Int]()),
-        project.data.enums.characters.map(v => Array[Int]()),
-        project.data.enums.characters.map(v => 0),
+        PartyParameters(
+          project.data.enums.characters.map(v => 1),
+          project.data.enums.characters.map(v => 1),
+          project.data.enums.characters.map(v => 1),
+          project.data.enums.characters.map(v => Array[Int]()),
+          project.data.enums.characters.map(v => Array[Int]()),
+          project.data.enums.characters.map(v => 0)),
         encounter,
         aiOpt = None)
 

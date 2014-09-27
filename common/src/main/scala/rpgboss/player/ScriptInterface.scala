@@ -186,13 +186,14 @@ class ScriptInterface(
       val battle = new Battle(
         project.data,
         persistent.getIntArray(PARTY),
-        persistent.getIntArray(CHARACTER_LEVELS),
-        persistent.getIntArray(CHARACTER_HPS),
-        persistent.getIntArray(CHARACTER_MPS),
-        charactersIdxs.map(id => persistent.getIntArray(CHARACTER_EQUIP(id))),
-        charactersIdxs.map(
-          id => persistent.getIntArray(CHARACTER_STATUS_EFFECTS(id))),
-        persistent.getIntArray(CHARACTER_ROWS),
+        PartyParameters(
+          persistent.getIntArray(CHARACTER_LEVELS),
+          persistent.getIntArray(CHARACTER_HPS),
+          persistent.getIntArray(CHARACTER_MPS),
+          charactersIdxs.map(id => persistent.getIntArray(CHARACTER_EQUIP(id))),
+          charactersIdxs.map(
+            id => persistent.getIntArray(CHARACTER_STATUS_EFFECTS(id))),
+          persistent.getIntArray(CHARACTER_ROWS)),
         encounter,
         aiOpt = Some(new RandomEnemyAI))
 

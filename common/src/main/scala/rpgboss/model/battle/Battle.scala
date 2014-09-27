@@ -1,67 +1,7 @@
 package rpgboss.model.battle
 
-import rpgboss.model._
-
-object BattleEntityType extends Enumeration {
-  type BattleEntityType = Value
-  val Party, Enemy = Value
-}
-
-/**
- * This class is used within Battle to keep track of the state of entities
- * within battle. It may be also used outside of battle when applying item
- * effects from the menu.
- *
- * @param index                 Used to keep track of which index in the list of
- *                              BattleStatus's for a given Battle.
- * @param entityIndex           Is the character index or enemy index within
- *                              the project's list of characters/enemies.
- * @param onAttackSkillIds      Usually there will be only one. However, it is
- *                              an array to support dual-wielding.
- * @param row                   0 for front row. 1 for back row. Other values
- *                              are undefined.
- */
-class BattleStatus(
-  val index: Int,
-  pData: ProjectData,
-  val entityType: BattleEntityType.Value,
-  val entityId: Int,
-  var hp: Int,
-  var mp: Int,
-  val baseStats: BaseStats,
-  val equipment: Array[Int] = Array(),
-  val onAttackSkillIds: Array[Int],
-  val knownSkillIds: Array[Int],
-  private var tempStatusEffects: Array[Int],
-  val row: Int) {
-
-  def alive = hp > 0
-
-  def update(pendingAction: Boolean, deltaSeconds: Double,
-             baseTurnTime: Double) = {
-    if (!alive) {
-      readiness = 0
-    } else if (!pendingAction) {
-      val turnTime = baseTurnTime / (1.0 + stats.spd / 100.0)
-      readiness += deltaSeconds / turnTime
-    }
-  }
-
-  var readiness: Double = 0
-
-  private var _stats =
-    BattleStats(pData, baseStats, equipment, tempStatusEffects)
-
-  def stats = _stats
-
-  override def toString = "BattleStatus(%s, %d)".format(entityType, index)
-}
-
-object BattleStatus {
-  def apply(pData: ProjectData, entityIndex: Int, id: Int) = {
-
-  }
-}
+import rpgboss.model.Encounter
+import rpgboss.model.ProjectData
 
 trait BattleAI {
   def update(battle: Battle)
@@ -102,7 +42,6 @@ class RandomEnemyAI extends BattleAI {
             canAffordSkills.apply(util.Random.nextInt(canAffordSkills.length))
           val skill = battle.pData.enums.skills(skillId)
 
-
           battle.takeAction(SkillAction(enemyStatus, Array(target.get), skillId))
         }
       } else {
@@ -119,6 +58,14 @@ case class BattleActionNotification(
   }
 }
 
+case class PartyParameters(
+  characterLevels: Array[Int],
+  initialCharacterHps: Array[Int],
+  initialCharacterMps: Array[Int],
+  characterEquip: Array[Array[Int]],
+  initialCharacterTempStatusEffects: Array[Array[Int]],
+  characterRows: Array[Int])
+
 /**
  * @param   characterLevels         The levels of all the characters, not just
  *                                  the ones within partyIds.
@@ -127,12 +74,7 @@ case class BattleActionNotification(
 class Battle(
   val pData: ProjectData,
   val partyIds: Array[Int],
-  characterLevels: Array[Int],
-  initialCharacterHps: Array[Int],
-  initialCharacterMps: Array[Int],
-  characterEquip: Array[Array[Int]],
-  initialCharacterTempStatusEffects: Array[Array[Int]],
-  characterRows: Array[Int],
+  partyParams: PartyParameters,
   val encounter: Encounter,
   aiOpt: Option[BattleAI]) {
   require(partyIds.forall(i => i >= 0 && i < pData.enums.characters.length))
@@ -208,37 +150,8 @@ class Battle(
   }
 
   val partyStatus: Array[BattleStatus] = {
-    for ((characterId, i) <- partyIds.zipWithIndex) yield {
-      val character = pData.enums.characters(characterId)
-      val level = characterLevels(characterId)
-      val baseStats = character.baseStats(pData, level)
-
-      val allItems = pData.enums.items
-      val weaponSkills =
-        characterEquip(characterId)
-          .filter(_ < allItems.length)
-          .map(id => allItems(id).onUseSkillId)
-      val onAttackSkills =
-        if (weaponSkills.size == 0) {
-          assume(character.charClass < pData.enums.classes.size)
-          val charClass = pData.enums.classes(character.charClass)
-          Array(charClass.unarmedAttackSkillId)
-        } else {
-          weaponSkills
-        }
-
-      assert(character.charClass < pData.enums.classes.length)
-      val knownSkillIds =
-        pData.enums.classes(character.charClass).knownSkillIds(level)
-
-      new BattleStatus(i, pData, BattleEntityType.Party, characterId,
-                       initialCharacterHps(characterId),
-                       initialCharacterMps(characterId),
-                       baseStats, characterEquip(characterId),
-                       onAttackSkills,
-                       knownSkillIds,
-                       initialCharacterTempStatusEffects(characterId),
-                       characterRows(characterId))
+    for ((characterId, index) <- partyIds.zipWithIndex) yield {
+      BattleStatus.fromCharacter(pData, partyParams, characterId, index)
     }
   }
   val enemyStatus: Array[BattleStatus] = {
@@ -248,12 +161,12 @@ class Battle(
       val baseStats = enemy.baseStats
       val row = (i * 2) / encounter.units.length
       new BattleStatus(i, pData, BattleEntityType.Enemy, unit.enemyIdx,
-                       baseStats.mhp, baseStats.mmp, baseStats,
-                       equipment = Array(),
-                       onAttackSkillIds = Array(enemy.attackSkillId),
-                       knownSkillIds = enemy.skillIds,
-                       tempStatusEffects = Array(),
-                       row)
+        baseStats.mhp, baseStats.mmp, baseStats,
+        equipment = Array(),
+        onAttackSkillIds = Array(enemy.attackSkillId),
+        knownSkillIds = enemy.skillIds,
+        tempStatusEffects = Array(),
+        row)
     }
   }
   val allStatus = partyStatus ++ enemyStatus
