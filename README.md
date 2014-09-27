@@ -149,6 +149,34 @@ USE Internet Archieve for Dead website links!
 
 ### Battlers
 
+Justin Nichol http://opengameart.org/users/justin-nichol (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(JustinNichol)
+
+P0ss http://opengameart.org/content/reaper-of-the-post-urban-jungle-concept-art (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(P0ss)
+
+Killyoverdrive http://opengameart.org/users/killyoverdrive (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(Killyoverdrive)
+
+richtaur http://opengameart.org/content/t-rex-02 (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Richtaur)
+
+Benalene http://opengameart.org/content/fire-and-ice-elementals (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Benalene)
+
+godlesshenk http://godlesshenk.deviantart.com/gallery/ (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Godlesshenk)
+
+Buch http://opengameart.org/content/turtle-like-beast-concept (CC-BY 3.0) http://creativecommons.org/licenses/by/3.0/
+
+(Buch)
+
 ramtam http://opengameart.org/content/creature-sprites (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
 
 (Ramtam)
