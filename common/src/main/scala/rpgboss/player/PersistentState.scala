@@ -111,6 +111,20 @@ class PersistentState
     leveledBuffer.toArray
   }
 
+  def saveCharacterVitals(
+      characterId: Int, hp: Int, mp: Int, tempStatusEffects: Array[Int]) = {
+    val hps = getIntArray(CHARACTER_HPS)
+    val mps = getIntArray(CHARACTER_MPS)
+
+    assert(characterId < hps.length)
+    assert(characterId < mps.length)
+
+    setIntArray(CHARACTER_HPS, hps.updated(characterId, hp))
+    setIntArray(CHARACTER_MPS, mps.updated(characterId, mp))
+
+    setIntArray(CHARACTER_STATUS_EFFECTS(characterId), tempStatusEffects)
+  }
+
   /**
    * Adds or removes items. If we try to remove a greater quantity of an itemId
    * than exists in the inventory, nothing happens and we return false.

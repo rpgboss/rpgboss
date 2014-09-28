@@ -473,7 +473,7 @@ class BattleScreen(
     animationManager.update(delta)
 
     // All these actions should not take place if this is an in-editor session.
-    if (gameOpt.isDefined) {
+    gameOpt map { game =>
       _battle.map { battle =>
         // Handle defeat
         if (battle.defeat) {
@@ -483,16 +483,25 @@ class BattleScreen(
           _defeatedTimer += delta
           if (_defeatedTimer >= defeatedMessageTime) {
             endBattle()
-            gameOpt.get.gameOver()
+            game.gameOver()
           }
         } else if (battle.victory) {
           if (!_victorySequenceStarted) {
             _victorySequenceStarted = true
 
-            val exp = _battle.get.victoryExperience
-            val leveled = gameOpt.get.persistent.givePartyExperience(
-              _battle.get.pData.enums.characters,
-              _battle.get.partyIds,
+            // Save party vitals
+            battle.partyStatus.map { status =>
+              game.persistent.saveCharacterVitals(
+                  status.entityId,
+                  status.hp,
+                  status.mp,
+                  status.tempStatusEffects)
+            }
+
+            val exp = battle.victoryExperience
+            val leveled = game.persistent.givePartyExperience(
+              battle.pData.enums.characters,
+              battle.partyIds,
               exp)
             val names = leveled.map(getCharacterName)
 
@@ -530,7 +539,7 @@ class BattleScreen(
                 for (hit <- notification.hits;
                      damage <- hit.damages) yield {
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
-                  new DamageTextWindow(gameOpt.get.persistent, windowManager,
+                  new DamageTextWindow(game.persistent, windowManager,
                       damage.value, box.x, box.y)
                 }
 
@@ -554,7 +563,7 @@ class BattleScreen(
                   postTextNotice("%s attacks %s.".format(
                       getEntityName(source), getEntityName(target)))
                 case action: SkillAction =>
-                  val skill = _battle.get.pData.enums.skills(action.skillId)
+                  val skill = battle.pData.enums.skills(action.skillId)
                   postTextNotice("%s uses %s.".format(
                       getEntityName(source), skill.name))
                 case _ =>

@@ -165,7 +165,7 @@ class Battle(
         equipment = Array(),
         onAttackSkillIds = Array(enemy.attackSkillId),
         knownSkillIds = enemy.skillIds,
-        tempStatusEffects = Array(),
+        initialTempStatusEffects = Array(),
         row)
     }
   }

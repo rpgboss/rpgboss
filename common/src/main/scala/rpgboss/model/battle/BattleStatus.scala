@@ -34,10 +34,22 @@ class BattleStatus(
   val equipment: Array[Int] = Array(),
   val onAttackSkillIds: Array[Int],
   val knownSkillIds: Array[Int],
-  private var tempStatusEffects: Array[Int],
+  initialTempStatusEffects: Array[Int],
   val row: Int) {
 
   def alive = hp > 0
+
+  private var _tempStatusEffects = initialTempStatusEffects
+
+  def calculateStats() =
+    BattleStats(pData, baseStats, equipment, _tempStatusEffects)
+
+  private var _stats = calculateStats()
+
+  def updateTempStatusEffects(newTempStatusEffects: Array[Int]) = {
+    _tempStatusEffects = newTempStatusEffects;
+    _stats = calculateStats()
+  }
 
   def update(pendingAction: Boolean, deltaSeconds: Double,
              baseTurnTime: Double) = {
@@ -51,10 +63,8 @@ class BattleStatus(
 
   var readiness: Double = 0
 
-  private var _stats =
-    BattleStats(pData, baseStats, equipment, tempStatusEffects)
-
   def stats = _stats
+  def tempStatusEffects = _tempStatusEffects
 
   override def toString = "BattleStatus(%s, %d)".format(entityType, index)
 }
