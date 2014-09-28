@@ -426,6 +426,15 @@ class ScriptInterface(
           project.data, persistent.getPartyParameters(project), characterId,
           index = -1)
 
+      val damages = item.effects.flatMap(_.applyAsSkillOrItem(characterStatus))
+
+      for (damage <- damages) {
+        logger.debug("Character %d took %d damage from item.".format(
+            characterId, damage.value))
+      }
+
+      persistent.saveCharacterVitals(characterId, characterStatus.hp,
+          characterStatus.mp, characterStatus.tempStatusEffects)
     }
   }
 

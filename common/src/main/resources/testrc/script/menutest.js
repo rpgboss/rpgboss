@@ -6,7 +6,7 @@ function testStatusMenu() {
       assert(choiceIdx == 0);
       return true;
     } else {
-      assert(choiceIdx == 1);
+      assert(choiceIdx == 3);
       return false;
     }
   });

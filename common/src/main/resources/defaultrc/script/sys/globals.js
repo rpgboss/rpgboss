@@ -32,38 +32,48 @@ function getStatusLines() {
         + leftPad(characterMaxMps[i].toString(), 4));
   }
 
-  return lines;
+  return {
+    lines: lines,
+    party: party
+  }
 }
 
 function makeStatusWin() {
-  var lines = getStatusLines();
+  var status = getStatusLines();
 
-  var statusWin = game.newChoiceWindow(lines, layout.northwest(sizer.prop(0.8,
-      1.0)), {
-    allowCancel : true,
-    linesPerChoice : 4,
-    lineHeight: 27
-  });
+  var statusWin = game.newChoiceWindow(
+    status.lines, 
+    layout.northwest(sizer.prop(0.8,1.0)), 
+    {
+      allowCancel : true,
+      linesPerChoice : 4,
+      lineHeight: 27
+    });
 
-  return statusWin;
+  return {
+    window: statusWin,
+    party: status.party
+  }
 }
 
-// onChoice is a callback that takes parameter (choiceId) and should
+// onChoice is a callback that takes parameter (characterId) and should
 // return whether or not to select again.
-// choiceId denotes the index inside the PARTY array, not the character id.
+// choiceId denotes the character id, not the choice index.
 function loopPartyStatusChoice(onChoice) {
-  var window = makeStatusWin();
+  var partyMenu = makeStatusWin();
+  var window = partyMenu.window;
   while (true) {
     var choiceIdx = window.getChoice();
 
     if (choiceIdx == -1)
       break;
 
-    var shouldContinue = onChoice(choiceIdx);
+    var shouldContinue = onChoice(partyMenu.party[choiceIdx]);
     if (!shouldContinue)
       break;
 
-    window.updateLines(getStatusLines());
+    var newLines = getStatusLines();
+    window.updateLines(newLines.lines);
   }
   window.close();
 }
