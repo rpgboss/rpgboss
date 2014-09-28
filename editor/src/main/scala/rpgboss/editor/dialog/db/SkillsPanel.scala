@@ -53,7 +53,7 @@ class SkillsPanel(
                                           model.effects = _,
                                           EffectContext.Skill)
         val damagePanel =
-          new DamageArrayPanel(dbDiag, model.damages, model.damages = _)
+          new DamageFormulaArrayPanel(dbDiag, model.damages, model.damages = _)
 
         contents += effectPanel
         contents += damagePanel

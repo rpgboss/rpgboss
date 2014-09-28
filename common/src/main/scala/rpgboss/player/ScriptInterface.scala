@@ -426,7 +426,6 @@ class ScriptInterface(
           project.data, persistent.getPartyParameters(project), characterId,
           index = -1)
 
-
     }
   }
 

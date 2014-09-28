@@ -128,7 +128,7 @@ class BattleSpec extends UnitSpec {
     f.pData.enums.skills =
       Array(
         Skill(damages = Array(
-          Damage(typeId = DamageType.Magic.id, elementId = 0,
+          DamageFormula(typeId = DamageType.Magic.id, elementId = 0,
                  formula = "-a.mag*10")))
     )
 

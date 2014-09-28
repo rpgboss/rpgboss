@@ -31,7 +31,7 @@ class JSBattleEntity(status: BattleStatus) extends ScriptableObject {
 
 case class TakenDamage(damageType: DamageType.Value, elementId: Int, value: Int)
 
-case class Damage(
+case class DamageFormula(
   var typeId: Int = DamageType.Physical.id,
   var elementId: Int = 0,
   var formula: String = "") extends LazyLogging {
@@ -102,7 +102,7 @@ case class Skill(
   var name: String = "",
   var scopeId: Int = Scope.OneEnemy.id,
   var cost: Int = 0,
-  var damages: Array[Damage] = Array(Damage()),
+  var damages: Array[DamageFormula] = Array(DamageFormula()),
   var effects: Array[Effect] = Array(),
   var animationId: Int = 0) extends HasName {
   def applySkill(actor: BattleStatus, target: BattleStatus): Seq[Hit] = {

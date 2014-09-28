@@ -2,6 +2,7 @@ package rpgboss.model
 
 import rpgboss.lib._
 import rpgboss.model.battle.BattleStatus
+import rpgboss.model.battle.Hit
 
 /**
  * Because effects have different meanings in different contexts, we provide
