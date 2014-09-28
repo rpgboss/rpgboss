@@ -1,6 +1,7 @@
 function getItemChoices() {
   var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
   var itemQtys = game.getIntArray(game.INVENTORY_QTYS());
+  var itemUsabilities = [];
 
   var choiceLines = [];
   var items = project.data().enums().items();
@@ -12,6 +13,7 @@ function getItemChoices() {
     } else {
       var item = items[itemId];
       var usable = item.usableInMenu();
+      itemUsabilities.push(usable);
 
       var lineParts = [];
       if (!usable)
@@ -28,7 +30,8 @@ function getItemChoices() {
   return {
     lines : choiceLines,
     itemIds : itemIds,
-    itemQtys : itemQtys
+    itemQtys : itemQtys,
+    itemUsabilities : itemUsabilities
   }
 }
 
@@ -46,7 +49,8 @@ function newInventoryMenu() {
   return {
     window : window,
     itemIds : itemChoices.itemIds,
-    itemQtys : itemChoices.itemQtys
+    itemQtys : itemChoices.itemQtys,
+    itemUsabilities : itemChoices.itemUsabilities
   }
 }
 
@@ -60,7 +64,25 @@ function enterItemsWindow(itemsTopWin, itemsMenu) {
       break;
 
     var itemId = itemsMenu.itemIds[choiceIdx];
+    var usable = itemsMenu.itemUsabilities[choiceIdx];
+    var itemsLeft = itemsMenu.itemQtys[choiceIdx];
 
+    if (!usable && itemsLeft > 0)
+      continue;
+
+    loopPartyStatusChoice(function onSelect(characterId) {
+      --itemsLeft;
+      game.useItemInMenu(itemId, characterId);
+
+      return itemsLeft > 0;
+    });
+
+    var newItemChoices = getItemChoices();
+    itemsMenu.window.updateLines(newItemChoices.lines);
+    itemsMenu.itemIds = newItemChoices.itemIds;
+    itemsMenu.itemQtys = newItemChoices.itemQtys;
+    itemsMenu.itemUsabilities = newItemChoices.itemUsabilities;
+    b
   }
 
   itemsTopWin.takeFocus();

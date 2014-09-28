@@ -433,6 +433,8 @@ class ScriptInterface(
             characterId, damage.value))
       }
 
+      characterStatus.clampVitals()
+
       persistent.saveCharacterVitals(characterId, characterStatus.hp,
           characterStatus.mp, characterStatus.tempStatusEffects)
     }

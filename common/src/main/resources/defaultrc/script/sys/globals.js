@@ -33,26 +33,24 @@ function getStatusLines() {
   }
 
   return {
-    lines: lines,
-    party: party
+    lines : lines,
+    party : party
   }
 }
 
 function makeStatusWin() {
   var status = getStatusLines();
 
-  var statusWin = game.newChoiceWindow(
-    status.lines, 
-    layout.northwest(sizer.prop(0.8,1.0)), 
-    {
-      allowCancel : true,
-      linesPerChoice : 4,
-      lineHeight: 27
-    });
+  var statusWin = game.newChoiceWindow(status.lines, layout.northwest(sizer
+      .prop(0.8, 1.0)), {
+    allowCancel : true,
+    linesPerChoice : 4,
+    lineHeight : 27
+  });
 
   return {
-    window: statusWin,
-    party: status.party
+    window : statusWin,
+    party : status.party
   }
 }
 
