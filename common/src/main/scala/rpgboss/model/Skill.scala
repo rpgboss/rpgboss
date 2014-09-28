@@ -106,8 +106,6 @@ case class Skill(
   var effects: Array[Effect] = Array(),
   var animationId: Int = 0) extends HasName {
   def applySkill(actor: BattleStatus, target: BattleStatus): Seq[Hit] = {
-    import EffectKey._
-
     val hits = new collection.mutable.ArrayBuffer[Hit]
 
     // Apply damages
@@ -118,36 +116,29 @@ case class Skill(
       target.hp -= damages.map(_.value).sum
     }
 
-    // Apply other effects
-    for (effect <- effects) {
-      def recoverHp(amount: Int) = {
-        target.hp += amount
-        hits.append(
-          Hit(target, Array(TakenDamage(DamageType.Magic, 0, -amount)),
-              animationId))
-      }
-
-      def recoverMp(amount: Int) = {
-        target.mp += amount
-        hits.append(
-          Hit(target, Array(TakenDamage(DamageType.MPDamage, 0, -amount)),
-              animationId))
-      }
-
-      if (target.hp > 0) {
-        if (effect.keyId == RecoverHpAdd.id) {
-          recoverHp(effect.v1)
-        } else if (effect.keyId == RecoverHpMul.id) {
-          recoverHp((effect.v1 * 0.01 * target.stats.mhp).round.toInt)
-        }
-      }
-
-      if (effect.keyId == RecoverMpAdd.id) {
-        recoverMp(effect.v1)
-      } else if (effect.keyId == RecoverMpMul.id) {
-        recoverMp((effect.v1 * 0.01 * target.stats.mmp).round.toInt)
-      }
+    def recoverHp(amount: Int) = {
+      target.hp += amount
+      Hit(target, Array(TakenDamage(DamageType.Magic, 0, -amount)),
+          animationId)
     }
+
+    def recoverMp(amount: Int) = {
+      target.mp += amount
+      Hit(target, Array(TakenDamage(DamageType.MPDamage, 0, -amount)),
+          animationId)
+    }
+
+    // Apply other effects
+    hits.appendAll(effects collect {
+      case e if e.meta == RecoverHpAdd && target.hp > 0 =>
+        recoverHp(e.v1)
+      case e if e.meta == RecoverHpMul && target.hp > 0 =>
+        recoverHp((e.v1 * 0.01 * target.stats.mhp).round.toInt)
+      case e if e.meta == RecoverMpAdd =>
+        recoverMp(e.v1)
+      case e if e.meta == RecoverMpMul =>
+        recoverMp((e.v1 * 0.01 * target.stats.mmp).round.toInt)
+    })
 
     target.hp = Utils.clamped(target.hp, 0, target.stats.mhp)
     target.mp = Utils.clamped(target.mp, 0, target.stats.mmp)

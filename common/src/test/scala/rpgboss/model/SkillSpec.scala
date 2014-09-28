@@ -4,8 +4,6 @@ import rpgboss._
 import rpgboss.model.battle._
 
 class SkillSpec extends UnitSpec {
-  import EffectKey._
-
   def fixture = new {
     val pData = ProjectData()
 

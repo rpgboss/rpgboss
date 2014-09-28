@@ -65,12 +65,10 @@ object BattleStats {
       val statusEffectStackMap = collection.mutable.Map[Int, Int]()
       val statusEffectBuffer = collection.mutable.ArrayBuffer[StatusEffect]()
 
+      def isValidStatusId(id: Int) =
+        id >= 0 && id < pData.enums.statusEffects.length
       val equipmentStatusEffectIds =
-        equipmentEffects
-          .filter(_.keyId == EffectKey.AddStatusEffect.id)
-          .map(_.v1)
-          .filter(_ >= 0)
-          .filter(_ < pData.enums.statusEffects.length)
+        equipmentEffects.filter(AddStatusEffect.matches).map(_.v1)
 
       for (statusEffectId <- equipmentStatusEffectIds ++ tempStatusEffectIds) {
         val statusEffect = pData.enums.statusEffects(statusEffectId)
@@ -89,28 +87,21 @@ object BattleStats {
     val allEffects = baseStats.effects ++ equipmentEffects ++
                      stackedStatusEffects.flatMap(_.effects)
 
-    def addEffects(key: EffectKey.Value): Int =
-      allEffects.filter(_.keyId == key.id).map(_.v1).sum
-
-    val elementResists = Array.fill(pData.enums.elements.size)(0)
-    for (effect <- allEffects) {
-      if (effect.keyId == EffectKey.ElementResist.id &&
-          effect.v1 < elementResists.length) {
-        elementResists(effect.v1) += effect.v2
-      }
-    }
-
-    apply(
-      mhp = baseStats.mhp + addEffects(EffectKey.MhpAdd),
-      mmp = baseStats.mmp + addEffects(EffectKey.MmpAdd),
-      atk = baseStats.atk + addEffects(EffectKey.AtkAdd),
-      spd = baseStats.spd + addEffects(EffectKey.SpdAdd),
-      mag = baseStats.mag + addEffects(EffectKey.MagAdd),
-      arm = baseStats.arm + addEffects(EffectKey.ArmAdd),
-      mre = baseStats.mre + addEffects(EffectKey.MreAdd),
-      elementResists = elementResists,
+    val statsWithoutEffects = apply(
+      mhp = baseStats.mhp,
+      mmp = baseStats.mmp,
+      atk = baseStats.atk,
+      spd = baseStats.spd,
+      mag = baseStats.mag,
+      arm = baseStats.arm,
+      mre = baseStats.mre,
+      elementResists = Array.fill(pData.enums.elements.size)(0),
       statusEffects = stackedStatusEffects
     )
+
+    // Apply list of effects to stats repeatedly without notion of order.
+    allEffects.foldLeft(statsWithoutEffects)(
+      (stats, effect) => effect.applyToStats(stats))
   }
 }
 

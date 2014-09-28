@@ -51,8 +51,6 @@ case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
                        skillId: Int)
   extends BattleAction {
   def process(battle: Battle) = {
-    import EffectKey._
-
     assume(skillId < battle.pData.enums.skills.length)
     val skill = battle.pData.enums.skills(skillId)
     if (actor.mp < skill.cost)
