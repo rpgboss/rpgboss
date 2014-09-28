@@ -536,11 +536,10 @@ class BattleScreen(
               val source = notification.action.actor
 
               val windows =
-                for (hit <- notification.hits;
-                     damage <- hit.damages) yield {
+                for (hit <- notification.hits) yield {
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
                   new DamageTextWindow(game.persistent, windowManager,
-                      damage.value, box.x, box.y)
+                      hit.damage.value, box.x, box.y)
                 }
 
               val animations =

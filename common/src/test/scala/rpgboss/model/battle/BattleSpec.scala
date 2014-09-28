@@ -139,10 +139,9 @@ class BattleSpec extends UnitSpec {
 
     hits.length should equal (1)
     hits.head.hitActor should equal (partyHead)
-    hits.head.damages.length should equal (1)
 
     // The reported healing value should exceed the HP
-    hits.head.damages.head should equal (TakenDamage(DamageType.Magic, 0, -91))
+    hits.head.damage should equal (Damage(DamageType.Magic, 0, -91))
 
     // But the final HP should equal the max HP
     partyHead.hp should equal(partyHead.stats.mhp)

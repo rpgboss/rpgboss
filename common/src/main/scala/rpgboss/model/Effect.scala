@@ -17,8 +17,8 @@ case class EffectUsability(valid: Boolean, helpMessage: String)
 case class Effect(var keyId: Int, v1: Int = 0, v2: Int = 0) {
   def meta = Effect.getMeta(keyId)
   def applyToStats(stats: BattleStats) = meta.applyToStats(this, stats)
-  def applyAsSkillOrItem(status: BattleStatus) =
-    meta.applyAsSkillOrItem(this, status)
+  def applyAsSkillOrItem(target: BattleStatus) =
+    meta.applyAsSkillOrItem(this, target)
 
   // TODO: Remove this statement and remove var. This is to support legacy
   // mappings.
@@ -39,7 +39,14 @@ trait MetaEffect {
   def renderer = (pData: ProjectData, effect: Effect) => "TODO: No renderer"
 
   def applyToStats(effect: Effect, stats: BattleStats) = stats
-  def applyAsSkillOrItem(effect: Effect, status: BattleStatus) = status
+
+  /**
+   * Although this method looks similar to applyToStats, it's very different.
+   * The method operates by mutating |target| directly without making a copy.
+   * @return  The damage (or healing) performed. Used for display purposes.
+   */
+  def applyAsSkillOrItem(
+      effect: Effect, target: BattleStatus): Option[Damage] = None
 
   Effect.registerMetaEffect(id, this)
 }
@@ -153,6 +160,24 @@ object Effect {
     case Equipment => EffectUsability(true, "Occurs once per hit.")
     case _ => EffectUsability(false, "Doesn't do anything.")
   }
+
+  /**
+   * Recovery Utility functions
+   */
+  def recoverHp(target: BattleStatus, amount: Double): Option[Damage] = {
+    if (!target.alive)
+      return None
+
+    val amountInt = amount.round.toInt
+    target.hp += amountInt
+    Some(Damage(DamageType.Magic, 0, -amountInt))
+  }
+
+  def recoverMp(target: BattleStatus, amount: Double) = {
+    val amountInt = amount.round.toInt
+    target.mp += amountInt
+    Some(Damage(DamageType.MPDamage, 0, -amountInt))
+  }
 }
 
 object InvalidEffect extends MetaEffect {
@@ -165,6 +190,8 @@ object RecoverHpAdd extends MetaEffect {
   def name = "Recover HP"
   override def usability = Effect.recoveryHelp _
   override def renderer = Effect.pointRenderer _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverHp(target, effect.v1)
 }
 
 object RecoverHpMul extends MetaEffect {
@@ -172,6 +199,8 @@ object RecoverHpMul extends MetaEffect {
   def name = "Recover percentage of HP"
   override def renderer = Effect.percentRenderer _
   override def usability = Effect.recoveryHelp _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverHp(target, effect.v1 * 0.01 * target.stats.mhp)
 }
 
 object RecoverMpAdd extends MetaEffect {
@@ -179,6 +208,8 @@ object RecoverMpAdd extends MetaEffect {
   def name = "Recover MP"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.recoveryHelp _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverMp(target, effect.v1)
 }
 
 object RecoverMpMul extends MetaEffect {
@@ -186,6 +217,8 @@ object RecoverMpMul extends MetaEffect {
   def name = "Recover percentage of MP"
   override def renderer = Effect.percentRenderer _
   override def usability = Effect.recoveryHelp _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverMp(target, effect.v1 * 0.01 * target.stats.mmp)
 }
 
 object AddStatusEffect extends MetaEffect {

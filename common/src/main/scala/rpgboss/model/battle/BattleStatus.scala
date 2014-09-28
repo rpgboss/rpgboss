@@ -3,6 +3,7 @@ package rpgboss.model.battle
 import rpgboss.model.BattleStats
 import rpgboss.model.BaseStats
 import rpgboss.model.ProjectData
+import rpgboss.lib.Utils
 
 object BattleEntityType extends Enumeration {
   type BattleEntityType = Value
@@ -49,6 +50,11 @@ class BattleStatus(
   def updateTempStatusEffects(newTempStatusEffects: Array[Int]) = {
     _tempStatusEffects = newTempStatusEffects;
     _stats = calculateStats()
+  }
+
+  def clampVitals() = {
+    hp = Utils.clamped(hp, 0, stats.mhp)
+    mp = Utils.clamped(mp, 0, stats.mmp)
   }
 
   def update(pendingAction: Boolean, deltaSeconds: Double,

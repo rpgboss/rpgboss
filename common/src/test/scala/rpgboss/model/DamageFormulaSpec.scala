@@ -71,7 +71,7 @@ class DamageFormulaSpec extends UnitSpec {
       Damage.getDamages(f.status, f.status, skill)
 
     takenDamages.length should equal(2)
-    takenDamages(0) should equal(TakenDamage(DamageType.Physical, 0, 5))
-    takenDamages(1) should equal(TakenDamage(DamageType.Magic, 1, 3))
+    takenDamages(0) should equal(Damage(DamageType.Physical, 0, 5))
+    takenDamages(1) should equal(Damage(DamageType.Magic, 1, 3))
   }
 }

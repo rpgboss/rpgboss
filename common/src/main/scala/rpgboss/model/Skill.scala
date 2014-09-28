@@ -29,7 +29,7 @@ class JSBattleEntity(status: BattleStatus) extends ScriptableObject {
   }
 }
 
-case class TakenDamage(damageType: DamageType.Value, elementId: Int, value: Int)
+case class Damage(damageType: DamageType.Value, elementId: Int, value: Int)
 
 case class DamageFormula(
   var typeId: Int = DamageType.Physical.id,
@@ -71,7 +71,7 @@ case class DamageFormula(
 
 object Damage {
   def getDamages(source: BattleStatus, target: BattleStatus,
-                 skill: Skill): Array[TakenDamage] = {
+                 skill: Skill): Array[Damage] = {
     import DamageType._
 
     for (damage <- skill.damages) yield {
@@ -92,7 +92,7 @@ object Damage {
 
       val damageValue = (baseDamage * resistMultiplier).round.toInt
 
-      TakenDamage(
+      Damage(
         DamageType.apply(damage.typeId), damage.elementId, damageValue)
     }
   }
@@ -106,43 +106,18 @@ case class Skill(
   var effects: Array[Effect] = Array(),
   var animationId: Int = 0) extends HasName {
   def applySkill(actor: BattleStatus, target: BattleStatus): Seq[Hit] = {
-    val hits = new collection.mutable.ArrayBuffer[Hit]
+    val allDamages = collection.mutable.ArrayBuffer[Damage]()
 
-    // Apply damages
-    val damages = Damage.getDamages(actor, target, this)
-    if (!damages.isEmpty) {
-      hits.append(Hit(target, damages, animationId))
+    // Apply direct damages
+    val directDamages = Damage.getDamages(actor, target, this)
+    target.hp -= directDamages.map(_.value).sum
+    allDamages ++= directDamages
 
-      target.hp -= damages.map(_.value).sum
-    }
+    // Apply effects and effect damages
+    allDamages ++= effects.flatMap(_.applyAsSkillOrItem(target))
 
-    def recoverHp(amount: Int) = {
-      target.hp += amount
-      Hit(target, Array(TakenDamage(DamageType.Magic, 0, -amount)),
-          animationId)
-    }
+    target.clampVitals()
 
-    def recoverMp(amount: Int) = {
-      target.mp += amount
-      Hit(target, Array(TakenDamage(DamageType.MPDamage, 0, -amount)),
-          animationId)
-    }
-
-    // Apply other effects
-    hits.appendAll(effects collect {
-      case e if e.meta == RecoverHpAdd && target.hp > 0 =>
-        recoverHp(e.v1)
-      case e if e.meta == RecoverHpMul && target.hp > 0 =>
-        recoverHp((e.v1 * 0.01 * target.stats.mhp).round.toInt)
-      case e if e.meta == RecoverMpAdd =>
-        recoverMp(e.v1)
-      case e if e.meta == RecoverMpMul =>
-        recoverMp((e.v1 * 0.01 * target.stats.mmp).round.toInt)
-    })
-
-    target.hp = Utils.clamped(target.hp, 0, target.stats.mhp)
-    target.mp = Utils.clamped(target.mp, 0, target.stats.mmp)
-
-    hits
+    allDamages.map(Hit(target, _, animationId))
   }
 }

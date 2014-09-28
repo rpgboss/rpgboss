@@ -2,8 +2,7 @@ package rpgboss.model.battle
 
 import rpgboss.model._
 
-case class Hit(hitActor: BattleStatus, damages: Array[TakenDamage],
-               animationId: Int)
+case class Hit(hitActor: BattleStatus, damage: Damage, animationId: Int)
 
 /**
  * A BattleAction is an action taken by an entity in the battle. It consumes
