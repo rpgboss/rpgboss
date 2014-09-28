@@ -82,7 +82,6 @@ function enterItemsWindow(itemsTopWin, itemsMenu) {
     itemsMenu.itemIds = newItemChoices.itemIds;
     itemsMenu.itemQtys = newItemChoices.itemQtys;
     itemsMenu.itemUsabilities = newItemChoices.itemUsabilities;
-    b
   }
 
   itemsTopWin.takeFocus();
