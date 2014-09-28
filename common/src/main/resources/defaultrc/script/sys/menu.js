@@ -1,6 +1,4 @@
-function newInventoryMenu() {
-  var kItemsDisplayedItems = 10;
-
+function getItemChoiceLines() {
   var inventoryItemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
   var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
 
@@ -27,11 +25,19 @@ function newInventoryMenu() {
     }
   }
 
-  return game.newChoiceWindow(choiceLines, layout.southwest(sizer
-      .prop(1.0, 0.9)), {
-    displayedItems : kItemsDisplayedItems,
-    allowCancel : true
-  });
+  return choiceLines;
+}
+
+function newInventoryMenu() {
+  var kItemsDisplayedItems = 10;
+
+  return game.newChoiceWindow(
+      getItemChoiceLines(),
+      layout.southwest(sizer.prop(1.0, 0.87)),
+      {
+        displayedItems : kItemsDisplayedItems,
+        allowCancel : true
+      });
 }
 
 function enterItemsWindow(itemsTopWin, itemsMainWin) {
@@ -54,7 +60,7 @@ function itemsMenu() {
 
   var itemsMainWin = newInventoryMenu();
   var itemsTopWin = game.newChoiceWindow([ "Use", "Organize" ], layout
-      .northwest(sizer.prop(1.0, 0.1)), {
+      .northwest(sizer.prop(1.0, 0.13)), {
     justification : game.CENTER(),
     columns : 2,
     allowCancel : true

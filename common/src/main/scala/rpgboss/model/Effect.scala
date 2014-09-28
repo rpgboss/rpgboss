@@ -1,6 +1,7 @@
 package rpgboss.model
 
 import rpgboss.lib._
+import rpgboss.model.battle.BattleStatus
 
 /**
  * Because effects have different meanings in different contexts, we provide
@@ -14,7 +15,9 @@ case class EffectUsability(valid: Boolean, helpMessage: String)
 
 case class Effect(var keyId: Int, v1: Int = 0, v2: Int = 0) {
   def meta = Effect.getMeta(keyId)
-  def applyToStats(stats: BattleStats) = meta.apply(stats, this)
+  def applyToStats(stats: BattleStats) = meta.applyToStats(this, stats)
+  def applyAsSkillOrItem(status: BattleStatus) =
+    meta.applyAsSkillOrItem(this, status)
 
   // TODO: Remove this statement and remove var. This is to support legacy
   // mappings.
@@ -34,7 +37,8 @@ trait MetaEffect {
     EffectUsability(false, "TODO: Implement a help message here.")
   def renderer = (pData: ProjectData, effect: Effect) => "TODO: No renderer"
 
-  def apply(stats: BattleStats, effect: Effect) = stats
+  def applyToStats(effect: Effect, stats: BattleStats) = stats
+  def applyAsSkillOrItem(effect: Effect, status: BattleStatus) = status
 
   Effect.registerMetaEffect(id, this)
 }
@@ -202,7 +206,7 @@ object MhpAdd extends MetaEffect {
   def name = "Increase Max HP"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) =
+  override def applyToStats(effect: Effect, stats: BattleStats) =
     stats.copy(mhp = stats.mhp + effect.v1)
 }
 
@@ -211,7 +215,7 @@ object MmpAdd extends MetaEffect {
   def name = "Increase Max MP"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) =
+  override def applyToStats(effect: Effect, stats: BattleStats) =
     stats.copy(mmp = stats.mmp + effect.v1)
 }
 
@@ -220,7 +224,7 @@ object AtkAdd extends MetaEffect {
   def name = "Increase ATK"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) =
+  override def applyToStats(effect: Effect, stats: BattleStats) =
     stats.copy(atk = stats.atk + effect.v1)
 }
 
@@ -229,7 +233,7 @@ object SpdAdd extends MetaEffect {
   def name = "Increase SPD"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) =
+  override def applyToStats(effect: Effect, stats: BattleStats) =
     stats.copy(spd = stats.spd + effect.v1)
 }
 
@@ -238,7 +242,7 @@ object MagAdd extends MetaEffect {
   def name = "Increase MAG"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) =
+  override def applyToStats(effect: Effect, stats: BattleStats) =
     stats.copy(mag = stats.mag + effect.v1)
 }
 
@@ -247,7 +251,7 @@ object ArmAdd extends MetaEffect {
   def name = "Increase ARM"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) =
+  override def applyToStats(effect: Effect, stats: BattleStats) =
     stats.copy(arm = stats.arm + effect.v1)
 }
 
@@ -256,7 +260,7 @@ object MreAdd extends MetaEffect {
   def name = "Increase MRE"
   override def renderer = Effect.pointRenderer _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) =
+  override def applyToStats(effect: Effect, stats: BattleStats) =
     stats.copy(mre = stats.mre + effect.v1)
 }
 
@@ -265,7 +269,7 @@ object ResistElement extends MetaEffect {
   def name = "Resist Element"
   override def renderer = Effect.getEnumOfValue2(_.enums.statusEffects) _
   override def usability = Effect.classEquipOrStatus _
-  override def apply(stats: BattleStats, effect: Effect) = {
+  override def applyToStats(effect: Effect, stats: BattleStats) = {
     val newResists = stats.elementResists.updated(
       effect.v1, stats.elementResists(effect.v1) + effect.v2)
     stats.copy(elementResists = newResists)

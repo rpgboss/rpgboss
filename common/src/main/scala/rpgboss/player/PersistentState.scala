@@ -1,7 +1,11 @@
 package rpgboss.player
-import collection.mutable._
-import collection.mutable.{ HashMap => MutableHashMap }
+
+import scala.collection.mutable.{HashMap => MutableHashMap}
+import scala.collection.mutable.Publisher
+
 import rpgboss.lib.ThreadChecked
+import rpgboss.model.Project
+import rpgboss.model.battle.PartyParameters
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -71,6 +75,18 @@ class PersistentState
     assertOnBoundThread()
     eventStates.update((mapName, eventId), newState)
     publish(EventStateChange((mapName, eventId), newState))
+  }
+
+  def getPartyParameters(project: Project) = {
+    val charactersIdxs =
+      (0 until project.data.enums.characters.length).toArray
+    PartyParameters(
+        getIntArray(CHARACTER_LEVELS),
+        getIntArray(CHARACTER_HPS),
+        getIntArray(CHARACTER_MPS),
+        charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
+        charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
+        getIntArray(CHARACTER_ROWS))
   }
 
   /**
