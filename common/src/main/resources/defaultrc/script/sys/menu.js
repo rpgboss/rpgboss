@@ -65,16 +65,22 @@ function enterItemsWindow(itemsTopWin, itemsMenu) {
 
     var itemId = itemsMenu.itemIds[choiceIdx];
     var usable = itemsMenu.itemUsabilities[choiceIdx];
+
     var itemsLeft = itemsMenu.itemQtys[choiceIdx];
 
-    if (!usable && itemsLeft > 0)
+    if (!usable || itemsLeft == 0)
       continue;
 
     loopPartyStatusChoice(function onSelect(characterId) {
-      --itemsLeft;
-      game.useItemInMenu(itemId, characterId);
+      if (itemsLeft > 0) {
+        game.useItemInMenu(itemId, characterId);
+      }
 
-      return itemsLeft > 0;
+      --itemsLeft;
+
+      // Don't return until after the user has had a chance to see the effect
+      // of using the last item.
+      return itemsLeft >= -1;
     });
 
     var newItemChoices = getItemChoices();
