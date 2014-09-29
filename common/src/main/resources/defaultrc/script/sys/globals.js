@@ -50,7 +50,12 @@ function makeStatusWin() {
 
   return {
     window : statusWin,
-    party : status.party
+    party : status.party,
+    update : function() {
+      var status = getStatusLines();
+      this.party = status.party;
+      this.window.updateLines(status.lines);
+    }
   }
 }
 

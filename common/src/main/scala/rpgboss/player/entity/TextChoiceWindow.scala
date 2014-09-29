@@ -75,7 +75,7 @@ class TextChoiceWindow(
   def updateLines(newLines: Array[String]) = {
     lines = newLines
     updateTextImages()
-    curChoice = math.min(curChoice, lines.length / linesPerChoice)
+    curChoice = math.min(curChoice, lines.length / linesPerChoice - 1)
     updateScrollPosition()
   }
 
