@@ -1,19 +1,19 @@
-function newInventoryMenu() {
-  var kItemsDisplayedItems = 10;
-
-  var inventoryItemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
-  var inventoryQtys = game.getIntArray(game.INVENTORY_QTYS());
+function getItemChoices() {
+  var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
+  var itemQtys = game.getIntArray(game.INVENTORY_QTYS());
+  var itemUsabilities = [];
 
   var choiceLines = [];
   var items = project.data().enums().items();
-  for (var i = 0; i < inventoryItemIds.length && i < inventoryQtys.length; ++i) {
-    var itemId = inventoryItemIds[i];
-    var itemQty = inventoryQtys[i];
+  for (var i = 0; i < itemIds.length && i < itemQtys.length; ++i) {
+    var itemId = itemIds[i];
+    var itemQty = itemQtys[i];
     if (itemId < 0 || itemQty <= 0) {
       choiceLines.push("");
     } else {
       var item = items[itemId];
       var usable = item.usableInMenu();
+      itemUsabilities.push(usable);
 
       var lineParts = [];
       if (!usable)
@@ -27,34 +27,70 @@ function newInventoryMenu() {
     }
   }
 
-  return game.newChoiceWindow(choiceLines, layout.southwest(sizer
-      .prop(1.0, 0.9)), {
+  return {
+    lines : choiceLines,
+    itemIds : itemIds,
+    itemQtys : itemQtys,
+    itemUsabilities : itemUsabilities
+  }
+}
+
+function newInventoryMenu() {
+  var kItemsDisplayedItems = 10;
+
+  var itemChoices = getItemChoices();
+
+  var window = game.newChoiceWindow(itemChoices.lines, layout.southwest(sizer
+      .prop(1.0, 0.87)), {
     displayedItems : kItemsDisplayedItems,
     allowCancel : true
   });
+
+  return {
+    window : window,
+    itemIds : itemChoices.itemIds,
+    itemQtys : itemChoices.itemQtys,
+    itemUsabilities : itemChoices.itemUsabilities
+  }
 }
 
-function enterItemsWindow(itemsTopWin, itemsMainWin) {
-  itemsMainWin.takeFocus();
+function enterItemsWindow(itemsTopWin, itemsMenu) {
+  itemsMenu.window.takeFocus();
 
-  var choiceIdx;
   while (true) {
-    choiceIdx = itemsMainWin.getChoice();
+    var choiceIdx = itemsMenu.window.getChoice();
 
     if (choiceIdx == -1)
       break;
+
+    var itemId = itemsMenu.itemIds[choiceIdx];
+    var usable = itemsMenu.itemUsabilities[choiceIdx];
+    var itemsLeft = itemsMenu.itemQtys[choiceIdx];
+
+    if (!usable && itemsLeft > 0)
+      continue;
+
+    loopPartyStatusChoice(function onSelect(characterId) {
+      --itemsLeft;
+      game.useItemInMenu(itemId, characterId);
+
+      return itemsLeft > 0;
+    });
+
+    var newItemChoices = getItemChoices();
+    itemsMenu.window.updateLines(newItemChoices.lines);
+    itemsMenu.itemIds = newItemChoices.itemIds;
+    itemsMenu.itemQtys = newItemChoices.itemQtys;
+    itemsMenu.itemUsabilities = newItemChoices.itemUsabilities;
   }
 
   itemsTopWin.takeFocus();
 }
 
 function itemsMenu() {
-  function organizeItems(itemsMainWin) {
-  }
-
-  var itemsMainWin = newInventoryMenu();
+  var itemsMenu = newInventoryMenu();
   var itemsTopWin = game.newChoiceWindow([ "Use", "Organize" ], layout
-      .northwest(sizer.prop(1.0, 0.1)), {
+      .northwest(sizer.prop(1.0, 0.13)), {
     justification : game.CENTER(),
     columns : 2,
     allowCancel : true
@@ -65,10 +101,9 @@ function itemsMenu() {
   while (true) {
     switch (choiceIdx) {
     case 0:
-      enterItemsWindow(itemsTopWin, itemsMainWin);
+      enterItemsWindow(itemsTopWin, itemsMenu);
       break;
     case 1:
-      organizeItems(itemsMainWin);
       break;
     }
 
@@ -78,12 +113,12 @@ function itemsMenu() {
       break;
   }
 
-  itemsMainWin.close();
+  itemsMenu.window.close();
   itemsTopWin.close();
 }
 
 function menu() {
-  var statusWin = makeStatusWin();
+  var statusMenu = makeStatusWin();
   var rootMenuWin = game.newChoiceWindow([ "Item", "Skills", "Equip", "Status",
       "Save" ], layout.northeast(sizer.prop(0.2, 0.8)), {
     justification : game.CENTER(),
@@ -104,5 +139,5 @@ function menu() {
   }
 
   rootMenuWin.close();
-  statusWin.close();
+  statusMenu.window.close();
 }

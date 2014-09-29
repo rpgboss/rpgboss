@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export VERSION="0.2.9"
+export VERSION="0.3.0"
 export SRC_DIR=$(cd "$(dirname "$0")"; pwd)
 
 cd $SRC_DIR

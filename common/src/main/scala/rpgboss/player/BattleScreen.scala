@@ -197,8 +197,8 @@ class BattleScreen(
         }
 
         def toBattler(status: BattleStatus) = status.entityType match {
-          case BattleEntityType.Enemy => _enemyBattlers(status.id)
-          case BattleEntityType.Party => _partyBattlers(status.id)
+          case BattleEntityType.Enemy => _enemyBattlers(status.index)
+          case BattleEntityType.Party => _partyBattlers(status.index)
         }
 
         // Convert each choice to a Set[Rect]
@@ -302,9 +302,9 @@ class BattleScreen(
   def getEntityName(status: BattleStatus) = {
     assume(battleActive)
     if (status.entityType == BattleEntityType.Party) {
-      getCharacterName(status.entityIndex)
+      getCharacterName(status.entityId)
     } else {
-      _battle.get.pData.enums.enemies(status.entityIndex).name
+      _battle.get.pData.enums.enemies(status.entityId).name
     }
   }
 
@@ -322,7 +322,7 @@ class BattleScreen(
     // TODO: Handle enemy revive
     for (enemyStatus <- _battle.get.enemyStatus; if !enemyStatus.alive) {
       windowManager.hidePicture(
-        PictureSlots.BATTLE_SPRITES_ENEMIES + enemyStatus.id)
+        PictureSlots.BATTLE_SPRITES_ENEMIES + enemyStatus.index)
     }
   }
 
@@ -331,8 +331,8 @@ class BattleScreen(
     assert(partyListWindow != null)
 
     val partyLines = for (status <- _battle.get.partyStatus) yield {
-      assert(status.entityIndex < _battle.get.pData.enums.characters.length)
-      val name = getCharacterName(status.entityIndex)
+      assert(status.entityId < _battle.get.pData.enums.characters.length)
+      val name = getCharacterName(status.entityId)
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
       "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
     }
@@ -341,7 +341,7 @@ class BattleScreen(
     // TODO: Handle party revive
     for (status <- _battle.get.partyStatus; if !status.alive) {
       windowManager.hidePicture(
-        PictureSlots.BATTLE_SPRITES_PARTY + status.id)
+        PictureSlots.BATTLE_SPRITES_PARTY + status.index)
     }
   }
 
@@ -473,7 +473,7 @@ class BattleScreen(
     animationManager.update(delta)
 
     // All these actions should not take place if this is an in-editor session.
-    if (gameOpt.isDefined) {
+    gameOpt map { game =>
       _battle.map { battle =>
         // Handle defeat
         if (battle.defeat) {
@@ -483,16 +483,25 @@ class BattleScreen(
           _defeatedTimer += delta
           if (_defeatedTimer >= defeatedMessageTime) {
             endBattle()
-            gameOpt.get.gameOver()
+            game.gameOver()
           }
         } else if (battle.victory) {
           if (!_victorySequenceStarted) {
             _victorySequenceStarted = true
 
-            val exp = _battle.get.victoryExperience
-            val leveled = gameOpt.get.persistent.givePartyExperience(
-              _battle.get.pData.enums.characters,
-              _battle.get.partyIds,
+            // Save party vitals
+            battle.partyStatus.map { status =>
+              game.persistent.saveCharacterVitals(
+                  status.entityId,
+                  status.hp,
+                  status.mp,
+                  status.tempStatusEffects)
+            }
+
+            val exp = battle.victoryExperience
+            val leveled = game.persistent.givePartyExperience(
+              battle.pData.enums.characters,
+              battle.partyIds,
               exp)
             val names = leveled.map(getCharacterName)
 
@@ -527,11 +536,10 @@ class BattleScreen(
               val source = notification.action.actor
 
               val windows =
-                for (hit <- notification.hits;
-                     damage <- hit.damages) yield {
-                  val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
-                  new DamageTextWindow(gameOpt.get.persistent, windowManager,
-                      damage.value, box.x, box.y)
+                for (hit <- notification.hits) yield {
+                  val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
+                  new DamageTextWindow(game.persistent, windowManager,
+                      hit.damage.value, box.x, box.y)
                 }
 
               val animations =
@@ -539,7 +547,7 @@ class BattleScreen(
                   assert(hit.animationId < battle.pData.enums.animations.length)
                   val animation = battle.pData.enums.animations(hit.animationId)
 
-                  val box = getBox(hit.hitActor.entityType, hit.hitActor.id)
+                  val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
                   val player = new AnimationPlayer(project, animation, assets,
                     box.x, box.y)
                   player.play()
@@ -554,7 +562,7 @@ class BattleScreen(
                   postTextNotice("%s attacks %s.".format(
                       getEntityName(source), getEntityName(target)))
                 case action: SkillAction =>
-                  val skill = _battle.get.pData.enums.skills(action.skillId)
+                  val skill = battle.pData.enums.skills(action.skillId)
                   postTextNotice("%s uses %s.".format(
                       getEntityName(source), skill.name))
                 case _ =>

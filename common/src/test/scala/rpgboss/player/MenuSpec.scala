@@ -37,8 +37,8 @@ class MenuSpec extends UnitSpec {
       override def dismissWaiterAtEndOfTestScript = false
 
       def testScript() = {
-        scriptInterface.modifyParty(true, 1)
-        scriptInterface.modifyParty(true, 2)
+        scriptInterface.modifyParty(true, 3)
+        scriptInterface.modifyParty(true, 4)
 
         scriptInterface.syncRun {
           TestScriptThread.fromTestScript(

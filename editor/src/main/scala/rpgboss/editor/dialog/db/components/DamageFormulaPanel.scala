@@ -10,9 +10,9 @@ import rpgboss.editor.dialog.DatabaseDialog
 /**
  * Updates model in-place.
  */
-class DamagePanel(
+class DamageFormulaPanel(
   dbDiag: DatabaseDialog,
-  initial: Damage,
+  initial: DamageFormula,
   onUpdate: () => Unit)
   extends DesignGridPanel {
   val model = initial
@@ -42,8 +42,10 @@ class DamagePanel(
  * @param onUpdate      Called when the array reference is updated. Array
  *                      may be updated in-place. onUpdate is not called then.
  */
-class DamageArrayPanel(dbDiag: DatabaseDialog, initial: Array[Damage],
-  onUpdate: Array[Damage] => Unit)
+class DamageFormulaArrayPanel(
+    dbDiag: DatabaseDialog,
+    initial: Array[DamageFormula],
+    onUpdate: Array[DamageFormula] => Unit)
   extends BoxPanel(Orientation.Vertical) {
 
   minimumSize = new Dimension(0, 500)
@@ -52,9 +54,9 @@ class DamageArrayPanel(dbDiag: DatabaseDialog, initial: Array[Damage],
 
   val buttonPanel = new BoxPanel(Orientation.Horizontal) {
     contents += new Button(Action("Add") {
-      model = model :+ Damage()
+      model = model :+ DamageFormula()
       damagesPanel.contents +=
-        new DamagePanel(dbDiag, model.last, () => onUpdate(model))
+        new DamageFormulaPanel(dbDiag, model.last, () => onUpdate(model))
       damagesPanel.revalidate()
       onUpdate(model)
     })
@@ -72,7 +74,7 @@ class DamageArrayPanel(dbDiag: DatabaseDialog, initial: Array[Damage],
 
   val damagesPanel = new BoxPanel(Orientation.Vertical)
   model.foreach(v =>
-    damagesPanel.contents += new DamagePanel(dbDiag, v, () => onUpdate(model)))
+    damagesPanel.contents += new DamageFormulaPanel(dbDiag, v, () => onUpdate(model)))
 
   border = BorderFactory.createTitledBorder("Damage")
   contents += buttonPanel

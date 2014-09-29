@@ -4,8 +4,6 @@ import rpgboss._
 import rpgboss.model.battle._
 
 class SkillSpec extends UnitSpec {
-  import EffectKey._
-
   def fixture = new {
     val pData = ProjectData()
 
@@ -32,8 +30,7 @@ class SkillSpec extends UnitSpec {
                       effects = Array(Effect(RecoverHpAdd.id, 20, 0)))
     val hits = skill.applySkill(f.status, f.status)
     hits.length should equal (1)
-    hits.head.damages.length should equal (1)
-    hits.head.damages.head.value should equal (-20)
+    hits.head.damage.value should equal (-20)
 
     f.status.hp should equal (40)
   }
@@ -46,8 +43,7 @@ class SkillSpec extends UnitSpec {
                       effects = Array(Effect(RecoverHpMul.id, 10, 0)))
     val hits = skill.applySkill(f.status, f.status)
     hits.length should equal (1)
-    hits.head.damages.length should equal (1)
-    hits.head.damages.head.value should equal (-5)
+    hits.head.damage.value should equal (-5)
 
     f.status.hp should equal (6)
   }
@@ -60,8 +56,7 @@ class SkillSpec extends UnitSpec {
                       effects = Array(Effect(RecoverMpAdd.id, 10, 0)))
     val hits = skill.applySkill(f.status, f.status)
     hits.length should equal (1)
-    hits.head.damages.length should equal (1)
-    hits.head.damages.head.value should equal (-10)
+    hits.head.damage.value should equal (-10)
 
     f.status.mp should equal (11)
   }
@@ -74,8 +69,7 @@ class SkillSpec extends UnitSpec {
                       effects = Array(Effect(RecoverMpMul.id, 20, 0)))
     val hits = skill.applySkill(f.status, f.status)
     hits.length should equal (1)
-    hits.head.damages.length should equal (1)
-    hits.head.damages.head.value should equal (-4)
+    hits.head.damage.value should equal (-4)
 
     f.status.mp should equal (5)
   }

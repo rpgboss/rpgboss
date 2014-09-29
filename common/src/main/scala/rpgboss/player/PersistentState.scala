@@ -1,7 +1,11 @@
 package rpgboss.player
-import collection.mutable._
-import collection.mutable.{ HashMap => MutableHashMap }
+
+import scala.collection.mutable.{HashMap => MutableHashMap}
+import scala.collection.mutable.Publisher
+
 import rpgboss.lib.ThreadChecked
+import rpgboss.model.Project
+import rpgboss.model.battle.PartyParameters
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -73,6 +77,18 @@ class PersistentState
     publish(EventStateChange((mapName, eventId), newState))
   }
 
+  def getPartyParameters(project: Project) = {
+    val charactersIdxs =
+      (0 until project.data.enums.characters.length).toArray
+    PartyParameters(
+        getIntArray(CHARACTER_LEVELS),
+        getIntArray(CHARACTER_HPS),
+        getIntArray(CHARACTER_MPS),
+        charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
+        charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
+        getIntArray(CHARACTER_ROWS))
+  }
+
   /**
    * @return  the list of characters that leveled up by their character index.
    */
@@ -109,6 +125,20 @@ class PersistentState
     setIntArray(CHARACTER_EXPS, exps)
 
     leveledBuffer.toArray
+  }
+
+  def saveCharacterVitals(
+      characterId: Int, hp: Int, mp: Int, tempStatusEffects: Array[Int]) = {
+    val hps = getIntArray(CHARACTER_HPS)
+    val mps = getIntArray(CHARACTER_MPS)
+
+    assert(characterId < hps.length)
+    assert(characterId < mps.length)
+
+    setIntArray(CHARACTER_HPS, hps.updated(characterId, hp))
+    setIntArray(CHARACTER_MPS, mps.updated(characterId, mp))
+
+    setIntArray(CHARACTER_STATUS_EFFECTS(characterId), tempStatusEffects)
   }
 
   /**

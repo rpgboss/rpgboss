@@ -180,19 +180,11 @@ class ScriptInterface(
       game.battleScreen.windowManager.setTransition(1, 0, 0.6f)
 
       val encounter = project.data.enums.encounters(encounterId)
-      val charactersIdxs =
-        (0 until project.data.enums.characters.length).toArray
 
       val battle = new Battle(
         project.data,
         persistent.getIntArray(PARTY),
-        persistent.getIntArray(CHARACTER_LEVELS),
-        persistent.getIntArray(CHARACTER_HPS),
-        persistent.getIntArray(CHARACTER_MPS),
-        charactersIdxs.map(id => persistent.getIntArray(CHARACTER_EQUIP(id))),
-        charactersIdxs.map(
-          id => persistent.getIntArray(CHARACTER_STATUS_EFFECTS(id))),
-        persistent.getIntArray(CHARACTER_ROWS),
+        persistent.getPartyParameters(project),
         encounter,
         aiOpt = Some(new RandomEnemyAI))
 
@@ -425,6 +417,27 @@ class ScriptInterface(
 
   def addRemoveItem(itemId: Int, qtyDelta: Int) = syncRun {
     persistent.addRemoveItem(itemId, qtyDelta)
+  }
+
+  def useItemInMenu(itemId: Int, characterId: Int) = syncRun {
+    if (persistent.addRemoveItem(itemId, -1)) {
+      val item = project.data.enums.items(itemId)
+      val characterStatus = BattleStatus.fromCharacter(
+          project.data, persistent.getPartyParameters(project), characterId,
+          index = -1)
+
+      val damages = item.effects.flatMap(_.applyAsSkillOrItem(characterStatus))
+
+      for (damage <- damages) {
+        logger.debug("Character %d took %d damage from item.".format(
+            characterId, damage.value))
+      }
+
+      characterStatus.clampVitals()
+
+      persistent.saveCharacterVitals(characterId, characterStatus.hp,
+          characterStatus.mp, characterStatus.tempStatusEffects)
+    }
   }
 
   def getInt(key: String): Int = syncRun {

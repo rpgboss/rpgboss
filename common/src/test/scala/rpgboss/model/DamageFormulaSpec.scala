@@ -3,7 +3,7 @@ package rpgboss.model
 import rpgboss._
 import rpgboss.model.battle._
 
-class DamageSpec extends UnitSpec {
+class DamageFormulaSpec extends UnitSpec {
   def fixture = new {
     val pData = ProjectData()
 
@@ -22,7 +22,7 @@ class DamageSpec extends UnitSpec {
       0)
 
     def testFormula(formula: String, expected: Int) = {
-      val d = Damage(formula = formula)
+      val d = DamageFormula(formula = formula)
       d.getBaseDamage(status, status) should equal(expected)
     }
   }
@@ -64,14 +64,14 @@ class DamageSpec extends UnitSpec {
     val f = fixture
 
     val skill = Skill(damages = Array(
-      Damage(DamageType.Physical.id, 0, "a.atk"),
-      Damage(DamageType.Magic.id, 1, "a.mag")))
+      DamageFormula(DamageType.Physical.id, 0, "a.atk"),
+      DamageFormula(DamageType.Magic.id, 1, "a.mag")))
 
     val takenDamages =
       Damage.getDamages(f.status, f.status, skill)
 
     takenDamages.length should equal(2)
-    takenDamages(0) should equal(TakenDamage(DamageType.Physical, 0, 5))
-    takenDamages(1) should equal(TakenDamage(DamageType.Magic, 1, 3))
+    takenDamages(0) should equal(Damage(DamageType.Physical, 0, 5))
+    takenDamages(1) should equal(Damage(DamageType.Magic, 1, 3))
   }
 }

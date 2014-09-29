@@ -1,5 +1,6 @@
 import sbt._
 
+import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
@@ -37,8 +38,9 @@ object Settings {
     Keys.`package` <<= (Keys.`package` in Compile) dependsOn TaskKey[Unit]("generateEnum"),
     Keys.`package` <<= (Keys.`package` in Compile) dependsOn TaskKey[Unit]("update-libs"),
     Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("generateEnum"),
-    Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("update-libs")
-   )
+    Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("update-libs"),
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+  )
 
   lazy val editor = Settings.common ++ editorLibs ++ editorAssembly
   
@@ -56,7 +58,9 @@ object Settings {
       jars.classpath
     },
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
-    scalacOptions ++= List("-deprecation", "-unchecked"))
+    scalacOptions ++= List("-deprecation", "-unchecked"),
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+  )
 
   lazy val editorAssembly = assemblySettings ++ Seq(
     mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>

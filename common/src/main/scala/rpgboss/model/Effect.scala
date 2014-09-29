@@ -1,6 +1,8 @@
 package rpgboss.model
 
 import rpgboss.lib._
+import rpgboss.model.battle.BattleStatus
+import rpgboss.model.battle.Hit
 
 /**
  * Because effects have different meanings in different contexts, we provide
@@ -8,123 +10,323 @@ import rpgboss.lib._
  */
 object EffectContext extends Enumeration {
   val CharacterClass, Item, Equipment, Skill, StatusEffect = Value
-
-  case class EffectHelp(valid: Boolean, helpMessage: String)
 }
 
-case class Effect(keyId: Int, var v1: Int, var v2: Int)
+case class EffectUsability(valid: Boolean, helpMessage: String)
 
-object EffectKey extends RpgEnum {
+case class Effect(var keyId: Int, v1: Int = 0, v2: Int = 0) {
+  def meta = Effect.getMeta(keyId)
+  def applyToStats(stats: BattleStats) = meta.applyToStats(this, stats)
+  def applyAsSkillOrItem(target: BattleStatus) =
+    meta.applyAsSkillOrItem(this, target)
+
+  // TODO: Remove this statement and remove var. This is to support legacy
+  // mappings.
+  keyId = meta.id
+}
+
+trait MetaEffect {
+  def id: Int
+
+  // TODO: Remove the getMeta clause. Only here to support legacy mappings.
+  def matchesKey(keyId: Int): Boolean =
+    keyId == id || Effect.getMeta(keyId).id == id
+  def matches(effect: Effect) = matchesKey(effect.keyId)
+
+  def name: String
+  def usability = (context: EffectContext.Value) =>
+    EffectUsability(false, "TODO: Implement a help message here.")
+  def renderer = (pData: ProjectData, effect: Effect) => "TODO: No renderer"
+
+  def applyToStats(effect: Effect, stats: BattleStats) = stats
+
+  /**
+   * Although this method looks similar to applyToStats, it's very different.
+   * The method operates by mutating |target| directly without making a copy.
+   * @return  The damage (or healing) performed. Used for display purposes.
+   */
+  def applyAsSkillOrItem(
+      effect: Effect, target: BattleStatus): Option[Damage] = None
+
+  Effect.registerMetaEffect(id, this)
+}
+
+object Effect {
   import EffectContext._
 
-  val defaultRenderer = (e: Effect, pData: ProjectData) => e.v1.toString
-  val defaultHelp = (context: EffectContext.Value) =>
-    EffectHelp(false, "TODO: Implement a help message here.")
+  private var _metaEffects = collection.mutable.Map[Int, MetaEffect]()
+  def registerMetaEffect(id: Int, metaEffect: MetaEffect) = {
+    assert(!_metaEffects.contains(id))
+    _metaEffects.put(id, metaEffect)
+  }
 
-  case class Val(
-    desc: String,
-    renderer: (Effect, ProjectData) => String = defaultRenderer,
-    help: (EffectContext.Value) => EffectHelp = defaultHelp)
-    extends super.Val
+  /**
+   * These are the old keyIds that we will be phasing out.
+   * These were problematic because they were arbitrarily assigned, and have
+   * no room between them to add new keys.
+   */
+  def getMeta(keyId: Int) = keyId match {
+    case 0 => RecoverHpAdd
+    case 1 => RecoverHpMul
+    case 2 => RecoverMpAdd
+    case 3 => RecoverMpMul
 
-  implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
+    case 4 => AddStatusEffect
+    case 5 => RemoveStatusEffect
+
+    case 6 => MhpAdd
+    case 7 => MmpAdd
+    case 8 => AtkAdd
+    case 9 => SpdAdd
+    case 10 => MagAdd
+    case 11 => ArmAdd
+    case 12 => MreAdd
+
+    case 13 => ResistElement
+
+    case 14 => EscapeBattle
+
+    case 15 => LearnSkill
+    case 16 => UseSkill
+
+    case i => _metaEffects.getOrElse(i, InvalidEffect)
+  }
+
+  def pointRenderer(pData: ProjectData, effect: Effect) =
+    "%dp".format(effect.v1)
+  def percentRenderer(pData: ProjectData, effect: Effect) =
+    "%d%%".format(effect.v1)
 
   /**
    * Renders the value of the enum index stored in v1.
    */
-  def getEnumOfValue1[T <% HasName](getChoices: ProjectData => Array[T]) =
-    (e: Effect, pData: ProjectData) => {
-      val choices = getChoices(pData)
-      val skillName =
-        if (e.v1 < pData.enums.skills.length)
-          pData.enums.skills(e.v1).name
-        else
-          "<Past end of array>"
-      StringUtils.standardIdxFormat(e.v1, skillName)
-    }
+  def getEnumOfValue1[T <% HasName]
+      (getChoices: ProjectData => Array[T])
+      (pData: ProjectData, effect: Effect) = {
+    val choices = getChoices(pData)
+    val name =
+      if (effect.v1 < choices.length)
+        choices(effect.v1).name
+      else
+        "<Past end of array>"
+    StringUtils.standardIdxFormat(effect.v1, name)
+  }
 
   /**
-   * Renders the value of the enum index stored in v1, and then shows the number
-   * stored in v2.
+   * Renders the value of the enum index stored in id, and then shows the number
+   * stored in value.
    */
-  def getEnumOfValue2[T <% HasName](getChoices: ProjectData => Array[T]) = {
-    val v1Func = getEnumOfValue1(getChoices)
-    (e: Effect, pData: ProjectData) => {
-      "%s. Value = %d ".format(v1Func(e, pData), e.v2)
-    }
+  def getEnumOfValue2[T <% HasName]
+      (getChoices: ProjectData => Array[T])
+      (pData: ProjectData, effect: Effect) = {
+    val value1string = getEnumOfValue1(getChoices)(pData, effect)
+    "%s. Value = %d ".format(value1string, effect.v2)
   }
 
   def recoveryHelp(context: EffectContext.Value) = context match {
-    case Item => EffectHelp(true, "One-time effect of item use.")
-    case Skill => EffectHelp(true, "One-time effect of skill use.")
-    case StatusEffect => EffectHelp(true, "Applies per tick.")
-    case _ => EffectHelp(false, "Doesn't do anything.")
+    case Item => EffectUsability(true, "One-time effect of item use.")
+    case Skill => EffectUsability(true, "One-time effect of skill use.")
+    case StatusEffect => EffectUsability(true, "Applies per tick.")
+    case _ => EffectUsability(false, "Doesn't do anything.")
   }
 
   def itemEquipSkillOnlyHelp(context: EffectContext.Value) = context match {
-    case Item => EffectHelp(true, "One-time effect of item use.")
-    case Equipment => EffectHelp(true, "Occurs once per hit.")
-    case Skill => EffectHelp(true, "One-time effect of skill use.")
-    case _ => EffectHelp(false, "Doesn't do anything.")
+    case Item => EffectUsability(true, "One-time effect of item use.")
+    case Equipment => EffectUsability(true, "Occurs once per hit.")
+    case Skill => EffectUsability(true, "One-time effect of skill use.")
+    case _ => EffectUsability(false, "Doesn't do anything.")
   }
 
-  def elementResistHelp(context: EffectContext.Value) = context match {
-    case CharacterClass => EffectHelp(true, "Permanently has resistance.")
-    case Equipment => EffectHelp(true, "Confers resistance on equipper.")
-    case StatusEffect => EffectHelp(true, "Confers resistance while active.")
-    case _ => EffectHelp(false, "Doesn't do anything.")
+  def classEquipOrStatus(context: EffectContext.Value) = context match {
+    case CharacterClass => EffectUsability(true, "Permanently has resistance.")
+    case Equipment => EffectUsability(true, "Confers resistance on equipper.")
+    case StatusEffect => EffectUsability(true, "Confers resistance while active.")
+    case _ => EffectUsability(false, "Doesn't do anything.")
   }
 
   def onItemAndSkillHelp(context: EffectContext.Value) = context match {
-    case Item => EffectHelp(true, "One-time effect of item use.")
-    case Skill => EffectHelp(true, "One-time effect of skill use.")
-    case _ => EffectHelp(false, "Doesn't do anything.")
+    case Item => EffectUsability(true, "One-time effect of item use.")
+    case Skill => EffectUsability(true, "One-time effect of skill use.")
+    case _ => EffectUsability(false, "Doesn't do anything.")
   }
 
   def onItemOnlyHelp(context: EffectContext.Value) = context match {
-    case Item => EffectHelp(true, "One-time effect of item use.")
-    case _ => EffectHelp(false, "Doesn't do anything.")
+    case Item => EffectUsability(true, "One-time effect of item use.")
+    case _ => EffectUsability(false, "Doesn't do anything.")
   }
 
   def onItemAndEquipHelp(context: EffectContext.Value) = context match {
-    case Item => EffectHelp(true, "One-time effect of item use.")
-    case Equipment => EffectHelp(true, "Occurs once per hit.")
-    case _ => EffectHelp(false, "Doesn't do anything.")
+    case Item => EffectUsability(true, "One-time effect of item use.")
+    case Equipment => EffectUsability(true, "Occurs once per hit.")
+    case _ => EffectUsability(false, "Doesn't do anything.")
   }
 
-  val RecoverHpAdd = Val("Recover HP", help = recoveryHelp)
-  val RecoverHpMul = Val("Recover percentage of HP", help = recoveryHelp)
-  val RecoverMpAdd = Val("Recover MP", help = recoveryHelp)
-  val RecoverMpMul = Val("Recover percentage of MP", help = recoveryHelp)
+  /**
+   * Recovery Utility functions
+   */
+  def recoverHp(target: BattleStatus, amount: Double): Option[Damage] = {
+    if (!target.alive)
+      return None
 
-  val AddStatusEffect =
-    Val("Add status effect", getEnumOfValue1(_.enums.statusEffects),
-        help = itemEquipSkillOnlyHelp)
+    val amountInt = amount.round.toInt
+    target.hp += amountInt
+    Some(Damage(DamageType.Magic, 0, -amountInt))
+  }
 
-  val RemoveStatusEffect =
-    Val("Remove status effect", getEnumOfValue1(_.enums.statusEffects),
-        help = itemEquipSkillOnlyHelp)
+  def recoverMp(target: BattleStatus, amount: Double) = {
+    val amountInt = amount.round.toInt
+    target.mp += amountInt
+    Some(Damage(DamageType.MPDamage, 0, -amountInt))
+  }
+}
 
-  val MhpAdd = Val("Increase Max HP")
-  val MmpAdd = Val("Increase Max MP")
-  val AtkAdd = Val("Increase Attack")
-  val SpdAdd = Val("Increase Speed")
-  val MagAdd = Val("Increase Magic")
-  val ArmAdd = Val("Increase Armor")
-  val MreAdd = Val("Increase Magic Resist")
+object InvalidEffect extends MetaEffect {
+  def id = -1
+  def name = "Invalid Effect"
+}
 
-  val ElementResist = Val("Resist Element", getEnumOfValue2(_.enums.elements),
-      help = elementResistHelp)
+object RecoverHpAdd extends MetaEffect {
+  def id = 100
+  def name = "Recover HP"
+  override def usability = Effect.recoveryHelp _
+  override def renderer = Effect.pointRenderer _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverHp(target, effect.v1)
+}
 
-  val EscapeBattle = Val("Escape battle", help = onItemAndSkillHelp)
-  val LearnSkill = Val("Learn skill", getEnumOfValue1(_.enums.skills),
-      help = onItemOnlyHelp)
+object RecoverHpMul extends MetaEffect {
+  def id = 101
+  def name = "Recover percentage of HP"
+  override def renderer = Effect.percentRenderer _
+  override def usability = Effect.recoveryHelp _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverHp(target, effect.v1 * 0.01 * target.stats.mhp)
+}
 
+object RecoverMpAdd extends MetaEffect {
+  def id = 102
+  def name = "Recover MP"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.recoveryHelp _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverMp(target, effect.v1)
+}
 
-  val UseSkill = Val("Use skill", getEnumOfValue1(_.enums.skills),
-      help = onItemAndEquipHelp)
+object RecoverMpMul extends MetaEffect {
+  def id = 103
+  def name = "Recover percentage of MP"
+  override def renderer = Effect.percentRenderer _
+  override def usability = Effect.recoveryHelp _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) =
+    Effect.recoverMp(target, effect.v1 * 0.01 * target.stats.mmp)
+}
 
-  def default = RecoverHpAdd
+object AddStatusEffect extends MetaEffect {
+  def id = 200
+  def name = "Add status effect"
+  override def renderer = Effect.getEnumOfValue2(_.enums.statusEffects) _
+  override def usability = Effect.itemEquipSkillOnlyHelp _
+}
 
-  def defaultEffect = Effect(RecoverHpAdd.id, 0, 0)
+object RemoveStatusEffect extends MetaEffect {
+  def id = 201
+  def name = "Remove status effect"
+  override def renderer = Effect.getEnumOfValue2(_.enums.statusEffects) _
+  override def usability = Effect.itemEquipSkillOnlyHelp _
+}
+
+object MhpAdd extends MetaEffect {
+  def id = 300
+  def name = "Increase Max HP"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) =
+    stats.copy(mhp = stats.mhp + effect.v1)
+}
+
+object MmpAdd extends MetaEffect {
+  def id = 301
+  def name = "Increase Max MP"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) =
+    stats.copy(mmp = stats.mmp + effect.v1)
+}
+
+object AtkAdd extends MetaEffect {
+  def id = 302
+  def name = "Increase ATK"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) =
+    stats.copy(atk = stats.atk + effect.v1)
+}
+
+object SpdAdd extends MetaEffect {
+  def id = 303
+  def name = "Increase SPD"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) =
+    stats.copy(spd = stats.spd + effect.v1)
+}
+
+object MagAdd extends MetaEffect {
+  def id = 304
+  def name = "Increase MAG"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) =
+    stats.copy(mag = stats.mag + effect.v1)
+}
+
+object ArmAdd extends MetaEffect {
+  def id = 305
+  def name = "Increase ARM"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) =
+    stats.copy(arm = stats.arm + effect.v1)
+}
+
+object MreAdd extends MetaEffect {
+  def id = 306
+  def name = "Increase MRE"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) =
+    stats.copy(mre = stats.mre + effect.v1)
+}
+
+object ResistElement extends MetaEffect {
+  def id = 400
+  def name = "Resist Element"
+  override def renderer = Effect.getEnumOfValue2(_.enums.statusEffects) _
+  override def usability = Effect.classEquipOrStatus _
+  override def applyToStats(effect: Effect, stats: BattleStats) = {
+    val newResists = stats.elementResists.updated(
+      effect.v1, stats.elementResists(effect.v1) + effect.v2)
+    stats.copy(elementResists = newResists)
+  }
+}
+
+object EscapeBattle extends MetaEffect {
+  def id = 500
+  def name = "Escape Battle"
+  override def renderer = Effect.pointRenderer _
+  override def usability = Effect.onItemOnlyHelp _
+}
+
+object LearnSkill extends MetaEffect {
+  def id = 600
+  def name = "Learn Skill"
+  override def renderer = Effect.getEnumOfValue1(_.enums.skills) _
+  override def usability = Effect.onItemOnlyHelp _
+}
+
+object UseSkill extends MetaEffect {
+  def id = 601
+  def name = "Use Skill"
+  override def renderer = Effect.getEnumOfValue1(_.enums.skills) _
+  override def usability = Effect.onItemAndEquipHelp _
 }
