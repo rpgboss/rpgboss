@@ -24,9 +24,7 @@ trait HasScriptConstants {
   val CENTER = Window.Center
   val RIGHT = Window.Right
 
-  val PLAYER_X = "playerX"
-  val PLAYER_Y = "playerY"
-  val PLAYER_MAP_NAME = "playerMapName"
+  val PLAYER_LOC = "playerLoc"
 
   val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
 
@@ -94,20 +92,8 @@ class ScriptInterface(
    * Things to do with the player's location and camera
    */
 
-  def setPlayerLoc(loc: MapLoc) = syncRun {
-    persistent.setInt(PLAYER_X, loc.x.round)
-    persistent.setInt(PLAYER_Y, loc.y.round)
-
-    if (mapScreen != null) {
-      mapScreen.playerEntity.x = loc.x
-      mapScreen.playerEntity.y = loc.y
-      mapScreen.playerEntity.mapName = Some(loc.map)
-
-      mapScreen.updateMapAssets(if (loc.map.isEmpty) None else Some(loc.map))
-    }
-  }
-
-  def teleport(mapName: String, x: Float, y: Float, transitionId: Int) = {
+  def teleport(mapName: String, x: Float, y: Float,
+      transitionId: Int = Transitions.NONE.id) = {
     val loc = MapLoc(mapName, x, y)
     val map = getMap(loc)
     val transition = Transitions.get(transitionId)
@@ -127,7 +113,9 @@ class ScriptInterface(
       sleep(fadeDuration);
     }
 
-    setPlayerLoc(loc);
+    syncRun {
+      game.setPlayerLoc(loc);
+    }
 
     if (transition == Transitions.FADE) {
       syncRun {

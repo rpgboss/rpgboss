@@ -160,6 +160,24 @@ class RpgGame(gamepath: File)
     setScreen(mapScreen)
   }
 
+  def setPlayerLoc(loc: MapLoc) = {
+    persistent.setLoc(PLAYER_LOC, loc)
+
+    if (mapScreen != null) {
+      mapScreen.playerEntity.x = loc.x
+      mapScreen.playerEntity.y = loc.y
+      mapScreen.playerEntity.mapName = Some(loc.map)
+
+      mapScreen.updateMapAssets(if (loc.map.isEmpty) None else Some(loc.map))
+    }
+  }
+
+  def persistCurrentPlayerLoc() = {
+    val p = mapScreen.playerEntity
+    assert(p.mapName.isDefined)
+    persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
+  }
+
   def quit() {
     assertOnBoundThread()
 

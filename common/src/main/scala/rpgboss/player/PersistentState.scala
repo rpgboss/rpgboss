@@ -2,10 +2,10 @@ package rpgboss.player
 
 import scala.collection.mutable.{HashMap => MutableHashMap}
 import scala.collection.mutable.Publisher
-
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.Project
 import rpgboss.model.battle.PartyParameters
+import rpgboss.model.MapLoc
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -16,26 +16,49 @@ case class EventStateChange(key: (String, Int), value: Int)
  * The part of the game state that should persist through save and load cycles.
  * This whole class should only be accessed on the Gdx thread.
  */
-class PersistentState
+class PersistentState(
+    initialIntMap: Map[String, Int] = Map(),
+    initialIntArrayMap: Map[String, Array[Int]] = Map(),
+    initialStringArrayMap: Map[String, Array[String]] = Map(),
+    initialMapLocMap: Map[String, MapLoc] = Map(),
+    initialEventStates: Map[(String, Int), Int] = Map())
   extends ThreadChecked
   with Publisher[PersistentStateUpdate]
   with HasScriptConstants {
-  private val globalInts = new MutableHashMap[String, Int]
-  private val intArrays = new MutableHashMap[String, Array[Int]]
-  private val stringArrays = new MutableHashMap[String, Array[String]]
+
+  private val intMap = new MutableHashMap[String, Int]
+  intMap ++= initialIntMap
+
+  private val intArrayMap = new MutableHashMap[String, Array[Int]]
+  intArrayMap ++= initialIntArrayMap
+
+  private val stringArrayMap = new MutableHashMap[String, Array[String]]
+  stringArrayMap ++= initialStringArrayMap
+
+  private val mapLocMap = new MutableHashMap[String, MapLoc]
+  mapLocMap ++= initialMapLocMap
 
   // mapName->eventId->state
   private val eventStates = new MutableHashMap[(String, Int), Int]
+  eventStates ++= initialEventStates
+
+  def getLoc(key: String) = {
+    mapLocMap.getOrElse(key, MapLoc())
+  }
+
+  def setLoc(key: String, loc: MapLoc) = {
+    mapLocMap.update(key, loc)
+  }
 
   // TODO: save player location
   def setInt(key: String, value: Int) = {
     assertOnBoundThread()
-    globalInts.update(key, value)
+    intMap.update(key, value)
     publish(IntChange(key, value))
   }
   def getInt(key: String) = {
     assertOnBoundThread()
-    globalInts.get(key).getOrElse(0)
+    intMap.get(key).getOrElse(0)
   }
 
   /**
@@ -43,12 +66,12 @@ class PersistentState
    */
   def getIntArray(key: String) = {
     assertOnBoundThread()
-    intArrays.get(key).map(_.clone()).getOrElse(new Array[Int](0))
+    intArrayMap.get(key).map(_.clone()).getOrElse(new Array[Int](0))
   }
 
   def setIntArray(key: String, value: Array[Int]) = {
     assertOnBoundThread()
-    intArrays.update(key, value.toArray)
+    intArrayMap.update(key, value.toArray)
   }
 
   /**
@@ -56,12 +79,12 @@ class PersistentState
    */
   def getStringArray(key: String) = {
     assertOnBoundThread()
-    stringArrays.get(key).map(_.clone()).getOrElse(new Array[String](0))
+    stringArrayMap.get(key).map(_.clone()).getOrElse(new Array[String](0))
   }
 
   def setStringArray(key: String, value: Array[String]) = {
     assertOnBoundThread()
-    stringArrays.update(key, value.toArray)
+    stringArrayMap.update(key, value.toArray)
   }
 
   // Gets the event state for the current map.

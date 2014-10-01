@@ -95,7 +95,7 @@ class EventCmdSpec extends UnitSpec {
       }
 
       def testScript() = {
-        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+        scriptInterface.teleport(mapName, 0.5f, 0.5f);
         scriptInterface.activateEvent(1, true)
         val oneVal = scriptInterface.getInt("one")
         val twoVal = scriptInterface.getInt("two")
