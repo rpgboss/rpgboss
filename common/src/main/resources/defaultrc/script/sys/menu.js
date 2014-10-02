@@ -38,20 +38,28 @@ function getItemChoices() {
 function newInventoryMenu() {
   var kItemsDisplayedItems = 10;
 
-  var itemChoices = getItemChoices();
+  var window = game.newChoiceWindow([],
+      layout.southwest(sizer.prop(1.0, 0.87)), {
+        displayedItems : kItemsDisplayedItems,
+        allowCancel : true
+      });
 
-  var window = game.newChoiceWindow(itemChoices.lines, layout.southwest(sizer
-      .prop(1.0, 0.87)), {
-    displayedItems : kItemsDisplayedItems,
-    allowCancel : true
-  });
-
-  return {
+  var object = {
     window : window,
-    itemIds : itemChoices.itemIds,
-    itemQtys : itemChoices.itemQtys,
-    itemUsabilities : itemChoices.itemUsabilities
+    update : updateObject
   }
+
+  function updateObject() {
+    var itemChoices = getItemChoices();
+    window.updateLines(itemChoices.lines);
+    object.itemIds = itemChoices.itemIds;
+    object.itemQtys = itemChoices.itemQtys;
+    object.itemUsabilities = itemChoices.itemUsabilities;
+  }
+
+  object.update();
+
+  return object;
 }
 
 function enterItemsWindow(itemsTopWin, itemsMenu) {
@@ -65,23 +73,25 @@ function enterItemsWindow(itemsTopWin, itemsMenu) {
 
     var itemId = itemsMenu.itemIds[choiceIdx];
     var usable = itemsMenu.itemUsabilities[choiceIdx];
+
     var itemsLeft = itemsMenu.itemQtys[choiceIdx];
 
-    if (!usable && itemsLeft > 0)
+    if (!usable || itemsLeft == 0)
       continue;
 
     loopPartyStatusChoice(function onSelect(characterId) {
-      --itemsLeft;
-      game.useItemInMenu(itemId, characterId);
+      if (itemsLeft > 0) {
+        game.useItemInMenu(itemId, characterId);
+      }
 
-      return itemsLeft > 0;
+      --itemsLeft;
+
+      // Don't return until after the user has had a chance to see the effect
+      // of using the last item.
+      return itemsLeft >= -1;
     });
 
-    var newItemChoices = getItemChoices();
-    itemsMenu.window.updateLines(newItemChoices.lines);
-    itemsMenu.itemIds = newItemChoices.itemIds;
-    itemsMenu.itemQtys = newItemChoices.itemQtys;
-    itemsMenu.itemUsabilities = newItemChoices.itemUsabilities;
+    itemsMenu.update();
   }
 
   itemsTopWin.takeFocus();
@@ -133,6 +143,8 @@ function menu() {
       itemsMenu();
       break;
     }
+
+    statusMenu.update();
 
     if (choiceIdx == -1)
       break;

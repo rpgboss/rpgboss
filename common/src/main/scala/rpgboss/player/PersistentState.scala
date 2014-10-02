@@ -1,11 +1,13 @@
 package rpgboss.player
 
-import scala.collection.mutable.{HashMap => MutableHashMap}
+import scala.collection.mutable.{ HashMap => MutableHashMap }
 import scala.collection.mutable.Publisher
-
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.Project
 import rpgboss.model.battle.PartyParameters
+import rpgboss.model.MapLoc
+import rpgboss.save.SaveFile
+import rpgboss.save.SavedEventState
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -16,26 +18,56 @@ case class EventStateChange(key: (String, Int), value: Int)
  * The part of the game state that should persist through save and load cycles.
  * This whole class should only be accessed on the Gdx thread.
  */
-class PersistentState
+class PersistentState(
+  initial: SaveFile = SaveFile())
   extends ThreadChecked
   with Publisher[PersistentStateUpdate]
   with HasScriptConstants {
-  private val globalInts = new MutableHashMap[String, Int]
-  private val intArrays = new MutableHashMap[String, Array[Int]]
-  private val stringArrays = new MutableHashMap[String, Array[String]]
+
+  private val intMap = new MutableHashMap[String, Int]
+  intMap ++= initial.intMap
+
+  private val intArrayMap = new MutableHashMap[String, Array[Int]]
+  intArrayMap ++= initial.intArrayMap
+
+  private val stringArrayMap = new MutableHashMap[String, Array[String]]
+  stringArrayMap ++= initial.stringArrayMap
+
+  private val mapLocMap = new MutableHashMap[String, MapLoc]
+  mapLocMap ++= initial.mapLocMap
 
   // mapName->eventId->state
   private val eventStates = new MutableHashMap[(String, Int), Int]
+  eventStates ++=
+    initial.eventStates.map(es => (es.mapName, es.eventId) -> es.eventState)
+
+  def toSerializable = {
+    val serializedEventStates = eventStates.map {
+      case ((mapName, eventId), eventState) =>
+        SavedEventState(mapName, eventId, eventState)
+    }
+    new SaveFile(intMap.toMap, intArrayMap.toMap, stringArrayMap.toMap,
+        mapLocMap.toMap, serializedEventStates.toArray)
+  }
+
+
+  def getLoc(key: String) = {
+    mapLocMap.getOrElse(key, MapLoc())
+  }
+
+  def setLoc(key: String, loc: MapLoc) = {
+    mapLocMap.update(key, loc)
+  }
 
   // TODO: save player location
   def setInt(key: String, value: Int) = {
     assertOnBoundThread()
-    globalInts.update(key, value)
+    intMap.update(key, value)
     publish(IntChange(key, value))
   }
   def getInt(key: String) = {
     assertOnBoundThread()
-    globalInts.get(key).getOrElse(0)
+    intMap.get(key).getOrElse(0)
   }
 
   /**
@@ -43,12 +75,12 @@ class PersistentState
    */
   def getIntArray(key: String) = {
     assertOnBoundThread()
-    intArrays.get(key).map(_.clone()).getOrElse(new Array[Int](0))
+    intArrayMap.get(key).map(_.clone()).getOrElse(new Array[Int](0))
   }
 
   def setIntArray(key: String, value: Array[Int]) = {
     assertOnBoundThread()
-    intArrays.update(key, value.toArray)
+    intArrayMap.update(key, value.toArray)
   }
 
   /**
@@ -56,12 +88,12 @@ class PersistentState
    */
   def getStringArray(key: String) = {
     assertOnBoundThread()
-    stringArrays.get(key).map(_.clone()).getOrElse(new Array[String](0))
+    stringArrayMap.get(key).map(_.clone()).getOrElse(new Array[String](0))
   }
 
   def setStringArray(key: String, value: Array[String]) = {
     assertOnBoundThread()
-    stringArrays.update(key, value.toArray)
+    stringArrayMap.update(key, value.toArray)
   }
 
   // Gets the event state for the current map.
@@ -81,12 +113,12 @@ class PersistentState
     val charactersIdxs =
       (0 until project.data.enums.characters.length).toArray
     PartyParameters(
-        getIntArray(CHARACTER_LEVELS),
-        getIntArray(CHARACTER_HPS),
-        getIntArray(CHARACTER_MPS),
-        charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
-        charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
-        getIntArray(CHARACTER_ROWS))
+      getIntArray(CHARACTER_LEVELS),
+      getIntArray(CHARACTER_HPS),
+      getIntArray(CHARACTER_MPS),
+      charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
+      charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
+      getIntArray(CHARACTER_ROWS))
   }
 
   /**
@@ -128,7 +160,7 @@ class PersistentState
   }
 
   def saveCharacterVitals(
-      characterId: Int, hp: Int, mp: Int, tempStatusEffects: Array[Int]) = {
+    characterId: Int, hp: Int, mp: Int, tempStatusEffects: Array[Int]) = {
     val hps = getIntArray(CHARACTER_HPS)
     val mps = getIntArray(CHARACTER_MPS)
 

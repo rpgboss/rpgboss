@@ -60,6 +60,36 @@ object Effect {
     _metaEffects.put(id, metaEffect)
   }
 
+  {
+    // Serves at a static initializer to create all Effect classes and force
+    // them to register their ids.
+    // TODO: This seems hacky. There must be a better way...
+    Array(
+        RecoverHpAdd,
+        RecoverHpMul,
+        RecoverMpAdd,
+        RecoverMpMul,
+
+        AddStatusEffect,
+        RemoveStatusEffect,
+
+        MhpAdd,
+        MmpAdd,
+        AtkAdd,
+        SpdAdd,
+        MagAdd,
+        ArmAdd,
+        MreAdd,
+
+        ResistElement,
+
+        EscapeBattle,
+
+        LearnSkill,
+        UseSkill
+    )
+  }
+
   /**
    * These are the old keyIds that we will be phasing out.
    * These were problematic because they were arbitrarily assigned, and have

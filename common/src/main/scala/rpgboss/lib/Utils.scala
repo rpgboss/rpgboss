@@ -1,11 +1,23 @@
 package rpgboss.lib
-import java.io._
-import scala.io.Source
-import java.awt._
-import javax.imageio.ImageIO
-import org.json4s.{ DefaultFormats, Formats }
+
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.FileWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.io.Writer
+import java.util.Locale
+
+import scala.collection.JavaConverters.mapAsScalaMapConverter
+
+import org.json4s.DefaultFormats
+import org.json4s.Formats
 import org.json4s.native.Serialization
 import org.mozilla.javascript.NativeObject
+
+import javax.imageio.ImageIO
 
 class FileHelper(file: File) {
   import FileHelper._
@@ -128,6 +140,12 @@ object Utils {
     val json = Serialization.write(a)(DefaultFormats)
     Serialization.read[A](json)(DefaultFormats, m)
   }
+
+  /**
+   * Generates a filename. Uses left padded 6 digits for number.
+   */
+  def generateFilename(prefix: String, id: Int, ext: String) =
+    "%s%06d.%s".formatLocal(Locale.US, prefix, id, ext)
 }
 
 object ArrayUtils {

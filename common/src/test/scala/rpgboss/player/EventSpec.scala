@@ -16,7 +16,7 @@ class EventSpec extends UnitSpec {
       }
 
       def testScript() = {
-        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+        scriptInterface.teleport(mapName, 0.5f, 0.5f);
         scriptInterface.activateEvent(1, true)
         val retrievedInt = scriptInterface.getInt("testKey")
 
@@ -45,7 +45,7 @@ class EventSpec extends UnitSpec {
       }
 
       def testScript() = {
-        scriptInterface.setPlayerLoc(MapLoc(mapName, 0.5f, 0.5f));
+        scriptInterface.teleport(mapName, 0.5f, 0.5f)
         scriptInterface.activateEvent(1, true)
         val firstRunIntOne = scriptInterface.getInt("one")
         val firstRunIntTwo = scriptInterface.getInt("two")

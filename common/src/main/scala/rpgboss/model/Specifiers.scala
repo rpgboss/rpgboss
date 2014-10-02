@@ -20,9 +20,9 @@ object HasName {
  * This means that the center of the tiles are actually at 0.5 intervals.
  */
 case class MapLoc(
-  map: String,
-  var x: Float,
-  var y: Float)
+  map: String = "",
+  var x: Float = 0f,
+  var y: Float = 0f)
 
 object WhichEntity extends RpgEnum {
   val PLAYER = Value(0, "Player")
