@@ -149,6 +149,10 @@ USE Internet Archieve for Dead website links!
 
 ### Battlers
 
+http://darts.kirara.st/m/ (CC-BY-ND) http://creativecommons.org/licenses/by-nd/4.0/
+
+(Kirara)
+
 http://www.junkie-chain.jp/kiyaku.html
 
 (Junkie)
