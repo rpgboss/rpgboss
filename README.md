@@ -149,6 +149,10 @@ USE Internet Archieve for Dead website links!
 
 ### Battlers
 
+http://www.junkie-chain.jp/kiyaku.html
+
+(Junkie)
+
 Justin Nichol http://opengameart.org/users/justin-nichol (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
 
 (JustinNichol)
