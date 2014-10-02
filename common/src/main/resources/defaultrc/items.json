@@ -3,11 +3,7 @@
     "name":"Damaged Sword",
     "desc":"A beginner sword.",
     "effects":[
-      {
-        "keyId":302,
-        "v1":3,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -22,11 +18,7 @@
     "name":"Damaged Glove",
     "desc":"A beginner glove",
     "effects":[
-      {
-        "keyId":305,
-        "v1":1,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -41,11 +33,7 @@
     "name":"Damaged Pant",
     "desc":"A beginner pant",
     "effects":[
-      {
-        "keyId":305,
-        "v1":1,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -60,11 +48,7 @@
     "name":"Damaged Helmet",
     "desc":"A beginner helmet",
     "effects":[
-      {
-        "keyId":305,
-        "v1":1,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -79,11 +63,7 @@
     "name":"Damaged Legging",
     "desc":"A beginner legging",
     "effects":[
-      {
-        "keyId":305,
-        "v1":1,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -98,11 +78,7 @@
     "name":"Damaged Chestplate",
     "desc":"A beginner chestplate",
     "effects":[
-      {
-        "keyId":305,
-        "v1":2,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -117,11 +93,7 @@
     "name":"Damaged Shield",
     "desc":"A beginner shield",
     "effects":[
-      {
-        "keyId":305,
-        "v1":1,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -136,11 +108,7 @@
     "name":"Damaged Staff",
     "desc":"A beginner staff",
     "effects":[
-      {
-        "keyId":304,
-        "v1":3,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -155,11 +123,7 @@
     "name":"Damaged Bow",
     "desc":"A beginner bow",
     "effects":[
-      {
-        "keyId":302,
-        "v1":3,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -174,16 +138,7 @@
     "name":"Damaged Dagger",
     "desc":"A beginner dagger",
     "effects":[
-      {
-        "keyId":303,
-        "v1":1,
-        "v2":0
-      },
-      {
-        "keyId":302,
-        "v1":2,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -274,11 +229,7 @@
     "name":"Rein Fire Sword",
     "desc":"A sword with the power of fire",
     "effects":[
-      {
-        "keyId":302,
-        "v1":20,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":100,
@@ -293,11 +244,7 @@
     "name":"Rein Ice Sword",
     "desc":"A sword with the power of ice",
     "effects":[
-      {
-        "keyId":302,
-        "v1":20,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":1000,
@@ -312,11 +259,7 @@
     "name":"Rein Earth Sword",
     "desc":"",
     "effects":[
-      {
-        "keyId":302,
-        "v1":20,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":1000,
@@ -331,11 +274,7 @@
     "name":"Rein Wind Sword",
     "desc":"",
     "effects":[
-      {
-        "keyId":302,
-        "v1":20,
-        "v2":0
-      }
+      
     ],
     "sellable":true,
     "price":1000,
@@ -526,7 +465,7 @@
     "sellable":false,
     "price":100,
     "itemTypeId":3,
-    "accessId":1,
+    "accessId":3,
     "scopeId":0,
     "equipType":0,
     "useOnAttack":false,
@@ -536,16 +475,6 @@
     "name":"Rein Fire Armor",
     "desc":"A chestplate that resist 50 fire damage",
     "effects":[
-      {
-        "keyId":305,
-        "v1":10,
-        "v2":0
-      },
-      {
-        "keyId":306,
-        "v1":10,
-        "v2":0
-      },
       {
         "keyId":400,
         "v1":4,
@@ -566,16 +495,6 @@
     "desc":"A chestplate that resist 50 ice damage",
     "effects":[
       {
-        "keyId":305,
-        "v1":10,
-        "v2":0
-      },
-      {
-        "keyId":306,
-        "v1":10,
-        "v2":0
-      },
-      {
         "keyId":400,
         "v1":5,
         "v2":50
@@ -595,16 +514,6 @@
     "desc":"A chestplate that resist 50 earth damage",
     "effects":[
       {
-        "keyId":305,
-        "v1":10,
-        "v2":0
-      },
-      {
-        "keyId":306,
-        "v1":10,
-        "v2":0
-      },
-      {
         "keyId":400,
         "v1":7,
         "v2":50
@@ -623,16 +532,6 @@
     "name":"Rein Wind Armor",
     "desc":"A chestplate that resist 50 wind damage",
     "effects":[
-      {
-        "keyId":305,
-        "v1":10,
-        "v2":0
-      },
-      {
-        "keyId":306,
-        "v1":10,
-        "v2":0
-      },
       {
         "keyId":400,
         "v1":13,
