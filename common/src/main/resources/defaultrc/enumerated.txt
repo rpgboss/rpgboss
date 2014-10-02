@@ -321,7 +321,16 @@ autotile/sys/Refmap-A4-5-6.png
 autotile/sys/Refmap-A4-5-6.png.metadata.json
 autotile/sys/Refmap-A4-5-7.png
 autotile/sys/Refmap-A4-5-7.png.metadata.json
-battlebg/sys/crownlesswish_rrr.jpg
+battlebg/sys/Crownlesswish/crownlesswish_rrr.jpg
+battlebg/sys/Etolier/01sougen.jpg
+battlebg/sys/Etolier/02doukutsu.jpg
+battlebg/sys/Etolier/03setugen2.jpg
+battlebg/sys/Etolier/03setugen3.jpg
+battlebg/sys/Etolier/05beach.jpg
+battlebg/sys/Etolier/08konkuri.jpg
+battlebg/sys/Etolier/09desert.jpg
+battlebg/sys/Etolier/18kumo.jpg
+battlebg/sys/Etolier/21maou_yama.jpg
 battler/sys/AncientBeast/cyberhound.png
 battler/sys/Benalene/firecreature.png
 battler/sys/Benalene/icecreature.png
