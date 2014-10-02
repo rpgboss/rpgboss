@@ -1346,7 +1346,7 @@
   {
     "name":"Frogtrident",
     "battler":{
-      "name":"sys/Reshrike/frogtrident.png",
+      "name":"sys/Redshrike/frogtrident.png",
       "scale":1.0
     },
     "level":5,
@@ -1369,7 +1369,7 @@
   {
     "name":"Blackcrow",
     "battler":{
-      "name":"sys/Reshrike/blackcrow.png",
+      "name":"sys/Redshrike/blackcrow.png",
       "scale":1.0
     },
     "level":5,
@@ -1392,7 +1392,7 @@
   {
     "name":"Hogaxe",
     "battler":{
-      "name":"sys/Reshrike/hogaxe.png",
+      "name":"sys/Redshrike/hogaxe.png",
       "scale":1.0
     },
     "level":5,
@@ -1415,8 +1415,8 @@
   {
     "name":"Skeltauren",
     "battler":{
-      "name":"sys/Reshrike/skeltauren.png",
-      "scale":1.0
+      "name":"sys/Redshrike/skeltauren.png",
+      "scale":1.5
     },
     "level":5,
     "mhp":40,
@@ -1438,7 +1438,7 @@
   {
     "name":"Dragon1",
     "battler":{
-      "name":"sys/Reshrike/dragon1.png",
+      "name":"sys/Redshrike/dragon1.png",
       "scale":1.0
     },
     "level":5,
@@ -1461,7 +1461,7 @@
   {
     "name":"Dragon2",
     "battler":{
-      "name":"sys/Reshrike/dragon2.png",
+      "name":"sys/Redshrike/dragon2.png",
       "scale":1.0
     },
     "level":5,
@@ -1484,7 +1484,7 @@
   {
     "name":"Dragon3",
     "battler":{
-      "name":"sys/Reshrike/dragon3.png",
+      "name":"sys/Redshrike/dragon3.png",
       "scale":1.0
     },
     "level":5,
@@ -1507,7 +1507,7 @@
   {
     "name":"Dragon4",
     "battler":{
-      "name":"sys/Reshrike/dragon4.png",
+      "name":"sys/Redshrike/dragon4.png",
       "scale":1.0
     },
     "level":5,
@@ -1530,7 +1530,7 @@
   {
     "name":"Dragon5",
     "battler":{
-      "name":"sys/Reshrike/dragon5.png",
+      "name":"sys/Redshrike/dragon5.png",
       "scale":1.0
     },
     "level":5,
@@ -1872,7 +1872,7 @@
       
     ]
   },
-    {
+  {
     "name":"Griffin",
     "battler":{
       "name":"sys/Momothecat/mohrthegriffin.png",
@@ -1895,7 +1895,7 @@
       
     ]
   },
- {
+  {
     "name":"Cyberhound",
     "battler":{
       "name":"sys/AncientBeast/cyberhound.png",
@@ -3483,7 +3483,7 @@
     ]
   },
   {
-    "name":"reaper",
+    "name":"Reaper",
     "battler":{
       "name":"sys/P0ss/reaper.png",
       "scale":0.25
@@ -3506,7 +3506,7 @@
     ]
   },
   {
-    "name":"templar",
+    "name":"Templar",
     "battler":{
       "name":"sys/Killoverdrive/templar.png",
       "scale":0.15
@@ -3529,7 +3529,7 @@
     ]
   },
   {
-    "name":"firecreature",
+    "name":"Firecreature",
     "battler":{
       "name":"sys/Benalene/firecreature.png",
       "scale":0.25
@@ -3552,7 +3552,7 @@
     ]
   },
   {
-    "name":"icecreature",
+    "name":"Icecreature",
     "battler":{
       "name":"sys/Benalene/icecreature.png",
       "scale":0.25
@@ -3573,13 +3573,434 @@
     "skillIds":[
       
     ]
- },
+  },
   {
-    "name":"dogun",
+    "name":"Dogun",
     "battler":{
       "name":"sys/Killoverdrive/dogun.png",
       "scale":0.25
     },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Assassin",
+    "battler":{
+      "name":"sys/Junkie/assassin.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Bat",
+    "battler":{
+      "name":"sys/Junkie/bat.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Catoblepas",
+    "battler":{
+      "name":"sys/Junkie/catoblepas.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Evilsword",
+    "battler":{
+      "name":"sys/Junkie/evilsword.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Fireball",
+    "battler":{
+      "name":"sys/Junkie/fireball.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Hauntedmansion",
+    "battler":{
+      "name":"sys/Junkie/hauntedmansion.png",
+      "scale":1.0
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Muspel",
+    "battler":{
+      "name":"sys/Junkie/muspel.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Musyaarmor",
+    "battler":{
+      "name":"sys/Junkie/musyaarmor.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Serpent",
+    "battler":{
+      "name":"sys/Junkie/serpent.png",
+      "scale":0.51
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Slimesf",
+    "battler":{
+      "name":"sys/Junkie/slimesf.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Snake",
+    "battler":{
+      "name":"sys/Junkie/snake.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Wyvern",
+    "battler":{
+      "name":"sys/Junkie/wyvern.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Yasaijin",
+    "battler":{
+      "name":"sys/Junkie/yasaijin.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Eaglel",
+    "battler":{
+      "name":"sys/Kirara/eaglel.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"Eagler",
+    "battler":{
+      "name":"sys/Kirara/eagler.png",
+      "scale":0.5
+    },
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
+    "level":5,
+    "mhp":40,
+    "mmp":40,
+    "atk":10,
+    "spd":10,
+    "mag":10,
+    "arm":10,
+    "mre":10,
+    "expValue":100,
+    "attackSkillId":0,
+    "effects":[
+      
+    ],
+    "skillIds":[
+      
+    ]
+  },
+  {
+    "name":"",
     "level":5,
     "mhp":40,
     "mmp":40,
