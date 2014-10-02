@@ -108,7 +108,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   }
 
   def generateName(id: Int) =
-    "Map%06d.%s".formatLocal(java.util.Locale.US, id, mapExt)
+    Utils.generateFilename("Map", id, mapExt)
 
   def defaultInstance(proj: Project, name: String) = {
     val idxOfDot = name.indexOf(".")

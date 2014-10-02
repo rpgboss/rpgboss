@@ -1,11 +1,13 @@
 package rpgboss.player
 
-import scala.collection.mutable.{HashMap => MutableHashMap}
+import scala.collection.mutable.{ HashMap => MutableHashMap }
 import scala.collection.mutable.Publisher
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.Project
 import rpgboss.model.battle.PartyParameters
 import rpgboss.model.MapLoc
+import rpgboss.save.SaveFile
+import rpgboss.save.SavedEventState
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -17,30 +19,37 @@ case class EventStateChange(key: (String, Int), value: Int)
  * This whole class should only be accessed on the Gdx thread.
  */
 class PersistentState(
-    initialIntMap: Map[String, Int] = Map(),
-    initialIntArrayMap: Map[String, Array[Int]] = Map(),
-    initialStringArrayMap: Map[String, Array[String]] = Map(),
-    initialMapLocMap: Map[String, MapLoc] = Map(),
-    initialEventStates: Map[(String, Int), Int] = Map())
+  initial: SaveFile = SaveFile())
   extends ThreadChecked
   with Publisher[PersistentStateUpdate]
   with HasScriptConstants {
 
   private val intMap = new MutableHashMap[String, Int]
-  intMap ++= initialIntMap
+  intMap ++= initial.intMap
 
   private val intArrayMap = new MutableHashMap[String, Array[Int]]
-  intArrayMap ++= initialIntArrayMap
+  intArrayMap ++= initial.intArrayMap
 
   private val stringArrayMap = new MutableHashMap[String, Array[String]]
-  stringArrayMap ++= initialStringArrayMap
+  stringArrayMap ++= initial.stringArrayMap
 
   private val mapLocMap = new MutableHashMap[String, MapLoc]
-  mapLocMap ++= initialMapLocMap
+  mapLocMap ++= initial.mapLocMap
 
   // mapName->eventId->state
   private val eventStates = new MutableHashMap[(String, Int), Int]
-  eventStates ++= initialEventStates
+  eventStates ++=
+    initial.eventStates.map(es => (es.mapName, es.eventId) -> es.eventState)
+
+  def toSerializable = {
+    val serializedEventStates = eventStates.map {
+      case ((mapName, eventId), eventState) =>
+        SavedEventState(mapName, eventId, eventState)
+    }
+    new SaveFile(intMap.toMap, intArrayMap.toMap, stringArrayMap.toMap,
+        mapLocMap.toMap, serializedEventStates.toArray)
+  }
+
 
   def getLoc(key: String) = {
     mapLocMap.getOrElse(key, MapLoc())
@@ -104,12 +113,12 @@ class PersistentState(
     val charactersIdxs =
       (0 until project.data.enums.characters.length).toArray
     PartyParameters(
-        getIntArray(CHARACTER_LEVELS),
-        getIntArray(CHARACTER_HPS),
-        getIntArray(CHARACTER_MPS),
-        charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
-        charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
-        getIntArray(CHARACTER_ROWS))
+      getIntArray(CHARACTER_LEVELS),
+      getIntArray(CHARACTER_HPS),
+      getIntArray(CHARACTER_MPS),
+      charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
+      charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
+      getIntArray(CHARACTER_ROWS))
   }
 
   /**
@@ -151,7 +160,7 @@ class PersistentState(
   }
 
   def saveCharacterVitals(
-      characterId: Int, hp: Int, mp: Int, tempStatusEffects: Array[Int]) = {
+    characterId: Int, hp: Int, mp: Int, tempStatusEffects: Array[Int]) = {
     val hps = getIntArray(CHARACTER_HPS)
     val mps = getIntArray(CHARACTER_MPS)
 
