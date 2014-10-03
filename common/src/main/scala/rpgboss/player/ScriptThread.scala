@@ -7,7 +7,7 @@ import scala.concurrent.duration.Duration
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 import rpgboss.lib.GdxUtils
-import rpgboss.model.Constants.Transitions
+import rpgboss.model.Transitions
 import rpgboss.model.ItemAccessibility
 import rpgboss.model.ItemType
 import rpgboss.model.MapLoc

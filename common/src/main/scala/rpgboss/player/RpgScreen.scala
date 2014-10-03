@@ -33,6 +33,7 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDuration: Float) = {
+    assertOnBoundThread()
 
     musics(slot).map({ oldMusic =>
       val tweenMusic = new MusicPlayerTweenable(oldMusic)

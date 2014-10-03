@@ -24,7 +24,7 @@ object MetadataMode extends RpgEnum {
 }
 
 case class TileMetadata(blockedDirs: Byte, height: Byte) {
-  import Constants.DirectionMasks._
+  import DirectionMasks._
 
   def passabilityHeightIncremented() = {
     if (!allBlocked(blockedDirs) && height == 0) {
@@ -78,7 +78,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TilesetsMetadataPanel)
     def updatedMetadata(button: Int, xTile: Int, yTile: Int,
                         xInTile: Int, yInTile: Int): TileMetadata = {
       val metadata = owner.getTileMeta(xTile, yTile).get
-      import Constants.DirectionMasks._
+      import DirectionMasks._
 
       if (metadataMode == PassabilityHeight) {
         if (button == MouseEvent.BUTTON1) {
@@ -137,7 +137,7 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TilesetsMetadataPanel)
       // Draw passabilty
       g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f))
 
-      import Constants.DirectionMasks._
+      import DirectionMasks._
 
       def draw22Icon(icon: BufferedImage, xTile: Int, yTile: Int) = {
         val x1 = xTile * tilesizeX + (tilesizeX - 22) / 2

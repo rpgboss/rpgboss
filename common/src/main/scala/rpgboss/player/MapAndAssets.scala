@@ -1,6 +1,6 @@
 package rpgboss.player
 import rpgboss.model._
-import rpgboss.model.Constants.DirectionMasks._
+import rpgboss.model.DirectionMasks._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.g2d._
@@ -99,7 +99,7 @@ class MapAndAssets(project: Project, val mapName: String) {
 
   def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
     import RpgMap._
-    import Constants.DirectionMasks._
+    import DirectionMasks._
     val xIdx = xTile * bytesPerTile
 
     // Test top layer first, as if the top layer provides an answer, there is

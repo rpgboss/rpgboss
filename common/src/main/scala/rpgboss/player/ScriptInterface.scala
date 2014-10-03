@@ -46,7 +46,7 @@ trait HasScriptConstants {
   def CHARACTER_STATUS_EFFECTS(characterId: Int) =
     "characterStatusEffects-%d".format(characterId)
 
-  val PICTURE_SLOTS = Constants.PictureSlots
+  val PICTURE_SLOTS = PictureSlots.END
 }
 
 /**
@@ -100,10 +100,6 @@ class ScriptInterface(
     val fadeDuration = Transitions.fadeLength
 
     syncRun {
-      if (map.metadata.changeMusicOnEnter) {
-        mapScreen.playMusic(0, map.metadata.music, true, fadeDuration);
-      }
-
       if (transition == Transitions.FADE) {
         mapScreen.windowManager.setTransition(0, 1, fadeDuration)
       }

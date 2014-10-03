@@ -4,7 +4,7 @@ import rpgboss.lib.Utils._
 import rpgboss.editor.uibase._
 import rpgboss.editor.misc.GraphicsUtils._
 import rpgboss.model._
-import rpgboss.model.Constants.DirectionMasks._
+import rpgboss.model.DirectionMasks._
 import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import rpgboss.model.resource.RpgMap._
