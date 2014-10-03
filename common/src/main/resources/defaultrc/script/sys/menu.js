@@ -79,7 +79,8 @@ function enterItemsWindow(itemsTopWin, itemsMenu) {
     if (!usable || itemsLeft == 0)
       continue;
 
-    loopPartyStatusChoice(function onSelect(characterId) {
+    var statusMenu = new StatusMenu();
+    statusMenu.loopCharacterChoice(function onSelect(characterId) {
       if (itemsLeft > 0) {
         game.useItemInMenu(itemId, characterId);
       }

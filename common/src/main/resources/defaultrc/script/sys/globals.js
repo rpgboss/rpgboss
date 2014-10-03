@@ -11,51 +11,44 @@ function rightPad(string, totalLen) {
   return castedString + Array(padLength).join(" ");
 }
 
-function StatusMenu() {
-  this.updateStatusLines = function() {
-    this.lines = [];
-    this.party = game.getIntArray(game.PARTY());
-
-    var characters = project.data().enums().characters();
-    var characterNames = game.getStringArray(game.CHARACTER_NAMES());
-    var characterLevels = game.getIntArray(game.CHARACTER_LEVELS());
-    var characterHps = game.getIntArray(game.CHARACTER_HPS());
-    var characterMps = game.getIntArray(game.CHARACTER_MPS());
-    var characterMaxHps = game.getIntArray(game.CHARACTER_MAX_HPS());
-    var characterMaxMps = game.getIntArray(game.CHARACTER_MAX_MPS());
-
-    for (var i = 0; i < this.party.length; ++i) {
-      this.lines.push(rightPad(characterNames[i], 10)
-          + leftPad(characters[i].subtitle(), 20));
-      this.lines.push(" LVL " + leftPad(characterLevels[i].toString(), 3));
-      this.lines.push("  HP " + leftPad(characterHps[i].toString(), 4) + " / "
-          + leftPad(characterMaxHps[i].toString(), 4));
-      this.lines.push("  MP " + leftPad(characterMps[i].toString(), 4) + " / "
-          + leftPad(characterMaxMps[i].toString(), 4));
+function assert(condition, message) {
+  if (!condition) {
+    message = message || "Assertion failed";
+    if (typeof Error !== "undefined") {
+      throw new Error(message);
     }
+    throw message; // Fallback
   }
+}
 
-  this.updateStatusLines();
+function assertDefined(variable) {
+  assert(typeof variable !== 'undefined');
+}
 
-  this.window = game.newChoiceWindow(this.lines, layout.northwest(sizer.prop(
-      0.8, 1.0)), {
-    allowCancel : true,
-    linesPerChoice : 4,
-    lineHeight : 27
-  });
+function Menu(details) {
+  assertDefined(details.getState);
+  assertDefined(details.layout);
+  assertDefined(details.windowDetails);
+
+  this.updateState = function() {
+    this.state = details.getState();
+  }
+  this.updateState();
+
+  this.window = game.newChoiceWindow(this.state.lines, details.layout,
+      details.windowDetails);
 
   this.update = function() {
-    this.updateStatusLines();
-    this.window.updateLines(this.lines);
+    this.updateState();
+    this.window.updateLines(this.state.lines);
   }
 
   this.close = function() {
     this.window.close();
   }
 
-  // onChoice is a callback that takes parameter (characterId) and should
-  // return whether or not to select again.
-  // choiceId denotes the character id, not the choice index.
+  // onChoice is a callback that takes choice index and should return whether 
+  // or not to select again.
   this.loopChoice = function(onChoice) {
     while (true) {
       var choiceIdx = this.window.getChoice();
@@ -63,7 +56,7 @@ function StatusMenu() {
       if (choiceIdx == -1)
         break;
 
-      var shouldContinue = onChoice(this.party[choiceIdx]);
+      var shouldContinue = onChoice(choiceIdx);
       if (!shouldContinue)
         break;
 
@@ -73,12 +66,48 @@ function StatusMenu() {
   }
 }
 
-function assert(condition, message) {
-  if (!condition) {
-    message = message || "Assertion failed";
-    if (typeof Error !== "undefined") {
-      throw new Error(message);
+function StatusMenu() {
+  var details = {
+    getState: function() {
+      var lines = [];
+      var party = game.getIntArray(game.PARTY());
+
+      var characters = project.data().enums().characters();
+      var characterNames = game.getStringArray(game.CHARACTER_NAMES());
+      var characterLevels = game.getIntArray(game.CHARACTER_LEVELS());
+      var characterHps = game.getIntArray(game.CHARACTER_HPS());
+      var characterMps = game.getIntArray(game.CHARACTER_MPS());
+      var characterMaxHps = game.getIntArray(game.CHARACTER_MAX_HPS());
+      var characterMaxMps = game.getIntArray(game.CHARACTER_MAX_MPS());
+
+      for (var i = 0; i < party.length; ++i) {
+        lines.push(rightPad(characterNames[i], 10)
+            + leftPad(characters[i].subtitle(), 20));
+        lines.push(" LVL " + leftPad(characterLevels[i].toString(), 3));
+        lines.push("  HP " + leftPad(characterHps[i].toString(), 4) + " / "
+            + leftPad(characterMaxHps[i].toString(), 4));
+        lines.push("  MP " + leftPad(characterMps[i].toString(), 4) + " / "
+            + leftPad(characterMaxMps[i].toString(), 4));
+      }
+
+      return {
+        lines: lines,
+        party: party
+      }
+    },
+    layout: layout.northwest(sizer.prop(0.8, 1.0)),
+    windowDetails: {
+      allowCancel : true,
+      linesPerChoice : 4,
+      lineHeight : 27
     }
-    throw message; // Fallback
   }
+  
+  var menu = new Menu(details);
+  menu.loopCharacterChoice = function(onCharacterChoice) {
+    menu.loopChoice(function(choiceIdx) {
+      return onCharacterChoice(menu.state.party[choiceIdx]);
+    });
+  }
+  return menu
 }
