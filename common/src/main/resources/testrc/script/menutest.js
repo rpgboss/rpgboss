@@ -1,6 +1,7 @@
 function testStatusMenu() {
   var i = -1;
-  loopPartyStatusChoice(function(choiceIdx) {
+  var statusMenu = new StatusMenu();
+  statusMenu.loopChoice(function(choiceIdx) {
     ++i;
     if (i == 0) {
       assert(choiceIdx == 0);

@@ -49,6 +49,11 @@ class WindowManager(
     curTransition = Some(Transition(startAlpha, endAlpha, duration))
   }
 
+  def clearTransition() = {
+    assertOnBoundThread()
+    curTransition = None
+  }
+
   def inTransition = curTransition.isDefined && !curTransition.get.done
 
   // TODO: Investigate if a more advanced z-ordering is needed other than just

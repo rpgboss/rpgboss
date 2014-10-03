@@ -128,7 +128,7 @@ function itemsMenu() {
 }
 
 function menu() {
-  var statusMenu = makeStatusWin();
+  var statusMenu = new StatusMenu();
   var rootMenuWin = game.newChoiceWindow([ "Item", "Skills", "Equip", "Status",
       "Save" ], layout.northeast(sizer.prop(0.2, 0.8)), {
     justification : game.CENTER(),
@@ -151,5 +151,5 @@ function menu() {
   }
 
   rootMenuWin.close();
-  statusMenu.window.close();
+  statusMenu.close();
 }
