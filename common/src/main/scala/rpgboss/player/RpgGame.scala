@@ -22,6 +22,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.lib.GdxUtils
 import com.badlogic.gdx.Screen
+import rpgboss.save.SaveFile
 
 case class MutableMapLoc(
   var map: String = "",
@@ -155,6 +156,20 @@ class RpgGame(gamepath: File)
     persistent.setIntArray(CHARACTER_EXPS , characters.map(x => 0))
 
     persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
+
+    mapScreen.windowManager.setTransition(1, 0, 0.4f)
+    setScreen(mapScreen)
+  }
+
+  def saveGame(slot: Int) = {
+    assertOnBoundThread()
+    SaveFile.write(persistent.toSerializable, project, slot)
+  }
+
+  def loadGame(slot: Int) = {
+    assertOnBoundThread()
+    val save = SaveFile.read(project, slot)
+    persistent = new PersistentState(save)
 
     mapScreen.windowManager.setTransition(1, 0, 0.4f)
     setScreen(mapScreen)

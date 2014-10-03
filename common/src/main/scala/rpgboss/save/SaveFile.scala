@@ -4,6 +4,7 @@ import rpgboss.model.Project
 import rpgboss.lib.JsonUtils
 import java.io.File
 import rpgboss.model.MapLoc
+import rpgboss.lib.Utils
 
 case class SavedEventState(mapName: String, eventId: Int, eventState: Int)
 
@@ -15,12 +16,14 @@ case class SaveFile(
     eventStates: Array[SavedEventState] = Array())
 
 object SaveFile {
-  def file(project: Project) = new File(project.dir, "saves.json")
+  def file(project: Project, slot: Int) =
+    new File(project.dir, Utils.generateFilename("save", slot, "json"))
 
-  def read(project: Project) = {
-    JsonUtils.readModelFromJson[SaveFile](file(project)).getOrElse(SaveFile())
+  def read(project: Project, slot: Int) = {
+    JsonUtils.readModelFromJson[SaveFile](
+        file(project, slot: Int)).getOrElse(SaveFile())
   }
 
-  def write(saveFile: SaveFile, project: Project) =
-    JsonUtils.writeModelToJson(file(project), saveFile)
+  def write(saveFile: SaveFile, project: Project, slot: Int) =
+    JsonUtils.writeModelToJson(file(project, slot), saveFile)
 }
