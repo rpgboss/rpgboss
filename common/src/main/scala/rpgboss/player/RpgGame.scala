@@ -157,7 +157,8 @@ class RpgGame(gamepath: File)
 
     persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
 
-    mapScreen.windowManager.setTransition(1, 0, 0.4f)
+    setPlayerLoc(project.data.startup.startingLoc)
+    mapScreen.windowManager.setTransition(1, 0, 1.0f)
     setScreen(mapScreen)
   }
 
@@ -171,7 +172,8 @@ class RpgGame(gamepath: File)
     val save = SaveFile.read(project, slot)
     persistent = new PersistentState(save)
 
-    mapScreen.windowManager.setTransition(1, 0, 0.4f)
+    setPlayerLoc(persistent.getLoc(PLAYER_LOC))
+    mapScreen.windowManager.setTransition(1, 0, 1.0f)
     setScreen(mapScreen)
   }
 

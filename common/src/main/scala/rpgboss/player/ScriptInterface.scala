@@ -99,13 +99,10 @@ class ScriptInterface(
     val transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
 
-    syncRun {
-      if (transition == Transitions.FADE) {
+    if (transition == Transitions.FADE) {
+      syncRun {
         mapScreen.windowManager.setTransition(0, 1, fadeDuration)
       }
-    }
-
-    if (transition == Transitions.FADE) {
       sleep(fadeDuration);
     }
 

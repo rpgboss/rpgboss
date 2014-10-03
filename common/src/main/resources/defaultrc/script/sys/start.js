@@ -1,11 +1,6 @@
 function newGame() {
   game.setTransition(0, 1, 0.4);
   game.sleep(0.4);
-  game.hidePicture(0);
-
-  var loc = project.data().startup().startingLoc();
-  game.teleport(loc.map(), loc.x(), loc.y(), Transitions.NONE().id());
-
   game.startNewGame();
 }
 
@@ -30,7 +25,7 @@ function showStartDialog() {
 }
 
 function start() {
-  game.setTransition(1, 0, 0.4);
+  game.setTransition(1, 0, 1.0);
   game.playMusic(0, project.data().startup().titleMusic(), true, 2.0);
   game.showPicture(0, project.data().startup().titlePic(), layout
       .centered(sizer.fit(640, 480)));
