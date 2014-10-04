@@ -12,6 +12,8 @@ import rpgboss.player.entity._
 import Predef._
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.NativeObject
+import rpgboss.save.SaveFile
+import rpgboss.save.SaveInfo
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -443,6 +445,22 @@ class ScriptInterface(
   def startNewGame() = syncRun {
     game.startNewGame()
   }
+
+  def getSaveInfos(maxSlots: Int): Array[SaveInfo] = {
+    val seq = for (slot <- 0 until maxSlots) yield {
+      SaveFile.readInfo(project, slot)
+    }
+    seq.toArray
+  }
+
+  def loadFromSaveSlot(slot: Int) = syncRun {
+    game.loadGame(slot)
+  }
+
+  def saveToSaveSlot(slot: Int) = syncRun {
+    game.saveGame(slot)
+  }
+
   def quit() = syncRun {
     game.quit()
   }

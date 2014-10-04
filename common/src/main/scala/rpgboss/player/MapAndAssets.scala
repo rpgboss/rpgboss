@@ -157,10 +157,11 @@ class MapAndAssets(project: Project, val mapName: String) {
     val newY = y + dy
     val (minX, minY, maxX, maxY) = (box.minX, box.minY, box.maxX, box.maxY)
 
-    val minXTile = minX.toInt
-    val minYTile = minY.toInt
-    val maxXTile = maxX.toInt
-    val maxYTile = maxY.toInt
+    // Need 'floor' because (-0.5).toInt == 0
+    val minXTile = minX.floor.toInt
+    val minYTile = minY.floor.toInt
+    val maxXTile = maxX.floor.toInt
+    val maxYTile = maxY.floor.toInt
 
     // 1. Test for going off map edge
     if (!map.metadata.withinBounds(minXTile, minYTile) ||

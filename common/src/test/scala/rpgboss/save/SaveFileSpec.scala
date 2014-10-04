@@ -7,7 +7,7 @@ import rpgboss.model.MapLoc
 class SaveFileSpec extends UnitSpec {
   "SaveFile" should "read an empty one for no file existing" in {
     val test = new ProjectTest
-    SaveFile.read(test.project, 0) should deepEqual(SaveFile())
+    SaveFile.read(test.project, 0) should equal (None)
   }
 
   "SaveFile" should "serialize and deserialize correctly" in {
@@ -20,7 +20,7 @@ class SaveFileSpec extends UnitSpec {
       Array(SavedEventState("map1", 1, 5), SavedEventState("map2", 4, 6)))
 
     SaveFile.write(fakeSaveFile, test.project, 4) should equal(true)
-    SaveFile.read(test.project, 0) should deepEqual(SaveFile())
-    SaveFile.read(test.project, 4) should deepEqual(fakeSaveFile)
+    SaveFile.read(test.project, 0) should equal(None)
+    SaveFile.read(test.project, 4).get should deepEqual(fakeSaveFile)
   }
 }

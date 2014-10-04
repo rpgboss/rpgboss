@@ -5,6 +5,8 @@ import rpgboss.lib.JsonUtils
 import java.io.File
 import rpgboss.model.MapLoc
 import rpgboss.lib.Utils
+import rpgboss.model.resource.RpgMap
+import rpgboss.player.HasScriptConstants
 
 case class SavedEventState(mapName: String, eventId: Int, eventState: Int)
 
@@ -15,13 +17,25 @@ case class SaveFile(
     mapLocMap: Map[String, MapLoc] = Map(),
     eventStates: Array[SavedEventState] = Array())
 
-object SaveFile {
+case class SaveInfo(isDefined: Boolean, mapTitle: String = "")
+
+object SaveFile extends HasScriptConstants {
   def file(project: Project, slot: Int) =
     new File(project.dir, Utils.generateFilename("save", slot, "json"))
 
-  def read(project: Project, slot: Int) = {
+  def read(project: Project, slot: Int): Option[SaveFile] = {
     JsonUtils.readModelFromJson[SaveFile](
-        file(project, slot: Int)).getOrElse(SaveFile())
+        file(project, slot: Int))
+  }
+
+  def readInfo(project: Project, slot: Int): SaveInfo = {
+    for (saveFile <- read(project, slot);
+         mapLoc <- saveFile.mapLocMap.get(PLAYER_LOC)) {
+       val map = RpgMap.readFromDisk(project, mapLoc.map)
+       return SaveInfo(true, map.metadata.title)
+    }
+
+    return SaveInfo(false)
   }
 
   def write(saveFile: SaveFile, project: Project, slot: Int) =

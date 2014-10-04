@@ -11,6 +11,7 @@ function testStatusMenu() {
       return false;
     }
   });
+  statusMenu.close();
   
   waiter.dismiss();
 }

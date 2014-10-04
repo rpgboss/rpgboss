@@ -1,83 +1,58 @@
-function getItemChoices() {
-  var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
-  var itemQtys = game.getIntArray(game.INVENTORY_QTYS());
-  var itemUsabilities = [];
+function ItemMenu() {
+  return new Menu({
+    getState : function() {
+      var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
+      var itemQtys = game.getIntArray(game.INVENTORY_QTYS());
+      var itemUsabilities = [];
 
-  var choiceLines = [];
-  var items = project.data().enums().items();
-  for (var i = 0; i < itemIds.length && i < itemQtys.length; ++i) {
-    var itemId = itemIds[i];
-    var itemQty = itemQtys[i];
-    if (itemId < 0 || itemQty <= 0) {
-      choiceLines.push("");
-    } else {
-      var item = items[itemId];
-      var usable = item.usableInMenu();
-      itemUsabilities.push(usable);
+      var choiceLines = [];
+      var items = project.data().enums().items();
+      for (var i = 0; i < itemIds.length && i < itemQtys.length; ++i) {
+        var itemId = itemIds[i];
+        var itemQty = itemQtys[i];
+        if (itemId < 0 || itemQty <= 0) {
+          choiceLines.push("");
+        } else {
+          var item = items[itemId];
+          var usable = item.usableInMenu();
+          itemUsabilities.push(usable);
 
-      var lineParts = [];
-      if (!usable)
-        lineParts.push("\\c[1]");
-      lineParts.push(rightPad(item.name(), 32));
-      lineParts.push(" : " + itemQty.toString());
-      if (!usable)
-        lineParts.push("\\c[0]");
+          var lineParts = [];
+          if (!usable)
+            lineParts.push("\\c[1]");
+          lineParts.push(rightPad(item.name(), 32));
+          lineParts.push(" : " + itemQty.toString());
+          if (!usable)
+            lineParts.push("\\c[0]");
 
-      choiceLines.push(lineParts.join(""));
+          choiceLines.push(lineParts.join(""));
+        }
+      }
+
+      return {
+        lines : choiceLines,
+        itemIds : itemIds,
+        itemQtys : itemQtys,
+        itemUsabilities : itemUsabilities
+      }
+    },
+    layout : layout.southwest(sizer.prop(1.0, 0.87)),
+    windowDetails : {
+      displayedItems : 10,
+      allowCancel : true
     }
-  }
-
-  return {
-    lines : choiceLines,
-    itemIds : itemIds,
-    itemQtys : itemQtys,
-    itemUsabilities : itemUsabilities
-  }
-}
-
-function newInventoryMenu() {
-  var kItemsDisplayedItems = 10;
-
-  var window = game.newChoiceWindow([],
-      layout.southwest(sizer.prop(1.0, 0.87)), {
-        displayedItems : kItemsDisplayedItems,
-        allowCancel : true
-      });
-
-  var object = {
-    window : window,
-    update : updateObject
-  }
-
-  function updateObject() {
-    var itemChoices = getItemChoices();
-    window.updateLines(itemChoices.lines);
-    object.itemIds = itemChoices.itemIds;
-    object.itemQtys = itemChoices.itemQtys;
-    object.itemUsabilities = itemChoices.itemUsabilities;
-  }
-
-  object.update();
-
-  return object;
+  });
 }
 
 function enterItemsWindow(itemsTopWin, itemsMenu) {
   itemsMenu.window.takeFocus();
-
-  while (true) {
-    var choiceIdx = itemsMenu.window.getChoice();
-
-    if (choiceIdx == -1)
-      break;
-
-    var itemId = itemsMenu.itemIds[choiceIdx];
-    var usable = itemsMenu.itemUsabilities[choiceIdx];
-
-    var itemsLeft = itemsMenu.itemQtys[choiceIdx];
+  itemsMenu.loopChoice(function(choiceId) {
+    var itemId = itemsMenu.state.itemIds[choiceId];
+    var usable = itemsMenu.state.itemUsabilities[choiceId];
+    var itemsLeft = itemsMenu.state.itemQtys[choiceId];
 
     if (!usable || itemsLeft == 0)
-      continue;
+      return true;
 
     var statusMenu = new StatusMenu();
     statusMenu.loopCharacterChoice(function onSelect(characterId) {
@@ -91,65 +66,71 @@ function enterItemsWindow(itemsTopWin, itemsMenu) {
       // of using the last item.
       return itemsLeft >= -1;
     });
+    statusMenu.close();
+  });
 
-    itemsMenu.update();
-  }
-
-  itemsTopWin.takeFocus();
+  itemsTopWin.window.takeFocus();
 }
 
 function itemsMenu() {
-  var itemsMenu = newInventoryMenu();
-  var itemsTopWin = game.newChoiceWindow([ "Use", "Organize" ], layout
-      .northwest(sizer.prop(1.0, 0.13)), {
-    justification : game.CENTER(),
-    columns : 2,
-    allowCancel : true
+  var itemsMenu = new ItemMenu();
+  var itemsTopWin = new Menu({
+    getState : function() {
+      return {
+        lines : [ "Use", "Organize" ]
+      };
+    },
+    layout : layout.northwest(sizer.prop(1.0, 0.13)),
+    windowDetails : {
+      justification : game.CENTER(),
+      columns : 2,
+      allowCancel : true
+    }
   });
 
-  var choiceIdx = 0;
-
-  while (true) {
-    switch (choiceIdx) {
-    case 0:
+  itemsTopWin.loopChoice(function(choiceId) {
+    if (choiceId == 0)
       enterItemsWindow(itemsTopWin, itemsMenu);
-      break;
-    case 1:
-      break;
-    }
+    return true;
+  });
 
-    choiceIdx = itemsTopWin.getChoice();
-
-    if (choiceIdx == -1)
-      break;
-  }
-
-  itemsMenu.window.close();
+  itemsMenu.close();
   itemsTopWin.close();
 }
 
 function menu() {
   var statusMenu = new StatusMenu();
-  var rootMenuWin = game.newChoiceWindow([ "Item", "Skills", "Equip", "Status",
-      "Save" ], layout.northeast(sizer.prop(0.2, 0.8)), {
-    justification : game.CENTER(),
-    allowCancel : true
+  var rootMenuWin = new Menu({
+    getState : function() {
+      return {
+        lines : [ "Item", "Skills", "Equip", "Status", "Save" ],
+      };
+    },
+    layout : layout.northeast(sizer.prop(0.2, 0.8)),
+    windowDetails : {
+      justification : game.CENTER(),
+      allowCancel : true
+    }
   });
 
-  while (true) {
-    var choiceIdx = rootMenuWin.getChoice();
-
-    switch (choiceIdx) {
+  rootMenuWin.loopChoice(function(choiceId) {
+    switch (choiceId) {
     case 0:
       itemsMenu();
+      break;
+    case 4:
+      var saveMenu = new SaveAndLoadMenu();
+      saveMenu.loopChoice(function(choiceId) {
+        game.saveToSaveSlot(choiceId);
+        return true;
+      });
+      saveMenu.close();
       break;
     }
 
     statusMenu.update();
-
-    if (choiceIdx == -1)
-      break;
-  }
+    return true;
+  });
 
   rootMenuWin.close();
   statusMenu.close();

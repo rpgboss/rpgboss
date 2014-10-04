@@ -47,7 +47,7 @@ function Menu(details) {
     this.window.close();
   }
 
-  // onChoice is a callback that takes choice index and should return whether 
+  // onChoice is a callback that takes choice index and should return whether
   // or not to select again.
   this.loopChoice = function(onChoice) {
     while (true) {
@@ -62,13 +62,12 @@ function Menu(details) {
 
       this.update();
     }
-    this.close();
   }
 }
 
 function StatusMenu() {
   var details = {
-    getState: function() {
+    getState : function() {
       var lines = [];
       var party = game.getIntArray(game.PARTY());
 
@@ -91,18 +90,18 @@ function StatusMenu() {
       }
 
       return {
-        lines: lines,
-        party: party
+        lines : lines,
+        party : party
       }
     },
-    layout: layout.northwest(sizer.prop(0.8, 1.0)),
-    windowDetails: {
+    layout : layout.northwest(sizer.prop(0.8, 1.0)),
+    windowDetails : {
       allowCancel : true,
       linesPerChoice : 4,
       lineHeight : 27
     }
   }
-  
+
   var menu = new Menu(details);
   menu.loopCharacterChoice = function(onCharacterChoice) {
     menu.loopChoice(function(choiceIdx) {
@@ -110,4 +109,36 @@ function StatusMenu() {
     });
   }
   return menu
+}
+
+function SaveAndLoadMenu() {
+  var kMaxSlots = 15;
+  return new Menu({
+    getState : function() {
+      var saveInfos = game.getSaveInfos(kMaxSlots);
+      var lines = [];
+
+      for (var i = 0; i < saveInfos.length; ++i) {
+        lines.push("Save " + leftPad(i + 1, 2));
+        var saveInfo = saveInfos[i];
+        if (saveInfo.isDefined()) {
+          lines.push(saveInfo.mapTitle());
+        } else {
+          lines.push("<Empty>");
+        }
+        lines.push("");
+      }
+
+      return {
+        lines : lines,
+        saveInfos : saveInfos
+      }
+    },
+    layout : layout.centered(sizer.fixed(320, 320)),
+    windowDetails : {
+      allowCancel : true,
+      linesPerChoice : 3,
+      displayedLines : 9
+    }
+  });
 }

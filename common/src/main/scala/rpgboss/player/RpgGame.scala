@@ -164,15 +164,26 @@ class RpgGame(gamepath: File)
 
   def saveGame(slot: Int) = {
     assertOnBoundThread()
+
+    // Persist current player location.
+    val p = mapScreen.playerEntity
+    assert(p.mapName.isDefined)
+    persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
+
     SaveFile.write(persistent.toSerializable, project, slot)
   }
 
   def loadGame(slot: Int) = {
     assertOnBoundThread()
     val save = SaveFile.read(project, slot)
-    persistent = new PersistentState(save)
+    assert(save.isDefined)
+    persistent = new PersistentState(save.get)
 
+    setParty(persistent.getIntArray(PARTY))
+
+    // Restore player location.
     setPlayerLoc(persistent.getLoc(PLAYER_LOC))
+
     mapScreen.windowManager.setTransition(1, 0, 1.0f)
     setScreen(mapScreen)
   }
@@ -187,12 +198,6 @@ class RpgGame(gamepath: File)
 
       mapScreen.updateMapAssets(if (loc.map.isEmpty) None else Some(loc.map))
     }
-  }
-
-  def persistCurrentPlayerLoc() = {
-    val p = mapScreen.playerEntity
-    assert(p.mapName.isDefined)
-    persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
   }
 
   def quit() {

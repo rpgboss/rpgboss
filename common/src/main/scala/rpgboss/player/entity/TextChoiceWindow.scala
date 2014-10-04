@@ -19,6 +19,7 @@ import java.io.File
 import rpgboss.lib.FileHelper
 import rpgboss.lib.JsonUtils
 import rpgboss.model.Item
+import rpgboss.lib.Utils
 
 class TextChoiceWindow(
   persistent: PersistentState,
@@ -102,7 +103,7 @@ class TextChoiceWindow(
     if (key == Up) {
       curChoice -= columns
       if (curChoice < 0) {
-        if (wrapChoices) {
+        if (wrapChoices && nChoices > 0) {
           curChoice += nChoices
           soundCursor.map(_.getAsset(assets).play())
         } else {
@@ -116,7 +117,7 @@ class TextChoiceWindow(
     } else if (key == Down) {
       curChoice += columns
       if (curChoice >= nChoices) {
-        if (wrapChoices) {
+        if (wrapChoices && nChoices > 0) {
           curChoice -= nChoices
           soundCursor.map(_.getAsset(assets).play())
         } else {
@@ -182,8 +183,8 @@ class TextChoiceWindow(
       }
 
       if (displayedLines != 0) {
-        val sections = lines.length / renderedLines
-        val currentSection = curChoice / displayedLines
+        val sections = Utils.ceilIntDiv(lines.length, renderedLines)
+        val currentSection = scrollTopLine / displayedLines
 
         val totalScrollbarLength = rect.h
         val sectionLength = totalScrollbarLength / sections

@@ -17,6 +17,20 @@ function showStartDialog() {
     if (choiceIdx == 0) {
       newGame();
       break;
+    } else if (choiceIdx == 1) {
+      var loadMenu = new SaveAndLoadMenu();
+
+      loadMenu.loopChoice(function(choiceId) {
+        if (loadMenu.state.saveInfos[choiceId].isDefined()) {
+          game.setTransition(0, 1, 0.4);
+          game.sleep(0.4);
+          game.loadFromSaveSlot(choiceId);
+        }
+
+        return false;
+      });
+
+      loadMenu.close();
     } else if (choiceIdx == 2) {
       game.quit();
       break;
