@@ -1,5 +1,5 @@
 function ItemMenu() {
-  return new Menu({
+  var menu = new Menu({
     getState : function() {
       var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
       var itemQtys = game.getIntArray(game.INVENTORY_QTYS());
@@ -42,42 +42,44 @@ function ItemMenu() {
       allowCancel : true
     }
   });
-}
 
-function enterItemsWindow(itemsTopWin, itemsMenu) {
-  itemsMenu.window.takeFocus();
-  itemsMenu.loopChoice(function(choiceId) {
-    if (itemsMenu.state.itemIds.length == 0) {
-      return true;
-    }
-
-    var itemId = itemsMenu.state.itemIds[choiceId];
-    var usable = itemsMenu.state.itemUsabilities[choiceId];
-    var itemsLeft = itemsMenu.state.itemQtys[choiceId];
-
-    if (!usable || itemsLeft == 0) {
-      return true;
-    }
-
-    var statusMenu = new StatusMenu();
-    statusMenu.loopCharacterChoice(function onSelect(characterId) {
-      if (itemsLeft > 0) {
-        game.useItemInMenu(itemId, characterId);
-      }
-
-      --itemsLeft;
-
-      // Don't return until after the user has had a chance to see the effect
-      // of using the last item.
-      return itemsLeft >= -1;
-    });
-    statusMenu.close();
-  });
-
-  itemsTopWin.window.takeFocus();
+  return menu;
 }
 
 function itemsMenu() {
+  function enterItemsWindow(itemsTopWin, itemsMenu) {
+    itemsMenu.window.takeFocus();
+    itemsMenu.loopChoice(function(choiceId) {
+      if (itemsMenu.state.itemIds.length == 0) {
+        return true;
+      }
+
+      var itemId = itemsMenu.state.itemIds[choiceId];
+      var usable = itemsMenu.state.itemUsabilities[choiceId];
+      var itemsLeft = itemsMenu.state.itemQtys[choiceId];
+
+      if (!usable || itemsLeft == 0) {
+        return true;
+      }
+
+      var statusMenu = new StatusMenu();
+      statusMenu.loopCharacterChoice(function onSelect(characterId) {
+        if (itemsLeft > 0) {
+          game.useItemInMenu(itemId, characterId);
+        }
+
+        --itemsLeft;
+
+        // Don't return until after the user has had a chance to see the effect
+        // of using the last item.
+        return itemsLeft >= -1;
+      });
+      statusMenu.close();
+    });
+
+    itemsTopWin.window.takeFocus();
+  }
+
   var itemsMenu = new ItemMenu();
   var itemsTopWin = new Menu({
     getState : function() {
