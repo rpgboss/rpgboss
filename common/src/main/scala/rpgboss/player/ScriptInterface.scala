@@ -21,6 +21,9 @@ object EntityInfo {
   def apply(e: Entity): EntityInfo = apply(e.x, e.y, e.dir)
 }
 
+case class CurrentAndProposedStats(
+  current: BattleStats, proposed: BattleStats)
+
 trait HasScriptConstants {
   val LEFT = Window.Left
   val CENTER = Window.Center
@@ -421,6 +424,23 @@ class ScriptInterface(
       persistent.saveCharacterVitals(characterId, characterStatus.hp,
           characterStatus.mp, characterStatus.tempStatusEffects)
     }
+  }
+
+  def getBattleStats(characterId: Int, proposedSlotId: Int,
+      proposedItemId: Int) = {
+    val partyParams = syncRun { persistent.getPartyParameters(project) }
+    val currentBattleStats = BattleStatus.fromCharacter(
+        project.data, partyParams, characterId)
+
+    if (proposedSlotId > 0 && proposedItemId > 0) {
+      partyParams.characterEquip(characterId).update(
+          proposedSlotId, proposedItemId)
+    }
+
+    val proposedBattleStats =
+      BattleStatus.fromCharacter(project.data, partyParams, characterId)
+
+    CurrentAndProposedStats(currentBattleStats.stats, proposedBattleStats.stats)
   }
 
   def getInt(key: String): Int = syncRun {

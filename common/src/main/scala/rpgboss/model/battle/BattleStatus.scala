@@ -80,7 +80,7 @@ object BattleStatus {
     pData: ProjectData,
     partyParams: PartyParameters,
     characterId: Int,
-    index: Int) = {
+    index: Int = -1) = {
     val character = pData.enums.characters(characterId)
     val level = partyParams.characterLevels(characterId)
     val baseStats = character.baseStats(pData, level)
