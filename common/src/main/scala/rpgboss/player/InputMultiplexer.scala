@@ -5,19 +5,19 @@ import com.badlogic.gdx.utils.Timer
 
 trait InputHandler {
   import MyKeys._
-  
+
   def keyDown(key: Int) = {}
   def keyUp(key: Int) = {}
-  
+
   // Defines list of keys swallowed by this event handler
   def capturedKeys = Set(Up, Down, Left, Right, OK, Cancel)
 }
 
 trait PlayerInputHandler extends InputHandler {
   private val keyIsActiveMap = new Array[Boolean](MyKeys.totalNumber)
-  
+
   def keyIsActive(key: Int) = keyIsActiveMap(key)
-  
+
   override def keyDown(key: Int) = {
     keyIsActiveMap(key) = true
     keyActivated(key)
@@ -26,7 +26,7 @@ trait PlayerInputHandler extends InputHandler {
     keyIsActiveMap(key) = false
     keyDeactivated(key)
   }
-  
+
   def keyActivated(key: Int)
   def keyDeactivated(key: Int)
 }
@@ -66,7 +66,7 @@ trait ChoiceInputHandler extends InputHandler {
     // Initial activation
     keyActivate(key)
 
-    // Schedule a task to be repeated 
+    // Schedule a task to be repeated
     Timer.schedule(activateTasks(key), keyDelay, keyInterval)
   }
 
@@ -83,10 +83,10 @@ trait ChoiceInputHandler extends InputHandler {
 class InputMultiplexer extends InputAdapter {
   val inputProcessors = new scala.collection.mutable.ListBuffer[InputHandler]()
 
-  def hasFocus(handler: InputHandler) = 
+  def hasFocus(handler: InputHandler) =
     !inputProcessors.isEmpty && inputProcessors.head == handler
-  
-  // Maps 
+
+  // Maps
   def mapKey(keycode: Int): Option[Int] = keycode match {
     case Keys.UP => Some(MyKeys.Up)
     case Keys.DOWN => Some(MyKeys.Down)
@@ -94,14 +94,16 @@ class InputMultiplexer extends InputAdapter {
     case Keys.RIGHT => Some(MyKeys.Right)
     case Keys.SPACE => Some(MyKeys.OK)
     case Keys.M => Some(MyKeys.Cancel)
+    case Keys.X => Some(MyKeys.Cancel)
+    case Keys.ESCAPE => Some(MyKeys.Cancel)
     case _ => None
   }
-  
+
   private val keyIsActive = new Array[Boolean](MyKeys.totalNumber)
-  
-  override def keyDown(keycode: Int) = 
+
+  override def keyDown(keycode: Int) =
     mapKey(keycode).map(myKeyDown _).getOrElse(false)
-  
+
   // Key down on abstract keys defined internally
   def myKeyDown(key: Int) = {
     /*
@@ -113,15 +115,15 @@ class InputMultiplexer extends InputAdapter {
     handler.map { _.keyDown(key) }.isDefined
   }
 
-  override def keyUp(keycode: Int) = 
+  override def keyUp(keycode: Int) =
     mapKey(keycode).map(myKeyUp _).getOrElse(false)
-  
+
   def myKeyUp(key: Int) = {
     keyIsActive(key) = false
     val handler = inputProcessors.find { _.capturedKeys.contains(key) }
     handler.map { _.keyUp(key) }.isDefined
   }
-  
+
   def prepend(newHandler: InputHandler) = {
     for (key <- newHandler.capturedKeys; if keyIsActive(key)) {
       // Send a keyUp signals to all input handlers that are now shadowed
@@ -139,7 +141,7 @@ class InputMultiplexer extends InputAdapter {
       // Send a keyUp to the handler before removal
       handler.keyUp(key)
     }
-    
+
     inputProcessors -= handler
   }
 }

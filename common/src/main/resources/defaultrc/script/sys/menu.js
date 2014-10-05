@@ -47,12 +47,17 @@ function ItemMenu() {
 function enterItemsWindow(itemsTopWin, itemsMenu) {
   itemsMenu.window.takeFocus();
   itemsMenu.loopChoice(function(choiceId) {
+    if (itemsMenu.state.itemIds.length == 0) {
+      return true;
+    }
+
     var itemId = itemsMenu.state.itemIds[choiceId];
     var usable = itemsMenu.state.itemUsabilities[choiceId];
     var itemsLeft = itemsMenu.state.itemQtys[choiceId];
 
-    if (!usable || itemsLeft == 0)
+    if (!usable || itemsLeft == 0) {
       return true;
+    }
 
     var statusMenu = new StatusMenu();
     statusMenu.loopCharacterChoice(function onSelect(characterId) {
