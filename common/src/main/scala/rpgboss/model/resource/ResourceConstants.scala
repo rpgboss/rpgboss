@@ -18,7 +18,7 @@ object ResourceConstants {
   def systemStartScript = "sys/start.js"
   def systemStartCall = "start()"
 
-  def editorBattleback = "sys/crownlesswish_rrr.jpg"
+  def editorBattleback = "sys/Crownlesswish/crownlesswish_rrr.jpg"
   def battlerTarget = "sys/Redshrike/goblinrider.png"
 
   def defaultTilesets = Array(

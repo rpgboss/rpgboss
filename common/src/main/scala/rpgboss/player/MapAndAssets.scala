@@ -1,6 +1,6 @@
 package rpgboss.player
 import rpgboss.model._
-import rpgboss.model.Constants.DirectionMasks._
+import rpgboss.model.DirectionMasks._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import com.badlogic.gdx.graphics.g2d._
@@ -99,7 +99,7 @@ class MapAndAssets(project: Project, val mapName: String) {
 
   def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
     import RpgMap._
-    import Constants.DirectionMasks._
+    import DirectionMasks._
     val xIdx = xTile * bytesPerTile
 
     // Test top layer first, as if the top layer provides an answer, there is
@@ -157,10 +157,11 @@ class MapAndAssets(project: Project, val mapName: String) {
     val newY = y + dy
     val (minX, minY, maxX, maxY) = (box.minX, box.minY, box.maxX, box.maxY)
 
-    val minXTile = minX.toInt
-    val minYTile = minY.toInt
-    val maxXTile = maxX.toInt
-    val maxYTile = maxY.toInt
+    // Need 'floor' because (-0.5).toInt == 0
+    val minXTile = minX.floor.toInt
+    val minYTile = minY.floor.toInt
+    val maxXTile = maxX.floor.toInt
+    val maxYTile = maxY.floor.toInt
 
     // 1. Test for going off map edge
     if (!map.metadata.withinBounds(minXTile, minYTile) ||

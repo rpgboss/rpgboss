@@ -104,7 +104,7 @@ case class Autotile(proj: Project,
     val frameI = frame % frames
 
     import Autotile._
-    import Constants.DirectionMasks._
+    import DirectionMasks._
     import Autotile.SubtileOffsets._
 
     val AHt = getCornerHt(borderConfig, WEST, NORTH, NW, As)

@@ -12,6 +12,8 @@ import rpgboss.player.entity._
 import Predef._
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.NativeObject
+import rpgboss.save.SaveFile
+import rpgboss.save.SaveInfo
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -46,7 +48,7 @@ trait HasScriptConstants {
   def CHARACTER_STATUS_EFFECTS(characterId: Int) =
     "characterStatusEffects-%d".format(characterId)
 
-  val PICTURE_SLOTS = Constants.PictureSlots
+  val PICTURE_SLOTS = PictureSlots.END
 }
 
 /**
@@ -99,17 +101,10 @@ class ScriptInterface(
     val transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
 
-    syncRun {
-      if (map.metadata.changeMusicOnEnter) {
-        mapScreen.playMusic(0, map.metadata.music, true, fadeDuration);
-      }
-
-      if (transition == Transitions.FADE) {
+    if (transition == Transitions.FADE) {
+      syncRun {
         mapScreen.windowManager.setTransition(0, 1, fadeDuration)
       }
-    }
-
-    if (transition == Transitions.FADE) {
       sleep(fadeDuration);
     }
 
@@ -450,6 +445,22 @@ class ScriptInterface(
   def startNewGame() = syncRun {
     game.startNewGame()
   }
+
+  def getSaveInfos(maxSlots: Int): Array[SaveInfo] = {
+    val seq = for (slot <- 0 until maxSlots) yield {
+      SaveFile.readInfo(project, slot)
+    }
+    seq.toArray
+  }
+
+  def loadFromSaveSlot(slot: Int) = syncRun {
+    game.loadGame(slot)
+  }
+
+  def saveToSaveSlot(slot: Int) = syncRun {
+    game.saveGame(slot)
+  }
+
   def quit() = syncRun {
     game.quit()
   }

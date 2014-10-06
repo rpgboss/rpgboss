@@ -10,3 +10,7 @@ v0.1.7
 v0.2.9
 ------
  - In "items.json", the item type field has been renamed from "itemType" to "itemTypeId".
+
+v0.3.3
+------
+ - Some battle backgrounds have been moved. This may break event commands that start battles.

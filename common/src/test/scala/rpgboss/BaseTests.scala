@@ -113,7 +113,8 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
 
       startNewGame()
 
-      setScreen(mapScreen)
+      // Allow test to start immediately
+      mapScreen.windowManager.clearTransition()
 
       // Run this asynchronously so it doesn't block the main render thread.
       Future {

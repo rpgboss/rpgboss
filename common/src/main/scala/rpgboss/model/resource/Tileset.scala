@@ -46,7 +46,7 @@ object Tileset extends MetaResource[Tileset, TilesetMetadata] {
     val tilesetWOMetadata = Tileset(proj, name,
       new TilesetMetadata(Array.empty, Array.empty))
 
-    import Constants.DirectionMasks._
+    import DirectionMasks._
 
     // Generate blockedDirs array
     val x = tilesetWOMetadata.xTiles

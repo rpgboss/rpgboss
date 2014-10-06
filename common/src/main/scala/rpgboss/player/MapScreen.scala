@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
+import rpgboss.model.Transitions
 
 /**
  * *
@@ -54,6 +55,10 @@ class MapScreen(val game: RpgGame)
       eventEntities = mapAndAssets.mapData.events.map {
         case (k, v) => ((k, new EventEntity(game, mapName, v)))
       }
+
+      playMusic(0, mapAndAssets.map.metadata.music, true,
+          Transitions.fadeLength);
+
     } else {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None
