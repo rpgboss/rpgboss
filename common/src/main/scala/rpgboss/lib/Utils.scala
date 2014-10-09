@@ -174,12 +174,6 @@ object ArrayUtils {
       resized(a, minElems, newDefaultInstance)
     else
       a
-
-  def normalizedAry[T](
-    a: Array[T],
-    nElems: Int,
-    newDefaultInstance: () => T)(implicit m: Manifest[T]): Array[T] =
-    normalizedAry(a, nElems, nElems, newDefaultInstance)
 }
 
 object JsonUtils {

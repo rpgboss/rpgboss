@@ -9,16 +9,16 @@ class UnitSpec extends FlatSpec with Matchers {
    * TODO: Investigate if we can do this without using json4s, which might not
    * be always accurate.
    */
-  class DeepEqualMatcher[A <: AnyRef](expected: A) 
+  class DeepEqualMatcher[A <: AnyRef](expected: A)
     extends Matcher[A] {
-    
+
     def deepEquals[T](a: T, b: T): Boolean = {
       if (a.isInstanceOf[Product] && b.isInstanceOf[Product]) {
         val aProduct = a.asInstanceOf[Product]
         val bProduct = b.asInstanceOf[Product]
         if (aProduct.productArity != bProduct.productArity)
           return false
-        
+
         val pairIt = (aProduct.productIterator zip bProduct.productIterator)
         pairIt forall {
           case (aElement, bElement) => {
@@ -30,7 +30,7 @@ class UnitSpec extends FlatSpec with Matchers {
         val bArray = b.asInstanceOf[Array[_]]
         if (aArray.length != bArray.length)
           return false
-        
+
         val pairIt = aArray zip bArray
         pairIt forall {
           case (aElement, bElement) => {
@@ -42,7 +42,7 @@ class UnitSpec extends FlatSpec with Matchers {
         val bMap = b.asInstanceOf[Map[_, _]]
         if (aMap.size != bMap.size)
           return false
-        
+
         // TODO: Slow, but probably sufficient.
         aMap.iterator.forall {
           case (aK, aV) => bMap.find({
@@ -56,7 +56,7 @@ class UnitSpec extends FlatSpec with Matchers {
         equal
       }
     }
-    
+
     def apply(left: A) = {
       MatchResult(
         deepEquals(left, expected),
@@ -64,6 +64,6 @@ class UnitSpec extends FlatSpec with Matchers {
         s"""$left deepEqualed $expected""")
     }
   }
-  
+
   def deepEqual[A <: AnyRef](right: A) = new DeepEqualMatcher(right)
 }
