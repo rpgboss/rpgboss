@@ -31,6 +31,8 @@ class TextChoiceWindow(
   extends ChoiceWindow(persistent, manager, inputs, rect,
                        invisible = false,
                        options.defaultChoice, options.allowCancel) {
+  assert(options.linesPerChoice != 0)
+
   def columns = options.columns
   def displayedLines = options.displayedLines
   def linesPerChoice = options.linesPerChoice
@@ -76,7 +78,13 @@ class TextChoiceWindow(
   def updateLines(newLines: Array[String]) = {
     lines = newLines
     updateTextImages()
-    curChoice = math.min(curChoice, lines.length / linesPerChoice - 1)
+
+    if (lines.length == 0) {
+      curChoice = 0
+    } else {
+      curChoice = math.min(curChoice, lines.length / linesPerChoice - 1)
+    }
+
     updateScrollPosition()
   }
 

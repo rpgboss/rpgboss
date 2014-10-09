@@ -53,11 +53,12 @@ object BattleStats {
   def apply(pData: ProjectData, baseStats: BaseStats,
             equippedIds: Array[Int] = Array(),
             tempStatusEffectIds: Array[Int] = Array()): BattleStats = {
-    require(equippedIds.forall(i => i >= 0 && i < pData.enums.items.length))
+    // -1 is okay because that signifies no item equipped.
+    require(equippedIds.forall(i => i >= -1 && i < pData.enums.items.length))
     require(tempStatusEffectIds.forall(
       i => i >= 0 && i < pData.enums.statusEffects.length))
 
-    val equipment = equippedIds.map(pData.enums.items)
+    val equipment = equippedIds.filterNot(_ == -1).map(pData.enums.items)
     val equipmentEffects = equipment.flatMap(_.effects)
 
     // Make sure we don't apply more than max-stacks of each status effect

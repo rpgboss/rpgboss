@@ -104,4 +104,39 @@ class PersistentStateSpec extends UnitSpec {
     p.addRemoveItem(3, -4) should equal (true)
     p.getZippedItems() should deepEqual(Array[(Int, Int)]())
   }
+
+  "PersistentState" should "get give a list of equippable items" in {
+    val p = new PersistentState
+
+    val pData = ProjectData()
+
+    pData.enums.items = Array(
+      Item(name = "Some Consumable", itemTypeId = ItemType.Consumable.id),
+      Item(name = "Weapon1", itemTypeId = ItemType.Equipment.id, equipType = 0),
+      Item(name = "Armor", itemTypeId = ItemType.Equipment.id, equipType = 1),
+      Item(name = "Weapon2", itemTypeId = ItemType.Equipment.id, equipType = 0),
+      Item(name = "NoHave", itemTypeId = ItemType.Equipment.id, equipType = 0))
+
+    pData.enums.classes = Array(
+      CharClass(canUseItems = Array(0, 1, 2, 3, 4)),
+      CharClass(canUseItems = Array(1)),
+      CharClass(canUseItems = Array(2, 3, 4)))
+
+    pData.enums.characters = Array(
+      Character(charClass = 0),
+      Character(charClass = 1),
+      Character(charClass = 2))
+
+    p.addRemoveItem(0, 1)
+    p.addRemoveItem(1, 2)
+    p.addRemoveItem(2, 2)
+    p.addRemoveItem(3, 2)
+
+    p.getEquippableItems(pData, 0, 0) should deepEqual(Array(1, 3))
+    p.getEquippableItems(pData, 0, 1) should deepEqual(Array(2))
+    p.getEquippableItems(pData, 1, 0) should deepEqual(Array(1))
+    p.getEquippableItems(pData, 1, 1) should deepEqual(Array[Int]())
+    p.getEquippableItems(pData, 2, 0) should deepEqual(Array(3))
+    p.getEquippableItems(pData, 2, 1) should deepEqual(Array(2))
+  }
 }

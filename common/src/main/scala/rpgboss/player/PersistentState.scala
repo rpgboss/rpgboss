@@ -8,6 +8,9 @@ import rpgboss.model.battle.PartyParameters
 import rpgboss.model.MapLoc
 import rpgboss.save.SaveFile
 import rpgboss.save.SavedEventState
+import rpgboss.model.ItemType
+import rpgboss.model.ProjectData
+import rpgboss.lib.ArrayUtils
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -47,9 +50,8 @@ class PersistentState(
         SavedEventState(mapName, eventId, eventState)
     }
     new SaveFile(intMap.toMap, intArrayMap.toMap, stringArrayMap.toMap,
-        mapLocMap.toMap, serializedEventStates.toArray)
+      mapLocMap.toMap, serializedEventStates.toArray)
   }
-
 
   def getLoc(key: String) = {
     mapLocMap.getOrElse(key, MapLoc())
@@ -217,5 +219,61 @@ class PersistentState(
     }
 
     return true
+  }
+
+  def getEquippableItems(
+    pData: ProjectData, characterId: Int, equipTypeId: Int) = {
+    assume(characterId < pData.enums.characters.length)
+    assume(equipTypeId < pData.enums.equipTypes.length)
+    val itemIds = getIntArray(INVENTORY_ITEM_IDS)
+    val itemQtys = getIntArray(INVENTORY_QTYS)
+    assert(itemQtys.length == itemIds.length)
+
+    var character = pData.enums.characters(characterId)
+
+    assert(character.charClass < pData.enums.classes.length)
+    val characterClass = pData.enums.classes(character.charClass)
+
+    val equippableItemIds = new collection.mutable.ArrayBuffer[Int]()
+
+    for (
+      (itemId, itemQty) <- itemIds zip itemQtys;
+      if itemQty > 0
+    ) {
+      assert(itemId < pData.enums.items.length)
+      val item = pData.enums.items(itemId);
+
+      if (item.itemTypeId == ItemType.Equipment.id &&
+        item.equipType == equipTypeId &&
+        characterClass.canUseItems.contains(itemId)) {
+        equippableItemIds.append(itemId)
+      }
+    }
+
+    equippableItemIds.toArray
+  }
+
+  def equipItem(characterId: Int, slotId: Int, itemId: Int) = {
+    // Remove equipped item from inventory
+    val removed = addRemoveItem(itemId, -1)
+    assert(removed)
+
+    val currentEquipment = getIntArray(CHARACTER_EQUIP(characterId))
+
+    // Put existing item back in inventory
+    if (slotId < currentEquipment.length) {
+      val currentItemId = currentEquipment(slotId)
+      if (currentItemId >= 0) {
+        addRemoveItem(currentItemId, 1)
+      }
+    }
+
+    // Resize array if necessary and equip new item.
+    val resizedAry = if (slotId < currentEquipment.length) {
+      currentEquipment
+    } else {
+      ArrayUtils.resized(currentEquipment, slotId + 1, () => -1)
+    }
+    resizedAry.update(slotId, itemId)
   }
 }

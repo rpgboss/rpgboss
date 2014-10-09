@@ -1,12 +1,20 @@
 // Casting to support both Javascript and Java strings.
 function leftPad(string, totalLen) {
+  assert(typeof string != 'undefined');
   var castedString = String(string);
+  assert(totalLen > castedString.length, 
+      "padding failed: totalLen = " + totalLen +
+      " string.length = " + castedString.length);
   var padLength = Math.max(totalLen - castedString.length, 0);
   return Array(padLength).join(" ") + castedString;
 }
 
 function rightPad(string, totalLen) {
+  assert(typeof string != 'undefined');
   var castedString = String(string);
+  assert(totalLen > castedString.length, 
+      "padding failed: totalLen = " + totalLen +
+      " string.length = " + castedString.length);
   var padLength = Math.max(totalLen - castedString.length, 0);
   return castedString + Array(padLength).join(" ");
 }
