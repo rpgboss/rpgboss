@@ -181,6 +181,7 @@ class PersistentState(
    * @return  Whether the items were successfully added or removed.
    */
   def addRemoveItem(itemId: Int, qtyDelta: Int): Boolean = {
+    assert(itemId >= 0)
     assert(qtyDelta != 0)
 
     val itemQtys = getIntArray(INVENTORY_QTYS)
@@ -221,6 +222,24 @@ class PersistentState(
     return true
   }
 
+  /**
+   * Count number of items of itemId in inventory
+   */
+  def countItems(itemId: Int) = {
+    assert(itemId >= 0)
+
+    val itemQtys = getIntArray(INVENTORY_QTYS)
+    val itemIds = getIntArray(INVENTORY_ITEM_IDS)
+
+    val idxOfItem = itemIds.indexOf(itemId)
+    val itemExistsInInventory = idxOfItem != -1
+
+    if (itemExistsInInventory)
+      itemQtys(idxOfItem)
+    else
+      0
+  }
+
   def getEquippableItems(
     pData: ProjectData, characterId: Int, equipTypeId: Int) = {
     assume(characterId < pData.enums.characters.length)
@@ -253,14 +272,21 @@ class PersistentState(
     equippableItemIds.toArray
   }
 
-  def equipItem(characterId: Int, slotId: Int, itemId: Int) = {
-    // Remove equipped item from inventory
-    val removed = addRemoveItem(itemId, -1)
-    assert(removed)
+  /**
+   * Returns whether or not we succeeded.
+   * @param   itemId    If set to -1, this means unequip only.
+   */
+  def equipItem(characterId: Int, slotId: Int, itemId: Int): Boolean = {
+    // Remove newly item from inventory
+    if (itemId >= 0) {
+      val removed = addRemoveItem(itemId, -1)
+      if (!removed)
+        return false
+    }
 
     val currentEquipment = getIntArray(CHARACTER_EQUIP(characterId))
 
-    // Put existing item back in inventory
+    // Put already-equipped item (if exists) back into inventory
     if (slotId < currentEquipment.length) {
       val currentItemId = currentEquipment(slotId)
       if (currentItemId >= 0) {
@@ -275,5 +301,9 @@ class PersistentState(
       ArrayUtils.resized(currentEquipment, slotId + 1, () => -1)
     }
     resizedAry.update(slotId, itemId)
+
+    setIntArray(CHARACTER_EQUIP(characterId), resizedAry)
+
+    return true
   }
 }

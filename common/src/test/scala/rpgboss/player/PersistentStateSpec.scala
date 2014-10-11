@@ -3,15 +3,13 @@ package rpgboss.player
 import rpgboss.UnitSpec
 import rpgboss.model._
 
-class PersistentStateSpec extends UnitSpec {
+class PersistentStateSpec extends UnitSpec with HasScriptConstants {
   def levelingFixture(level1: Int, level2: Int, exp1: Int, exp2: Int) = new {
     val character1 =
       Character(progressions = StatProgressions(exp = Curve(300, 100)))
     val character2 =
       Character(progressions = StatProgressions(exp = Curve(600, 200)))
     val characters = Array(character1, character2)
-
-    import ScriptInterfaceConstants._
 
     val persistent = new PersistentState
     persistent.setIntArray(CHARACTER_LEVELS , Array(level1, level2))
@@ -138,5 +136,37 @@ class PersistentStateSpec extends UnitSpec {
     p.getEquippableItems(pData, 1, 1) should deepEqual(Array[Int]())
     p.getEquippableItems(pData, 2, 0) should deepEqual(Array(3))
     p.getEquippableItems(pData, 2, 1) should deepEqual(Array(2))
+  }
+
+  "PersistentState" should "equip items correctly" in {
+    val p = new PersistentState
+
+    val pData = ProjectData()
+
+    pData.enums.items = Array(
+      Item(name = "Weapon1", itemTypeId = ItemType.Equipment.id, equipType = 0),
+      Item(name = "Weapon2", itemTypeId = ItemType.Equipment.id, equipType = 0))
+
+    p.addRemoveItem(0, 1)
+
+    p.countItems(0) should equal (1)
+    p.countItems(1) should equal (0)
+
+    // Can't equip item id 1, because there are none.
+    p.equipItem(0, 2, 1) should equal (false)
+
+    p.equipItem(0, 2, 0) should equal (true)
+
+    p.countItems(0) should equal (0)
+    p.countItems(1) should equal (0)
+
+    p.getIntArray(CHARACTER_EQUIP(0)) should deepEqual(Array(-1, -1, 0))
+
+    p.equipItem(0, 2, -1) should equal (true)
+
+    p.countItems(0) should equal (1)
+    p.countItems(1) should equal (0)
+
+    p.getIntArray(CHARACTER_EQUIP(0)) should deepEqual(Array(-1, -1, -1))
   }
 }
