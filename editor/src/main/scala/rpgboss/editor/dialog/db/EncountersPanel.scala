@@ -23,7 +23,7 @@ import rpgboss.model.battle.PartyParameters
 
 object EncounterFieldGdxPanel {
   val width = 640
-  val height = 480
+  val height = 320
 }
 
 class EncounterFieldGdxPanel(project: Project, initial: Encounter)
@@ -191,7 +191,7 @@ class EncountersPanel(
       contents += new BoxPanel(Orientation.Vertical) {
         contents += leftLabel("Enemies:")
         contents += new ScrollPane(fEnemySelector) {
-          preferredSize = new Dimension(200, 320)
+          preferredSize = new Dimension(200, 120)
         }
       }
 

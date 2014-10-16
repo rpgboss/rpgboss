@@ -76,11 +76,12 @@ class AnimationsPanel(
         row().grid(lbl("Name:")).add(fName)
       }
       contents += new BoxPanel(Orientation.Horizontal) {
-        contents += fVisuals
-        contents += fSounds
+        contents += animationPlayerPanel
+        contents += new BoxPanel(Orientation.Vertical) {
+          contents += fVisuals
+          contents += fSounds
+        }
       }
-
-      contents += animationPlayerPanel
 
       override def dispose() = {
         animationPlayerPanel.dispose()
