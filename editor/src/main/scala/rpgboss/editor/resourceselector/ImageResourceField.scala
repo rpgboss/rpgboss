@@ -50,7 +50,10 @@ abstract class ImageResourceField[SpecT](
 
   override def paintComponent(g: Graphics2D) = {
     super.paintComponent(g)
-    g.setColor(Color.WHITE)
+    if (enabled)
+      g.setColor(Color.WHITE)
+    else
+      g.setColor(Color.GRAY)
     g.fillRect(0, 0, peer.getWidth(), peer.getHeight())
 
     // Draw the image centered if it exists
@@ -63,7 +66,10 @@ abstract class ImageResourceField[SpecT](
 
   listenTo(mouse.clicks)
   reactions += {
-    case e: MouseClicked => getSelectDialog().open()
+    case e: MouseClicked => {
+      if (enabled)
+        getSelectDialog().open()
+    }
   }
 }
 
