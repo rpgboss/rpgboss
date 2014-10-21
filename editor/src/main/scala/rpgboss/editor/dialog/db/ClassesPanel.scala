@@ -66,8 +66,10 @@ class ClassesPanel(
     }
 
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
-      contents += mainFields
-      contents += fEffects
+      contents += new BoxPanel(Orientation.Vertical) {
+        contents += mainFields
+        contents += fEffects
+      }
       contents += rightFields
     }
   }
