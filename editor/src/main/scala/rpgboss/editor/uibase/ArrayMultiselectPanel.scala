@@ -17,10 +17,6 @@ class ArrayMultiselectPanel[T <: HasName](
   onUpdate: Array[Int] => Unit)
   extends ScrollPane
   with LazyLogging {
-
-  preferredSize = new Dimension(150, 200)
-  maximumSize = new Dimension(150, 300)
-
   val model = collection.mutable.Set[Int](initialSelections: _*)
 
   val gridPanel = new GridPanel(choices.size, 1) {
@@ -36,4 +32,7 @@ class ArrayMultiselectPanel[T <: HasName](
   border = BorderFactory.createTitledBorder(label)
 
   contents = gridPanel
+
+
+  preferredSize = new Dimension(100, 100)
 }

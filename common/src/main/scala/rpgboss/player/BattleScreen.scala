@@ -351,25 +351,27 @@ class BattleScreen(
 
     _battle = Some(battle)
 
-    enemyListWindow = {
-      new TextWindow(
-        persistentState,
-        windowManager,
-        null,
-        Array(),
-        layout.southwest(200, 180)) {
-        override def openCloseTime = 0
+    if (gameOpt.isDefined) {
+      enemyListWindow = {
+        new TextWindow(
+          persistentState,
+          windowManager,
+          null,
+          Array(),
+          layout.southwest(200, 180)) {
+          override def openCloseTime = 0
+        }
       }
-    }
 
-    partyListWindow = {
-      new TextWindow(
-        persistentState,
-        windowManager,
-        null,
-        Array(),
-        layout.southeast(440, 180)) {
-        override def openCloseTime = 0
+      partyListWindow = {
+        new TextWindow(
+          persistentState,
+          windowManager,
+          null,
+          Array(),
+          layout.southeast(440, 180)) {
+          override def openCloseTime = 0
+        }
       }
     }
 

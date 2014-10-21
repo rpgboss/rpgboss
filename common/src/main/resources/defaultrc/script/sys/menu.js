@@ -129,9 +129,7 @@ function equipMenu(statusMenu) {
         }
       },
       layout : layout.southwest(sizer.prop(0.5, 0.6)),
-      windowDetails : {
-
-      }
+      windowDetails : {}
     });
   }
 
@@ -146,7 +144,7 @@ function equipMenu(statusMenu) {
         
         for (var i = 0; i < slots.length; ++i) {
           var itemsString = "";
-          if (i < equipment.length && equipment[i] > 0) {
+          if (i < equipment.length && equipment[i] >= 0) {
             itemsString = items[equipment[i]].name();
           }
           
@@ -159,7 +157,7 @@ function equipMenu(statusMenu) {
       },
       layout : layout.north(sizer.prop(1.0, 0.4)),
       windowDetails : {
-
+        allowCancel: true
       }
     });
   }
@@ -168,7 +166,48 @@ function equipMenu(statusMenu) {
     var statsMenu = new StatsMenu(characterId);
     var equipMenu = new EquipMenu(characterId);
     
+    var slotEquipTypes = [0, 1, 2, 4, 4];
+    
     equipMenu.loopChoice(function(choiceId) {
+      if (choiceId == -1)
+        return false;
+      
+      var slotId = choiceId;
+      var equipTypeId = slotEquipTypes[slotId];
+      var itemsMenu = new Menu({
+        getState : function() {
+          var items = project.data().enums().items();
+          var itemIds = game.getEquippableItems(characterId, equipTypeId);
+          var itemNames = 
+            itemIds.map(function(itemId) { return items[itemId].name(); });
+          
+          return {
+            itemIds: itemIds,
+            lines: itemNames
+          }
+        },
+        layout : layout.southeast(sizer.prop(0.5, 0.6)),
+        windowDetails : {
+          allowCancel : true
+        }
+      });
+      
+      itemsMenu.loopChoice(function(choiceId) {
+        if (choiceId == -1)
+          return false;
+        
+        if (itemsMenu.state.itemIds.length == 0)
+          return false;
+        
+        var itemId = itemsMenu.state.itemIds[choiceId];
+        game.equipItem(characterId, slotId, itemId);
+        
+        statsMenu.update();
+        
+        return false;
+      })
+      itemsMenu.close();
+      
       return true;
     });
     

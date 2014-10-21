@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Disposable
 
 object AnimationPlayerGdxPanel {
-  def width = 640
+  def width = 320
   def height = 320
 }
 

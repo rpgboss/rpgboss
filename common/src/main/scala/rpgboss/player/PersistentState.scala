@@ -11,6 +11,7 @@ import rpgboss.save.SavedEventState
 import rpgboss.model.ItemType
 import rpgboss.model.ProjectData
 import rpgboss.lib.ArrayUtils
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -25,7 +26,8 @@ class PersistentState(
   initial: SaveFile = SaveFile())
   extends ThreadChecked
   with Publisher[PersistentStateUpdate]
-  with HasScriptConstants {
+  with HasScriptConstants
+  with LazyLogging {
 
   private val intMap = new MutableHashMap[String, Int]
   intMap ++= initial.intMap
@@ -118,7 +120,8 @@ class PersistentState(
       getIntArray(CHARACTER_LEVELS),
       getIntArray(CHARACTER_HPS),
       getIntArray(CHARACTER_MPS),
-      charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
+      charactersIdxs.map(
+          id => getIntArray(CHARACTER_EQUIP(id)).filter(_ != -1)),
       charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
       getIntArray(CHARACTER_ROWS))
   }
@@ -242,6 +245,8 @@ class PersistentState(
 
   def getEquippableItems(
     pData: ProjectData, characterId: Int, equipTypeId: Int) = {
+    assertOnBoundThread()
+
     assume(characterId < pData.enums.characters.length)
     assume(equipTypeId < pData.enums.equipTypes.length)
     val itemIds = getIntArray(INVENTORY_ITEM_IDS)

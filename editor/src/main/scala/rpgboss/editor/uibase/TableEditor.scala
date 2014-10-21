@@ -18,7 +18,8 @@ abstract class TableEditor[T] extends ScrollPane {
   def modelArray: ArrayBuffer[T]
   def newInstance(): T
 
-  preferredSize = new Dimension(200, 200)
+  minimumSize = new Dimension(100, 100)
+  preferredSize = new Dimension(150, 100)
 
   /**
    * Called whenever modelArray changes.

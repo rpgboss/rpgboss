@@ -90,7 +90,7 @@ class EnemiesPanel(
 
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += bioFields
-      contents += new GridPanel(2, 1) {
+      contents += new BoxPanel(Orientation.Vertical) {
         contents += fEffects
         contents += fSkills
       }
