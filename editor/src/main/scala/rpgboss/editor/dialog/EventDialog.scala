@@ -12,6 +12,7 @@ import rpgboss.editor.StateMaster
 import java.awt.Dimension
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.resourceselector.SpriteField
+import javax.swing.BorderFactory
 
 class EventDialog(
   owner: Window,
@@ -29,9 +30,10 @@ class EventDialog(
   class EventStatePane(val idx: Int) extends BoxPanel(Orientation.Horizontal) {
     private def curEvtState = event.states(idx)
 
-    val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
-      selection.item = EventTrigger(curEvtState.trigger)
-    }
+    val fSameAppearanceAsStateZero: CheckBox =
+      boolField("Same Appearance As State 0",
+          curEvtState.sameAppearanceAsStateZero,
+          checked => updateAppearanceFieldsState())
     val heightBox = new ComboBox(EventHeight.values.toSeq) {
       selection.item = EventHeight(curEvtState.height)
     }
@@ -47,13 +49,40 @@ class EventDialog(
         }
       })
 
-    contents += new DesignGridPanel {
-      row().grid().add(leftLabel("Trigger:"))
-      row().grid().add(triggerBox)
-      row().grid().add(leftLabel("Height:"))
-      row().grid().add(heightBox)
-      row().grid().add(leftLabel("Sprite:"))
-      row().grid().add(spriteBox)
+    def updateAppearanceFieldsState() = {
+      if (idx == 0) {
+        fSameAppearanceAsStateZero.selected = true
+        fSameAppearanceAsStateZero.enabled = false
+        heightBox.enabled = true
+        spriteBox.enabled = true
+      } else {
+        val sameAppearance = fSameAppearanceAsStateZero.selected
+        heightBox.enabled = !sameAppearance
+        spriteBox.enabled = !sameAppearance
+      }
+    }
+    updateAppearanceFieldsState()
+
+    val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
+      selection.item = EventTrigger(curEvtState.trigger)
+    }
+
+    contents += new BoxPanel(Orientation.Vertical) {
+      contents += new DesignGridPanel {
+        border = BorderFactory.createTitledBorder("Appearance")
+
+        row().grid().add(fSameAppearanceAsStateZero)
+        row().grid().add(leftLabel("Height:"))
+        row().grid().add(heightBox)
+        row().grid().add(leftLabel("Sprite:"))
+        row().grid().add(spriteBox)
+      }
+
+      contents += new DesignGridPanel {
+        border = BorderFactory.createTitledBorder("Programming")
+        row().grid().add(leftLabel("Trigger:"))
+        row().grid().add(triggerBox)
+      }
     }
 
     val commandBox = new CommandBox(
@@ -76,6 +105,7 @@ class EventDialog(
     def formToModel() = {
       val origState = event.states(idx)
       val newState = origState.copy(
+        sameAppearanceAsStateZero = fSameAppearanceAsStateZero.selected,
         sprite = spriteBox.getValue,
         trigger = triggerBox.selection.item.id,
         height = heightBox.selection.item.id,

@@ -39,12 +39,15 @@ object RpgEvent {
 }
 
 /**
- * @param   cmds    May be empty.
+ * @param   cmds                        May be empty.
+ * @param   sameAppearanceAsStateZero   If true, takes on the height and sprite
+ *                                      of state 0.
  */
 case class RpgEventState(
   switchCondition: Option[EventCondition] = None,
-  sprite: Option[SpriteSpec] = None,
   trigger: Int = EventTrigger.BUTTON.id,
+  sameAppearanceAsStateZero: Boolean = true,
+  sprite: Option[SpriteSpec] = None,
   height: Int = EventHeight.UNDER.id,
   cmds: Array[EventCmd] = RpgEventState.defaultCmds)
 

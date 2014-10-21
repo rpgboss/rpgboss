@@ -18,6 +18,13 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
   def evtState = mapEvent.states(evtStateIdx)
 
+  def height = {
+    if (evtState.sameAppearanceAsStateZero)
+      mapEvent.states.head.height
+    else
+      evtState.height
+  }
+
   val persistentListener =
     new Subscriber[PersistentStateUpdate, PersistentState#Pub] {
     def notify(pub: PersistentState#Pub, evt: PersistentStateUpdate) =
@@ -30,7 +37,10 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
   def updateState() = {
     evtStateIdx = game.persistent.getEventState(mapName, mapEvent.id)
-    setSprite(evtState.sprite)
+    if (evtState.sameAppearanceAsStateZero)
+      setSprite(mapEvent.states.head.sprite)
+    else
+      setSprite(evtState.sprite)
   }
   updateState()
 
