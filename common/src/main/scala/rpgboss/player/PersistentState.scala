@@ -11,6 +11,7 @@ import rpgboss.save.SavedEventState
 import rpgboss.model.ItemType
 import rpgboss.model.ProjectData
 import rpgboss.lib.ArrayUtils
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -25,7 +26,8 @@ class PersistentState(
   initial: SaveFile = SaveFile())
   extends ThreadChecked
   with Publisher[PersistentStateUpdate]
-  with HasScriptConstants {
+  with HasScriptConstants
+  with LazyLogging {
 
   private val intMap = new MutableHashMap[String, Int]
   intMap ++= initial.intMap
@@ -118,7 +120,8 @@ class PersistentState(
       getIntArray(CHARACTER_LEVELS),
       getIntArray(CHARACTER_HPS),
       getIntArray(CHARACTER_MPS),
-      charactersIdxs.map(id => getIntArray(CHARACTER_EQUIP(id))),
+      charactersIdxs.map(
+          id => getIntArray(CHARACTER_EQUIP(id)).filter(_ != -1)),
       charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
       getIntArray(CHARACTER_ROWS))
   }
@@ -181,6 +184,7 @@ class PersistentState(
    * @return  Whether the items were successfully added or removed.
    */
   def addRemoveItem(itemId: Int, qtyDelta: Int): Boolean = {
+    assert(itemId >= 0)
     assert(qtyDelta != 0)
 
     val itemQtys = getIntArray(INVENTORY_QTYS)
@@ -221,8 +225,28 @@ class PersistentState(
     return true
   }
 
+  /**
+   * Count number of items of itemId in inventory
+   */
+  def countItems(itemId: Int) = {
+    assert(itemId >= 0)
+
+    val itemQtys = getIntArray(INVENTORY_QTYS)
+    val itemIds = getIntArray(INVENTORY_ITEM_IDS)
+
+    val idxOfItem = itemIds.indexOf(itemId)
+    val itemExistsInInventory = idxOfItem != -1
+
+    if (itemExistsInInventory)
+      itemQtys(idxOfItem)
+    else
+      0
+  }
+
   def getEquippableItems(
     pData: ProjectData, characterId: Int, equipTypeId: Int) = {
+    assertOnBoundThread()
+
     assume(characterId < pData.enums.characters.length)
     assume(equipTypeId < pData.enums.equipTypes.length)
     val itemIds = getIntArray(INVENTORY_ITEM_IDS)
@@ -253,14 +277,21 @@ class PersistentState(
     equippableItemIds.toArray
   }
 
-  def equipItem(characterId: Int, slotId: Int, itemId: Int) = {
-    // Remove equipped item from inventory
-    val removed = addRemoveItem(itemId, -1)
-    assert(removed)
+  /**
+   * Returns whether or not we succeeded.
+   * @param   itemId    If set to -1, this means unequip only.
+   */
+  def equipItem(characterId: Int, slotId: Int, itemId: Int): Boolean = {
+    // Remove newly item from inventory
+    if (itemId >= 0) {
+      val removed = addRemoveItem(itemId, -1)
+      if (!removed)
+        return false
+    }
 
     val currentEquipment = getIntArray(CHARACTER_EQUIP(characterId))
 
-    // Put existing item back in inventory
+    // Put already-equipped item (if exists) back into inventory
     if (slotId < currentEquipment.length) {
       val currentItemId = currentEquipment(slotId)
       if (currentItemId >= 0) {
@@ -275,5 +306,9 @@ class PersistentState(
       ArrayUtils.resized(currentEquipment, slotId + 1, () => -1)
     }
     resizedAry.update(slotId, itemId)
+
+    setIntArray(CHARACTER_EQUIP(characterId), resizedAry)
+
+    return true
   }
 }

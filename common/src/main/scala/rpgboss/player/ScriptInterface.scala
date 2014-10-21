@@ -462,6 +462,14 @@ class ScriptInterface(
     persistent.setStringArray(key, value)
   }
 
+  def getEquippableItems(characterId: Int, equipTypeId: Int) = syncRun {
+    persistent.getEquippableItems(project.data, characterId, equipTypeId)
+  }
+
+  def equipItem(characterId: Int, slotId: Int, itemId: Int) = syncRun {
+    persistent.equipItem(characterId, slotId, itemId)
+  }
+
   def startNewGame() = syncRun {
     game.startNewGame()
   }

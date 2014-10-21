@@ -332,10 +332,10 @@ battlebg/sys/Etolier/09desert.jpg
 battlebg/sys/Etolier/18kumo.jpg
 battlebg/sys/Etolier/21maou_yama.jpg
 battlebg/sys/Public/beach.jpg
-battlebg/sys/Xin/factory.jpg
 battlebg/sys/Xin/Palace1.jpg
+battlebg/sys/Xin/Strangedesert.jpg
+battlebg/sys/Xin/factory.jpg
 battlebg/sys/Xin/rocky.jpg
-battlebg/sys/Xin/strangedesert.jpg
 battler/sys/AncientBeast/cyberhound.png
 battler/sys/Benalene/firecreature.png
 battler/sys/Benalene/icecreature.png
