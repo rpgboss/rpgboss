@@ -30,7 +30,7 @@ case class RpgEvent(
   var name: String,
   var x: Float,
   var y: Float,
-  states: Array[RpgEventState])
+  var states: Array[RpgEventState])
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
@@ -44,12 +44,12 @@ object RpgEvent {
  *                                      of the preceding state.
  */
 case class RpgEventState(
-  switchCondition: Option[EventCondition] = None,
-  trigger: Int = EventTrigger.BUTTON.id,
-  sameAppearanceAsPrevState: Boolean = true,
-  sprite: Option[SpriteSpec] = None,
-  height: Int = EventHeight.UNDER.id,
-  cmds: Array[EventCmd] = RpgEventState.defaultCmds)
+  var switchCondition: Option[EventCondition] = None,
+  var trigger: Int = EventTrigger.BUTTON.id,
+  var sameAppearanceAsPrevState: Boolean = true,
+  var sprite: Option[SpriteSpec] = None,
+  var height: Int = EventHeight.UNDER.id,
+  var cmds: Array[EventCmd] = RpgEventState.defaultCmds)
 
 object RpgEventState {
   def defaultCmds: Array[EventCmd] = Array()

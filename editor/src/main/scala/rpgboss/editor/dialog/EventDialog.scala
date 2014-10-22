@@ -33,10 +33,11 @@ class EventDialog(
     val fSameAppearanceAsPrevState: CheckBox =
       boolField("Same Appearance As Previous State",
           curEvtState.sameAppearanceAsPrevState,
-          checked => updateAppearanceFieldsState())
-    val heightBox = new ComboBox(EventHeight.values.toSeq) {
-      selection.item = EventHeight(curEvtState.height)
-    }
+          curEvtState.sameAppearanceAsPrevState = _,
+          Some(updateAppearanceFieldsState))
+    val heightBox =
+      enumIdCombo(EventHeight)(curEvtState.height, curEvtState.height = _)
+
     val spriteBox = new SpriteField(
       owner,
       sm,
@@ -44,9 +45,14 @@ class EventDialog(
       (spriteSpec: Option[SpriteSpec]) => {
         // If the sprite's "existence" has changed...
         if (curEvtState.sprite.isDefined != spriteSpec.isDefined) {
-          heightBox.selection.item = if (spriteSpec.isDefined)
-            EventHeight.SAME else EventHeight.UNDER
+          heightBox.selection.index =
+            if (spriteSpec.isDefined)
+              EventHeight.SAME.id
+            else
+              EventHeight.UNDER.id
         }
+
+        curEvtState.sprite = spriteSpec
       })
 
     def updateAppearanceFieldsState() = {
@@ -63,9 +69,8 @@ class EventDialog(
     }
     updateAppearanceFieldsState()
 
-    val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
-      selection.item = EventTrigger(curEvtState.trigger)
-    }
+    val triggerBox =
+      enumIdCombo(EventTrigger)(curEvtState.trigger, curEvtState.trigger = _)
 
     contents += new BoxPanel(Orientation.Vertical) {
       contents += new DesignGridPanel {
@@ -91,7 +96,7 @@ class EventDialog(
       sm,
       mapName,
       curEvtState.cmds,
-      _ => Unit,  // Don't need onUpdate notifies, as use formToModel function.
+      curEvtState.cmds = _,
       inner = false)
 
     contents += new DesignGridPanel {
@@ -101,32 +106,14 @@ class EventDialog(
         contents = commandBox
       })
     }
-
-    def formToModel() = {
-      val origState = event.states(idx)
-      val newState = origState.copy(
-        sameAppearanceAsPrevState = fSameAppearanceAsPrevState.selected,
-        sprite = spriteBox.getValue,
-        trigger = triggerBox.selection.item.id,
-        height = heightBox.selection.item.id,
-        cmds = commandBox.getEventCmds)
-      event = event.copy(states = event.states.updated(idx, newState))
-    }
   }
 
   def okFunc() = {
-    event = event.copy(name = nameField.text)
-
-    tabPane.savePanesToModel()
-
     onOk(event)
     close()
   }
 
-  val nameField = new TextField {
-    columns = 12
-    text = event.name
-  }
+  val nameField = textField(event.name, event.name = _)
 
   val tabPane = new TabbedPane() {
     def loadPanesFromModel() = {
@@ -137,22 +124,12 @@ class EventDialog(
       }
     }
 
-    def savePanesToModel() = {
-      pages.foreach { page =>
-        val pane = page.content.asInstanceOf[EventStatePane]
-        pane.formToModel()
-      }
-    }
-
     def curPane = selection.page.content.asInstanceOf[EventStatePane]
 
     loadPanesFromModel()
   }
 
   def newState(copyCurrent: Boolean) = {
-    // Save the current pane statuses
-    tabPane.savePanesToModel()
-
     // Add to list of states
     val newPaneIdx = tabPane.curPane.idx + 1
     val newState =
@@ -175,9 +152,6 @@ class EventDialog(
       Dialog.showMessage(tabPane, "Cannot delete the last state", "Error",
         Dialog.Message.Error)
     } else {
-      // Save the current pane statuses
-      tabPane.savePanesToModel()
-
       val deletedIdx = tabPane.curPane.idx
 
       val newStates =

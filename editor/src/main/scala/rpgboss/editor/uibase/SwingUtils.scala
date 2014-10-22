@@ -112,12 +112,12 @@ object SwingUtils {
   }
 
   /**
-   * Accepts any types <% that are 'viewable' i.e. implicitly convertible to 
+   * Accepts any types <% that are 'viewable' i.e. implicitly convertible to
    * HasName.
    */
   def indexedCombo[T <% HasName](
     choices: Seq[T], initial: Int, onUpdate: Int => Unit,
-    additionalAction: Option[() => Unit] = None) = {    
+    additionalAction: Option[() => Unit] = None) = {
     new ComboBox(choices) {
       selection.index = initial
       renderer = standardIdxRenderer(_.name)
