@@ -40,13 +40,13 @@ object RpgEvent {
 
 /**
  * @param   cmds                        May be empty.
- * @param   sameAppearanceAsStateZero   If true, takes on the height and sprite
- *                                      of state 0.
+ * @param   sameAppearanceAsPrevState   If true, takes on the height and sprite
+ *                                      of the preceding state.
  */
 case class RpgEventState(
   switchCondition: Option[EventCondition] = None,
   trigger: Int = EventTrigger.BUTTON.id,
-  sameAppearanceAsStateZero: Boolean = true,
+  sameAppearanceAsPrevState: Boolean = true,
   sprite: Option[SpriteSpec] = None,
   height: Int = EventHeight.UNDER.id,
   cmds: Array[EventCmd] = RpgEventState.defaultCmds)

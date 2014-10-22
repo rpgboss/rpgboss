@@ -30,9 +30,9 @@ class EventDialog(
   class EventStatePane(val idx: Int) extends BoxPanel(Orientation.Horizontal) {
     private def curEvtState = event.states(idx)
 
-    val fSameAppearanceAsStateZero: CheckBox =
-      boolField("Same Appearance As State 0",
-          curEvtState.sameAppearanceAsStateZero,
+    val fSameAppearanceAsPrevState: CheckBox =
+      boolField("Same Appearance As Previous State",
+          curEvtState.sameAppearanceAsPrevState,
           checked => updateAppearanceFieldsState())
     val heightBox = new ComboBox(EventHeight.values.toSeq) {
       selection.item = EventHeight(curEvtState.height)
@@ -51,12 +51,12 @@ class EventDialog(
 
     def updateAppearanceFieldsState() = {
       if (idx == 0) {
-        fSameAppearanceAsStateZero.selected = true
-        fSameAppearanceAsStateZero.enabled = false
+        fSameAppearanceAsPrevState.selected = true
+        fSameAppearanceAsPrevState.enabled = false
         heightBox.enabled = true
         spriteBox.enabled = true
       } else {
-        val sameAppearance = fSameAppearanceAsStateZero.selected
+        val sameAppearance = fSameAppearanceAsPrevState.selected
         heightBox.enabled = !sameAppearance
         spriteBox.enabled = !sameAppearance
       }
@@ -71,7 +71,7 @@ class EventDialog(
       contents += new DesignGridPanel {
         border = BorderFactory.createTitledBorder("Appearance")
 
-        row().grid().add(fSameAppearanceAsStateZero)
+        row().grid().add(fSameAppearanceAsPrevState)
         row().grid().add(leftLabel("Height:"))
         row().grid().add(heightBox)
         row().grid().add(leftLabel("Sprite:"))
@@ -79,7 +79,7 @@ class EventDialog(
       }
 
       contents += new DesignGridPanel {
-        border = BorderFactory.createTitledBorder("Programming")
+        border = BorderFactory.createTitledBorder("Behavior")
         row().grid().add(leftLabel("Trigger:"))
         row().grid().add(triggerBox)
       }
@@ -105,7 +105,7 @@ class EventDialog(
     def formToModel() = {
       val origState = event.states(idx)
       val newState = origState.copy(
-        sameAppearanceAsStateZero = fSameAppearanceAsStateZero.selected,
+        sameAppearanceAsPrevState = fSameAppearanceAsPrevState.selected,
         sprite = spriteBox.getValue,
         trigger = triggerBox.selection.item.id,
         height = heightBox.selection.item.id,
