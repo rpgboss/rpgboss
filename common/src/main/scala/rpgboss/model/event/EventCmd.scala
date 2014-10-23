@@ -3,6 +3,8 @@ package rpgboss.model.event
 import EventCmd._
 import rpgboss.model._
 import rpgboss.player._
+import org.json4s.TypeHints
+import org.json4s.ShortTypeHints
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -37,7 +39,17 @@ object EventCmd {
       .map(("  " * indent) + _) // Indent by 2 spaces
   }
 
-  def types = List(
+  // Used to deserialize legacy names.
+  case object EventRenameHints extends TypeHints {
+    val hints: List[Class[_]] = Nil
+    def hintFor(clazz: Class[_]) = sys.error("No hints provided")
+    def classFor(hint: String) = hint match {
+      case "SetEvtState" => Some(SetEventState.getClass())
+      case _ => None
+    }
+  }
+
+  val hints = ShortTypeHints(List(
     classOf[EndOfScript],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
@@ -49,7 +61,7 @@ object EventCmd {
     classOf[MoveEvent],
     classOf[RunJs],
     classOf[StartBattle],
-    classOf[SetInt])
+    classOf[SetInt])) + EventRenameHints
 
   case class RawJs(exp: String)
 
@@ -142,7 +154,7 @@ case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
 }
 
 case class SetEventState(state: Int = 0) extends EventCmd {
-  def sections = singleCall("game.setEventState", RawJs("event.id()"), state)
+  def sections = singleCall("game.SetEventState", RawJs("event.id()"), state)
 }
 
 case class IncrementEventState() extends EventCmd {
