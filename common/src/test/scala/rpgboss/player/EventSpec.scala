@@ -36,9 +36,10 @@ class EventSpec extends UnitSpec {
         val states = Array(
           RpgEventState(cmds = Array(
             RunJs("""game.setInt("one", game.getInt("one") + 1);"""),
-            SetEventState(1))),
+            IncrementEventState())),
           RpgEventState(cmds = Array(
-            RunJs("""game.setInt("two", game.getInt("two") + 1);"""))))
+            RunJs("""game.setInt("two", game.getInt("two") + 1);"""),
+            SetEventState(0))))
         mapData.events = Map(
           1->RpgEvent(1, "Testevent", 0, 0, states)
         )
@@ -46,18 +47,21 @@ class EventSpec extends UnitSpec {
 
       def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f)
+        def getIntTuple() =
+          (scriptInterface.getInt("one"), scriptInterface.getInt("two"))
+
         scriptInterface.activateEvent(1, true)
-        val firstRunIntOne = scriptInterface.getInt("one")
-        val firstRunIntTwo = scriptInterface.getInt("two")
+        val (a1, a2) = getIntTuple()
         scriptInterface.activateEvent(1, true)
-        val secondRunIntOne = scriptInterface.getInt("one")
-        val secondRunIntTwo = scriptInterface.getInt("two")
+        val (b1, b2) = getIntTuple()
+        scriptInterface.activateEvent(1, true)
+        val (c1, c2) = getIntTuple()
+
 
         waiter {
-          firstRunIntOne should equal(1)
-          firstRunIntTwo should equal(0)
-          secondRunIntOne should equal(1)
-          secondRunIntTwo should equal(1)
+          (a1, a2) should equal (1, 0)
+          (b1, b2) should equal (1, 1)
+          (c1, c2) should equal (2, 1)
         }
       }
     }

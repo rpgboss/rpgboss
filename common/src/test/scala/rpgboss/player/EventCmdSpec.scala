@@ -70,6 +70,11 @@ class EventCmdSpec extends UnitSpec {
       Array("game.setEventState(event.id(), 5);"))
   }
 
+  "EventCmd" should "produce correct script for IncrementEventState" in {
+    IncrementEventState().toJs should deepEqual(
+      Array("game.incrementEventState(event.id());"))
+  }
+
   "EventCmd" should "produce correct script for MoveEvent" in {
     val e1 = MoveEvent(EntitySpec(WhichEntity.PLAYER.id, 0), 1, 5, false, true)
     e1.toJs should deepEqual(

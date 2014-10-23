@@ -45,6 +45,7 @@ object EventCmd {
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEventState],
+    classOf[IncrementEventState],
     classOf[MoveEvent],
     classOf[RunJs],
     classOf[StartBattle],
