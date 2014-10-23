@@ -159,8 +159,11 @@ object ScriptThread {
     onFinish: Option[() => Unit] = None) = {
     val scriptName = "%s/%d".format(entity.mapEvent.name, state)
     val eventState = entity.mapEvent.states(state)
-    val extraCmdsAtEnd = if (eventState.runOnceThenIncrementState)
-      Array(IncrementEventState()) else Array()
+    val extraCmdsAtEnd: Array[EventCmd] =
+      if (eventState.runOnceThenIncrementState)
+        Array(IncrementEventState())
+      else
+        Array()
     val cmds = eventState.cmds ++ extraCmdsAtEnd
 
     val scriptBody = cmds.flatMap(_.toJs).mkString("\n")

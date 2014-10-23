@@ -24,7 +24,9 @@ class EventDialog(
   onCancel: RpgEvent => Any)
   extends StdDialog(owner, "Event: " + initialEvent.name) {
 
-  val event = Utils.deepCopy(initialEvent)
+  // TODO: Need to make a deep copy here for Cancel to work correctly.
+  // However, Utils.deepCopy doesn't work correctly for polymorphic lists.
+  val event = initialEvent
 
   override def cancelFunc() = onCancel(event)
 
