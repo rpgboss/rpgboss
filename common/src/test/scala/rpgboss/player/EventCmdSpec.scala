@@ -3,6 +3,7 @@ package rpgboss.player
 import rpgboss._
 import rpgboss.model._
 import rpgboss.model.event._
+import org.json4s.native.Serialization
 
 class EventCmdSpec extends UnitSpec {
   "EventCmd" should "produce correct script for LockPlayerMovement" in {
@@ -113,5 +114,26 @@ class EventCmdSpec extends UnitSpec {
     }
 
     test.runTest()
+  }
+
+  "EventCmd" should "deserialize legacy names correctly" in {
+    implicit val formats = Serialization.formats(EventCmd.hints)
+    val legacyJson = """
+      [
+        {
+          "jsonClass":"ShowText",
+          "lines":[
+            "Hi"
+          ]
+        },
+        {
+          "jsonClass":"SetEvtState",
+          "state":1
+        }
+      ]"""
+    val result = Serialization.read[Array[EventCmd]](legacyJson)
+    val expected: Array[EventCmd] =
+      Array(ShowText(Array("Hi")), SetEventState(1))
+    result should deepEqual (expected)
   }
 }

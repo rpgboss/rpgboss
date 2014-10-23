@@ -44,7 +44,7 @@ object EventCmd {
     val hints: List[Class[_]] = Nil
     def hintFor(clazz: Class[_]) = sys.error("No hints provided")
     def classFor(hint: String) = hint match {
-      case "SetEvtState" => Some(SetEventState.getClass())
+      case "SetEvtState" => Some(classOf[SetEventState])
       case _ => None
     }
   }
