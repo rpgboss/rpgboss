@@ -170,9 +170,8 @@ object ScriptThread {
       override def initScope(jsScope: ScriptableObject) = {
         super.initScope(jsScope)
 
-        // Bind 'event' to the EventEntity so that we can control its movement
         ScriptableObject.putProperty(jsScope, "event",
-          Context.javaToJS(entity, jsScope))
+          Context.javaToJS(entity.getScriptInterface(), jsScope))
       }
     }
   }

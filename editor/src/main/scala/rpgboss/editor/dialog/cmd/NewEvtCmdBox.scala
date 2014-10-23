@@ -65,7 +65,7 @@ class NewEvtCmdBox(
     row().grid().add(btnEvtCmd("Add/Remove Item...", AddRemoveItem()))
 
     row().grid().add(leftLabel("Other:"))
-    row().grid().add(btnEvtCmd("Change event state...", SetEvtState()))
+    row().grid().add(btnEvtCmd("Change event state...", SetEventState()))
     row().grid().add(btnEvtCmd("Start battle...", StartBattle()))
     row().grid().add(btnEvtCmd("Run Javascript...", RunJs()))
 

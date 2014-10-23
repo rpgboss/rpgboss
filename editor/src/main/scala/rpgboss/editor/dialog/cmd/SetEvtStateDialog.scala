@@ -6,10 +6,10 @@ import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.model.RpgEnum
 
-class SetEvtStateDialog(
+class SetEventStateDialog(
   owner: Window,
-  initial: SetEvtState,
-  successF: (SetEvtState) => Any)
+  initial: SetEventState,
+  successF: (SetEventState) => Any)
   extends StdDialog(owner, "Set Event State") {
   
   val fieldNewState = new NumberSpinner(initial.state, 0, 127)
@@ -20,7 +20,7 @@ class SetEvtStateDialog(
   }
 
   def okFunc() = {
-    successF(SetEvtState(fieldNewState.getValue))
+    successF(SetEventState(fieldNewState.getValue))
     close()
   }
 }

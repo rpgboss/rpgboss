@@ -44,7 +44,7 @@ object EventCmd {
     classOf[AddRemoveItem],
     classOf[ShowText],
     classOf[Teleport],
-    classOf[SetEvtState],
+    classOf[SetEventState],
     classOf[MoveEvent],
     classOf[RunJs],
     classOf[StartBattle],
@@ -140,8 +140,12 @@ case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }
 
-case class SetEvtState(state: Int = 0) extends EventCmd {
+case class SetEventState(state: Int = 0) extends EventCmd {
   def sections = singleCall("game.setEventState", RawJs("event.id()"), state)
+}
+
+case class IncrementEventState() extends EventCmd {
+  def sections = singleCall("game.incrementEventState", RawJs("event.id()"))
 }
 
 case class MoveEvent(

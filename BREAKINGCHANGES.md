@@ -14,3 +14,7 @@ v0.2.9
 v0.3.3
 ------
  - Some battle backgrounds have been moved. This may break event commands that start battles.
+
+v0.3.7
+------
+ - Break old SetEvtState event commands. Class has been renamed SetEventState.

@@ -36,7 +36,7 @@ class EventSpec extends UnitSpec {
         val states = Array(
           RpgEventState(cmds = Array(
             RunJs("""game.setInt("one", game.getInt("one") + 1);"""),
-            SetEvtState(1))),
+            SetEventState(1))),
           RpgEventState(cmds = Array(
             RunJs("""game.setInt("two", game.getInt("two") + 1);"""))))
         mapData.events = Map(

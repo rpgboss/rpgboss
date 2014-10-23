@@ -65,8 +65,8 @@ class EventCmdSpec extends UnitSpec {
     Locale.setDefault(defaultLocale)
   }
 
-  "EventCmd" should "produce correct script for SetEvtState" in {
-    SetEvtState(5).toJs should deepEqual(
+  "EventCmd" should "produce correct script for SetEventState" in {
+    SetEventState(5).toJs should deepEqual(
       Array("game.setEventState(event.id(), 5);"))
   }
 

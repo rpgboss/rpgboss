@@ -7,6 +7,8 @@ import scala.concurrent.Promise
 import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
 
+case class EventScriptInterface(id: Int)
+
 class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
   extends Entity(game, mapEvent.x, mapEvent.y) {
 
@@ -15,6 +17,8 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
   private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
+
+  def getScriptInterface() = EventScriptInterface(id)
 
   def evtState = mapEvent.states(evtStateIdx)
 
