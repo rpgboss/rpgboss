@@ -68,4 +68,31 @@ class EventSpec extends UnitSpec {
 
     test.runTest()
   }
+
+  "Events" should "respect run once option" in {
+    val test = new MapScreenTest {
+      override def setupMapData(mapData: RpgMapData) = {
+        super.setupMapData(mapData)
+        val states = Array(
+          RpgEventState(runOnceThenIncrementState = true),
+          RpgEventState())
+        mapData.events = Map(
+          1->RpgEvent(1, "Testevent", 0, 0, states)
+        )
+      }
+
+      def testScript() = {
+        val s1 = scriptInterface.getEventState(1)
+        scriptInterface.activateEvent(1, true)
+        val s2 = scriptInterface.getEventState(1)
+
+        waiter {
+          s1 should equal (0)
+          s2 should equal (1)
+        }
+      }
+    }
+
+    test.runTest()
+  }
 }

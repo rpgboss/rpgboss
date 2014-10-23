@@ -42,6 +42,8 @@ object RpgEvent {
  * @param   cmds                        May be empty.
  * @param   sameAppearanceAsPrevState   If true, takes on the height and sprite
  *                                      of the preceding state.
+ * @param   runOnceThenIncrementState   If true, increments the state after
+ *                                      running the commands.
  */
 case class RpgEventState(
   var switchCondition: Option[EventCondition] = None,
@@ -49,7 +51,8 @@ case class RpgEventState(
   var sameAppearanceAsPrevState: Boolean = true,
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,
-  var cmds: Array[EventCmd] = RpgEventState.defaultCmds)
+  var cmds: Array[EventCmd] = RpgEventState.defaultCmds,
+  var runOnceThenIncrementState: Boolean = false)
 
 object RpgEventState {
   def defaultCmds: Array[EventCmd] = Array()

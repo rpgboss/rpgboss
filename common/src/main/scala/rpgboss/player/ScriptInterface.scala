@@ -348,6 +348,12 @@ class ScriptInterface(
     entityOpt.isDefined
   }
 
+  def getEventState(eventId: Int) = syncRun {
+    mapScreen.playerEntity.mapName.map { mapName =>
+      persistent.getEventState(mapName, eventId)
+    } getOrElse(-1)
+  }
+
   def setEventState(eventId: Int, newState: Int) = syncRun {
     mapScreen.playerEntity.mapName.map { mapName =>
       persistent.setEventState(mapName, eventId, newState)

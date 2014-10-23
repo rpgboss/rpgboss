@@ -13,6 +13,7 @@ import java.awt.Dimension
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.resourceselector.SpriteField
 import javax.swing.BorderFactory
+import rpgboss.lib.Utils
 
 class EventDialog(
   owner: Window,
@@ -23,7 +24,7 @@ class EventDialog(
   onCancel: RpgEvent => Any)
   extends StdDialog(owner, "Event: " + initialEvent.name) {
 
-  var event = initialEvent
+  val event = Utils.deepCopy(initialEvent)
 
   override def cancelFunc() = onCancel(event)
 
@@ -72,6 +73,16 @@ class EventDialog(
     val triggerBox =
       enumIdCombo(EventTrigger)(curEvtState.trigger, curEvtState.trigger = _)
 
+    val fRunOnce =
+      boolField("Run Once, then increment state",
+          curEvtState.runOnceThenIncrementState,
+          curEvtState.runOnceThenIncrementState = _,
+          Some(() => {
+            if (curEvtState == event.states.last) {
+              newState(false, false)
+            }
+          }))
+
     contents += new BoxPanel(Orientation.Vertical) {
       contents += new DesignGridPanel {
         border = BorderFactory.createTitledBorder("Appearance")
@@ -87,6 +98,7 @@ class EventDialog(
         border = BorderFactory.createTitledBorder("Behavior")
         row().grid().add(leftLabel("Trigger:"))
         row().grid().add(triggerBox)
+        row().grid().add(fRunOnce)
       }
     }
 
@@ -129,7 +141,7 @@ class EventDialog(
     loadPanesFromModel()
   }
 
-  def newState(copyCurrent: Boolean) = {
+  def newState(copyCurrent: Boolean, switchPane: Boolean) = {
     // Add to list of states
     val newPaneIdx = tabPane.curPane.idx + 1
     val newState =
@@ -137,14 +149,15 @@ class EventDialog(
         event.states(tabPane.curPane.idx).copy()
       else
         RpgEventState()
-    val newStates =
+    event.states =
       event.states.take(newPaneIdx) ++ Array(newState) ++
         event.states.takeRight(event.states.size - newPaneIdx)
 
-    event = event.copy(states = newStates)
-
     tabPane.loadPanesFromModel()
-    tabPane.selection.index = newPaneIdx
+
+    if (switchPane) {
+      tabPane.selection.index = newPaneIdx
+    }
   }
 
   def deleteState() = {
@@ -154,11 +167,9 @@ class EventDialog(
     } else {
       val deletedIdx = tabPane.curPane.idx
 
-      val newStates =
+      event.states =
         event.states.take(deletedIdx) ++
           event.states.takeRight(event.states.size - deletedIdx - 1)
-
-      event = event.copy(states = newStates)
 
       tabPane.loadPanesFromModel()
       tabPane.selection.index = math.min(deletedIdx, event.states.size - 1)
@@ -171,11 +182,11 @@ class EventDialog(
         .add(leftLabel("Name:")).add(nameField)
         .add(
           new Button(Action("New state") {
-            newState(false)
+            newState(false, true)
           }))
         .add(
           new Button(Action("Copy state") {
-            newState(true)
+            newState(true, true)
           }))
         .add(
           new Button(Action("Delete state") {

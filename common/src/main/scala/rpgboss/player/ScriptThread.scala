@@ -11,6 +11,7 @@ import rpgboss.model.Transitions
 import rpgboss.model.ItemAccessibility
 import rpgboss.model.ItemType
 import rpgboss.model.MapLoc
+import rpgboss.model.event._
 import rpgboss.model.resource.ResourceConstants
 import rpgboss.model.resource.Script
 import rpgboss.player.entity.EventEntity
@@ -157,8 +158,12 @@ object ScriptThread {
     state: Int,
     onFinish: Option[() => Unit] = None) = {
     val scriptName = "%s/%d".format(entity.mapEvent.name, state)
-    val scriptBody =
-      entity.mapEvent.states(state).cmds.flatMap(_.toJs).mkString("\n");
+    val eventState = entity.mapEvent.states(state)
+    val extraCmdsAtEnd = if (eventState.runOnceThenIncrementState)
+      Array(IncrementEventState()) else Array()
+    val cmds = eventState.cmds ++ extraCmdsAtEnd
+
+    val scriptBody = cmds.flatMap(_.toJs).mkString("\n")
     new ScriptThread(
       game,
       screen,
