@@ -5,6 +5,7 @@ import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
 import scala.sys.process.{Process => SysProcess}
+import java.io.PrintWriter
 
 object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
@@ -28,9 +29,30 @@ object Settings {
       jars.classpath
     },
     updateLibsTask,
-    TaskKey[Unit]("generateEnum") := {  
-      SysProcess("python GenerateFileEnum.py", new File("common/src/main/resources")).run()
-      println("Generated file enumeration")
+    TaskKey[Unit]("generateEnum") := {
+      def listSubfiles(dir: File): Seq[File] = {
+        assert(dir.isDirectory)
+        val (childDirs, childFiles) = dir.listFiles.partition(_.isDirectory)
+        childFiles ++: childDirs.flatMap(listSubfiles)
+      }
+
+      for (subDir <- List("defaultrc", "testrc")) {
+        val fullDir = new File("common/src/main/resources", subDir)
+        val subFiles = listSubfiles(fullDir).filter(_.name != "enumerated.txt")
+        val relativizedSubFiles = subFiles
+          .map(fullDir.relativize(_).get)
+          .map(_.toString.replace("\\", "/"))
+          .sorted
+
+        val outputFile = new File(fullDir, "enumerated.txt")
+
+        val writer = new PrintWriter(outputFile)
+        relativizedSubFiles.foreach(s => {
+          writer.write(s)
+          writer.write("\n")
+        })
+        writer.close()
+      }
       Unit
     },
     Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum"),
