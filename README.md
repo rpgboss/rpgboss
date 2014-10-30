@@ -149,6 +149,10 @@ USE Internet Archieve for Dead website links!
 
 ### Battlers
 
+http://media.ryzom.com/ (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(Ryzom)
+
 http://darts.kirara.st/m/ (CC-BY-ND) http://creativecommons.org/licenses/by-nd/4.0/
 
 (Kirara)
