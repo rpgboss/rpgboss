@@ -71,45 +71,27 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     contents += new Button(Action("Play...") {
       if (sm.askSaveUnchanged(this)) {
         val projPath = sm.getProj.dir.getCanonicalPath()
-        val winExecutable = "rpgboss-editor.exe"
-
-        // Returns path to windows executable if it exists, null otherwise
-        def getWinExecutable(): Option[File] = {
-          val programDir = new File(System.getProperty("user.dir"))
-
-          val executablePath = new File(programDir, winExecutable)
-
-          if (executablePath.exists())
-            Some(executablePath)
-          else
-            None
-        }
 
         val processBuilder: ProcessBuilder = {
-          getWinExecutable() map { exePath =>
-            new ProcessBuilder(exePath.toString, "--player",
-                """"%s"""".format(projPath))
-          } getOrElse {
-            val separator = System.getProperty("file.separator")
-            val cpSeparator = System.getProperty("path.separator")
-            val classpath =
-              List("java.class.path", "java.boot.class.path",
-                   "sun.boot.class.path")
-                .map(s => System.getProperty(s, "")).mkString(cpSeparator)
+          val separator = System.getProperty("file.separator")
+          val cpSeparator = System.getProperty("path.separator")
+          val classpath =
+            List("java.class.path", "java.boot.class.path",
+                 "sun.boot.class.path")
+              .map(s => System.getProperty(s, "")).mkString(cpSeparator)
 
-            val javaPath =
-              System.getProperty("java.home") +
-                separator +
-                "bin" +
-                separator +
-                "java";
+          val javaPath =
+            System.getProperty("java.home") +
+              separator +
+              "bin" +
+              separator +
+              "java";
 
-            new ProcessBuilder(javaPath, "-cp",
-              classpath,
-              "rpgboss.editor.RpgDesktop",
-              "--player",
-              projPath)
-          }
+          new ProcessBuilder(javaPath, "-cp",
+            classpath,
+            "rpgboss.editor.RpgDesktop",
+            "--player",
+            projPath)
         }
 
         println(processBuilder.command().mkString(" "))
