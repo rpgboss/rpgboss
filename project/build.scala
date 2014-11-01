@@ -89,8 +89,6 @@ object Settings {
   lazy val editorAssembly = assemblySettings ++ Seq(
     mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
       {
-        case PathList("scala", "reflect", "internal", _ @ _*) => MergeStrategy.discard
-        case PathList("scala", "tools", "nsc", _ @ _*) => MergeStrategy.discard
         case x => old(x)
       }
     }
