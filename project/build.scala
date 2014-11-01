@@ -18,6 +18,7 @@ object Settings {
       "ch.qos.logback" % "logback-classic" % "1.0.6",
       "com.google.guava" % "guava" % "17.0",
       "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
+      "commons-io" % "commons-io" % "2.4",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
       "org.json4s" %% "json4s-native" % "3.2.10" withSources(),
       "org.scalatest" %% "scalatest" % "2.1.5" % "test",
@@ -69,6 +70,7 @@ object Settings {
   lazy val editorLibs = Seq(
     scalaVersion := "2.11.1",
     libraryDependencies ++= Seq(
+      "org.apache.commons" % "commons-compress" % "1.9",
       "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
       "com.github.benhutchison" %% "scalaswingcontrib" % "1.5", 
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
