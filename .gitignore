@@ -3,6 +3,7 @@ common/.project
 downloaded-libs
 libs/
 target/
+eclipsetarget/
 src_managed/
 project/boot/
 project/plugins/project

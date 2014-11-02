@@ -62,7 +62,8 @@ object Settings {
     Keys.`package` <<= (Keys.`package` in Compile) dependsOn TaskKey[Unit]("update-libs"),
     Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("generateEnum"),
     Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("update-libs"),
-    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
+    EclipseKeys.eclipseOutput := Some("eclipsetarget")
   )
 
   lazy val editor = Settings.common ++ editorLibs ++ editorAssembly
@@ -83,7 +84,8 @@ object Settings {
     },
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
     scalacOptions ++= List("-deprecation", "-unchecked"),
-    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
+    EclipseKeys.eclipseOutput := Some("eclipsetarget")
   )
 
   lazy val editorAssembly = assemblySettings ++ Seq(
