@@ -47,6 +47,9 @@ Build instructions:
     ```
     > eclipse
     ```
+6. For Eclipse, I recommend simply using the Scala IDE package: http://scala-ide.org/. Then, import the projects you generated in the above step into Eclipse.
+
+7. Run RpgDesktop.scala in Eclipse to build and run the editor.
 
 Commiting and Automated tests
 -----------------------------
