@@ -12,6 +12,10 @@ class MainPanel(val topWin: Frame)
 
   minimumSize = new Dimension(800, 600)
 
+  def getWindow() = {
+    topWin
+  }
+
   val actionNew = Action("New Project") {
     if (askSaveUnchanged()) {
       val d = new NewProjectDialog(topWin, p => setProject(p))
@@ -42,6 +46,7 @@ class MainPanel(val topWin: Frame)
 
   setContent(new StartPanel(this))
 
+  /*
   Settings.get("project.last") map { path =>
     val file = new File(path)
     if (file.isDirectory() && file.canRead()) {
@@ -50,6 +55,7 @@ class MainPanel(val topWin: Frame)
       }
     }
   }
+  */
 
   def setProject(p: Project) = {
     val sm = new StateMaster(this, p)
