@@ -16,6 +16,8 @@ class TeleportCmdDialog(
   successF: (Teleport) => Any)
   extends StdDialog(owner, "Teleport Player") {
 
+  centerDialog(new Dimension(800, 600))
+
   def okFunc() = {
     val cmd = Teleport(mapLocPanel.loc, transitionId)
     successF(cmd)

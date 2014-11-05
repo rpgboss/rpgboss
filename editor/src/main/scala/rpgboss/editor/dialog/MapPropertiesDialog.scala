@@ -19,6 +19,8 @@ class MapPropertiesDialog(
   onOk: (RpgMap, RpgMapData) => Any)
   extends StdDialog(owner, title + " - " + initialMap.displayId) {
 
+  centerDialog(new Dimension(400, 400))
+
   val model = initialMap.metadata.copy()
 
   def okFunc(): Unit = {

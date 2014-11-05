@@ -15,6 +15,8 @@ class StartBattleCmdDialog(
   successF: (StartBattle) => Any)
   extends StdDialog(owner, "StartBattle") {
 
+  centerDialog(new Dimension(300, 200))
+
   var model = Utils.deepCopy(initial)
 
   val encounterSelect = indexedCombo(

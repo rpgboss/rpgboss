@@ -15,6 +15,8 @@ class ModifyPartyCmdDialog(
   successF: (ModifyParty) => Any)
   extends StdDialog(owner, "Show text") {
 
+  centerDialog(new Dimension(200, 100))
+
   var modelAddOrRemove = initial.add
 
   val fAddOrRemove = enumIdRadios(AddOrRemove)(
