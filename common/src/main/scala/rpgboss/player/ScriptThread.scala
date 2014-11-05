@@ -36,30 +36,23 @@ class ScriptThread(
   onFinish: Option[() => Unit] = None)
   extends UncaughtExceptionHandler {
   def initScope(jsScope: ScriptableObject): Any = {
+    def putProperty(objName: String, obj: Object) = {
+      ScriptableObject.putProperty(jsScope, objName,
+          Context.javaToJS(obj, jsScope))
+    }
 
-    ScriptableObject.putProperty(jsScope, "game",
-      Context.javaToJS(scriptInterface, jsScope))
-    ScriptableObject.putProperty(jsScope, "layout",
-      Context.javaToJS(screen.layout, jsScope))
-    ScriptableObject.putProperty(jsScope, "sizer",
-      Context.javaToJS(screen.sizer, jsScope))
+    putProperty("game", scriptInterface)
+    putProperty("layout", screen.layout)
+    putProperty("sizer", screen.sizer)
 
-    ScriptableObject.putProperty(jsScope, "project",
-      Context.javaToJS(game.project, jsScope))
-
-    ScriptableObject.putProperty(jsScope, "out",
-      Context.javaToJS(System.out, jsScope))
+    putProperty("project", game.project)
+    putProperty("out", System.out)
 
     // Some models to be imported
-    ScriptableObject.putProperty(jsScope, "MapLoc",
-      Context.javaToJS(MapLoc, jsScope))
-    ScriptableObject.putProperty(jsScope, "Transitions",
-      Context.javaToJS(Transitions, jsScope))
-    ScriptableObject.putProperty(jsScope, "Keys",
-      Context.javaToJS(MyKeys, jsScope))
-
-    ScriptableObject.putProperty(jsScope, "None",
-      Context.javaToJS(None, jsScope))
+    putProperty("MapLoc", MapLoc)
+    putProperty("Transitions", Transitions)
+    putProperty("Keys", MyKeys)
+    putProperty("None", None)
   }
 
   val runnable = new Runnable() {
@@ -179,7 +172,10 @@ object ScriptThread {
         super.initScope(jsScope)
 
         ScriptableObject.putProperty(jsScope, "event",
-          Context.javaToJS(entity.getScriptInterface(), jsScope))
+            Context.javaToJS(entity.getScriptInterface(), jsScope))
+        ScriptableObject.putProperty(jsScope, "player",
+            Context.javaToJS(game.mapScreen.playerEntity.getScriptInterface(),
+                jsScope))
       }
     }
   }
