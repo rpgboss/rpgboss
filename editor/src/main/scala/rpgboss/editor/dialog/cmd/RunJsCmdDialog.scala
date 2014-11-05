@@ -11,6 +11,8 @@ class RunJsCmdDialog(
   successF: (RunJs) => Any)
   extends StdDialog(owner, "Run Javascript") {
 
+  centerDialog(new Dimension(400, 300))
+
   val textEdit = new TextArea(initial.scriptBody)
 
   val textEditScroll = new ScrollPane {

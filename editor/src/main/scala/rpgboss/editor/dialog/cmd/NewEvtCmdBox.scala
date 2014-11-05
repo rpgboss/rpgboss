@@ -21,6 +21,8 @@ class NewEvtCmdBox(
   idxToInsert: Int)
   extends StdDialog(owner, "New command") {
 
+  centerDialog(new Dimension(400, 400))
+
   // Noop, as there is no okay button
   def okFunc() = {}
 

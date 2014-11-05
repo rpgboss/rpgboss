@@ -9,12 +9,16 @@ abstract class StdDialog(owner: Window, titleArg: String)
   title = titleArg
   modal = true
   defaultButton = okBtn
-  setLocationRelativeTo(owner)
 
   private var okPressed = false
 
   def okFunc()
   def cancelFunc() = {}
+
+  def centerDialog(size : Dimension) = {
+    minimumSize = size
+    centerOnScreen()
+  }
 
   lazy val cancelBtn = new Button(Action("Cancel") {
     cancelFunc()

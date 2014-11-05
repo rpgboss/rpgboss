@@ -16,6 +16,8 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
   extends StdDialog(owner, "Load Project") {
   val rootChooser = Paths.getRootChooserPanel(() => populateList())
 
+  centerDialog(new Dimension(400, 400))
+
   val projList = new Table() {
     selection.intervalMode = Table.IntervalMode.Single
     selection.elementMode = Table.ElementMode.Row

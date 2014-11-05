@@ -11,6 +11,8 @@ class ShowTextCmdDialog(
   successF: (ShowText) => Any)
   extends StdDialog(owner, "Show text") {
 
+  centerDialog(new Dimension(400, 300))
+
   val textEdit = new TextArea(initial.lines.mkString("\n"))
 
   val textEditScroll = new ScrollPane {

@@ -15,6 +15,8 @@ class MoveEventCmdDialog(
   successF: (MoveEvent) => Any)
   extends StdDialog(owner, "Move event") {
 
+  centerDialog(new Dimension(200, 300))
+
   val model = Utils.deepCopy(initial)
 
   val mapData = sm.getMapData(mapName)

@@ -55,6 +55,8 @@ class EffectDialog(
     }
   }
 
+  centerDialog(new Dimension(400, 400))
+
   var model = initial
   var controls = Nil
   var selectedControls: EffectControls = null

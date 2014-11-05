@@ -14,7 +14,7 @@ import scala.swing.event._
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, "Database") {
 
-  preferredSize = new Dimension(1200, 730)
+  centerDialog(new Dimension(1200, 730))
 
   val model = Utils.deepCopy(sm.getProjData)
 

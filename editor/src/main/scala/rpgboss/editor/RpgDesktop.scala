@@ -13,7 +13,9 @@ object RpgDesktop
   with UncaughtExceptionHandler {
 
   def top() = new MainFrame {
-    minimumSize = new Dimension(800, 600)
+    minimumSize = new Dimension(600, 400)
+    resizable = false
+    centerOnScreen()
     title = "rpgboss beta"
 
     import javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE

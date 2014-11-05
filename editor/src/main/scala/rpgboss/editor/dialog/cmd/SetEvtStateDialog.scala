@@ -15,6 +15,8 @@ class SetEventStateDialog(
   successF: (SetEventState) => Any)
   extends StdDialog(owner, "Set Event State") {
 
+  centerDialog(new Dimension(300, 100))
+
   val fieldNewState = new NumberSpinner(initial.state, 0, 127)
 
   contents = new DesignGridPanel {

@@ -16,6 +16,7 @@ import java.util.Scanner
 import javax.swing.ImageIcon
 import rpgboss.editor.util.Export
 import java.awt.Desktop
+import java.awt.Toolkit
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -23,6 +24,15 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new ProjectPanelMapSelector(sm, this)
   val mapView = new MapEditor(this, sm, tileSelector)
+
+  val window = mainP.getWindow()
+  window.resizable = true
+  window.location = new Point(0,0)
+
+  val screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+  window.minimumSize = new Dimension(screenSize.width/2,screenSize.height/2)
+  window.maximize()
 
   val projMenu = new PopupMenu {
     contents += new MenuItem(mainP.actionNew)
