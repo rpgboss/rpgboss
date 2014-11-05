@@ -75,39 +75,30 @@ class MapEditor(
 
   //--- BUTTONS ---//
 
-  def iconOnlyToggle(iconName: String, actionBody: () => Unit) = {
-    new ToggleButton() {
-      action = Action("") {
-        actionBody()
-      }
-
-      icon = new ImageIcon(
-          Utils.readClasspathImage("hendrik-weiler-theme/%s".format(iconName)))
-    }
-  }
-
   // Clear out scale buttons
   toolbar.contents.clear()
 
-  val layerButtons = List(
-      iconOnlyToggle("bottom-layer.png", () => selectLayer(MapLayers.Bot)),
-      iconOnlyToggle("middle-layer.png", () => selectLayer(MapLayers.Mid)),
-      iconOnlyToggle("top-layer.png", () => selectLayer(MapLayers.Top)),
-      iconOnlyToggle("event-layer.png", () => selectLayer(MapLayers.Evt)))
+  val layerButtons = enumButtons(MapLayers)(
+      selectedLayer,
+      selectLayer,
+      List(
+          "hendrik-weiler-theme/bottom-layer.png",
+          "hendrik-weiler-theme/middle-layer.png",
+          "hendrik-weiler-theme/top-layer.png",
+          "hendrik-weiler-theme/event-layer.png"))
 
   addBtnsAsGrp(toolbar.contents, layerButtons)
 
   toolbar.contents += Swing.HStrut(16)
 
-  val toolsButtons = List(
-      iconOnlyToggle("pencil.png",
-          () => selectedTool = MapViewToolsEnum.Pencil),
-      iconOnlyToggle("rectangle.png",
-          () => selectedTool = MapViewToolsEnum.Rectangle),
-      iconOnlyToggle("circle.png",
-          () => selectedTool = MapViewToolsEnum.Ellipse),
-      iconOnlyToggle("bucket.png",
-          () => selectedTool = MapViewToolsEnum.Bucket))
+  val toolsButtons = enumButtons(MapViewToolsEnum)(
+      selectedTool,
+      selectedTool = _,
+      iconPaths = List(
+          "hendrik-weiler-theme/pencil.png",
+          "hendrik-weiler-theme/rectangle.png",
+          "hendrik-weiler-theme/circle.png",
+          "hendrik-weiler-theme/bucket.png"))
 
   addBtnsAsGrp(toolbar.contents, toolsButtons)
 

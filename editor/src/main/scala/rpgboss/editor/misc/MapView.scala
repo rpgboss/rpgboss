@@ -52,7 +52,8 @@ class MapView(
     s => {
       curTilesize = Tileset.tilesize / s.id
       resizeRevalidateRepaint()
-    })
+    },
+    Nil)
 
   //--- WIDGETS --//
   val toolbar = new BoxPanel(Orientation.Horizontal) {
@@ -223,12 +224,12 @@ class MapView(
     viewStateOpt = mapOpt map { mapMeta =>
       new MapViewState(sm, mapMeta.name)
     }
-    
+
     updateCursorSq(TileRect.empty)
 
     // Restore centers upon loading a new map
     scrollPane.restoreCenters()
-    
+
     resizeRevalidateRepaint()
   }
 
