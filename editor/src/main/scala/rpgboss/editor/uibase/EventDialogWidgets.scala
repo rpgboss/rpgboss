@@ -60,7 +60,7 @@ class EntitySelectPanel(
 
   def updateFieldState() = {
     fieldEventId.enabled =
-      WhichEntity(model.whichEntityId) == WhichEntity.OTHER_EVENT
+      WhichEntity(model.whichEntityId) == WhichEntity.EVENT_ON_MAP
   }
 
   val btns = enumIdRadios(WhichEntity)(
@@ -70,7 +70,7 @@ class EntitySelectPanel(
       updateFieldState()
     },
     disabledSet =
-      if (mapData.events.isEmpty) Set(WhichEntity.OTHER_EVENT) else Set.empty)
+      if (mapData.events.isEmpty) Set(WhichEntity.EVENT_ON_MAP) else Set.empty)
 
   val (fieldEventId, found) =
     EventArrayComboBox.fromMap(mapData, model.eventId, model.eventId = _)

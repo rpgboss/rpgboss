@@ -153,8 +153,21 @@ case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }
 
-case class SetEventState(state: Int = 0) extends EventCmd {
-  def sections = singleCall("game.setEventState", RawJs("event.id()"), state)
+case class SetEventState(
+  var entitySpec: EntitySpec = EntitySpec(),
+  state: Int = 0) extends EventCmd {
+  def sections = {
+    val (mapName, eventId) = WhichEntity(entitySpec.whichEntityId) match {
+      case WhichEntity.THIS_EVENT =>
+        (RawJs("event.mapName()"), RawJs("event.id()"))
+      case WhichEntity.EVENT_ON_MAP =>
+        (RawJs("event.mapName()"), entitySpec.eventId)
+      case WhichEntity.EVENT_ON_OTHER_MAP =>
+        (entitySpec.mapName, entitySpec.eventId)
+    }
+
+    singleCall("game.setEventState", mapName, eventId, state)
+  }
 }
 
 case class IncrementEventState() extends EventCmd {
@@ -167,18 +180,17 @@ case class MoveEvent(
   var dy: Float = 0f,
   var affixDirection: Boolean = false,
   var async: Boolean = false) extends EventCmd {
-  def sections = {
-    entitySpec match {
-      case EntitySpec(which, _) if which == WhichEntity.PLAYER.id =>
-        singleCall("game.movePlayer", dx, dy, affixDirection, async)
-      case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
-        singleCall(
-          "game.moveEvent", RawJs("event.id()"), dx, dy, affixDirection,
-          async)
-      case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
-        singleCall(
-          "game.moveEvent", entitySpec.eventId, dx, dy, affixDirection, async)
-    }
+  def sections = entitySpec match {
+    case EntitySpec(which, _, _) if which == WhichEntity.PLAYER.id =>
+      singleCall("game.movePlayer", dx, dy, affixDirection, async)
+    case EntitySpec(which, _, _) if which == WhichEntity.THIS_EVENT.id =>
+      singleCall(
+        "game.moveEvent", RawJs("event.id()"), dx, dy, affixDirection,
+        async)
+    case EntitySpec(which, _, eventIdx)
+    if which == WhichEntity.EVENT_ON_MAP.id =>
+      singleCall(
+        "game.moveEvent", entitySpec.eventId, dx, dy, affixDirection, async)
   }
 }
 

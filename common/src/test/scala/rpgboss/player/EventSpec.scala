@@ -3,7 +3,7 @@ package rpgboss.player
 import rpgboss._
 import rpgboss.model._
 import rpgboss.model.event._
-import rpgboss.model.resource.ResourceConstants
+import rpgboss.model.resource._
 
 class EventSpec extends UnitSpec {
   "Events" should "activate and run their script" in {
@@ -39,7 +39,7 @@ class EventSpec extends UnitSpec {
             IncrementEventState())),
           RpgEventState(cmds = Array(
             RunJs("""game.setInt("two", game.getInt("two") + 1);"""),
-            SetEventState(0))))
+            SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 0))))
         mapData.events = Map(
           1->RpgEvent(1, "Testevent", 0, 0, states)
         )
@@ -82,9 +82,10 @@ class EventSpec extends UnitSpec {
       }
 
       def testScript() = {
-        val s1 = scriptInterface.getEventState(1)
+        val mapName = RpgMap.generateName(project.data.lastCreatedMapId)
+        val s1 = scriptInterface.getEventState(mapName, 1)
         scriptInterface.activateEvent(1, true)
-        val s2 = scriptInterface.getEventState(1)
+        val s2 = scriptInterface.getEventState(mapName, 1)
 
         waiter {
           s1 should equal (0)
