@@ -9,6 +9,8 @@ import scala.swing._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.resourceselector.MapField
 import rpgboss.model.WhichEntity
+import javax.swing.BorderFactory
+import rpgboss.editor.misc.MapSelector
 
 object EventArrayComboBox {
   // Returns a ComboBox, plus a boolean indicating whether or not 'initial' was
@@ -55,13 +57,24 @@ class EntitySelectPanel(
   owner: Window,
   sm: StateMaster,
   mapData: RpgMapData,
-  model: EntitySpec)
+  model: EntitySpec,
+  allowPlayer: Boolean,
+  allowEventOnOtherMap: Boolean)
   extends DesignGridPanel {
 
+  border = BorderFactory.createTitledBorder("Which Entity")
+
   def updateFieldState() = {
+    val which = WhichEntity(model.whichEntityId)
     fieldEventId.enabled =
-      WhichEntity(model.whichEntityId) == WhichEntity.EVENT_ON_MAP
+      which == WhichEntity.EVENT_ON_MAP ||
+      which == WhichEntity.EVENT_ON_OTHER_MAP
   }
+
+  val disabledSet = collection.mutable.Set[WhichEntity.Value]()
+  if (!allowPlayer) disabledSet += WhichEntity.PLAYER
+  if (!allowEventOnOtherMap) disabledSet += WhichEntity.EVENT_ON_OTHER_MAP
+  if (mapData.events.isEmpty) disabledSet += WhichEntity.EVENT_ON_MAP
 
   val btns = enumIdRadios(WhichEntity)(
     model.whichEntityId,
@@ -69,16 +82,21 @@ class EntitySelectPanel(
       model.whichEntityId = v
       updateFieldState()
     },
-    disabledSet =
-      if (mapData.events.isEmpty) Set(WhichEntity.EVENT_ON_MAP) else Set.empty)
+    disabledSet = disabledSet.toSet)
 
-  val (fieldEventId, found) =
+  val mapSelector = new MapSelector(sm)
+
+  val (fieldEventId, _) =
     EventArrayComboBox.fromMap(mapData, model.eventId, model.eventId = _)
 
   row().grid().add(new BoxPanel(Orientation.Vertical) {
     addBtnsAsGrp(contents, btns)
   })
-  row().grid().add(fieldEventId)
+
+  row().grid(new Label("Event: ")).add(fieldEventId)
+
+  if (allowEventOnOtherMap)
+    row().grid(new Label("Map: ")).add(mapSelector)
 
   updateFieldState();
 }
