@@ -292,7 +292,16 @@ http://opengameart.org/content/37-hitspunches
 
 Default music by Aaron McDonald. Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). http://creativecommons.org/licenses/by-sa/4.0/
 
-### Material Rules
+Other Credits
+-------------
+
+Some program icons from:
+Hendrik Weiler: https://github.com/hendrik-weiler
+https://www.iconfinder.com/icons/284087/edit_editor_pen_pencil_write_icon#size=128
+https://www.iconfinder.com/icons/174644/bucket_paint_icon#size=128
+
+Material Rules
+--------------
 
 Autotiles are individual files in Rpg Maker VX format.
 Spritesets are in Rpg Maker VX format.
@@ -300,4 +309,5 @@ Tilesets only constrained to be comprised of 32x32 square tiles.
 Iconsets can be any size, but you will need to specify the tile-size when you import it.
 
 Windowskins are in the Rpg Maker XP format.
+
 

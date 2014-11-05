@@ -67,52 +67,88 @@ class MapEditor(
   // Initialize variables based on selected layer
   selectLayer(selectedLayer)
 
-  //--- BUTTONS ---//
-  val layersBtns = enumButtons(MapLayers)(selectedLayer, selectLayer _)
-  val toolsBtns = enumButtons(MapViewToolsEnum)(selectedTool, selectedTool = _)
-
-  val undoAction = new Action("Undo") {
-    enabled = false
-
-    def refreshEnabled(vs: MapViewState) = {
-      enabled = vs.canUndo()
-    }
-
-    def apply() = {
-      viewStateOpt.map(vs => {
-        logger.info("Undo called")
-        vs.undo()
-        refreshEnabled(vs)
-        repaintAll()
-      })
-    }
-  }
-
   // Defined so we know to update the state of the undo action
   def commitVS(vs: MapViewState) = {
     vs.commit()
-    undoAction.refreshEnabled(vs)
+    undoButton.refreshEnabled(vs)
   }
 
-  toolbar.contents += new Button(undoAction) {
-    val a =
-      KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK)
+  //--- BUTTONS ---//
+
+  def iconOnlyToggle(iconName: String, actionBody: () => Unit) = {
+    new ToggleButton() {
+      action = Action("") {
+        actionBody()
+      }
+
+      icon = new ImageIcon(
+          Utils.readClasspathImage("hendrik-weiler-theme/%s".format(iconName)))
+    }
+  }
+
+  // Clear out scale buttons
+  toolbar.contents.clear()
+
+  val layerButtons = List(
+      iconOnlyToggle("bottom-layer.png", () => selectLayer(MapLayers.Bot)),
+      iconOnlyToggle("middle-layer.png", () => selectLayer(MapLayers.Mid)),
+      iconOnlyToggle("top-layer.png", () => selectLayer(MapLayers.Top)),
+      iconOnlyToggle("event-layer.png", () => selectLayer(MapLayers.Evt)))
+
+  addBtnsAsGrp(toolbar.contents, layerButtons)
+
+  toolbar.contents += Swing.HStrut(16)
+
+  val toolsButtons = List(
+      iconOnlyToggle("pencil.png",
+          () => selectedTool = MapViewToolsEnum.Pencil),
+      iconOnlyToggle("rectangle.png",
+          () => selectedTool = MapViewToolsEnum.Rectangle),
+      iconOnlyToggle("circle.png",
+          () => selectedTool = MapViewToolsEnum.Ellipse),
+      iconOnlyToggle("bucket.png",
+          () => selectedTool = MapViewToolsEnum.Bucket))
+
+  addBtnsAsGrp(toolbar.contents, toolsButtons)
+
+  toolbar.contents += Swing.HStrut(16)
+
+  val undoButton = new Button() {
+    def refreshEnabled(vs: MapViewState) = {
+      action.enabled = vs.canUndo()
+    }
+
+    action = new Action("Undo") {
+      enabled = false
+
+      def apply() = {
+        viewStateOpt.map(vs => {
+          logger.info("Undo called")
+          vs.undo()
+          refreshEnabled(vs)
+          repaintAll()
+        })
+      }
+    }
 
     peer
       .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
-      .put(a, "UndoAction")
+      .put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK), "Undo")
     peer
-      .getActionMap.put("UndoAction", undoAction.peer)
+      .getActionMap.put("Undo", action.peer)
 
     icon = new ImageIcon(Utils.readClasspathImage(
-      "crystal_project/16x16/actions/undo.png"))
+        "hendrik-weiler-theme/undo.png"))
   }
 
-  toolbar.contents += Swing.HStrut(16)
-  addBtnsAsGrp(toolbar.contents, layersBtns)
+  toolbar.contents += undoButton
 
   toolbar.contents += Swing.HStrut(16)
-  addBtnsAsGrp(toolbar.contents, toolsBtns)
+
+  // Add back the scale buttons
+  addBtnsAsGrp(toolbar.contents, scaleButtons)
+
+  toolbar.contents += Swing.HGlue
 
   override lazy val canvasPanel = new MapViewPanel {
     override def paintComponent(g: Graphics2D) =
