@@ -8,6 +8,7 @@ rm -rfv $SRC_DIR/target
 mkdir $SRC_DIR/target/
 
 launch4j $SRC_DIR/config-win.xml 
+launch4j $SRC_DIR/config-win-player.xml
 
 #cd $SRC_DIR/target
 #wget http://people.apache.org/~ebourg/jsign/jsign-1.2.jar

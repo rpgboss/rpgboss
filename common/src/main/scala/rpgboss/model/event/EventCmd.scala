@@ -3,6 +3,8 @@ package rpgboss.model.event
 import EventCmd._
 import rpgboss.model._
 import rpgboss.player._
+import org.json4s.TypeHints
+import org.json4s.ShortTypeHints
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -37,18 +39,29 @@ object EventCmd {
       .map(("  " * indent) + _) // Indent by 2 spaces
   }
 
-  def types = List(
+  // Used to deserialize legacy names.
+  case object EventRenameHints extends TypeHints {
+    val hints: List[Class[_]] = Nil
+    def hintFor(clazz: Class[_]) = sys.error("No hints provided")
+    def classFor(hint: String) = hint match {
+      case "SetEvtState" => Some(classOf[SetEventState])
+      case _ => None
+    }
+  }
+
+  val hints = ShortTypeHints(List(
     classOf[EndOfScript],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
     classOf[AddRemoveItem],
     classOf[ShowText],
     classOf[Teleport],
-    classOf[SetEvtState],
+    classOf[SetEventState],
+    classOf[IncrementEventState],
     classOf[MoveEvent],
     classOf[RunJs],
     classOf[StartBattle],
-    classOf[SetInt])
+    classOf[SetInt])) + EventRenameHints
 
   case class RawJs(exp: String)
 
@@ -140,8 +153,25 @@ case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }
 
-case class SetEvtState(state: Int = 0) extends EventCmd {
-  def sections = singleCall("game.setEventState", RawJs("event.id()"), state)
+case class SetEventState(
+  var entitySpec: EntitySpec = EntitySpec(),
+  state: Int = 0) extends EventCmd {
+  def sections = {
+    val (mapName, eventId) = WhichEntity(entitySpec.whichEntityId) match {
+      case WhichEntity.THIS_EVENT =>
+        (RawJs("event.mapName()"), RawJs("event.id()"))
+      case WhichEntity.EVENT_ON_MAP =>
+        (RawJs("event.mapName()"), entitySpec.eventId)
+      case WhichEntity.EVENT_ON_OTHER_MAP =>
+        (entitySpec.mapName, entitySpec.eventId)
+    }
+
+    singleCall("game.setEventState", mapName, eventId, state)
+  }
+}
+
+case class IncrementEventState() extends EventCmd {
+  def sections = singleCall("game.incrementEventState", RawJs("event.id()"))
 }
 
 case class MoveEvent(
@@ -150,18 +180,17 @@ case class MoveEvent(
   var dy: Float = 0f,
   var affixDirection: Boolean = false,
   var async: Boolean = false) extends EventCmd {
-  def sections = {
-    entitySpec match {
-      case EntitySpec(which, _) if which == WhichEntity.PLAYER.id =>
-        singleCall("game.movePlayer", dx, dy, affixDirection, async)
-      case EntitySpec(which, _) if which == WhichEntity.THIS_EVENT.id =>
-        singleCall(
-          "game.moveEvent", RawJs("event.id()"), dx, dy, affixDirection,
-          async)
-      case EntitySpec(which, eventIdx) if which == WhichEntity.OTHER_EVENT.id =>
-        singleCall(
-          "game.moveEvent", entitySpec.eventId, dx, dy, affixDirection, async)
-    }
+  def sections = entitySpec match {
+    case EntitySpec(which, _, _) if which == WhichEntity.PLAYER.id =>
+      singleCall("game.movePlayer", dx, dy, affixDirection, async)
+    case EntitySpec(which, _, _) if which == WhichEntity.THIS_EVENT.id =>
+      singleCall(
+        "game.moveEvent", RawJs("event.id()"), dx, dy, affixDirection,
+        async)
+    case EntitySpec(which, _, eventIdx)
+    if which == WhichEntity.EVENT_ON_MAP.id =>
+      singleCall(
+        "game.moveEvent", entitySpec.eventId, dx, dy, affixDirection, async)
   }
 }
 

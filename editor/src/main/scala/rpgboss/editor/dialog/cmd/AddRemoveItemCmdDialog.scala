@@ -15,6 +15,8 @@ class AddRemoveItemCmdDialog(
   successF: (AddRemoveItem) => Any)
   extends StdDialog(owner, "Add/Remove Item") {
 
+  centerDialog(new Dimension(200, 200))
+
   val model = Utils.deepCopy(initial)
 
   val fItemId =

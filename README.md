@@ -47,6 +47,9 @@ Build instructions:
     ```
     > eclipse
     ```
+6. For Eclipse, I recommend simply using the Scala IDE package: http://scala-ide.org/. Then, import the projects you generated in the above step into Eclipse.
+
+7. Run RpgDesktop.scala in Eclipse to build and run the editor.
 
 Commiting and Automated tests
 -----------------------------
@@ -148,6 +151,10 @@ http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
 USE Internet Archieve for Dead website links!
 
 ### Battlers
+
+http://media.ryzom.com/ (CC-BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+(Ryzom)
 
 http://darts.kirara.st/m/ (CC-BY-ND) http://creativecommons.org/licenses/by-nd/4.0/
 
@@ -285,7 +292,16 @@ http://opengameart.org/content/37-hitspunches
 
 Default music by Aaron McDonald. Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). http://creativecommons.org/licenses/by-sa/4.0/
 
-### Material Rules
+Other Credits
+-------------
+
+Some program icons from:
+Hendrik Weiler: https://github.com/hendrik-weiler
+https://www.iconfinder.com/icons/284087/edit_editor_pen_pencil_write_icon#size=128
+https://www.iconfinder.com/icons/174644/bucket_paint_icon#size=128
+
+Material Rules
+--------------
 
 Autotiles are individual files in Rpg Maker VX format.
 Spritesets are in Rpg Maker VX format.
@@ -293,4 +309,5 @@ Tilesets only constrained to be comprised of 32x32 square tiles.
 Iconsets can be any size, but you will need to specify the tile-size when you import it.
 
 Windowskins are in the Rpg Maker XP format.
+
 

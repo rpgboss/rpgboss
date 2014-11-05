@@ -20,12 +20,12 @@ case class SaveFile(
 case class SaveInfo(isDefined: Boolean, mapTitle: String = "")
 
 object SaveFile extends HasScriptConstants {
-  def file(project: Project, slot: Int) =
-    new File(project.dir, Utils.generateFilename("save", slot, "json"))
+  def file(projectDir: File, slot: Int) =
+    new File(projectDir, Utils.generateFilename("save", slot, "json"))
 
   def read(project: Project, slot: Int): Option[SaveFile] = {
     JsonUtils.readModelFromJson[SaveFile](
-        file(project, slot: Int))
+        file(project.dir, slot: Int))
   }
 
   def readInfo(project: Project, slot: Int): SaveInfo = {
@@ -39,5 +39,5 @@ object SaveFile extends HasScriptConstants {
   }
 
   def write(saveFile: SaveFile, project: Project, slot: Int) =
-    JsonUtils.writeModelToJson(file(project, slot), saveFile)
+    JsonUtils.writeModelToJson(file(project.dir, slot), saveFile)
 }

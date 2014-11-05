@@ -30,7 +30,7 @@ case class RpgEvent(
   var name: String,
   var x: Float,
   var y: Float,
-  states: Array[RpgEventState])
+  var states: Array[RpgEventState])
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
@@ -39,14 +39,20 @@ object RpgEvent {
 }
 
 /**
- * @param   cmds    May be empty.
+ * @param   cmds                        May be empty.
+ * @param   sameAppearanceAsPrevState   If true, takes on the height and sprite
+ *                                      of the preceding state.
+ * @param   runOnceThenIncrementState   If true, increments the state after
+ *                                      running the commands.
  */
 case class RpgEventState(
-  switchCondition: Option[EventCondition] = None,
-  sprite: Option[SpriteSpec] = None,
-  trigger: Int = EventTrigger.BUTTON.id,
-  height: Int = EventHeight.UNDER.id,
-  cmds: Array[EventCmd] = RpgEventState.defaultCmds)
+  var switchCondition: Option[EventCondition] = None,
+  var trigger: Int = EventTrigger.BUTTON.id,
+  var sameAppearanceAsPrevState: Boolean = true,
+  var sprite: Option[SpriteSpec] = None,
+  var height: Int = EventHeight.UNDER.id,
+  var cmds: Array[EventCmd] = RpgEventState.defaultCmds,
+  var runOnceThenIncrementState: Boolean = false)
 
 object RpgEventState {
   def defaultCmds: Array[EventCmd] = Array()

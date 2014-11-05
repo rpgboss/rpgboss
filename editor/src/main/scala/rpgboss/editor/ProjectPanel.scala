@@ -14,6 +14,9 @@ import org.lwjgl.opengl.Display
 import java.io._
 import java.util.Scanner
 import javax.swing.ImageIcon
+import rpgboss.editor.util.Export
+import java.awt.Desktop
+import java.awt.Toolkit
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -21,6 +24,15 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new ProjectPanelMapSelector(sm, this)
   val mapView = new MapEditor(this, sm, tileSelector)
+
+  val window = mainP.getWindow()
+  window.resizable = true
+  window.location = new Point(0,0)
+
+  val screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+  window.minimumSize = new Dimension(screenSize.width/2,screenSize.height/2)
+  window.maximize()
 
   val projMenu = new PopupMenu {
     contents += new MenuItem(mainP.actionNew)
@@ -30,17 +42,6 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
   def selectMap(mapOpt: Option[RpgMap]) = {
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
-  }
-
-  def inheritIO(src: InputStream, dest: PrintStream) = {
-    new Thread(new Runnable() {
-        def run() = {
-            val sc = new Scanner(src);
-            while (sc.hasNextLine()) {
-                dest.println(sc.nextLine());
-            }
-        }
-    }).start();
   }
 
   val topBar = new BoxPanel(Orientation.Horizontal) {
@@ -70,46 +71,39 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     }
     contents += new Button(Action("Play...") {
       if (sm.askSaveUnchanged(this)) {
-        val projPath = sm.getProj.dir.getCanonicalPath()
-        val winExecutable = "rpgboss-editor.exe"
-
-        // Returns path to windows executable if it exists, null otherwise
-        def getWinExecutable(): Option[File] = {
-          val programDir = new File(System.getProperty("user.dir"))
-
-          val executablePath = new File(programDir, winExecutable)
-
-          if (executablePath.exists())
-            Some(executablePath)
-          else
-            None
+        def inheritIO(src: InputStream, dest: PrintStream) = {
+          new Thread(new Runnable() {
+              def run() = {
+                  val sc = new Scanner(src);
+                  while (sc.hasNextLine()) {
+                      dest.println(sc.nextLine());
+                  }
+              }
+          }).start();
         }
 
+        val projPath = sm.getProj.dir.getCanonicalPath()
+
         val processBuilder: ProcessBuilder = {
-          getWinExecutable() map { exePath =>
-            new ProcessBuilder(exePath.toString, "--player",
-                """"%s"""".format(projPath))
-          } getOrElse {
-            val separator = System.getProperty("file.separator")
-            val cpSeparator = System.getProperty("path.separator")
-            val classpath =
-              List("java.class.path", "java.boot.class.path",
-                   "sun.boot.class.path")
-                .map(s => System.getProperty(s, "")).mkString(cpSeparator)
+          val separator = System.getProperty("file.separator")
+          val cpSeparator = System.getProperty("path.separator")
+          val classpath =
+            List("java.class.path", "java.boot.class.path",
+                 "sun.boot.class.path")
+              .map(s => System.getProperty(s, "")).mkString(cpSeparator)
 
-            val javaPath =
-              System.getProperty("java.home") +
-                separator +
-                "bin" +
-                separator +
-                "java";
+          val javaPath =
+            System.getProperty("java.home") +
+              separator +
+              "bin" +
+              separator +
+              "java";
 
-            new ProcessBuilder(javaPath, "-cp",
-              classpath,
-              "rpgboss.editor.RpgDesktop",
-              "--player",
-              projPath)
-          }
+          new ProcessBuilder(javaPath, "-cp",
+            classpath,
+            "rpgboss.editor.RpgDesktop",
+            "--player",
+            projPath)
         }
 
         println(processBuilder.command().mkString(" "))
@@ -122,6 +116,46 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/actions/player_play.png"))
+    }
+
+    contents += new Button(Action("Export...") {
+      if (sm.askSaveUnchanged(this)) {
+        val jarFile: File = {
+          val envVarValue = System.getenv("RPGBOSS_EXPORT_JAR_PATH")
+          if (envVarValue != null) {
+            new File(envVarValue)
+          } else {
+            val classLoc =
+              getClass.getProtectionDomain().getCodeSource().getLocation()
+            new File(classLoc.getPath())
+          }
+        }
+
+        if (jarFile.isFile()) {
+          Export.export(sm.getProj, jarFile)
+          val exportedDir = new File(sm.getProj.dir, "export")
+          Dialog.showMessage(
+              this,
+              "Export complete. Packages in: \n"+
+              exportedDir.getCanonicalPath(),
+              "Export Complete",
+              Dialog.Message.Info)
+          if (Desktop.isDesktopSupported())
+            Desktop.getDesktop().browse(exportedDir.toURI)
+        } else {
+          Dialog.showMessage(
+              this,
+              "Cannot locate rpgboss JAR for export. Path tried: \n" +
+              jarFile.getCanonicalPath() + "\n\n" +
+              "If you are running from an IDE or SBT for development,\n" +
+              "set the RPGBOSS_EXPORT_JAR_PATH environment variable.",
+              "Cannot export",
+              Dialog.Message.Error)
+        }
+      }
+    }) {
+      icon = new ImageIcon(Utils.readClasspathImage(
+        "crystal_project/16x16/actions/fileexport.png"))
     }
   }
 

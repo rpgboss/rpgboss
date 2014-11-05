@@ -27,9 +27,10 @@ case class MapLoc(
 object WhichEntity extends RpgEnum {
   val PLAYER = Value(0, "Player")
   val THIS_EVENT = Value(1, "This event")
-  val OTHER_EVENT = Value(2, "Other event")
+  val EVENT_ON_MAP = Value(2, "Event on Map")
+  val EVENT_ON_OTHER_MAP = Value(3, "Event on Other Map")
 
-  def default = PLAYER
+  def default = THIS_EVENT
 }
 
 object Scope extends RpgEnum {
@@ -56,6 +57,7 @@ object AddOrRemove extends RpgEnum {
 // Specifies an entity: Either the player or an event on the current map.
 case class EntitySpec(
   var whichEntityId: Int = WhichEntity.default.id,
+  var mapName: String = "",
   var eventId: Int = -1)
 
 case class SpriteSpec(

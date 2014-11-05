@@ -17,6 +17,8 @@ class ResourcesDialog(owner: Window, sm: StateMaster)
     close()
   }
 
+  centerDialog(new Dimension(1200, 730))
+
   val importResourcesPanel = new ImportResourcesPanel(sm)
   val tilesetsMetadataPanel = new TilesetsMetadataPanel(sm)
 

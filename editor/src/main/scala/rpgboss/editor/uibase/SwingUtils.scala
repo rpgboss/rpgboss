@@ -5,6 +5,7 @@ import rpgboss.model._
 import scala.collection.mutable.Buffer
 import scala.swing._
 import scala.swing.event._
+import javax.swing.ImageIcon
 
 object SwingUtils {
   def lbl(s: String) = new Label(s)
@@ -112,12 +113,12 @@ object SwingUtils {
   }
 
   /**
-   * Accepts any types <% that are 'viewable' i.e. implicitly convertible to 
+   * Accepts any types <% that are 'viewable' i.e. implicitly convertible to
    * HasName.
    */
   def indexedCombo[T <% HasName](
     choices: Seq[T], initial: Int, onUpdate: Int => Unit,
-    additionalAction: Option[() => Unit] = None) = {    
+    additionalAction: Option[() => Unit] = None) = {
     new ComboBox(choices) {
       selection.index = initial
       renderer = standardIdxRenderer(_.name)
@@ -159,18 +160,29 @@ object SwingUtils {
     firstSelected.map { btn => grp.select(btn) }
   }
 
-  def enumButtons[T <: Enumeration](enum: T)(initial: enum.Value, selectF: enum.Value => Any) =
-    {
-      enum.values.toList.map { eVal =>
-        new ToggleButton() {
-          action = Action(eVal.toString) {
-            selectF(eVal)
-          }
+  def enumButtons[T <: Enumeration](enum: T)(
+      initial: enum.Value,
+      selectF: enum.Value => Any,
+      iconPaths: List[String]) =
+  {
+    val enumValues = enum.values.toList
 
-          selected = eVal == initial
+    assert(iconPaths.isEmpty || iconPaths.length == enumValues.length)
+
+    enumValues.zipWithIndex.map { case (eVal, i) =>
+      new ToggleButton() {
+        action = Action(if (iconPaths.isEmpty) eVal.toString else "") {
+          selectF(eVal)
         }
+
+        if (!iconPaths.isEmpty) {
+          icon = new ImageIcon(Utils.readClasspathImage(iconPaths(i)))
+        }
+
+        selected = eVal == initial
       }
     }
+  }
 
   def enumIdRadios[T <: Enumeration](enum: T)(
     initialId: Int,

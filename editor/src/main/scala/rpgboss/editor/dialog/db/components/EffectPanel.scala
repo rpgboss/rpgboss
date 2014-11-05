@@ -41,7 +41,7 @@ class EffectPanel(
   }
 
   if (includeStatEffects)
-    preferredSize = new Dimension(250, 300)
+    preferredSize = new Dimension(300, 300)
   else
     preferredSize = new Dimension(250, 200)
 
@@ -70,7 +70,7 @@ class EffectPanel(
       val initialValue =
         statEffects.find(metaEffect.matches _).map(_.v1).getOrElse(0)
 
-      new NumberSpinner(initialValue, -1000, 1000, spinFunc)
+      new NumberSpinner(initialValue, -999, 999, spinFunc)
     }
 
     row()

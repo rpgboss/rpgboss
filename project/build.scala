@@ -5,6 +5,7 @@ import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
 import scala.sys.process.{Process => SysProcess}
+import java.io.PrintWriter
 
 object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
@@ -17,6 +18,7 @@ object Settings {
       "ch.qos.logback" % "logback-classic" % "1.0.6",
       "com.google.guava" % "guava" % "17.0",
       "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
+      "commons-io" % "commons-io" % "2.4",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
       "org.json4s" %% "json4s-native" % "3.2.10" withSources(),
       "org.scalatest" %% "scalatest" % "2.1.5" % "test",
@@ -28,9 +30,30 @@ object Settings {
       jars.classpath
     },
     updateLibsTask,
-    TaskKey[Unit]("generateEnum") := {  
-      SysProcess("python GenerateFileEnum.py", new File("common/src/main/resources")).run()
-      println("Generated file enumeration")
+    TaskKey[Unit]("generateEnum") := {
+      def listSubfiles(dir: File): Seq[File] = {
+        assert(dir.isDirectory)
+        val (childDirs, childFiles) = dir.listFiles.partition(_.isDirectory)
+        childFiles ++: childDirs.flatMap(listSubfiles)
+      }
+
+      for (subDir <- List("defaultrc", "testrc")) {
+        val fullDir = new File("common/src/main/resources", subDir)
+        val subFiles = listSubfiles(fullDir).filter(_.name != "enumerated.txt")
+        val relativizedSubFiles = subFiles
+          .map(fullDir.relativize(_).get)
+          .map(_.toString.replace("\\", "/"))
+          .sorted
+
+        val outputFile = new File(fullDir, "enumerated.txt")
+
+        val writer = new PrintWriter(outputFile)
+        relativizedSubFiles.foreach(s => {
+          writer.write(s)
+          writer.write("\n")
+        })
+        writer.close()
+      }
       Unit
     },
     Keys.`compile` <<= (Keys.`compile` in Compile) dependsOn TaskKey[Unit]("generateEnum"),
@@ -39,7 +62,8 @@ object Settings {
     Keys.`package` <<= (Keys.`package` in Compile) dependsOn TaskKey[Unit]("update-libs"),
     Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("generateEnum"),
     Keys.`test` <<= (Keys.`test` in Test) dependsOn TaskKey[Unit]("update-libs"),
-    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
+    EclipseKeys.eclipseOutput := Some("eclipsetarget")
   )
 
   lazy val editor = Settings.common ++ editorLibs ++ editorAssembly
@@ -47,6 +71,7 @@ object Settings {
   lazy val editorLibs = Seq(
     scalaVersion := "2.11.1",
     libraryDependencies ++= Seq(
+      "org.apache.commons" % "commons-compress" % "1.9",
       "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
       "com.github.benhutchison" %% "scalaswingcontrib" % "1.5", 
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
@@ -59,14 +84,13 @@ object Settings {
     },
     mainClass in (Compile, run) := Some("rpgboss.editor.RpgDesktop"),
     scalacOptions ++= List("-deprecation", "-unchecked"),
-    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
+    EclipseKeys.eclipseOutput := Some("eclipsetarget")
   )
 
   lazy val editorAssembly = assemblySettings ++ Seq(
     mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
       {
-        case PathList("scala", "reflect", "internal", _ @ _*) => MergeStrategy.discard
-        case PathList("scala", "tools", "nsc", _ @ _*) => MergeStrategy.discard
         case x => old(x)
       }
     }

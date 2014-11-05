@@ -27,6 +27,8 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
   // Set to a large number, as we expect to cancel this move when we lift button
   val moveSize = 1000f
 
+  def getScriptInterface() = EventScriptInterface(mapName.getOrElse(""), -1)
+
   def processMoveKeys(): Unit = {
     if (currentMoveQueueItem != null) {
       if (!currentMoveQueueItem.isDone())

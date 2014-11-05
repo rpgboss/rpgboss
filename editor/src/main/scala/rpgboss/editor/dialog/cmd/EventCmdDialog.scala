@@ -31,7 +31,7 @@ object EventCmdDialog {
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
-      case e: SetEvtState => new SetEvtStateDialog(owner, e, successF)
+      case e: SetEventState => new SetEventStateDialog(owner, e, successF)
       case e: MoveEvent =>
         new MoveEventCmdDialog(owner, sm, mapName, e, successF)
       case e: StartBattle =>

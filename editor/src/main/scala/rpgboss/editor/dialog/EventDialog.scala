@@ -12,6 +12,8 @@ import rpgboss.editor.StateMaster
 import java.awt.Dimension
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.resourceselector.SpriteField
+import javax.swing.BorderFactory
+import rpgboss.lib.Utils
 
 class EventDialog(
   owner: Window,
@@ -22,19 +24,25 @@ class EventDialog(
   onCancel: RpgEvent => Any)
   extends StdDialog(owner, "Event: " + initialEvent.name) {
 
-  var event = initialEvent
+  centerDialog(new Dimension(600, 600))
+
+  // TODO: Need to make a deep copy here for Cancel to work correctly.
+  // However, Utils.deepCopy doesn't work correctly for polymorphic lists.
+  val event = initialEvent
 
   override def cancelFunc() = onCancel(event)
 
   class EventStatePane(val idx: Int) extends BoxPanel(Orientation.Horizontal) {
     private def curEvtState = event.states(idx)
 
-    val triggerBox = new ComboBox(EventTrigger.values.toSeq) {
-      selection.item = EventTrigger(curEvtState.trigger)
-    }
-    val heightBox = new ComboBox(EventHeight.values.toSeq) {
-      selection.item = EventHeight(curEvtState.height)
-    }
+    val fSameAppearanceAsPrevState: CheckBox =
+      boolField("Same Appearance As Previous State",
+          curEvtState.sameAppearanceAsPrevState,
+          curEvtState.sameAppearanceAsPrevState = _,
+          Some(updateAppearanceFieldsState))
+    val heightBox =
+      enumIdCombo(EventHeight)(curEvtState.height, curEvtState.height = _)
+
     val spriteBox = new SpriteField(
       owner,
       sm,
@@ -42,18 +50,60 @@ class EventDialog(
       (spriteSpec: Option[SpriteSpec]) => {
         // If the sprite's "existence" has changed...
         if (curEvtState.sprite.isDefined != spriteSpec.isDefined) {
-          heightBox.selection.item = if (spriteSpec.isDefined)
-            EventHeight.SAME else EventHeight.UNDER
+          heightBox.selection.index =
+            if (spriteSpec.isDefined)
+              EventHeight.SAME.id
+            else
+              EventHeight.UNDER.id
         }
+
+        curEvtState.sprite = spriteSpec
       })
 
-    contents += new DesignGridPanel {
-      row().grid().add(leftLabel("Trigger:"))
-      row().grid().add(triggerBox)
-      row().grid().add(leftLabel("Height:"))
-      row().grid().add(heightBox)
-      row().grid().add(leftLabel("Sprite:"))
-      row().grid().add(spriteBox)
+    def updateAppearanceFieldsState() = {
+      if (idx == 0) {
+        fSameAppearanceAsPrevState.selected = true
+        fSameAppearanceAsPrevState.enabled = false
+        heightBox.enabled = true
+        spriteBox.enabled = true
+      } else {
+        val sameAppearance = fSameAppearanceAsPrevState.selected
+        heightBox.enabled = !sameAppearance
+        spriteBox.enabled = !sameAppearance
+      }
+    }
+    updateAppearanceFieldsState()
+
+    val triggerBox =
+      enumIdCombo(EventTrigger)(curEvtState.trigger, curEvtState.trigger = _)
+
+    val fRunOnce =
+      boolField("Run Once, then increment state",
+          curEvtState.runOnceThenIncrementState,
+          curEvtState.runOnceThenIncrementState = _,
+          Some(() => {
+            if (curEvtState == event.states.last) {
+              newState(false, false)
+            }
+          }))
+
+    contents += new BoxPanel(Orientation.Vertical) {
+      contents += new DesignGridPanel {
+        border = BorderFactory.createTitledBorder("Appearance")
+
+        row().grid().add(fSameAppearanceAsPrevState)
+        row().grid().add(leftLabel("Height:"))
+        row().grid().add(heightBox)
+        row().grid().add(leftLabel("Sprite:"))
+        row().grid().add(spriteBox)
+      }
+
+      contents += new DesignGridPanel {
+        border = BorderFactory.createTitledBorder("Behavior")
+        row().grid().add(leftLabel("Trigger:"))
+        row().grid().add(triggerBox)
+        row().grid().add(fRunOnce)
+      }
     }
 
     val commandBox = new CommandBox(
@@ -62,7 +112,7 @@ class EventDialog(
       sm,
       mapName,
       curEvtState.cmds,
-      _ => Unit,  // Don't need onUpdate notifies, as use formToModel function.
+      curEvtState.cmds = _,
       inner = false)
 
     contents += new DesignGridPanel {
@@ -72,31 +122,14 @@ class EventDialog(
         contents = commandBox
       })
     }
-
-    def formToModel() = {
-      val origState = event.states(idx)
-      val newState = origState.copy(
-        sprite = spriteBox.getValue,
-        trigger = triggerBox.selection.item.id,
-        height = heightBox.selection.item.id,
-        cmds = commandBox.getEventCmds)
-      event = event.copy(states = event.states.updated(idx, newState))
-    }
   }
 
   def okFunc() = {
-    event = event.copy(name = nameField.text)
-
-    tabPane.savePanesToModel()
-
     onOk(event)
     close()
   }
 
-  val nameField = new TextField {
-    columns = 12
-    text = event.name
-  }
+  val nameField = textField(event.name, event.name = _)
 
   val tabPane = new TabbedPane() {
     def loadPanesFromModel() = {
@@ -107,22 +140,12 @@ class EventDialog(
       }
     }
 
-    def savePanesToModel() = {
-      pages.foreach { page =>
-        val pane = page.content.asInstanceOf[EventStatePane]
-        pane.formToModel()
-      }
-    }
-
     def curPane = selection.page.content.asInstanceOf[EventStatePane]
 
     loadPanesFromModel()
   }
 
-  def newState(copyCurrent: Boolean) = {
-    // Save the current pane statuses
-    tabPane.savePanesToModel()
-
+  def newState(copyCurrent: Boolean, switchPane: Boolean) = {
     // Add to list of states
     val newPaneIdx = tabPane.curPane.idx + 1
     val newState =
@@ -130,14 +153,15 @@ class EventDialog(
         event.states(tabPane.curPane.idx).copy()
       else
         RpgEventState()
-    val newStates =
+    event.states =
       event.states.take(newPaneIdx) ++ Array(newState) ++
         event.states.takeRight(event.states.size - newPaneIdx)
 
-    event = event.copy(states = newStates)
-
     tabPane.loadPanesFromModel()
-    tabPane.selection.index = newPaneIdx
+
+    if (switchPane) {
+      tabPane.selection.index = newPaneIdx
+    }
   }
 
   def deleteState() = {
@@ -145,16 +169,11 @@ class EventDialog(
       Dialog.showMessage(tabPane, "Cannot delete the last state", "Error",
         Dialog.Message.Error)
     } else {
-      // Save the current pane statuses
-      tabPane.savePanesToModel()
-
       val deletedIdx = tabPane.curPane.idx
 
-      val newStates =
+      event.states =
         event.states.take(deletedIdx) ++
           event.states.takeRight(event.states.size - deletedIdx - 1)
-
-      event = event.copy(states = newStates)
 
       tabPane.loadPanesFromModel()
       tabPane.selection.index = math.min(deletedIdx, event.states.size - 1)
@@ -167,11 +186,11 @@ class EventDialog(
         .add(leftLabel("Name:")).add(nameField)
         .add(
           new Button(Action("New state") {
-            newState(false)
+            newState(false, true)
           }))
         .add(
           new Button(Action("Copy state") {
-            newState(true)
+            newState(true, true)
           }))
         .add(
           new Button(Action("Delete state") {

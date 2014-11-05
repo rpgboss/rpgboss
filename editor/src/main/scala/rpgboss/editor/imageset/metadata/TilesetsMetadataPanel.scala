@@ -156,7 +156,8 @@ class TilesetsMetadataPanel(sm: StateMaster)
       newMode => {
         metadataMode = newMode
         metadataPanelContainer.repaint()
-      })
+      },
+      Nil)
 
     new ButtonGroup(btns: _*)
 

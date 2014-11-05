@@ -3,6 +3,7 @@ package rpgboss.player
 import rpgboss._
 import rpgboss.model._
 import rpgboss.model.event._
+import org.json4s.native.Serialization
 
 class EventCmdSpec extends UnitSpec {
   "EventCmd" should "produce correct script for LockPlayerMovement" in {
@@ -65,23 +66,37 @@ class EventCmdSpec extends UnitSpec {
     Locale.setDefault(defaultLocale)
   }
 
-  "EventCmd" should "produce correct script for SetEvtState" in {
-    SetEvtState(5).toJs should deepEqual(
-      Array("game.setEventState(event.id(), 5);"))
+  "EventCmd" should "produce correct script for SetEventState" in {
+    val e1 = SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 5)
+    e1.toJs should deepEqual(
+      Array("game.setEventState(event.mapName(), event.id(), 5);"))
+    val e2 = SetEventState(EntitySpec(WhichEntity.EVENT_ON_MAP.id, "", 20), 6)
+    e2.toJs should deepEqual(
+      Array("game.setEventState(event.mapName(), 20, 6);"))
+    val e3 = SetEventState(EntitySpec(
+        WhichEntity.EVENT_ON_OTHER_MAP.id, "foo", 1), 2)
+    e3.toJs should deepEqual(
+      Array("game.setEventState(\"foo\", 1, 2);"))
+  }
+
+  "EventCmd" should "produce correct script for IncrementEventState" in {
+    IncrementEventState().toJs should deepEqual(
+      Array("game.incrementEventState(event.id());"))
   }
 
   "EventCmd" should "produce correct script for MoveEvent" in {
-    val e1 = MoveEvent(EntitySpec(WhichEntity.PLAYER.id, 0), 1, 5, false, true)
+    val e1 = MoveEvent(EntitySpec(WhichEntity.PLAYER.id), 1, 5, false, true)
     e1.toJs should deepEqual(
       Array("game.movePlayer(1.000000, 5.000000, false, true);"))
 
     val e2 =
-      MoveEvent(EntitySpec(WhichEntity.THIS_EVENT.id, 0), 4, 1, true, true)
+      MoveEvent(EntitySpec(WhichEntity.THIS_EVENT.id, "", 0), 4, 1, true, true)
     e2.toJs should deepEqual(
       Array("game.moveEvent(event.id(), 4.000000, 1.000000, true, true);"))
 
     val e3 =
-      MoveEvent(EntitySpec(WhichEntity.OTHER_EVENT.id, 10), 1, 5, false, false)
+      MoveEvent(EntitySpec(
+          WhichEntity.EVENT_ON_MAP.id, "", 10), 1, 5, false, false)
     e3.toJs should deepEqual(
       Array("game.moveEvent(10, 1.000000, 5.000000, false, false);"))
   }
@@ -108,5 +123,27 @@ class EventCmdSpec extends UnitSpec {
     }
 
     test.runTest()
+  }
+
+  "EventCmd" should "deserialize legacy names correctly" in {
+    implicit val formats = Serialization.formats(EventCmd.hints)
+    val legacyJson = """
+      [
+        {
+          "jsonClass":"ShowText",
+          "lines":[
+            "Hi"
+          ]
+        },
+        {
+          "jsonClass":"SetEvtState",
+          "state":1
+        }
+      ]"""
+    val result = Serialization.read[Array[EventCmd]](legacyJson)
+    val expected: Array[EventCmd] =
+      Array(ShowText(Array("Hi")),
+          SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 1))
+    result should deepEqual (expected)
   }
 }

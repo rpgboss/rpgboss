@@ -17,6 +17,8 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
   extends StdDialog(owner, "New Project") {
   val rootChooser = Paths.getRootChooserPanel(() => Unit)
 
+  centerDialog(new Dimension(400, 200))
+
   val shortnameField = new TextField() {
     columns = 12
   }

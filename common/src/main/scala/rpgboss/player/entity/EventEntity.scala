@@ -7,6 +7,8 @@ import scala.concurrent.Promise
 import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
 
+case class EventScriptInterface(mapName: String, id: Int)
+
 class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
   extends Entity(game, mapEvent.x, mapEvent.y) {
 
@@ -16,7 +18,17 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
   var evtStateIdx = 0
 
+  def getScriptInterface() = EventScriptInterface(mapName, id)
+
   def evtState = mapEvent.states(evtStateIdx)
+
+  def height: Int = {
+    for (i <- evtStateIdx to 1 by -1) {
+      if (!mapEvent.states(i).sameAppearanceAsPrevState)
+        return mapEvent.states(i).height
+    }
+    return mapEvent.states.head.height
+  }
 
   val persistentListener =
     new Subscriber[PersistentStateUpdate, PersistentState#Pub] {
@@ -28,9 +40,13 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
     game.persistent.subscribe(this)
   }
 
-  def updateState() = {
+  def updateState(): Unit = {
     evtStateIdx = game.persistent.getEventState(mapName, mapEvent.id)
-    setSprite(evtState.sprite)
+    for (i <- evtStateIdx to 1 by -1) {
+      if (!mapEvent.states(i).sameAppearanceAsPrevState)
+        return setSprite(mapEvent.states(i).sprite)
+    }
+    return setSprite(mapEvent.states.head.sprite)
   }
   updateState()
 

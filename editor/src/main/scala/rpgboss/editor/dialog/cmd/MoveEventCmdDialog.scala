@@ -15,12 +15,16 @@ class MoveEventCmdDialog(
   successF: (MoveEvent) => Any)
   extends StdDialog(owner, "Move event") {
 
+  centerDialog(new Dimension(200, 300))
+
   val model = Utils.deepCopy(initial)
 
   val mapData = sm.getMapData(mapName)
 
   val fieldWhichEvent = new EntitySelectPanel(owner, sm, mapData,
-                                              model.entitySpec)
+                                              model.entitySpec,
+                                              allowPlayer = true,
+                                              allowEventOnOtherMap = false)
 
   val fieldDx = new FloatSpinner(model.dx, -100, 100, model.dx = _, 0.1f)
   val fieldDy = new FloatSpinner(model.dy, -100, 100, model.dy = _, 0.1f)
@@ -35,14 +39,14 @@ class MoveEventCmdDialog(
     close()
   }
 
-  contents = new DesignGridPanel {
-    row().grid(lbl("Event:")).add(fieldWhichEvent)
-    row().grid(lbl("X Movement:")).add(fieldDx)
-    row().grid(lbl("Y Movement:")).add(fieldDy)
-    row().grid(lbl("Affix direction:")).add(fieldAffixDirection)
-    row().grid(lbl("Async:")).add(fieldAsync)
-
-    addButtons(cancelBtn, okBtn)
+  contents = new BoxPanel(Orientation.Vertical) {
+    contents += fieldWhichEvent
+    contents += new DesignGridPanel {
+      row().grid(lbl("X Movement:")).add(fieldDx)
+      row().grid(lbl("Y Movement:")).add(fieldDy)
+      row().grid(lbl("Affix direction:")).add(fieldAffixDirection)
+      row().grid(lbl("Async:")).add(fieldAsync)
+      addButtons(cancelBtn, okBtn)
+    }
   }
-
 }

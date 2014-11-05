@@ -11,6 +11,7 @@ import rpgboss.model.Transitions
 import rpgboss.model.ItemAccessibility
 import rpgboss.model.ItemType
 import rpgboss.model.MapLoc
+import rpgboss.model.event._
 import rpgboss.model.resource.ResourceConstants
 import rpgboss.model.resource.Script
 import rpgboss.player.entity.EventEntity
@@ -35,30 +36,23 @@ class ScriptThread(
   onFinish: Option[() => Unit] = None)
   extends UncaughtExceptionHandler {
   def initScope(jsScope: ScriptableObject): Any = {
+    def putProperty(objName: String, obj: Object) = {
+      ScriptableObject.putProperty(jsScope, objName,
+          Context.javaToJS(obj, jsScope))
+    }
 
-    ScriptableObject.putProperty(jsScope, "game",
-      Context.javaToJS(scriptInterface, jsScope))
-    ScriptableObject.putProperty(jsScope, "layout",
-      Context.javaToJS(screen.layout, jsScope))
-    ScriptableObject.putProperty(jsScope, "sizer",
-      Context.javaToJS(screen.sizer, jsScope))
+    putProperty("game", scriptInterface)
+    putProperty("layout", screen.layout)
+    putProperty("sizer", screen.sizer)
 
-    ScriptableObject.putProperty(jsScope, "project",
-      Context.javaToJS(game.project, jsScope))
-
-    ScriptableObject.putProperty(jsScope, "out",
-      Context.javaToJS(System.out, jsScope))
+    putProperty("project", game.project)
+    putProperty("out", System.out)
 
     // Some models to be imported
-    ScriptableObject.putProperty(jsScope, "MapLoc",
-      Context.javaToJS(MapLoc, jsScope))
-    ScriptableObject.putProperty(jsScope, "Transitions",
-      Context.javaToJS(Transitions, jsScope))
-    ScriptableObject.putProperty(jsScope, "Keys",
-      Context.javaToJS(MyKeys, jsScope))
-
-    ScriptableObject.putProperty(jsScope, "None",
-      Context.javaToJS(None, jsScope))
+    putProperty("MapLoc", MapLoc)
+    putProperty("Transitions", Transitions)
+    putProperty("Keys", MyKeys)
+    putProperty("None", None)
   }
 
   val runnable = new Runnable() {
@@ -157,8 +151,15 @@ object ScriptThread {
     state: Int,
     onFinish: Option[() => Unit] = None) = {
     val scriptName = "%s/%d".format(entity.mapEvent.name, state)
-    val scriptBody =
-      entity.mapEvent.states(state).cmds.flatMap(_.toJs).mkString("\n");
+    val eventState = entity.mapEvent.states(state)
+    val extraCmdsAtEnd: Array[EventCmd] =
+      if (eventState.runOnceThenIncrementState)
+        Array(IncrementEventState())
+      else
+        Array()
+    val cmds = eventState.cmds ++ extraCmdsAtEnd
+
+    val scriptBody = cmds.flatMap(_.toJs).mkString("\n")
     new ScriptThread(
       game,
       screen,
@@ -170,9 +171,11 @@ object ScriptThread {
       override def initScope(jsScope: ScriptableObject) = {
         super.initScope(jsScope)
 
-        // Bind 'event' to the EventEntity so that we can control its movement
         ScriptableObject.putProperty(jsScope, "event",
-          Context.javaToJS(entity, jsScope))
+            Context.javaToJS(entity.getScriptInterface(), jsScope))
+        ScriptableObject.putProperty(jsScope, "player",
+            Context.javaToJS(game.mapScreen.playerEntity.getScriptInterface(),
+                jsScope))
       }
     }
   }
