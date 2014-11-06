@@ -11,7 +11,7 @@ import rpgboss.model.resource._
 
 class MapSelector(sm: StateMaster)
   extends ScrollPane {
-  val allNodes = collection.mutable.Map[String, Node]()
+  protected val allNodes = collection.mutable.Map[String, Node]()
 
   /*
    * TODO: Currently assume no map will be "orphaned". Add code to
@@ -69,11 +69,7 @@ class MapSelector(sm: StateMaster)
   tree.expandPath(Path(projectRoot))
 
   def getNode(mapName: String) = {
-    allNodes.get(mapName).map { node =>
-      node
-    } getOrElse {
-      throw new RuntimeException("Map: %s not found.".format(mapName))
-    }
+    allNodes.get(mapName)
   }
 
   def highlightWithoutEvent(node: Node) = {
@@ -94,6 +90,11 @@ class MapSelector(sm: StateMaster)
     val path = node.getPath()
     tree.expandPath(path)
     tree.selectPaths(path)
+  }
+
+  override def enabled_=(b: Boolean) = {
+    super.enabled_=(b)
+    tree.enabled_=(b)
   }
 
   contents = tree

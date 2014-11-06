@@ -28,7 +28,7 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
         curLocField.update()
         updateCursorSq(TileRect(x0.toInt, y0.toInt, 1, 1))
       }
-      
+
       Some((true, mousePressed(e, _, _, _), mousePressed(e, _, _, _)))
     }
 
@@ -37,10 +37,10 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
       viewStateOpt = mapOpt map { mapMeta =>
         new MapViewState(sm, mapMeta.name)
       }
-      
+
       updateCursorSq(TileRect.empty)
-      
-      mapOpt map { map => 
+
+      mapOpt map { map =>
         if (selectMapOnly) {
           // When selecting a map only, treat switching maps as changing the loc
           loc = MapLoc(map.name, 0, 0)
@@ -51,7 +51,7 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
           scrollPane.center(loc.x, loc.y)
         }
       }
-      
+
       resizeRevalidateRepaint()
     }
   }
@@ -63,7 +63,8 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
   }
 
   // Initialize views
-  selector.selectNode(selector.getNode(loc.map))
+  for (node <- selector.getNode(loc.map))
+    selector.selectNode(node)
 
   val curLocField = new TextField {
     enabled = false

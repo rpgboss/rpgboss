@@ -8,25 +8,35 @@ import rpgboss.editor.uibase._
 import rpgboss.model.RpgEnum
 import rpgboss.model.WhichEntity
 import rpgboss.model.EntitySpec
+import rpgboss.lib.Utils
+import rpgboss.editor.StateMaster
 
 class SetEventStateDialog(
   owner: Window,
+  sm: StateMaster,
+  mapName: String,
   initial: SetEventState,
   successF: (SetEventState) => Any)
   extends StdDialog(owner, "Set Event State") {
 
+  val model = Utils.deepCopy(initial)
+
   centerDialog(new Dimension(300, 100))
 
-  val fieldNewState = new NumberSpinner(initial.state, 0, 127)
+  val fieldWhichEvent = new EntitySelectPanel(owner, sm, mapName,
+      model.entitySpec, allowPlayer = false, allowEventOnOtherMap = true)
+  val fieldNewState = new NumberSpinner(model.state, 0, 127, model.state = _)
 
-  contents = new DesignGridPanel {
-    row().grid(lbl("New state:")).add(fieldNewState)
-    addButtons(cancelBtn, okBtn)
+  contents = new BoxPanel(Orientation.Vertical) {
+    contents += fieldWhichEvent
+    contents += new DesignGridPanel {
+      row().grid(lbl("New state:")).add(fieldNewState)
+      addButtons(cancelBtn, okBtn)
+    }
   }
 
   def okFunc() = {
-    successF(SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id),
-        fieldNewState.getValue))
+    successF(model)
     close()
   }
 }
