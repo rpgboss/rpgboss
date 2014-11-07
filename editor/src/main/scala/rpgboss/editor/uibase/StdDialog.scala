@@ -20,6 +20,8 @@ abstract class StdDialog(owner: Window, titleArg: String)
     centerOnScreen()
   }
 
+  setLocationRelativeTo(owner)
+
   lazy val cancelBtn = new Button(Action("Cancel") {
     cancelFunc()
     close()
@@ -32,7 +34,7 @@ abstract class StdDialog(owner: Window, titleArg: String)
       okFunc()
     }
   })
-  
+
   override def close() = {
     super.close()
     onClose()
@@ -42,7 +44,7 @@ abstract class StdDialog(owner: Window, titleArg: String)
   def onClose(): Unit = {
     dispose()
   }
-  
+
   /**
    * Treat closing the dialog without pressing OK as a Cancel.
    */
