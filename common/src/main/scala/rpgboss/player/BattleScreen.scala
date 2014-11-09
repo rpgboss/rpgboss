@@ -103,7 +103,8 @@ class BattleScreen(
 
             while (true) {
               val idxInChoiceBox = skillWindow.getChoice()
-              if (idxInChoiceBox == -1) {
+              if (idxInChoiceBox == -1 ||
+                  idxInChoiceBox >= actor.knownSkillIds.length) {
                 skillWindow.close()
                 return false
               }

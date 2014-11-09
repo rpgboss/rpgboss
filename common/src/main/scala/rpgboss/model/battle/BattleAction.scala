@@ -1,6 +1,7 @@
 package rpgboss.model.battle
 
 import rpgboss.model._
+import rpgboss.player.PersistentState
 
 case class Hit(hitActor: BattleStatus, damage: Damage, animationId: Int)
 
@@ -68,3 +69,33 @@ case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
   }
 }
 
+case class ItemAction(actor: BattleStatus, targets: Array[BattleStatus],
+                      itemId: Int, persistentState: PersistentState)
+  extends BattleAction {
+  def process(battle: Battle) = {
+    assume(itemId < battle.pData.enums.items.length)
+    val item = battle.pData.enums.items(itemId)
+
+    val removed = persistentState.addRemoveItem(itemId, -1)
+
+    if (removed) {
+      assert(targets.length >= 0)
+      assert(item.usableInBattle)
+
+      val skillId = item.onUseSkillId
+      assume(skillId < battle.pData.enums.items.length)
+      val skill = battle.pData.enums.skills(skillId)
+
+      assert(targets.length >= 1)
+
+      val hits = new collection.mutable.ArrayBuffer[Hit]
+      for (target <- targets) {
+        hits ++= skill.applySkill(actor, target)
+      }
+
+      hits.toArray
+    } else {
+      Array.empty
+    }
+  }
+}
