@@ -75,7 +75,8 @@ object Settings {
       "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
       "com.github.benhutchison" %% "scalaswingcontrib" % "1.5", 
       "org.apache.httpcomponents" % "httpclient" % "4.1.1",
-      "net.java.dev.designgridlayout" % "designgridlayout" % "1.8"
+      "net.java.dev.designgridlayout" % "designgridlayout" % "1.8",
+      "com.fifesoft" % "rsyntaxtextarea" % "2.5.3"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base => 
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
