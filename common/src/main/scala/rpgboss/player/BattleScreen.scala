@@ -127,6 +127,49 @@ class BattleScreen(
             skillWindow.close()
             return true
           }
+          case 2 => {
+            assert(gameOpt.isDefined)
+            val game = gameOpt.get
+
+            val battleItems = GdxUtils.syncRun {
+              game.persistent.getBattleItems(battle.pData)
+            }
+
+            val battleItemInstances =
+              battleItems.map(x => battle.pData.enums.items(x._1))
+
+            val window = scriptInterface.newChoiceWindow(
+              battleItemInstances.map(_.name), layout.south(640, 180),
+              TextChoiceWindowOptions(columns = 2, allowCancel = true))
+
+            while (true) {
+              val idxInChoiceBox = window.getChoice()
+              if (idxInChoiceBox == -1 ||
+                  idxInChoiceBox >= battleItems.length) {
+                window.close()
+                return false
+              }
+
+              val itemId = battleItems(idxInChoiceBox)._1
+              val item = battleItemInstances(idxInChoiceBox)
+              val skillId = item.onUseSkillId
+              val skill = battle.pData.enums.skills(idxInChoiceBox)
+              val scope = Scope(skill.scopeId)
+              val targets = getTargets(scope)
+              if (targets.isDefined) {
+                window.close()
+                GdxUtils.syncRun {
+                  _battle.get.takeAction(
+                    ItemAction(actor, targets.get, itemId, game.persistent))
+                }
+                return true
+              }
+            }
+
+            assert(0 == 1) // We should never reach this point
+            window.close()
+            return true
+          }
           case _ => {
             GdxUtils.syncRun {
               // This is optional because this condition may be reached
@@ -144,7 +187,7 @@ class BattleScreen(
           currentOpt = Some(this)
 
           _window = scriptInterface.newChoiceWindow(
-            Array("Attack", "Skill"), layout.south(140, 180),
+            Array("Attack", "Skill", "Item"), layout.south(140, 180),
             TextChoiceWindowOptions(allowCancel = true))
         }
 
@@ -568,6 +611,11 @@ class BattleScreen(
                   val skill = battle.pData.enums.skills(action.skillId)
                   postTextNotice("%s uses %s.".format(
                       getEntityName(source), skill.name))
+                case action: ItemAction =>
+                  val item = battle.pData.enums.items(action.itemId)
+                  postTextNotice("%s uses %s.".format(
+                      getEntityName(source), item.name))
+
                 case _ =>
                   postTextNotice("Not implemented yet.")
               }
