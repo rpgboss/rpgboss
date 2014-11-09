@@ -277,6 +277,20 @@ class PersistentState(
     equippableItemIds.toArray
   }
 
+  def getBattleItems(pData: ProjectData): Array[(Int, Int)] = {
+    assertOnBoundThread()
+
+    val itemIds = getIntArray(INVENTORY_ITEM_IDS)
+    val itemQtys = getIntArray(INVENTORY_QTYS)
+    assert(itemQtys.length == itemIds.length)
+
+    itemIds zip itemQtys filter {
+      case (itemId, itemQty) =>
+        itemQty > 0 && itemId < pData.enums.items.length &&
+        pData.enums.items(itemId).usableInBattle
+    }
+  }
+
   /**
    * Returns whether or not we succeeded.
    * @param   itemId    If set to -1, this means unequip only.

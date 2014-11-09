@@ -246,9 +246,11 @@ class MapEditor(
       vs.mapName,
       event,
       onOk = { e: RpgEvent =>
-        val newMetadata = vs.mapMeta.copy(
+        if (isNewEvent) {
+          val newMetadata = vs.mapMeta.copy(
             lastGeneratedEventId = vs.mapMeta.lastGeneratedEventId + 1)
-        sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
+          sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
+        }
         vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
 
         commitVS(vs)

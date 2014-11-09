@@ -155,7 +155,7 @@ case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
 
 case class SetEventState(
   var entitySpec: EntitySpec = EntitySpec(),
-  state: Int = 0) extends EventCmd {
+  var state: Int = 0) extends EventCmd {
   def sections = {
     val (mapName, eventId) = WhichEntity(entitySpec.whichEntityId) match {
       case WhichEntity.THIS_EVENT =>

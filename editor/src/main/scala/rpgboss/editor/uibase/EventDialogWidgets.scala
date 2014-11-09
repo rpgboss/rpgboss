@@ -11,6 +11,7 @@ import rpgboss.editor.resourceselector.MapField
 import rpgboss.model.WhichEntity
 import javax.swing.BorderFactory
 import rpgboss.editor.misc.MapSelector
+import rpgboss.model.resource.RpgMap
 
 object EventArrayComboBox {
   // Returns a ComboBox, plus a boolean indicating whether or not 'initial' was
@@ -51,12 +52,13 @@ object EventArrayComboBox {
 }
 
 /**
- * @param   model   Is mutated in place.
+ * @param   model       Is mutated in place.
+ * @param   mapData     Is the map data for the current map.
  */
 class EntitySelectPanel(
   owner: Window,
   sm: StateMaster,
-  mapData: RpgMapData,
+  currentMapName: String,
   model: EntitySpec,
   allowPlayer: Boolean,
   allowEventOnOtherMap: Boolean)
@@ -64,39 +66,107 @@ class EntitySelectPanel(
 
   border = BorderFactory.createTitledBorder("Which Entity")
 
-  def updateFieldState() = {
-    val which = WhichEntity(model.whichEntityId)
-    fieldEventId.enabled =
-      which == WhichEntity.EVENT_ON_MAP ||
-      which == WhichEntity.EVENT_ON_OTHER_MAP
+  var selectedOtherMap =
+    if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
+      model.mapName
+    else
+      currentMapName
+  val selectedEventIdPerMap = collection.mutable.HashMap[String, Int]()
+
+  val currentMapData = sm.getMapData(currentMapName)
+  def selectedMapData() = {
+    if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
+      sm.getMapData(model.mapName)
+    else
+      currentMapData
   }
+
+  def updateFieldState(oldWhichId: Int, newWhichId: Int) = {
+    val oldWhich = WhichEntity(oldWhichId)
+    val newWhich = WhichEntity(newWhichId)
+
+    // Persist old stuff
+    if (oldWhich == WhichEntity.EVENT_ON_OTHER_MAP)
+      selectedOtherMap = model.mapName
+
+    val oldMapName = model.mapName
+
+    // Restore new mode stuff
+    if (newWhich == WhichEntity.EVENT_ON_MAP)
+      model.mapName = currentMapName
+    else if (newWhich == WhichEntity.EVENT_ON_OTHER_MAP)
+      model.mapName = selectedOtherMap
+
+    replaceEventIdField(oldMapName, model.mapName)
+
+    mapSelector.enabled = newWhich == WhichEntity.EVENT_ON_OTHER_MAP
+    fieldEventId.enabled =
+      newWhich == WhichEntity.EVENT_ON_MAP ||
+      newWhich == WhichEntity.EVENT_ON_OTHER_MAP
+  }
+
+  var fieldEventId: ComboBox[RpgEvent] = null
+
+  def replaceEventIdField(oldMapName: String, newMapName: String) = {
+    println("Store %s -> %d".format(oldMapName, model.eventId))
+    selectedEventIdPerMap(oldMapName) = model.eventId
+    val newMapData = sm.getMapData(newMapName)
+    val initialId = selectedEventIdPerMap.getOrElse(newMapName, -1)
+
+    println("ReStore %s -> %d".format(newMapName, initialId))
+    val (newField, found) =
+        EventArrayComboBox.fromMap(newMapData, initialId, model.eventId = _)
+
+    if (!newMapData.events.isEmpty)
+      model.eventId = newField.selection.item.id
+    else
+      model.eventId = -1
+
+    fieldEventIdContainer.contents.clear()
+    fieldEventId = newField
+    fieldEventIdContainer.contents += fieldEventId
+    fieldEventIdContainer.revalidate()
+  }
+
+  val fieldEventIdContainer = new BoxPanel(Orientation.Vertical)
 
   val disabledSet = collection.mutable.Set[WhichEntity.Value]()
   if (!allowPlayer) disabledSet += WhichEntity.PLAYER
   if (!allowEventOnOtherMap) disabledSet += WhichEntity.EVENT_ON_OTHER_MAP
-  if (mapData.events.isEmpty) disabledSet += WhichEntity.EVENT_ON_MAP
+  if (currentMapData.events.isEmpty) disabledSet += WhichEntity.EVENT_ON_MAP
 
   val btns = enumIdRadios(WhichEntity)(
     model.whichEntityId,
     v => {
+      val old = model.whichEntityId
       model.whichEntityId = v
-      updateFieldState()
+      updateFieldState(old, v)
     },
     disabledSet = disabledSet.toSet)
 
-  val mapSelector = new MapSelector(sm)
+  val mapSelector = new MapSelector(sm) {
+    override def onSelectMap(mapOpt: Option[RpgMap]) = {
+      for (map <- mapOpt) {
+        replaceEventIdField(model.mapName, map.name)
+        model.mapName = map.name
+      }
+    }
+  }
 
-  val (fieldEventId, _) =
-    EventArrayComboBox.fromMap(mapData, model.eventId, model.eventId = _)
+  // Initialize the combo box data
+  if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
+    mapSelector.getNode(model.mapName).map(mapSelector.selectNode)
+  else
+    mapSelector.getNode(currentMapName).map(mapSelector.selectNode)
 
   row().grid().add(new BoxPanel(Orientation.Vertical) {
     addBtnsAsGrp(contents, btns)
   })
 
-  row().grid(new Label("Event: ")).add(fieldEventId)
+  row().grid(new Label("Event: ")).add(fieldEventIdContainer)
 
   if (allowEventOnOtherMap)
     row().grid(new Label("Map: ")).add(mapSelector)
 
-  updateFieldState();
+  updateFieldState(model.whichEntityId, model.whichEntityId)
 }

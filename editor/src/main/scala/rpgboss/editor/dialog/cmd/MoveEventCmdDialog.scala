@@ -19,9 +19,7 @@ class MoveEventCmdDialog(
 
   val model = Utils.deepCopy(initial)
 
-  val mapData = sm.getMapData(mapName)
-
-  val fieldWhichEvent = new EntitySelectPanel(owner, sm, mapData,
+  val fieldWhichEvent = new EntitySelectPanel(owner, sm, mapName,
                                               model.entitySpec,
                                               allowPlayer = true,
                                               allowEventOnOtherMap = false)

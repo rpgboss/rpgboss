@@ -38,6 +38,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     contents += new MenuItem(mainP.actionNew)
     contents += new MenuItem(mainP.actionOpen)
     contents += new MenuItem(mainP.actionSave)
+    contents += new MenuItem(mainP.actionClose)
   }
 
   def selectMap(mapOpt: Option[RpgMap]) = {
@@ -184,8 +185,10 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
   // This calls the selectMapFunction
   selectMap(initialMap)
-  initialMap.map(m =>
-    mapSelector.highlightWithoutEvent(mapSelector.getNode(m.name)))
+  for (map <- initialMap;
+       node <- mapSelector.getNode(map.name)) {
+    mapSelector.highlightWithoutEvent(node)
+  }
 
   mainP.revalidate()
 }
