@@ -41,7 +41,7 @@ class EventSpec extends UnitSpec {
             RunJs("""game.setInt("two", game.getInt("two") + 1);"""),
             SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 0))))
         mapData.events = Map(
-          1->RpgEvent(1, "Testevent", 0, 0, states)
+          1->RpgEvent(1, "Testevent", 0, 0, states, Map())
         )
       }
 
@@ -77,7 +77,7 @@ class EventSpec extends UnitSpec {
           RpgEventState(runOnceThenIncrementState = true),
           RpgEventState())
         mapData.events = Map(
-          1->RpgEvent(1, "Testevent", 0, 0, states)
+          1->RpgEvent(1, "Testevent", 0, 0, states, Map())
         )
       }
 

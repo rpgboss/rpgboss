@@ -30,12 +30,13 @@ case class RpgEvent(
   var name: String,
   var x: Float,
   var y: Float,
-  var states: Array[RpgEventState])
+  var states: Array[RpgEventState],
+  var params: Map[String, EventParameter])
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
-             Array(RpgEventState()))
+             Array(RpgEventState()), Map())
 }
 
 /**
