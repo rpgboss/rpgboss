@@ -51,7 +51,7 @@ class RpgMapSpec extends UnitSpec {
     md1.events = Map(1 -> RpgEvent(
         1, "TestEvent", 5f, 5f, Array(state),
         Map("param"->EventParameter(EventParameterType.CharacterId.id, 4))))
-    md1.eventInstances = Map(2-> RpgEventInstance(
+    md1.eventInstances = Map(2-> EventInstance(
         5, 2, "InstanceName", 4f, 4f,
         Map("param"->EventParameter(EventParameterType.AnimationId.id, 5))))
 

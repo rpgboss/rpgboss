@@ -23,7 +23,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
                       midLayer: Array[Array[Byte]],
                       topLayer: Array[Array[Byte]],
                       var events: Map[Int, RpgEvent],
-                      var eventInstances: Map[Int, RpgEventInstance]) {
+                      var eventInstances: Map[Int, EventInstance]) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
 
@@ -130,7 +130,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
 }
 
 case class RpgMapDataEventsIntermediate(
-    events: Array[RpgEvent], eventInstances: Array[RpgEventInstance])
+    events: Array[RpgEvent], eventInstances: Array[EventInstance])
 
 case object RpgMapData {
   val formats = Serialization.formats(EventCmd.hints)

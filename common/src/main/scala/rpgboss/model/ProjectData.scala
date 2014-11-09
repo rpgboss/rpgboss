@@ -1,9 +1,10 @@
 package rpgboss.model
-import rpgboss.model.resource.RpgMap
+
 import java.io.File
+
 import rpgboss.lib.JsonUtils
+import rpgboss.model.event.EventClass
 import rpgboss.model.resource.ResourceConstants
-import rpgboss.model.event.RpgEvent
 
 case class ProjectDataStartup(
   var startingLoc: MapLoc,
@@ -35,7 +36,7 @@ case class ProjectDataEnums(
   var elements: Array[String] = ProjectData.defaultElements,
   var enemies: Array[Enemy] = Array(Enemy()),
   var encounters: Array[Encounter] = Array(Encounter()),
-  var eventClasses: Array[RpgEvent] = Array(),
+  var eventClasses: Array[EventClass] = Array(EventClass()),
   var equipTypes: Array[String] = ProjectData.defaultEquipTypes,
   var items: Array[Item] = Array(Item()),
   var skills: Array[Skill] = Array(Skill()),

@@ -24,7 +24,16 @@ object EventParameterType extends RpgEnum {
 
 case class EventParameter(paramTypeId: Int, intValue: Int)
 
-case class RpgEventInstance(
+case class EventClass(
+  var name: String = "",
+  var states: Array[RpgEventState] = Array(RpgEventState()),
+  var params: Map[String, EventParameter] = Map()) extends HasName
+
+/**
+ * This information combined with an EventClass can be used to instantiate an
+ * RpgEvent.
+ */
+case class EventInstance(
   var eventClassId: Int,
   id: Int,
   var name: String,
