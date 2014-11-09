@@ -15,6 +15,7 @@ class MainPanel(val topWin: Frame)
   def getWindow() = {
     topWin
   }
+  val window = topWin
 
   val actionNew = Action("New Project") {
     if (askSaveUnchanged()) {
@@ -44,8 +45,17 @@ class MainPanel(val topWin: Frame)
     revalidate()
   }
 
-  setContent(new StartPanel(this))
+  val actionClose = Action("Close Project") {
+    Settings.set("project.last","");
+    setContent(new StartPanel(this))
+    window.unmaximize()
+    window.minimumSize = new Dimension(600, 400)
+    window.size = new Dimension(600, 400)
+    window.resizable = false
+    window.centerOnScreen()
+  }
 
+  setContent(new StartPanel(this))
   
   Settings.get("project.last") map { path =>
     val file = new File(path)

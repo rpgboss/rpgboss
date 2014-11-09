@@ -38,6 +38,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     contents += new MenuItem(mainP.actionNew)
     contents += new MenuItem(mainP.actionOpen)
     contents += new MenuItem(mainP.actionSave)
+    contents += new MenuItem(mainP.actionClose)
   }
 
   def selectMap(mapOpt: Option[RpgMap]) = {
