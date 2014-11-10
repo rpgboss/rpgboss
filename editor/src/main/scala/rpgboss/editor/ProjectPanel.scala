@@ -13,6 +13,7 @@ import com.badlogic.gdx.LifecycleListener
 import org.lwjgl.opengl.Display
 import java.io._
 import java.util.Scanner
+import rpgboss.editor.dialog.ExportDialog
 import javax.swing.ImageIcon
 import rpgboss.editor.util.Export
 import java.awt.Desktop
@@ -120,40 +121,8 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     }
 
     contents += new Button(Action("Export...") {
-      if (sm.askSaveUnchanged(this)) {
-        val jarFile: File = {
-          val envVarValue = System.getenv("RPGBOSS_EXPORT_JAR_PATH")
-          if (envVarValue != null) {
-            new File(envVarValue)
-          } else {
-            val classLoc =
-              getClass.getProtectionDomain().getCodeSource().getLocation()
-            new File(classLoc.getPath())
-          }
-        }
-
-        if (jarFile.isFile()) {
-          Export.export(sm.getProj, jarFile)
-          val exportedDir = new File(sm.getProj.dir, "export")
-          Dialog.showMessage(
-              this,
-              "Export complete. Packages in: \n"+
-              exportedDir.getCanonicalPath(),
-              "Export Complete",
-              Dialog.Message.Info)
-          if (Desktop.isDesktopSupported())
-            Desktop.getDesktop().browse(exportedDir.toURI)
-        } else {
-          Dialog.showMessage(
-              this,
-              "Cannot locate rpgboss JAR for export. Path tried: \n" +
-              jarFile.getCanonicalPath() + "\n\n" +
-              "If you are running from an IDE or SBT for development,\n" +
-              "set the RPGBOSS_EXPORT_JAR_PATH environment variable.",
-              "Cannot export",
-              Dialog.Message.Error)
-        }
-      }
+      val d = new ExportDialog(mainP.topWin, sm, mainP)
+      d.open()
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/actions/fileexport.png"))
