@@ -20,7 +20,18 @@ import java.awt.Desktop
 import rpgboss.editor.util.Export
 import javax.swing.ImageIcon
 
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+import scala.util.{Success, Failure}
+
 import net.coobird.thumbnailator._
+
+class PleaseWaitFrame extends Frame {
+  title = "Please Wait"
+  minimumSize = new Dimension(320, 240)
+  centerOnScreen()
+  contents = new Label("Now exporting...")
+}
 
 class ExportDialog(
   owner: Window,
@@ -28,15 +39,16 @@ class ExportDialog(
   mainp: MainPanel)
   extends StdDialog(owner, "Export Project") {
 
-  centerDialog(new Dimension(600, 300))
+  centerDialog(new Dimension(600, 200))
   resizable = false
 
   var exportType = 0
 
-  def ExportDesktop() {
+  def ExportDesktop():Int = {
       if (sm.askSaveUnchanged(mainp)) {
         val jarFile: File = {
-          val envVarValue = System.getenv("RPGBOSS_EXPORT_JAR_PATH")
+          var envVarValue = System.getenv("RPGBOSS_EXPORT_JAR_PATH")
+          //envVarValue = "D:/rpgboss/editor/target/scala-2.11/editor-assembly-0.1.jar"
           if (envVarValue != null) {
             new File(envVarValue)
           } else {
@@ -68,6 +80,7 @@ class ExportDialog(
               Dialog.Message.Error)
         }
       }
+      return 1;
   }
 
   def choosePlainFile(title: String = "", txtfield: TextField, lable:Label): Option[File] = {  
@@ -93,6 +106,8 @@ class ExportDialog(
 
   contents = new BoxPanel(Orientation.Vertical) {
 
+    /*
+
     contents += new Label("Game Executable Icon")
 
     val img = new Label { 
@@ -113,6 +128,8 @@ class ExportDialog(
 
     contents += img
 
+    */
+
     contents += new Label("Export type")
 
     val dirFileSelector = List(
@@ -120,7 +137,7 @@ class ExportDialog(
           name = "desktop"
           text = "Windows/Osx/Linux"
           selected = true
-        },
+        }/*,
         new RadioButton() {
           name = "web"
           text = "WebPlayer"
@@ -128,7 +145,7 @@ class ExportDialog(
         new RadioButton() {
           name = "android"
           text = "Android"
-        }
+        }*/
       )
 
     new ButtonGroup(dirFileSelector: _*)
@@ -157,7 +174,20 @@ class ExportDialog(
       reactions += {
         case ButtonClicked(this.exportBtn) => 
           if(exportType==0) {
-            ExportDesktop()
+            val waitFrame = new PleaseWaitFrame
+            waitFrame.open()
+            val f: Future[Int] = Future {
+              dispose()
+              waitFrame.visible = true
+              ExportDesktop()
+            }
+            f onComplete {
+              case Success(posts) =>
+                waitFrame.dispose()
+              case Failure(t) =>
+
+            }
+            
           }
           if(exportType==1 || exportType==2) {
             Dialog.showMessage(
