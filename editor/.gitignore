@@ -1,6 +1,5 @@
 project
 target
-lib/*
 .cache
 .settings
 .classpath
