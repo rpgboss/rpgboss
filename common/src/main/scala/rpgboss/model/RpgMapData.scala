@@ -22,7 +22,8 @@ import rpgboss.model.resource.RpgMapMetadata
 case class RpgMapData(botLayer: Array[Array[Byte]],
                       midLayer: Array[Array[Byte]],
                       topLayer: Array[Array[Byte]],
-                      var events: Map[Int, RpgEvent]) {
+                      var events: Map[Int, RpgEvent],
+                      var eventInstances: Map[Int, EventInstance]) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
 
@@ -75,7 +76,8 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
 
     val eventsWritten = JsonUtils.writeModelToJsonWithFormats(
       evtFile,
-      RpgMapDataEventsIntermediate(events),
+      RpgMapDataEventsIntermediate(
+          events.values.toArray, eventInstances.values.toArray),
       RpgMapData.formats)
 
     mapFileWritten && layersWritten && eventsWritten
@@ -127,11 +129,8 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
   }
 }
 
-case class RpgMapDataEventsIntermediate(events: Array[RpgEvent])
-object RpgMapDataEventsIntermediate {
-  def apply(events: Map[Int, RpgEvent]): RpgMapDataEventsIntermediate =
-    apply(events.values.toArray)
-}
+case class RpgMapDataEventsIntermediate(
+    events: Array[RpgEvent], eventInstances: Array[EventInstance])
 
 case object RpgMapData {
   val formats = Serialization.formats(EventCmd.hints)
@@ -171,12 +170,14 @@ case object RpgMapData {
     val eventsIntermediateOpt =
       JsonUtils.readModelFromJsonWithFormats[RpgMapDataEventsIntermediate](
         evtFile, RpgMapData.formats)
-    val eventsOpt = eventsIntermediateOpt.map { intermediate =>
-      intermediate.events.map(event => event.id->event).toMap
-    }
 
     for (botAry <- botAryOpt; midAry <- midAryOpt; topAry <- topAryOpt;
-         events <- eventsOpt) yield {
+         eventsIntermediate <- eventsIntermediateOpt) yield {
+
+      val events =
+        eventsIntermediate.events.map(e => e.id->e).toMap
+      val eventInstances =
+        eventsIntermediate.eventInstances.map(ei => ei.id->ei).toMap
 
       // TODO: Move to a more mature system for schema migration.
       val fixedEvents = events.map {
@@ -189,7 +190,7 @@ case object RpgMapData {
         }
       }
 
-      RpgMapData(botAry, midAry, topAry, fixedEvents)
+      RpgMapData(botAry, midAry, topAry, fixedEvents, eventInstances)
     }
   }
 }

@@ -19,10 +19,9 @@ object EventCmdPanel {
 }
 
 class EventCmdPanel(
-  evtDiag: EventDialog,
   owner: Window,
   sm: StateMaster,
-  mapName: String,
+  eventLoc: MapLoc,
   parentCmdBox: CommandBox,
   initialIndex: Int,
   initial: EventCmd,
@@ -64,7 +63,7 @@ class EventCmdPanel(
         def updateInnerCmds(newInnerCmds: Array[EventCmd]) =
           onUpdate(initial.copyWithNewInnerCmds(sectionI, newInnerCmds))
 
-        contents += new CommandBox(evtDiag, owner, sm, mapName, innerCmds,
+        contents += new CommandBox(owner, sm, eventLoc, innerCmds,
                                    updateInnerCmds, inner = true)
       }
     }
@@ -111,10 +110,9 @@ class EventCmdPanel(
  * @param     onUpdate    Called when the contents change.
  */
 class CommandBox(
-  evtDiag: EventDialog,
   owner: Window,
   sm: StateMaster,
-  mapName: String,
+  eventLoc: MapLoc,
   initialCmds: Array[EventCmd],
   onUpdate: (Array[EventCmd]) => Unit,
   inner: Boolean)
@@ -126,7 +124,7 @@ class CommandBox(
   def getEventCmds: Array[EventCmd] = model.toArray
 
   def newEventCmdPanel(i: Int, cmd: EventCmd) =
-    new EventCmdPanel(evtDiag, owner, sm, mapName, this, i, cmd,
+    new EventCmdPanel(owner, sm, eventLoc, this, i, cmd,
                       newCmd => updateCmd(i, newCmd))
   for ((cmd, i) <- model.zipWithIndex) {
     contents += newEventCmdPanel(i, cmd)
@@ -187,7 +185,7 @@ class CommandBox(
   def newCmdDialog(indexToInsert: Int) = {
     assert(indexToInsert >= 0)
     assert(indexToInsert <= model.length)
-    val d = new NewEvtCmdBox(evtDiag, sm, owner, mapName, this, indexToInsert)
+    val d = new NewEvtCmdBox(sm, owner, eventLoc, this, indexToInsert)
     d.open()
   }
 
@@ -195,7 +193,7 @@ class CommandBox(
     assert(index >= 0)
     assert(index < model.length)
     val selectedCmd = model(index)
-    val d = EventCmdDialog.dialogFor(owner, sm, mapName, selectedCmd,
+    val d = EventCmdDialog.dialogFor(owner, sm, eventLoc.map, selectedCmd,
       newEvt => updateCmd(index, newEvt))
     if (d != null)
       d.open()

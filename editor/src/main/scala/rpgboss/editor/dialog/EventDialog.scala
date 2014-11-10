@@ -32,98 +32,6 @@ class EventDialog(
 
   override def cancelFunc() = onCancel(event)
 
-  class EventStatePane(val idx: Int) extends BoxPanel(Orientation.Horizontal) {
-    private def curEvtState = event.states(idx)
-
-    val fSameAppearanceAsPrevState: CheckBox =
-      boolField("Same Appearance As Previous State",
-          curEvtState.sameAppearanceAsPrevState,
-          curEvtState.sameAppearanceAsPrevState = _,
-          Some(updateAppearanceFieldsState))
-    val heightBox =
-      enumIdCombo(EventHeight)(curEvtState.height, curEvtState.height = _)
-
-    val spriteBox = new SpriteField(
-      owner,
-      sm,
-      curEvtState.sprite,
-      (spriteSpec: Option[SpriteSpec]) => {
-        // If the sprite's "existence" has changed...
-        if (curEvtState.sprite.isDefined != spriteSpec.isDefined) {
-          heightBox.selection.index =
-            if (spriteSpec.isDefined)
-              EventHeight.SAME.id
-            else
-              EventHeight.UNDER.id
-        }
-
-        curEvtState.sprite = spriteSpec
-      })
-
-    def updateAppearanceFieldsState() = {
-      if (idx == 0) {
-        fSameAppearanceAsPrevState.selected = true
-        fSameAppearanceAsPrevState.enabled = false
-        heightBox.enabled = true
-        spriteBox.enabled = true
-      } else {
-        val sameAppearance = fSameAppearanceAsPrevState.selected
-        heightBox.enabled = !sameAppearance
-        spriteBox.enabled = !sameAppearance
-      }
-    }
-    updateAppearanceFieldsState()
-
-    val triggerBox =
-      enumIdCombo(EventTrigger)(curEvtState.trigger, curEvtState.trigger = _)
-
-    val fRunOnce =
-      boolField("Run Once, then increment state",
-          curEvtState.runOnceThenIncrementState,
-          curEvtState.runOnceThenIncrementState = _,
-          Some(() => {
-            if (curEvtState == event.states.last) {
-              newState(false, false)
-            }
-          }))
-
-    contents += new BoxPanel(Orientation.Vertical) {
-      contents += new DesignGridPanel {
-        border = BorderFactory.createTitledBorder("Appearance")
-
-        row().grid().add(fSameAppearanceAsPrevState)
-        row().grid().add(leftLabel("Height:"))
-        row().grid().add(heightBox)
-        row().grid().add(leftLabel("Sprite:"))
-        row().grid().add(spriteBox)
-      }
-
-      contents += new DesignGridPanel {
-        border = BorderFactory.createTitledBorder("Behavior")
-        row().grid().add(leftLabel("Trigger:"))
-        row().grid().add(triggerBox)
-        row().grid().add(fRunOnce)
-      }
-    }
-
-    val commandBox = new CommandBox(
-      EventDialog.this,
-      owner,
-      sm,
-      mapName,
-      curEvtState.cmds,
-      curEvtState.cmds = _,
-      inner = false)
-
-    contents += new DesignGridPanel {
-      row.grid.add(leftLabel("Commands:"))
-      row.grid.add(new ScrollPane {
-        preferredSize = new Dimension(400, 400)
-        contents = commandBox
-      })
-    }
-  }
-
   def okFunc() = {
     onOk(event)
     close()
@@ -132,20 +40,31 @@ class EventDialog(
   val nameField = textField(event.name, event.name = _)
 
   val tabPane = new TabbedPane() {
-    def loadPanesFromModel() = {
+    def loadPanesFromModel(): Unit = {
       pages.clear()
       for (i <- 0 until event.states.length) {
         val state = event.states(i)
-        pages += new Page("State %d".format(i), new EventStatePane(i))
+        val pane: EventStatePane = new EventStatePane(
+            owner,
+            sm,
+            state,
+            i,
+            MapLoc(mapName, event.x, event.y),
+            () => {
+              if (i == event.states.length - 1) {
+                newState(false, false)
+              }
+            })
+        pages += new Page("State %d".format(i), pane)
       }
     }
 
     def curPane = selection.page.content.asInstanceOf[EventStatePane]
-
-    loadPanesFromModel()
   }
 
-  def newState(copyCurrent: Boolean, switchPane: Boolean) = {
+  tabPane.loadPanesFromModel()
+
+  def newState(copyCurrent: Boolean, switchPane: Boolean): Unit = {
     // Add to list of states
     val newPaneIdx = tabPane.curPane.idx + 1
     val newState =

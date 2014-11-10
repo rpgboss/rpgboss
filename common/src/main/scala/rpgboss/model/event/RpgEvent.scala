@@ -23,19 +23,20 @@ object EventHeight extends RpgEnum {
 import EventTrigger._
 
 /**
- * Guaranteed to have at least one state
+ * @param   states    Guaranteed to be size at least 1.
  */
 case class RpgEvent(
-  id: Int,
-  var name: String,
-  var x: Float,
-  var y: Float,
-  var states: Array[RpgEventState])
+  id: Int = 0,
+  var name: String = "",
+  var x: Float = 0,
+  var y: Float = 0,
+  var states: Array[RpgEventState] = Array(RpgEventState()),
+  var params: Map[String, EventParameter] = Map())
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
-             Array(RpgEventState()))
+             Array(RpgEventState()), Map())
 }
 
 /**

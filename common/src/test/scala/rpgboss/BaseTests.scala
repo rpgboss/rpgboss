@@ -72,7 +72,7 @@ class ProjectTest extends ShouldMatchers {
     val sprite = ResourceConstants.defaultSpriteSpec
     val states = Array(RpgEventState(sprite = Some(sprite), cmds = Array(cmd)))
     Map(
-      1 -> RpgEvent(1, "Testevent", x, y, states))
+      1 -> RpgEvent(1, "Testevent", x, y, states, Map()))
   }
 
   val projectDirectory = Files.createTempDir()
