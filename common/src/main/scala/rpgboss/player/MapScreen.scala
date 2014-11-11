@@ -10,6 +10,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
 import rpgboss.model.Transitions
+import rpgboss.lib.Utils
 
 /**
  * *
@@ -24,11 +25,6 @@ class MapScreen(val game: RpgGame)
 
   var screenWTiles: Float = screenW / Tileset.tilesize
   var screenHTiles: Float = screenH / Tileset.tilesize
-
-  var cameraL: Double = 0
-  var cameraR: Double = 0
-  var cameraT: Double = 0
-  var cameraB: Double = 0
 
   val tileCamera: OrthographicCamera = new OrthographicCamera()
   tileCamera.setToOrtho(true, screenWTiles, screenHTiles) // y points down
@@ -66,11 +62,23 @@ class MapScreen(val game: RpgGame)
     }
   }
 
-  def updateCameraLoc() = {
-    cameraL = camera.x - screenWTiles / 2
-    cameraR = camera.x + screenWTiles / 2
-    cameraT = camera.y - screenHTiles / 2
-    cameraB = camera.y + screenHTiles / 2
+  def updateCameraLoc(mapAndAssets: MapAndAssets) = {
+    val map = mapAndAssets.map
+
+    if (screenWTiles >= map.metadata.xSize) {
+      camera.x = map.metadata.xSize.toFloat / 2
+    } else {
+      camera.x = Utils.clamped(
+          camera.x, screenWTiles / 2, map.metadata.xSize - screenWTiles / 2)
+    }
+
+    if (screenHTiles >= map.metadata.ySize) {
+      camera.y = map.metadata.ySize.toFloat / 2
+    } else {
+      camera.y = Utils.clamped(
+          camera.y, screenHTiles / 2, map.metadata.ySize - screenHTiles / 2)
+    }
+
     tileCamera.position.x = camera.x
     tileCamera.position.y = camera.y
     tileCamera.update()
@@ -142,7 +150,12 @@ class MapScreen(val game: RpgGame)
 
     import Tileset._
 
-    updateCameraLoc()
+    updateCameraLoc(mapAndAssets)
+
+    val cameraL = camera.x - screenWTiles / 2
+    val cameraR = camera.x + screenWTiles / 2
+    val cameraT = camera.y - screenHTiles / 2
+    val cameraB = camera.y + screenHTiles / 2
 
     // Leftmost, rightmost, topmost, bottom-most tiles to render
     val tileL = math.max(0, cameraL.toInt)

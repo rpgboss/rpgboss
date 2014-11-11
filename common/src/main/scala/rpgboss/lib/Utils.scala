@@ -123,6 +123,9 @@ object Utils {
   def clamped(orig: Int, min: Int, max: Int) =
     math.min(max, math.max(min, orig))
 
+  def clamped(orig: Float, min: Float, max: Float) =
+    math.min(max, math.max(min, orig))
+
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m
 
