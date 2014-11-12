@@ -58,6 +58,7 @@ class MapView(
   //--- WIDGETS --//
   val toolbar = new BoxPanel(Orientation.Horizontal) {
     minimumSize = new Dimension(200, 32)
+    maximumSize = new Dimension(2000, 32)
 
     addBtnsAsGrp(contents, scaleButtons)
 

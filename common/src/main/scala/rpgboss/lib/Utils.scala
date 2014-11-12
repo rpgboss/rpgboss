@@ -9,15 +9,13 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.io.Writer
 import java.util.Locale
-
 import scala.collection.JavaConverters.mapAsScalaMapConverter
-
 import org.json4s.DefaultFormats
 import org.json4s.Formats
 import org.json4s.native.Serialization
 import org.mozilla.javascript.NativeObject
-
 import javax.imageio.ImageIO
+import rpgboss.model.RpgMapData
 
 class FileHelper(file: File) {
   import FileHelper._
@@ -140,8 +138,14 @@ object Utils {
 
   // TODO: Look for a more efficient implementation.
   def deepCopy[A <: AnyRef](a: A)(implicit m: reflect.Manifest[A]): A = {
-    val json = Serialization.write(a)(DefaultFormats)
-    Serialization.read[A](json)(DefaultFormats, m)
+    // So far RpgmapData.formats is our only polymorphic list for type hints
+    deepCopyWithFormats(a, RpgMapData.formats)
+  }
+
+  private def deepCopyWithFormats[A <: AnyRef](
+      a: A, formats: Formats)(implicit m: reflect.Manifest[A]): A = {
+    val json = Serialization.write(a)(formats)
+    Serialization.read[A](json)(formats, m)
   }
 
   /**
