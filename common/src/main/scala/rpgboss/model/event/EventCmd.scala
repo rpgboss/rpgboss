@@ -1,10 +1,11 @@
 package rpgboss.model.event
 
-import EventCmd._
 import rpgboss.model._
 import rpgboss.player._
 import org.json4s.TypeHints
 import org.json4s.ShortTypeHints
+import EventCmd._
+import EventJavascript._
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -23,14 +24,6 @@ trait EventCmd extends HasScriptConstants {
 }
 
 object EventCmd {
-  trait CodeSection {
-    def toJs: Array[String]
-  }
-
-  case class PlainLines(lines: Array[String]) extends CodeSection {
-    def toJs = lines
-  }
-
   case class CommandList(cmds: Array[EventCmd],
     indent: Int) extends CodeSection {
     def toJs = cmds
@@ -62,45 +55,6 @@ object EventCmd {
     classOf[RunJs],
     classOf[StartBattle],
     classOf[SetInt])) + EventRenameHints
-
-  case class RawJs(exp: String)
-
-  def toJs(x: Any): String = {
-    import java.util.Locale
-    x match {
-      case RawJs(exp) =>
-        exp
-      case x: String =>
-        """"%s"""".format(x.replaceAll("\"", "\\\\\""))
-      case x: Array[String] =>
-        x.map(toJs).mkString("[", ", ", "]")
-      case x: Double =>
-        "%f".formatLocal(Locale.US, x)
-      case x: Float =>
-        "%f".formatLocal(Locale.US, x)
-      case x: Int =>
-        "%d".formatLocal(Locale.US, x)
-      case x: Long =>
-        "%d".formatLocal(Locale.US, x)
-      case x: Boolean =>
-        "%b".formatLocal(Locale.US, x)
-      case _ =>
-        "undefined"
-    }
-  }
-
-  def jsCall(functionName: String, args: Any*): RawJs = {
-    val argsString = args.map(toJs).mkString(", ")
-    RawJs("""%s(%s)""".format(functionName, argsString))
-  }
-
-  def jsStatement(functionName: String, args: Any*): String = {
-    jsCall(functionName, args: _*).exp + ";"
-  }
-
-  def singleCall(functionName: String, args: Any*): Array[CodeSection] = {
-    Array(PlainLines(Array(jsStatement(functionName, args: _*))))
-  }
 }
 
 /**
@@ -138,10 +92,24 @@ case class ModifyParty(add: Boolean = true, characterId: Int = 0)
 }
 
 case class AddRemoveItem(
-  var itemId: Int = 0, var add: Boolean = true, var qty: Int = 1)
+  itemId: IntParameter = IntParameter(),
+  var add: Boolean = true,
+  qty: IntParameter = IntParameter())
   extends EventCmd {
-  def qtyDelta = (if (add) 1 else -1) * qty
+  def qtyDelta =
+    RawJs("(%s) * %s".format(
+        EventJavascript.toJs(if (add) 1 else -1), qty.jsString))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
+}
+
+object AddRemoveItem {
+  // Backwards-compatibility constructor
+  def apply(itemId: Int, add: Boolean, qty: Int): AddRemoveItem = {
+    apply(
+        IntParameter(EventParameterValueType.Constant.id, itemId),
+        add,
+        IntParameter(EventParameterValueType.Constant.id, qty))
+  }
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

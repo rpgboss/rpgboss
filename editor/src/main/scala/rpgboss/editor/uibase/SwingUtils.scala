@@ -151,13 +151,16 @@ object SwingUtils {
     }
   }
 
-  def addBtnsAsGrp(contents: Buffer[Component], btns: Seq[AbstractButton]) = {
+  def makeButtonGroup(btns: Seq[AbstractButton]) = {
     val firstSelected = btns.find(_.selected)
-    val grp = new ButtonGroup(btns: _*)
+    val group = new ButtonGroup(btns: _*)
+    firstSelected.map { btn => group.select(btn) }
+    group
+  }
 
+  def addBtnsAsGrp(contents: Buffer[Component], btns: Seq[AbstractButton]) = {
+    val group = makeButtonGroup(btns)
     contents ++= btns
-
-    firstSelected.map { btn => grp.select(btn) }
   }
 
   def enumButtons[T <: Enumeration](enum: T)(

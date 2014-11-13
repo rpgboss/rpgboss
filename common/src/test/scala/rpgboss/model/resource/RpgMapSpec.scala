@@ -50,10 +50,10 @@ class RpgMapSpec extends UnitSpec {
     val state = RpgEventState(sprite = Some(SpriteSpec("testSpriteName", 0)))
     md1.events = Map(1 -> RpgEvent(
         1, "TestEvent", 5f, 5f, Array(state),
-        Map("param"->EventParameter(EventParameterType.CharacterId.id, 4))))
+        Map()))
     md1.eventInstances = Map(2-> EventInstance(
         5, 2, "InstanceName", 4f, 4f,
-        Map("param"->EventParameter(EventParameterType.AnimationId.id, 5))))
+        Map()))
 
     // Add some differing data to each layer.
     md1.botLayer(1)(1) = 1

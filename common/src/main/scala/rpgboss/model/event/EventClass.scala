@@ -4,25 +4,28 @@ import rpgboss.model.HasName
 import rpgboss.model.RpgEnum
 import rpgboss.model.ProjectData
 
-object EventParameterType extends RpgEnum {
-  val IntParam = Value(0)
+object EventParameterValueType extends RpgEnum {
+  val Constant = Value(0)
+  val Parameter = Value(1)
 
-  val AnimationId = Value(100)
-  val CharacterId = Value(101)
-  val CharClassId = Value(102)
-  val ElementId = Value(103)
-  val EnemyId = Value(104)
-  val EncounterId = Value(105)
-  val EquipTypeId = Value(106)
-  val EventClassId = Value(107)
-  val ItemId = Value(108)
-  val SkillId = Value(109)
-  val StatusEffectId = Value(110)
-
-  val default = IntParam
+  def default = Constant
 }
 
-case class EventParameter(paramTypeId: Int, intValue: Int)
+trait EventParameter {
+  def jsString: String
+}
+
+case class IntParameter(
+    var valueTypeId: Int = EventParameterValueType.Constant.id,
+    var constant: Int = 0,
+    var parameter: String = "") extends EventParameter {
+  import EventParameterValueType._
+
+  def jsString = EventParameterValueType(valueTypeId) match {
+    case Constant => EventJavascript.toJs(constant)
+    case Parameter => parameter
+  }
+}
 
 case class EventClass(
   var name: String = "",

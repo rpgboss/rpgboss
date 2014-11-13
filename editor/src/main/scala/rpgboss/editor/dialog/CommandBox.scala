@@ -33,7 +33,7 @@ class EventCmdPanel(
   background = UIManager.getColor("TextArea.background")
 
   initial.sections.zipWithIndex.foreach {
-    case (EventCmd.PlainLines(lines), i) => {
+    case (PlainLines(lines), i) => {
       contents += new BoxPanel(Orientation.Horizontal) {
         opaque = false
         contents += new Label {
