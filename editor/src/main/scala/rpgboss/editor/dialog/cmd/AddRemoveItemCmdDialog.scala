@@ -20,13 +20,13 @@ class AddRemoveItemCmdDialog(
   val model = Utils.deepCopy(initial)
 
   val fItemId = new IntParameterEnumerationIndexField(
-      model.itemId, sm.getProj.data.enums.items)
+      owner, model.itemId, sm.getProj.data.enums.items)
 
   val fAddOrRemove = enumIdRadios(AddOrRemove)(
     AddOrRemove.fromBoolean(model.add).id,
     id => model.add = AddOrRemove.toBoolean(id))
 
-  val fQty = new IntParameterNumberField(model.qty, 1, 99)
+  val fQty = new IntParameterNumberField(owner, model.qty, 1, 99)
 
   def okFunc() = {
     successF(model)

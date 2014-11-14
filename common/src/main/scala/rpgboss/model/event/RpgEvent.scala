@@ -30,13 +30,12 @@ case class RpgEvent(
   var name: String = "",
   var x: Float = 0,
   var y: Float = 0,
-  var states: Array[RpgEventState] = Array(RpgEventState()),
-  var params: Map[String, EventParameter] = Map())
+  var states: Array[RpgEventState] = Array(RpgEventState()))
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
-             Array(RpgEventState()), Map())
+             Array(RpgEventState()))
 }
 
 /**
@@ -53,7 +52,15 @@ case class RpgEventState(
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,
   var cmds: Array[EventCmd] = RpgEventState.defaultCmds,
-  var runOnceThenIncrementState: Boolean = false)
+  var runOnceThenIncrementState: Boolean = false) {
+
+  def getFreeVariables() = {
+    // All variables are free right now since there's exposed EventCmd to
+    // bind them (for now).
+    cmds.flatMap(_.getParameters().filter(
+        _.valueTypeId == EventParameterValueType.LocalVariable.id))
+  }
+}
 
 object RpgEventState {
   def defaultCmds: Array[EventCmd] = Array()

@@ -16,7 +16,7 @@ object EventJavascript {
     x match {
       case RawJs(exp) =>
         exp
-      case x: EventParameter =>
+      case x: EventParameter[_] =>
         x.jsString
       case x: String =>
         """"%s"""".format(x.replaceAll("\"", "\\\\\""))

@@ -96,8 +96,27 @@ class EventStatePane(
     sm,
     eventLoc,
     model.cmds,
-    model.cmds = _,
+    newCmds => {
+      model.cmds = newCmds
+      messageField.updateMessages()
+    },
     inner = false)
+
+  val messageField = new TextField() {
+    enabled = true
+    editable = false
+
+    def updateMessages() = {
+      val freeVars = model.getFreeVariables()
+      if (!freeVars.isEmpty) {
+        text = "Free variables (normal for event classes): %s.".format(
+            freeVars.map(_.localVariable).mkString(", "))
+      } else {
+        text = "No errors."
+      }
+    }
+    updateMessages()
+  }
 
   contents += new DesignGridPanel {
     row.grid.add(leftLabel("Commands:"))
@@ -105,5 +124,7 @@ class EventStatePane(
       preferredSize = new Dimension(400, 400)
       contents = commandBox
     })
+
+    row.grid.add(messageField)
   }
 }

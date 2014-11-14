@@ -133,7 +133,7 @@ case class RpgMapDataEventsIntermediate(
     events: Array[RpgEvent], eventInstances: Array[EventInstance])
 
 case object RpgMapData {
-  val formats = Serialization.formats(EventCmd.hints)
+  val formats = Serialization.formats(EventCmd.hints + EventParameter.hints)
 
   def datafiles(p: Project, name: String) = {
     val mapFile = new File(RpgMap.rcDir(p), name)

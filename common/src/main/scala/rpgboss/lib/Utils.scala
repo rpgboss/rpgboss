@@ -138,7 +138,7 @@ object Utils {
 
   // TODO: Look for a more efficient implementation.
   def deepCopy[A <: AnyRef](a: A)(implicit m: reflect.Manifest[A]): A = {
-    // So far RpgmapData.formats is our only polymorphic list for type hints
+    // So far RpgMapData.formats is our only polymorphic list for type hints
     deepCopyWithFormats(a, RpgMapData.formats)
   }
 

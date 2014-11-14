@@ -5,16 +5,27 @@ import scala.swing._
 import rpgboss.model.event.IntParameter
 import rpgboss.model.event.EventParameterValueType
 import rpgboss.model.HasName
+import scala.swing.event.MouseClicked
+import rpgboss.model.event.EventParameter
+import rpgboss.lib.Utils
 
-class IntParameterField(
-    model: IntParameter,
-    fConstant: Component) extends GridPanel(2, 2) {
-  val fParameter = textField(model.parameter, model.parameter = _)
+class ParameterDialog[T](
+    owner: Window,
+    initial: EventParameter[T],
+    onOk: EventParameter[T] => Unit,
+    constantFieldFactory: EventParameter[T] => Component)
+    (implicit m: reflect.Manifest[EventParameter[T]])
+    extends StdDialog(owner, "Parameter") {
+
+  val model = Utils.deepCopy(initial)
+
+  val fConstant = constantFieldFactory(model)
+  val fLocalVariable = textField(model.localVariable, model.localVariable = _)
 
   def updateFields() = {
     fConstant.enabled = model.valueTypeId == EventParameterValueType.Constant.id
-    fParameter.enabled =
-      model.valueTypeId == EventParameterValueType.Parameter.id
+    fLocalVariable.enabled =
+      model.valueTypeId == EventParameterValueType.LocalVariable.id
   }
   updateFields()
 
@@ -26,23 +37,91 @@ class IntParameterField(
       })
   val group = makeButtonGroup(valueTypeBtns)
 
-  contents += valueTypeBtns(0)
-  contents += fConstant
+  def okFunc() = {
+    onOk(model)
+    close()
+  }
 
-  contents += valueTypeBtns(1)
-  contents += fParameter
+  contents = new DesignGridPanel {
+    row().grid().add(valueTypeBtns(0))
+    row().grid().add(fConstant)
+    row().grid().add(valueTypeBtns(1))
+    row().grid().add(fLocalVariable)
+    addButtons(cancelBtn, okBtn)
+  }
+}
+
+class ParameterField[T](
+    owner: Window,
+    model: EventParameter[T],
+    constantFieldFactory: EventParameter[T] => Component)
+    (implicit m: reflect.Manifest[EventParameter[T]])
+      extends BoxPanel(Orientation.Horizontal) {
+  val container = new BoxPanel(Orientation.Horizontal)
+  val detailsBtn = new Button(Action("...") {
+    val d: ParameterDialog[T] = new ParameterDialog[T](
+        owner,
+        model,
+        newModel => {
+          model.copyValuesFrom(newModel)
+          updateContainer()
+        },
+        constantFieldFactory)
+    d.open()
+  })
+  var fConstant = constantFieldFactory(model)
+  val label = new TextField {
+    editable = false
+    enabled = true
+
+    listenTo(this.mouse.clicks)
+    reactions += {
+      case e: MouseClicked => {
+        detailsBtn.doClick()
+      }
+    }
+  }
+
+  def updateContainer(): Unit = {
+    container.contents.clear()
+
+    if (model.valueTypeId == EventParameterValueType.Constant.id) {
+      fConstant = constantFieldFactory(model)
+      container.contents += fConstant
+    } else {
+      container.contents += label
+      label.text = EventParameterValueType(model.valueTypeId) match {
+        case EventParameterValueType.LocalVariable =>
+          "Local Variable: %s".format(model.localVariable)
+      }
+    }
+
+    container.revalidate()
+    container.repaint()
+  }
+  updateContainer()
+
+  contents += container
+  contents += detailsBtn
 }
 
 class IntParameterNumberField(
+    owner: Window,
     model: IntParameter,
     min: Int,
-    max: Int)
-    extends IntParameterField(
+    max: Int)(implicit m: reflect.Manifest[IntParameter])
+    extends ParameterField[Int](
+        owner,
         model,
-        new NumberSpinner(model.constant, min, max, model.constant = _))
+        model =>
+          new NumberSpinner(model.constant, min, max, model.constant = _))
 
 class IntParameterEnumerationIndexField[T <% HasName](
+    owner: Window,
     model: IntParameter,
-    choices: Seq[T]) extends IntParameterField(
+    choices: Seq[T])(implicit m: reflect.Manifest[IntParameter])
+    extends ParameterField[Int](
+        owner,
         model,
-        indexedCombo(choices, model.constant, model.constant = _))
+        model =>
+          indexedCombo(choices, model.constant, model.constant = _))
