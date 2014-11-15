@@ -22,8 +22,7 @@ import rpgboss.model.resource.RpgMapMetadata
 case class RpgMapData(botLayer: Array[Array[Byte]],
                       midLayer: Array[Array[Byte]],
                       topLayer: Array[Array[Byte]],
-                      var events: Map[Int, RpgEvent],
-                      var eventInstances: Map[Int, EventInstance]) {
+                      var events: Map[Int, RpgEvent]) {
   import RpgMapData._
   def drawOrder = List(botLayer, midLayer, topLayer)
 
@@ -76,8 +75,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
 
     val eventsWritten = JsonUtils.writeModelToJsonWithFormats(
       evtFile,
-      RpgMapDataEventsIntermediate(
-          events.values.toArray, eventInstances.values.toArray),
+      RpgMapDataEventsIntermediate(events.values.toArray),
       RpgMapData.formats)
 
     mapFileWritten && layersWritten && eventsWritten
@@ -129,8 +127,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
   }
 }
 
-case class RpgMapDataEventsIntermediate(
-    events: Array[RpgEvent], eventInstances: Array[EventInstance])
+case class RpgMapDataEventsIntermediate(events: Array[RpgEvent])
 
 case object RpgMapData {
   val formats = Serialization.formats(EventCmd.hints + EventParameter.hints)
@@ -176,8 +173,6 @@ case object RpgMapData {
 
       val events =
         eventsIntermediate.events.map(e => e.id->e).toMap
-      val eventInstances =
-        eventsIntermediate.eventInstances.map(ei => ei.id->ei).toMap
 
       // TODO: Move to a more mature system for schema migration.
       val fixedEvents = events.map {
@@ -190,7 +185,7 @@ case object RpgMapData {
         }
       }
 
-      RpgMapData(botAry, midAry, topAry, fixedEvents, eventInstances)
+      RpgMapData(botAry, midAry, topAry, fixedEvents)
     }
   }
 }

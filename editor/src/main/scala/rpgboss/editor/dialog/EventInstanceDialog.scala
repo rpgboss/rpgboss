@@ -17,38 +17,34 @@ import rpgboss.lib.Utils
 import rpgboss.model.MapLoc
 import rpgboss.model.event.RpgEvent
 
-class EventDialog(
+class EventInstanceDialog(
   owner: Window,
   sm: StateMaster,
-  val mapName: String,
   initialEvent: RpgEvent,
   onOk: RpgEvent => Any,
   onCancel: RpgEvent => Any)
-  extends StdDialog(owner, "Event: " + initialEvent.name) {
+  extends StdDialog(owner, "Event Instance: " + initialEvent.name) {
 
-  centerDialog(new Dimension(600, 600))
+  val model = Utils.deepCopy(initialEvent)
 
-  val event = Utils.deepCopy(initialEvent)
-
-  override def cancelFunc() = onCancel(event)
+  override def cancelFunc() = onCancel(model)
 
   def okFunc() = {
-    onOk(event)
+    onOk(model)
     close()
   }
 
-  val eventPanel = new EventPanel(
-      owner,
-      sm,
-      MapLoc(mapName, event.x, event.y),
-      event.name,
-      event.name = _,
-      event.states,
-      event.states = _)
+  val fClassId = indexedCombo(
+      sm.getProjData.enums.eventClasses,
+      model.eventClassId,
+      model.eventClassId = _,
+      Some(() => {
+
+      }))
 
   contents = new BoxPanel(Orientation.Vertical) {
-    contents += eventPanel
     contents += new DesignGridPanel {
+      row().grid(lbl("Event Class:")).add(fClassId)
       addButtons(okBtn, cancelBtn)
     }
   }

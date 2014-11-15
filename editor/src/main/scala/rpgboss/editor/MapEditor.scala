@@ -27,6 +27,7 @@ import java.awt.event.KeyEvent
 import java.awt.event.InputEvent
 import rpgboss.editor.imageset.selector.TabbedTileSelector
 import javax.swing.ImageIcon
+import rpgboss.editor.dialog.EventInstanceDialog
 
 class MapEditor(
   projectPanel: ProjectPanel,
@@ -222,43 +223,59 @@ class MapEditor(
 
   //--- EVENT POPUP MENU ---//
   import MapLayers._
-  def editEvent() = viewStateOpt map { vs =>
-    val isNewEvent = selectedEvtId.isEmpty
 
-    /**
-     * Brings up dialog to create new or edit event at the selected event tile
-     */
+  def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
+    val id = vs.mapMeta.lastGeneratedEventId + 1
+    val x = canvasPanel.cursorSquare.x1 + 0.5f
+    val y = canvasPanel.cursorSquare.y1 + 0.5f
+
+    val event = if (eventInstance)
+      RpgEvent.blankInstance(id, x, y)
+    else
+      RpgEvent.blank(id, x, y)
+
+    showEditDialog(true, vs, event)
+  }
+
+  def editEvent(id: Int) = viewStateOpt map { vs =>
+    val event = vs.nextMapData.events(id)
+    showEditDialog(false, vs, event)
+  }
+
+  def showEditDialog(isNewEvent: Boolean, vs: MapViewState, event: RpgEvent) = {
     vs.begin()
 
-    val event = selectedEvtId.map { id =>
-      vs.nextMapData.events(id)
-    } getOrElse {
-      // Need the +0.5f to offset into center of selected tile
-      RpgEvent.blank(
-        vs.mapMeta.lastGeneratedEventId + 1,
-        canvasPanel.cursorSquare.x1 + 0.5f,
-        canvasPanel.cursorSquare.y1 + 0.5f)
+    def onOk(e: RpgEvent) = {
+      if (isNewEvent) {
+        val newMetadata = vs.mapMeta.copy(
+          lastGeneratedEventId = vs.mapMeta.lastGeneratedEventId + 1)
+        sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
+      }
+      vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
+
+      commitVS(vs)
+      repaintRegion(TileRect(e.x.toInt, e.y.toInt))
     }
 
-    val dialog = new EventDialog(
-      projectPanel.mainP.topWin,
-      sm,
-      vs.mapName,
-      event,
-      onOk = { e: RpgEvent =>
-        if (isNewEvent) {
-          val newMetadata = vs.mapMeta.copy(
-            lastGeneratedEventId = vs.mapMeta.lastGeneratedEventId + 1)
-          sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
-        }
-        vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
+    def onCancel(e: RpgEvent) =
+      vs.abort()
 
-        commitVS(vs)
-        repaintRegion(TileRect(e.x.toInt, e.y.toInt))
-      },
-      onCancel = { e: RpgEvent =>
-        vs.abort()
-      })
+    val dialog = if (event.isInstance) {
+      new EventInstanceDialog(
+        projectPanel.mainP.topWin,
+        sm,
+        event,
+        onOk = onOk,
+        onCancel = onCancel)
+    } else {
+      new EventDialog(
+        projectPanel.mainP.topWin,
+        sm,
+        vs.mapName,
+        event,
+        onOk = onOk,
+        onCancel = onCancel)
+    }
 
     dialog.open()
   }
@@ -282,7 +299,15 @@ class MapEditor(
       val newEditText = if (evtSelected) "Edit event..." else "New event..."
 
       val menu = new RpgPopupMenu {
-        contents += new MenuItem(Action(newEditText) { editEvent() })
+        if (evtSelected) {
+          contents += new MenuItem(Action("Edit...") {
+            editEvent(selectedEvtId.get)
+          })
+        } else {
+          contents += new MenuItem(Action("New Event...") { newEvent(false) })
+          contents += new MenuItem(
+              Action("New Event Instance...") { newEvent(true) })
+        }
 
         if (evtSelected)
           contents += new MenuItem(Action("Delete") { deleteEvent() })
@@ -410,7 +435,9 @@ class MapEditor(
     case e: MouseClicked if e.source == canvasPanel && selectedLayer == Evt =>
       logger.info("MouseClicked on EvtLayer")
       if (e.clicks == 2) {
-        editEvent()
+        selectedEvtId
+          .map(id => editEvent(id))
+          .getOrElse(newEvent(eventInstance = false))
       }
   }
 }

@@ -22,7 +22,7 @@ trait EventCmd extends HasScriptConstants {
   val toJs: Array[String] =
     sections.flatMap(_.toJs)
 
-  def getParameters(): List[EventParameter[_]] = Nil
+  def getParameters(): List[EventParameterMetadata] = Nil
 }
 
 object EventCmd {
@@ -94,19 +94,23 @@ case class ModifyParty(add: Boolean = true, characterId: Int = 0)
 }
 
 case class AddRemoveItem(
-  itemId: IntParameter = IntParameter(),
   var add: Boolean = true,
-  qty: IntParameter = IntParameter(EventParameterValueType.Constant.id, 1),
-  dummy: Boolean = false)
+  itemId: IntParameter = IntParameter(),
+  qty: IntParameter = IntParameter(EventParameterValueType.Constant.id, 1))
   extends EventCmd {
   // Backwards-compatibility constructor
   def this(itemId: Int, add: Boolean, qty: Int) =
-    this(IntParameter(EventParameterValueType.Constant.id, itemId), add,
+    this(
+        add,
+        IntParameter(EventParameterValueType.Constant.id, itemId),
         IntParameter(EventParameterValueType.Constant.id, qty))
 
   def qtyDelta =
     RawJs(if (add) qty.jsString else "%s * -1".format(qty.jsString))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
+
+  override def getParameters() =
+    List(IntProjectDataEnumParameter(itemId, _.items), IntNumberParameter(qty))
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

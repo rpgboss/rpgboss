@@ -4,6 +4,7 @@ import rpgboss.model.HasName
 import rpgboss.model.RpgEnum
 import rpgboss.model.ProjectData
 import org.json4s.ShortTypeHints
+import rpgboss.model.ProjectDataEnums
 
 object EventParameterValueType extends RpgEnum {
   val Constant = Value(0, "Constant")
@@ -48,18 +49,16 @@ case class IntParameter(
   }
 }
 
+trait EventParameterMetadata {
+  def parameter: EventParameter[_]
+}
+
+case class IntNumberParameter(parameter: IntParameter)
+    extends EventParameterMetadata
+case class IntProjectDataEnumParameter[T <% HasName](
+    parameter: IntParameter,
+    getChoices: ProjectDataEnums => Array[T]) extends EventParameterMetadata
+
 case class EventClass(
   var name: String = "",
   var states: Array[RpgEventState] = Array(RpgEventState())) extends HasName
-
-/**
- * This information combined with an EventClass can be used to instantiate an
- * RpgEvent.
- */
-case class EventInstance(
-  var eventClassId: Int,
-  id: Int,
-  var name: String,
-  var x: Float,
-  var y: Float,
-  var params: Map[String, EventParameter[_]])
