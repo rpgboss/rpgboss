@@ -108,9 +108,9 @@ object ParameterFullComponent {
       pData: ProjectData,
       panel: DesignGridPanel,
       cmd: EventCmd) = {
-    for (field <- EventParameterField.getConstantFields(pData, cmd)) {
+    for (field <- EventParameterField.getFields(pData, cmd)) {
       val fullComponent = new ParameterFullComponent(
-          owner, field.model, field.component)
+          owner, field.model, field.constantComponentFactory(field.model))
       panel.row().grid((new Label(field.name)).peer).add(fullComponent.peer)
     }
   }

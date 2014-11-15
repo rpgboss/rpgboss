@@ -12,23 +12,23 @@ import rpgboss.model.ProjectData
  * The name of the field and a component for editing the constant value.
  */
 case class EventParameterField[T](
-    name: String, model: T, component: Component)
+    name: String, model: T, constantComponentFactory: T => Component)
 
 object EventParameterField {
   def IntNumberField(name: String, min: Int, max: Int, model: IntParameter) =
     EventParameterField[IntParameter](
         name,
         model,
-        new NumberSpinner(model.constant, min, max, model.constant = _))
+        p => new NumberSpinner(p.constant, min, max, p.constant = _))
 
   def IntEnumIdField[T <% HasName]
       (name: String, choices: Array[T], model: IntParameter) =
     EventParameterField[IntParameter](
         name,
         model,
-        indexedCombo(choices, model.constant, model.constant = _))
+        p => indexedCombo(choices, p.constant, p.constant = _))
 
-  def getConstantFields(pData: ProjectData, cmd: EventCmd) = cmd match {
+  def getFields(pData: ProjectData, cmd: EventCmd) = cmd match {
     case c: AddRemoveItem => List(
         IntEnumIdField("Item", pData.enums.items, c.itemId),
         IntNumberField("Quantity", 1, 99, c.quantity))

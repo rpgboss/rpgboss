@@ -34,17 +34,64 @@ class EventInstanceDialog(
     close()
   }
 
+  val container = new BoxPanel(Orientation.Vertical) {
+    def update() = {
+      contents.clear()
+
+      val eventClass =
+        sm.getProjData.enums.eventClasses.apply(model.eventClassId)
+
+      val freeVariableMap =
+        collection.mutable.Map[String, EventParameter[_]]()
+      val componentMap =
+        collection.mutable.Map[String, Component]()
+
+      for (state <- eventClass.states;
+           cmd <- state.cmds;
+           field <- EventParameterField.getFields(sm.getProjData, cmd);
+           if field.model.valueTypeId ==
+             EventParameterValueType.LocalVariable.id) {
+        val paramCopy = Utils.deepCopy(field.model)
+        paramCopy.valueTypeId = EventParameterValueType.Constant.id
+
+        val component = field.constantComponentFactory(paramCopy)
+
+        freeVariableMap.update(field.model.localVariable, paramCopy)
+        componentMap.update(field.model.localVariable, component)
+      }
+
+      model.params = freeVariableMap.toMap
+
+      contents += new DesignGridPanel {
+        componentMap map {
+          case (name, component) => row().grid(lbl(name)).add(component)
+        }
+      }
+
+      revalidate()
+      repaint()
+      EventInstanceDialog.this.repaint()
+    }
+
+    update()
+  }
+
   val fClassId = indexedCombo(
       sm.getProjData.enums.eventClasses,
       model.eventClassId,
       model.eventClassId = _,
       Some(() => {
-
+        container.update()
       }))
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new DesignGridPanel {
       row().grid(lbl("Event Class:")).add(fClassId)
+    }
+
+    contents += container
+
+    contents += new DesignGridPanel {
       addButtons(okBtn, cancelBtn)
     }
   }
