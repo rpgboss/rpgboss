@@ -96,7 +96,7 @@ case class ModifyParty(add: Boolean = true, characterId: Int = 0)
 case class AddRemoveItem(
   var add: Boolean = true,
   itemId: IntParameter = IntParameter(),
-  qty: IntParameter = IntParameter(EventParameterValueType.Constant.id, 1))
+  quantity: IntParameter = IntParameter(EventParameterValueType.Constant.id, 1))
   extends EventCmd {
   // Backwards-compatibility constructor
   def this(itemId: Int, add: Boolean, qty: Int) =
@@ -106,10 +106,10 @@ case class AddRemoveItem(
         IntParameter(EventParameterValueType.Constant.id, qty))
 
   def qtyDelta =
-    RawJs(if (add) qty.jsString else "%s * -1".format(qty.jsString))
+    RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
 
-  override def getParameters() = List(itemId, qty)
+  override def getParameters() = List(itemId, quantity)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

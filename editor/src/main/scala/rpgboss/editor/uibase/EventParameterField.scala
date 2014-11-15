@@ -31,7 +31,7 @@ object EventParameterField {
   def getConstantFields(pData: ProjectData, cmd: EventCmd) = cmd match {
     case c: AddRemoveItem => List(
         IntEnumIdField("Item", pData.enums.items, c.itemId),
-        IntNumberField("Quantity", 1, 99, c.qty))
+        IntNumberField("Quantity", 1, 99, c.quantity))
     case _ => Nil
   }
 }
