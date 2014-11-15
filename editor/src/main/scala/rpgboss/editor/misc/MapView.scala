@@ -138,7 +138,16 @@ class MapView(
 
                 val dx1 = ((rpgevt.x - 0.5) * curTilesize + 2).toInt + 1
                 val dy1 = ((rpgevt.y - 0.5) * curTilesize + 2).toInt + 1
-                rpgevt.states.head.sprite.map { spriteSpec =>
+
+                val sprite = if (rpgevt.isInstance) {
+                  val eventClass =
+                    sm.getProjData.enums.eventClasses(rpgevt.eventClassId)
+                  eventClass.states.head.sprite
+                } else {
+                  rpgevt.states.head.sprite
+                }
+
+                sprite.map { spriteSpec =>
                   g.drawImage(
                     evtImgCache.get(spriteSpec),
                     dx1, dy1, curTilesize - 4 - 1, curTilesize - 4 - 1, evtFill, null)
