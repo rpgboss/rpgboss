@@ -24,7 +24,7 @@ class EventPanel(
   initialStates: Array[RpgEventState],
   updateStatesF: Array[RpgEventState] => Unit) extends DesignGridPanel {
 
-  private var statesModel = Utils.deepCopy(initialStates)
+  private var statesModel = initialStates
   def updateStates(newStatesModel: Array[RpgEventState]) = {
     statesModel = newStatesModel
     updateStatesF(statesModel)

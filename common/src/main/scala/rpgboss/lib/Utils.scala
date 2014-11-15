@@ -10,7 +10,6 @@ import java.io.OutputStreamWriter
 import java.io.Writer
 import java.util.Locale
 import scala.collection.JavaConverters.mapAsScalaMapConverter
-import org.json4s.DefaultFormats
 import org.json4s.Formats
 import org.json4s.native.Serialization
 import org.mozilla.javascript.NativeObject
@@ -186,6 +185,8 @@ object ArrayUtils {
 object JsonUtils {
   import FileHelper._
 
+  val defaultFormats = RpgMapData.formats
+
   def readModelFromJsonWithFormats[T](
     file: File, formats: Formats)(implicit m: Manifest[T]): Option[T] = {
     file.getReader().map { reader =>
@@ -194,10 +195,10 @@ object JsonUtils {
   }
 
   def readModelFromJson[T](file: File)(implicit m: Manifest[T]) =
-    readModelFromJsonWithFormats(file, DefaultFormats)(m)
+    readModelFromJsonWithFormats(file, defaultFormats)(m)
 
   def writeModelToJson[T <: AnyRef](file: File, model: T): Boolean =
-    writeModelToJsonWithFormats(file, model, DefaultFormats)
+    writeModelToJsonWithFormats(file, model, defaultFormats)
 
   def writeModelToJsonWithFormats[T <: AnyRef](
     file: File, model: T, formats: Formats): Boolean = {
@@ -209,7 +210,7 @@ object JsonUtils {
   def nativeObjectToCaseClass[T](
     jsObj: NativeObject)(implicit m: Manifest[T]) = {
     import scala.collection.JavaConverters._
-    implicit val formats = DefaultFormats
+    implicit val formats = defaultFormats
     val asScalaMap = jsObj.asScala.toMap
     val json = Serialization.write[Map[_, _]](asScalaMap)
 
