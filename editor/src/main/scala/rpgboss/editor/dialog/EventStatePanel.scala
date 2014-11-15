@@ -110,7 +110,7 @@ class EventStatePane(
       val freeVars = model.getFreeVariables()
       if (!freeVars.isEmpty) {
         text = "Free variables (normal for event classes): %s.".format(
-            freeVars.map(_.parameter.localVariable).mkString(", "))
+            freeVars.map(_.localVariable).mkString(", "))
       } else {
         text = "No errors."
       }

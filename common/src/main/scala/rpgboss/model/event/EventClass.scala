@@ -49,16 +49,6 @@ case class IntParameter(
   }
 }
 
-trait EventParameterMetadata {
-  def parameter: EventParameter[_]
-}
-
-case class IntNumberParameter(parameter: IntParameter)
-    extends EventParameterMetadata
-case class IntProjectDataEnumParameter[T <% HasName](
-    parameter: IntParameter,
-    getChoices: ProjectDataEnums => Array[T]) extends EventParameterMetadata
-
 case class EventClass(
   var name: String = "",
   var states: Array[RpgEventState] = Array(RpgEventState())) extends HasName

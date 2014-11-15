@@ -22,7 +22,7 @@ trait EventCmd extends HasScriptConstants {
   val toJs: Array[String] =
     sections.flatMap(_.toJs)
 
-  def getParameters(): List[EventParameterMetadata] = Nil
+  def getParameters(): List[EventParameter[_]] = Nil
 }
 
 object EventCmd {
@@ -109,8 +109,7 @@ case class AddRemoveItem(
     RawJs(if (add) qty.jsString else "%s * -1".format(qty.jsString))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
 
-  override def getParameters() =
-    List(IntProjectDataEnumParameter(itemId, _.items), IntNumberParameter(qty))
+  override def getParameters() = List(itemId, qty)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

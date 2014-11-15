@@ -8,22 +8,21 @@ import rpgboss.model.HasName
 import scala.swing.event.MouseClicked
 import rpgboss.model.event.EventParameter
 import rpgboss.lib.Utils
+import rpgboss.model.event.EventCmd
+import rpgboss.model.ProjectData
 
 class ParameterDialog[T](
     owner: Window,
     initial: EventParameter[T],
-    onOk: EventParameter[T] => Unit,
-    constantFieldFactory: EventParameter[T] => Component)
+    onOk: EventParameter[T] => Unit)
     (implicit m: reflect.Manifest[EventParameter[T]])
     extends StdDialog(owner, "Parameter") {
 
   val model = Utils.deepCopy(initial)
 
-  val fConstant = constantFieldFactory(model)
   val fLocalVariable = textField(model.localVariable, model.localVariable = _)
 
   def updateFields() = {
-    fConstant.enabled = model.valueTypeId == EventParameterValueType.Constant.id
     fLocalVariable.enabled =
       model.valueTypeId == EventParameterValueType.LocalVariable.id
   }
@@ -44,17 +43,17 @@ class ParameterDialog[T](
 
   contents = new DesignGridPanel {
     row().grid().add(valueTypeBtns(0))
-    row().grid().add(fConstant)
+    row().grid().add(Swing.HGlue)
     row().grid().add(valueTypeBtns(1))
     row().grid().add(fLocalVariable)
     addButtons(cancelBtn, okBtn)
   }
 }
 
-class ParameterField[T](
+class ParameterFullComponent[T](
     owner: Window,
     model: EventParameter[T],
-    constantFieldFactory: EventParameter[T] => Component)
+    component: Component)
     (implicit m: reflect.Manifest[EventParameter[T]])
       extends BoxPanel(Orientation.Horizontal) {
   val container = new BoxPanel(Orientation.Horizontal)
@@ -65,11 +64,10 @@ class ParameterField[T](
         newModel => {
           model.copyValuesFrom(newModel)
           updateContainer()
-        },
-        constantFieldFactory)
+        })
     d.open()
   })
-  var fConstant = constantFieldFactory(model)
+  val fConstant = component
   val label = new TextField {
     editable = false
     enabled = true
@@ -86,7 +84,6 @@ class ParameterField[T](
     container.contents.clear()
 
     if (model.valueTypeId == EventParameterValueType.Constant.id) {
-      fConstant = constantFieldFactory(model)
       container.contents += fConstant
     } else {
       container.contents += label
@@ -105,23 +102,16 @@ class ParameterField[T](
   contents += detailsBtn
 }
 
-class IntParameterNumberField(
-    owner: Window,
-    model: IntParameter,
-    min: Int,
-    max: Int)(implicit m: reflect.Manifest[IntParameter])
-    extends ParameterField[Int](
-        owner,
-        model,
-        model =>
-          new NumberSpinner(model.constant, min, max, model.constant = _))
-
-class IntParameterEnumerationIndexField[T <% HasName](
-    owner: Window,
-    model: IntParameter,
-    choices: Seq[T])(implicit m: reflect.Manifest[IntParameter])
-    extends ParameterField[Int](
-        owner,
-        model,
-        model =>
-          indexedCombo(choices, model.constant, model.constant = _))
+object ParameterFullComponent {
+  def addParameterFullComponentsToPanel(
+      owner: Window,
+      pData: ProjectData,
+      panel: DesignGridPanel,
+      cmd: EventCmd) = {
+    for (field <- EventParameterField.getConstantFields(pData, cmd)) {
+      val fullComponent = new ParameterFullComponent(
+          owner, field.model, field.component)
+      panel.row().grid((new Label(field.name)).peer).add(fullComponent.peer)
+    }
+  }
+}

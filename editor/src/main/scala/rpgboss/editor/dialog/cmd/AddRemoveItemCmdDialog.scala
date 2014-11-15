@@ -19,14 +19,9 @@ class AddRemoveItemCmdDialog(
 
   val model = Utils.deepCopy(initial)
 
-  val fItemId = new IntParameterEnumerationIndexField(
-      owner, model.itemId, sm.getProj.data.enums.items)
-
   val fAddOrRemove = enumIdRadios(AddOrRemove)(
     AddOrRemove.fromBoolean(model.add).id,
     id => model.add = AddOrRemove.toBoolean(id))
-
-  val fQty = new IntParameterNumberField(owner, model.qty, 1, 99)
 
   def okFunc() = {
     successF(model)
@@ -38,8 +33,8 @@ class AddRemoveItemCmdDialog(
       new BoxPanel(Orientation.Horizontal) {
         addBtnsAsGrp(contents, fAddOrRemove)
       })
-    row().grid(lbl("Item:")).add(fItemId)
-    row().grid(lbl("Quantity:")).add(fQty)
+    ParameterFullComponent.addParameterFullComponentsToPanel(
+        owner, sm.getProjData, this, model)
 
     addButtons(cancelBtn, okBtn)
   }

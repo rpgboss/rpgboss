@@ -70,7 +70,7 @@ case class RpgEventState(
     // All variables are free right now since there's exposed EventCmd to
     // bind them (for now).
     cmds.flatMap(_.getParameters().filter(
-        _.parameter.valueTypeId == EventParameterValueType.LocalVariable.id))
+        _.valueTypeId == EventParameterValueType.LocalVariable.id))
   }
 }
 
