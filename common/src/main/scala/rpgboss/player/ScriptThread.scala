@@ -148,10 +148,10 @@ object ScriptThread {
     screen: RpgScreen,
     scriptInterface: ScriptInterface,
     entity: EventEntity,
+    scriptName: String,
+    eventState: RpgEventState,
     state: Int,
     onFinish: Option[() => Unit] = None) = {
-    val scriptName = "%s/%d".format(entity.mapEvent.name, state)
-    val eventState = entity.mapEvent.states(state)
     val extraCmdsAtEnd: Array[EventCmd] =
       if (eventState.runOnceThenIncrementState)
         Array(IncrementEventState())

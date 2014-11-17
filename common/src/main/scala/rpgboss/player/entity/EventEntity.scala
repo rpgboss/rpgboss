@@ -6,13 +6,31 @@ import rpgboss.model.SpriteSpec
 import scala.concurrent.Promise
 import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
+import rpgboss.lib.Utils
 
 case class EventScriptInterface(mapName: String, id: Int)
 
-class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
+class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
   extends Entity(game, mapEvent.x, mapEvent.y) {
 
   def id = mapEvent.id
+
+  val states = if (mapEvent.isInstance) {
+    val eventClass = game.project.data.enums.eventClasses(mapEvent.eventClassId)
+    val eventClassStates = eventClass.states
+
+    val bindCmds = mapEvent.params map {
+      case (key, parameter) =>
+        val p = Utils.deepCopy(parameter)
+        p.localVariable = key
+        SetLocalVariable(p)
+    }
+
+    // Bind local variables.
+    eventClassStates.map(s => s.copy(cmds = bindCmds.toArray ++ s.cmds))
+  } else {
+    mapEvent.states
+  }
 
   private var curThread: Option[ScriptThread] = None
 
@@ -20,14 +38,14 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
   def getScriptInterface() = EventScriptInterface(mapName, id)
 
-  def evtState = mapEvent.states(evtStateIdx)
+  def evtState = states(evtStateIdx)
 
   def height: Int = {
     for (i <- evtStateIdx to 1 by -1) {
-      if (!mapEvent.states(i).sameAppearanceAsPrevState)
-        return mapEvent.states(i).height
+      if (!states(i).sameAppearanceAsPrevState)
+        return states(i).height
     }
-    return mapEvent.states.head.height
+    return states.head.height
   }
 
   val persistentListener =
@@ -43,10 +61,10 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
   def updateState(): Unit = {
     evtStateIdx = game.persistent.getEventState(mapName, mapEvent.id)
     for (i <- evtStateIdx to 1 by -1) {
-      if (!mapEvent.states(i).sameAppearanceAsPrevState)
-        return setSprite(mapEvent.states(i).sprite)
+      if (!states(i).sameAppearanceAsPrevState)
+        return setSprite(states(i).sprite)
     }
-    return setSprite(mapEvent.states.head.sprite)
+    return setSprite(states.head.sprite)
   }
   updateState()
 
@@ -68,7 +86,10 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
       game,
       game.mapScreen,
       game.mapScreen.scriptInterface,
-      this, evtStateIdx,
+      this,
+      "%s/%d".format(mapEvent.name, evtStateIdx),
+      evtState,
+      evtStateIdx,
       onFinish = Some(() => {
         val movedDuringScript = movesEnqueued != startingMovesEnqueued
         if (activatorsDirection!= Directions.NONE && !movedDuringScript)

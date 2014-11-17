@@ -46,6 +46,7 @@ object EventCmd {
 
   val hints = ShortTypeHints(List(
     classOf[EndOfScript],
+    classOf[SetLocalVariable],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
     classOf[AddRemoveItem],
@@ -65,6 +66,12 @@ object EventCmd {
  */
 case class EndOfScript() extends EventCmd {
   def sections = Array(PlainLines(Array("")))
+}
+
+case class SetLocalVariable(parameter: EventParameter[_]) extends EventCmd {
+  def sections = Array(PlainLines(
+      Array("var %s = %s;".format(
+          parameter.localVariable, parameter.constant))))
 }
 
 case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
