@@ -53,6 +53,10 @@ class EventCmdSpec extends UnitSpec {
     val e3 = ShowText(Array("Hello", "World", "Quote mark: \""))
     e3.toJs should deepEqual (Array(
       """game.showText(["Hello", "World", "Quote mark: \""]);"""))
+
+    val e4 = ShowText(Array("Hello \\L[blah]"))
+    e4.toJs should deepEqual (Array(
+      """game.showText(["Hello " + blah + ""]);"""))
   }
 
   "EventCmd" should "produce correct script in comma-decimal locales" in {

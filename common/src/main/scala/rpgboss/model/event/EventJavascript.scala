@@ -20,7 +20,7 @@ object EventJavascript {
         x.jsString
       case x: String =>
         """"%s"""".format(x.replaceAll("\"", "\\\\\""))
-      case x: Array[String] =>
+      case x: Array[_] =>
         x.map(toJs).mkString("[", ", ", "]")
       case x: Double =>
         "%f".formatLocal(Locale.US, x)

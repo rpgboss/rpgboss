@@ -6,6 +6,7 @@ import org.json4s.TypeHints
 import org.json4s.ShortTypeHints
 import EventCmd._
 import EventJavascript._
+import rpgboss.player.entity.WindowText
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -120,7 +121,19 @@ case class AddRemoveItem(
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
-  def sections = singleCall("game.showText", lines)
+  def processedLines = lines.map { l =>
+    // The local variables need to be processed here rather than in the
+    // WindowText class, because only the Javascript has access to the local
+    // variables.
+    val escapedLine = EventJavascript.toJs(l)
+    val withVariablesInserted = WindowText.localVariableCtrl.replaceAllIn(
+        escapedLine, rMatch => {
+          """" + %s + """".format(rMatch.group(1))
+        })
+    RawJs(withVariablesInserted)
+  }
+
+  def sections = singleCall("game.showText", processedLines)
 }
 
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {

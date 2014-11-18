@@ -21,6 +21,7 @@ object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
   val nameCtrl = """\\[Nn]\[(\d+)\]""".r
   val variableCtrl = """\\[Vv]\[([a-zA-Z_$][\w_$]*)\]""".r
+  val localVariableCtrl = """\\[Ll]\[([a-zA-Z_$][\w_$]*)\]""".r
 
   // Provide 12 default colors. TODO: Make this customizable
   val colorSet = Array(
