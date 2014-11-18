@@ -125,12 +125,13 @@ case class ShowText(lines: Array[String] = Array()) extends EventCmd {
     // The local variables need to be processed here rather than in the
     // WindowText class, because only the Javascript has access to the local
     // variables.
-    val escapedLine = EventJavascript.toJs(l)
-    val withVariablesInserted = WindowText.localVariableCtrl.replaceAllIn(
-        escapedLine, rMatch => {
+    val l1 = EventJavascript.toJs(l)
+    val l2 = WindowText.javascriptCtrl.replaceAllIn(
+        l1, rMatch => {
           """" + %s + """".format(rMatch.group(1))
         })
-    RawJs(withVariablesInserted)
+
+    RawJs(l2)
   }
 
   def sections = singleCall("game.showText", processedLines)

@@ -80,6 +80,8 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
     if (activatorsDirection != Directions.NONE)
       dir = Directions.opposite(activatorsDirection)
 
+    val origState = evtStateIdx
+
     val startingMovesEnqueued = movesEnqueued
 
     curThread = Some(ScriptThread.fromEventEntity(
@@ -92,7 +94,8 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
       evtStateIdx,
       onFinish = Some(() => {
         val movedDuringScript = movesEnqueued != startingMovesEnqueued
-        if (activatorsDirection!= Directions.NONE && !movedDuringScript)
+        if (activatorsDirection!= Directions.NONE && !movedDuringScript &&
+            origState == evtStateIdx)
           dir = origDir
         curThread = None
       })))

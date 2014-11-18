@@ -33,6 +33,16 @@ function assertDefined(variable) {
   assert(typeof variable !== 'undefined');
 }
 
+function getItemName(itemId) {
+  var items = project.data().enums().items();
+  if (itemId < items.length) {
+    var item = items[itemId];
+    return item.name();
+  } else {
+    return "ITEM_ID_OUT_OF_BOUNDS";
+  }
+}
+
 function Menu(details) {
   assertDefined(details.getState);
   assertDefined(details.layout);
