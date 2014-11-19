@@ -90,7 +90,7 @@ class EventInstanceDialog(
     contents += container
 
     contents += new DesignGridPanel {
-      addButtons(okBtn, cancelBtn)
+      addButtons(cancelBtn, okBtn)
     }
   }
 }

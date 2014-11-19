@@ -49,7 +49,7 @@
           "step":1
         },
         "height":1,
-        "affixDirection":false,
+        "affixDirection":true,
         "cmds":[
           {
             "jsonClass":"ShowText",
