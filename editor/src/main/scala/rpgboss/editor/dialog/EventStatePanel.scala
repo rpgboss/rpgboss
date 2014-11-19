@@ -31,6 +31,8 @@ class EventStatePane(
         Some(updateAppearanceFieldsState))
   val heightBox =
     enumIdCombo(EventHeight)(model.height, model.height = _)
+  val fAffixDirection =
+    boolField("Affix Direction", model.affixDirection, model.affixDirection = _)
 
   val spriteBox = new SpriteField(
     owner,
@@ -55,10 +57,12 @@ class EventStatePane(
       fSameAppearanceAsPrevState.enabled = false
       heightBox.enabled = true
       spriteBox.enabled = true
+      fAffixDirection.enabled = true
     } else {
       val sameAppearance = fSameAppearanceAsPrevState.selected
       heightBox.enabled = !sameAppearance
       spriteBox.enabled = !sameAppearance
+      fAffixDirection.enabled = !sameAppearance
     }
   }
   updateAppearanceFieldsState()
@@ -77,10 +81,12 @@ class EventStatePane(
       border = BorderFactory.createTitledBorder("Appearance")
 
       row().grid().add(fSameAppearanceAsPrevState)
+
       row().grid().add(leftLabel("Height:"))
       row().grid().add(heightBox)
       row().grid().add(leftLabel("Sprite:"))
       row().grid().add(spriteBox)
+      row().grid().add(fAffixDirection)
     }
 
     contents += new DesignGridPanel {

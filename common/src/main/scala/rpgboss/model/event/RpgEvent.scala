@@ -63,6 +63,7 @@ case class RpgEventState(
   var sameAppearanceAsPrevState: Boolean = true,
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,
+  var affixDirection: Boolean = false,
   var cmds: Array[EventCmd] = RpgEventState.defaultCmds,
   var runOnceThenIncrementState: Boolean = false) {
 

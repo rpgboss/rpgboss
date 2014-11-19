@@ -12,6 +12,7 @@
           "step":1
         },
         "height":1,
+        "affixDirection":true,
         "cmds":[
           {
             "jsonClass":"AddRemoveItem",
@@ -48,6 +49,7 @@
           "step":1
         },
         "height":1,
+        "affixDirection":false,
         "cmds":[
           {
             "jsonClass":"ShowText",
@@ -67,6 +69,7 @@
         "trigger":1,
         "sameAppearanceAsPrevState":true,
         "height":0,
+        "affixDirection":false,
         "cmds":[
           
         ],
