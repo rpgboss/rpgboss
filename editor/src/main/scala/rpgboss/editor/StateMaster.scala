@@ -124,7 +124,7 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project) {
   }
 
   def getMapData(mapName: String) = {
-    assert(mapStates.contains(mapName), "map %d doesn't exist".format(mapName))
+    assert(mapStates.contains(mapName), "map %s doesn't exist".format(mapName))
     val mapState = mapStates.get(mapName).get
     mapState.mapDataOpt getOrElse {
       val mapData = mapState.map.readMapData() getOrElse {

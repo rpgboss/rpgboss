@@ -22,7 +22,7 @@ object EventCmdDialog {
   def dialogFor(
     owner: Window,
     sm: StateMaster,
-    mapName: String,
+    mapName: Option[String],
     evtCmd: EventCmd,
     successF: (EventCmd) => Any) = {
     evtCmd match {

@@ -10,7 +10,7 @@ import rpgboss.lib.Utils
 class MoveEventCmdDialog(
   owner: Window,
   sm: StateMaster,
-  mapName: String,
+  mapName: Option[String],
   initial: MoveEvent,
   successF: (MoveEvent) => Any)
   extends StdDialog(owner, "Move event") {

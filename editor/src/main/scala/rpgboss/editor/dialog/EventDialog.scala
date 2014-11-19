@@ -40,7 +40,7 @@ class EventDialog(
   val eventPanel = new EventPanel(
       owner,
       sm,
-      MapLoc(mapName, event.x, event.y),
+      Some(MapLoc(mapName, event.x, event.y)),
       event.name,
       event.name = _,
       event.states,

@@ -18,7 +18,7 @@ import rpgboss.model.RpgMapData
 class EventPanel(
   owner: Window,
   sm: StateMaster,
-  eventLoc: MapLoc,
+  eventLoc: Option[MapLoc],
   initialName: String,
   updateNameF: String => Unit,
   initialStates: Array[RpgEventState],

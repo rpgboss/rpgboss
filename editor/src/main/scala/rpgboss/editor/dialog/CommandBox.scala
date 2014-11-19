@@ -21,7 +21,7 @@ object EventCmdPanel {
 class EventCmdPanel(
   owner: Window,
   sm: StateMaster,
-  eventLoc: MapLoc,
+  eventLoc: Option[MapLoc],
   parentCmdBox: CommandBox,
   initialIndex: Int,
   initial: EventCmd,
@@ -112,7 +112,7 @@ class EventCmdPanel(
 class CommandBox(
   owner: Window,
   sm: StateMaster,
-  eventLoc: MapLoc,
+  eventLoc: Option[MapLoc],
   initialCmds: Array[EventCmd],
   onUpdate: (Array[EventCmd]) => Unit,
   inner: Boolean)
@@ -193,8 +193,8 @@ class CommandBox(
     assert(index >= 0)
     assert(index < model.length)
     val selectedCmd = model(index)
-    val d = EventCmdDialog.dialogFor(owner, sm, eventLoc.map, selectedCmd,
-      newEvt => updateCmd(index, newEvt))
+    val d = EventCmdDialog.dialogFor(owner, sm, eventLoc.map(_.map),
+        selectedCmd, newEvt => updateCmd(index, newEvt))
     if (d != null)
       d.open()
     else

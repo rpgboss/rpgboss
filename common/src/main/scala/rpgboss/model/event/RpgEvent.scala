@@ -36,7 +36,7 @@ case class RpgEvent(
   var y: Float = 0,
   var states: Array[RpgEventState] = Array(RpgEventState()),
   var eventClassId: Int = -1,
-  var params: Map[String, EventParameter[_]] = Map()) {
+  var params: Array[EventParameter[_]] = Array()) {
   def isInstance = eventClassId >= 0
 }
 

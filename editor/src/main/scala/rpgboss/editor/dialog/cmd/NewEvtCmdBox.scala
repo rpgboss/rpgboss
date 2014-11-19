@@ -15,7 +15,7 @@ import rpgboss.editor.dialog.EventDialog
 class NewEvtCmdBox(
   sm: StateMaster,
   owner: Window,
-  eventLoc: MapLoc,
+  eventLoc: Option[MapLoc],
   cmdBox: CommandBox,
   idxToInsert: Int)
   extends StdDialog(owner, "New command") {
@@ -31,7 +31,7 @@ class NewEvtCmdBox(
         val d = EventCmdDialog.dialogFor(
           owner,
           sm,
-          eventLoc.map,
+          eventLoc.map(_.map),
           e,
           evtCmd => {
             NewEvtCmdBox.this.close()
@@ -54,7 +54,7 @@ class NewEvtCmdBox(
 
     row().grid().add(leftLabel("Movement:"))
     row().grid().add(btnEvtCmd("Teleport player...",
-      Teleport(eventLoc, Transitions.FADE.id)))
+      Teleport(eventLoc.getOrElse(MapLoc()), Transitions.FADE.id)))
     row().grid().add(btnEvtCmd("Move event...", MoveEvent()))
     row().grid().add(btnEvtCmd("Lock player movement...",
       LockPlayerMovement(Array())))

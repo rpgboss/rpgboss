@@ -19,11 +19,8 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
     val eventClass = game.project.data.enums.eventClasses(mapEvent.eventClassId)
     val eventClassStates = eventClass.states
 
-    val bindCmds = mapEvent.params map {
-      case (key, parameter) =>
-        val p = Utils.deepCopy(parameter)
-        p.localVariable = key
-        SetLocalVariable(p)
+    val bindCmds = mapEvent.params map { p =>
+      SetLocalVariable(p)
     }
 
     // Bind local variables.

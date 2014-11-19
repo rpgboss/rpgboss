@@ -14,7 +14,7 @@ import rpgboss.editor.StateMaster
 class SetEventStateDialog(
   owner: Window,
   sm: StateMaster,
-  mapName: String,
+  mapName: Option[String],
   initial: SetEventState,
   successF: (SetEventState) => Any)
   extends StdDialog(owner, "Set Event State") {

@@ -52,15 +52,13 @@ class EventInstanceDialog(
            if field.model.valueTypeId ==
              EventParameterValueType.LocalVariable.id) {
         val paramCopy = Utils.deepCopy(field.model)
-        paramCopy.valueTypeId = EventParameterValueType.Constant.id
-
         val component = field.constantComponentFactory(paramCopy)
 
         freeVariableMap.update(field.model.localVariable, paramCopy)
         componentMap.update(field.model.localVariable, component)
       }
 
-      model.params = freeVariableMap.toMap
+      model.params = freeVariableMap.values.toArray[EventParameter[_]]
 
       contents += new DesignGridPanel {
         componentMap map {

@@ -28,7 +28,7 @@ class EventClassesPanel(
     new EventPanel(
         owner,
         sm,
-        MapLoc(),
+        None,
         model.name,
         newName => {
           model.name = newName

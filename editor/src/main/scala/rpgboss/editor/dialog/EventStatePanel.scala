@@ -20,7 +20,7 @@ class EventStatePane(
   sm: StateMaster,
   model: RpgEventState,
   val idx: Int,
-  eventLoc: MapLoc,
+  eventLoc: Option[MapLoc],
   runOnceChangeCallback: () => Unit)
   extends BoxPanel(Orientation.Horizontal) {
 
