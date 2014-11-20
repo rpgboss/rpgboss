@@ -123,8 +123,10 @@ abstract class MusicSelectDialog(
 
       val volumeSlider = floatSlider(
         selection.volume, 0f, 1f, 100, 5, 25,
-        v => updateSelectionF(
-          selection.copy(volume = v)))
+        v => {
+          currentMusic.map(_.setVolume(v))
+          updateSelectionF(selection.copy(volume = v))
+        })
 
       val gdxPanel = new GdxPanel(sm.getProj)
 

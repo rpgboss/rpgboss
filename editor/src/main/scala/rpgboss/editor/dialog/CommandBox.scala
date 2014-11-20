@@ -75,8 +75,8 @@ class EventCmdPanel(
       requestFocus()
       if (e.peer.getButton() == MouseEvent.BUTTON3) {
         val menu = new RpgPopupMenu {
-          contents += new MenuItem(Action("Insert command...") {
-            parentCmdBox.newCmdDialog(index + 1)
+          contents += new MenuItem(Action("Insert command above...") {
+            parentCmdBox.newCmdDialog(index)
           })
           contents += new MenuItem(Action("Edit...") {
             parentCmdBox.editSelectedCmd(index)
@@ -88,7 +88,7 @@ class EventCmdPanel(
 
         menu.show(this, e.point.x, e.point.y)
       } else if (e.clicks == 2) {
-        parentCmdBox.newCmdDialog(index + 1)
+        parentCmdBox.editSelectedCmd(index)
       }
   }
 

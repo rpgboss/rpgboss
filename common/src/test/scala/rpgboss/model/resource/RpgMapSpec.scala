@@ -67,4 +67,15 @@ class RpgMapSpec extends UnitSpec {
     md2 should deepEqual (md1)
     map2 should deepEqual (map1)
   }
+
+  "RpgMapData" should "deepcopy correctly" in {
+    val md1 = RpgMap.defaultMapData()
+    val state = RpgEventState(sprite = Some(SpriteSpec("testSpriteName", 0)))
+    md1.events = Map(1 -> RpgEvent(
+        1, "TestEvent", 5f, 5f, Array(state)))
+
+    val md2 = md1.deepcopy()
+    System.identityHashCode(md2.events(1)) should equal (
+        System.identityHashCode(md2.events(1)))
+  }
 }

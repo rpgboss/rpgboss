@@ -120,10 +120,14 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
   }
 
   def deepcopy() = {
+    val eventsCopy = events.map {
+      case (k, v) => k -> Utils.deepCopy(v)
+    }
+
     copy(botLayer = botLayer.map(_.clone()),
          midLayer = midLayer.map(_.clone()),
          topLayer = topLayer.map(_.clone()),
-         events = events.mapValues(_.copy()))
+         events = eventsCopy)
   }
 }
 
