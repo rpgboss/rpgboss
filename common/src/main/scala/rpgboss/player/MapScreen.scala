@@ -47,6 +47,10 @@ class MapScreen(val game: RpgGame)
       mapAndAssetsOption.map(_.dispose())
 
       val mapAndAssets = new MapAndAssets(project, mapNameOption.get)
+
+      // TODO: Find a better place for this
+      mapAndAssets.setLastBattlePosition(playerEntity.x, playerEntity.y)
+
       mapAndAssetsOption = Some(mapAndAssets)
       eventEntities = mapAndAssets.mapData.events.map {
         case (k, v) => ((k, new EventEntity(game, mapName, v)))
@@ -142,7 +146,37 @@ class MapScreen(val game: RpgGame)
 
     // Update events, including player event
     eventEntities.values.foreach(_.update(delta))
+
+    val playerOldX = playerEntity.x
+    val playerOldY = playerEntity.y
+
     playerEntity.update(delta)
+
+    val playerMoveDistance =
+      math.abs(playerEntity.x - playerOldX) +
+      math.abs(playerEntity.y - playerOldY)
+
+    mapAndAssetsOption map { mapAndAssets =>
+      val minimumDistanceFromLastBattle = 10
+
+      val encounterSettings = mapAndAssets.encounterSettings
+
+      if (!encounterSettings.encounters.isEmpty &&
+          mapAndAssets.manhattanDistanceFromLastBattle(
+              playerEntity.x, playerEntity.y) > minimumDistanceFromLastBattle) {
+        val chanceBattle = playerMoveDistance / encounterSettings.stepsAverage
+
+        if (math.random < chanceBattle) {
+          mapAndAssets.setLastBattlePosition(playerEntity.x, playerEntity.y)
+
+          // TODO: Add battle background
+          val encounterId = Utils.randomChoose(
+              encounterSettings.encounters.map(_.encounterId),
+              encounterSettings.encounters.map(_.weight))
+          game.startBattle(encounterId, "")
+        }
+      }
+    }
   }
 
   def renderMap() = mapAndAssetsOption map { mapAndAssets =>
