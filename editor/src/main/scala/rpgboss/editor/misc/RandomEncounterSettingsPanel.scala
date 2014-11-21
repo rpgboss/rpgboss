@@ -2,17 +2,38 @@ package rpgboss.editor.misc
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.Window
-
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.editor.uibase.NumberSpinner
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.uibase.SwingUtils.indexedCombo
+import rpgboss.editor.uibase.SwingUtils.leftLabel
 import rpgboss.editor.uibase.SwingUtils.lbl
 import rpgboss.editor.uibase.TableEditor
 import rpgboss.lib.Utils
 import rpgboss.model.ProjectData
 import rpgboss.model.RandomEncounter
 import rpgboss.model._
+import javax.swing.BorderFactory
+import scala.swing.BoxPanel
+import scala.swing.Orientation
+import rpgboss.editor.uibase.NumberSpinner
+import java.awt.Dimension
+
+class RandomEncounterSettingsPanel(
+    owner: Window,
+    projectData: ProjectData,
+    model: RandomEncounterSettings)
+    extends BoxPanel(Orientation.Vertical) {
+  val fEncounterList = new RandomEncounterListPanel(
+      owner, projectData, model.encounters, model.encounters = _)
+  val fStepsAverage =
+    new NumberSpinner(model.stepsAverage, 4, 100, model.stepsAverage = _)
+
+  contents += fEncounterList
+  contents += new DesignGridPanel {
+    row().grid(lbl("Steps between battles:")).add(fStepsAverage)
+  }
+}
 
 class RandomEncounterListPanel(
     owner: Window,

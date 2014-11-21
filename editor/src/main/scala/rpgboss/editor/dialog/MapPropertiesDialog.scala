@@ -9,7 +9,7 @@ import rpgboss.editor.StateMaster
 import rpgboss.editor.resourceselector.MusicField
 import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.resourceselector.TilesetArrayField
-import rpgboss.editor.misc.RandomEncounterListPanel
+import rpgboss.editor.misc.RandomEncounterSettingsPanel
 
 class MapPropertiesDialog(
   owner: Window,
@@ -65,8 +65,8 @@ class MapPropertiesDialog(
   val fTilesets =
     new TilesetArrayField(owner, sm, model.tilesets, model.tilesets = _)
 
-  val fRandomEncounters = new RandomEncounterListPanel(
-      owner, sm.getProjData, model.randomEncounters, model.randomEncounters = _)
+  val fRandomEncounters = new RandomEncounterSettingsPanel(
+      owner, sm.getProjData, model.randomEncounterSettings)
 
   def setEnabledFields() =
     fMusic.enabled = model.changeMusicOnEnter

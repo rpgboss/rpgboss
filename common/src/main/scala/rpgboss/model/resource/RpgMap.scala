@@ -21,8 +21,8 @@ case class RpgMapMetadata(var parent: String,
                           var editorCenterX: Float = 0f,
                           var editorCenterY: Float = 0f,
                           var lastGeneratedEventId: Int = 0,
-                          var randomEncounters: Array[RandomEncounter] =
-                            Array()) {
+                          var randomEncounterSettings: RandomEncounterSettings =
+                            RandomEncounterSettings()) {
   def withinBounds(x: Float, y: Float) = {
     x < xSize && y < ySize && x >= 0 && y >= 0
   }

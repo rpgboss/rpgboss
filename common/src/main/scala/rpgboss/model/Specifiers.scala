@@ -66,6 +66,12 @@ case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 
 case class RandomEncounter(var encounterId: Int = 0, var weight: Int = 10)
 
+case class RandomEncounterSettings(
+  var stepsAverage: Int = 20,
+  var encounters: Array[RandomEncounter] = Array()) {
+  def deepcopy() = copy(encounters = encounters.map(_.copy()))
+}
+
 case class SoundSpec(
   sound: String = "",
   var volume: Float = 1.0f,
