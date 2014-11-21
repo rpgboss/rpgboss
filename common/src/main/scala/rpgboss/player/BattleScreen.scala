@@ -12,7 +12,7 @@ import rpgboss.lib._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import scala.collection.mutable.ArrayBuffer
-
+import scala.concurrent.Channel
 
 case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Float,
                         y: Float) extends BoxLike {
@@ -51,6 +51,11 @@ class BattleScreen(
   batch.setProjectionMatrix(screenCamera.combined)
   batch.enableBlending()
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
+  /**
+   * Read this channel to await a battle being finished.
+   */
+  val finishChannel = new Channel[Int]()
 
   override def createWindowManager() =
     new WindowManager(assets, project, screenW, screenH)
@@ -495,6 +500,8 @@ class BattleScreen(
 
     _enemyBattlers.clear()
     _partyBattlers.clear()
+
+    finishChannel.write(0)
   }
 
   def postTextNotice(msg: String) = {

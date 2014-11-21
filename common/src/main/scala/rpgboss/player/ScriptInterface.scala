@@ -149,8 +149,13 @@ class ScriptInterface(
     activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
   }
 
-  def startBattle(encounterId: Int, battleBackground: String) = syncRun {
-    game.startBattle(encounterId, battleBackground)
+  def startBattle(encounterId: Int, battleBackground: String) = {
+    syncRun {
+      game.startBattle(encounterId, battleBackground)
+    }
+
+    // Blocks until the battle screen finishes on way or the other
+    game.battleScreen.finishChannel.read
   }
 
   def endBattleBackToMap() = {
