@@ -149,33 +149,8 @@ class ScriptInterface(
     activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
   }
 
-  def startBattle(encounterId: Int, battleBackground: String) = {
-    assert(encounterId >= 0)
-    assert(encounterId < project.data.enums.encounters.length)
-
-    assert(game.getScreen() == game.mapScreen)
-
-    // Fade out map
-    setTransition(0, 1, 0.6f)
-    sleep(0.6f)
-
-    syncRun {
-      game.setScreen(game.battleScreen)
-
-      // TODO fix this hack of manipulating battleScreen directly
-      game.battleScreen.windowManager.setTransition(1, 0, 0.6f)
-
-      val encounter = project.data.enums.encounters(encounterId)
-
-      val battle = new Battle(
-        project.data,
-        persistent.getIntArray(PARTY),
-        persistent.getPartyParameters(project),
-        encounter,
-        aiOpt = Some(new RandomEnemyAI))
-
-      game.battleScreen.startBattle(battle, battleBackground)
-    }
+  def startBattle(encounterId: Int, battleBackground: String) = syncRun {
+    game.startBattle(encounterId, battleBackground)
   }
 
   def endBattleBackToMap() = {

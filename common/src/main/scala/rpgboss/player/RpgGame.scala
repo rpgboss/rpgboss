@@ -23,6 +23,8 @@ import scala.concurrent.duration.Duration
 import rpgboss.lib.GdxUtils
 import com.badlogic.gdx.Screen
 import rpgboss.save.SaveFile
+import rpgboss.model.battle.Battle
+import rpgboss.model.battle.RandomEnemyAI
 
 case class MutableMapLoc(
   var map: String = "",
@@ -76,6 +78,8 @@ class RpgGame(gamepath: File)
   var persistent: PersistentState = null
 
   val assets = new RpgAssetManager(project)
+
+  override def getScreen() = super.getScreen().asInstanceOf[RpgScreen]
 
   def create() = {
     rebindToCurrentThread()
@@ -198,6 +202,33 @@ class RpgGame(gamepath: File)
 
       mapScreen.updateMapAssets(if (loc.map.isEmpty) None else Some(loc.map))
     }
+  }
+
+  def startBattle(encounterId: Int, battleBackground: String): Unit = {
+    assert(encounterId >= 0)
+    assert(encounterId < project.data.enums.encounters.length)
+
+    val currentScreen = getScreen()
+    if (currentScreen == battleScreen)
+      return
+
+    // Fade out map
+    currentScreen.windowManager.setTransition(0, 1, 0.6f)
+    currentScreen.windowManager.runAfterTransition(() => {
+      setScreen(battleScreen)
+      battleScreen.windowManager.setTransition(1, 0, 0.6f)
+
+      val encounter = project.data.enums.encounters(encounterId)
+
+      val battle = new Battle(
+        project.data,
+        persistent.getIntArray(PARTY),
+        persistent.getPartyParameters(project),
+        encounter,
+        aiOpt = Some(new RandomEnemyAI))
+
+      battleScreen.startBattle(battle, battleBackground)
+    })
   }
 
   def quit() {
