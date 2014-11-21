@@ -36,6 +36,6 @@ class AddRemoveItemCmdDialog(
     ParameterFullComponent.addParameterFullComponentsToPanel(
         owner, sm.getProjData, this, model)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 }

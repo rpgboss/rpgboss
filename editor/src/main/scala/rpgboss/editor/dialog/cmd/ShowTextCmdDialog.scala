@@ -29,7 +29,7 @@ class ShowTextCmdDialog(
     row().grid().add(leftLabel("Text:"))
     row().grid().add(textEditScroll)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
 }

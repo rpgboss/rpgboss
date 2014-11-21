@@ -66,7 +66,7 @@ class LearnedSkillDialog(
     row().grid(lbl("Level:")).add(fLevel)
     row().grid(lbl("Skill:")).add(fSkill)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
   def okFunc() = {

@@ -9,6 +9,7 @@ import rpgboss.editor.StateMaster
 import rpgboss.editor.resourceselector.MusicField
 import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.resourceselector.TilesetArrayField
+import rpgboss.editor.misc.RandomEncounterListPanel
 
 class MapPropertiesDialog(
   owner: Window,
@@ -64,31 +65,41 @@ class MapPropertiesDialog(
   val fTilesets =
     new TilesetArrayField(owner, sm, model.tilesets, model.tilesets = _)
 
+  val fRandomEncounters = new RandomEncounterListPanel(
+      owner, sm.getProjData, model.randomEncounters, model.randomEncounters = _)
+
   def setEnabledFields() =
     fMusic.enabled = model.changeMusicOnEnter
 
   setEnabledFields()
 
-  contents = new DesignGridPanel {
+  contents = new BoxPanel(Orientation.Vertical) {
+    contents += new BoxPanel(Orientation.Horizontal) {
+      contents += new DesignGridPanel {
+        row()
+          .grid(leftLabel("Map ID:")).add(new TextField {
+            text = initialMap.id
+            enabled = false
+          })
 
-    row().grid(leftLabel("Map ID:")).add(new TextField {
-      text = initialMap.id
-      enabled = false
-    })
+        row().grid(leftLabel("Map Title:")).add(fTitle)
 
-    row().grid(leftLabel("Map Title:")).add(fTitle)
+        row().grid(leftLabel("Dimensions:"))
+          .add(leftLabel("Width")).add(leftLabel("Height"))
+        row().grid()
+          .add(fWidth).add(fHeight)
 
-    row().grid(leftLabel("Dimensions:"))
-      .add(leftLabel("Width")).add(leftLabel("Height"))
-    row().grid()
-      .add(fWidth).add(fHeight)
+        row().grid(leftLabel("Music:")).add(fChangeMusic)
+        row().grid().add(fMusic)
 
-    row().grid(leftLabel("Music:")).add(fChangeMusic)
-    row().grid().add(fMusic)
+        row().grid(leftLabel("Tilesets:")).add(fTilesets)
+      }
 
-    row().grid(leftLabel("Tilesets:")).add(fTilesets)
+      contents += fRandomEncounters
+    }
 
-    addButtons(cancelBtn, okBtn)
+    contents += new DesignGridPanel {
+      addButtons(okBtn, cancelBtn)
+    }
   }
-
 }

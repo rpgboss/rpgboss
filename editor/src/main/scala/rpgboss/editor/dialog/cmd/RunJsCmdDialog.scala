@@ -35,7 +35,7 @@ class RunJsCmdDialog(
     //row().grid().add(textEditScroll)
     row().grid().add(sp);
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
 }

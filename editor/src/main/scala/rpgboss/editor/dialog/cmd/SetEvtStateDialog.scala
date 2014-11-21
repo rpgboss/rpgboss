@@ -31,7 +31,7 @@ class SetEventStateDialog(
     contents += fieldWhichEvent
     contents += new DesignGridPanel {
       row().grid(lbl("New state:")).add(fieldNewState)
-      addButtons(cancelBtn, okBtn)
+      addButtons(okBtn, cancelBtn)
     }
   }
 

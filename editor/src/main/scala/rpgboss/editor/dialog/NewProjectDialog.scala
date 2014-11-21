@@ -50,7 +50,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
     row().grid().add(leftLabel("Project shortname (ex. 'chronotrigger'):"))
     row().grid().add(shortnameField)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
 
     shortnameField.requestFocus()
   }

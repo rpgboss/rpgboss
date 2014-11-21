@@ -44,7 +44,7 @@ class MoveEventCmdDialog(
       row().grid(lbl("Y Movement:")).add(fieldDy)
       row().grid(lbl("Affix direction:")).add(fieldAffixDirection)
       row().grid(lbl("Async:")).add(fieldAsync)
-      addButtons(cancelBtn, okBtn)
+      addButtons(okBtn, cancelBtn)
     }
   }
 }

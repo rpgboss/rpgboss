@@ -82,6 +82,6 @@ class SingleIntegerDialog(
     }
     row().grid().add(leftLabel(label))
     row().grid().add(fieldInt)
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 }

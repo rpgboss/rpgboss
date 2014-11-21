@@ -39,7 +39,7 @@ class TeleportCmdDialog(
     row().grid().add(transitionRadios)
     row().grid().add(leftLabel("Destination:"))
     row().grid().add(mapLocPanel)
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
 }

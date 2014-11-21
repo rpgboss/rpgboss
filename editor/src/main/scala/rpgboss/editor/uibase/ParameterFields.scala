@@ -46,7 +46,7 @@ class ParameterDialog[T](
     row().grid().add(Swing.HGlue)
     row().grid().add(valueTypeBtns(1))
     row().grid().add(fLocalVariable)
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 }
 

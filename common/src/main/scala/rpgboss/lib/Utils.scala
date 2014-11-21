@@ -126,6 +126,9 @@ object Utils {
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m
 
+  def floatToPercent(x: Float) =
+    "%d%%".format((x * 100).round)
+
   def removeFromSeq[T](seq: Seq[T], i: Int) =
     seq.take(i) ++ seq.drop(i + 1)
 

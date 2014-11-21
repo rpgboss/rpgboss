@@ -42,6 +42,6 @@ class StartBattleCmdDialog(
     row().grid().add(leftLabel("Battle Background:"))
     row().grid().add(battleBgSelect)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 }

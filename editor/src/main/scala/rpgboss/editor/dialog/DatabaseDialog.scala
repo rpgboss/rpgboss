@@ -72,7 +72,7 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
 
   contents = new DesignGridPanel {
     row().grid().add(tabPane)
-    addButtons(cancelBtn, okBtn, Some(applyBtn))
+    addButtons(okBtn, cancelBtn, Some(applyBtn))
   }
 
 }

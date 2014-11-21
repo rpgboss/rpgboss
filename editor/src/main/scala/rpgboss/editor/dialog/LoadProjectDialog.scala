@@ -88,7 +88,7 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       contents = projList
     })
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
   listenTo(projList.mouse.clicks)

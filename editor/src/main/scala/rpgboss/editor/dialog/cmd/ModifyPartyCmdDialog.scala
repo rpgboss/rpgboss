@@ -38,7 +38,7 @@ class ModifyPartyCmdDialog(
       })
     row().grid(lbl("Character: ")).add(fCharacterId)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
 }

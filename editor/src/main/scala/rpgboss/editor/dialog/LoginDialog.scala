@@ -64,7 +64,7 @@ class LoginDialog(owner: Window, loginFunc: Option[(String, Long)] => Any)
     
     row().center().fill().add(statusLabel)
     
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
   
   listenTo(usernameField, usernameField.keys, passwordField, passwordField.keys)

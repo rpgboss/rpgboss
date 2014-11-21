@@ -60,6 +60,6 @@ abstract class ResourceSelectDialog[SpecType, T, MT](
 
   contents = new DesignGridPanel {
     row().grid().add(resourceSelector)
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 }

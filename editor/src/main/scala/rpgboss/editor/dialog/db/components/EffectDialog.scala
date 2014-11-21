@@ -266,7 +266,7 @@ class EffectDialog(
     row().grid().add(tabPane)
     row().grid().add(helpLabel)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
   def okFunc() = {

@@ -146,7 +146,7 @@ class MapLocSelectDialog(
 
   contents = new DesignGridPanel {
     row().grid().add(locPanel)
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 }
 
