@@ -7,10 +7,10 @@ import com.badlogic.gdx.math.Vector2
 case class CameraInfo(x: Float, y: Float, speed: Float, moveQueueLength: Int)
 
 /** Controls where the camera is pointed. Accessed only on the Gdx thread.
- *  
+ *
  *  The camera is implicitly locked to the player. If however, there are moves
  *  in the move queue, it will execute those before re-locking to the player.
- *  
+ *
  *  Callers must move the camera back to the player if they don't want the
  *  camera to jerk afterwards.
  */
@@ -19,18 +19,18 @@ class MapCamera(game: RpgGame) {
   var y: Float = 0f
   var speed: Float = 2f // tiles per second
   val moveQueue = new MutateQueue(MapCamera.this)
-    
+
   def info = CameraInfo(x, y, speed, moveQueue.queue.length)
-  
-  def update(delta: Float) = {
+
+  def update(delta: Float, x: Float, y: Float) = {
     if (moveQueue.isEmpty) {
-      x = game.mapScreen.playerEntity.x
-      y = game.mapScreen.playerEntity.y
+      this.x = x
+      this.y = y
     } else {
       moveQueue.runQueueItem(delta)
     }
   }
-  
+
   def enqueueMove(dx: Float, dy: Float): MapCameraMove = {
     val move = new MapCameraMove(dx, dy)
     moveQueue.enqueue(move)

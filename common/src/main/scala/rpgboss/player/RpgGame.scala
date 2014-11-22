@@ -124,17 +124,8 @@ class RpgGame(gamepath: File)
    */
   def setParty(partyArray: Array[Int]) = {
     assertOnBoundThread()
-
     persistent.setIntArray(PARTY, partyArray)
-
-    if (mapScreen != null) {
-      if (partyArray.length > 0) {
-        val spritespec = project.data.enums.characters(partyArray(0)).sprite
-        mapScreen.playerEntity.setSprite(spritespec)
-      } else {
-        mapScreen.playerEntity.setSprite(None)
-      }
-    }
+    mapScreen.updateParty()
   }
 
   def startNewGame() = {
@@ -168,12 +159,7 @@ class RpgGame(gamepath: File)
 
   def saveGame(slot: Int) = {
     assertOnBoundThread()
-
-    // Persist current player location.
-    val p = mapScreen.playerEntity
-    assert(p.mapName.isDefined)
-    persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
-
+    mapScreen.persistPlayerLocation()
     SaveFile.write(persistent.toSerializable, project, slot)
   }
 
@@ -195,13 +181,8 @@ class RpgGame(gamepath: File)
   def setPlayerLoc(loc: MapLoc) = {
     persistent.setLoc(PLAYER_LOC, loc)
 
-    if (mapScreen != null) {
-      mapScreen.playerEntity.x = loc.x
-      mapScreen.playerEntity.y = loc.y
-      mapScreen.playerEntity.mapName = Some(loc.map)
-
-      mapScreen.updateMapAssets(if (loc.map.isEmpty) None else Some(loc.map))
-    }
+    if (mapScreen != null)
+      mapScreen.setPlayerLoc(loc)
   }
 
   def startBattle(encounterId: Int, battleBackground: String): Unit = {

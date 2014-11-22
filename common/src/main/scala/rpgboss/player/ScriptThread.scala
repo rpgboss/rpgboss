@@ -124,6 +124,19 @@ class ScriptThread(
   }
 }
 
+trait ScriptThreadFactory {
+  def fromFile(
+    scriptName: String,
+    fnToRun: String = "",
+    onFinish: Option[() => Unit] = None): ScriptThread
+
+  def fromEventEntity(
+    entity: EventEntity,
+    eventState: RpgEventState,
+    state: Int,
+    onFinish: Option[() => Unit] = None): ScriptThread
+}
+
 object ScriptThread {
   def fromFile(
     game: RpgGame,
@@ -173,9 +186,6 @@ object ScriptThread {
 
         ScriptableObject.putProperty(jsScope, "event",
             Context.javaToJS(entity.getScriptInterface(), jsScope))
-        ScriptableObject.putProperty(jsScope, "player",
-            Context.javaToJS(game.mapScreen.playerEntity.getScriptInterface(),
-                jsScope))
       }
     }
   }

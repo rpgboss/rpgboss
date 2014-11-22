@@ -37,7 +37,10 @@ class MoveSpec extends UnitSpec {
     val test = new MapScreenTest {
       def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f)
-        scriptInterface.mapScreenKeyPress(MyKeys.Right, 5f / game.mapScreen.playerEntity.speed)
+
+        // TODO: fix hardcoded speed here
+        val speed = 4f
+        scriptInterface.mapScreenKeyPress(MyKeys.Right, 5f / speed)
 
         val player = scriptInterface.getPlayerEntityInfo()
 

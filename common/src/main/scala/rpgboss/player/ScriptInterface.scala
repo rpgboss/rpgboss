@@ -291,17 +291,11 @@ class ScriptInterface(
       timePerChar = 0.02f)
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {
-    EntityInfo(mapScreen.playerEntity)
+    mapScreen.getPlayerEntityInfo()
   }
 
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
     mapScreen.eventEntities.get(id).map(EntityInfo.apply)
-  }
-
-  def movePlayer(dx: Float, dy: Float,
-                 affixDirection: Boolean = false,
-                 async: Boolean = false) = {
-    moveEntity(mapScreen.playerEntity, dx, dy, affixDirection, async)
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
@@ -321,11 +315,17 @@ class ScriptInterface(
   def moveEvent(id: Int, dx: Float, dy: Float,
                 affixDirection: Boolean = false,
                 async: Boolean = false) = {
-    val entityOpt = mapScreen.eventEntities.get(id)
-    entityOpt.foreach { entity =>
-      moveEntity(entity, dx, dy, affixDirection, async)
-    }
-    entityOpt.isDefined
+    val move = mapScreen.moveEvent(id, dx, dy, affixDirection)
+    if (move != null && !async)
+      move.awaitDone()
+  }
+
+  def movePlayer(dx: Float, dy: Float,
+                 affixDirection: Boolean = false,
+                 async: Boolean = false) = {
+    val move = mapScreen.movePlayer(dx, dy, affixDirection)
+    if (move != null && !async)
+      move.awaitDone()
   }
 
   def getEventState(mapName: String, eventId: Int) = syncRun {
@@ -337,30 +337,9 @@ class ScriptInterface(
   }
 
   def incrementEventState(eventId: Int) = syncRun {
-    mapScreen.playerEntity.mapName.map { mapName =>
+    mapScreen.mapName.map { mapName =>
       val newState = persistent.getEventState(mapName, eventId) + 1
       persistent.setEventState(mapName, eventId, newState)
-    }
-  }
-
-  private def moveEntity(entity: Entity, dx: Float, dy: Float,
-                         affixDirection: Boolean = false,
-                         async: Boolean = false) = {
-    import SpriteSpec.Directions._
-    if (dx != 0 || dy != 0) {
-      if (!affixDirection) {
-        val direction =
-          if (math.abs(dx) > math.abs(dy))
-            if (dx > 0) EAST else WEST
-          else if (dy > 0) SOUTH else NORTH
-        syncRun { entity.enqueueMove(EntityFaceDirection(direction)) }
-      }
-
-      val move = EntityMove(dx, dy)
-      syncRun { entity.enqueueMove(move) }
-
-      if (!async)
-        move.awaitDone()
     }
   }
 

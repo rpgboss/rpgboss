@@ -30,7 +30,9 @@ import rpgboss.player._
  * Bottom edge length is boundBoxTiles.
  */
 class Entity(
-  val game: RpgGame,
+  spritesets: Map[String, Spriteset],
+  mapAndAssetsOption: Option[MapAndAssets],
+  eventEntities: Map[Int, EventEntity],
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
@@ -68,7 +70,7 @@ class Entity(
   }
 
   def getMapCollisions(dxArg: Float, dyArg: Float) : (Boolean, Int) = {
-    game.mapScreen.mapAndAssetsOption map { mapAndAssets =>
+    mapAndAssetsOption map { mapAndAssets =>
       mapAndAssets.getCollisions(this, x, y, dxArg, dyArg)
     } getOrElse (true, 0)
   }
@@ -91,7 +93,7 @@ class Entity(
   }
 
   def setSprite(spriteSpec: Option[SpriteSpec]) = spriteSpec map { s =>
-    spriteset = game.spritesets(s.name)
+    spriteset = spritesets(s.name)
     spriteIdx = s.spriteIndex
 
     graphicW = (spriteset.tileW.toDouble / Tileset.tilesize).toFloat
@@ -109,14 +111,14 @@ class Entity(
    * Finds all events with which this dxArg and dyArg touches
    */
   def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
-    game.mapScreen.eventEntities.values.filter(npc => {
+    eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(x + dxArg, y + dyArg)
     })
   }
 
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox()
-    game.mapScreen.eventEntities.values.filter(npc => {
+    eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(boundingBox)
     })
   }
@@ -256,15 +258,11 @@ case class EntityMove(totalDx: Float, totalDy: Float)
         if (travelledThisFrame.len() >= desiredThisFrame.len()) {
           travelDoneThisFrame = true
         }
-        //entity.game.logger.info("Moved to %f, %f".format(entity.x, entity.y))
       } else {
         travelDoneThisFrame = true
         finish()
       }
     }
-
-//    entity.game.logger.info("desired / travel : " + desiredThisFrame.toString()
-//                            + " " + travelledThisFrame.toString())
 
     remainingTravel.sub(desiredThisFrame)
 

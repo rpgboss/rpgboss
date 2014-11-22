@@ -11,7 +11,10 @@ import MyKeys.Right
 import MyKeys.Up
 
 class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
-  extends Entity(game: RpgGame)
+  extends Entity(
+      game.spritesets,
+      game.mapScreen.mapAndAssetsOption,
+      game.mapScreen.eventEntities)
   with PlayerInputHandler {
   assume(game != null)
   assume(mapScreen != null)

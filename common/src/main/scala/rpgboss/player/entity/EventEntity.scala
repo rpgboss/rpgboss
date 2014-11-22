@@ -11,7 +11,12 @@ import rpgboss.lib.Utils
 case class EventScriptInterface(mapName: String, id: Int)
 
 class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
-  extends Entity(game, mapEvent.x, mapEvent.y) {
+  extends Entity(
+      game.spritesets,
+      game.mapScreen.mapAndAssetsOption,
+      game.mapScreen.eventEntities,
+      mapEvent.x,
+      mapEvent.y) {
 
   def id = mapEvent.id
 
@@ -32,6 +37,11 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
   private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
+
+  /**
+   * Maintain a cooldown to prevent events from firing too quickly.
+   */
+  private var _activateCooldown = 0.0f
 
   def getScriptInterface() = EventScriptInterface(mapName, id)
 
@@ -73,6 +83,15 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
     if (curThread.isDefined)
       return None
 
+    if (evtState.trigger == EventTrigger.ANYTOUCH.id ||
+        evtState.trigger == EventTrigger.EVENTTOUCH.id ||
+        evtState.trigger == EventTrigger.PLAYERTOUCH.id) {
+      if (_activateCooldown > 0)
+        return None
+      else
+        _activateCooldown = 2.0f
+    }
+
     val origDir = dir
     if (!evtState.affixDirection && activatorsDirection != Directions.NONE)
       dir = Directions.opposite(activatorsDirection)
@@ -108,5 +127,11 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
           e.evtState.trigger == EventTrigger.ANYTOUCH.id)
 
     activatedEvts.foreach(_.activate(dir))
+  }
+
+  override def update(delta: Float) = {
+    super.update(delta)
+    if (_activateCooldown > 0)
+      _activateCooldown -= delta
   }
 }
