@@ -5,9 +5,9 @@ import rpgboss.model._
 object EventTrigger extends RpgEnum {
   val NONE = Value(0, "None")
   val BUTTON = Value(1, "Button")
-  val PLAYERTOUCH = Value(2, "Player Touch")
-  val EVENTTOUCH = Value(3, "Event Touch")
-  val ANYTOUCH = Value(4, "Any Touch")
+  val PLAYERTOUCH = Value(2, "Touch by Player")
+  val EVENTTOUCH = Value(3, "Touch by Other Event")
+  val ANYTOUCH = Value(4, "Touch by Any")
   val AUTORUN = Value(5, "Autorun (parallel)")
 
   def default = BUTTON
