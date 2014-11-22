@@ -73,7 +73,7 @@ class MapScreen(val game: RpgGame)
   val camera = new MapCamera(game)
 
   // All the events on the current map, including the player event
-  var eventEntities = Map[Int, EventEntity]()
+  val eventEntities = collection.mutable.Map[Int, EventEntity]()
 
   def updateMapAssets(loc: MapLoc) = {
     if (!loc.map.isEmpty()) {
@@ -84,8 +84,17 @@ class MapScreen(val game: RpgGame)
       mapAndAssets.setLastBattlePosition(loc.x, loc.y)
 
       mapAndAssetsOption = Some(mapAndAssets)
-      eventEntities = mapAndAssets.mapData.events.map {
-        case (k, v) => ((k, new EventEntity(game, mapName, v)))
+      eventEntities.clear()
+      eventEntities ++= mapAndAssets.mapData.events.map {
+        case (k, v) => ((k, new EventEntity(
+            game.project,
+            game.persistent,
+            scriptFactory,
+            game.spritesets,
+            mapAndAssetsOption,
+            eventEntities,
+            mapName,
+            v)))
       }
 
       playMusic(0, mapAndAssets.map.metadata.music, true,
@@ -94,7 +103,7 @@ class MapScreen(val game: RpgGame)
     } else {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None
-      eventEntities = Map.empty
+      eventEntities.clear()
     }
   }
 

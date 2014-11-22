@@ -1,6 +1,8 @@
 package rpgboss.player.entity
 
+import rpgboss.model._
 import rpgboss.model.event._
+import rpgboss.model.resource._
 import rpgboss.player._
 import rpgboss.model.SpriteSpec
 import scala.concurrent.Promise
@@ -10,18 +12,26 @@ import rpgboss.lib.Utils
 
 case class EventScriptInterface(mapName: String, id: Int)
 
-class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
+class EventEntity(
+    project: Project,
+    persistent: PersistentState,
+    scriptFactory: ScriptThreadFactory,
+    spritesets: Map[String, Spriteset],
+    mapAndAssetsOption: Option[MapAndAssets],
+    eventEntities: collection.Map[Int, EventEntity],
+    mapName: String,
+    val mapEvent: RpgEvent)
   extends Entity(
-      game.spritesets,
-      game.mapScreen.mapAndAssetsOption,
-      game.mapScreen.eventEntities,
+      spritesets,
+      mapAndAssetsOption,
+      eventEntities,
       mapEvent.x,
       mapEvent.y) {
 
   def id = mapEvent.id
 
   val states = if (mapEvent.isInstance) {
-    val eventClass = game.project.data.enums.eventClasses(mapEvent.eventClassId)
+    val eventClass = project.data.enums.eventClasses(mapEvent.eventClassId)
     val eventClassStates = eventClass.states
 
     val bindCmds = mapEvent.params map { p =>
@@ -34,7 +44,7 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
     mapEvent.states
   }
 
-  private var curThread: Option[ScriptThread] = None
+  private var curThread: Option[Finishable] = None
 
   var evtStateIdx = 0
 
@@ -62,11 +72,11 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
         case EventStateChange((mapName, id), _) => updateState()
         case _ => Unit
       }
-    game.persistent.subscribe(this)
+    persistent.subscribe(this)
   }
 
   def updateState(): Unit = {
-    evtStateIdx = game.persistent.getEventState(mapName, mapEvent.id)
+    evtStateIdx = persistent.getEventState(mapName, mapEvent.id)
     for (i <- evtStateIdx to 1 by -1) {
       if (!states(i).sameAppearanceAsPrevState)
         return setSprite(states(i).sprite)
@@ -76,8 +86,7 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
   updateState()
 
   // Returns None if it's already running.
-  def activate(activatorsDirection: Int =
-                   SpriteSpec.Directions.NONE): Option[ScriptThread] = {
+  def activate(activatorsDirection: Int): Option[Finishable] = {
     import SpriteSpec._
 
     if (curThread.isDefined)
@@ -85,7 +94,7 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
     if (evtState.trigger == EventTrigger.ANYTOUCH.id ||
         evtState.trigger == EventTrigger.EVENTTOUCH.id ||
-        evtState.trigger == EventTrigger.PLAYERTOUCH.id) {
+        evtState.trigger == EventTrigger.AUTORUN.id) {
       if (_activateCooldown > 0)
         return None
       else
@@ -100,7 +109,7 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
     val startingMovesEnqueued = movesEnqueued
 
-    curThread = Some(game.mapScreen.scriptFactory.runFromEventEntity(
+    curThread = Some(scriptFactory.runFromEventEntity(
       this,
       evtState,
       evtStateIdx,
@@ -109,7 +118,6 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
         if (!evtState.affixDirection && activatorsDirection!= Directions.NONE &&
             !movedDuringScript && origState == evtStateIdx)
           dir = origDir
-        curThread = None
       })))
 
     return curThread
@@ -132,5 +140,10 @@ class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
 
     if (_activateCooldown > 0)
       _activateCooldown -= delta
+
+    if (evtState.trigger == EventTrigger.AUTORUN.id &&
+        _activateCooldown <= 0) {
+      activate(SpriteSpec.Directions.NONE)
+    }
   }
 }

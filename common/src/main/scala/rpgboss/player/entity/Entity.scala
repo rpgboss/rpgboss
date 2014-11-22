@@ -32,7 +32,7 @@ import rpgboss.player._
 class Entity(
   spritesets: Map[String, Spriteset],
   mapAndAssetsOption: Option[MapAndAssets],
-  eventEntities: Map[Int, EventEntity],
+  eventEntities: collection.Map[Int, EventEntity],
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,

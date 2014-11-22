@@ -8,6 +8,7 @@ object EventTrigger extends RpgEnum {
   val PLAYERTOUCH = Value(2, "Player Touch")
   val EVENTTOUCH = Value(3, "Event Touch")
   val ANYTOUCH = Value(4, "Any Touch")
+  val AUTORUN = Value(5, "Autorun (parallel)")
 
   def default = BUTTON
 }
