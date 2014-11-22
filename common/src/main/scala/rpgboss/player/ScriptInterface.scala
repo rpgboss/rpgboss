@@ -230,6 +230,23 @@ class ScriptInterface(
     window.scriptInterface
   }
 
+  def newStaticTextWindow(
+    lines: Array[String],
+    rect: Rect,
+    options: TextWindowOptions): TextWindow#WindowScriptInterface = {
+    val window = syncRun {
+      new TextWindow(
+          game.persistent,
+          activeScreen.windowManager,
+          activeScreen.inputs,
+          lines,
+          rect,
+          options)
+    }
+
+    window.scriptInterface
+  }
+
   /**
    * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
    * the choice index, or -1 if the choices were invalid.
