@@ -34,7 +34,8 @@ class ScriptThread(
   scriptBody: String,
   fnToRun: String = "",
   onFinish: Option[() => Unit] = None)
-  extends UncaughtExceptionHandler {
+  extends UncaughtExceptionHandler
+  with FinishableByPromise {
   def initScope(jsScope: ScriptableObject): Any = {
     def putProperty(objName: String, obj: Object) = {
       ScriptableObject.putProperty(jsScope, objName,
@@ -95,22 +96,16 @@ class ScriptThread(
         }
       }
 
-      finishPromise.success(0)
+      finish()
     }
   }
 
-  private val finishPromise = Promise[Int]()
   val thread = new Thread(runnable)
 
   def run() = {
+    assert(!thread.isAlive())
     thread.start()
     this
-  }
-
-  def isFinished = finishPromise.isCompleted
-
-  def awaitFinish() = {
-    Await.result(finishPromise.future, Duration.Inf)
   }
 
   def uncaughtException(thread: Thread, ex: Throwable) = {
@@ -125,28 +120,28 @@ class ScriptThread(
 }
 
 trait ScriptThreadFactory {
-  def fromFile(
+  def runFromFile(
     scriptName: String,
     fnToRun: String = "",
-    onFinish: Option[() => Unit] = None): ScriptThread
+    onFinish: Option[() => Unit] = None): Finishable
 
-  def fromEventEntity(
+  def runFromEventEntity(
     entity: EventEntity,
     eventState: RpgEventState,
     state: Int,
-    onFinish: Option[() => Unit] = None): ScriptThread
+    onFinish: Option[() => Unit] = None): Finishable
 }
 
-object ScriptThread {
-  def fromFile(
+class GameScriptThreadFactory(
     game: RpgGame,
     screen: RpgScreen,
-    scriptInterface: ScriptInterface,
+    scriptInterface: ScriptInterface) extends ScriptThreadFactory {
+  override def runFromFile(
     scriptName: String,
     fnToRun: String = "",
     onFinish: Option[() => Unit] = None) = {
     val script = Script.readFromDisk(game.project, scriptName)
-    new ScriptThread(
+    val s = new ScriptThread(
       game,
       screen,
       scriptInterface,
@@ -154,14 +149,12 @@ object ScriptThread {
       script.readAsString,
       fnToRun,
       onFinish)
+    s.run()
+    s
   }
 
-  def fromEventEntity(
-    game: RpgGame,
-    screen: RpgScreen,
-    scriptInterface: ScriptInterface,
+  override def runFromEventEntity(
     entity: EventEntity,
-    scriptName: String,
     eventState: RpgEventState,
     state: Int,
     onFinish: Option[() => Unit] = None) = {
@@ -172,8 +165,10 @@ object ScriptThread {
         Array()
     val cmds = eventState.cmds ++ extraCmdsAtEnd
 
+    val scriptName = "%s/%d".format(entity.mapEvent.name, entity.evtStateIdx)
+
     val scriptBody = cmds.flatMap(_.toJs).mkString("\n")
-    new ScriptThread(
+    val s = new ScriptThread(
       game,
       screen,
       scriptInterface,
@@ -188,6 +183,7 @@ object ScriptThread {
             Context.javaToJS(entity.getScriptInterface(), jsScope))
       }
     }
+    s.run()
+    s
   }
-
 }

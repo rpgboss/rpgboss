@@ -192,7 +192,7 @@ case class EntityMove(totalDx: Float, totalDy: Float)
     val travelledThisFrame = new Vector2()
 
     var travelDoneThisFrame = false
-    while (!travelDoneThisFrame && !isDone()) {
+    while (!travelDoneThisFrame && !isFinished) {
       val lengthThisIteration = min(
           entity.collisionDeltas,
           desiredThisFrame.len() - travelledThisFrame.len())
@@ -266,7 +266,7 @@ case class EntityMove(totalDx: Float, totalDy: Float)
 
     remainingTravel.sub(desiredThisFrame)
 
-    if (remainingTravel.len() < entity.collisionDeltas && !isDone())
+    if (remainingTravel.len() < entity.collisionDeltas && !isFinished)
       finish()
   }
 }

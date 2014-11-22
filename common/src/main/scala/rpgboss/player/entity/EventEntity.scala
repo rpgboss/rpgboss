@@ -10,7 +10,7 @@ import rpgboss.lib.Utils
 
 case class EventScriptInterface(mapName: String, id: Int)
 
-class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
+class EventEntity(game: RpgGame, mapName: String, val mapEvent: RpgEvent)
   extends Entity(
       game.spritesets,
       game.mapScreen.mapAndAssetsOption,
@@ -100,12 +100,8 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
 
     val startingMovesEnqueued = movesEnqueued
 
-    curThread = Some(ScriptThread.fromEventEntity(
-      game,
-      game.mapScreen,
-      game.mapScreen.scriptInterface,
+    curThread = Some(game.mapScreen.scriptFactory.runFromEventEntity(
       this,
-      "%s/%d".format(mapEvent.name, evtStateIdx),
       evtState,
       evtStateIdx,
       onFinish = Some(() => {
@@ -115,7 +111,6 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
           dir = origDir
         curThread = None
       })))
-    curThread.get.run()
 
     return curThread
   }
@@ -131,6 +126,10 @@ class EventEntity(game: RpgGame, mapName: String, mapEvent: RpgEvent)
 
   override def update(delta: Float) = {
     super.update(delta)
+
+    if (curThread.map(_.isFinished).getOrElse(false))
+      curThread = None
+
     if (_activateCooldown > 0)
       _activateCooldown -= delta
   }

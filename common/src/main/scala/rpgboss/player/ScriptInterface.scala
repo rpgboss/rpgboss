@@ -128,7 +128,7 @@ class ScriptInterface(
   def moveCamera(dx: Float, dy: Float, async: Boolean) = {
     val move = syncRun { mapScreen.camera.enqueueMove(dx, dy) }
     if (!async)
-      move.awaitDone()
+      move.awaitFinish()
   }
 
   /**
@@ -317,7 +317,7 @@ class ScriptInterface(
                 async: Boolean = false) = {
     val move = mapScreen.moveEvent(id, dx, dy, affixDirection)
     if (move != null && !async)
-      move.awaitDone()
+      move.awaitFinish()
   }
 
   def movePlayer(dx: Float, dy: Float,
@@ -325,7 +325,7 @@ class ScriptInterface(
                  async: Boolean = false) = {
     val move = mapScreen.movePlayer(dx, dy, affixDirection)
     if (move != null && !async)
-      move.awaitDone()
+      move.awaitFinish()
   }
 
   def getEventState(mapName: String, eventId: Int) = syncRun {

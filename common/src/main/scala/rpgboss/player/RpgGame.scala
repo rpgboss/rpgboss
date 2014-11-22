@@ -108,12 +108,9 @@ class RpgGame(gamepath: File)
 
     setScreen(startScreen)
 
-    ScriptThread.fromFile(
-      this,
-      startScreen,
-      startScreen.scriptInterface,
+    startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
-      ResourceConstants.systemStartCall).run()
+      ResourceConstants.systemStartCall)
   }
 
   /**

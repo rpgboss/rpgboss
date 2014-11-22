@@ -34,7 +34,7 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
 
   def processMoveKeys(): Unit = {
     if (currentMoveQueueItem != null) {
-      if (!currentMoveQueueItem.isDone())
+      if (!currentMoveQueueItem.isFinished)
         currentMoveQueueItem.finish()
       currentMoveQueueItem = null
     }
@@ -100,16 +100,12 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
     } else if (key == Cancel) {
       if (!menuActive) {
         menuActive = true
-        ScriptThread.fromFile(
-          game,
-          game.mapScreen,
-          mapScreen.scriptInterface,
-          "sys/menu.js",
+        mapScreen.scriptFactory.runFromFile("sys/menu.js",
           "menu()",
           Some(() => {
             menuActive = false
             processMoveKeys()
-          })).run()
+          }))
       }
     } else {
       processMoveKeys()
