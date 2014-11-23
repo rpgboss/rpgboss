@@ -14,6 +14,7 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.NativeObject
 import rpgboss.save.SaveFile
 import rpgboss.save.SaveInfo
+import rpgboss.model.event.EventJavascript
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -199,18 +200,10 @@ class ScriptInterface(
   def newChoiceWindow(
     lines: Array[String],
     rect: Rect,
-    options: NativeObject) = {
-    val window = syncRun {
-      new TextChoiceWindow(
-        game.persistent,
-        activeScreen.windowManager,
-        activeScreen.inputs,
-        lines,
-        rect,
+    options: NativeObject): ChoiceWindow#ChoiceWindowScriptInterface = {
+    newChoiceWindow(
+        lines, rect,
         JsonUtils.nativeObjectToCaseClass[TextChoiceWindowOptions](options))
-    }
-
-    window.scriptInterface
   }
 
   def newChoiceWindow(
@@ -228,6 +221,15 @@ class ScriptInterface(
     }
 
     window.scriptInterface
+  }
+
+  def newStaticTextWindow(
+    lines: Array[String],
+    rect: Rect,
+    options: NativeObject): TextWindow#WindowScriptInterface = {
+    newStaticTextWindow(
+        lines, rect,
+        JsonUtils.nativeObjectToCaseClass[TextWindowOptions](options))
   }
 
   def newStaticTextWindow(
@@ -384,6 +386,21 @@ class ScriptInterface(
     }
 
     syncRun { f() }
+  }
+
+  def openStore(itemIdsSold: Array[Int], buyPriceMultiplier: Float,
+                sellPriceMultiplier: Float) = {
+    assert(activeScreen == game.mapScreen)
+    val finishable = syncRun {
+      val statement = EventJavascript.jsStatement(
+          "openStore", itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
+      println(statement)
+      game.mapScreen.scriptFactory.runFromFile(
+        "sys/store.js",
+        statement,
+        None)
+    }
+    finishable.awaitFinish()
   }
 
   def addRemoveItem(itemId: Int, qtyDelta: Int) = syncRun {
