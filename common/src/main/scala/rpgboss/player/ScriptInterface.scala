@@ -32,6 +32,7 @@ trait HasScriptConstants {
 
   val PLAYER_LOC = "playerLoc"
 
+  val GOLD = "gold"
   val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
 
   val PARTY = "party"
@@ -226,7 +227,7 @@ class ScriptInterface(
   def newStaticTextWindow(
     lines: Array[String],
     rect: Rect,
-    options: NativeObject): TextWindow#WindowScriptInterface = {
+    options: NativeObject): TextWindow#TextWindowScriptInterface = {
     newStaticTextWindow(
         lines, rect,
         JsonUtils.nativeObjectToCaseClass[TextWindowOptions](options))
@@ -235,7 +236,7 @@ class ScriptInterface(
   def newStaticTextWindow(
     lines: Array[String],
     rect: Rect,
-    options: TextWindowOptions): TextWindow#WindowScriptInterface = {
+    options: TextWindowOptions): TextWindow#TextWindowScriptInterface = {
     val window = syncRun {
       new TextWindow(
           game.persistent,

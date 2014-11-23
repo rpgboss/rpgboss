@@ -16,6 +16,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player._
 import com.badlogic.gdx.utils.Disposable
+import rpgboss.lib.GdxUtils.syncRun
 
 object Window {
   val Opening = 0
@@ -211,6 +212,14 @@ class TextWindow(
       }
     }
   }
+
+  class TextWindowScriptInterface extends WindowScriptInterface {
+    def updateLines(lines: Array[String]) = syncRun {
+      TextWindow.this.textImage.updateText(lines)
+    }
+  }
+
+  override lazy val scriptInterface = new TextWindowScriptInterface
 }
 
 /**

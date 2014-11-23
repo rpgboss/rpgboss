@@ -54,6 +54,7 @@ class ScriptThread(
     putProperty("Transitions", Transitions)
     putProperty("Keys", MyKeys)
     putProperty("None", None)
+    putProperty("Constants", ScriptInterfaceConstants)
   }
 
   val runnable = new Runnable() {
