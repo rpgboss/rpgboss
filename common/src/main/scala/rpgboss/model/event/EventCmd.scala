@@ -109,10 +109,7 @@ case class AddRemoveItem(
   extends EventCmd {
   // Backwards-compatibility constructor
   def this(itemId: Int, add: Boolean, qty: Int) =
-    this(
-        add,
-        IntParameter(EventParameterValueType.Constant.id, itemId),
-        IntParameter(EventParameterValueType.Constant.id, qty))
+    this(add, IntParameter(itemId), IntParameter(qty))
 
   def qtyDelta =
     RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
