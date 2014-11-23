@@ -169,4 +169,13 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
 
     p.getIntArray(CHARACTER_EQUIP(0)) should deepEqual(Array(-1, -1, -1))
   }
+
+  "PersistentState" should "add and remove gold correctly" in {
+    val p = new PersistentState
+    p.addRemoveGold(-1) should equal (false)
+    p.addRemoveGold(20) should equal (true)
+    p.addRemoveGold(-21) should equal (false)
+    p.addRemoveGold(-20) should equal (true)
+    p.addRemoveGold(-1) should equal (false)
+  }
 }

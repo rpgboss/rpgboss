@@ -48,7 +48,7 @@ class EventInstanceDialog(
 
       for (state <- eventClass.states;
            cmd <- state.cmds;
-           field <- EventParameterField.getFields(sm.getProjData, cmd);
+           field <- EventParameterField.getParameterFields(sm.getProjData, cmd);
            if field.model.valueTypeId ==
              EventParameterValueType.LocalVariable.id) {
         val paramCopy = Utils.deepCopy(field.model)

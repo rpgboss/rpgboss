@@ -325,4 +325,19 @@ class PersistentState(
 
     return true
   }
+
+  /**
+   * Returns false if @param delta is negative and player does not have enough
+   * gold.
+   */
+  def addRemoveGold(delta: Int): Boolean = {
+    val gold = getInt(GOLD)
+    val newGold = gold + delta
+
+    if (delta < 0 && newGold < 0)
+      return false
+
+    setInt(GOLD, newGold)
+    return true
+  }
 }

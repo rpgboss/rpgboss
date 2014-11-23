@@ -206,6 +206,19 @@ object SwingUtils {
       }
     }
 
+  def boolEnumHorizBox(
+    enum: BooleanRpgEnum,
+    initial: Boolean,
+    onUpdate: Boolean => Any) = {
+    val radios = enumIdRadios(enum)(
+      AddOrRemove.fromBoolean(initial).id,
+      id => onUpdate(enum.toBoolean(id)))
+
+    new BoxPanel(Orientation.Horizontal) {
+      addBtnsAsGrp(contents, radios)
+    }
+  }
+
   def showErrorDialog(parent: Component, message: String) = {
     Dialog.showMessage(parent, message, "Error", Dialog.Message.Error)
   }

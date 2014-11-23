@@ -51,6 +51,7 @@ object EventCmd {
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
     classOf[AddRemoveItem],
+    classOf[AddRemoveGold],
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEventState],
@@ -118,6 +119,17 @@ case class AddRemoveItem(
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
 
   override def getParameters() = List(itemId, quantity)
+}
+
+case class AddRemoveGold(
+  var add: Boolean = true,
+  quantity: IntParameter = IntParameter())
+  extends EventCmd {
+  def qtyDelta =
+    RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
+  def sections = singleCall("game.addRemoveGold", qtyDelta)
+
+  override def getParameters() = List(quantity)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

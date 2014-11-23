@@ -46,7 +46,7 @@ object Scope extends RpgEnum {
   def default = OneAlly
 }
 
-object AddOrRemove extends RpgEnum {
+object AddOrRemove extends BooleanRpgEnum {
   val Add, Remove = Value
   def default = Add
 

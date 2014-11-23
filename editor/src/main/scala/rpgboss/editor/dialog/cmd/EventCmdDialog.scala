@@ -1,12 +1,54 @@
 package rpgboss.editor.dialog.cmd
 
-import scala.swing._
-import rpgboss.model.event.EventCmd
-import rpgboss.editor.dialog._
-import rpgboss.model.event._
+import scala.swing.Component
+import scala.swing.Window
+
 import rpgboss.editor.StateMaster
+import rpgboss.editor.uibase.DesignGridPanel
+import rpgboss.editor.uibase.ParameterFullComponent
+import rpgboss.editor.uibase.StdDialog
+import rpgboss.editor.uibase.SwingUtils.lbl
 import rpgboss.lib.Utils
-import rpgboss.model.RpgEnum
+import rpgboss.model.event.AddRemoveGold
+import rpgboss.model.event.AddRemoveItem
+import rpgboss.model.event.EventCmd
+import rpgboss.model.event.ModifyParty
+import rpgboss.model.event.MoveEvent
+import rpgboss.model.event.RunJs
+import rpgboss.model.event.SetEventState
+import rpgboss.model.event.ShowText
+import rpgboss.model.event.StartBattle
+import rpgboss.model.event.Teleport
+
+abstract class EventCmdDialog[T <: EventCmd](
+  owner: Window,
+  sm: StateMaster,
+  title: String,
+  initial: T,
+  successF: T => Any)(implicit m: reflect.Manifest[T])
+  extends StdDialog(owner, title) {
+
+  case class TitledComponent(title: String, component: Component)
+
+  def fields: Seq[TitledComponent]
+
+  val model = Utils.deepCopy(initial)
+
+  def okFunc() = {
+    successF(model)
+    close()
+  }
+
+  contents = new DesignGridPanel {
+    for (TitledComponent(fieldName, fieldComponent) <- fields) {
+      row().grid(lbl(fieldName)).add(fieldComponent)
+    }
+    ParameterFullComponent.addParameterFullComponentsToPanel(
+        owner, sm.getProjData, this, model)
+
+    addButtons(okBtn, cancelBtn)
+  }
+}
 
 object EventCmdDialog {
   /**
@@ -28,6 +70,8 @@ object EventCmdDialog {
     evtCmd match {
       case e: AddRemoveItem =>
         new AddRemoveItemCmdDialog(owner, sm, e, successF)
+      case e: AddRemoveGold =>
+        new AddRemoveGoldCmdDialog(owner, sm, e, successF)
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)

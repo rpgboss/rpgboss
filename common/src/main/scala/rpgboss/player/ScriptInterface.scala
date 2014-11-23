@@ -408,6 +408,10 @@ class ScriptInterface(
     persistent.addRemoveItem(itemId, qtyDelta)
   }
 
+  def addRemoveGold(delta: Int) = syncRun {
+    persistent.addRemoveGold(delta)
+  }
+
   def useItemInMenu(itemId: Int, characterId: Int) = syncRun {
     if (persistent.addRemoveItem(itemId, -1)) {
       val item = project.data.enums.items(itemId)

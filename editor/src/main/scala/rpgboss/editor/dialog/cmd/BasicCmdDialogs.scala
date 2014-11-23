@@ -7,6 +7,7 @@ import rpgboss.editor.uibase._
 import rpgboss.editor._
 import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.lib.Utils
+import rpgboss.model.AddOrRemove
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -44,4 +45,28 @@ class StartBattleCmdDialog(
 
     addButtons(okBtn, cancelBtn)
   }
+}
+
+class AddRemoveItemCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: AddRemoveItem,
+  successF: (AddRemoveItem) => Any)
+  extends EventCmdDialog(owner, sm, "Add/Remove Item", initial, successF) {
+
+  override def fields = Seq(
+    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
+  )
+}
+
+class AddRemoveGoldCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: AddRemoveGold,
+  successF: (AddRemoveGold) => Any)
+  extends EventCmdDialog(owner, sm, "Add/Remove Item", initial, successF) {
+
+  override def fields = Seq(
+    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
+  )
 }

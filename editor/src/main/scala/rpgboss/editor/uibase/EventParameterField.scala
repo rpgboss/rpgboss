@@ -7,6 +7,7 @@ import rpgboss.model.event.IntParameter
 import rpgboss.model.event.EventCmd
 import rpgboss.model.event.AddRemoveItem
 import rpgboss.model.ProjectData
+import rpgboss.model.event.AddRemoveGold
 
 /**
  * The name of the field and a component for editing the constant value.
@@ -28,10 +29,12 @@ object EventParameterField {
         model,
         p => indexedCombo(choices, p.constant, p.constant = _))
 
-  def getFields(pData: ProjectData, cmd: EventCmd) = cmd match {
+  def getParameterFields(pData: ProjectData, cmd: EventCmd) = cmd match {
     case c: AddRemoveItem => List(
         IntEnumIdField("Item", pData.enums.items, c.itemId),
         IntNumberField("Quantity", 1, 99, c.quantity))
+    case c: AddRemoveGold => List(
+        IntNumberField("Quantity", 1, 9999, c.quantity))
     case _ => Nil
   }
 }
