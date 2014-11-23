@@ -105,7 +105,7 @@ case class ModifyParty(add: Boolean = true, characterId: Int = 0)
 case class AddRemoveItem(
   var add: Boolean = true,
   itemId: IntParameter = IntParameter(),
-  quantity: IntParameter = IntParameter(EventParameterValueType.Constant.id, 1))
+  quantity: IntParameter = IntParameter(1))
   extends EventCmd {
   // Backwards-compatibility constructor
   def this(itemId: Int, add: Boolean, qty: Int) =

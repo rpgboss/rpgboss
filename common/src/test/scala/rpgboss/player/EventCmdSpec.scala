@@ -28,28 +28,19 @@ class EventCmdSpec extends UnitSpec {
   }
 
   "EventCmd" should "produce correct script for AddRemoveItem" in {
-    AddRemoveItem(
-        true,
-        IntParameter(constant = 1),
-        IntParameter(constant = 5)).toJs should deepEqual(
+    AddRemoveItem(true, IntParameter(1), IntParameter(5)).toJs should deepEqual(
             Array("game.addRemoveItem(1, 5);"))
 
     AddRemoveItem(
-        false,
-        IntParameter(constant = 12),
-        IntParameter(constant = 25)).toJs should deepEqual(
+        false, IntParameter(12), IntParameter(25)).toJs should deepEqual(
             Array("game.addRemoveItem(12, 25 * -1);"))
   }
 
   "EventCmd" should "produce correct script for AddRemoveGold" in {
-    AddRemoveGold(
-        true,
-        IntParameter(constant = 12)).toJs should deepEqual(
+    AddRemoveGold(true, IntParameter(12)).toJs should deepEqual(
             Array("game.addRemoveGold(12);"))
 
-    AddRemoveGold(
-        false,
-        IntParameter(constant = 25)).toJs should deepEqual(
+    AddRemoveGold(false, IntParameter(25)).toJs should deepEqual(
             Array("game.addRemoveGold(25 * -1);"))
   }
 
@@ -183,8 +174,7 @@ class EventCmdSpec extends UnitSpec {
 
     val result1 = Serialization.read[Array[EventCmd]](legacyJson1)
     val expected: Array[EventCmd] =
-      Array(AddRemoveItem(
-          true, IntParameter(constant = 12), IntParameter(constant = 5)))
+      Array(AddRemoveItem(true, IntParameter(12), IntParameter(5)))
     result1 should deepEqual (expected)
   }
 }
