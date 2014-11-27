@@ -83,7 +83,7 @@ function Menu(details) {
   }
 }
 
-function ItemMenu() {
+function ItemMenu(displayUsability, menuLayout, rightPadding) {
   var menu = new Menu({
     getState : function() {
       var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
@@ -103,11 +103,11 @@ function ItemMenu() {
           itemUsabilities.push(usable);
 
           var lineParts = [];
-          if (!usable)
+          if (displayUsability && !usable)
             lineParts.push("\\c[1]");
-          lineParts.push(rightPad(item.name(), 32));
+          lineParts.push(rightPad(item.name(), rightPadding));
           lineParts.push(" : " + itemQty.toString());
-          if (!usable)
+          if (displayUsability && !usable)
             lineParts.push("\\c[0]");
 
           choiceLines.push(lineParts.join(""));
@@ -121,7 +121,7 @@ function ItemMenu() {
         itemUsabilities : itemUsabilities
       }
     },
-    layout : layout.southwest(sizer.prop(1.0, 0.87)),
+    layout : menuLayout,
     windowDetails : {
       displayedItems : 10,
       allowCancel : true

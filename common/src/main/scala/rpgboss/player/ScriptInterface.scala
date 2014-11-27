@@ -408,6 +408,10 @@ class ScriptInterface(
     persistent.addRemoveItem(itemId, qtyDelta)
   }
 
+  def countItems(itemId: Int) = syncRun {
+    persistent.countItems(itemId)
+  }
+
   def addRemoveGold(delta: Int) = syncRun {
     persistent.addRemoveGold(delta)
   }
