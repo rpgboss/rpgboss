@@ -106,6 +106,7 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
         
         return true;
       });
+      itemsMenu.close();
     }
     return true;
   });
