@@ -52,6 +52,16 @@ case class IntParameter(
     var valueTypeId: Int = EventParameterValueType.Constant.id,
     var localVariable: String = "") extends EventParameter[Int]
 
+case class FloatParameter(
+    var constant: Float = 0,
+    var valueTypeId: Int = EventParameterValueType.Constant.id,
+    var localVariable: String = "") extends EventParameter[Float]
+
+case class IntArrayParameter(
+    var constant: Array[Int] = Array(),
+    var valueTypeId: Int = EventParameterValueType.Constant.id,
+    var localVariable: String = "") extends EventParameter[Array[Int]]
+
 case class EventClass(
   var name: String = "",
   var states: Array[RpgEventState] = Array(RpgEventState())) extends HasName
