@@ -60,13 +60,15 @@ object RpgEvent {
  */
 case class RpgEventState(
   var switchCondition: Option[EventCondition] = None,
-  var trigger: Int = EventTrigger.BUTTON.id,
   var sameAppearanceAsPrevState: Boolean = true,
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,
   var affixDirection: Boolean = false,
-  var cmds: Array[EventCmd] = RpgEventState.defaultCmds,
-  var runOnceThenIncrementState: Boolean = false) {
+
+  var trigger: Int = EventTrigger.BUTTON.id,
+  var runOnceThenIncrementState: Boolean = false,
+
+  var cmds: Array[EventCmd] = RpgEventState.defaultCmds) {
 
   def getFreeVariables() = {
     // All variables are free right now since there's exposed EventCmd to
