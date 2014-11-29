@@ -39,6 +39,9 @@ trait EventParameter[T] {
 
 object EventParameter {
   val hints = ShortTypeHints(List(
+    classOf[BooleanParameter],
+    classOf[FloatParameter],
+    classOf[IntArrayParameter],
     classOf[IntParameter]))
 }
 
@@ -46,11 +49,6 @@ case class BooleanParameter(
     var constant: Boolean = false,
     var valueTypeId: Int = EventParameterValueType.Constant.id,
     var localVariable: String = "") extends EventParameter[Boolean]
-
-case class IntParameter(
-    var constant: Int = 0,
-    var valueTypeId: Int = EventParameterValueType.Constant.id,
-    var localVariable: String = "") extends EventParameter[Int]
 
 case class FloatParameter(
     var constant: Float = 0,
@@ -61,6 +59,11 @@ case class IntArrayParameter(
     var constant: Array[Int] = Array(),
     var valueTypeId: Int = EventParameterValueType.Constant.id,
     var localVariable: String = "") extends EventParameter[Array[Int]]
+
+case class IntParameter(
+    var constant: Int = 0,
+    var valueTypeId: Int = EventParameterValueType.Constant.id,
+    var localVariable: String = "") extends EventParameter[Int]
 
 case class EventClass(
   var name: String = "",

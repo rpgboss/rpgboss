@@ -65,6 +65,7 @@ class NewEvtCmdBox(
     row().grid().add(leftLabel("Inventory:"))
     row().grid().add(btnEvtCmd("Add/Remove Item...", AddRemoveItem()))
     row().grid().add(btnEvtCmd("Add/Remove Gold...", AddRemoveGold()))
+    row().grid().add(btnEvtCmd("Open Store...", OpenStore()))
 
     row().grid().add(leftLabel("Other:"))
     row().grid().add(btnEvtCmd("Change event state...", SetEventState()))

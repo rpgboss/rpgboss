@@ -54,7 +54,7 @@ class AddRemoveItemCmdDialog(
   successF: (AddRemoveItem) => Any)
   extends EventCmdDialog(owner, sm, "Add/Remove Item", initial, successF) {
 
-  override def fields = Seq(
+  override def extraFields = Seq(
     TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
   )
 }
@@ -66,7 +66,14 @@ class AddRemoveGoldCmdDialog(
   successF: (AddRemoveGold) => Any)
   extends EventCmdDialog(owner, sm, "Add/Remove Item", initial, successF) {
 
-  override def fields = Seq(
+  override def extraFields = Seq(
     TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
   )
 }
+
+class OpenStoreCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: OpenStore,
+  successF: (OpenStore) => Any)
+  extends EventCmdDialog(owner, sm, "Open Store", initial, successF)
