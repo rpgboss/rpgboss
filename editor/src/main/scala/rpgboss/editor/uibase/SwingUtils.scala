@@ -113,7 +113,7 @@ object SwingUtils {
   }
 
   /**
-   * Accepts any types <% that are 'viewable' i.e. implicitly convertible to
+   * Accepts any types <: that are 'viewable' i.e. implicitly convertible to
    * HasName.
    */
   def indexedCombo[T <% HasName](

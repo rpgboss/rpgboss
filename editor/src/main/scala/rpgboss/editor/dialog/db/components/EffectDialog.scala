@@ -203,7 +203,7 @@ class EffectDialog(
       })
   }
 
-  def choicePercentEffect[T <: HasName]
+  def choicePercentEffect[T <% HasName]
       (meta: MetaEffect, choices: Seq[T]): EffectControls = {
     choiceWithValueEffect(meta, choices, 100, 0, 100, "%")
   }

@@ -52,6 +52,7 @@ object EventCmd {
     classOf[ModifyParty],
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
+    classOf[OpenStore],
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEventState],
@@ -127,6 +128,17 @@ case class AddRemoveGold(
   def sections = singleCall("game.addRemoveGold", qtyDelta)
 
   override def getParameters() = List(quantity)
+}
+
+case class OpenStore(
+  itemIdsSold: IntArrayParameter = IntArrayParameter(),
+  buyPriceMultiplier: FloatParameter = FloatParameter(1.0f),
+  sellPriceMultiplier: FloatParameter = FloatParameter(0.5f)) extends EventCmd {
+  def sections = singleCall("game.openStore", itemIdsSold, buyPriceMultiplier,
+      sellPriceMultiplier)
+
+  override def getParameters() =
+    List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {

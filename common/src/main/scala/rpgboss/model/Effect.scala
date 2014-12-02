@@ -130,7 +130,7 @@ object Effect {
   /**
    * Renders the value of the enum index stored in v1.
    */
-  def getEnumOfValue1[T <% HasName]
+  def getEnumOfValue1[T <: HasName]
       (getChoices: ProjectData => Array[T])
       (pData: ProjectData, effect: Effect) = {
     val choices = getChoices(pData)
@@ -146,7 +146,7 @@ object Effect {
    * Renders the value of the enum index stored in id, and then shows the number
    * stored in value.
    */
-  def getEnumOfValue2[T <% HasName]
+  def getEnumOfValue2[T <: HasName]
       (getChoices: ProjectData => Array[T])
       (pData: ProjectData, effect: Effect) = {
     val value1string = getEnumOfValue1(getChoices)(pData, effect)

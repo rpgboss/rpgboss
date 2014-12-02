@@ -32,7 +32,8 @@ function itemsMenu() {
     itemsTopWin.window.takeFocus();
   }
 
-  var itemsMenu = new ItemMenu();
+  var itemsMenu = 
+    new ItemMenu(true, layout.southwest(sizer.prop(1.0, 0.87)), 32);
   var itemsTopWin = new Menu({
     getState : function() {
       return {
@@ -145,9 +146,6 @@ function equipMenu(statusMenu) {
       });
       
       itemsMenu.loopChoice(function(choiceId) {
-        if (choiceId == -1)
-          return false;
-        
         if (itemsMenu.state.itemIds.length == 0)
           return false;
         

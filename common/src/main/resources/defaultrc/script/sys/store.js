@@ -34,6 +34,8 @@ function StoreBuyMenu(itemIds, priceMultiplier) {
 }
 
 function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
+  var items = project.data().enums().items();
+
   var storeHeaderWin = game.newStaticTextWindow(
     ["Store"],
     layout.northwest(sizer.prop(0.5, 0.13)),
@@ -42,12 +44,18 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
   var storeRightPane = game.newStaticTextWindow(
     [], layout.southeast(sizer.prop(0.4, 0.87)), {})
     
-  function updateStoreRightPane() {
-    storeRightPane.updateLines(
-        ["Gold: ",
-         "  " + game.getInt(Constants.GOLD())])
+  function updateStoreRightPane(itemId) {
+    lines = [];
+    lines.push("Gold: ");
+    lines.push("  "  + game.getInt(Constants.GOLD()));
+    
+    if (itemId >= 0) {
+      lines.push("Owned: ");
+      lines.push("  " + game.countItems(itemId));
+    }
+    storeRightPane.updateLines(lines)
   }
-  updateStoreRightPane();
+  updateStoreRightPane(-1);
   
   var storeTopWin = new Menu({
     getState : function() {
@@ -67,12 +75,38 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
     if (choiceId == 0) {
       var buyMenu = new StoreBuyMenu(itemIdsSold, buyPriceMultiplier);
       buyMenu.loopChoice(function(choiceId) {
-        updateStoreRightPane();
+        var itemId = itemIdsSold[choiceId];
+        var item = items[itemId];
+        
+        if (game.addRemoveGold(-item.price())) {
+          game.addRemoveItem(itemId, 1);
+        }
+        
+        updateStoreRightPane(itemId);
         return true;
       });
       buyMenu.close();
     } else {
-      
+      var itemsMenu = 
+        new ItemMenu(false, layout.southwest(sizer.prop(0.6, 0.87)), 20);
+      itemsMenu.loopChoice(function(choiceId) {
+        if (itemsMenu.state.itemIds.length == 0)
+          return false;
+        
+        var itemId = itemsMenu.state.itemIds[choiceId];
+        var item = items[itemId];
+               
+        var itemsLeft = itemsMenu.state.itemQtys[choiceId];
+        
+        if (itemsLeft >= 1) {
+          game.addRemoveGold(item.price() * sellPriceMultiplier);
+          game.addRemoveItem(itemId, -1);
+          updateStoreRightPane(itemId);
+        }
+        
+        return true;
+      });
+      itemsMenu.close();
     }
     return true;
   });

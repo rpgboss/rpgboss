@@ -48,11 +48,11 @@ class EventInstanceDialog(
 
       for (state <- eventClass.states;
            cmd <- state.cmds;
-           field <- EventParameterField.getParameterFields(sm.getProjData, cmd);
+           field <- EventParameterField.getParameterFields(
+               owner, sm.getProjData, cmd);
            if field.model.valueTypeId ==
              EventParameterValueType.LocalVariable.id) {
-        val paramCopy = Utils.deepCopy(field.model)
-        val component = field.constantComponentFactory(paramCopy)
+        val (paramCopy, component) = field.getModelCopyComponent()
 
         freeVariableMap.update(field.model.localVariable, paramCopy)
         componentMap.update(field.model.localVariable, component)

@@ -2,7 +2,6 @@ package rpgboss.editor.dialog.cmd
 
 import scala.swing.Component
 import scala.swing.Window
-
 import rpgboss.editor.StateMaster
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.editor.uibase.ParameterFullComponent
@@ -19,6 +18,7 @@ import rpgboss.model.event.SetEventState
 import rpgboss.model.event.ShowText
 import rpgboss.model.event.StartBattle
 import rpgboss.model.event.Teleport
+import rpgboss.model.event.OpenStore
 
 abstract class EventCmdDialog[T <: EventCmd](
   owner: Window,
@@ -30,7 +30,7 @@ abstract class EventCmdDialog[T <: EventCmd](
 
   case class TitledComponent(title: String, component: Component)
 
-  def fields: Seq[TitledComponent]
+  def extraFields: Seq[TitledComponent] = Nil
 
   val model = Utils.deepCopy(initial)
 
@@ -40,7 +40,7 @@ abstract class EventCmdDialog[T <: EventCmd](
   }
 
   contents = new DesignGridPanel {
-    for (TitledComponent(fieldName, fieldComponent) <- fields) {
+    for (TitledComponent(fieldName, fieldComponent) <- extraFields) {
       row().grid(lbl(fieldName)).add(fieldComponent)
     }
     ParameterFullComponent.addParameterFullComponentsToPanel(
@@ -73,6 +73,7 @@ object EventCmdDialog {
       case e: AddRemoveGold =>
         new AddRemoveGoldCmdDialog(owner, sm, e, successF)
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
+      case e: OpenStore => new OpenStoreCmdDialog(owner, sm, e, successF)
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
       case e: SetEventState =>

@@ -98,7 +98,7 @@ class EventEntity(
       if (_activateCooldown > 0)
         return None
       else
-        _activateCooldown = 2.0f
+        _activateCooldown = 0.2f
     }
 
     val origDir = dir
