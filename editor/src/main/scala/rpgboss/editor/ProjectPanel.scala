@@ -21,6 +21,7 @@ import java.awt.Toolkit
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
+  with Internationalized
   with SelectsMap {
   val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new ProjectPanelMapSelector(sm, this)
@@ -51,27 +52,27 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
     contents += new Button {
       val btn = this
-      action = Action("Project \u25BC") {
+      action = Action(messages.getString("Project") + " \u25BC") {
         projMenu.show(btn, 0, btn.bounds.height)
       }
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/devices/blockdevice.png"))
     }
-    contents += new Button(Action("Database...") {
+    contents += new Button(Action(messages.getString("Database") + "...") {
       val d = new DatabaseDialog(mainP.topWin, sm)
       d.open()
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/apps/database.png"))
     }
-    contents += new Button(Action("Resources...") {
+    contents += new Button(Action(messages.getString("Resources") + "...") {
       val d = new ResourcesDialog(mainP.topWin, sm)
       d.open()
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/filesystems/folder_images.png"))
     }
-    contents += new Button(Action("Play...") {
+    contents += new Button(Action(messages.getString("Play") + "...") {
       if (sm.askSaveUnchanged(this)) {
         def inheritIO(src: InputStream, dest: PrintStream) = {
           new Thread(new Runnable() {
@@ -120,7 +121,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         "crystal_project/16x16/actions/player_play.png"))
     }
 
-    contents += new Button(Action("Export...") {
+    contents += new Button(Action(messages.getString("Export") + "...") {
       val d = new ExportDialog(mainP.topWin, sm, mainP)
       d.open()
     }) {

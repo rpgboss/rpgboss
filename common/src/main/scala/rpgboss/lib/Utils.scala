@@ -152,7 +152,8 @@ object Utils {
 
   def readClasspathImage(path: String) = {
     val resource = getClass.getClassLoader.getResourceAsStream(path)
-    assert(resource != null)
+    if (resource == null)
+      throw new RuntimeException("Could not load: " + path)
     ImageIO.read(resource)
   }
 
