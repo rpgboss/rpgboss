@@ -24,12 +24,7 @@ class SystemPanel(
 
   def model = dbDiag.model
 
-  val fGameTitle = new TextField() {
-    text = model.title
-    reactions += {
-      case EditDone(_) => model.title = text
-    }
-  }
+  val fGameTitle = textField(model.title, model.title = _)
 
   val fTitlepic = new PictureField(owner, sm, model.startup.titlePic,
       model.startup.titlePic = _)
