@@ -7,6 +7,7 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.StateMaster
 import rpgboss.model.RpgEnum
 import rpgboss.model.AddOrRemove
+import rpgboss.editor.Internationalized._
 
 class ModifyPartyCmdDialog(
   owner: Window,
@@ -36,7 +37,7 @@ class ModifyPartyCmdDialog(
       new BoxPanel(Orientation.Horizontal) {
         addBtnsAsGrp(contents, fAddOrRemove)
       })
-    row().grid(lbl("Character: ")).add(fCharacterId)
+    row().grid(lbl(getMessage("Character") + ": ")).add(fCharacterId)
 
     addButtons(okBtn, cancelBtn)
   }
