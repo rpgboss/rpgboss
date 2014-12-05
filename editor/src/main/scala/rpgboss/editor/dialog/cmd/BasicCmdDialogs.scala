@@ -8,6 +8,7 @@ import rpgboss.editor._
 import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.lib.Utils
 import rpgboss.model.AddOrRemove
+import rpgboss.editor.Internationalized._
 
 class StartBattleCmdDialog(
   owner: Window,
