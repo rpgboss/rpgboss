@@ -527,6 +527,7 @@ elements.json
 encounters.json
 enemies.json
 equipTypes.json
+eventClasses.json
 face/sys/01fsm_actorA.png
 face/sys/f_actor01.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png
@@ -538,35 +539,44 @@ msgfont/sys/Vera.ttf
 msgfont/sys/VeraMono-Bold.ttf
 msgfont/sys/VeraMono-Italic.ttf
 msgfont/sys/VeraMono.ttf
-music/sys/A Midsummer Night's Dream - A Duel Comences.mid
-music/sys/A Midsummer Night's Dream - A Forest People.mid
-music/sys/A Midsummer Night's Dream - Cue 1.mid
-music/sys/A Midsummer Night's Dream - Cue 2.mid
-music/sys/A Midsummer Night's Dream - Magic and Wonder.mid
-music/sys/A Midsummer Night's Dream - They Tried to Love and They Could Not.mid
-music/sys/Journey to the East - Cue 1.mid
-music/sys/Journey to the East - Cue 2.mid
-music/sys/Journey to the East - Ghost Dance.mid
-music/sys/Journey to the East - Lost in the Fog.mid
-music/sys/Journey to the East - Things in the Light.mid
-music/sys/Journey to the East - Town of Legend.mid
-music/sys/Macbeth - A Drowning King.mid
-music/sys/Macbeth - A Wheeping Kingdom.mid
-music/sys/Macbeth - Cue 1.mid
-music/sys/Macbeth - Cue 2.mid
-music/sys/Macbeth - The Wrath of Fate.mid
-music/sys/Macbeth - To War.mid
-music/sys/Titus Andronicus - An Affinity for Blood (piano version).mid
-music/sys/Titus Andronicus - An Affinity for Blood.mid
-music/sys/Titus Andronicus - Cue 1.mid
-music/sys/Titus Andronicus - Cue 2.mid
-music/sys/Titus Andronicus - Madness Reigns.mid
-music/sys/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
-music/sys/Titus Andronicus - Who Is Burried Here.mid
+music/sys/aaron_mcdonald/A Midsummer Night's Dream - A Duel Comences.mid
+music/sys/aaron_mcdonald/A Midsummer Night's Dream - A Forest People.mid
+music/sys/aaron_mcdonald/A Midsummer Night's Dream - Cue 1.mid
+music/sys/aaron_mcdonald/A Midsummer Night's Dream - Cue 2.mid
+music/sys/aaron_mcdonald/A Midsummer Night's Dream - Magic and Wonder.mid
+music/sys/aaron_mcdonald/A Midsummer Night's Dream - They Tried to Love and They Could Not.mid
+music/sys/aaron_mcdonald/Journey to the East - Cue 1.mid
+music/sys/aaron_mcdonald/Journey to the East - Cue 2.mid
+music/sys/aaron_mcdonald/Journey to the East - Ghost Dance.mid
+music/sys/aaron_mcdonald/Journey to the East - Lost in the Fog.mid
+music/sys/aaron_mcdonald/Journey to the East - Things in the Light.mid
+music/sys/aaron_mcdonald/Journey to the East - Town of Legend.mid
+music/sys/aaron_mcdonald/Macbeth - A Drowning King.mid
+music/sys/aaron_mcdonald/Macbeth - A Wheeping Kingdom.mid
+music/sys/aaron_mcdonald/Macbeth - Cue 1.mid
+music/sys/aaron_mcdonald/Macbeth - Cue 2.mid
+music/sys/aaron_mcdonald/Macbeth - The Wrath of Fate.mid
+music/sys/aaron_mcdonald/Macbeth - To War.mid
+music/sys/aaron_mcdonald/Titus Andronicus - An Affinity for Blood (piano version).mid
+music/sys/aaron_mcdonald/Titus Andronicus - An Affinity for Blood.mid
+music/sys/aaron_mcdonald/Titus Andronicus - Cue 1.mid
+music/sys/aaron_mcdonald/Titus Andronicus - Cue 2.mid
+music/sys/aaron_mcdonald/Titus Andronicus - Madness Reigns.mid
+music/sys/aaron_mcdonald/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
+music/sys/aaron_mcdonald/Titus Andronicus - Who Is Burried Here.mid
+music/sys/sean_m_stephens/Battle1.mid
+music/sys/sean_m_stephens/Battle2.mid
+music/sys/sean_m_stephens/Battle3.mid
+music/sys/sean_m_stephens/Choral.mid
+music/sys/sean_m_stephens/TitleMoon.mid
+music/sys/sean_m_stephens/World1.mid
+music/sys/sean_m_stephens/World2.mid
+music/sys/sean_m_stephens/World3.mid
 picture/sys/LordSpirit.jpg
 script/sys/globals.js
 script/sys/menu.js
 script/sys/start.js
+script/sys/store.js
 skills.json
 sound/sys/opengameart-37hitspunches/hit02.mp3
 sound/sys/opengameart-37hitspunches/hit12.mp3

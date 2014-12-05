@@ -164,7 +164,7 @@ object ResourceConstants {
 
     titlePic = "sys/LordSpirit.jpg",
     titleMusic =
-      Some(SoundSpec("sys/Journey to the East - Town of Legend.mid")),
+      Some(SoundSpec("sys/sean_m_stephens/TitleMoon.mid")),
 
     screenW = 640,
     screenH = 480,
