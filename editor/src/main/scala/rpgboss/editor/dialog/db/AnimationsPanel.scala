@@ -20,7 +20,6 @@ class AnimationsPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Animations",
     dbDiag.model.enums.animations) {
   def panelName = "Animations"
   def newDefaultInstance() = new Animation()

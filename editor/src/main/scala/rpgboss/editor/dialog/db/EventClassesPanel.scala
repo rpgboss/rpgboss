@@ -18,7 +18,6 @@ class EventClassesPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Event Classes",
     dbDiag.model.enums.eventClasses)
   with DatabasePanel {
   def panelName = "Event Classes"

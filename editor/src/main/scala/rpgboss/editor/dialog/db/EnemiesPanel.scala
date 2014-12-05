@@ -19,7 +19,6 @@ class EnemiesPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Enemies",
     dbDiag.model.enums.enemies) {
   def panelName = "Enemies"
   def newDefaultInstance() = new Enemy()

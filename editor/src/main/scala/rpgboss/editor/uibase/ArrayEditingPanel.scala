@@ -31,7 +31,6 @@ class ArrayListView[T](initialAry: Array[T]) extends ListView(initialAry) {
 
 abstract class ArrayEditingPanel[T <: AnyRef](
   owner: Window,
-  label: String,
   initialAry: Array[T],
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
@@ -165,11 +164,11 @@ class ArrayDuplicateDialog(
 
 class StringArrayEditingPanel(
   owner: Window,
-  label: String,
+  arrayLabel: String,
   initialAry: Array[String],
   minElems: Int = 1,
   maxElems: Int = 1024)
-  extends ArrayEditingPanel(owner, label, initialAry, minElems, maxElems) {
+  extends ArrayEditingPanel(owner, initialAry, minElems, maxElems) {
   def newDefaultInstance() = ""
   def label(a: String) = a
 
@@ -192,7 +191,7 @@ class StringArrayEditingPanel(
     contents = listView
   }
 
-  border = BorderFactory.createTitledBorder(label)
+  border = BorderFactory.createTitledBorder(arrayLabel)
 
   row().grid().add(editPaneContainer)
   row().grid().add(scrollPane)
@@ -201,21 +200,20 @@ class StringArrayEditingPanel(
 
 abstract class RightPaneArrayEditingPanel[T <: AnyRef](
   owner: Window,
-  label: String,
   initialAry: Array[T],
   minElems: Int = 1,
   maxElems: Int = 1024)(implicit m: Manifest[T])
   extends ArrayEditingPanel[T](
     owner,
-    label,
     initialAry,
     minElems,
     maxElems)(m) {
+  def arrayLabel: String
   def editPaneEmpty =
     new BoxPanel(Orientation.Vertical) with DisposableComponent
 
   val bigLbl = new Label {
-    text = label
+    text = arrayLabel
     font = new Font("Arial", Font.BOLD, 14)
     horizontalAlignment = Alignment.Center
     background = Color.BLACK

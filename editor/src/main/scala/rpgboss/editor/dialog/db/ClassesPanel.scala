@@ -19,7 +19,6 @@ class ClassesPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Classes",
     dbDiag.model.enums.classes)
   with DatabasePanel {
   def panelName = "Classes"

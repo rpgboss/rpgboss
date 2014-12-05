@@ -19,7 +19,6 @@ class CharactersPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Characters",
     dbDiag.model.enums.characters) {
   def panelName = "Characters"
   def newDefaultInstance() = new Character()
