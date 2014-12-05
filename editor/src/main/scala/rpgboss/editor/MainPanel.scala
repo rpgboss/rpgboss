@@ -5,6 +5,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.editor.dialog._
 import java.io.File
+import rpgboss.editor.Internationalized._ 
 
 class MainPanel(val topWin: Frame)
   extends BoxPanel(Orientation.Vertical) {
@@ -17,14 +18,14 @@ class MainPanel(val topWin: Frame)
   }
   val window = topWin
 
-  val actionNew = Action("New Project") {
+  val actionNew = Action(getMessage("New_Project")) {
     if (askSaveUnchanged()) {
       val d = new NewProjectDialog(topWin, p => setProject(p))
       d.open()
     }
   }
 
-  val actionOpen = Action("Load Project") {
+  val actionOpen = Action(getMessage("Load_Project")) {
     if (askSaveUnchanged()) {
       val d = new LoadProjectDialog(topWin, p => setProject(p))
       d.open()
@@ -35,7 +36,7 @@ class MainPanel(val topWin: Frame)
     smOpt.map(_.askSaveUnchanged(this)).getOrElse(true)
   }
 
-  val actionSave = Action("Save Project") {
+  val actionSave = Action(getMessage("Save_Project")) {
     smOpt.map(_.save())
   }
 
@@ -45,7 +46,7 @@ class MainPanel(val topWin: Frame)
     revalidate()
   }
 
-  val actionClose = Action("Close Project") {
+  val actionClose = Action(getMessage("Close_Project")) {
     Settings.set("project.last","");
     setContent(new StartPanel(this))
     window.unmaximize()
