@@ -12,6 +12,8 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.resourceselector._
+import rpgboss.editor.misc.RandomEncounterSettingsPanel
+
 
 class EnemiesPanel(
   owner: Window,

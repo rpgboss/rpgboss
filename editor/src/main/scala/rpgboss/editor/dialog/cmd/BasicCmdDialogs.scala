@@ -37,10 +37,10 @@ class StartBattleCmdDialog(
   }
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Encounter:"))
+    row().grid().add(leftLabel(getMessage("Encounter") + ":"))
     row().grid().add(encounterSelect)
 
-    row().grid().add(leftLabel("Battle Background:"))
+    row().grid().add(leftLabel(getMessage("Battle Background" + ":"))
     row().grid().add(battleBgSelect)
 
     addButtons(okBtn, cancelBtn)
@@ -52,7 +52,7 @@ class AddRemoveItemCmdDialog(
   sm: StateMaster,
   initial: AddRemoveItem,
   successF: (AddRemoveItem) => Any)
-  extends EventCmdDialog(owner, sm, "Add/Remove Item", initial, successF) {
+  extends EventCmdDialog(owner, sm, getMessage("Add_Remove_Item"), initial, successF) {
 
   override def extraFields = Seq(
     TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
@@ -64,7 +64,7 @@ class AddRemoveGoldCmdDialog(
   sm: StateMaster,
   initial: AddRemoveGold,
   successF: (AddRemoveGold) => Any)
-  extends EventCmdDialog(owner, sm, "Add/Remove Item", initial, successF) {
+  extends EventCmdDialog(owner, sm, getMessage("Add_Remove_Item"), initial, successF) {
 
   override def extraFields = Seq(
     TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
@@ -76,4 +76,4 @@ class OpenStoreCmdDialog(
   sm: StateMaster,
   initial: OpenStore,
   successF: (OpenStore) => Any)
-  extends EventCmdDialog(owner, sm, "Open Store", initial, successF)
+  extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
