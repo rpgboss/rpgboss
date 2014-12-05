@@ -1,6 +1,7 @@
 package rpgboss.editor.dialog.db
 
 import rpgboss.editor._
+import rpgboss.editor.Internationalized._
 import rpgboss.editor.uibase._
 import rpgboss.editor.dialog.db.components._
 import rpgboss.editor.uibase.SwingUtils._
@@ -20,7 +21,7 @@ class CharactersPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     dbDiag.model.enums.characters) {
-  def panelName = "Characters"
+  def panelName = getMessage("Characters")
   def newDefaultInstance() = new Character()
 
   def editPaneForItem(idx: Int, model: Character) = {
@@ -61,20 +62,24 @@ class CharactersPanel(
         MAXLEVEL,
         model.maxLevel = _)
 
-      row().grid(leftLabel("Default name:")).add(fName)
+      row().grid(leftLabel(getMessage("Default_name") + ":")).add(fName)
 
-      row().grid(leftLabel("Subtitle:")).add(fSubtitle)
-
-      row().grid(leftLabel("Description:")).add(fDescription)
-
-      row().grid(leftLabel("Sprite:")).add(fSprite)
+      row().grid(leftLabel(getMessage("Subtitle") + ":")).add(fSubtitle)
 
       row()
-        .grid(leftLabel("Class:")).add(fClass)
+        .grid(leftLabel(getMessage("Description") + ":"))
+        .add(fDescription)
+
+      row().grid(leftLabel(getMessage("Sprite") + ":")).add(fSprite)
 
       row()
-        .grid(leftLabel("Initial level:")).add(fInitLevel)
-        .grid(leftLabel("Max level:")).add(fMaxLevel)
+        .grid(leftLabel(getMessage("Class") + ":")).add(fClass)
+
+      row()
+        .grid(leftLabel(getMessage("Initial_level") + ":"))
+        .add(fInitLevel)
+        .grid(leftLabel(getMessage("Max_level") + ":"))
+        .add(fMaxLevel)
     }
 
     val progressionFields = new StatProgressionPanel(model.progressions)
