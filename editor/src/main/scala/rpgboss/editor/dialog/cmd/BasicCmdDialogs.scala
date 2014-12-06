@@ -15,7 +15,7 @@ class StartBattleCmdDialog(
   sm: StateMaster,
   initial: StartBattle,
   successF: (StartBattle) => Any)
-  extends StdDialog(owner, "StartBattle") {
+  extends StdDialog(owner, getMessage("StartBattle")) {
 
   centerDialog(new Dimension(300, 200))
 

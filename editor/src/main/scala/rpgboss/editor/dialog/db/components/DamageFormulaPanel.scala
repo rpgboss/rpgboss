@@ -6,6 +6,7 @@ import scala.swing._
 import rpgboss.editor.uibase.DesignGridPanel
 import javax.swing.BorderFactory
 import rpgboss.editor.dialog.DatabaseDialog
+import rpgboss.editor.Internationalized._
 
 /**
  * Updates model in-place.
@@ -33,9 +34,9 @@ class DamageFormulaPanel(
   val panelType = new BoxPanel(Orientation.Horizontal)
   addBtnsAsGrp(panelType.contents, radiosType)
 
-  row().grid(lbl("Damage type:")).add(panelType)
-  row().grid(lbl("Element:")).add(fElement)
-  row().grid(lbl("Formula:")).add(fFormula)
+  row().grid(lbl(getMessage("Damage_Type" + ":"))).add(panelType)
+  row().grid(lbl(getMessage("Element" + ":"))).add(fElement)
+  row().grid(lbl(getMessage("Formula" + ":"))).add(fFormula)
 }
 
 /**
@@ -53,7 +54,7 @@ class DamageFormulaArrayPanel(
   var model = initial
 
   val buttonPanel = new BoxPanel(Orientation.Horizontal) {
-    contents += new Button(Action("Add") {
+    contents += new Button(Action(getMessage("Add")) {
       model = model :+ DamageFormula()
       damagesPanel.contents +=
         new DamageFormulaPanel(dbDiag, model.last, () => onUpdate(model))
@@ -61,7 +62,7 @@ class DamageFormulaArrayPanel(
       onUpdate(model)
     })
 
-    contents += new Button(Action("Remove Last") {
+    contents += new Button(Action(getMessage("Remove_Last")) {
       if (model.length > 0) {
         model = model.dropRight(1)
         damagesPanel.contents.trimEnd(1)
@@ -76,7 +77,7 @@ class DamageFormulaArrayPanel(
   model.foreach(v =>
     damagesPanel.contents += new DamageFormulaPanel(dbDiag, v, () => onUpdate(model)))
 
-  border = BorderFactory.createTitledBorder("Damage")
+  border = BorderFactory.createTitledBorder(getMessage("Damage"))
   contents += buttonPanel
   contents += new ScrollPane {
     contents = damagesPanel

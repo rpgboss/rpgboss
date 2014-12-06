@@ -23,6 +23,7 @@ import rpgboss.model.MmpAdd
 import rpgboss.model.MreAdd
 import rpgboss.model.RecoverHpAdd
 import rpgboss.model.SpdAdd
+import rpgboss.editor.Internationalized._
 
 class EffectPanel(
   owner: Window,
@@ -75,24 +76,24 @@ class EffectPanel(
     }
 
     row()
-      .grid(lbl("+Max HP")).add(statSpinner(MhpAdd))
-      .grid(lbl("+Attack")).add(statSpinner(AtkAdd))
+      .grid(lbl("+" + getMessage("Max_HP"))).add(statSpinner(MhpAdd))
+      .grid(lbl("+" + getMessage("Attack"))).add(statSpinner(AtkAdd))
     row()
-      .grid(lbl("+Max MP")).add(statSpinner(MmpAdd))
-      .grid(lbl("+Speed")).add(statSpinner(SpdAdd))
+      .grid(lbl("+" + getMessage("Max_MP"))).add(statSpinner(MmpAdd))
+      .grid(lbl("+" + getMessage("Speed"))).add(statSpinner(SpdAdd))
 
     row()
-      .grid(lbl("+Armor")).add(statSpinner(ArmAdd))
-      .grid(lbl("+Magic")).add(statSpinner(MagAdd))
+      .grid(lbl("+" + getMessage("Armor"))).add(statSpinner(ArmAdd))
+      .grid(lbl("+" + getMessage("Magic"))).add(statSpinner(MagAdd))
 
     row()
-      .grid(lbl("+Mag. Res.")).add(statSpinner(MreAdd))
+      .grid(lbl("+" + getMessage("Mag_Res"))).add(statSpinner(MreAdd))
       .grid()
   }
 
   val miscEffects = ArrayBuffer(initial.filter(!isStatEffect(_)): _*)
   val miscEffectsTable = new TableEditor[Effect]() {
-    def title = "Other Effects"
+    def title = getMessage("Other_Effects")
 
     def modelArray = miscEffects
     def newInstance() = Effect(RecoverHpAdd.id)
@@ -117,7 +118,7 @@ class EffectPanel(
 
   if (includeStatEffects) {
     contents += new BoxPanel(Orientation.Vertical) {
-      border = BorderFactory.createTitledBorder("Stat boosts")
+      border = BorderFactory.createTitledBorder(getMessage("Stat_Boosts"))
       contents += statEffectsPanel
     }
   }

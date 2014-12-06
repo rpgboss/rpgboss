@@ -11,6 +11,7 @@ import rpgboss.model._
 import rpgboss.editor.StateMaster
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.dialog.EventDialog
+import rpgboss.editor.Internationalized._
 
 class NewEvtCmdBox(
   sm: StateMaster,
@@ -18,7 +19,7 @@ class NewEvtCmdBox(
   eventLoc: Option[MapLoc],
   cmdBox: CommandBox,
   idxToInsert: Int)
-  extends StdDialog(owner, "New command") {
+  extends StdDialog(owner, getMessage("New_Command")) {
 
   centerDialog(new Dimension(400, 400))
 
@@ -49,28 +50,28 @@ class NewEvtCmdBox(
   }
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Windows:"))
-    row().grid().add(btnEvtCmd("Show text...", ShowText()))
+    row().grid().add(leftLabel(getMessage("Windows") + ":"))
+    row().grid().add(btnEvtCmd(getMessage("Show_Text"), ShowText()))
 
-    row().grid().add(leftLabel("Movement:"))
-    row().grid().add(btnEvtCmd("Teleport player...",
+    row().grid().add(leftLabel(getMessage("Movement") + ":"))
+    row().grid().add(btnEvtCmd(getMessage("Teleport_Player"),
       Teleport(eventLoc.getOrElse(MapLoc()), Transitions.FADE.id)))
-    row().grid().add(btnEvtCmd("Move event...", MoveEvent()))
-    row().grid().add(btnEvtCmd("Lock player movement...",
+    row().grid().add(btnEvtCmd(getMessage("Move_Event"), MoveEvent()))
+    row().grid().add(btnEvtCmd(getMessage("Lock_Player_Movement"),
       LockPlayerMovement(Array())))
 
-    row().grid().add(leftLabel("Party:"))
-    row().grid().add(btnEvtCmd("Modify Party...", ModifyParty()))
+    row().grid().add(leftLabel(getMessage("Party") + ":"))
+    row().grid().add(btnEvtCmd(getMessage("Modify_Party"), ModifyParty()))
 
-    row().grid().add(leftLabel("Inventory:"))
-    row().grid().add(btnEvtCmd("Add/Remove Item...", AddRemoveItem()))
-    row().grid().add(btnEvtCmd("Add/Remove Gold...", AddRemoveGold()))
-    row().grid().add(btnEvtCmd("Open Store...", OpenStore()))
+    row().grid().add(leftLabel(getMessage("Inventory") + ":"))
+    row().grid().add(btnEvtCmd(getMessage("Add_Remove_Item"), AddRemoveItem()))
+    row().grid().add(btnEvtCmd(getMessage("Add_Remove_Gold"), AddRemoveGold()))
+    row().grid().add(btnEvtCmd(getMessage("Open_Store"), OpenStore()))
 
-    row().grid().add(leftLabel("Other:"))
-    row().grid().add(btnEvtCmd("Change event state...", SetEventState()))
-    row().grid().add(btnEvtCmd("Start battle...", StartBattle()))
-    row().grid().add(btnEvtCmd("Run Javascript...", RunJs()))
+    row().grid().add(leftLabel(getMessage("Other" + ":")))
+    row().grid().add(btnEvtCmd(getMessage("Change_Event_State"), SetEventState()))
+    row().grid().add(btnEvtCmd(getMessage("Start_Battle"), StartBattle()))
+    row().grid().add(btnEvtCmd(getMessage("Run_Javascript"), RunJs()))
 
     addCancel(cancelBtn)
   }

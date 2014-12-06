@@ -8,13 +8,14 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.StateMaster
 import rpgboss.model.Transitions
+import rpgboss.editor.Internationalized._
 
 class TeleportCmdDialog(
   owner: Window,
   sm: StateMaster,
   initial: Teleport,
   successF: (Teleport) => Any)
-  extends StdDialog(owner, "Teleport Player") {
+  extends StdDialog(owner, getMessage("Teleport_Player")) {
 
   centerDialog(new Dimension(800, 600))
 
@@ -35,9 +36,9 @@ class TeleportCmdDialog(
   val mapLocPanel = new MapLocPanel(owner, sm, initial.loc, false)
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Transition:"))
+    row().grid().add(leftLabel(getMessage("Transition") + ":"))
     row().grid().add(transitionRadios)
-    row().grid().add(leftLabel("Destination:"))
+    row().grid().add(leftLabel(getMessage("Destination" + ":")))
     row().grid().add(mapLocPanel)
     addButtons(okBtn, cancelBtn)
   }

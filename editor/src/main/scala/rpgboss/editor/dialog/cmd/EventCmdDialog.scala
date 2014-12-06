@@ -19,6 +19,7 @@ import rpgboss.model.event.ShowText
 import rpgboss.model.event.StartBattle
 import rpgboss.model.event.Teleport
 import rpgboss.model.event.OpenStore
+import rpgboss.editor.Internationalized._
 
 abstract class EventCmdDialog[T <: EventCmd](
   owner: Window,

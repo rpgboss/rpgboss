@@ -6,6 +6,7 @@ import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.editor.StateMaster
 import rpgboss.lib.Utils
+import rpgboss.editor.Internationalized._
 
 class MoveEventCmdDialog(
   owner: Window,
@@ -13,7 +14,7 @@ class MoveEventCmdDialog(
   mapName: Option[String],
   initial: MoveEvent,
   successF: (MoveEvent) => Any)
-  extends StdDialog(owner, "Move event") {
+  extends StdDialog(owner, getMessage("Move_Event")) {
 
   centerDialog(new Dimension(200, 300))
 
@@ -40,10 +41,10 @@ class MoveEventCmdDialog(
   contents = new BoxPanel(Orientation.Vertical) {
     contents += fieldWhichEvent
     contents += new DesignGridPanel {
-      row().grid(lbl("X Movement:")).add(fieldDx)
-      row().grid(lbl("Y Movement:")).add(fieldDy)
-      row().grid(lbl("Affix direction:")).add(fieldAffixDirection)
-      row().grid(lbl("Async:")).add(fieldAsync)
+      row().grid(lbl(getMessage("X_Movement") + ":")).add(fieldDx)
+      row().grid(lbl(getMessage("Y_Movement") + ":")).add(fieldDy)
+      row().grid(lbl(getMessage("Affix_Direction") + ":")).add(fieldAffixDirection)
+      row().grid(lbl(getMessage("Async") + ":")).add(fieldAsync)
       addButtons(okBtn, cancelBtn)
     }
   }
