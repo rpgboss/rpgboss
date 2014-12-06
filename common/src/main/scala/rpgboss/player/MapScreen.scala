@@ -250,7 +250,7 @@ class MapScreen(val game: RpgGame)
           // TODO: Add battle background
           val encounterId = Utils.randomChoose(
               encounterSettings.encounters.map(_.encounterId),
-              encounterSettings.encounters.map(_.weight))
+              encounterSettings.encounters.map(_.weight.floatValue))
           game.startBattle(encounterId, "")
         }
       }

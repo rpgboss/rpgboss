@@ -558,12 +558,28 @@ class BattleScreen(
               exp)
             val names = leveled.map(getCharacterName)
 
+            val gold = battle.goldDrops
+            game.persistent.addRemoveGold(gold)
+
+            val items = battle.generateItemDrops()
+            items.foreach(itemId => game.persistent.addRemoveItem(itemId, 1))
+
+            val itemNames = items.map(battle.pData.enums.items(_).name)
+
             import concurrent.ExecutionContext.Implicits.global
 
             concurrent.Future {
               scriptInterface.showText(Array("Received %d XP.".format(exp)))
               for (i <- leveled) {
                 scriptInterface.showText(Array("%s leveled!".format(names(i))))
+              }
+
+              if (gold > 0)
+                scriptInterface.showText(Array("Got %d Gold".format(gold)))
+
+              if (!itemNames.isEmpty) {
+                scriptInterface.showText(Array("Got %s.".format(
+                    itemNames.mkString(", "))))
               }
 
               // TODO: endBattle() is called this script. Seems janky.

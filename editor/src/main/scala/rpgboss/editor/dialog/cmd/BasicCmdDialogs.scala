@@ -41,7 +41,7 @@ class StartBattleCmdDialog(
     row().grid().add(leftLabel(getMessage("Encounter") + ":"))
     row().grid().add(encounterSelect)
 
-    row().grid().add(leftLabel(getMessage("Battle Background" + ":"))
+    row().grid().add(leftLabel(getMessage("Battle_Background") + ":"))
     row().grid().add(battleBgSelect)
 
     addButtons(okBtn, cancelBtn)

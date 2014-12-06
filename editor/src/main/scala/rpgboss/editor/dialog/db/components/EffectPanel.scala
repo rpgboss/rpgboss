@@ -32,7 +32,8 @@ class EffectPanel(
   private var context: EffectContext.Value)
   extends BoxPanel(Orientation.Vertical) {
 
-  def includeStatEffects = context != EffectContext.Skill
+  def includeStatEffects =
+    context != EffectContext.Skill && context != EffectContext.Enemy
 
   def updateContext(newContext: EffectContext.Value) = {
     context = newContext

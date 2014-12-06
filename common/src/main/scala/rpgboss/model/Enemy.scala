@@ -1,6 +1,6 @@
 package rpgboss.model
 
-case class ItemDrop(var itemId: Int, var chance: Float)
+case class ItemDrop(var itemId: Int = 0, var chance: Float = 0.1f)
 
 case class Enemy(
   var name: String = "",

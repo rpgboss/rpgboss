@@ -9,7 +9,7 @@ import rpgboss.model.battle.Hit
  * a way to get the validity and meaning of an effect in this context.
  */
 object EffectContext extends Enumeration {
-  val CharacterClass, Item, Equipment, Skill, StatusEffect = Value
+  val CharacterClass, Item, Equipment, Enemy, Skill, StatusEffect = Value
 }
 
 case class EffectUsability(valid: Boolean, helpMessage: String)

@@ -1,7 +1,10 @@
 package rpgboss.model.battle
 
+import rpgboss.lib.Utils
 import rpgboss.model.Encounter
 import rpgboss.model.ProjectData
+import scala.collection.mutable.ArrayBuffer
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 trait BattleAI {
   def update(battle: Battle)
@@ -76,7 +79,7 @@ class Battle(
   val partyIds: Array[Int],
   partyParams: PartyParameters,
   val encounter: Encounter,
-  aiOpt: Option[BattleAI]) {
+  aiOpt: Option[BattleAI]) extends LazyLogging {
   require(partyIds.forall(i => i >= 0 && i < pData.enums.characters.length))
   require(encounter.units.forall(
     unit => unit.enemyIdx >= 0 && unit.enemyIdx < pData.enums.enemies.length))
@@ -89,10 +92,28 @@ class Battle(
   private var _victory = false
   def victory = _victory
 
-  def victoryExperience = {
-    enemyStatus
-      .map(status => pData.enums.enemies.apply(status.entityId).expValue)
-      .sum
+  private def _enemyDatas =
+    enemyStatus.map(status => pData.enums.enemies.apply(status.entityId))
+
+  def victoryExperience = _enemyDatas.map(_.expValue).sum
+  def goldDrops = _enemyDatas.map(_.droppedGold).sum
+
+  def generateItemDrops() = {
+    val droppedItemIds = new ArrayBuffer[Int]()
+    for (enemy <- _enemyDatas) {
+      val totalChanceDrop = enemy.droppedItems.map(_.chance).sum
+      if (totalChanceDrop > 1.0f) {
+        logger.warn("Enemy \"%s\" has a %f%% chance of dropping items.".format(
+            enemy.name, totalChanceDrop * 100))
+      }
+
+      if (math.random < totalChanceDrop) {
+        droppedItemIds.append(
+            Utils.randomChoose(enemy.droppedItems.map(_.itemId),
+                enemy.droppedItems.map(_.chance)))
+      }
+    }
+    droppedItemIds
   }
 
   /**
