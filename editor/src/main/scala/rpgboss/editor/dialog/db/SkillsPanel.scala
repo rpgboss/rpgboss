@@ -18,7 +18,6 @@ class SkillsPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Skills",
     dbDiag.model.enums.skills) {
   def panelName = "Skills"
   def newDefaultInstance() = Skill()

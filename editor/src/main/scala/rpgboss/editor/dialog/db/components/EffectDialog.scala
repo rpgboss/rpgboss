@@ -1,4 +1,4 @@
-package rpgboss.editor.dialog.db.components
+﻿package rpgboss.editor.dialog.db.components
 
 import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
@@ -35,6 +35,7 @@ import rpgboss.model.RecoverMpMul
 import rpgboss.model.RemoveStatusEffect
 import rpgboss.model.ResistElement
 import rpgboss.model.UseSkill
+import rpgboss.editor.Internationalized._
 
 class EffectDialog(
   owner: Window,
@@ -42,7 +43,7 @@ class EffectDialog(
   initial: Effect,
   onOk: Effect => Unit,
   context: EffectContext.Value)
-  extends StdDialog(owner, "Edit Effect") {
+  extends StdDialog(owner, getMessage("Edit_Effect") {
   case class EffectControls(
     meta: MetaEffect,
     control: Component,
@@ -246,9 +247,9 @@ class EffectDialog(
   }
 
   val ctlPages = Array(
-    new ControlPage("Status", effectsStatus),
-    new ControlPage("Stats", effectsStats),
-    new ControlPage("Other", effectsOther))
+    new ControlPage(getMessage("Status"), effectsStatus),
+    new ControlPage(getMessage("Stats"), effectsStats),
+    new ControlPage(getMessage("Other"), effectsOther))
 
   val tabPane = new TabbedPane {
     pages ++= ctlPages.map(_.tabPage)

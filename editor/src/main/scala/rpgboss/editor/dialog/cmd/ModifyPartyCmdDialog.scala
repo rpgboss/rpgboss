@@ -14,7 +14,7 @@ class ModifyPartyCmdDialog(
   sm: StateMaster,
   initial: ModifyParty,
   successF: (ModifyParty) => Any)
-  extends StdDialog(owner, "Show text") {
+  extends StdDialog(owner, getMessage("Show_Text")) {
 
   centerDialog(new Dimension(200, 100))
 

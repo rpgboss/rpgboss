@@ -15,12 +15,12 @@ trait DatabasePanel extends DisposableComponent {
 
 abstract class RightPaneArrayDatabasePanel[T <: HasName](
   owner: Window,
-  label: String,
   initialAry: Array[T])(implicit m: Manifest[T])
-  extends RightPaneArrayEditingPanel[T](owner, label, initialAry)(m)
+  extends RightPaneArrayEditingPanel[T](owner, initialAry)(m)
   with DatabasePanel {
 
   def label(a: T) = a.name
+  def arrayLabel = panelName
 
   override def activate(): Unit = {
     if (!listView.selection.indices.isEmpty)

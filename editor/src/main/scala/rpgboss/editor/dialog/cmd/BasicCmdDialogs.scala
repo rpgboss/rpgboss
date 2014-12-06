@@ -1,4 +1,4 @@
-package rpgboss.editor.dialog.cmd
+﻿package rpgboss.editor.dialog.cmd
 
 import scala.swing._
 import rpgboss.model.event._
@@ -15,7 +15,7 @@ class StartBattleCmdDialog(
   sm: StateMaster,
   initial: StartBattle,
   successF: (StartBattle) => Any)
-  extends StdDialog(owner, "StartBattle") {
+  extends StdDialog(owner, getMessage("StartBattle")) {
 
   centerDialog(new Dimension(300, 200))
 
@@ -41,7 +41,7 @@ class StartBattleCmdDialog(
     row().grid().add(leftLabel(getMessage("Encounter") + ":"))
     row().grid().add(encounterSelect)
 
-    row().grid().add(leftLabel(getMessage("Battle Background" + ":"))
+    row().grid().add(leftLabel(getMessage("Battle_Background") + ":"))
     row().grid().add(battleBgSelect)
 
     addButtons(okBtn, cancelBtn)
