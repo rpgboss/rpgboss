@@ -1,4 +1,4 @@
-﻿package rpgboss.editor.dialog.db.components
+package rpgboss.editor.dialog.db.components
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.BoxPanel
@@ -76,18 +76,18 @@ class EffectPanel(
     }
 
     row()
-      .grid(lbl("+" + getMessage("Max_HP")).add(statSpinner(MhpAdd))
-      .grid(lbl("+" + getMessage("Attack")).add(statSpinner(AtkAdd))
+      .grid(lbl("+" + getMessage("Max_HP"))).add(statSpinner(MhpAdd))
+      .grid(lbl("+" + getMessage("Attack"))).add(statSpinner(AtkAdd))
     row()
-      .grid(lbl("+" + getMessage("Max_MP")).add(statSpinner(MmpAdd))
-      .grid(lbl("+" + getMessage("Speed")).add(statSpinner(SpdAdd))
+      .grid(lbl("+" + getMessage("Max_MP"))).add(statSpinner(MmpAdd))
+      .grid(lbl("+" + getMessage("Speed"))).add(statSpinner(SpdAdd))
 
     row()
-      .grid(lbl("+" + getMessage("Armor")).add(statSpinner(ArmAdd))
-      .grid(lbl("+" + getMessage("Magic")).add(statSpinner(MagAdd))
+      .grid(lbl("+" + getMessage("Armor"))).add(statSpinner(ArmAdd))
+      .grid(lbl("+" + getMessage("Magic"))).add(statSpinner(MagAdd))
 
     row()
-      .grid(lbl("+" + getMessage("Mag_Res")).add(statSpinner(MreAdd))
+      .grid(lbl("+" + getMessage("Mag_Res"))).add(statSpinner(MreAdd))
       .grid()
   }
 

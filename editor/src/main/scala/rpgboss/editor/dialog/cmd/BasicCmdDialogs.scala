@@ -1,4 +1,4 @@
-﻿package rpgboss.editor.dialog.cmd
+package rpgboss.editor.dialog.cmd
 
 import scala.swing._
 import rpgboss.model.event._

@@ -8,6 +8,7 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.StateMaster
 import rpgboss.model.Transitions
+import rpgboss.editor.Internationalized._
 
 class TeleportCmdDialog(
   owner: Window,

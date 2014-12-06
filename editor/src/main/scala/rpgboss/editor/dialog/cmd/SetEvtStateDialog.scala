@@ -31,7 +31,7 @@ class SetEventStateDialog(
   contents = new BoxPanel(Orientation.Vertical) {
     contents += fieldWhichEvent
     contents += new DesignGridPanel {
-      row().grid(lbl(getMessage("New_State') + ":")).add(fieldNewState)
+      row().grid(lbl(getMessage("New_State") + ":")).add(fieldNewState)
       addButtons(okBtn, cancelBtn)
     }
   }

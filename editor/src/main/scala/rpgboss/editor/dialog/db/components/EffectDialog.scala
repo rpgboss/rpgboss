@@ -1,4 +1,4 @@
-﻿package rpgboss.editor.dialog.db.components
+package rpgboss.editor.dialog.db.components
 
 import scala.Array.canBuildFrom
 import scala.Array.fallbackCanBuildFrom
@@ -43,7 +43,7 @@ class EffectDialog(
   initial: Effect,
   onOk: Effect => Unit,
   context: EffectContext.Value)
-  extends StdDialog(owner, getMessage("Edit_Effect") {
+  extends StdDialog(owner, getMessage("Edit_Effect")) {
   case class EffectControls(
     meta: MetaEffect,
     control: Component,
@@ -274,4 +274,4 @@ class EffectDialog(
     onOk(model)
     close()
   }
-}
+}//It's not in the github directory

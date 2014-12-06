@@ -1,4 +1,4 @@
-﻿package rpgboss.editor.dialog.db.components
+package rpgboss.editor.dialog.db.components
 
 import rpgboss.model._
 import rpgboss.editor.uibase.SwingUtils._

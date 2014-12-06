@@ -63,7 +63,7 @@ class NewEvtCmdBox(
     row().grid().add(leftLabel(getMessage("Party") + ":"))
     row().grid().add(btnEvtCmd(getMessage("Modify_Party"), ModifyParty()))
 
-    row().grid().add(leftLabel(getMessage("Inventory" + ":"))
+    row().grid().add(leftLabel(getMessage("Inventory") + ":"))
     row().grid().add(btnEvtCmd(getMessage("Add_Remove_Item"), AddRemoveItem()))
     row().grid().add(btnEvtCmd(getMessage("Add_Remove_Gold"), AddRemoveGold()))
     row().grid().add(btnEvtCmd(getMessage("Open_Store"), OpenStore()))
