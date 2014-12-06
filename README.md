@@ -26,9 +26,9 @@ Build instructions:
     OpenJDK 64-Bit Server VM (build 24.51-b03, mixed mode)
     ```
 
-2. Clone this repo and enter it.
+2. Fork this repository into your own GitHub account. Clone your fork and enter it.
     ```
-    $ git clone https://github.com/rpgboss/rpgboss.git
+    $ git clone https://github.com/yourusername/rpgboss.git
     $ cd rpgboss
     ```
 
@@ -48,6 +48,10 @@ Build instructions:
     > eclipse
     ```
 6. For Eclipse, I recommend simply using the Scala IDE package: http://scala-ide.org/. Then, import the projects you generated in the above step into Eclipse.
+
+    There is no need to move the project into your workspace. Leave the project in a folder outside the workspace and import the project into your workspace.
+
+    Warning: If you have a username with non-ASCII / Unicode / International characters, the sbt-eclipse plugin may not generate your Eclipse project correctly. Look at your Java Build Path under Eclipse to verify.
 
 7. Run RpgDesktop.scala in Eclipse to build and run the editor.
 
@@ -290,7 +294,9 @@ http://opengameart.org/content/37-hitspunches
 
 ### Music
 
-Default music by Aaron McDonald. Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). http://creativecommons.org/licenses/by-sa/4.0/
+Default music by Aaron McDonald and Sean M. Stephens.
+
+Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). http://creativecommons.org/licenses/by-sa/4.0/
 
 Other Credits
 -------------

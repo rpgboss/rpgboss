@@ -126,14 +126,14 @@ object Utils {
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m
 
-  def randomChoose[T](items: Array[T], weights: Array[Int]): T = {
+  def randomChoose[T](items: Array[T], weights: Array[Float]): T = {
     assume(!items.isEmpty)
     assume(!weights.isEmpty)
     assume(items.length == weights.length)
     val total = weights.sum
-    val roll = util.Random.nextInt(total)
+    val roll = util.Random.nextFloat * total
 
-    var cumProb = 0
+    var cumProb = 0f
     for ((item, weight) <- items zip weights) {
       cumProb += weight
       if (roll < cumProb)
