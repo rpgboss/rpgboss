@@ -148,8 +148,7 @@ class DroppedItemListPanel(
           model.itemId,
           model.itemId = _)
 
-      val fChance =
-        floatSlider(model.chance, 0, 1, 100, 5, 25, model.chance = _)
+      val fChance = percentField(0, 1, model.chance, model.chance = _)
 
       contents = new DesignGridPanel {
         row().grid(lbl("Item:")).add(fItemId)

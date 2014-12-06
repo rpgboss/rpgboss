@@ -49,12 +49,10 @@ object EventParameterField {
 
   def FloatPercentField(
       name: String, min: Float, max: Float,
-      stepsPerOneArg: Int, minorStepArg: Int, majorStepArg: Int,
       model: FloatParameter) =
     new EventParameterField[Float](name, model) {
       override def constantComponentFactory(p: EventParameter[Float]) =
-        floatSlider(p.constant, min, max,
-            stepsPerOneArg, minorStepArg, majorStepArg, p.constant =_)
+        percentField(min, max, p.constant, p.constant =_)
     }
 
   def IntMultiselectField[T <: HasName](
@@ -80,11 +78,9 @@ object EventParameterField {
         IntMultiselectField(
             owner, "Items Sold", pData.enums.items, c.itemIdsSold),
         FloatPercentField(
-            "Buy price multiplier:", 0f, 4f, 100, 50, 100,
-            c.buyPriceMultiplier),
+            "Buy price multiplier:", 0f, 4f, c.buyPriceMultiplier),
         FloatPercentField(
-            "Sell price multiplier:", 0f, 4f, 100, 50, 100,
-            c.sellPriceMultiplier))
+            "Sell price multiplier:", 0f, 4f, c.sellPriceMultiplier))
     case _ => Nil
   }
 }
