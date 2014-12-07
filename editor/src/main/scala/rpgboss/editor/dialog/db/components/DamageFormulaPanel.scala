@@ -34,9 +34,9 @@ class DamageFormulaPanel(
   val panelType = new BoxPanel(Orientation.Horizontal)
   addBtnsAsGrp(panelType.contents, radiosType)
 
-  row().grid(lbl(getMessage("Damage_Type" + ":"))).add(panelType)
-  row().grid(lbl(getMessage("Element" + ":"))).add(fElement)
-  row().grid(lbl(getMessage("Formula" + ":"))).add(fFormula)
+  row().grid(lbl(getMessage("Damage_Type") + ":")).add(panelType)
+  row().grid(lbl(getMessage("Element") + ":")).add(fElement)
+  row().grid(lbl(getMessage("Formula") + ":")).add(fFormula)
 }
 
 /**

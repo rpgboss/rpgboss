@@ -11,6 +11,7 @@ import rpgboss.model._
 import rpgboss.model.Constants._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.resourceselector._
+import rpgboss.editor.Internationalized._
 
 class SkillsPanel(
   owner: Window,
@@ -19,7 +20,7 @@ class SkillsPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     dbDiag.model.enums.skills) {
-  def panelName = "Skills"
+  def panelName = getMessage("Skills")
   def newDefaultInstance() = Skill()
 
   def editPaneForItem(idx: Int, model: Skill) = {
@@ -41,10 +42,10 @@ class SkillsPanel(
           model.animationId,
           model.animationId = _)
 
-        row().grid(lbl("Name:")).add(fName)
-        row().grid(lbl("Scope:")).add(fScope)
-        row().grid(lbl("Skill point cost:")).add(fCost)
-        row().grid(lbl("Animation:")).add(fAnimationId)
+        row().grid(lbl(getMessage("Name") + ":")).add(fName)
+        row().grid(lbl(getMessage("Scope") + ":")).add(fScope)
+        row().grid(lbl(getMessage("Skill_Point_Cost") + ":")).add(fCost)
+        row().grid(lbl(getMessage("Animation") + ":")).add(fAnimationId)
       }
 
       contents += new BoxPanel(Orientation.Vertical) {
