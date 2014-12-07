@@ -25,7 +25,7 @@ class EnemiesPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     dbDiag.model.enums.enemies) {
-  def panelName = "Enemies"
+  def panelName = getMessage("Enemies")
   def newDefaultInstance() = new Enemy()
 
   def editPaneForItem(idx: Int, model: Enemy) = {
