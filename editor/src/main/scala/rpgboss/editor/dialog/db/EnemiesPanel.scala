@@ -15,6 +15,7 @@ import rpgboss.editor.resourceselector._
 import rpgboss.editor.misc.RandomEncounterSettingsPanel
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.lib.Utils
+import rpgboss.editor.Internationalized._
 
 
 class EnemiesPanel(
@@ -61,26 +62,26 @@ class EnemiesPanel(
           model.attackSkillId,
           model.attackSkillId = _)
 
-      row().grid(leftLabel("Name:")).add(fName)
+      row().grid(leftLabel(getMessage("Name") + ":")).add(fName)
 
-      row().grid(leftLabel("Battler:")).add(fBattler)
+      row().grid(leftLabel(getMessage("Battler") + ":")).add(fBattler)
 
-      row().grid(leftLabel("Level:")).add(fLevel)
+      row().grid(leftLabel(getMessage("Level") + ":")).add(fLevel)
 
-      row().grid(leftLabel("Max HP:")).add(fMhp)
-      row().grid(leftLabel("Max MP:")).add(fMmp)
+      row().grid(leftLabel(getMessage("Max_HP") + ":")).add(fMhp)
+      row().grid(leftLabel(getMessage("Max_MP") + ":")).add(fMmp)
 
-      row().grid(leftLabel("Attack:")).add(fAtk)
-      row().grid(leftLabel("Magic:")).add(fMag)
+      row().grid(leftLabel(getMessage("Attack") + ":")).add(fAtk)
+      row().grid(leftLabel(getMessage("Magic") + ":")).add(fMag)
 
-      row().grid(leftLabel("Armor:")).add(fArm)
-      row().grid(leftLabel("Magic Resist:")).add(fMre)
+      row().grid(leftLabel(getMessage("Armor") + ":")).add(fArm)
+      row().grid(leftLabel(getMessage("Magic_Resist") + ":")).add(fMre)
 
-      row().grid(leftLabel("Speed:")).add(fSpd)
-      row().grid(leftLabel("EXP Value:")).add(fExpValue)
-      row().grid(leftLabel("Dropped Gold:")).add(fDroppedGold)
+      row().grid(leftLabel(getMessage("Speed") + ":")).add(fSpd)
+      row().grid(leftLabel(getMessage("EXP_Value") + ":")).add(fExpValue)
+      row().grid(leftLabel(getMessage("Dropped_Gold") + ":")).add(fDroppedGold)
 
-      row().grid(leftLabel("Attack skill:")).add(fAttackSkillId)
+      row().grid(leftLabel(getMessage("Attack_Skill") + ":")).add(fAttackSkillId)
     }
 
     val fItemDrops = new DroppedItemListPanel(
