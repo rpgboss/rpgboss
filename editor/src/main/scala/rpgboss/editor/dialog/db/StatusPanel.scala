@@ -60,14 +60,14 @@ class StatusPanel(
           50,
           model.maxStacks = _)
 
-        row().grid(lbl(getMessage("Name" + ":"))).add(fName)
+        row().grid(lbl(getMessage("Name") + ":")).add(fName)
 
-        row().grid(lbl(getMessage("State_Expiration_In_Rounds" + ":"))).add(fReleaseTime)
-        row().grid(lbl(getMessage("Release_Chance_After_Expiry" + ":"))).add(fReleaseChance)
+        row().grid(lbl(getMessage("State_Expiration_In_Rounds") + ":")).add(fReleaseTime)
+        row().grid(lbl(getMessage("Release_Chance_After_Expiry") + ":")).add(fReleaseChance)
 
-        row().grid(lbl(getMessage("Release_After_Battle" + ":"))).add(fReleaseOnBattleEnd)
+        row().grid(lbl(getMessage("Release_After_Battle") + ":")).add(fReleaseOnBattleEnd)
 
-        row().grid(lbl(getMessage("Maximum_Stacks" + ":"))).add(fMaxStacks)
+        row().grid(lbl(getMessage("Maximum_Stacks") + ":")).add(fMaxStacks)
       }
 
       val rightPane =
