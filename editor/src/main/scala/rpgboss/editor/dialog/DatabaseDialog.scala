@@ -26,12 +26,14 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   val itemsPane = new ItemsPanel(owner, sm, this)
   val skillsPane = new SkillsPanel(owner, sm, this)
   val statusPane = new StatusPanel(owner, sm, this)
+  val eventClassesPane = new EventClassesPanel(owner, sm, this)
   val sysPane = new SystemPanel(owner, sm, this)
   val enumPane = new EnumerationsPanel(owner, sm, this)
 
   val panels =
     List(charPane, classesPane, enemiesPane, encountersPane, itemsPane,
-         skillsPane, statusPane, animationsPane, sysPane, enumPane)
+         skillsPane, statusPane, animationsPane, eventClassesPane, sysPane,
+         enumPane)
 
   def applyFunc() = {
     sm.setProjData(model)
@@ -70,7 +72,7 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
 
   contents = new DesignGridPanel {
     row().grid().add(tabPane)
-    addButtons(cancelBtn, okBtn, Some(applyBtn))
+    addButtons(okBtn, cancelBtn, Some(applyBtn))
   }
 
 }

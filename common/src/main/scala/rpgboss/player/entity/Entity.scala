@@ -30,7 +30,9 @@ import rpgboss.player._
  * Bottom edge length is boundBoxTiles.
  */
 class Entity(
-  val game: RpgGame,
+  spritesets: Map[String, Spriteset],
+  mapAndAssetsOption: Option[MapAndAssets],
+  eventEntities: collection.Map[Int, EventEntity],
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
@@ -68,7 +70,7 @@ class Entity(
   }
 
   def getMapCollisions(dxArg: Float, dyArg: Float) : (Boolean, Int) = {
-    game.mapScreen.mapAndAssetsOption map { mapAndAssets =>
+    mapAndAssetsOption map { mapAndAssets =>
       mapAndAssets.getCollisions(this, x, y, dxArg, dyArg)
     } getOrElse (true, 0)
   }
@@ -91,7 +93,7 @@ class Entity(
   }
 
   def setSprite(spriteSpec: Option[SpriteSpec]) = spriteSpec map { s =>
-    spriteset = game.spritesets(s.name)
+    spriteset = spritesets(s.name)
     spriteIdx = s.spriteIndex
 
     graphicW = (spriteset.tileW.toDouble / Tileset.tilesize).toFloat
@@ -106,17 +108,20 @@ class Entity(
   }
 
   /**
-   * Finds all events with which this dxArg and dyArg touches
+   * This calculates the touches based only on the center
    */
   def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
-    game.mapScreen.eventEntities.values.filter(npc => {
+    eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(x + dxArg, y + dyArg)
     })
   }
 
+  /**
+   * Finds all events with which this dxArg and dyArg touches
+   */
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox()
-    game.mapScreen.eventEntities.values.filter(npc => {
+    eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(boundingBox)
     })
   }
@@ -190,7 +195,7 @@ case class EntityMove(totalDx: Float, totalDy: Float)
     val travelledThisFrame = new Vector2()
 
     var travelDoneThisFrame = false
-    while (!travelDoneThisFrame && !isDone()) {
+    while (!travelDoneThisFrame && !isFinished) {
       val lengthThisIteration = min(
           entity.collisionDeltas,
           desiredThisFrame.len() - travelledThisFrame.len())
@@ -201,13 +206,19 @@ case class EntityMove(totalDx: Float, totalDy: Float)
 
       var movedThisLoop = false
 
-      val evtsTouched =
-        entity.getAllEventCenterTouches(dx, dy).filter(_ != entity)
-      entity.eventTouchCallback(evtsTouched)
-      val evtBlocking = evtsTouched.exists(_.height == EventHeight.SAME.id)
+      val evtsTouchedX =
+        entity.getAllEventCenterTouches(dx, 0).filter(_ != entity)
+      val evtsTouchedY =
+        entity.getAllEventCenterTouches(0, dy).filter(_ != entity)
+
+      val evtsTouchedSet = evtsTouchedX.toSet ++ evtsTouchedY.toSet
+      entity.eventTouchCallback(evtsTouchedSet)
+
+      val evtBlockingX = evtsTouchedX.exists(_.height == EventHeight.SAME.id)
+      val evtBlockingY = evtsTouchedY.exists(_.height == EventHeight.SAME.id)
 
       // Move along x
-      if (!evtBlocking && desiredThisFrame.x != 0) {
+      if (!evtBlockingX && desiredThisFrame.x != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(dx, 0)
@@ -229,7 +240,7 @@ case class EntityMove(totalDx: Float, totalDy: Float)
       }
 
       // Move along y
-      if (!evtBlocking && desiredThisFrame.y != 0) {
+      if (!evtBlockingY && desiredThisFrame.y != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(0, dy)
@@ -256,19 +267,15 @@ case class EntityMove(totalDx: Float, totalDy: Float)
         if (travelledThisFrame.len() >= desiredThisFrame.len()) {
           travelDoneThisFrame = true
         }
-        //entity.game.logger.info("Moved to %f, %f".format(entity.x, entity.y))
       } else {
         travelDoneThisFrame = true
         finish()
       }
     }
 
-//    entity.game.logger.info("desired / travel : " + desiredThisFrame.toString()
-//                            + " " + travelledThisFrame.toString())
-
     remainingTravel.sub(desiredThisFrame)
 
-    if (remainingTravel.len() < entity.collisionDeltas && !isDone())
+    if (remainingTravel.len() < entity.collisionDeltas && !isFinished)
       finish()
   }
 }

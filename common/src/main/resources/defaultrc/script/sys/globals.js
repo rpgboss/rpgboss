@@ -33,6 +33,16 @@ function assertDefined(variable) {
   assert(typeof variable !== 'undefined');
 }
 
+function getItemName(itemId) {
+  var items = project.data().enums().items();
+  if (itemId < items.length) {
+    var item = items[itemId];
+    return item.name();
+  } else {
+    return "ITEM_ID_OUT_OF_BOUNDS";
+  }
+}
+
 function Menu(details) {
   assertDefined(details.getState);
   assertDefined(details.layout);
@@ -71,6 +81,54 @@ function Menu(details) {
       this.update();
     }
   }
+}
+
+function ItemMenu(displayUsability, menuLayout, rightPadding) {
+  var menu = new Menu({
+    getState : function() {
+      var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
+      var itemQtys = game.getIntArray(game.INVENTORY_QTYS());
+      var itemUsabilities = [];
+
+      var choiceLines = [];
+      var items = project.data().enums().items();
+      for (var i = 0; i < itemIds.length && i < itemQtys.length; ++i) {
+        var itemId = itemIds[i];
+        var itemQty = itemQtys[i];
+        if (itemId < 0 || itemQty <= 0) {
+          choiceLines.push("");
+        } else {
+          var item = items[itemId];
+          var usable = item.usableInMenu();
+          itemUsabilities.push(usable);
+
+          var lineParts = [];
+          if (displayUsability && !usable)
+            lineParts.push("\\c[1]");
+          lineParts.push(rightPad(item.name(), rightPadding));
+          lineParts.push(" : " + itemQty.toString());
+          if (displayUsability && !usable)
+            lineParts.push("\\c[0]");
+
+          choiceLines.push(lineParts.join(""));
+        }
+      }
+
+      return {
+        lines : choiceLines,
+        itemIds : itemIds,
+        itemQtys : itemQtys,
+        itemUsabilities : itemUsabilities
+      }
+    },
+    layout : menuLayout,
+    windowDetails : {
+      displayedItems : 10,
+      allowCancel : true
+    }
+  });
+
+  return menu;
 }
 
 function StatusMenu() {

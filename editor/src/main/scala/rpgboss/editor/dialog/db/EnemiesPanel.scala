@@ -12,6 +12,10 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.resourceselector._
+import rpgboss.editor.misc.RandomEncounterSettingsPanel
+import scala.collection.mutable.ArrayBuffer
+import rpgboss.lib.Utils
+
 
 class EnemiesPanel(
   owner: Window,
@@ -19,7 +23,6 @@ class EnemiesPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Enemies",
     dbDiag.model.enums.enemies) {
   def panelName = "Enemies"
   def newDefaultInstance() = new Enemy()
@@ -50,6 +53,8 @@ class EnemiesPanel(
 
       val fExpValue =
         new NumberSpinner(model.expValue, 10, 50000, model.expValue = _)
+      val fDroppedGold =
+        new NumberSpinner(model.droppedGold, 0, 9999, model.droppedGold = _)
 
       val fAttackSkillId = indexedCombo(
           dbDiag.model.enums.skills,
@@ -73,13 +78,17 @@ class EnemiesPanel(
 
       row().grid(leftLabel("Speed:")).add(fSpd)
       row().grid(leftLabel("EXP Value:")).add(fExpValue)
+      row().grid(leftLabel("Dropped Gold:")).add(fDroppedGold)
 
       row().grid(leftLabel("Attack skill:")).add(fAttackSkillId)
     }
 
+    val fItemDrops = new DroppedItemListPanel(
+        owner, dbDiag.model, model.droppedItems, model.droppedItems = _)
+
     val fEffects =
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _,
-          EffectContext.CharacterClass)
+          EffectContext.Enemy)
 
     val fSkills = new ArrayMultiselectPanel(
       owner,
@@ -91,6 +100,7 @@ class EnemiesPanel(
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += bioFields
       contents += new BoxPanel(Orientation.Vertical) {
+        contents += fItemDrops
         contents += fEffects
         contents += fSkills
       }
@@ -100,5 +110,52 @@ class EnemiesPanel(
   override def onListDataUpdate() = {
     logger.info("Enemies data updated")
     dbDiag.model.enums.enemies = dataAsArray
+  }
+}
+
+class DroppedItemListPanel(
+    owner: Window,
+    projectData: ProjectData,
+    initial: Array[ItemDrop],
+    onUpdate: Array[ItemDrop] => Unit)
+    extends TableEditor[ItemDrop] {
+  override def title = "Dropped Items"
+
+  override val modelArray = ArrayBuffer(initial: _*)
+  override def newInstance() = ItemDrop()
+
+  override def onUpdate() = onUpdate(modelArray.toArray)
+
+  override def colHeaders = Array("Item", "% Chance")
+
+  override def getRowStrings(itemDrop: ItemDrop) = {
+    Array(
+      projectData.enums.items(itemDrop.itemId).name,
+      Utils.floatToPercent(itemDrop.chance))
+  }
+
+  override def showEditDialog(
+      initial: ItemDrop, okCallback: ItemDrop => Unit) = {
+    val d = new StdDialog(owner, "ItemDrop") {
+      val model = initial.copy()
+      def okFunc() = {
+        okCallback(model)
+        close()
+      }
+
+      val fItemId = indexedCombo(
+          projectData.enums.items,
+          model.itemId,
+          model.itemId = _)
+
+      val fChance = percentField(0, 1, model.chance, model.chance = _)
+
+      contents = new DesignGridPanel {
+        row().grid(lbl("Item:")).add(fItemId)
+        row().grid(lbl("Chance:")).add(fChance)
+        addButtons(okBtn, cancelBtn)
+      }
+    }
+    d.open()
   }
 }

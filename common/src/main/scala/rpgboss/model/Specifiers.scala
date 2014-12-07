@@ -46,7 +46,7 @@ object Scope extends RpgEnum {
   def default = OneAlly
 }
 
-object AddOrRemove extends RpgEnum {
+object AddOrRemove extends BooleanRpgEnum {
   val Add, Remove = Value
   def default = Add
 
@@ -54,26 +54,34 @@ object AddOrRemove extends RpgEnum {
   def toBoolean(id: Int) = id == Add.id
 }
 
+case class BattlerSpec(var name: String, var scale: Float = 1.0f)
+
 // Specifies an entity: Either the player or an event on the current map.
 case class EntitySpec(
   var whichEntityId: Int = WhichEntity.default.id,
   var mapName: String = "",
   var eventId: Int = -1)
 
-case class SpriteSpec(
-  name: String,
-  spriteIndex: Int,
-  dir: Int = SpriteSpec.Directions.SOUTH,
-  step: Int = SpriteSpec.Steps.STILL)
+case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 
-case class BattlerSpec(var name: String, var scale: Float = 1.0f)
+case class RandomEncounter(var encounterId: Int = 0, var weight: Int = 10)
+
+case class RandomEncounterSettings(
+  var stepsAverage: Int = 20,
+  var encounters: Array[RandomEncounter] = Array()) {
+  def deepcopy() = copy(encounters = encounters.map(_.copy()))
+}
 
 case class SoundSpec(
   sound: String = "",
   var volume: Float = 1.0f,
   var pitch: Float = 1.0f)
 
-case class IconSpec(iconset: String, iconX: Int, iconY: Int)
+case class SpriteSpec(
+  name: String,
+  spriteIndex: Int,
+  dir: Int = SpriteSpec.Directions.SOUTH,
+  step: Int = SpriteSpec.Steps.STILL)
 
 object SpriteSpec {
   object Directions {

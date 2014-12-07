@@ -70,11 +70,15 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
     enabled = false
 
     def update() = {
-      val displayId = sm.getMap(loc.map).get.displayId
-      if (selectMapOnly)
-        text = "Current location: %s".format(displayId)
-      else
-        text = "Current location: %s (%f, %f)".format(displayId, loc.x, loc.y)
+      sm.getMap(loc.map) map { map =>
+        val displayId = map.displayId
+        if (selectMapOnly)
+          text = "Current location: %s".format(displayId)
+        else
+          text = "Current location: %s (%f, %f)".format(displayId, loc.x, loc.y)
+      } getOrElse {
+        text = "No map selected"
+      }
     }
     update()
   }

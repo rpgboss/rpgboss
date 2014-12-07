@@ -23,6 +23,8 @@ import scala.concurrent.duration.Duration
 import rpgboss.lib.GdxUtils
 import com.badlogic.gdx.Screen
 import rpgboss.save.SaveFile
+import rpgboss.model.battle.Battle
+import rpgboss.model.battle.RandomEnemyAI
 
 case class MutableMapLoc(
   var map: String = "",
@@ -77,6 +79,8 @@ class RpgGame(gamepath: File)
 
   val assets = new RpgAssetManager(project)
 
+  override def getScreen() = super.getScreen().asInstanceOf[RpgScreen]
+
   def create() = {
     rebindToCurrentThread()
 
@@ -104,12 +108,9 @@ class RpgGame(gamepath: File)
 
     setScreen(startScreen)
 
-    ScriptThread.fromFile(
-      this,
-      startScreen,
-      startScreen.scriptInterface,
+    startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
-      ResourceConstants.systemStartCall).run()
+      ResourceConstants.systemStartCall)
   }
 
   /**
@@ -120,17 +121,8 @@ class RpgGame(gamepath: File)
    */
   def setParty(partyArray: Array[Int]) = {
     assertOnBoundThread()
-
     persistent.setIntArray(PARTY, partyArray)
-
-    if (mapScreen != null) {
-      if (partyArray.length > 0) {
-        val spritespec = project.data.enums.characters(partyArray(0)).sprite
-        mapScreen.playerEntity.setSprite(spritespec)
-      } else {
-        mapScreen.playerEntity.setSprite(None)
-      }
-    }
+    mapScreen.updateParty()
   }
 
   def startNewGame() = {
@@ -164,12 +156,7 @@ class RpgGame(gamepath: File)
 
   def saveGame(slot: Int) = {
     assertOnBoundThread()
-
-    // Persist current player location.
-    val p = mapScreen.playerEntity
-    assert(p.mapName.isDefined)
-    persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
-
+    mapScreen.persistPlayerLocation()
     SaveFile.write(persistent.toSerializable, project, slot)
   }
 
@@ -191,13 +178,35 @@ class RpgGame(gamepath: File)
   def setPlayerLoc(loc: MapLoc) = {
     persistent.setLoc(PLAYER_LOC, loc)
 
-    if (mapScreen != null) {
-      mapScreen.playerEntity.x = loc.x
-      mapScreen.playerEntity.y = loc.y
-      mapScreen.playerEntity.mapName = Some(loc.map)
+    if (mapScreen != null)
+      mapScreen.setPlayerLoc(loc)
+  }
 
-      mapScreen.updateMapAssets(if (loc.map.isEmpty) None else Some(loc.map))
-    }
+  def startBattle(encounterId: Int, battleBackground: String): Unit = {
+    assert(encounterId >= 0)
+    assert(encounterId < project.data.enums.encounters.length)
+
+    val currentScreen = getScreen()
+    if (currentScreen == battleScreen)
+      return
+
+    // Fade out map
+    currentScreen.windowManager.setTransition(0, 1, 0.6f)
+    currentScreen.windowManager.runAfterTransition(() => {
+      setScreen(battleScreen)
+      battleScreen.windowManager.setTransition(1, 0, 0.6f)
+
+      val encounter = project.data.enums.encounters(encounterId)
+
+      val battle = new Battle(
+        project.data,
+        persistent.getIntArray(PARTY),
+        persistent.getPartyParameters(project),
+        encounter,
+        aiOpt = Some(new RandomEnemyAI))
+
+      battleScreen.startBattle(battle, battleBackground)
+    })
   }
 
   def quit() {

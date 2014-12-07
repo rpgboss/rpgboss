@@ -7,13 +7,15 @@ import rpgboss.editor.uibase._
 import rpgboss.editor._
 import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.lib.Utils
+import rpgboss.model.AddOrRemove
+import rpgboss.editor.Internationalized._
 
 class StartBattleCmdDialog(
   owner: Window,
   sm: StateMaster,
   initial: StartBattle,
   successF: (StartBattle) => Any)
-  extends StdDialog(owner, "StartBattle") {
+  extends StdDialog(owner, getMessage("StartBattle")) {
 
   centerDialog(new Dimension(300, 200))
 
@@ -36,12 +38,43 @@ class StartBattleCmdDialog(
   }
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Encounter:"))
+    row().grid().add(leftLabel(getMessage("Encounter") + ":"))
     row().grid().add(encounterSelect)
 
-    row().grid().add(leftLabel("Battle Background:"))
+    row().grid().add(leftLabel(getMessage("Battle_Background") + ":"))
     row().grid().add(battleBgSelect)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 }
+
+class AddRemoveItemCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: AddRemoveItem,
+  successF: (AddRemoveItem) => Any)
+  extends EventCmdDialog(owner, sm, getMessage("Add_Remove_Item"), initial, successF) {
+
+  override def extraFields = Seq(
+    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
+  )
+}
+
+class AddRemoveGoldCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: AddRemoveGold,
+  successF: (AddRemoveGold) => Any)
+  extends EventCmdDialog(owner, sm, getMessage("Add_Remove_Item"), initial, successF) {
+
+  override def extraFields = Seq(
+    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
+  )
+}
+
+class OpenStoreCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: OpenStore,
+  successF: (OpenStore) => Any)
+  extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)

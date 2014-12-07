@@ -7,13 +7,14 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.StateMaster
 import rpgboss.model.RpgEnum
 import rpgboss.model.AddOrRemove
+import rpgboss.editor.Internationalized._
 
 class ModifyPartyCmdDialog(
   owner: Window,
   sm: StateMaster,
   initial: ModifyParty,
   successF: (ModifyParty) => Any)
-  extends StdDialog(owner, "Show text") {
+  extends StdDialog(owner, getMessage("Show_Text")) {
 
   centerDialog(new Dimension(200, 100))
 
@@ -36,9 +37,9 @@ class ModifyPartyCmdDialog(
       new BoxPanel(Orientation.Horizontal) {
         addBtnsAsGrp(contents, fAddOrRemove)
       })
-    row().grid(lbl("Character: ")).add(fCharacterId)
+    row().grid(lbl(getMessage("Character") + ": ")).add(fCharacterId)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
 }

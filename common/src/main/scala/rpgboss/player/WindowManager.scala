@@ -46,11 +46,26 @@ class WindowManager(
 
   def setTransition(startAlpha: Float, endAlpha: Float, duration: Float) = {
     assertOnBoundThread()
+    curTransition.map(_.flushPendingClosures())
     curTransition = Some(Transition(startAlpha, endAlpha, duration))
+  }
+
+  /**
+   * @param   closure   Runs on the Gdx thread once the current transition is
+   *                    over. Runs immediately if there is no current
+   *                    transition.
+   */
+  def runAfterTransition(closure: () => Unit) {
+    curTransition map { transition =>
+      transition.pendingClosures += closure
+    } getOrElse {
+      closure()
+    }
   }
 
   def clearTransition() = {
     assertOnBoundThread()
+    curTransition.map(_.flushPendingClosures())
     curTransition = None
   }
 
@@ -110,6 +125,9 @@ class WindowManager(
   }
 
   def update(delta: Float) = {
+    // We don't ever reap curTransition after completion, as we want to keep
+    // drawing the black screen or whatever until the next transition comes to
+    // take it over.
     curTransition.map(_.update(delta))
 
     windows.foreach(_.update(delta))

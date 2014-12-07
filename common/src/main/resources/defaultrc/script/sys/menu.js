@@ -1,51 +1,3 @@
-function ItemMenu() {
-  var menu = new Menu({
-    getState : function() {
-      var itemIds = game.getIntArray(game.INVENTORY_ITEM_IDS());
-      var itemQtys = game.getIntArray(game.INVENTORY_QTYS());
-      var itemUsabilities = [];
-
-      var choiceLines = [];
-      var items = project.data().enums().items();
-      for (var i = 0; i < itemIds.length && i < itemQtys.length; ++i) {
-        var itemId = itemIds[i];
-        var itemQty = itemQtys[i];
-        if (itemId < 0 || itemQty <= 0) {
-          choiceLines.push("");
-        } else {
-          var item = items[itemId];
-          var usable = item.usableInMenu();
-          itemUsabilities.push(usable);
-
-          var lineParts = [];
-          if (!usable)
-            lineParts.push("\\c[1]");
-          lineParts.push(rightPad(item.name(), 32));
-          lineParts.push(" : " + itemQty.toString());
-          if (!usable)
-            lineParts.push("\\c[0]");
-
-          choiceLines.push(lineParts.join(""));
-        }
-      }
-
-      return {
-        lines : choiceLines,
-        itemIds : itemIds,
-        itemQtys : itemQtys,
-        itemUsabilities : itemUsabilities
-      }
-    },
-    layout : layout.southwest(sizer.prop(1.0, 0.87)),
-    windowDetails : {
-      displayedItems : 10,
-      allowCancel : true
-    }
-  });
-
-  return menu;
-}
-
 function itemsMenu() {
   function enterItemsWindow(itemsTopWin, itemsMenu) {
     itemsMenu.window.takeFocus();
@@ -80,7 +32,8 @@ function itemsMenu() {
     itemsTopWin.window.takeFocus();
   }
 
-  var itemsMenu = new ItemMenu();
+  var itemsMenu = 
+    new ItemMenu(true, layout.southwest(sizer.prop(1.0, 0.87)), 32);
   var itemsTopWin = new Menu({
     getState : function() {
       return {
@@ -193,9 +146,6 @@ function equipMenu(statusMenu) {
       });
       
       itemsMenu.loopChoice(function(choiceId) {
-        if (choiceId == -1)
-          return false;
-        
         if (itemsMenu.state.itemIds.length == 0)
           return false;
         

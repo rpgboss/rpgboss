@@ -1,22 +1,20 @@
 package rpgboss.editor
 
-import rpgboss.editor.uibase._
+import java.awt.Toolkit
+import java.io._
+import java.util.Scanner
+
 import scala.collection.JavaConversions._
+import scala.swing._
+
+import javax.swing.ImageIcon
+import rpgboss.editor.Internationalized._
+import rpgboss.editor.dialog.ExportDialog
 import rpgboss.editor.imageset.selector._
 import rpgboss.editor.misc._
-import scala.swing._
-import scala.swing.event._
 import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
-import com.badlogic.gdx.LifecycleListener
-import org.lwjgl.opengl.Display
-import java.io._
-import java.util.Scanner
-import javax.swing.ImageIcon
-import rpgboss.editor.util.Export
-import java.awt.Desktop
-import java.awt.Toolkit
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -50,27 +48,27 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
     contents += new Button {
       val btn = this
-      action = Action("Project \u25BC") {
+      action = Action(getMessage("Project") + " \u25BC") {
         projMenu.show(btn, 0, btn.bounds.height)
       }
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/devices/blockdevice.png"))
     }
-    contents += new Button(Action("Database...") {
+    contents += new Button(Action(getMessage("Database") + "...") {
       val d = new DatabaseDialog(mainP.topWin, sm)
       d.open()
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/apps/database.png"))
     }
-    contents += new Button(Action("Resources...") {
+    contents += new Button(Action(getMessage("Resources") + "...") {
       val d = new ResourcesDialog(mainP.topWin, sm)
       d.open()
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/filesystems/folder_images.png"))
     }
-    contents += new Button(Action("Play...") {
+    contents += new Button(Action(getMessage("Play") + "...") {
       if (sm.askSaveUnchanged(this)) {
         def inheritIO(src: InputStream, dest: PrintStream) = {
           new Thread(new Runnable() {
@@ -119,41 +117,9 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         "crystal_project/16x16/actions/player_play.png"))
     }
 
-    contents += new Button(Action("Export...") {
-      if (sm.askSaveUnchanged(this)) {
-        val jarFile: File = {
-          val envVarValue = System.getenv("RPGBOSS_EXPORT_JAR_PATH")
-          if (envVarValue != null) {
-            new File(envVarValue)
-          } else {
-            val classLoc =
-              getClass.getProtectionDomain().getCodeSource().getLocation()
-            new File(classLoc.getPath())
-          }
-        }
-
-        if (jarFile.isFile()) {
-          Export.export(sm.getProj, jarFile)
-          val exportedDir = new File(sm.getProj.dir, "export")
-          Dialog.showMessage(
-              this,
-              "Export complete. Packages in: \n"+
-              exportedDir.getCanonicalPath(),
-              "Export Complete",
-              Dialog.Message.Info)
-          if (Desktop.isDesktopSupported())
-            Desktop.getDesktop().browse(exportedDir.toURI)
-        } else {
-          Dialog.showMessage(
-              this,
-              "Cannot locate rpgboss JAR for export. Path tried: \n" +
-              jarFile.getCanonicalPath() + "\n\n" +
-              "If you are running from an IDE or SBT for development,\n" +
-              "set the RPGBOSS_EXPORT_JAR_PATH environment variable.",
-              "Cannot export",
-              Dialog.Message.Error)
-        }
-      }
+    contents += new Button(Action(getMessage("Export") + "...") {
+      val d = new ExportDialog(mainP.topWin, sm, mainP)
+      d.open()
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/actions/fileexport.png"))

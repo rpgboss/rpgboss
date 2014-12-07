@@ -58,19 +58,30 @@ trait MusicPlayer extends Disposable {
 }
 
 class MidiMusicPlayer(music: Music) extends MusicPlayer with LazyLogging {
-  val sequencer: Sequencer = try {
-    MidiSystem.getSequencer()
+  val (sequencer: Sequencer, synthesizer: Synthesizer) = try {
+    val sequencer = MidiSystem.getSequencer(false)
+    val synthesizer = MidiSystem.getSynthesizer()
+
+    synthesizer.open()
+
+    sequencer.getTransmitter().setReceiver(synthesizer.getReceiver())
+
+    (sequencer, synthesizer)
   } catch {
-    case _: Throwable => {
-      logger.error("Could not initialize MIDI sequencer")
+    case e: Throwable => {
+      logger.error(
+          "Could not initialize MIDI sequencer: %s".format(e.getMessage()))
       null
     }
   }
+
+  private var _volume = 0.0f
 
   val sequence: Sequence = try {
     val s = MidiSystem.getSequence(music.newDataStream)
     if (sequencer != null) {
       sequencer.open()
+      setVolume(0.0f)
       sequencer.setSequence(s)
     }
     s
@@ -82,12 +93,16 @@ class MidiMusicPlayer(music: Music) extends MusicPlayer with LazyLogging {
   }
 
   def getVolume() = {
-    logger.warn("MIDI getVolume() not implemented.")
-    1.0f
+    _volume
   }
 
   def setVolume(newVolume: Float) = {
-//    logger.warn("MIDI setVolume() not implemented.")
+    _volume = newVolume
+    val midiVolume = (newVolume * 127.0).toInt
+
+    for (channel <- synthesizer.getChannels()) {
+      channel.controlChange(7, midiVolume)
+    }
   }
 
   def pause() = {

@@ -12,9 +12,10 @@ import java.io._
 import rpgboss.lib.FileHelper._
 import rpgboss.editor.uibase.StdDialog
 import rpgboss.model.resource.Resource
+import rpgboss.editor.Internationalized._
 
 class NewProjectDialog(owner: Window, onSuccess: Project => Any)
-  extends StdDialog(owner, "New Project") {
+  extends StdDialog(owner, getMessage("New_Project")) {
   val rootChooser = Paths.getRootChooserPanel(() => Unit)
 
   centerDialog(new Dimension(400, 200))
@@ -25,7 +26,7 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
 
   def okFunc() = {
     if (shortnameField.text.isEmpty)
-      Dialog.showMessage(shortnameField, "Need a short name.")
+      Dialog.showMessage(shortnameField, getMessage("Need_Short_Name"))
     else {
       val shortname = shortnameField.text
       val projectDirectory = new File(rootChooser.getRoot, shortname)
@@ -37,20 +38,20 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
         onSuccess(projectOption.get)
         close()
       } else
-        Dialog.showMessage(okBtn, "File write error", "Error",
+        Dialog.showMessage(okBtn, getMessage("File_Write_Error"), getMessage("Error"),
           Dialog.Message.Error)
     }
   }
 
   contents = new DesignGridPanel {
 
-    row().grid().add(leftLabel("Directory for all projects:"))
+    row().grid().add(leftLabel(getMessage("Directory_Project") + ":"))
     row().grid().add(rootChooser)
 
-    row().grid().add(leftLabel("Project shortname (ex. 'chronotrigger'):"))
+    row().grid().add(leftLabel(getMessage("Project_Shortname") + ":"))
     row().grid().add(shortnameField)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
 
     shortnameField.requestFocus()
   }

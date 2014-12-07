@@ -75,7 +75,7 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
 
     val eventsWritten = JsonUtils.writeModelToJsonWithFormats(
       evtFile,
-      RpgMapDataEventsIntermediate(events),
+      RpgMapDataEventsIntermediate(events.values.toArray),
       RpgMapData.formats)
 
     mapFileWritten && layersWritten && eventsWritten
@@ -120,21 +120,21 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
   }
 
   def deepcopy() = {
+    val eventsCopy = events.map {
+      case (k, v) => k -> Utils.deepCopy(v)
+    }
+
     copy(botLayer = botLayer.map(_.clone()),
          midLayer = midLayer.map(_.clone()),
          topLayer = topLayer.map(_.clone()),
-         events = events.mapValues(_.copy()))
+         events = eventsCopy)
   }
 }
 
 case class RpgMapDataEventsIntermediate(events: Array[RpgEvent])
-object RpgMapDataEventsIntermediate {
-  def apply(events: Map[Int, RpgEvent]): RpgMapDataEventsIntermediate =
-    apply(events.values.toArray)
-}
 
 case object RpgMapData {
-  val formats = Serialization.formats(EventCmd.hints)
+  val formats = Serialization.formats(EventCmd.hints + EventParameter.hints)
 
   def datafiles(p: Project, name: String) = {
     val mapFile = new File(RpgMap.rcDir(p), name)
@@ -171,12 +171,12 @@ case object RpgMapData {
     val eventsIntermediateOpt =
       JsonUtils.readModelFromJsonWithFormats[RpgMapDataEventsIntermediate](
         evtFile, RpgMapData.formats)
-    val eventsOpt = eventsIntermediateOpt.map { intermediate =>
-      intermediate.events.map(event => event.id->event).toMap
-    }
 
     for (botAry <- botAryOpt; midAry <- midAryOpt; topAry <- topAryOpt;
-         events <- eventsOpt) yield {
+         eventsIntermediate <- eventsIntermediateOpt) yield {
+
+      val events =
+        eventsIntermediate.events.map(e => e.id->e).toMap
 
       // TODO: Move to a more mature system for schema migration.
       val fixedEvents = events.map {

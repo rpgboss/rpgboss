@@ -14,6 +14,7 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.NativeObject
 import rpgboss.save.SaveFile
 import rpgboss.save.SaveInfo
+import rpgboss.model.event.EventJavascript
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -31,6 +32,7 @@ trait HasScriptConstants {
 
   val PLAYER_LOC = "playerLoc"
 
+  val GOLD = "gold"
   val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
 
   val PARTY = "party"
@@ -128,7 +130,7 @@ class ScriptInterface(
   def moveCamera(dx: Float, dy: Float, async: Boolean) = {
     val move = syncRun { mapScreen.camera.enqueueMove(dx, dy) }
     if (!async)
-      move.awaitDone()
+      move.awaitFinish()
   }
 
   /**
@@ -150,32 +152,12 @@ class ScriptInterface(
   }
 
   def startBattle(encounterId: Int, battleBackground: String) = {
-    assert(encounterId >= 0)
-    assert(encounterId < project.data.enums.encounters.length)
-
-    assert(game.getScreen() == game.mapScreen)
-
-    // Fade out map
-    setTransition(0, 1, 0.6f)
-    sleep(0.6f)
-
     syncRun {
-      game.setScreen(game.battleScreen)
-
-      // TODO fix this hack of manipulating battleScreen directly
-      game.battleScreen.windowManager.setTransition(1, 0, 0.6f)
-
-      val encounter = project.data.enums.encounters(encounterId)
-
-      val battle = new Battle(
-        project.data,
-        persistent.getIntArray(PARTY),
-        persistent.getPartyParameters(project),
-        encounter,
-        aiOpt = Some(new RandomEnemyAI))
-
-      game.battleScreen.startBattle(battle, battleBackground)
+      game.startBattle(encounterId, battleBackground)
     }
+
+    // Blocks until the battle screen finishes on way or the other
+    game.battleScreen.finishChannel.read
   }
 
   def endBattleBackToMap() = {
@@ -219,18 +201,10 @@ class ScriptInterface(
   def newChoiceWindow(
     lines: Array[String],
     rect: Rect,
-    options: NativeObject) = {
-    val window = syncRun {
-      new TextChoiceWindow(
-        game.persistent,
-        activeScreen.windowManager,
-        activeScreen.inputs,
-        lines,
-        rect,
+    options: NativeObject): ChoiceWindow#ChoiceWindowScriptInterface = {
+    newChoiceWindow(
+        lines, rect,
         JsonUtils.nativeObjectToCaseClass[TextChoiceWindowOptions](options))
-    }
-
-    window.scriptInterface
   }
 
   def newChoiceWindow(
@@ -245,6 +219,32 @@ class ScriptInterface(
         lines,
         rect,
         options)
+    }
+
+    window.scriptInterface
+  }
+
+  def newStaticTextWindow(
+    lines: Array[String],
+    rect: Rect,
+    options: NativeObject): TextWindow#TextWindowScriptInterface = {
+    newStaticTextWindow(
+        lines, rect,
+        JsonUtils.nativeObjectToCaseClass[TextWindowOptions](options))
+  }
+
+  def newStaticTextWindow(
+    lines: Array[String],
+    rect: Rect,
+    options: TextWindowOptions): TextWindow#TextWindowScriptInterface = {
+    val window = syncRun {
+      new TextWindow(
+          game.persistent,
+          activeScreen.windowManager,
+          activeScreen.inputs,
+          lines,
+          rect,
+          options)
     }
 
     window.scriptInterface
@@ -311,17 +311,11 @@ class ScriptInterface(
       timePerChar = 0.02f)
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {
-    EntityInfo(mapScreen.playerEntity)
+    mapScreen.getPlayerEntityInfo()
   }
 
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
     mapScreen.eventEntities.get(id).map(EntityInfo.apply)
-  }
-
-  def movePlayer(dx: Float, dy: Float,
-                 affixDirection: Boolean = false,
-                 async: Boolean = false) = {
-    moveEntity(mapScreen.playerEntity, dx, dy, affixDirection, async)
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
@@ -341,11 +335,17 @@ class ScriptInterface(
   def moveEvent(id: Int, dx: Float, dy: Float,
                 affixDirection: Boolean = false,
                 async: Boolean = false) = {
-    val entityOpt = mapScreen.eventEntities.get(id)
-    entityOpt.foreach { entity =>
-      moveEntity(entity, dx, dy, affixDirection, async)
-    }
-    entityOpt.isDefined
+    val move = mapScreen.moveEvent(id, dx, dy, affixDirection)
+    if (move != null && !async)
+      move.awaitFinish()
+  }
+
+  def movePlayer(dx: Float, dy: Float,
+                 affixDirection: Boolean = false,
+                 async: Boolean = false) = {
+    val move = mapScreen.movePlayer(dx, dy, affixDirection)
+    if (move != null && !async)
+      move.awaitFinish()
   }
 
   def getEventState(mapName: String, eventId: Int) = syncRun {
@@ -357,30 +357,9 @@ class ScriptInterface(
   }
 
   def incrementEventState(eventId: Int) = syncRun {
-    mapScreen.playerEntity.mapName.map { mapName =>
+    mapScreen.mapName.map { mapName =>
       val newState = persistent.getEventState(mapName, eventId) + 1
       persistent.setEventState(mapName, eventId, newState)
-    }
-  }
-
-  private def moveEntity(entity: Entity, dx: Float, dy: Float,
-                         affixDirection: Boolean = false,
-                         async: Boolean = false) = {
-    import SpriteSpec.Directions._
-    if (dx != 0 || dy != 0) {
-      if (!affixDirection) {
-        val direction =
-          if (math.abs(dx) > math.abs(dy))
-            if (dx > 0) EAST else WEST
-          else if (dy > 0) SOUTH else NORTH
-        syncRun { entity.enqueueMove(EntityFaceDirection(direction)) }
-      }
-
-      val move = EntityMove(dx, dy)
-      syncRun { entity.enqueueMove(move) }
-
-      if (!async)
-        move.awaitDone()
     }
   }
 
@@ -410,8 +389,31 @@ class ScriptInterface(
     syncRun { f() }
   }
 
+  def openStore(itemIdsSold: Array[Int], buyPriceMultiplier: Float,
+                sellPriceMultiplier: Float) = {
+    assert(activeScreen == game.mapScreen)
+    val finishable = syncRun {
+      val statement = EventJavascript.jsStatement(
+          "openStore", itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
+      println(statement)
+      game.mapScreen.scriptFactory.runFromFile(
+        "sys/store.js",
+        statement,
+        None)
+    }
+    finishable.awaitFinish()
+  }
+
   def addRemoveItem(itemId: Int, qtyDelta: Int) = syncRun {
     persistent.addRemoveItem(itemId, qtyDelta)
+  }
+
+  def countItems(itemId: Int) = syncRun {
+    persistent.countItems(itemId)
+  }
+
+  def addRemoveGold(delta: Int) = syncRun {
+    persistent.addRemoveGold(delta)
   }
 
   def useItemInMenu(itemId: Int, characterId: Int) = syncRun {

@@ -66,54 +66,26 @@ object SwingUtils {
       }
     }
 
-  trait FloatSlider {
-    def stepsPerOne: Int
-    def value: Int
-    def floatValue: Float = value.toFloat / stepsPerOne
-  }
+  def percentField(min: Float, max: Float, initial: Float,
+      onUpdate: Float => Unit) = {
+    val spinner = new NumberSpinner(
+      (initial * 100).round,
+      (min * 100).toInt,
+      (max * 100).toInt,
+      v => onUpdate(v.toFloat / 100))
 
-  def floatSlider(initial: Float, minArg: Float, maxArg: Float,
-                  stepsPerOneArg: Int, minorStepArg: Int, majorStepArg: Int,
-                  onUpdate: Float => Unit) = {
-    new Slider with FloatSlider {
-      def stepsPerOne = stepsPerOneArg
-
-      min = (minArg * stepsPerOne).toInt
-      max = (maxArg * stepsPerOne).toInt
-      minorTickSpacing = minorStepArg
-      majorTickSpacing = majorStepArg
-      snapToTicks = true
-      paintLabels = true
-      value = (initial * stepsPerOne).toInt
-
-      listenTo(this)
-      reactions += {
-        case ValueChanged(_) => onUpdate(floatValue)
+    new BoxPanel(Orientation.Horizontal) {
+      contents += spinner
+      contents += new Label("%") {
+        preferredSize = new Dimension(15, 15)
       }
-    }
-  }
 
-  def slider(initial: Int, minArg: Int, maxArg: Int,
-             minorStepArg: Int, majorStepArg: Int,
-             onUpdate: Int => Unit) = {
-    new Slider {
-      min = minArg
-      max = maxArg
-      minorTickSpacing = minorStepArg
-      majorTickSpacing = majorStepArg
-      snapToTicks = true
-      paintLabels = true
-      value = initial
-
-      listenTo(this)
-      reactions += {
-        case ValueChanged(_) => onUpdate(value)
-      }
+      def floatValue = spinner.getValue.toFloat / 100f
     }
   }
 
   /**
-   * Accepts any types <% that are 'viewable' i.e. implicitly convertible to
+   * Accepts any types <: that are 'viewable' i.e. implicitly convertible to
    * HasName.
    */
   def indexedCombo[T <% HasName](
@@ -151,13 +123,16 @@ object SwingUtils {
     }
   }
 
-  def addBtnsAsGrp(contents: Buffer[Component], btns: Seq[AbstractButton]) = {
+  def makeButtonGroup(btns: Seq[AbstractButton]) = {
     val firstSelected = btns.find(_.selected)
-    val grp = new ButtonGroup(btns: _*)
+    val group = new ButtonGroup(btns: _*)
+    firstSelected.map { btn => group.select(btn) }
+    group
+  }
 
+  def addBtnsAsGrp(contents: Buffer[Component], btns: Seq[AbstractButton]) = {
+    val group = makeButtonGroup(btns)
     contents ++= btns
-
-    firstSelected.map { btn => grp.select(btn) }
   }
 
   def enumButtons[T <: Enumeration](enum: T)(
@@ -202,6 +177,19 @@ object SwingUtils {
         }
       }
     }
+
+  def boolEnumHorizBox(
+    enum: BooleanRpgEnum,
+    initial: Boolean,
+    onUpdate: Boolean => Any) = {
+    val radios = enumIdRadios(enum)(
+      AddOrRemove.fromBoolean(initial).id,
+      id => onUpdate(enum.toBoolean(id)))
+
+    new BoxPanel(Orientation.Horizontal) {
+      addBtnsAsGrp(contents, radios)
+    }
+  }
 
   def showErrorDialog(parent: Component, message: String) = {
     Dialog.showMessage(parent, message, "Error", Dialog.Message.Error)

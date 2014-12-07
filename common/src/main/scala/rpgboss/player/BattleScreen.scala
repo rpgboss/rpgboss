@@ -12,7 +12,7 @@ import rpgboss.lib._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import scala.collection.mutable.ArrayBuffer
-
+import scala.concurrent.Channel
 
 case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Float,
                         y: Float) extends BoxLike {
@@ -51,6 +51,11 @@ class BattleScreen(
   batch.setProjectionMatrix(screenCamera.combined)
   batch.enableBlending()
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
+  /**
+   * Read this channel to await a battle being finished.
+   */
+  val finishChannel = new Channel[Int]()
 
   override def createWindowManager() =
     new WindowManager(assets, project, screenW, screenH)
@@ -378,7 +383,7 @@ class BattleScreen(
       assert(status.entityId < _battle.get.pData.enums.characters.length)
       val name = getCharacterName(status.entityId)
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
-      "%-10s  %3d : %2d  %3d%%".format(name, status.hp, status.mp, readiness)
+      "%-10s  %3d HP | %2d MP %3d%% ".format(name, status.hp, status.mp, readiness)
     }
     partyListWindow.updateText(partyLines)
 
@@ -495,6 +500,8 @@ class BattleScreen(
 
     _enemyBattlers.clear()
     _partyBattlers.clear()
+
+    finishChannel.write(0)
   }
 
   def postTextNotice(msg: String) = {
@@ -551,12 +558,28 @@ class BattleScreen(
               exp)
             val names = leveled.map(getCharacterName)
 
+            val gold = battle.goldDrops
+            game.persistent.addRemoveGold(gold)
+
+            val items = battle.generateItemDrops()
+            items.foreach(itemId => game.persistent.addRemoveItem(itemId, 1))
+
+            val itemNames = items.map(battle.pData.enums.items(_).name)
+
             import concurrent.ExecutionContext.Implicits.global
 
             concurrent.Future {
               scriptInterface.showText(Array("Received %d XP.".format(exp)))
               for (i <- leveled) {
                 scriptInterface.showText(Array("%s leveled!".format(names(i))))
+              }
+
+              if (gold > 0)
+                scriptInterface.showText(Array("Got %d Gold".format(gold)))
+
+              if (!itemNames.isEmpty) {
+                scriptInterface.showText(Array("Got %s.".format(
+                    itemNames.mkString(", "))))
               }
 
               // TODO: endBattle() is called this script. Seems janky.

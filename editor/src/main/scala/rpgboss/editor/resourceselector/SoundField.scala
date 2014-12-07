@@ -69,13 +69,14 @@ abstract class SoundSelectDialog(
 
       val gdxPanel = new GdxPanel(sm.getProj)
 
-      val volumeSlider = floatSlider(
-        selection.volume, 0f, 1f, 100, 5, 25,
+      val volumeSlider = percentField(
+        0f, 1f,
+        selection.volume,
         v => updateSelectionF(
           selection.copy(volume = v)))
 
-      val pitchSlider = floatSlider(
-        selection.pitch, 0.5f, 1.5f, 100, 5, 25,
+      val pitchSlider = percentField(
+        0.5f, 1.5f, selection.pitch,
         v => updateSelectionF(
           selection.copy(pitch = v)))
 
@@ -121,10 +122,12 @@ abstract class MusicSelectDialog(
         assets.dispose()
       }
 
-      val volumeSlider = floatSlider(
-        selection.volume, 0f, 1f, 100, 5, 25,
-        v => updateSelectionF(
-          selection.copy(volume = v)))
+      val volumeSlider = percentField(
+        0, 1, selection.volume,
+        v => {
+          currentMusic.map(_.setVolume(v))
+          updateSelectionF(selection.copy(volume = v))
+        })
 
       val gdxPanel = new GdxPanel(sm.getProj)
 

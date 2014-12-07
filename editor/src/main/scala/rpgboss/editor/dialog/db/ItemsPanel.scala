@@ -18,7 +18,6 @@ class ItemsPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Items",
     dbDiag.model.enums.items)
   with DatabasePanel {
   def panelName = "Items/Equipment"

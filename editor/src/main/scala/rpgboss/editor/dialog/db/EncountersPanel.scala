@@ -98,7 +98,6 @@ class EncountersPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Encounters",
     dbDiag.model.enums.encounters) {
   def battlefieldWidth: Int = 350
   def battlefieldHeight: Int = 220

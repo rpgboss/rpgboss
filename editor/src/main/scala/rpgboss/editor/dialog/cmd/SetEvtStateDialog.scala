@@ -10,14 +10,15 @@ import rpgboss.model.WhichEntity
 import rpgboss.model.EntitySpec
 import rpgboss.lib.Utils
 import rpgboss.editor.StateMaster
+import rpgboss.editor.Internationalized._
 
 class SetEventStateDialog(
   owner: Window,
   sm: StateMaster,
-  mapName: String,
+  mapName: Option[String],
   initial: SetEventState,
   successF: (SetEventState) => Any)
-  extends StdDialog(owner, "Set Event State") {
+  extends StdDialog(owner, getMessage("Set_Event_State")) {
 
   val model = Utils.deepCopy(initial)
 
@@ -30,8 +31,8 @@ class SetEventStateDialog(
   contents = new BoxPanel(Orientation.Vertical) {
     contents += fieldWhichEvent
     contents += new DesignGridPanel {
-      row().grid(lbl("New state:")).add(fieldNewState)
-      addButtons(cancelBtn, okBtn)
+      row().grid(lbl(getMessage("New_State") + ":")).add(fieldNewState)
+      addButtons(okBtn, cancelBtn)
     }
   }
 

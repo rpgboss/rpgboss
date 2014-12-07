@@ -9,6 +9,11 @@ trait RpgEnum extends Enumeration {
   def default: Value
 }
 
+trait BooleanRpgEnum extends RpgEnum {
+  def fromBoolean(x: Boolean): Value
+  def toBoolean(id: Int): Boolean
+}
+
 object DirectionMasks {
   val NORTH = 1 << 0
   val EAST = 1 << 1

@@ -9,15 +9,12 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.io.Writer
 import java.util.Locale
-
 import scala.collection.JavaConverters.mapAsScalaMapConverter
-
-import org.json4s.DefaultFormats
 import org.json4s.Formats
 import org.json4s.native.Serialization
 import org.mozilla.javascript.NativeObject
-
 import javax.imageio.ImageIO
+import rpgboss.model.RpgMapData
 
 class FileHelper(file: File) {
   import FileHelper._
@@ -123,22 +120,53 @@ object Utils {
   def clamped(orig: Int, min: Int, max: Int) =
     math.min(max, math.max(min, orig))
 
+  def clamped(orig: Float, min: Float, max: Float) =
+    math.min(max, math.max(min, orig))
+
   // Modulus that always returns a positive number
   def pmod(x: Int, m: Int) = (x % m + m) % m
+
+  def randomChoose[T](items: Array[T], weights: Array[Float]): T = {
+    assume(!items.isEmpty)
+    assume(!weights.isEmpty)
+    assume(items.length == weights.length)
+    val total = weights.sum
+    val roll = util.Random.nextFloat * total
+
+    var cumProb = 0f
+    for ((item, weight) <- items zip weights) {
+      cumProb += weight
+      if (roll < cumProb)
+        return item
+    }
+
+    assert(1 == 0)
+    return items.head
+  }
+
+  def floatToPercent(x: Float) =
+    "%d%%".format((x * 100).round)
 
   def removeFromSeq[T](seq: Seq[T], i: Int) =
     seq.take(i) ++ seq.drop(i + 1)
 
   def readClasspathImage(path: String) = {
     val resource = getClass.getClassLoader.getResourceAsStream(path)
-    assert(resource != null)
+    if (resource == null)
+      throw new RuntimeException("Could not load: " + path)
     ImageIO.read(resource)
   }
 
   // TODO: Look for a more efficient implementation.
   def deepCopy[A <: AnyRef](a: A)(implicit m: reflect.Manifest[A]): A = {
-    val json = Serialization.write(a)(DefaultFormats)
-    Serialization.read[A](json)(DefaultFormats, m)
+    // So far RpgMapData.formats is our only polymorphic list for type hints
+    deepCopyWithFormats(a, RpgMapData.formats)
+  }
+
+  private def deepCopyWithFormats[A <: AnyRef](
+      a: A, formats: Formats)(implicit m: reflect.Manifest[A]): A = {
+    val json = Serialization.write(a)(formats)
+    Serialization.read[A](json)(formats, m)
   }
 
   /**
@@ -179,6 +207,8 @@ object ArrayUtils {
 object JsonUtils {
   import FileHelper._
 
+  val defaultFormats = RpgMapData.formats
+
   def readModelFromJsonWithFormats[T](
     file: File, formats: Formats)(implicit m: Manifest[T]): Option[T] = {
     file.getReader().map { reader =>
@@ -187,10 +217,10 @@ object JsonUtils {
   }
 
   def readModelFromJson[T](file: File)(implicit m: Manifest[T]) =
-    readModelFromJsonWithFormats(file, DefaultFormats)(m)
+    readModelFromJsonWithFormats(file, defaultFormats)(m)
 
   def writeModelToJson[T <: AnyRef](file: File, model: T): Boolean =
-    writeModelToJsonWithFormats(file, model, DefaultFormats)
+    writeModelToJsonWithFormats(file, model, defaultFormats)
 
   def writeModelToJsonWithFormats[T <: AnyRef](
     file: File, model: T, formats: Formats): Boolean = {
@@ -202,7 +232,7 @@ object JsonUtils {
   def nativeObjectToCaseClass[T](
     jsObj: NativeObject)(implicit m: Manifest[T]) = {
     import scala.collection.JavaConverters._
-    implicit val formats = DefaultFormats
+    implicit val formats = defaultFormats
     val asScalaMap = jsObj.asScala.toMap
     val json = Serialization.write[Map[_, _]](asScalaMap)
 

@@ -28,11 +28,20 @@ class EventCmdSpec extends UnitSpec {
   }
 
   "EventCmd" should "produce correct script for AddRemoveItem" in {
-    AddRemoveItem(1, true, 5).toJs should deepEqual(
-      Array("game.addRemoveItem(1, 5);"))
+    AddRemoveItem(true, IntParameter(1), IntParameter(5)).toJs should deepEqual(
+            Array("game.addRemoveItem(1, 5);"))
 
-    AddRemoveItem(12, false, 25).toJs should deepEqual(
-      Array("game.addRemoveItem(12, -25);"))
+    AddRemoveItem(
+        false, IntParameter(12), IntParameter(25)).toJs should deepEqual(
+            Array("game.addRemoveItem(12, 25 * -1);"))
+  }
+
+  "EventCmd" should "produce correct script for AddRemoveGold" in {
+    AddRemoveGold(true, IntParameter(12)).toJs should deepEqual(
+            Array("game.addRemoveGold(12);"))
+
+    AddRemoveGold(false, IntParameter(25)).toJs should deepEqual(
+            Array("game.addRemoveGold(25 * -1);"))
   }
 
   "EventCmd" should "produce correct script for ShowText" in {
@@ -47,6 +56,10 @@ class EventCmdSpec extends UnitSpec {
     val e3 = ShowText(Array("Hello", "World", "Quote mark: \""))
     e3.toJs should deepEqual (Array(
       """game.showText(["Hello", "World", "Quote mark: \""]);"""))
+
+    val e4 = ShowText(Array("Hello \\J[getItemName(itemId)]"))
+    e4.toJs should deepEqual (Array(
+      """game.showText(["Hello " + getItemName(itemId) + ""]);"""))
   }
 
   "EventCmd" should "produce correct script in comma-decimal locales" in {
@@ -145,5 +158,23 @@ class EventCmdSpec extends UnitSpec {
       Array(ShowText(Array("Hi")),
           SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 1))
     result should deepEqual (expected)
+  }
+
+  "EventCmd" should "deserialize legacy AddRemoveItem correctly" in {
+    implicit val formats = RpgMapData.formats
+    val legacyJson1 = """
+      [
+        {
+          "jsonClass":"AddRemoveItem",
+          "itemId":12,
+          "add":true,
+          "qty":5
+        }
+      ]"""
+
+    val result1 = Serialization.read[Array[EventCmd]](legacyJson1)
+    val expected: Array[EventCmd] =
+      Array(AddRemoveItem(true, IntParameter(12), IntParameter(5)))
+    result1 should deepEqual (expected)
   }
 }

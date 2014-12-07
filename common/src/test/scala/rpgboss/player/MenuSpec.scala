@@ -12,15 +12,12 @@ class MenuSpec extends UnitSpec {
 
       def testScript() = {
         scriptInterface.syncRun {
-          ScriptThread.fromFile(
-            game,
-            game.mapScreen,
-            game.mapScreen.scriptInterface,
+          game.mapScreen.scriptFactory.runFromFile(
             "sys/menu.js",
             "menu()",
             Some(() => {
               waiter.dismiss()
-            })).run()
+            }))
         }
 
         // TODO: Fix hack maybe. Wait one second for menu to open.

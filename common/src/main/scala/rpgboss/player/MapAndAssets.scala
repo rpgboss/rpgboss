@@ -18,13 +18,26 @@ class MapAndAssets(project: Project, val mapName: String) {
   val mapData: RpgMapData = map.readMapData().get
   mapData.sanitizeForMetadata(map.metadata)
 
+  var encounterSettings = map.metadata.randomEncounterSettings.deepcopy()
+  private var _lastBattleX: Float = -1
+  private var _lastBattleY: Float = -1
+  def setLastBattlePosition(x: Float, y: Float) = {
+    _lastBattleX = x
+    _lastBattleY = y
+  }
+
+  def manhattanDistanceFromLastBattle(x: Float, y: Float) = {
+    math.abs(x - _lastBattleX) + math.abs(y - _lastBattleY)
+  }
+
   /**
    * *
    * This section is all the stuff that finds the graphics and packs it into
    * texture atlases.
    */
 
-  val packerTiles = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
+  val packerTiles =
+    new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 0, false)
 
   val autotiles: Array[Autotile] = map.metadata.autotiles.map { name =>
     Autotile.readFromDisk(project, name)

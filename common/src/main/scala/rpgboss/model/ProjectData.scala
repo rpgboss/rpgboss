@@ -1,7 +1,9 @@
 package rpgboss.model
-import rpgboss.model.resource.RpgMap
+
 import java.io.File
+
 import rpgboss.lib.JsonUtils
+import rpgboss.model.event.EventClass
 import rpgboss.model.resource.ResourceConstants
 
 case class ProjectDataStartup(
@@ -34,6 +36,7 @@ case class ProjectDataEnums(
   var elements: Array[String] = ProjectData.defaultElements,
   var enemies: Array[Enemy] = Array(Enemy()),
   var encounters: Array[Encounter] = Array(Encounter()),
+  var eventClasses: Array[EventClass] = Array(EventClass()),
   var equipTypes: Array[String] = ProjectData.defaultEquipTypes,
   var items: Array[Item] = Array(Item()),
   var skills: Array[Skill] = Array(Skill()),
@@ -57,6 +60,7 @@ case class ProjectData(
     writeModel("elements", enums.elements)
     writeModel("enemies", enums.enemies)
     writeModel("encounters", enums.encounters)
+    writeModel("eventClasses", enums.eventClasses)
     writeModel("equipTypes", enums.equipTypes)
     writeModel("items", enums.items)
     writeModel("skills", enums.skills)
@@ -100,6 +104,7 @@ object ProjectData {
       readModel[Array[String]]("elements", enums.elements = _)
       readModel[Array[Enemy]]("enemies", enums.enemies = _)
       readModel[Array[Encounter]]("encounters", enums.encounters = _)
+      readModel[Array[EventClass]]("eventClasses", enums.eventClasses = _)
       readModel[Array[String]]("equipTypes", enums.equipTypes = _)
       readModel[Array[Item]]("items", enums.items = _)
       readModel[Array[Skill]]("skills", enums.skills = _)

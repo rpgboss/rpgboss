@@ -21,6 +21,7 @@ class RunJsCmdDialog(
   centerDialog(new Dimension(screenSize.width/2, screenSize.height/2))
 
   val textArea = new RSyntaxTextArea(20, 60);
+  textArea.setText(initial.scriptBody);
   textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
   textArea.setCodeFoldingEnabled(true);
   val sp = new RTextScrollPane(textArea);
@@ -31,11 +32,9 @@ class RunJsCmdDialog(
   }
 
   contents = new DesignGridPanel {
-    //row().grid().add(leftLabel("Script:"))
-    //row().grid().add(textEditScroll)
     row().grid().add(sp);
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
 }

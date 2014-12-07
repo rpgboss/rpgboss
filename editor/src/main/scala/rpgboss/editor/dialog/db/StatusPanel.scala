@@ -21,7 +21,6 @@ class StatusPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Status Effects",
     dbDiag.model.enums.statusEffects)
   with DatabasePanel {
   def panelName = "Status Effects"

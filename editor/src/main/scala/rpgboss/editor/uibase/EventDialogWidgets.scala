@@ -58,7 +58,7 @@ object EventArrayComboBox {
 class EntitySelectPanel(
   owner: Window,
   sm: StateMaster,
-  currentMapName: String,
+  currentMapName: Option[String],
   model: EntitySpec,
   allowPlayer: Boolean,
   allowEventOnOtherMap: Boolean)
@@ -70,16 +70,10 @@ class EntitySelectPanel(
     if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
       model.mapName
     else
-      currentMapName
+      currentMapName.getOrElse("")
   val selectedEventIdPerMap = collection.mutable.HashMap[String, Int]()
 
-  val currentMapData = sm.getMapData(currentMapName)
-  def selectedMapData() = {
-    if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
-      sm.getMapData(model.mapName)
-    else
-      currentMapData
-  }
+  val currentMapData = currentMapName.map(sm.getMapData)
 
   def updateFieldState(oldWhichId: Int, newWhichId: Int) = {
     val oldWhich = WhichEntity(oldWhichId)
@@ -93,7 +87,7 @@ class EntitySelectPanel(
 
     // Restore new mode stuff
     if (newWhich == WhichEntity.EVENT_ON_MAP)
-      model.mapName = currentMapName
+      model.mapName = currentMapName.getOrElse("")
     else if (newWhich == WhichEntity.EVENT_ON_OTHER_MAP)
       model.mapName = selectedOtherMap
 
@@ -108,22 +102,29 @@ class EntitySelectPanel(
   var fieldEventId: ComboBox[RpgEvent] = null
 
   def replaceEventIdField(oldMapName: String, newMapName: String) = {
-    println("Store %s -> %d".format(oldMapName, model.eventId))
     selectedEventIdPerMap(oldMapName) = model.eventId
-    val newMapData = sm.getMapData(newMapName)
-    val initialId = selectedEventIdPerMap.getOrElse(newMapName, -1)
+    if (newMapName != "") {
+      val newMapData = sm.getMapData(newMapName)
 
-    println("ReStore %s -> %d".format(newMapName, initialId))
-    val (newField, found) =
-        EventArrayComboBox.fromMap(newMapData, initialId, model.eventId = _)
+      val initialId = selectedEventIdPerMap.getOrElse(newMapName, -1)
 
-    if (!newMapData.events.isEmpty)
-      model.eventId = newField.selection.item.id
-    else
+      val (newField, found) =
+          EventArrayComboBox.fromMap(newMapData, initialId, model.eventId = _)
+
+      if (!newMapData.events.isEmpty)
+        model.eventId = newField.selection.item.id
+      else
+        model.eventId = -1
+
+      fieldEventId = newField
+    } else {
+      fieldEventId = new ComboBox[RpgEvent](Nil) {
+        enabled = false
+      }
       model.eventId = -1
+    }
 
     fieldEventIdContainer.contents.clear()
-    fieldEventId = newField
     fieldEventIdContainer.contents += fieldEventId
     fieldEventIdContainer.revalidate()
   }
@@ -133,7 +134,8 @@ class EntitySelectPanel(
   val disabledSet = collection.mutable.Set[WhichEntity.Value]()
   if (!allowPlayer) disabledSet += WhichEntity.PLAYER
   if (!allowEventOnOtherMap) disabledSet += WhichEntity.EVENT_ON_OTHER_MAP
-  if (currentMapData.events.isEmpty) disabledSet += WhichEntity.EVENT_ON_MAP
+  if (currentMapData.isEmpty || currentMapData.get.events.isEmpty)
+    disabledSet += WhichEntity.EVENT_ON_MAP
 
   val btns = enumIdRadios(WhichEntity)(
     model.whichEntityId,
@@ -157,7 +159,7 @@ class EntitySelectPanel(
   if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
     mapSelector.getNode(model.mapName).map(mapSelector.selectNode)
   else
-    mapSelector.getNode(currentMapName).map(mapSelector.selectNode)
+    currentMapName.flatMap(mapSelector.getNode).map(mapSelector.selectNode)
 
   row().grid().add(new BoxPanel(Orientation.Vertical) {
     addBtnsAsGrp(contents, btns)

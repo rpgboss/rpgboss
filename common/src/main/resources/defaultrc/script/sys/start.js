@@ -40,9 +40,9 @@ function showStartDialog() {
 
 function start() {
   game.setTransition(1, 0, 1.0);
-  game.playMusic(0, project.data().startup().titleMusic(), true, 2.0);
+  game.playMusic(0, project.data().startup().titleMusic(), true, 0.4);
   game.showPicture(0, project.data().startup().titlePic(), layout
-      .centered(sizer.fit(640, 480)));
+      .centered(sizer.prop(1.0, 1.0)));
 
   showStartDialog();
 }

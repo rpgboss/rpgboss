@@ -16,6 +16,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player._
 import com.badlogic.gdx.utils.Disposable
+import rpgboss.lib.GdxUtils.syncRun
 
 object Window {
   val Opening = 0
@@ -168,18 +169,13 @@ class Window(
   private val closePromise = Promise[Int]()
 }
 
-/**
- * @param   stayOpenTime    If this is positive, window closes after it's open for
- *                          this period of time.
- */
 class TextWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
   text: Array[String] = Array(),
   rect: Rect,
-  justification: Int = Window.Left,
-  stayOpenTime: Double = 0.0)
+  options: TextWindowOptions = TextWindowOptions())
   extends Window(manager, inputs, rect) {
 
   def xpad = 24
@@ -192,13 +188,14 @@ class TextWindow(
     text,
     rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad),
     manager.fontbmp,
-    justification)
+    options.justification)
 
   override def update(delta: Float) = {
     super.update(delta)
     textImage.update(delta)
 
-    if (stayOpenTime > 0.0 && state == Window.Open && stateAge >= stayOpenTime)
+    if (options.stayOpenTime > 0.0 && state == Window.Open &&
+        stateAge >= options.stayOpenTime)
       startClosing()
   }
 
@@ -215,7 +212,23 @@ class TextWindow(
       }
     }
   }
+
+  class TextWindowScriptInterface extends WindowScriptInterface {
+    def updateLines(lines: Array[String]) = syncRun {
+      TextWindow.this.textImage.updateText(lines)
+    }
+  }
+
+  override lazy val scriptInterface = new TextWindowScriptInterface
 }
+
+/**
+ * @param   stayOpenTime    If this is positive, window closes after it's open
+ *                          for this period of time.
+ */
+case class TextWindowOptions(
+  justification: Int = Window.Left,
+  stayOpenTime: Float = 0.0f)
 
 class DamageTextWindow(
   persistent: PersistentState,

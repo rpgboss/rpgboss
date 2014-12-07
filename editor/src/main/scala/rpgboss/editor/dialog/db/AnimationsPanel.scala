@@ -20,7 +20,6 @@ class AnimationsPanel(
   val dbDiag: DatabaseDialog)
   extends RightPaneArrayDatabasePanel(
     owner,
-    "Animations",
     dbDiag.model.enums.animations) {
   def panelName = "Animations"
   def newDefaultInstance() = new Animation()
@@ -128,7 +127,7 @@ class AnimationVisualDialog(
     row().grid(leftLabel("Start:")).add(fStartFrame)
     row().grid(leftLabel("End:")).add(fEndFrame)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
   def okFunc() = {
@@ -179,7 +178,7 @@ class AnimationSoundDialog(
     row().grid(leftLabel("Start time:")).add(fTime)
     row().grid(leftLabel("Sound:")).add(fSound)
 
-    addButtons(cancelBtn, okBtn)
+    addButtons(okBtn, cancelBtn)
   }
 
   def okFunc() = {

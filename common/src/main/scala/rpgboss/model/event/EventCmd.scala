@@ -1,10 +1,12 @@
 package rpgboss.model.event
 
-import EventCmd._
 import rpgboss.model._
 import rpgboss.player._
 import org.json4s.TypeHints
 import org.json4s.ShortTypeHints
+import EventCmd._
+import EventJavascript._
+import rpgboss.player.entity.WindowText
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -20,17 +22,11 @@ trait EventCmd extends HasScriptConstants {
 
   val toJs: Array[String] =
     sections.flatMap(_.toJs)
+
+  def getParameters(): List[EventParameter[_]] = Nil
 }
 
 object EventCmd {
-  trait CodeSection {
-    def toJs: Array[String]
-  }
-
-  case class PlainLines(lines: Array[String]) extends CodeSection {
-    def toJs = lines
-  }
-
   case class CommandList(cmds: Array[EventCmd],
     indent: Int) extends CodeSection {
     def toJs = cmds
@@ -51,9 +47,12 @@ object EventCmd {
 
   val hints = ShortTypeHints(List(
     classOf[EndOfScript],
+    classOf[SetLocalVariable],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
     classOf[AddRemoveItem],
+    classOf[AddRemoveGold],
+    classOf[OpenStore],
     classOf[ShowText],
     classOf[Teleport],
     classOf[SetEventState],
@@ -62,45 +61,6 @@ object EventCmd {
     classOf[RunJs],
     classOf[StartBattle],
     classOf[SetInt])) + EventRenameHints
-
-  case class RawJs(exp: String)
-
-  def toJs(x: Any): String = {
-    import java.util.Locale
-    x match {
-      case RawJs(exp) =>
-        exp
-      case x: String =>
-        """"%s"""".format(x.replaceAll("\"", "\\\\\""))
-      case x: Array[String] =>
-        x.map(toJs).mkString("[", ", ", "]")
-      case x: Double =>
-        "%f".formatLocal(Locale.US, x)
-      case x: Float =>
-        "%f".formatLocal(Locale.US, x)
-      case x: Int =>
-        "%d".formatLocal(Locale.US, x)
-      case x: Long =>
-        "%d".formatLocal(Locale.US, x)
-      case x: Boolean =>
-        "%b".formatLocal(Locale.US, x)
-      case _ =>
-        "undefined"
-    }
-  }
-
-  def jsCall(functionName: String, args: Any*): RawJs = {
-    val argsString = args.map(toJs).mkString(", ")
-    RawJs("""%s(%s)""".format(functionName, argsString))
-  }
-
-  def jsStatement(functionName: String, args: Any*): String = {
-    jsCall(functionName, args: _*).exp + ";"
-  }
-
-  def singleCall(functionName: String, args: Any*): Array[CodeSection] = {
-    Array(PlainLines(Array(jsStatement(functionName, args: _*))))
-  }
 }
 
 /**
@@ -109,6 +69,12 @@ object EventCmd {
  */
 case class EndOfScript() extends EventCmd {
   def sections = Array(PlainLines(Array("")))
+}
+
+case class SetLocalVariable(parameter: EventParameter[_]) extends EventCmd {
+  def sections = Array(PlainLines(
+      Array("var %s = %s;".format(
+          parameter.localVariable, parameter.constant))))
 }
 
 case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
@@ -138,14 +104,58 @@ case class ModifyParty(add: Boolean = true, characterId: Int = 0)
 }
 
 case class AddRemoveItem(
-  var itemId: Int = 0, var add: Boolean = true, var qty: Int = 1)
+  var add: Boolean = true,
+  itemId: IntParameter = IntParameter(),
+  quantity: IntParameter = IntParameter(1))
   extends EventCmd {
-  def qtyDelta = (if (add) 1 else -1) * qty
+  // Backwards-compatibility constructor
+  def this(itemId: Int, add: Boolean, qty: Int) =
+    this(add, IntParameter(itemId), IntParameter(qty))
+
+  def qtyDelta =
+    RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
+
+  override def getParameters() = List(itemId, quantity)
+}
+
+case class AddRemoveGold(
+  var add: Boolean = true,
+  quantity: IntParameter = IntParameter())
+  extends EventCmd {
+  def qtyDelta =
+    RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
+  def sections = singleCall("game.addRemoveGold", qtyDelta)
+
+  override def getParameters() = List(quantity)
+}
+
+case class OpenStore(
+  itemIdsSold: IntArrayParameter = IntArrayParameter(),
+  buyPriceMultiplier: FloatParameter = FloatParameter(1.0f),
+  sellPriceMultiplier: FloatParameter = FloatParameter(0.5f)) extends EventCmd {
+  def sections = singleCall("game.openStore", itemIdsSold, buyPriceMultiplier,
+      sellPriceMultiplier)
+
+  override def getParameters() =
+    List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
 case class ShowText(lines: Array[String] = Array()) extends EventCmd {
-  def sections = singleCall("game.showText", lines)
+  def processedLines = lines.map { l =>
+    // The local variables need to be processed here rather than in the
+    // WindowText class, because only the Javascript has access to the local
+    // variables.
+    val l1 = EventJavascript.toJs(l)
+    val l2 = WindowText.javascriptCtrl.replaceAllIn(
+        l1, rMatch => {
+          """" + %s + """".format(rMatch.group(1))
+        })
+
+    RawJs(l2)
+  }
+
+  def sections = singleCall("game.showText", processedLines)
 }
 
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {

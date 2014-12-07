@@ -5,9 +5,10 @@ import rpgboss.model._
 object EventTrigger extends RpgEnum {
   val NONE = Value(0, "None")
   val BUTTON = Value(1, "Button")
-  val PLAYERTOUCH = Value(2, "Player Touch")
-  val EVENTTOUCH = Value(3, "Event Touch")
-  val ANYTOUCH = Value(4, "Any Touch")
+  val PLAYERTOUCH = Value(2, "Touch by Player")
+  val EVENTTOUCH = Value(3, "Touch by Other Event")
+  val ANYTOUCH = Value(4, "Touch by Any")
+  val AUTORUN = Value(5, "Autorun (parallel)")
 
   def default = BUTTON
 }
@@ -23,19 +24,31 @@ object EventHeight extends RpgEnum {
 import EventTrigger._
 
 /**
- * Guaranteed to have at least one state
+ * @param   states          Guaranteed to be size at least 1, unless this event
+ *                          is an event instance, in which case size must be 0.
+ * @param   eventClassId    -1 if normal event. Otherwise, the id of the event
+ *                          class this is an instance of.
+ * @param   params          Variables to bind for the event class.
  */
 case class RpgEvent(
-  id: Int,
-  var name: String,
-  var x: Float,
-  var y: Float,
-  var states: Array[RpgEventState])
+  id: Int = 0,
+  var name: String = "",
+  var x: Float = 0,
+  var y: Float = 0,
+  var states: Array[RpgEventState] = Array(RpgEventState()),
+  var eventClassId: Int = -1,
+  var params: Array[EventParameter[_]] = Array()) {
+  def isInstance = eventClassId >= 0
+}
 
 object RpgEvent {
   def blank(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
              Array(RpgEventState()))
+
+  def blankInstance(idFromMap: Int, x: Float, y: Float) =
+    RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
+             Array.empty, 0)
 }
 
 /**
@@ -47,12 +60,23 @@ object RpgEvent {
  */
 case class RpgEventState(
   var switchCondition: Option[EventCondition] = None,
-  var trigger: Int = EventTrigger.BUTTON.id,
   var sameAppearanceAsPrevState: Boolean = true,
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,
-  var cmds: Array[EventCmd] = RpgEventState.defaultCmds,
-  var runOnceThenIncrementState: Boolean = false)
+  var affixDirection: Boolean = false,
+
+  var trigger: Int = EventTrigger.BUTTON.id,
+  var runOnceThenIncrementState: Boolean = false,
+
+  var cmds: Array[EventCmd] = RpgEventState.defaultCmds) {
+
+  def getFreeVariables() = {
+    // All variables are free right now since there's exposed EventCmd to
+    // bind them (for now).
+    cmds.flatMap(_.getParameters().filter(
+        _.valueTypeId == EventParameterValueType.LocalVariable.id))
+  }
+}
 
 object RpgEventState {
   def defaultCmds: Array[EventCmd] = Array()

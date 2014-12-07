@@ -48,7 +48,8 @@ class RpgMapSpec extends UnitSpec {
     map1.metadata.editorCenterX = 42
 
     val state = RpgEventState(sprite = Some(SpriteSpec("testSpriteName", 0)))
-    md1.events = Map(1 -> RpgEvent(1, "TestEvent", 5f, 5f, Array(state)))
+    md1.events = Map(1 -> RpgEvent(
+        1, "TestEvent", 5f, 5f, Array(state)))
 
     // Add some differing data to each layer.
     md1.botLayer(1)(1) = 1
@@ -65,5 +66,16 @@ class RpgMapSpec extends UnitSpec {
     md2.events should deepEqual (md1.events)
     md2 should deepEqual (md1)
     map2 should deepEqual (map1)
+  }
+
+  "RpgMapData" should "deepcopy correctly" in {
+    val md1 = RpgMap.defaultMapData()
+    val state = RpgEventState(sprite = Some(SpriteSpec("testSpriteName", 0)))
+    md1.events = Map(1 -> RpgEvent(
+        1, "TestEvent", 5f, 5f, Array(state)))
+
+    val md2 = md1.deepcopy()
+    System.identityHashCode(md2.events(1)) should equal (
+        System.identityHashCode(md2.events(1)))
   }
 }
