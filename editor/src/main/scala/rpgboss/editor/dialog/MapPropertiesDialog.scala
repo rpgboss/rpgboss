@@ -10,6 +10,7 @@ import rpgboss.editor.resourceselector.MusicField
 import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.misc.RandomEncounterSettingsPanel
+import rpgboss.editor.Internationalized._
 
 class MapPropertiesDialog(
   owner: Window,
@@ -77,22 +78,22 @@ class MapPropertiesDialog(
     contents += new BoxPanel(Orientation.Horizontal) {
       contents += new DesignGridPanel {
         row()
-          .grid(leftLabel("Map ID:")).add(new TextField {
+          .grid(leftLabel(getMessage("Map_ID") + ":")).add(new TextField {
             text = initialMap.id
             enabled = false
           })
 
-        row().grid(leftLabel("Map Title:")).add(fTitle)
+        row().grid(leftLabel(getMessage("Map_Title") + ":")).add(fTitle)
 
-        row().grid(leftLabel("Dimensions:"))
-          .add(leftLabel("Width")).add(leftLabel("Height"))
+        row().grid(leftLabel(getMessage("Dimensions") + ":"))
+          .add(leftLabel(getMessage("Width"))).add(leftLabel(getMessage("Height")))
         row().grid()
           .add(fWidth).add(fHeight)
 
-        row().grid(leftLabel("Music:")).add(fChangeMusic)
+        row().grid(leftLabel(getMessage("Music") + ":")).add(fChangeMusic)
         row().grid().add(fMusic)
 
-        row().grid(leftLabel("Tilesets:")).add(fTilesets)
+        row().grid(leftLabel(getMessage("Tilesets") + ":")).add(fTilesets)
       }
 
       contents += fRandomEncounters

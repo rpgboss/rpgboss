@@ -9,6 +9,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.dialog.DatabaseDialog
+import rpgboss.editor.Internationalized._
 
 class EnumerationsPanel(
   owner: Window,
@@ -16,7 +17,7 @@ class EnumerationsPanel(
   val dbDiag: DatabaseDialog)
   extends DesignGridPanel
   with DatabasePanel {
-  def panelName = "Enumerations"
+  def panelName = getMessage("Enumerations")
   layout.labelAlignment(LabelAlignment.RIGHT)
 
   val fElements =
@@ -26,7 +27,7 @@ class EnumerationsPanel(
       dbDiag.model.enums.elements) {
 
       override def onListDataUpdate() = {
-        logger.info("Elements updated")
+        logger.info(getMessage("Elements_Updated"))
         dbDiag.model.enums.elements = dataAsArray
       }
     }

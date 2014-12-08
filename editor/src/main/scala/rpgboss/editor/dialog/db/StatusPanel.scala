@@ -14,6 +14,7 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 
 import net.java.dev.designgridlayout._
+import rpgboss.editor.Internationalized._
 
 class StatusPanel(
   owner: Window,
@@ -23,7 +24,7 @@ class StatusPanel(
     owner,
     dbDiag.model.enums.statusEffects)
   with DatabasePanel {
-  def panelName = "Status Effects"
+  def panelName = getMessage("Status_Effects")
   def newDefaultInstance() = new StatusEffect()
 
   def editPaneForItem(idx: Int, model: StatusEffect) = {
@@ -59,14 +60,14 @@ class StatusPanel(
           50,
           model.maxStacks = _)
 
-        row().grid(lbl("Name:")).add(fName)
+        row().grid(lbl(getMessage("Name") + ":")).add(fName)
 
-        row().grid(lbl("State expiration in rounds:")).add(fReleaseTime)
-        row().grid(lbl("Release chance after expiry:")).add(fReleaseChance)
+        row().grid(lbl(getMessage("State_Expiration_In_Rounds") + ":")).add(fReleaseTime)
+        row().grid(lbl(getMessage("Release_Chance_After_Expiry") + ":")).add(fReleaseChance)
 
-        row().grid(lbl("Release after battle:")).add(fReleaseOnBattleEnd)
+        row().grid(lbl(getMessage("Release_After_Battle") + ":")).add(fReleaseOnBattleEnd)
 
-        row().grid(lbl("Maximum stacks:")).add(fMaxStacks)
+        row().grid(lbl(getMessage("Maximum_Stacks") + ":")).add(fMaxStacks)
       }
 
       val rightPane =

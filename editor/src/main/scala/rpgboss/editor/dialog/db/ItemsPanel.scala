@@ -11,6 +11,7 @@ import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import scala.swing._
 import scala.swing.event._
+import rpgboss.editor.Internationalized._
 
 class ItemsPanel(
   owner: Window,
@@ -20,7 +21,7 @@ class ItemsPanel(
     owner,
     dbDiag.model.enums.items)
   with DatabasePanel {
-  def panelName = "Items/Equipment"
+  def panelName = getMessage("Items_Equipment")
   def newDefaultInstance() = new Item()
 
   def editPaneForItem(idx: Int, model: Item) = {
@@ -102,24 +103,24 @@ class ItemsPanel(
 
         setEnabledFields()
 
-        row().grid(lbl("Name:")).add(fName)
-        row().grid(lbl("Description:")).add(fDesc)
+        row().grid(lbl(getMessage("Name") + ":")).add(fName)
+        row().grid(lbl(getMessage("Description") + ":")).add(fDesc)
         row()
-          .grid(lbl("Sellable:")).add(fSellable)
-          .grid(lbl("Price:")).add(fPrice)
+          .grid(lbl(getMessage("Sellable") + ":")).add(fSellable)
+          .grid(lbl(getMessage("Price") + ":")).add(fPrice)
 
         row()
-          .grid(lbl("Item type:")).add(fItemType)
+          .grid(lbl(getMessage("Item_Type") + ":")).add(fItemType)
 
         row()
-          .grid(lbl("Effect scope:")).add(fScope)
-          .grid(lbl("Item access:")).add(fAccess)
+          .grid(lbl(getMessage("Effect_Scope") + ":")).add(fScope)
+          .grid(lbl(getMessage("Item_Access") + ":")).add(fAccess)
 
         row()
-          .grid(lbl("Equip type:")).add(fEquipType)
+          .grid(lbl(getMessage("Equip_Type") + ":")).add(fEquipType)
         row().grid().add(fUseOnAttack)
         row()
-          .grid(lbl("On use skill:")).add(fOnUseSkillId)
+          .grid(lbl(getMessage("On_Use_Skill") + ":")).add(fOnUseSkillId)
       }
 
       contents += leftPane

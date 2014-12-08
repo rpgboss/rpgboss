@@ -68,7 +68,7 @@ class NewEvtCmdBox(
     row().grid().add(btnEvtCmd(getMessage("Add_Remove_Gold"), AddRemoveGold()))
     row().grid().add(btnEvtCmd(getMessage("Open_Store"), OpenStore()))
 
-    row().grid().add(leftLabel(getMessage("Other" + ":")))
+    row().grid().add(leftLabel(getMessage("Other") + ":"))
     row().grid().add(btnEvtCmd(getMessage("Change_Event_State"), SetEventState()))
     row().grid().add(btnEvtCmd(getMessage("Start_Battle"), StartBattle()))
     row().grid().add(btnEvtCmd(getMessage("Run_Javascript"), RunJs()))
