@@ -43,8 +43,8 @@ class StatProgressionPanel(model: StatProgressions)
   }
 
   val fExp = progressionEditor(getMessage("EXP_To_Level-Up"), model.exp)
-  val fMhp = progressionEditor(getMessage("Max HP"), model.mhp)
-  val fMmp = progressionEditor(getMessage("Max MP"), model.mmp)
+  val fMhp = progressionEditor(getMessage("Max_HP"), model.mhp)
+  val fMmp = progressionEditor(getMessage("Max_MP"), model.mmp)
   val fAtk = progressionEditor(getMessage("Attack"), model.atk)
   val fSpd = progressionEditor(getMessage("Speed"), model.spd)
   val fMag = progressionEditor(getMessage("Magic"), model.mag)
