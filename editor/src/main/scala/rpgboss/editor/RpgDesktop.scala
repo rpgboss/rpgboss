@@ -6,6 +6,7 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import java.lang.Thread.UncaughtExceptionHandler
 import javax.swing.UIManager
 import javax.imageio.ImageIO
+import rpgboss.editor.Internationalized._
 
 object RpgDesktop
   extends SwingApplication
@@ -16,7 +17,7 @@ object RpgDesktop
     minimumSize = new Dimension(600, 400)
     resizable = false
     centerOnScreen()
-    title = "rpgboss beta"
+    title = getMessage("rpgboss")
 
     import javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE
     peer.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE)

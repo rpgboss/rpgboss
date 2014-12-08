@@ -8,6 +8,7 @@ import javax.swing.BorderFactory
 import rpgboss.model._
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.editor.uibase.FloatSpinner
+import rpgboss.editor.Internationalized._
 
 /**
  * Edits the model in-place.
@@ -35,20 +36,20 @@ class StatProgressionPanel(model: StatProgressions)
       val mSpin = numSpinner(model.perLevel, model.perLevel = _)
       val bSpin = numSpinner(model.base, model.base = _)
 
-      row().grid(leftLabel("L1 Base:")).add(bSpin)
-      row().grid(leftLabel("Per level:")).add(mSpin)
-      row().grid(leftLabel("At L50:")).add(lvl50Val)
+      row().grid(leftLabel(getMessage("L1_Base") + ":")).add(bSpin)
+      row().grid(leftLabel(getMessage("Per_level") + ":")).add(mSpin)
+      row().grid(leftLabel(getMessage("At_L50") + ":")).add(lvl50Val)
     }
   }
 
-  val fExp = progressionEditor("EXP to Level-Up", model.exp)
-  val fMhp = progressionEditor("Max HP", model.mhp)
-  val fMmp = progressionEditor("Max MP", model.mmp)
-  val fAtk = progressionEditor("Attack", model.atk)
-  val fSpd = progressionEditor("Speed", model.spd)
-  val fMag = progressionEditor("Magic", model.mag)
-  val fArm = progressionEditor("Base Armor", model.arm)
-  val fMre = progressionEditor("Magic Resist", model.mre)
+  val fExp = progressionEditor(getMessage("EXP_To_Level-Up"), model.exp)
+  val fMhp = progressionEditor(getMessage("Max_HP"), model.mhp)
+  val fMmp = progressionEditor(getMessage("Max_MP"), model.mmp)
+  val fAtk = progressionEditor(getMessage("Attack"), model.atk)
+  val fSpd = progressionEditor(getMessage("Speed"), model.spd)
+  val fMag = progressionEditor(getMessage("Magic"), model.mag)
+  val fArm = progressionEditor(getMessage("Base_Armor"), model.arm)
+  val fMre = progressionEditor(getMessage("Magic_Resist"), model.mre)
 
   row().grid().add(fMhp, fExp)
   row().grid().add(fMmp, fSpd)

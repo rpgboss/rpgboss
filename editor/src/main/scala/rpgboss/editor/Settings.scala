@@ -4,6 +4,7 @@ import java.util.Properties
 
 import java.io._
 import rpgboss.lib.FileHelper._
+import rpgboss.editor.Internationalized._
 
 object Settings {
   val props = new Properties()
@@ -20,7 +21,7 @@ object Settings {
   def set(k: String, v: String) = {
     props.setProperty(k, v)
     propsFile.getFos().map({ fos =>
-      props.store(fos, "rpgboss editor settings")
+      props.store(fos, getMessage("rpgboss_Editor_Settings"))
       true
     })
   }
