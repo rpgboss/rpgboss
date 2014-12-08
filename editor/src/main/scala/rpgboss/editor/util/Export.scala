@@ -8,6 +8,7 @@ import rpgboss.save.SaveFile
 import rpgboss.util.ProjectCreator
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import rpgboss.editor.Internationalized._
 
 object Zip {
   def zipFolder(folder: File, outputZip: File, needUnixPerm: Boolean) = {
@@ -46,15 +47,15 @@ object Export {
       SaveFile.file(dir, i).delete()
     }
 
-    FileUtils.deleteDirectory(new File(dir, "export"))
+    FileUtils.deleteDirectory(new File(dir, getMessage("Export")))
   }
 
   def export(project: Project, executableJarFile: File): Unit = {
-    val exportDir = new File(project.dir, "export")
+    val exportDir = new File(project.dir, getMessage("Export"))
     exportDir.mkdir()
 
     if (!exportDir.isDirectory())
-      throw new RuntimeException("Cannot write to export directory.")
+      throw new RuntimeException(getMessage("Cannot_Write_To_Export_Directory"))
 
     val gamedataDir = Files.createTempDir()
     FileUtils.copyDirectory(project.dir, gamedataDir)
