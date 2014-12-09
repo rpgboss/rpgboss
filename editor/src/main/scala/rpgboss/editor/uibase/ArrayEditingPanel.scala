@@ -165,12 +165,15 @@ class ArrayDuplicateDialog(
 class StringArrayEditingPanel(
   owner: Window,
   arrayLabel: String,
-  initialAry: Array[String],
+  initial: Array[String],
+  updateF: Array[String] => Unit,
   minElems: Int = 1,
   maxElems: Int = 1024)
-  extends ArrayEditingPanel(owner, initialAry, minElems, maxElems) {
+  extends ArrayEditingPanel(owner, initial, minElems, maxElems) {
   def newDefaultInstance() = ""
   def label(a: String) = a
+
+  override def onListDataUpdate() = updateF(dataAsArray)
 
   def editPaneForItem(idx: Int, item: String) = {
     new TextField with DisposableComponent {

@@ -24,23 +24,15 @@ class EnumerationsPanel(
     new StringArrayEditingPanel(
       owner,
       "Elements",
-      dbDiag.model.enums.elements) {
-
-      override def onListDataUpdate() = {
-        logger.info(getMessage("Elements_Updated"))
-        dbDiag.model.enums.elements = dataAsArray
-      }
-    }
+      dbDiag.model.enums.elements,
+      dbDiag.model.enums.elements = _)
 
   val fEquipTypes =
     new StringArrayEditingPanel(
       owner,
       "Equipment Types",
-      dbDiag.model.enums.equipTypes) {
-      override def onListDataUpdate() = {
-        dbDiag.model.enums.equipTypes = dataAsArray
-      }
-    }
+      dbDiag.model.enums.equipTypes,
+      dbDiag.model.enums.equipTypes = _)
 
   row.grid().add(fElements).add(fEquipTypes)
 }
