@@ -166,8 +166,8 @@ case class ShowText(lines: Array[String] = Array()) extends EventCmd {
  * @param   innerCmds   Has one more element than choices to account for the
  *                      default case.
  */
-case class GetChoice(choices: Array[String] = Array("Yes", "No"),
-                     allowCancel: Boolean = false,
+case class GetChoice(var choices: Array[String] = Array("Yes", "No"),
+                     var allowCancel: Boolean = false,
                      innerCmds: Array[Array[EventCmd]] =
                        Array(Array(), Array(), Array())) extends EventCmd {
   def sections = {

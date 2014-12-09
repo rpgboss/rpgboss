@@ -86,4 +86,10 @@ class GetChoiceCmdDialog(
   successF: (GetChoice) => Any)
   extends EventCmdDialog(owner, sm, "Get Choice", initial, successF) {
 
+  override def extraFields = Seq(
+    TitledComponent("", new StringArrayEditingPanel(
+        owner, "Choices", model.choices, model.choices = _,
+        minElems = 2, maxElems = 4)),
+    TitledComponent("", boolField("Allow Cancel", model.allowCancel,
+        model.allowCancel = _)))
 }

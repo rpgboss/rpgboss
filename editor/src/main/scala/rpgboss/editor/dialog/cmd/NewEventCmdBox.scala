@@ -13,7 +13,7 @@ import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.dialog.EventDialog
 import rpgboss.editor.Internationalized._
 
-class NewEvtCmdBox(
+class NewEventCmdBox(
   sm: StateMaster,
   owner: Window,
   eventLoc: Option[MapLoc],
@@ -28,14 +28,14 @@ class NewEvtCmdBox(
 
   def btnEvtCmd(title: String, e: EventCmd) = {
     new Button() {
-      action = Action(title) {
+      action = Action(title) ({
         val d = EventCmdDialog.dialogFor(
           owner,
           sm,
           eventLoc.map(_.map),
           e,
           evtCmd => {
-            NewEvtCmdBox.this.close()
+            NewEventCmdBox.this.close()
             cmdBox.insertCmd(idxToInsert, evtCmd)
           })
 
@@ -43,15 +43,16 @@ class NewEvtCmdBox(
           d.open()
         } else {
           cmdBox.insertCmd(idxToInsert, e)
-          NewEvtCmdBox.this.close()
+          NewEventCmdBox.this.close()
         }
-      }
+      })
     }
   }
 
   contents = new DesignGridPanel {
     row().grid().add(leftLabel(getMessageColon("Windows")))
     row().grid().add(btnEvtCmd(getMessage("Show_Text"), ShowText()))
+    row().grid().add(btnEvtCmd("Get Choice", GetChoice()))
 
     row().grid().add(leftLabel(getMessageColon("Movement")))
     row().grid().add(btnEvtCmd(getMessage("Teleport_Player"),

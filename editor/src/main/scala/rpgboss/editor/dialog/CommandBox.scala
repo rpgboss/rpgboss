@@ -6,7 +6,7 @@ import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.editor.dialog.cmd._
 import rpgboss.editor.StateMaster
-import rpgboss.editor.dialog.cmd.NewEvtCmdBox
+import rpgboss.editor.dialog.cmd.NewEventCmdBox
 import java.awt.event.MouseEvent
 import rpgboss.editor.uibase.RpgPopupMenu
 import javax.swing.UIManager
@@ -185,7 +185,7 @@ class CommandBox(
   def newCmdDialog(indexToInsert: Int) = {
     assert(indexToInsert >= 0)
     assert(indexToInsert <= model.length)
-    val d = new NewEvtCmdBox(sm, owner, eventLoc, this, indexToInsert)
+    val d = new NewEventCmdBox(sm, owner, eventLoc, this, indexToInsert)
     d.open()
   }
 
