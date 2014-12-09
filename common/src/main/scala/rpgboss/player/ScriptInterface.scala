@@ -310,6 +310,16 @@ class ScriptInterface(
       activeScreen.layout.south(640, 180),
       timePerChar = 0.02f)
 
+  def getChoice(choices: Array[String], allowCancel: Boolean) = {
+    val window = newChoiceWindow(
+        choices,
+        activeScreen.layout.south(640, 180),
+        TextChoiceWindowOptions(displayedLines = 4, allowCancel = allowCancel))
+    val choice = window.getChoice()
+    window.close()
+    choice
+  }
+
   def getPlayerEntityInfo(): EntityInfo = syncRun {
     mapScreen.getPlayerEntityInfo()
   }

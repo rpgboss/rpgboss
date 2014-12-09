@@ -62,6 +62,28 @@ class EventCmdSpec extends UnitSpec {
       """game.showText(["Hello " + getItemName(itemId) + ""]);"""))
   }
 
+  "EventCmd" should "produce correct script for GetChoice" in {
+    val e = GetChoice(Array("Yes", "No"), true,
+        Array(
+            Array(ShowText(Array("Hello"))),
+            Array(ShowText(Array("Goodbye"))),
+            Array(ShowText(Array("Default")))))
+
+    e.toJs should deepEqual(Array(
+      """switch(game.getChoice(["Yes", "No"], true)) {""",
+      """  case 0:""",
+      """    game.showText(["Hello"]);""",
+      """    break;""",
+      """  case 1:""",
+      """    game.showText(["Goodbye"]);""",
+      """    break;""",
+      """  default:""",
+      """    game.showText(["Default"]);""",
+      """    break;""",
+      """}"""
+    ))
+  }
+
   "EventCmd" should "produce correct script in comma-decimal locales" in {
     val e = Teleport(MapLoc("mapname", 1.5f, 5.5f), 0)
 

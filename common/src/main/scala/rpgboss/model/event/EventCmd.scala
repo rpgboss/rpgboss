@@ -7,6 +7,9 @@ import org.json4s.ShortTypeHints
 import EventCmd._
 import EventJavascript._
 import rpgboss.player.entity.WindowText
+import scala.collection.mutable.ArrayBuffer
+import rpgboss.lib.Utils
+import rpgboss.lib.ArrayUtils
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -54,6 +57,7 @@ object EventCmd {
     classOf[AddRemoveGold],
     classOf[OpenStore],
     classOf[ShowText],
+    classOf[GetChoice],
     classOf[Teleport],
     classOf[SetEventState],
     classOf[IncrementEventState],
@@ -156,6 +160,46 @@ case class ShowText(lines: Array[String] = Array()) extends EventCmd {
   }
 
   def sections = singleCall("game.showText", processedLines)
+}
+
+/**
+ * @param   innerCmds   Has one more element than choices to account for the
+ *                      default case.
+ */
+case class GetChoice(choices: Array[String] = Array("Yes", "No"),
+                     allowCancel: Boolean = false,
+                     innerCmds: Array[Array[EventCmd]] =
+                       Array(Array(), Array(), Array())) extends EventCmd {
+  def sections = {
+    val buf = new ArrayBuffer[CodeSection]()
+
+    def caseSections(caseLabel: String, code: Array[EventCmd]) = Array(
+      PlainLines(Array("  %s:".format(caseLabel))),
+      CommandList(code, 2),
+      PlainLines(Array("    break;")))
+
+    buf += PlainLines(Array(
+      RawJs("switch(game.getChoice(%s, %b)) {".format(
+          EventJavascript.toJs(choices), allowCancel)).exp))
+
+    for (i <- 0 until choices.size) {
+      caseSections("case %d".format(i), innerCmds(i)).foreach(buf += _)
+    }
+
+    caseSections("default", innerCmds.last).foreach(buf += _)
+
+    buf += PlainLines(Array(RawJs("}").exp))
+
+    buf.toArray
+  }
+
+  override def copyWithNewInnerCmds(sectionI: Int,
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    val newArray = ArrayUtils.normalizedAry(
+        innerCmds, choices.size + 1, choices.size + 1, () => Array[EventCmd]())
+    newArray.update(sectionI, newInnerCmds)
+    copy(innerCmds = newArray)
+  }
 }
 
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
