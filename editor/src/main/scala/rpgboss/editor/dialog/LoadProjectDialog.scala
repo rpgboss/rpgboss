@@ -81,10 +81,10 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
 
   contents = new DesignGridPanel {
 
-    row().grid().add(leftLabel(getMessage("Directory_For_All_Projects") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Directory_For_All_Projects")))
     row().grid().add(rootChooser)
 
-    row().grid().add(leftLabel(getMessage("Projects") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Projects")))
     row().grid().add(new ScrollPane {
       preferredSize = new Dimension(300, 150)
       contents = projList

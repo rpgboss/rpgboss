@@ -57,19 +57,19 @@ class SystemPanel(
   val fSoundCannot = new SoundField(owner, sm, model.startup.soundCannot,
       model.startup.soundCannot = _)
 
-  row().grid(lbl(getMessage("Game_Title") + ":")).add(fGameTitle)
-  row().grid(lbl(getMessage("Title_Picture") + ":")).add(fTitlepic)
-  row().grid(lbl(getMessage("Title_Music") + ":")).add(fTitleMusic)
+  row().grid(lbl(getMessageColon("Game_Title"))).add(fGameTitle)
+  row().grid(lbl(getMessageColon("Title_Picture"))).add(fTitlepic)
+  row().grid(lbl(getMessageColon("Title_Music"))).add(fTitleMusic)
 
-  row().grid(lbl(getMessage("X_Resolution") + ":")).add(fScreenW)
-  row().grid(lbl(getMessage("Y_Resolution") + ":")).add(fScreenH)
+  row().grid(lbl(getMessageColon("X_Resolution"))).add(fScreenW)
+  row().grid(lbl(getMessageColon("Y_Resolution"))).add(fScreenH)
 
-  row().grid(lbl(getMessage("Windowskin") + ":")).add(fWindowskin)
-  row().grid(lbl(getMessage("Message_Font") + ":")).add(fMsgfont)
-  row().grid(lbl(getMessage("Font_Size") + ":")).add(fFontsize)
+  row().grid(lbl(getMessageColon("Windowskin"))).add(fWindowskin)
+  row().grid(lbl(getMessageColon("Message_Font"))).add(fMsgfont)
+  row().grid(lbl(getMessageColon("Font_Size"))).add(fFontsize)
 
-  row().grid(lbl(getMessage("Cursor_Sound") + ":")).add(fSoundCursor)
-  row().grid(lbl(getMessage("Select_Sound") + ":")).add(fSoundSelect)
-  row().grid(lbl(getMessage("Cancel_Sound") + ":")).add(fSoundCancel)
-  row().grid(lbl(getMessage("Cannot_Sound") + ":")).add(fSoundCannot)
+  row().grid(lbl(getMessageColon("Cursor_Sound"))).add(fSoundCursor)
+  row().grid(lbl(getMessageColon("Select_Sound"))).add(fSoundSelect)
+  row().grid(lbl(getMessageColon("Cancel_Sound"))).add(fSoundCancel)
+  row().grid(lbl(getMessageColon("Cannot_Sound"))).add(fSoundCannot)
 }

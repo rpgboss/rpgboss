@@ -62,26 +62,26 @@ class EnemiesPanel(
           model.attackSkillId,
           model.attackSkillId = _)
 
-      row().grid(leftLabel(getMessage("Name") + ":")).add(fName)
+      row().grid(leftLabel(getMessageColon("Name"))).add(fName)
 
-      row().grid(leftLabel(getMessage("Battler") + ":")).add(fBattler)
+      row().grid(leftLabel(getMessageColon("Battler"))).add(fBattler)
 
-      row().grid(leftLabel(getMessage("Level") + ":")).add(fLevel)
+      row().grid(leftLabel(getMessageColon("Level"))).add(fLevel)
 
-      row().grid(leftLabel(getMessage("Max_HP") + ":")).add(fMhp)
-      row().grid(leftLabel(getMessage("Max_MP") + ":")).add(fMmp)
+      row().grid(leftLabel(getMessageColon("Max_HP"))).add(fMhp)
+      row().grid(leftLabel(getMessageColon("Max_MP"))).add(fMmp)
 
-      row().grid(leftLabel(getMessage("Attack") + ":")).add(fAtk)
-      row().grid(leftLabel(getMessage("Magic") + ":")).add(fMag)
+      row().grid(leftLabel(getMessageColon("Attack"))).add(fAtk)
+      row().grid(leftLabel(getMessageColon("Magic"))).add(fMag)
 
-      row().grid(leftLabel(getMessage("Armor") + ":")).add(fArm)
-      row().grid(leftLabel(getMessage("Magic_Resist") + ":")).add(fMre)
+      row().grid(leftLabel(getMessageColon("Armor"))).add(fArm)
+      row().grid(leftLabel(getMessageColon("Magic_Resist"))).add(fMre)
 
-      row().grid(leftLabel(getMessage("Speed") + ":")).add(fSpd)
-      row().grid(leftLabel(getMessage("EXP_Value") + ":")).add(fExpValue)
-      row().grid(leftLabel(getMessage("Dropped_Gold") + ":")).add(fDroppedGold)
+      row().grid(leftLabel(getMessageColon("Speed"))).add(fSpd)
+      row().grid(leftLabel(getMessageColon("EXP_Value"))).add(fExpValue)
+      row().grid(leftLabel(getMessageColon("Dropped_Gold"))).add(fDroppedGold)
 
-      row().grid(leftLabel(getMessage("Attack_Skill") + ":")).add(fAttackSkillId)
+      row().grid(leftLabel(getMessageColon("Attack_Skill"))).add(fAttackSkillId)
     }
 
     val fItemDrops = new DroppedItemListPanel(

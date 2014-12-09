@@ -103,24 +103,24 @@ class ItemsPanel(
 
         setEnabledFields()
 
-        row().grid(lbl(getMessage("Name") + ":")).add(fName)
-        row().grid(lbl(getMessage("Description") + ":")).add(fDesc)
+        row().grid(lbl(getMessageColon("Name"))).add(fName)
+        row().grid(lbl(getMessageColon("Description"))).add(fDesc)
         row()
-          .grid(lbl(getMessage("Sellable") + ":")).add(fSellable)
-          .grid(lbl(getMessage("Price") + ":")).add(fPrice)
+          .grid(lbl(getMessageColon("Sellable"))).add(fSellable)
+          .grid(lbl(getMessageColon("Price"))).add(fPrice)
 
         row()
-          .grid(lbl(getMessage("Item_Type") + ":")).add(fItemType)
+          .grid(lbl(getMessageColon("Item_Type"))).add(fItemType)
 
         row()
-          .grid(lbl(getMessage("Effect_Scope") + ":")).add(fScope)
-          .grid(lbl(getMessage("Item_Access") + ":")).add(fAccess)
+          .grid(lbl(getMessageColon("Effect_Scope"))).add(fScope)
+          .grid(lbl(getMessageColon("Item_Access"))).add(fAccess)
 
         row()
-          .grid(lbl(getMessage("Equip_Type") + ":")).add(fEquipType)
+          .grid(lbl(getMessageColon("Equip_Type"))).add(fEquipType)
         row().grid().add(fUseOnAttack)
         row()
-          .grid(lbl(getMessage("On_Use_Skill") + ":")).add(fOnUseSkillId)
+          .grid(lbl(getMessageColon("On_Use_Skill"))).add(fOnUseSkillId)
       }
 
       contents += leftPane

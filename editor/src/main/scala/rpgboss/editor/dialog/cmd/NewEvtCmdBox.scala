@@ -50,25 +50,25 @@ class NewEvtCmdBox(
   }
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel(getMessage("Windows") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Windows")))
     row().grid().add(btnEvtCmd(getMessage("Show_Text"), ShowText()))
 
-    row().grid().add(leftLabel(getMessage("Movement") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Movement")))
     row().grid().add(btnEvtCmd(getMessage("Teleport_Player"),
       Teleport(eventLoc.getOrElse(MapLoc()), Transitions.FADE.id)))
     row().grid().add(btnEvtCmd(getMessage("Move_Event"), MoveEvent()))
     row().grid().add(btnEvtCmd(getMessage("Lock_Player_Movement"),
       LockPlayerMovement(Array())))
 
-    row().grid().add(leftLabel(getMessage("Party") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Party")))
     row().grid().add(btnEvtCmd(getMessage("Modify_Party"), ModifyParty()))
 
-    row().grid().add(leftLabel(getMessage("Inventory") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Inventory")))
     row().grid().add(btnEvtCmd(getMessage("Add_Remove_Item"), AddRemoveItem()))
     row().grid().add(btnEvtCmd(getMessage("Add_Remove_Gold"), AddRemoveGold()))
     row().grid().add(btnEvtCmd(getMessage("Open_Store"), OpenStore()))
 
-    row().grid().add(leftLabel(getMessage("Other") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Other")))
     row().grid().add(btnEvtCmd(getMessage("Change_Event_State"), SetEventState()))
     row().grid().add(btnEvtCmd(getMessage("Start_Battle"), StartBattle()))
     row().grid().add(btnEvtCmd(getMessage("Run_Javascript"), RunJs()))

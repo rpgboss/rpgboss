@@ -62,23 +62,23 @@ class CharactersPanel(
         MAXLEVEL,
         model.maxLevel = _)
 
-      row().grid(leftLabel(getMessage("Default_name") + ":")).add(fName)
+      row().grid(leftLabel(getMessageColon("Default_name"))).add(fName)
 
-      row().grid(leftLabel(getMessage("Subtitle") + ":")).add(fSubtitle)
+      row().grid(leftLabel(getMessageColon("Subtitle"))).add(fSubtitle)
 
       row()
-        .grid(leftLabel(getMessage("Description") + ":"))
+        .grid(leftLabel(getMessageColon("Description")))
         .add(fDescription)
 
-      row().grid(leftLabel(getMessage("Sprite") + ":")).add(fSprite)
+      row().grid(leftLabel(getMessageColon("Sprite"))).add(fSprite)
 
       row()
-        .grid(leftLabel(getMessage("Class") + ":")).add(fClass)
+        .grid(leftLabel(getMessageColon("Class"))).add(fClass)
 
       row()
-        .grid(leftLabel(getMessage("Initial_level") + ":"))
+        .grid(leftLabel(getMessageColon("Initial_level")))
         .add(fInitLevel)
-        .grid(leftLabel(getMessage("Max_level") + ":"))
+        .grid(leftLabel(getMessageColon("Max_level")))
         .add(fMaxLevel)
     }
 

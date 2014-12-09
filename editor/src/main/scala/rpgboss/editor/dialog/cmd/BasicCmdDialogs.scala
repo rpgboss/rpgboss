@@ -38,10 +38,10 @@ class StartBattleCmdDialog(
   }
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel(getMessage("Encounter") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Encounter")))
     row().grid().add(encounterSelect)
 
-    row().grid().add(leftLabel(getMessage("Battle_Background") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Battle_Background")))
     row().grid().add(battleBgSelect)
 
     addButtons(okBtn, cancelBtn)

@@ -78,22 +78,22 @@ class MapPropertiesDialog(
     contents += new BoxPanel(Orientation.Horizontal) {
       contents += new DesignGridPanel {
         row()
-          .grid(leftLabel(getMessage("Map_ID") + ":")).add(new TextField {
+          .grid(leftLabel(getMessageColon("Map_ID"))).add(new TextField {
             text = initialMap.id
             enabled = false
           })
 
-        row().grid(leftLabel(getMessage("Map_Title") + ":")).add(fTitle)
+        row().grid(leftLabel(getMessageColon("Map_Title"))).add(fTitle)
 
-        row().grid(leftLabel(getMessage("Dimensions") + ":"))
+        row().grid(leftLabel(getMessageColon("Dimensions")))
           .add(leftLabel(getMessage("Width"))).add(leftLabel(getMessage("Height")))
         row().grid()
           .add(fWidth).add(fHeight)
 
-        row().grid(leftLabel(getMessage("Music") + ":")).add(fChangeMusic)
+        row().grid(leftLabel(getMessageColon("Music"))).add(fChangeMusic)
         row().grid().add(fMusic)
 
-        row().grid(leftLabel(getMessage("Tilesets") + ":")).add(fTilesets)
+        row().grid(leftLabel(getMessageColon("Tilesets"))).add(fTilesets)
       }
 
       contents += fRandomEncounters

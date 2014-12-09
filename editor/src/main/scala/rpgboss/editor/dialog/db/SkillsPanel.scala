@@ -42,10 +42,10 @@ class SkillsPanel(
           model.animationId,
           model.animationId = _)
 
-        row().grid(lbl(getMessage("Name") + ":")).add(fName)
-        row().grid(lbl(getMessage("Scope") + ":")).add(fScope)
-        row().grid(lbl(getMessage("Skill_Point_Cost") + ":")).add(fCost)
-        row().grid(lbl(getMessage("Animation") + ":")).add(fAnimationId)
+        row().grid(lbl(getMessageColon("Name"))).add(fName)
+        row().grid(lbl(getMessageColon("Scope"))).add(fScope)
+        row().grid(lbl(getMessageColon("Skill_Point_Cost"))).add(fCost)
+        row().grid(lbl(getMessageColon("Animation"))).add(fAnimationId)
       }
 
       contents += new BoxPanel(Orientation.Vertical) {

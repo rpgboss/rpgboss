@@ -36,7 +36,7 @@ class TeleportCmdDialog(
   val mapLocPanel = new MapLocPanel(owner, sm, initial.loc, false)
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel(getMessage("Transition") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Transition")))
     row().grid().add(transitionRadios)
     row().grid().add(leftLabel(getMessage("Destination" + ":")))
     row().grid().add(mapLocPanel)

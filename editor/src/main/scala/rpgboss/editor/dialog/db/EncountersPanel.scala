@@ -180,7 +180,7 @@ class EncountersPanel(
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {
-          row().grid(lbl(getMessage("Encounter_Name") + ":")).add(fName)
+          row().grid(lbl(getMessageColon("Encounter_Name"))).add(fName)
         }
         contents += fDisplay
       }
@@ -189,7 +189,7 @@ class EncountersPanel(
         contents += btnRemove
       }
       contents += new BoxPanel(Orientation.Vertical) {
-        contents += leftLabel(getMessage("Enemies") + ":")
+        contents += leftLabel(getMessageColon("Enemies"))
         contents += new ScrollPane(fEnemySelector) {
           preferredSize = new Dimension(200, 120)
         }

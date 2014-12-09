@@ -19,4 +19,6 @@ object Internationalized extends LazyLogging {
     val rawValue = messages.getString(key)
     new String(rawValue.getBytes("ISO-8859-1"), "UTF-8")
   }
+
+  def getMessageColon(key: String) = getMessage(key) + ":"
 }
