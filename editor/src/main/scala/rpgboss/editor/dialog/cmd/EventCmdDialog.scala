@@ -11,6 +11,7 @@ import rpgboss.lib.Utils
 import rpgboss.model.event.AddRemoveGold
 import rpgboss.model.event.AddRemoveItem
 import rpgboss.model.event.EventCmd
+import rpgboss.model.event.GetChoice
 import rpgboss.model.event.ModifyParty
 import rpgboss.model.event.MoveEvent
 import rpgboss.model.event.RunJs
@@ -73,6 +74,7 @@ object EventCmdDialog {
         new AddRemoveItemCmdDialog(owner, sm, e, successF)
       case e: AddRemoveGold =>
         new AddRemoveGoldCmdDialog(owner, sm, e, successF)
+      case e: GetChoice => new GetChoiceCmdDialog(owner, sm, e, successF)
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: OpenStore => new OpenStoreCmdDialog(owner, sm, e, successF)
       case e: ShowText => new ShowTextCmdDialog(owner, e, successF)

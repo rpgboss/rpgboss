@@ -78,3 +78,12 @@ class OpenStoreCmdDialog(
   initial: OpenStore,
   successF: (OpenStore) => Any)
   extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
+
+class GetChoiceCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: GetChoice,
+  successF: (GetChoice) => Any)
+  extends EventCmdDialog(owner, sm, "Get Choice", initial, successF) {
+
+}
