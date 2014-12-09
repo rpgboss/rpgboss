@@ -11,5 +11,12 @@ object Internationalized extends LazyLogging {
   private val messages =
     ResourceBundle.getBundle("editorMessages", Internationalized.currentLocale)
 
-  def getMessage(key: String) = messages.getString(key)
+  /**
+   * Convert to allow .properties file to be in UTF-8.
+   * Technique from: http://stackoverflow.com/a/6995374.
+   */
+  def getMessage(key: String) = {
+    val rawValue = messages.getString(key)
+    new String(rawValue.getBytes("ISO-8859-1"), "UTF-8")
+  }
 }
