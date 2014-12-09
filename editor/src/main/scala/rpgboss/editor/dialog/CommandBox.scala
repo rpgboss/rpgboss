@@ -32,6 +32,7 @@ class EventCmdPanel(
 
   background = UIManager.getColor("TextArea.background")
 
+  var commandListI = 0
   initial.sections.zipWithIndex.foreach {
     case (PlainLines(lines), i) => {
       contents += new BoxPanel(Orientation.Horizontal) {
@@ -50,8 +51,10 @@ class EventCmdPanel(
         contents += Swing.HGlue
       }
     }
-    case (EventCmd.CommandList(innerCmds, indent), sectionI) => {
+    case (EventCmd.CommandList(innerCmds, indent), _) => {
       contents += new BoxPanel(Orientation.Horizontal) {
+        val currentCommandListI = commandListI
+
         opaque = true
         // TODO: Pick a better color
         //background = UIManager.getColor("TextArea.inactiveBackground")
@@ -61,10 +64,13 @@ class EventCmdPanel(
         contents += Swing.RigidBox(new Dimension(indentPx, 1))
 
         def updateInnerCmds(newInnerCmds: Array[EventCmd]) =
-          onUpdate(initial.copyWithNewInnerCmds(sectionI, newInnerCmds))
+          onUpdate(initial.copyWithNewInnerCmds(currentCommandListI,
+              newInnerCmds))
 
         contents += new CommandBox(owner, sm, eventLoc, innerCmds,
                                    updateInnerCmds, inner = true)
+
+        commandListI += 1
       }
     }
   }

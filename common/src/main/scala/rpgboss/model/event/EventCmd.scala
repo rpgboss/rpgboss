@@ -16,9 +16,9 @@ trait EventCmd extends HasScriptConstants {
 
   /**
    *  Returns a copy of this EventCmd with a new set of inner commands placed
-   *  in section |sectionI|.
+   *  in section |commandListI|.
    */
-  def copyWithNewInnerCmds(sectionI: Int,
+  def copyWithNewInnerCmds(commandListI: Int,
     newInnerCmds: Array[EventCmd]): EventCmd = {
     throw new NotImplementedError
   }
@@ -95,9 +95,9 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
         RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " - 1")),
       RawJs("}").exp)))
 
-  override def copyWithNewInnerCmds(sectionI: Int,
+  override def copyWithNewInnerCmds(commandListI: Int,
     newInnerCmds: Array[EventCmd]): EventCmd = {
-    assert(sectionI == 1)
+    assert(commandListI == 0)
     copy(body = newInnerCmds)
   }
 }
@@ -193,11 +193,11 @@ case class GetChoice(var choices: Array[String] = Array("Yes", "No"),
     buf.toArray
   }
 
-  override def copyWithNewInnerCmds(sectionI: Int,
+  override def copyWithNewInnerCmds(commandListI: Int,
     newInnerCmds: Array[EventCmd]): EventCmd = {
     val newArray = ArrayUtils.normalizedAry(
         innerCmds, choices.size + 1, choices.size + 1, () => Array[EventCmd]())
-    newArray.update(sectionI, newInnerCmds)
+    newArray.update(commandListI, newInnerCmds)
     copy(innerCmds = newArray)
   }
 }
