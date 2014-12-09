@@ -16,6 +16,8 @@ import javax.swing.BorderFactory
 import rpgboss.lib.Utils
 import rpgboss.model.MapLoc
 import rpgboss.model.event.RpgEvent
+import rpgboss.editor.Internationalized._
+
 
 class EventInstanceDialog(
   owner: Window,
@@ -23,7 +25,7 @@ class EventInstanceDialog(
   initialEvent: RpgEvent,
   onOk: RpgEvent => Any,
   onCancel: RpgEvent => Any)
-  extends StdDialog(owner, "Event Instance: " + initialEvent.name) {
+  extends StdDialog(owner, getMessage("Event_Instance") + ": " + initialEvent.name) {
 
   val model = Utils.deepCopy(initialEvent)
 
@@ -84,7 +86,7 @@ class EventInstanceDialog(
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new DesignGridPanel {
-      row().grid(lbl("Event Class:")).add(fClassId)
+      row().grid(lbl(getMessage("Event_Class") + ":")).add(fClassId)
     }
 
     contents += container

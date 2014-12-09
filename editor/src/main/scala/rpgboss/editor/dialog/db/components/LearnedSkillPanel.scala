@@ -7,6 +7,7 @@ import rpgboss.lib._
 import rpgboss.model._
 import scala.collection.mutable.ArrayBuffer
 import scala.swing._
+import rpgboss.editor.Internationalized._
 
 class LearnedSkillPanel(
   owner: Window,
@@ -20,13 +21,13 @@ class LearnedSkillPanel(
   val learnedSkills = ArrayBuffer(initial : _*)
 
   val tableEditor = new TableEditor[LearnedSkill]() {
-    def title = "Learned Skills"
+    def title = getMessage("Learned_Skills")
     
     def modelArray = learnedSkills
     def newInstance() = LearnedSkill(1, 0)
     def onUpdate() = LearnedSkillPanel.this.onUpdate(learnedSkills.toArray)
       
-    def colHeaders = Array("Level", "Skill")
+    def colHeaders = Array(getMessage("Level"), getMessage("Skill"))
     def getRowStrings(learnedSkill: LearnedSkill) = {
       val skill = dbDiag.model.enums.skills(learnedSkill.skillId)
       Array("Level %d".format(learnedSkill.level),
@@ -52,7 +53,7 @@ class LearnedSkillDialog(
   dbDiag: DatabaseDialog,
   initial: LearnedSkill,
   onOk: LearnedSkill => Unit)
-  extends StdDialog(owner, "Learned Skill") {
+  extends StdDialog(owner, getMessage("Learned_Skill")) {
 
   import SwingUtils._
 

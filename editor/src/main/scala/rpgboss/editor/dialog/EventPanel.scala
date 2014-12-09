@@ -14,6 +14,7 @@ import scala.swing.Dialog
 import scala.swing.TabbedPane.Page
 import scala.swing.Action
 import rpgboss.model.RpgMapData
+import rpgboss.editor.Internationalized._
 
 class EventPanel(
   owner: Window,
@@ -78,7 +79,7 @@ class EventPanel(
 
   def deleteState() = {
     if (statesModel.size == 1) {
-      Dialog.showMessage(tabPane, "Cannot delete the last state", "Error",
+      Dialog.showMessage(tabPane, getMessage("Cannot_Delete_The_Last_State"), getMessage("Error"),
         Dialog.Message.Error)
     } else {
       val deletedIdx = tabPane.curPane.idx
@@ -95,15 +96,15 @@ class EventPanel(
   row().grid()
     .add(leftLabel("Name:")).add(nameField)
     .add(
-      new Button(Action("New state") {
+      new Button(Action(getMessage("New_State")) {
         newState(false, true)
       }))
     .add(
-      new Button(Action("Copy state") {
+      new Button(Action(getMessage("Copy_State")) {
         newState(true, true)
       }))
     .add(
-      new Button(Action("Delete state") {
+      new Button(Action(getMessage("Delete_State")) {
         deleteState()
       }))
 

@@ -23,6 +23,7 @@ import java.awt.datatransfer.StringSelection
 import javax.activation.DataHandler
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeNode
+import rpgboss.editor.Internationalized._
 
 class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
   extends MapSelector(sm) {
@@ -153,7 +154,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
   def popupMenuFor(node: Node) = {
     new RpgPopupMenu {
       if (node != projectRoot) {
-        contents += new MenuItem(Action("Map Properties...") {
+        contents += new MenuItem(Action(getMessage("Map_Properties") + "...") {
           val origMap = sm.getMap(node.mapName).get
           val origMapData = sm.getMapData(node.mapName)
 
@@ -177,7 +178,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
             })
           d.open()
         })
-        contents += new MenuItem(Action("Delete") {
+        contents += new MenuItem(Action(getMessage("Delete")) {
           val msg =
             "Are you sure you want to delete map '%s'?".format(node.mapName)
           val answer = Dialog.showConfirmation(this, msg, "Delete")
@@ -194,7 +195,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
         })
         contents += new Separator
       }
-      contents += new MenuItem(Action("New Map...") {
+      contents += new MenuItem(Action(getMessage("New_Map") + "...") {
         // Generate a new map with an incremented map id name
         val newMap = RpgMap.defaultInstance(
           sm.getProj,

@@ -10,6 +10,8 @@ import rpgboss.editor.uibase.IsEnhancedListView
 import rpgboss.editor.uibase.DesignGridPanel
 import scala.swing.event.MouseClicked
 import rpgboss.editor.uibase.DisposableComponent
+import rpgboss.editor.Internationalized._
+
 
 class TilesetArrayField(
   owner: Window,
@@ -42,13 +44,13 @@ class TilesetArrayField(
     }
   }
 
-  val btnAdd = new Button(Action("Add...") {
+  val btnAdd = new Button(Action(getMessage("Add") + "...") {
     editModel("", newVal => {
       fTilesets.updatePreserveSelection(fTilesets.listData :+ newVal)
     })
   })
 
-  val btnDelete = new Button(Action("Remove last") {
+  val btnDelete = new Button(Action(getMessage("Remove_Last")) {
     fTilesets.updatePreserveSelection(fTilesets.listData.dropRight(1))
   })
 
@@ -73,7 +75,7 @@ abstract class TilesetSelectDialog(
     selection: String,
     updateSelectionF: String => Unit): DisposableComponent = {
     if (selection.isEmpty()) {
-      return new Label("No Tileset selected") with DisposableComponent
+      return new Label(getMessage("No_Tileset_Selected")) with DisposableComponent
     }
 
     val tileset = Tileset.readFromDisk(sm.getProj, selection)

@@ -13,6 +13,7 @@ import javax.swing.UIManager
 import javax.swing.BorderFactory
 import java.awt.Font
 import scala.collection.mutable.ArrayBuffer
+import rpgboss.editor.Internationalized._ 
 
 object EventCmdPanel {
   val textFont = new Font("Monospaced", Font.BOLD, 14)
@@ -81,13 +82,13 @@ class EventCmdPanel(
       requestFocus()
       if (e.peer.getButton() == MouseEvent.BUTTON3) {
         val menu = new RpgPopupMenu {
-          contents += new MenuItem(Action("Insert command above...") {
+          contents += new MenuItem(Action(getMessage("Insert_Command_Above") + "...") {
             parentCmdBox.newCmdDialog(index)
           })
-          contents += new MenuItem(Action("Edit...") {
+          contents += new MenuItem(Action(getMessage("Edit") + "...") {
             parentCmdBox.editSelectedCmd(index)
           })
-          contents += new MenuItem(Action("Delete") {
+          contents += new MenuItem(Action(getMessage("Delete")) {
             parentCmdBox.deleteCmd(index)
           })
         }
@@ -152,7 +153,7 @@ class CommandBox(
         requestFocus()
         if (e.peer.getButton() == MouseEvent.BUTTON3) {
           val menu = new RpgPopupMenu {
-            contents += new MenuItem(Action("Insert command...") {
+            contents += new MenuItem(Action(getMessage("Insert_Command") + "...") {
               newCmdDialog(model.length)
             })
           }
@@ -177,7 +178,7 @@ class CommandBox(
     case e: MouseClicked =>
       if (e.peer.getButton() == MouseEvent.BUTTON3) {
         val menu = new RpgPopupMenu {
-          contents += new MenuItem(Action("Insert command...") {
+          contents += new MenuItem(Action(getMessage("Insert_Command") + "...") {
             newCmdDialog(model.length)
           })
         }
@@ -204,7 +205,7 @@ class CommandBox(
     if (d != null)
       d.open()
     else
-      Dialog.showMessage(this, "Nothing to edit", "Info")
+      Dialog.showMessage(this, getMessage("Nothing_To_Edit"), getMessage("Info"))
   }
 
   def insertCmd(idx: Int, cmd: EventCmd) = {
