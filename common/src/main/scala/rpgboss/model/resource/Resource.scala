@@ -49,7 +49,7 @@ trait Resource[T, MT <: AnyRef] extends LazyLogging {
   }
 
   def writeMetadata(): Boolean =
-    JsonUtils.writeModelToJson(meta.metadataFile(proj, name), metadata)
+    JsonUtils.writeModelToJson(meta.metadataPath(proj, name), metadata)
 }
 
 trait MetaResource[T, MT] {
@@ -133,13 +133,11 @@ trait MetaResource[T, MT] {
     f.delete()
   }
 
-  def metadataFile(proj: Project, name: String) = {
-    val resourceFile = new File(rcDir(proj), name)
-    val resourceFilename = resourceFile.getName()
-    val resourceDir = resourceFile.getParentFile()
+  def metadataPathRelative(name: String) =
+    name + "." + Resource.metadataSuffix
 
-    new File(resourceDir, "%s.%s".format(resourceFilename, Resource.metadataSuffix))
-  }
+  def metadataPath(proj: Project, name: String) =
+    new File(rcDir(proj), metadataPathRelative(name))
 
   // Create a new instance with the default metadata
   def defaultInstance(proj: Project, name: String): T
@@ -148,8 +146,17 @@ trait MetaResource[T, MT] {
 
   // Returns default instance in case of failure to retrieve
   def readFromDisk(proj: Project, name: String)(implicit m: Manifest[MT]): T = {
-    val metadataOpt =
-      JsonUtils.readModelFromJson[MT](metadataFile(proj, name))(m)
+    val metadataFromFileOpt =
+      JsonUtils.readModelFromJson[MT](metadataPath(proj, name))(m)
+
+    val metadataOpt = if (metadataFromFileOpt.isDefined) {
+      metadataFromFileOpt
+    } else {
+      JsonUtils.readModelFromJsonInClasspath[MT](
+          "%s/%s/%s".format(ResourceConstants.defaultRcDir, rcType,
+              metadataPathRelative(name)))(m)
+    }
+
     metadataOpt.map(apply(proj, name, _)).getOrElse(defaultInstance(proj, name))
   }
 }
@@ -163,6 +170,4 @@ object Resource {
   val resourceTypes = List(
       AnimationImage, Autotile, Battler, BattleBackground, Iconset, Msgfont,
       Music, Picture, RpgMap, Script, Sound, Spriteset, Tileset, Windowskin)
-
-
 }

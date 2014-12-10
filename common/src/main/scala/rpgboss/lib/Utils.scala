@@ -15,6 +15,9 @@ import org.json4s.native.Serialization
 import org.mozilla.javascript.NativeObject
 import javax.imageio.ImageIO
 import rpgboss.model.RpgMapData
+import java.io.Reader
+import com.google.common.io.Resources
+import com.google.common.io.Files
 
 class FileHelper(file: File) {
   import FileHelper._
@@ -157,6 +160,11 @@ object Utils {
     ImageIO.read(resource)
   }
 
+  def copyResource(resourcePath: String, targetFile: File) = {
+    val source = Resources.asByteSource(Resources.getResource(resourcePath))
+    source.copyTo(Files.asByteSink(targetFile))
+  }
+
   // TODO: Look for a more efficient implementation.
   def deepCopy[A <: AnyRef](a: A)(implicit m: reflect.Manifest[A]): A = {
     // So far RpgMapData.formats is our only polymorphic list for type hints
@@ -208,6 +216,19 @@ object JsonUtils {
   import FileHelper._
 
   val defaultFormats = RpgMapData.formats
+
+  def readModelFromJsonInClasspath[T](path: String)(
+      implicit m: Manifest[T]): Option[T] = {
+    val stream = getClass.getClassLoader().getResourceAsStream(path)
+    if (stream == null)
+      return None
+
+    val reader = new java.io.InputStreamReader(stream)
+    if (reader == null)
+      return None
+
+    Some(Serialization.read[T](reader)(defaultFormats, m))
+  }
 
   def readModelFromJsonWithFormats[T](
     file: File, formats: Formats)(implicit m: Manifest[T]): Option[T] = {

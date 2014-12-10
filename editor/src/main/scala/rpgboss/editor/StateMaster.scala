@@ -23,7 +23,7 @@ case class MapState(map: RpgMap,
       mapDataOpt.map(data => map.saveMapData(data))
     } else if (dirty == Deleted) {
       // Effect deletion
-      RpgMap.metadataFile(p, map.name).delete()
+      RpgMap.metadataPath(p, map.name).delete()
       val (mapFile, botFile, midFile, topFile, evtFile) =
         RpgMapData.datafiles(p, map.name)
       mapFile.delete()

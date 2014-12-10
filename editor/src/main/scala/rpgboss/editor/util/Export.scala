@@ -9,6 +9,7 @@ import rpgboss.util.ProjectCreator
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import rpgboss.editor.Internationalized._
+import rpgboss.lib.Utils
 
 object Zip {
   def zipFolder(folder: File, outputZip: File, needUnixPerm: Boolean) = {
@@ -75,7 +76,7 @@ object Export {
 
       FileUtils.copyFile(executableJarFile, new File(dir, libraryJarName))
       FileUtils.copyDirectory(gamedataDir, new File(dir, "gamedata"))
-      ProjectCreator.copyResource(launchSource, launchFile)
+      Utils.copyResource(launchSource, launchFile)
       launchFile.setExecutable(true, false)
 
       val zipName = packageName + ".zip"
