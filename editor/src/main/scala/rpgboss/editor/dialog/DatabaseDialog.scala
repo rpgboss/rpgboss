@@ -10,9 +10,10 @@ import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import scala.swing._
 import scala.swing.event._
+import rpgboss.editor.Internationalized._
 
 class DatabaseDialog(owner: Window, sm: StateMaster)
-  extends StdDialog(owner, "Database") {
+  extends StdDialog(owner, getMessage("Database")) {
 
   centerDialog(new Dimension(1200, 730))
 
@@ -59,7 +60,7 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
     }
   }
 
-  lazy val applyBtn = new Button(new Action("Apply") {
+  lazy val applyBtn = new Button(new Action(getMessage("Apply")) {
     def apply() = {
       applyFunc()
     }

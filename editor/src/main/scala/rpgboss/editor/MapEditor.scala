@@ -28,6 +28,7 @@ import java.awt.event.InputEvent
 import rpgboss.editor.imageset.selector.TabbedTileSelector
 import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
+import rpgboss.editor.Internationalized._
 
 class MapEditor(
   projectPanel: ProjectPanel,
@@ -110,12 +111,12 @@ class MapEditor(
       action.enabled = vs.canUndo()
     }
 
-    action = new Action("Undo") {
+    action = new Action(getMessage("Undo")) {
       enabled = false
 
       def apply() = {
         viewStateOpt.map(vs => {
-          logger.info("Undo called")
+          logger.info(getMessage("Undo_Called"))
           vs.undo()
           refreshEnabled(vs)
           repaintAll()
@@ -125,9 +126,9 @@ class MapEditor(
 
     peer
       .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
-      .put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK), "Undo")
+      .put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK), getMessage("Undo"))
     peer
-      .getActionMap.put("Undo", action.peer)
+      .getActionMap.put(getMessage("Undo"), action.peer)
 
     icon = new ImageIcon(Utils.readClasspathImage(
         "hendrik-weiler-theme/undo.png"))
@@ -214,7 +215,7 @@ class MapEditor(
 
       val newCursorSquare = if (visible) {
         val tCodes = tileSelector.selectionBytes
-        assert(tCodes.length > 0 && tCodes(0).length > 0, "Selected tiles empty")
+        assert(tCodes.length > 0 && tCodes(0).length > 0, getMessage("Selected_Tiles_Empty"))
         TileRect(xInt, yInt, tCodes(0).length, tCodes.length)
       } else TileRect.empty
 
@@ -296,25 +297,25 @@ class MapEditor(
   def showEventPopupMenu(px: Int, py: Int, xTile: Float, yTile: Float) = {
     viewStateOpt map { vs =>
       val evtSelected = selectedEvtId.isDefined
-      val newEditText = if (evtSelected) "Edit event..." else "New event..."
+      val newEditText = if (evtSelected) getMessage("Edit_Event") + "..." else getMessage("New_Event") + "..."
 
       val menu = new RpgPopupMenu {
         if (evtSelected) {
-          contents += new MenuItem(Action("Edit...") {
+          contents += new MenuItem(Action(getMessage("Edit") + "...") {
             editEvent(selectedEvtId.get)
           })
         } else {
-          contents += new MenuItem(Action("New Event...") { newEvent(false) })
+          contents += new MenuItem(Action(getMessage("New_Event") + "...") { newEvent(false) })
           contents += new MenuItem(
-              Action("New Event Instance...") { newEvent(true) })
+              Action(getMessage("New_Event_Instance") + "...") { newEvent(true) })
         }
 
         if (evtSelected)
-          contents += new MenuItem(Action("Delete") { deleteEvent() })
+          contents += new MenuItem(Action(getMessage("Delete")) { deleteEvent() })
 
         contents += new Separator
 
-        contents += new MenuItem(Action("Set start location") {
+        contents += new MenuItem(Action(getMessage("Set_Start_Location")) {
           def repaintMapLoc(l: MapLoc) =
             repaintRegion(TileRect(l.x - 0.5f, l.y - 0.5f, 1, 1))
 
