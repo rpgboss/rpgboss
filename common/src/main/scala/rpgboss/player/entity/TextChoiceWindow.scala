@@ -80,9 +80,9 @@ class TextChoiceWindow(
     updateTextImages()
 
     if (lines.length == 0) {
-      curChoice = 0
+      setCurChoice(0)
     } else {
-      curChoice = math.min(curChoice, lines.length / linesPerChoice - 1)
+      setCurChoice(math.min(curChoice, lines.length / linesPerChoice - 1))
     }
 
     updateScrollPosition()
@@ -109,28 +109,28 @@ class TextChoiceWindow(
     assets.finishLoading()
 
     if (key == Up) {
-      curChoice -= columns
+      setCurChoice(curChoice - columns)
       if (curChoice < 0) {
         if (wrapChoices && nChoices > 0) {
-          curChoice += nChoices
+          setCurChoice(curChoice + nChoices)
           soundCursor.map(_.getAsset(assets).play())
         } else {
           // Undo the subtraction we just did.
-          curChoice += columns
+          setCurChoice(curChoice + columns)
           soundCannot.map(_.getAsset(assets).play())
         }
       } else {
         soundCursor.map(_.getAsset(assets).play())
       }
     } else if (key == Down) {
-      curChoice += columns
+      setCurChoice(curChoice + columns)
       if (curChoice >= nChoices) {
         if (wrapChoices && nChoices > 0) {
-          curChoice -= nChoices
+          setCurChoice(curChoice - nChoices)
           soundCursor.map(_.getAsset(assets).play())
         } else {
           // Undo the addition we just did
-          curChoice -= columns
+          setCurChoice(curChoice - columns)
           soundCannot.map(_.getAsset(assets).play())
         }
       } else {
@@ -140,17 +140,17 @@ class TextChoiceWindow(
       if (key == Right) {
         // Go back to left if all the way on right
         if (curChoice % columns == columns - 1)
-          curChoice -= (columns - 1)
+          setCurChoice(curChoice - columns + 1)
         else
-          curChoice += 1
+          setCurChoice(curChoice + 1)
 
         soundCursor.map(_.getAsset(assets).play())
       } else if (key == Left) {
         // Go back to right if all the way on left
         if (curChoice % columns == 0)
-          curChoice += (columns - 1)
+          setCurChoice(curChoice + columns - 1)
         else
-          curChoice -= 1
+          setCurChoice(curChoice - 1)
 
         soundCursor.map(_.getAsset(assets).play())
       }

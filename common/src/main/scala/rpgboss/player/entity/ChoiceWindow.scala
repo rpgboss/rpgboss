@@ -1,6 +1,8 @@
 package rpgboss.player.entity
 
 import scala.concurrent.Channel
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
@@ -21,6 +23,10 @@ import rpgboss.player.MyKeys.Up
 import rpgboss.player.PersistentState
 import rpgboss.player.WindowManager
 
+trait HasIntCallback {
+  def intCallback(value: Int): Unit
+}
+
 abstract class ChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
@@ -32,7 +38,19 @@ abstract class ChoiceWindow(
   extends Window(manager, inputs, rect, invisible)
   with ChoiceInputHandler {
 
-  protected var curChoice = defaultChoice
+  private var choiceChangeCallback: HasIntCallback = null
+  private var _curChoice = defaultChoice
+
+  def curChoice = _curChoice
+  def setCurChoice(choiceId: Int) = {
+    assertOnBoundThread()
+    _curChoice = choiceId
+    if (choiceChangeCallback != null) {
+      Future {
+        choiceChangeCallback.intCallback(choiceId)
+      }
+    }
+  }
 
   override def capturedKeys =
     Set(MyKeys.Left, MyKeys.Right, MyKeys.Up, MyKeys.Down,
@@ -61,6 +79,13 @@ abstract class ChoiceWindow(
 
   class ChoiceWindowScriptInterface extends WindowScriptInterface {
     def getChoice() = choiceChannel.read
+
+    def setChoiceChangeCallback(callback: HasIntCallback) = {
+      choiceChangeCallback = callback
+      syncRun {
+        setCurChoice(curChoice)
+      }
+    }
 
     def takeFocus(): Unit = syncRun {
       inputs.remove(ChoiceWindow.this)
@@ -97,10 +122,10 @@ class SpatialChoiceWindow(
 
     import MyKeys._
     if (key == Up || key == Left) {
-      curChoice = Utils.pmod(curChoice - 1, choices.length)
+      setCurChoice(Utils.pmod(curChoice - 1, choices.length))
       soundCursor.map(_.getAsset(assets).play())
     } else if (key == Down || key == Right) {
-      curChoice = Utils.pmod(curChoice + 1, choices.length)
+      setCurChoice(Utils.pmod(curChoice + 1, choices.length))
       soundCursor.map(_.getAsset(assets).play())
     }
 

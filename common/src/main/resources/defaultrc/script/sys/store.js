@@ -74,6 +74,13 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
   storeTopWin.loopChoice(function(choiceId) {
     if (choiceId == 0) {
       var buyMenu = new StoreBuyMenu(itemIdsSold, buyPriceMultiplier);
+      buyMenu.window.setChoiceChangeCallback(function(choiceId) {
+        if (choiceId < itemIdsSold.length) {
+          var itemId = itemIdsSold[choiceId];
+          updateStoreRightPane(itemId);
+        }
+      });
+      
       buyMenu.loopChoice(function(choiceId) {
         var itemId = itemIdsSold[choiceId];
         var item = items[itemId];
@@ -89,6 +96,13 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
     } else {
       var itemsMenu = 
         new ItemMenu(false, layout.southwest(sizer.prop(0.6, 0.87)), 20);
+      itemsMenu.window.setChoiceChangeCallback(function(choiceId) {
+        if (choiceId < itemsMenu.state.itemIds.length) {
+          var itemId = itemsMenu.state.itemIds[choiceId];
+          updateStoreRightPane(itemId);
+        }
+      });
+      
       itemsMenu.loopChoice(function(choiceId) {
         if (itemsMenu.state.itemIds.length == 0)
           return false;
