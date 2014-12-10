@@ -181,22 +181,4 @@ class EventCmdSpec extends UnitSpec {
           SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 1))
     result should deepEqual (expected)
   }
-
-  "EventCmd" should "deserialize legacy AddRemoveItem correctly" in {
-    implicit val formats = RpgMapData.formats
-    val legacyJson1 = """
-      [
-        {
-          "jsonClass":"AddRemoveItem",
-          "itemId":12,
-          "add":true,
-          "qty":5
-        }
-      ]"""
-
-    val result1 = Serialization.read[Array[EventCmd]](legacyJson1)
-    val expected: Array[EventCmd] =
-      Array(AddRemoveItem(true, IntParameter(12), IntParameter(5)))
-    result1 should deepEqual (expected)
-  }
 }

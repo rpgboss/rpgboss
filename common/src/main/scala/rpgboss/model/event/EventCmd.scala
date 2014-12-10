@@ -112,10 +112,6 @@ case class AddRemoveItem(
   itemId: IntParameter = IntParameter(),
   quantity: IntParameter = IntParameter(1))
   extends EventCmd {
-  // Backwards-compatibility constructor
-  def this(itemId: Int, add: Boolean, qty: Int) =
-    this(add, IntParameter(itemId), IntParameter(qty))
-
   def qtyDelta =
     RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
