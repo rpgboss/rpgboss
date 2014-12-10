@@ -43,7 +43,7 @@ class MoveEventCmdDialog(
     contents += new DesignGridPanel {
       row().grid(lbl(getMessageColon("X_Movement"))).add(fieldDx)
       row().grid(lbl(getMessageColon("Y_Movement"))).add(fieldDy)
-      row().grid(lbl(getMessageColon("Affix_Direction"))).add(fieldAffixDirection)
+      row().grid(lbl(getMessageColon("Affix_direction"))).add(fieldAffixDirection)
       row().grid(lbl(getMessageColon("Async"))).add(fieldAsync)
       addButtons(okBtn, cancelBtn)
     }
