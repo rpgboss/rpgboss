@@ -65,6 +65,8 @@ object WindowText {
 
     newText.toArray
   }
+
+  def DefaultLineHeight = 32
 }
 
 class WindowText(
@@ -73,7 +75,8 @@ class WindowText(
   private var rect: Rect,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
-  val lineHeight: Int = 32) extends ThreadChecked with LazyLogging {
+  val lineHeight: Int = WindowText.DefaultLineHeight)
+  extends ThreadChecked with LazyLogging {
 
   protected var _text: Array[String] =
     WindowText.processText(initialText, persistent)

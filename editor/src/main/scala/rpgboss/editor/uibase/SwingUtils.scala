@@ -66,6 +66,20 @@ object SwingUtils {
       }
     }
 
+  def textAreaField(initial: Array[String], onUpdate: Array[String] => Unit) = {
+    val textEdit = new TextArea(initial.mkString("\n")) {
+      listenTo(this)
+      reactions += {
+        case e: ValueChanged => onUpdate(text.split("\n"))
+      }
+    }
+
+    new ScrollPane {
+      contents = textEdit
+      preferredSize = new Dimension(300, 150)
+    }
+  }
+
   def percentField(min: Float, max: Float, initial: Float,
       onUpdate: Float => Unit) = {
     val spinner = new NumberSpinner(

@@ -9,6 +9,7 @@ import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.lib.Utils
 import rpgboss.model.AddOrRemove
 import rpgboss.editor.Internationalized._
+import rpgboss.lib.ArrayUtils
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -87,8 +88,15 @@ class GetChoiceCmdDialog(
   extends EventCmdDialog(owner, sm, "Get Choice", initial, successF) {
 
   override def extraFields = Seq(
+    TitledComponent("Question",
+        textAreaField(model.question, model.question = _)),
     TitledComponent("", new StringArrayEditingPanel(
-        owner, "Choices", model.choices, model.choices = _,
+        owner, "Choices", model.choices,
+        newChoices => {
+          model.choices = newChoices
+          model.innerCmds = ArrayUtils.resized(model.innerCmds, newChoices.size,
+              () => Array[EventCmd]())
+        },
         minElems = 2, maxElems = 4)),
     TitledComponent("", boolField("Allow Cancel", model.allowCancel,
         model.allowCancel = _)))

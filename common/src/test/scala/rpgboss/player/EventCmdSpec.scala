@@ -63,14 +63,14 @@ class EventCmdSpec extends UnitSpec {
   }
 
   "EventCmd" should "produce correct script for GetChoice" in {
-    val e = GetChoice(Array("Yes", "No"), true,
+    val e = GetChoice(Array("Question text"), Array("Yes", "No"), true,
         Array(
             Array(ShowText(Array("Hello"))),
             Array(ShowText(Array("Goodbye"))),
             Array(ShowText(Array("Default")))))
 
     e.toJs should deepEqual(Array(
-      """switch(game.getChoice(["Yes", "No"], true)) {""",
+      """switch(game.getChoice(["Question text"], ["Yes", "No"], true)) {""",
       """  case 0:""",
       """    game.showText(["Hello"]);""",
       """    break;""",

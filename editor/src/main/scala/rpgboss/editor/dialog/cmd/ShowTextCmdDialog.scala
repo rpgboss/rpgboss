@@ -5,32 +5,16 @@ import rpgboss.model.event._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.StateMaster
 
 class ShowTextCmdDialog(
   owner: Window,
+  sm: StateMaster,
   initial: ShowText,
   successF: (ShowText) => Any)
-  extends StdDialog(owner, getMessage("Show_Text")) {
+  extends EventCmdDialog(
+      owner, sm, getMessage("Show_Text"), initial, successF) {
 
-  centerDialog(new Dimension(400, 300))
-
-  val textEdit = new TextArea(initial.lines.mkString("\n"))
-
-  val textEditScroll = new ScrollPane {
-    contents = textEdit
-    preferredSize = new Dimension(300, 150)
-  }
-
-  def okFunc() = {
-    successF(ShowText(textEdit.text.split("\n")))
-    close()
-  }
-
-  contents = new DesignGridPanel {
-    row().grid().add(leftLabel("Text:"))
-    row().grid().add(textEditScroll)
-
-    addButtons(okBtn, cancelBtn)
-  }
-
+  override def extraFields = Seq(
+    TitledComponent("Text", textAreaField(model.lines, model.lines = _)))
 }

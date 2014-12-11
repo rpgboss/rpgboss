@@ -310,13 +310,45 @@ class ScriptInterface(
       activeScreen.layout.south(640, 180),
       timePerChar = 0.02f)
 
-  def getChoice(choices: Array[String], allowCancel: Boolean) = {
-    val window = newChoiceWindow(
+  def getChoice(question: Array[String], choices: Array[String],
+      allowCancel: Boolean) = {
+    val questionRect =
+      activeScreen.layout.south(640, 180)
+    val questionWindow = syncRun {
+      new PrintingTextWindow(
+        game.persistent,
+        activeScreen.windowManager,
+        activeScreen.inputs,
+        question,
+        questionRect,
+        timePerChar = 0.02f)
+    }
+
+    val fontbmp = activeScreen.windowManager.fontbmp
+
+    val choicesWidth =
+      choices.map(fontbmp.getBounds(_).width).max + 2 * TextChoiceWindow.xpad
+
+    // Removing 0.5*xpad at the end makes it look better.
+    val choicesHeight =
+      choices.length * WindowText.DefaultLineHeight +
+      1.5f * TextChoiceWindow.ypad
+
+    val choiceRectInSE =
+      activeScreen.layout.southeast(choicesWidth, choicesHeight)
+    val choiceRect = choiceRectInSE.copy(y = choiceRectInSE.y - questionRect.h)
+
+    val choiceWindow = newChoiceWindow(
         choices,
-        activeScreen.layout.south(640, 180),
-        TextChoiceWindowOptions(displayedLines = 4, allowCancel = allowCancel))
-    val choice = window.getChoice()
-    window.close()
+        choiceRect,
+        TextChoiceWindowOptions(
+            allowCancel = allowCancel, justification = RIGHT))
+
+    val choice = choiceWindow.getChoice()
+    choiceWindow.close()
+
+    questionWindow.scriptInterface.close()
+
     choice
   }
 

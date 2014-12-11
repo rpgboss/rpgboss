@@ -141,7 +141,7 @@ case class OpenStore(
     List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
-case class ShowText(lines: Array[String] = Array()) extends EventCmd {
+case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
   def processedLines = lines.map { l =>
     // The local variables need to be processed here rather than in the
     // WindowText class, because only the Javascript has access to the local
@@ -162,9 +162,10 @@ case class ShowText(lines: Array[String] = Array()) extends EventCmd {
  * @param   innerCmds   Has one more element than choices to account for the
  *                      default case.
  */
-case class GetChoice(var choices: Array[String] = Array("Yes", "No"),
+case class GetChoice(var question: Array[String] = Array(),
+                     var choices: Array[String] = Array("Yes", "No"),
                      var allowCancel: Boolean = false,
-                     innerCmds: Array[Array[EventCmd]] =
+                     var innerCmds: Array[Array[EventCmd]] =
                        Array(Array(), Array(), Array())) extends EventCmd {
   def sections = {
     val buf = new ArrayBuffer[CodeSection]()
@@ -175,7 +176,8 @@ case class GetChoice(var choices: Array[String] = Array("Yes", "No"),
       PlainLines(Array("    break;")))
 
     buf += PlainLines(Array(
-      RawJs("switch(game.getChoice(%s, %b)) {".format(
+      RawJs("switch(game.getChoice(%s, %s, %b)) {".format(
+          EventJavascript.toJs(question),
           EventJavascript.toJs(choices), allowCancel)).exp))
 
     for (i <- 0 until choices.size) {

@@ -77,7 +77,7 @@ object EventCmdDialog {
       case e: GetChoice => new GetChoiceCmdDialog(owner, sm, e, successF)
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: OpenStore => new OpenStoreCmdDialog(owner, sm, e, successF)
-      case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
+      case e: ShowText => new ShowTextCmdDialog(owner, sm, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
       case e: SetEventState =>
         new SetEventStateDialog(owner, sm, mapName, e, successF)

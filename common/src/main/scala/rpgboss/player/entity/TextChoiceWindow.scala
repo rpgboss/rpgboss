@@ -21,6 +21,11 @@ import rpgboss.lib.JsonUtils
 import rpgboss.model.Item
 import rpgboss.lib.Utils
 
+object TextChoiceWindow {
+  val xpad = 24
+  val ypad = 24
+}
+
 class TextChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
@@ -31,14 +36,13 @@ class TextChoiceWindow(
   extends ChoiceWindow(persistent, manager, inputs, rect,
                        invisible = false,
                        options.defaultChoice, options.allowCancel) {
+  import TextChoiceWindow._
   assert(options.linesPerChoice != 0)
 
   def columns = options.columns
   def displayedLines = options.displayedLines
   def linesPerChoice = options.linesPerChoice
 
-  val xpad = 24
-  val ypad = 24
   val textWTotal = rect.w - 2*xpad
   val textHTotal = rect.h - 2*ypad
   val textColW = textWTotal / columns
