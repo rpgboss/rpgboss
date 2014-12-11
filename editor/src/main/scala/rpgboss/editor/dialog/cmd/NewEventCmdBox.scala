@@ -52,7 +52,7 @@ class NewEventCmdBox(
   contents = new DesignGridPanel {
     row().grid().add(leftLabel(getMessageColon("Windows")))
     row().grid().add(btnEvtCmd(getMessage("Show_Text"), ShowText()))
-    row().grid().add(btnEvtCmd("Get Choice", GetChoice()))
+    row().grid().add(btnEvtCmd(getMessage("Get_Choice"), GetChoice()))
 
     row().grid().add(leftLabel(getMessageColon("Movement")))
     row().grid().add(btnEvtCmd(getMessage("Teleport_Player"),

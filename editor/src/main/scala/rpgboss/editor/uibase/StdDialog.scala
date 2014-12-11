@@ -3,6 +3,7 @@ package rpgboss.editor.uibase
 import scala.swing._
 import scala.swing.event._
 import SwingUtils._
+import rpgboss.editor.Internationalized._
 
 abstract class StdDialog(owner: Window, titleArg: String)
   extends Dialog(owner) {
@@ -22,7 +23,7 @@ abstract class StdDialog(owner: Window, titleArg: String)
 
   setLocationRelativeTo(owner)
 
-  lazy val cancelBtn = new Button(Action("Cancel") {
+  lazy val cancelBtn = new Button(Action(getMessage("Cancel")) {
     cancelFunc()
     close()
   })

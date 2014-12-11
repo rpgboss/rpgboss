@@ -85,7 +85,7 @@ class GetChoiceCmdDialog(
   sm: StateMaster,
   initial: GetChoice,
   successF: (GetChoice) => Any)
-  extends EventCmdDialog(owner, sm, "Get Choice", initial, successF) {
+  extends EventCmdDialog(owner, sm, getMessage("Get_Choice"), initial, successF) {
 
   override def extraFields = Seq(
     TitledComponent("Question",
