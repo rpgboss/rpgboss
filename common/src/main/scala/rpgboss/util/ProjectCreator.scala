@@ -10,13 +10,15 @@ import java.util.Arrays
 
 object ProjectCreator {
   def copyResources(resourceDirectoryName: String,
-                    resourceList: Seq[String], targetRcDirectory: File) = {
+                    resourceList: Seq[String], targetRcDirectory: File,
+                    copyAllFiles: Boolean = false) = {
     for (resourceName <- resourceList) {
       val target = new File(targetRcDirectory, resourceName)
       target.getParentFile.mkdirs()
 
-      if (!resourceName.contains("/") &&
-          resourceName.endsWith(Resource.jsonSuffix)) {
+      if (copyAllFiles ||
+          (!resourceName.contains("/") &&
+              resourceName.endsWith(Resource.jsonSuffix))) {
         Utils.copyResource(
           "%s/%s".format(resourceDirectoryName, resourceName), target)
       }
