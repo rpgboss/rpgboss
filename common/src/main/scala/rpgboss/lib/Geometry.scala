@@ -1,5 +1,7 @@
 package rpgboss.lib
 
+import rpgboss.model.RpgEnum
+
 /**
  * @param   x   Refers to center of the rectangle.
  * @param   y   Refers to center of the rectangle.
@@ -22,7 +24,10 @@ trait BoxLike {
  * @param   x   Refers to center of the rectangle.
  * @param   y   Refers to center of the rectangle.
  */
-case class Rect(x: Float, y: Float, w: Float, h: Float) extends BoxLike
+case class Rect(x: Float, y: Float, w: Float, h: Float) extends BoxLike {
+  def offset(xOffset: Float, yOffset: Float) =
+    copy(x = x + xOffset, y = y + yOffset)
+}
 
 case class Size(w: Float, h: Float)
 
@@ -33,11 +38,6 @@ case class Size(w: Float, h: Float)
  *                    convenience.
  */
 class LayoutProvider(screenW: Float, screenH: Float) {
-  def proportional(xProportion: Float, yProportion: Float, w: Float, h: Float) =
-    Rect(xProportion * screenW, yProportion * screenH, w, h)
-  def proportional(xProportion: Float, yProportion: Float, s: Size): Rect =
-    proportional(xProportion, yProportion, s.w, s.h)
-
   def north(w: Float, h: Float) =
     Rect(screenW / 2, h / 2, w, h)
   def north(s: Size): Rect = north(s.w, s.h)
@@ -73,6 +73,34 @@ class LayoutProvider(screenW: Float, screenH: Float) {
   def centered(w: Float, h: Float) =
     Rect(screenW / 2, screenH / 2, w, h)
   def centered(s: Size): Rect = centered(s.w, s.h)
+}
+
+object SizeType extends RpgEnum {
+  case class Val(i: Int, name: String, needParameters: Boolean)
+    extends super.Val(i, name)
+
+  implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
+
+  val Fixed = Val(0, "Fixed", true)
+  val Proportional = Val(1, "Proportional", true)
+  val Cover = Val(2, "Cover", false)
+  val Contain = Val(3, "Contain", false)
+
+  def default = Fixed
+}
+
+object LayoutType extends RpgEnum {
+  val Centered = Value(0)
+  val North = Value(1)
+  val East = Value(2)
+  val South = Value(3)
+  val West = Value(4)
+  val NorthEast = Value(5)
+  val SouthEast = Value(6)
+  val SouthWest = Value(7)
+  val NorthWest = Value(8)
+
+  def default = Centered
 }
 
 class SizeProvider(screenW: Float, screenH: Float) {

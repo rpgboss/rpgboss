@@ -6,8 +6,14 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 trait HasEnhancedListView[T] extends LazyLogging {
   def listView: ListView[T]
 
-  def updatePreserveSelection(idx: Int, newVal: T): Unit =
-    updatePreserveSelection(listView.listData.updated(idx, newVal))
+  def updatePreserveSelection(idx: Int, newVal: T): Unit = {
+    listView.deafTo(listView.selection)
+    val oldIdx = listView.selection.indices.head
+    listView.listData = listView.listData.updated(idx, newVal)
+    listView.selectIndices(oldIdx)
+    listView.listenTo(listView.selection)
+    onListDataUpdate()
+  }
 
   def updatePreserveSelection(newData: Seq[T]) = {
     listView.deafTo(listView.selection)

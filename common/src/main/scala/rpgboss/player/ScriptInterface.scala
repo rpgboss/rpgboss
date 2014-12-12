@@ -334,9 +334,8 @@ class ScriptInterface(
       choices.length * WindowText.DefaultLineHeight +
       1.5f * TextChoiceWindow.ypad
 
-    val choiceRectInSE =
-      activeScreen.layout.southeast(choicesWidth, choicesHeight)
-    val choiceRect = choiceRectInSE.copy(y = choiceRectInSE.y - questionRect.h)
+    val choiceRect = activeScreen.layout.southeast(choicesWidth, choicesHeight)
+        .offset(0, -questionRect.h)
 
     val choiceWindow = newChoiceWindow(
         choices,
