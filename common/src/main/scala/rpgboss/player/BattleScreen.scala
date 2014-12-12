@@ -35,7 +35,8 @@ class BattleScreen(
   val screenW: Float,
   val screenH: Float)
   extends ThreadChecked
-  with RpgScreen {
+  with RpgScreen
+  with HasScriptConstants {
   assume(atlasSprites != null)
 
   val scriptInterface = gameOpt.map(new ScriptInterface(_, this)).orNull
@@ -103,7 +104,7 @@ class BattleScreen(
             }
 
             val skillWindow = scriptInterface.newChoiceWindow(
-              skillChoices.map(_.name), layout.south(640, 180),
+              skillChoices.map(_.name), Layout(SOUTH, FIXED, 640, 180),
               TextChoiceWindowOptions(columns = 2, allowCancel = true))
 
             while (true) {
@@ -144,7 +145,7 @@ class BattleScreen(
               battleItems.map(x => battle.pData.enums.items(x._1))
 
             val window = scriptInterface.newChoiceWindow(
-              battleItemInstances.map(_.name), layout.south(640, 180),
+              battleItemInstances.map(_.name), Layout(SOUTH, FIXED, 640, 180),
               TextChoiceWindowOptions(columns = 2, allowCancel = true))
 
             while (true) {
@@ -192,7 +193,7 @@ class BattleScreen(
           currentOpt = Some(this)
 
           _window = scriptInterface.newChoiceWindow(
-            Array("Attack", "Skill", "Item"), layout.south(140, 180),
+            Array("Attack", "Skill", "Item"), Layout(FIXED, SOUTH, 140, 180),
             TextChoiceWindowOptions(allowCancel = true))
         }
 
@@ -407,7 +408,7 @@ class BattleScreen(
           windowManager,
           null,
           Array(),
-          layout.southwest(200, 180)) {
+          Layout(SOUTHWEST, FIXED, 200, 180)) {
           override def openCloseTime = 0
         }
       }
@@ -418,7 +419,7 @@ class BattleScreen(
           windowManager,
           null,
           Array(),
-          layout.southeast(440, 180)) {
+          Layout(SOUTHEAST, FIXED, 440, 180)) {
           override def openCloseTime = 0
         }
       }
@@ -428,7 +429,7 @@ class BattleScreen(
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       windowManager.showPicture(
         PictureSlots.BATTLE_BACKGROUND,
-        TexturePicture(assets, bg, layout.north(sizer.fit(640, 320))))
+        TexturePicture(assets, bg, Layout(NORTH, COVER, 0, 0)))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -506,7 +507,7 @@ class BattleScreen(
 
   def postTextNotice(msg: String) = {
     new TextWindow(gameOpt.get.persistent, windowManager, null, Array(msg),
-        layout.north(640, 60)) {
+        Layout(NORTH, FIXED, 640, 60)) {
       override def openCloseTime = 0.0
 
       override def ypad = 20

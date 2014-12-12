@@ -54,6 +54,24 @@ trait HasScriptConstants {
     "characterStatusEffects-%d".format(characterId)
 
   val PICTURE_SLOTS = PictureSlots.END
+
+  // Synchronized with LayoutType RpgEnum.
+  val CENTERED = 0
+  val NORTH = 1
+  val EAST = 2
+  val SOUTH = 3
+  val WEST = 4
+  val NORTHEAST = 5
+  val SOUTHEAST = 6
+  val SOUTHWEST = 7
+  val NORTHWEST = 8
+
+  // Synchronized with SizeType RpgEnum.
+  val FIXED = 0
+  val SCALE_SOURCE = 1
+  val SCREEN = 2
+  val COVER = 3
+  val CONTAIN = 4
 }
 
 /**
@@ -94,6 +112,13 @@ class ScriptInterface(
    */
   def getMap(loc: MapLoc) =
     RpgMap.readFromDisk(project, loc.map)
+
+  def layout(layoutTypeId: Int, sizeTypeId: Int, wArg: Float, hArg: Float) =
+    Layout(layoutTypeId, sizeTypeId, wArg, hArg)
+
+  def layoutWithOffset(layoutTypeId: Int, sizeTypeId: Int,
+                       wArg: Float, hArg: Float, xOffset: Int, yOffset: Int) =
+    Layout(layoutTypeId, sizeTypeId, wArg, hArg, xOffset, yOffset)
 
   /*
    * Things to do with the player's location and camera
@@ -174,8 +199,8 @@ class ScriptInterface(
     }
   }
 
-  def showPicture(slot: Int, name: String, rect: Rect) = syncRun {
-    activeScreen.windowManager.showPictureByName(slot, name, rect)
+  def showPicture(slot: Int, name: String, layout: Layout) = syncRun {
+    activeScreen.windowManager.showPictureByName(slot, name, layout)
   }
 
   def hidePicture(slot: Int) = syncRun {
@@ -200,16 +225,16 @@ class ScriptInterface(
    */
   def newChoiceWindow(
     lines: Array[String],
-    rect: Rect,
+    layout: Layout,
     options: NativeObject): ChoiceWindow#ChoiceWindowScriptInterface = {
     newChoiceWindow(
-        lines, rect,
+        lines, layout,
         JsonUtils.nativeObjectToCaseClass[TextChoiceWindowOptions](options))
   }
 
   def newChoiceWindow(
     lines: Array[String],
-    rect: Rect,
+    layout: Layout,
     options: TextChoiceWindowOptions): ChoiceWindow#ChoiceWindowScriptInterface = {
     val window = syncRun {
       new TextChoiceWindow(
@@ -217,7 +242,7 @@ class ScriptInterface(
         activeScreen.windowManager,
         activeScreen.inputs,
         lines,
-        rect,
+        layout,
         options)
     }
 
@@ -226,16 +251,16 @@ class ScriptInterface(
 
   def newStaticTextWindow(
     lines: Array[String],
-    rect: Rect,
+    layout: Layout,
     options: NativeObject): TextWindow#TextWindowScriptInterface = {
     newStaticTextWindow(
-        lines, rect,
+        lines, layout,
         JsonUtils.nativeObjectToCaseClass[TextWindowOptions](options))
   }
 
   def newStaticTextWindow(
     lines: Array[String],
-    rect: Rect,
+    layout: Layout,
     options: TextWindowOptions): TextWindow#TextWindowScriptInterface = {
     val window = syncRun {
       new TextWindow(
@@ -243,7 +268,7 @@ class ScriptInterface(
           activeScreen.windowManager,
           activeScreen.inputs,
           lines,
-          rect,
+          layout,
           options)
     }
 
@@ -291,14 +316,14 @@ class ScriptInterface(
     choice
   }
 
-  def showText(text: Array[String], rect: Rect, timePerChar: Float) = {
+  def showText(text: Array[String], layout: Layout, timePerChar: Float) = {
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
         text,
-        rect,
+        layout,
         timePerChar)
     }
     window.scriptInterface.awaitClose()
@@ -307,20 +332,20 @@ class ScriptInterface(
   def showText(text: Array[String]): Unit =
     showText(
       text,
-      activeScreen.layout.south(640, 180),
+      layout(SOUTH, FIXED, 640, 180),
       timePerChar = 0.02f)
 
   def getChoice(question: Array[String], choices: Array[String],
       allowCancel: Boolean) = {
-    val questionRect =
-      activeScreen.layout.south(640, 180)
+    val questionLayout =
+      layout(SOUTH, FIXED, 640, 180)
     val questionWindow = syncRun {
       new PrintingTextWindow(
         game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
         question,
-        questionRect,
+        questionLayout,
         timePerChar = 0.02f)
     }
 
@@ -334,12 +359,12 @@ class ScriptInterface(
       choices.length * WindowText.DefaultLineHeight +
       1.5f * TextChoiceWindow.ypad
 
-    val choiceRect = activeScreen.layout.southeast(choicesWidth, choicesHeight)
-        .offset(0, -questionRect.h)
+    val choiceLayout = layoutWithOffset(
+        SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0, -questionLayout.hPx)
 
     val choiceWindow = newChoiceWindow(
         choices,
-        choiceRect,
+        choiceLayout,
         TextChoiceWindowOptions(
             allowCancel = allowCancel, justification = RIGHT))
 

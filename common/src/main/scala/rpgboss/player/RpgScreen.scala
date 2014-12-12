@@ -21,9 +21,6 @@ trait RpgScreen extends Screen with ThreadChecked {
   def createWindowManager(): WindowManager =
     new WindowManager(assets, project, screenW, screenH)
 
-  val layout = new LayoutProvider(screenW, screenH)
-  val sizer = new SizeProvider(screenW, screenH)
-
   val musics = Array.fill[Option[MusicPlayer]](8)(None)
   val windowManager = createWindowManager()
 
