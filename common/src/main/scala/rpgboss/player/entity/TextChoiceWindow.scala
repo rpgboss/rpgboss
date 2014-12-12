@@ -20,6 +20,7 @@ import rpgboss.lib.FileHelper
 import rpgboss.lib.JsonUtils
 import rpgboss.model.Item
 import rpgboss.lib.Utils
+import rpgboss.lib.Layout
 
 object TextChoiceWindow {
   val xpad = 24
@@ -31,9 +32,9 @@ class TextChoiceWindow(
   manager: WindowManager,
   inputs: InputMultiplexer,
   var lines: Array[String],
-  rect: Rect,
+  layout: Layout,
   options: TextChoiceWindowOptions)
-  extends ChoiceWindow(persistent, manager, inputs, rect,
+  extends ChoiceWindow(persistent, manager, inputs, layout,
                        invisible = false,
                        options.defaultChoice, options.allowCancel) {
   import TextChoiceWindow._
@@ -43,6 +44,7 @@ class TextChoiceWindow(
   def displayedLines = options.displayedLines
   def linesPerChoice = options.linesPerChoice
 
+  val rect = getRectFromLines(lines, options.displayedLines, xpad)
   val textWTotal = rect.w - 2*xpad
   val textHTotal = rect.h - 2*ypad
   val textColW = textWTotal / columns

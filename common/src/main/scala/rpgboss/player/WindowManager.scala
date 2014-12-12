@@ -13,6 +13,7 @@ import rpgboss.model.resource._
 import rpgboss.player.entity._
 import rpgboss.lib.ThreadChecked
 import rpgboss.lib.Rect
+import rpgboss.lib.Layout
 
 /**
  * This class renders stuff on the screen.
@@ -25,8 +26,8 @@ import rpgboss.lib.Rect
 class WindowManager(
   val assets: RpgAssetManager,
   val project: Project,
-  screenW: Float,
-  screenH: Float) extends ThreadChecked {
+  val screenW: Int,
+  val screenH: Int) extends ThreadChecked {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
 
@@ -96,9 +97,9 @@ class WindowManager(
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
-  def showPictureByName(slot: Int, name: String, rect: Rect) = {
+  def showPictureByName(slot: Int, name: String, layout: Layout) = {
     val picture = Picture.readFromDisk(project, name)
-    showPicture(slot, TexturePicture(assets, picture, rect))
+    showPicture(slot, TexturePicture(assets, picture, layout))
   }
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
@@ -143,7 +144,7 @@ class WindowManager(
 
     for (i <- PictureSlots.BELOW_MAP until PictureSlots.ABOVE_MAP;
          pic <- pictures(i)) {
-      pic.render(batch)
+      pic.render(this, batch)
     }
 
     batch.end()
@@ -163,7 +164,7 @@ class WindowManager(
 
     for (i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
          pic <- pictures(i)) {
-      pic.render(batch)
+      pic.render(this, batch)
     }
 
     // Render all windows
@@ -171,7 +172,7 @@ class WindowManager(
 
     for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.END;
          pic <- pictures(i)) {
-      pic.render(batch)
+      pic.render(this, batch)
     }
 
     batch.end()
@@ -200,7 +201,7 @@ class WindowManager(
 
 trait PictureLike {
   def dispose()
-  def render(batch: SpriteBatch)
+  def render(manager: WindowManager, batch: SpriteBatch)
 }
 
 /**
@@ -208,14 +209,16 @@ trait PictureLike {
  */
 case class TexturePicture[MT <: AnyRef](
   assets: RpgAssetManager, resource: ImageResource[_, MT],
-  rect: Rect) extends PictureLike {
+  layout: Layout) extends PictureLike {
 
   resource.loadAsset(assets)
   def dispose() = resource.unloadAsset(assets)
 
-  def render(batch: SpriteBatch) = {
+  override def render(manager: WindowManager, batch: SpriteBatch) = {
     if (resource.isLoaded(assets)) {
       val texture = resource.getAsset(assets)
+      val rect = layout.getRect(texture.getWidth(), texture.getHeight(),
+                                manager.screenW, manager.screenH)
       batch.draw(texture,
         rect.left, rect.top, rect.w, rect.h,
         0, 0, texture.getWidth(), texture.getHeight(),
@@ -238,7 +241,7 @@ case class TextureAtlasRegionPicture(
     // No need to dispose since the texture is part of the TextureAtlas
   }
 
-  def render(batch: SpriteBatch) = {
+  override def render(manager: WindowManager, batch: SpriteBatch) = {
     batch.draw(
       region.getTexture(),
       x, y, w, h,

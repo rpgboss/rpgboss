@@ -27,6 +27,12 @@ object Window {
   val Left = 0
   val Center = 1
   val Right = 2
+
+  def maxWidth(lines: Array[String], fontbmp: BitmapFont, xPadding: Int) = {
+    val linesWidth =
+      if (lines.isEmpty) 0 else lines.map(fontbmp.getBounds(_).width).max
+    linesWidth + 2 * xPadding
+  }
 }
 
 /**
@@ -37,7 +43,7 @@ object Window {
 class Window(
   manager: WindowManager,
   inputs: InputMultiplexer,
-  rect: Rect, invisible: Boolean = false)
+  layout: Layout, invisible: Boolean = false)
   extends InputHandler with ThreadChecked with Disposable {
 
   def openCloseTime: Double = 0.25
@@ -46,6 +52,18 @@ class Window(
   private var _state = initialState
   // Determines when states expire. In seconds.
   protected var stateAge = 0.0
+
+  private lazy val rect = {
+    layout.getRect(100, 100, manager.screenW, manager.screenH)
+  }
+
+  protected def getRectFromLines(
+      lines: Array[String], linesShown: Int, xPadding: Int) = {
+    val autoW = Window.maxWidth(lines, manager.fontbmp, xPadding)
+    val displayedLines = if (linesShown > 0) linesShown else lines.length
+    val autoH = WindowText.DefaultLineHeight * displayedLines
+    layout.getRect(autoW, autoH, manager.screenW, manager.screenH)
+  }
 
   if (inputs != null)
     inputs.prepend(this)
@@ -169,67 +187,6 @@ class Window(
   private val closePromise = Promise[Int]()
 }
 
-class TextWindow(
-  persistent: PersistentState,
-  manager: WindowManager,
-  inputs: InputMultiplexer,
-  text: Array[String] = Array(),
-  rect: Rect,
-  options: TextWindowOptions = TextWindowOptions())
-  extends Window(manager, inputs, rect) {
-
-  def xpad = 24
-  def ypad = 24
-
-  def updateText(newText: Array[String]) = textImage.updateText(newText)
-
-  val textImage = new WindowText(
-    persistent,
-    text,
-    rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad),
-    manager.fontbmp,
-    options.justification)
-
-  override def update(delta: Float) = {
-    super.update(delta)
-    textImage.update(delta)
-
-    if (options.stayOpenTime > 0.0 && state == Window.Open &&
-        stateAge >= options.stayOpenTime)
-      startClosing()
-  }
-
-  override def render(b: SpriteBatch) = {
-    super.render(b)
-    state match {
-      case Window.Open => {
-        textImage.render(b)
-      }
-      case Window.Opening => {
-        textImage.render(b)
-      }
-      case _ => {
-      }
-    }
-  }
-
-  class TextWindowScriptInterface extends WindowScriptInterface {
-    def updateLines(lines: Array[String]) = syncRun {
-      TextWindow.this.textImage.updateText(lines)
-    }
-  }
-
-  override lazy val scriptInterface = new TextWindowScriptInterface
-}
-
-/**
- * @param   stayOpenTime    If this is positive, window closes after it's open
- *                          for this period of time.
- */
-case class TextWindowOptions(
-  justification: Int = Window.Left,
-  stayOpenTime: Float = 0.0f)
-
 class DamageTextWindow(
   persistent: PersistentState,
   manager: WindowManager,
@@ -237,8 +194,7 @@ class DamageTextWindow(
   initialX: Float, initialY: Float)
   // TODO: We pass 'null' as inputs here because we don't want to accept input.
   // Window has zeros for x, y, w, and h because the window itself is invisible.
-  extends Window(manager, null, Rect(0, 0, 0, 0),
-    invisible = true) {
+  extends Window(manager, null, Layout.empty, invisible = true) {
 
   private val expiryTime = 0.8
   private val yDisplacement = -25.0
@@ -278,30 +234,33 @@ class DamageTextWindow(
   }
 }
 
+case class PrintingTextWindowOptions(
+  timePerChar: Float = 0.02f,
+  linesPerBlock: Int = 4,
+  justification: Int = Window.Left,
+  stayOpenTime: Float = 0,
+  showArrow: Boolean = false)
 
 class PrintingTextWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  text: Array[String] = Array(),
-  rect: Rect,
-  timePerChar: Float,
-  linesPerBlock: Int = 4,
-  justification: Int = Window.Left)
-  extends Window(manager, inputs, rect) {
+  initialLines: Array[String] = Array(),
+  layout: Layout,
+  options: PrintingTextWindowOptions = PrintingTextWindowOptions())
+  extends Window(manager, inputs, layout) {
   val xpad = 24
   val ypad = 24
 
+  val rect = getRectFromLines(initialLines, options.linesPerBlock, xpad)
   val textImage = new PrintingWindowText(
     persistent,
-    text,
+    initialLines,
     rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad),
     skin,
     skinRegion,
     manager.fontbmp,
-    timePerChar,
-    linesPerBlock,
-    justification)
+    options)
 
   override def keyDown(key: Int): Unit = {
     import MyKeys._
@@ -321,6 +280,11 @@ class PrintingTextWindow(
   override def update(delta: Float) = {
     super.update(delta)
     textImage.update(delta)
+
+    if (options.stayOpenTime > 0.0 && state == Window.Open &&
+        stateAge >= options.stayOpenTime) {
+      startClosing()
+    }
   }
 
   override def render(b: SpriteBatch) = {
@@ -336,4 +300,17 @@ class PrintingTextWindow(
       }
     }
   }
+
+  def updateLines(lines: Array[String]) = {
+    assertOnBoundThread()
+    textImage.updateText(lines)
+  }
+
+  class PrintingTextWindowScriptInterface extends WindowScriptInterface {
+    def updateLines(lines: Array[String]) = syncRun {
+      PrintingTextWindow.this.updateLines(lines)
+    }
+  }
+
+  override lazy val scriptInterface = new PrintingTextWindowScriptInterface
 }

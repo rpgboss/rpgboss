@@ -12,8 +12,8 @@ import rpgboss.model.resource.RpgAssetManager
 trait RpgScreen extends Screen with ThreadChecked {
   def project: Project
   def assets: RpgAssetManager
-  def screenW: Float
-  def screenH: Float
+  def screenW: Int
+  def screenH: Int
 
   def scriptInterface: ScriptInterface
 

@@ -117,7 +117,8 @@ class ScriptInterface(
     Layout(layoutTypeId, sizeTypeId, wArg, hArg)
 
   def layoutWithOffset(layoutTypeId: Int, sizeTypeId: Int,
-                       wArg: Float, hArg: Float, xOffset: Int, yOffset: Int) =
+                       wArg: Float, hArg: Float,
+                       xOffset: Float, yOffset: Float) =
     Layout(layoutTypeId, sizeTypeId, wArg, hArg, xOffset, yOffset)
 
   /*
@@ -249,32 +250,6 @@ class ScriptInterface(
     window.scriptInterface
   }
 
-  def newStaticTextWindow(
-    lines: Array[String],
-    layout: Layout,
-    options: NativeObject): TextWindow#TextWindowScriptInterface = {
-    newStaticTextWindow(
-        lines, layout,
-        JsonUtils.nativeObjectToCaseClass[TextWindowOptions](options))
-  }
-
-  def newStaticTextWindow(
-    lines: Array[String],
-    layout: Layout,
-    options: TextWindowOptions): TextWindow#TextWindowScriptInterface = {
-    val window = syncRun {
-      new TextWindow(
-          game.persistent,
-          activeScreen.windowManager,
-          activeScreen.inputs,
-          lines,
-          layout,
-          options)
-    }
-
-    window.scriptInterface
-  }
-
   /**
    * Choices are arrays of [x, y, w, h] in screen coordinates. Returns either
    * the choice index, or -1 if the choices were invalid.
@@ -316,7 +291,16 @@ class ScriptInterface(
     choice
   }
 
-  def showText(text: Array[String], layout: Layout, timePerChar: Float) = {
+  def newTextWindow(text: Array[String], layout: Layout,
+      options: NativeObject):
+      PrintingTextWindow#PrintingTextWindowScriptInterface = {
+    newTextWindow(text, layout,
+        JsonUtils.nativeObjectToCaseClass[PrintingTextWindowOptions](options))
+  }
+
+  def newTextWindow(text: Array[String], layout: Layout,
+      options: PrintingTextWindowOptions):
+      PrintingTextWindow#PrintingTextWindowScriptInterface = {
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
@@ -324,16 +308,18 @@ class ScriptInterface(
         activeScreen.inputs,
         text,
         layout,
-        timePerChar)
+        options)
     }
-    window.scriptInterface.awaitClose()
+    window.scriptInterface
   }
 
-  def showText(text: Array[String]): Unit =
-    showText(
+  def showText(text: Array[String]): Int = {
+    val window = newTextWindow(
       text,
       layout(SOUTH, FIXED, 640, 180),
-      timePerChar = 0.02f)
+      PrintingTextWindowOptions(showArrow = true))
+    window.awaitClose()
+  }
 
   def getChoice(question: Array[String], choices: Array[String],
       allowCancel: Boolean) = {
@@ -345,22 +331,18 @@ class ScriptInterface(
         activeScreen.windowManager,
         activeScreen.inputs,
         question,
-        questionLayout,
-        timePerChar = 0.02f)
+        questionLayout)
     }
 
     val fontbmp = activeScreen.windowManager.fontbmp
-
-    val choicesWidth =
-      choices.map(fontbmp.getBounds(_).width).max + 2 * TextChoiceWindow.xpad
-
+    val choicesWidth = Window.maxWidth(choices, fontbmp, TextChoiceWindow.xpad)
     // Removing 0.5*xpad at the end makes it look better.
     val choicesHeight =
       choices.length * WindowText.DefaultLineHeight +
       1.5f * TextChoiceWindow.ypad
 
     val choiceLayout = layoutWithOffset(
-        SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0, -questionLayout.hPx)
+        SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0, -questionLayout.h)
 
     val choiceWindow = newChoiceWindow(
         choices,

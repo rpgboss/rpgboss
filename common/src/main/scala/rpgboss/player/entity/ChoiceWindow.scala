@@ -3,9 +3,7 @@ package rpgboss.player.entity
 import scala.concurrent.Channel
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-
 import rpgboss.lib.GdxUtils.syncRun
 import rpgboss.lib.Rect
 import rpgboss.lib.Utils
@@ -22,6 +20,7 @@ import rpgboss.player.MyKeys.Right
 import rpgboss.player.MyKeys.Up
 import rpgboss.player.PersistentState
 import rpgboss.player.WindowManager
+import rpgboss.lib.Layout
 
 trait HasIntCallback {
   def intCallback(value: Int): Unit
@@ -31,11 +30,11 @@ abstract class ChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  rect: Rect,
+  layout: Layout,
   invisible: Boolean = false,
   defaultChoice: Int = 0,
   allowCancel: Boolean = true)
-  extends Window(manager, inputs, rect, invisible)
+  extends Window(manager, inputs, layout, invisible)
   with ChoiceInputHandler {
 
   private var choiceChangeCallback: HasIntCallback = null
@@ -108,7 +107,7 @@ class SpatialChoiceWindow(
   inputs: InputMultiplexer,
   choices: Array[Set[Rect]] = Array(),
   defaultChoice: Int = 0)
-  extends ChoiceWindow(persistent, manager, inputs, Rect(0, 0, 0, 0),
+  extends ChoiceWindow(persistent, manager, inputs, Layout.empty,
                        invisible = true, defaultChoice, allowCancel = true) {
   def keyActivate(key: Int): Unit = {
     import MyKeys._

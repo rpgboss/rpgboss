@@ -43,8 +43,6 @@ class ScriptThread(
     }
 
     putProperty("game", scriptInterface)
-    putProperty("layout", screen.layout)
-    putProperty("sizer", screen.sizer)
 
     putProperty("project", game.project)
     putProperty("out", System.out)
@@ -54,7 +52,6 @@ class ScriptThread(
     putProperty("Transitions", Transitions)
     putProperty("Keys", MyKeys)
     putProperty("None", None)
-    putProperty("Constants", ScriptInterfaceConstants)
   }
 
   val runnable = new Runnable() {

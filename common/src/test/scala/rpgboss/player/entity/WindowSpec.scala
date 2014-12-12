@@ -3,6 +3,7 @@ package rpgboss.player.entity
 import rpgboss._
 import rpgboss.player._
 import rpgboss.lib.Rect
+import rpgboss.lib.Layout
 
 class WindowSpec extends UnitSpec {
   "Window" should "do text substitution" in {
@@ -28,7 +29,7 @@ class WindowSpec extends UnitSpec {
   }
 
   "Window" should "change state on time" in {
-    val w = new Window(null, null, Rect(100, 100, 100, 100)) {
+    val w = new Window(null, null, Layout.dummy) {
       override def openCloseTime = 0.25
     }
     w.state should equal (Window.Opening)

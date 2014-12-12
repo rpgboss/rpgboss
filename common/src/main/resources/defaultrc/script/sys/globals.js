@@ -160,7 +160,7 @@ function StatusMenu() {
         party : party
       }
     },
-    layout : layout.northwest(sizer.prop(0.8, 1.0)),
+    layout : game.layout(game.NORTHWEST(), game.SCREEN(), 0.8, 1.0),
     windowDetails : {
       allowCancel : true,
       linesPerChoice : 4,
@@ -200,7 +200,7 @@ function SaveAndLoadMenu() {
         saveInfos : saveInfos
       }
     },
-    layout : layout.centered(sizer.fixed(320, 320)),
+    layout : game.layout(game.CENTERED(), game.FIXED(), 320, 320),
     windowDetails : {
       allowCancel : true,
       linesPerChoice : 3,

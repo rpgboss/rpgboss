@@ -7,7 +7,7 @@ function newGame() {
 function showStartDialog() {
   while (true) {
     var choiceWin = game.newChoiceWindow([ "New Game", "Load Game", "Quit" ],
-        layout.centered(200, 130), {
+        game.layout(game.CENTERED(), game.FIXED(), 200, 130), {
           justification : game.CENTER()
         });
 
@@ -41,8 +41,8 @@ function showStartDialog() {
 function start() {
   game.setTransition(1, 0, 1.0);
   game.playMusic(0, project.data().startup().titleMusic(), true, 0.4);
-  game.showPicture(0, project.data().startup().titlePic(), layout
-      .centered(sizer.prop(1.0, 1.0)));
+  game.showPicture(0, project.data().startup().titlePic(), 
+      game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
 
   showStartDialog();
 }

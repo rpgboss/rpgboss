@@ -58,11 +58,17 @@ object LayoutType extends RpgEnum {
   def default = Centered
 }
 
+/**
+ * The parameters have different units depending on the sizeTypeId.
+ * If SizeType(sizeTypeId) is SizeType.Fixed, then they are in pixels.
+ * Otherwise, they are a ratio with respect either the screen or the source
+ * image.
+ * @param   xOffset   Ignored for Fill and Contain size types.
+ * @param   yOffset   Ignored for Fill and Contain size types.
+ */
 case class Layout(layoutTypeId: Int, sizeTypeId: Int,
-                  wPx: Int, hPx: Int,
-                  wRatio: Float, hRatio: Float,
-                  xOffsetPx: Int, yOffsetPx: Int) {
-  def getRect(srcW: Int, srcH: Int, screenW: Int, screenH: Int) = {
+                  w: Float, h: Float, xOffset: Float = 0, yOffset: Float = 0) {
+  def getRect(srcW: Float, srcH: Float, screenW: Int, screenH: Int) = {
     import LayoutType._
     import SizeType._
 
@@ -71,27 +77,29 @@ case class Layout(layoutTypeId: Int, sizeTypeId: Int,
     assume(screenW > 0)
     assume(screenH > 0)
 
-    val (dstW, dstH): (Float, Float) = SizeType(sizeTypeId) match {
-      case Fixed => (wPx, hPx)
-      case ScaleSource => (srcW * wRatio, srcH * hRatio)
-      case ProportionalToScreen => (screenW * wRatio, screenH * hRatio)
-      case Cover if srcW > 0 && srcH > 0 => {
-        val scale = math.max(screenW / srcW, screenH / srcH)
-        (srcW * scale, srcH * scale)
+    val (dstW, dstH, xOffsetPx, yOffsetPx): (Float, Float, Float, Float) =
+      SizeType(sizeTypeId) match {
+        case Fixed => (w, h, xOffset, yOffset)
+        case ScaleSource => (srcW * w, srcH * h, srcW * xOffset, srcH * yOffset)
+        case ProportionalToScreen =>
+          (screenW * w, screenH * h, screenW * xOffset, screenH * yOffset)
+        case Cover if srcW > 0 && srcH > 0 => {
+          val scale = math.max(screenW / srcW, screenH / srcH)
+          (srcW * scale, srcH * scale, 0, 0)
+        }
+        case Contain if srcW > 0 && srcH > 0 => {
+          val scale = math.min(screenW / srcW, screenH / srcH)
+          (srcW * scale, srcH * scale, 0, 0)
+        }
+        case _ => (0, 0, 0, 0)
       }
-      case Contain if srcW > 0 && srcH > 0 => {
-        val scale = math.min(screenW / srcW, screenH / srcH)
-        (srcW * scale, srcH * scale)
-      }
-      case _ => (0, 0)
-    }
 
     val (x1, y1): (Float, Float) = LayoutType(layoutTypeId) match {
       case Centered => (screenW / 2, screenH / 2)
       case North => (screenW / 2, dstH / 2)
       case East => (dstW / 2, screenH / 2)
       case South => (screenW / 2, screenH - dstH / 2)
-      case West => (screenW - dstW /2, screenH / 2)
+      case West => (screenW - dstW / 2, screenH / 2)
       case NorthEast => (screenW - dstW / 2, dstH / 2)
       case SouthEast => (screenW - dstW / 2, screenH - dstH / 2)
       case SouthWest => (dstW / 2, screenH - dstH / 2)
@@ -104,15 +112,6 @@ case class Layout(layoutTypeId: Int, sizeTypeId: Int,
 }
 
 object Layout {
-  // Convenience constructor
-  def apply(layoutTypeId: Int, sizeTypeId: Int, wArg: Float, hArg: Float,
-            xOffset: Int = 0, yOffset: Int = 0): Layout = {
-    import SizeType._
-    val (wPx, yPx, wRatio, yRatio): (Int, Int, Float, Float) =
-      SizeType(sizeTypeId) match {
-        case Fixed => (wArg.round, hArg.round, 0, 0)
-        case _ => (0, 0, wArg, hArg)
-      }
-    Layout(layoutTypeId, sizeTypeId, wPx, yPx, wRatio, yRatio, xOffset, yOffset)
-  }
+  def empty = Layout(LayoutType.default.id, SizeType.default.id, 0, 0)
+  def dummy = Layout(LayoutType.default.id, SizeType.default.id, 100, 100)
 }

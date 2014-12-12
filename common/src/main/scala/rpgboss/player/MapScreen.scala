@@ -42,13 +42,21 @@ class MapScreen(val game: RpgGame)
   private def moveEntity(
       entity: Entity, dx: Float, dy: Float,
       affixDirection: Boolean): EntityMove = {
-    import SpriteSpec.Directions._
     if (dx != 0 || dy != 0) {
       if (!affixDirection) {
         val direction =
           if (math.abs(dx) > math.abs(dy))
-            if (dx > 0) EAST else WEST
-          else if (dy > 0) SOUTH else NORTH
+            if (dx > 0)
+              SpriteSpec.Directions.EAST
+            else
+              SpriteSpec.Directions.WEST
+          else {
+            if (dy > 0)
+              SpriteSpec.Directions.SOUTH
+            else
+              SpriteSpec.Directions.NORTH
+          }
+
         entity.enqueueMove(EntityFaceDirection(direction))
       }
 
