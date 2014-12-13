@@ -66,8 +66,16 @@ object LayoutType extends RpgEnum {
  * @param   xOffset   Ignored for Fill and Contain size types.
  * @param   yOffset   Ignored for Fill and Contain size types.
  */
-case class Layout(layoutTypeId: Int, sizeTypeId: Int,
-                  w: Float, h: Float, xOffset: Float = 0, yOffset: Float = 0) {
+case class Layout(var layoutTypeId: Int = LayoutType.default.id,
+                  var sizeTypeId: Int = SizeType.default.id,
+                  var w: Float = 1.0f,
+                  var h: Float = 1.0f,
+                  var xOffset: Float = 0,
+                  var yOffset: Float = 0) {
+
+  def toJs() = "game.layout(%d, %d, %f, %f, %f, %f)".format(
+      layoutTypeId, sizeTypeId, w, h, xOffset, yOffset)
+
   def getRect(srcW: Float, srcH: Float, screenW: Int, screenH: Int) = {
     import LayoutType._
     import SizeType._
@@ -112,6 +120,9 @@ case class Layout(layoutTypeId: Int, sizeTypeId: Int,
 }
 
 object Layout {
+  def defaultForPictures =
+    Layout(LayoutType.default.id, SizeType.ScaleSource.id, 1.0f, 1.0f)
+
   def empty = Layout(LayoutType.default.id, SizeType.default.id, 0, 0)
   def dummy = Layout(LayoutType.default.id, SizeType.default.id, 100, 100)
 }
