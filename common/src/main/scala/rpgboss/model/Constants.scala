@@ -32,6 +32,7 @@ object DirectionMasks {
 }
 
 object PictureSlots {
+  val BEGIN = 0
   val BELOW_MAP = 0
   val ABOVE_MAP = 8
   val BATTLE_BEGIN = 24

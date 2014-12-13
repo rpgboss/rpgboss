@@ -73,13 +73,6 @@ class AddRemoveGoldCmdDialog(
   )
 }
 
-class OpenStoreCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: OpenStore,
-  successF: (OpenStore) => Any)
-  extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
-
 class GetChoiceCmdDialog(
   owner: Window,
   sm: StateMaster,
@@ -101,3 +94,18 @@ class GetChoiceCmdDialog(
     TitledComponent("", boolField("Allow Cancel", model.allowCancel,
         model.allowCancel = _)))
 }
+
+class HidePictureCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: HidePicture,
+  successF: (HidePicture) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("Hide Picture"), initial, successF)
+
+class OpenStoreCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: OpenStore,
+  successF: (OpenStore) => Any)
+  extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)

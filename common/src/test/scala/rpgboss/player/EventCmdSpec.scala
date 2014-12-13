@@ -29,19 +29,24 @@ class EventCmdSpec extends UnitSpec {
 
   "EventCmd" should "produce correct script for AddRemoveItem" in {
     AddRemoveItem(true, IntParameter(1), IntParameter(5)).toJs should deepEqual(
-            Array("game.addRemoveItem(1, 5);"))
+        Array("game.addRemoveItem(1, 5);"))
 
     AddRemoveItem(
         false, IntParameter(12), IntParameter(25)).toJs should deepEqual(
-            Array("game.addRemoveItem(12, 25 * -1);"))
+        Array("game.addRemoveItem(12, 25 * -1);"))
   }
 
   "EventCmd" should "produce correct script for AddRemoveGold" in {
     AddRemoveGold(true, IntParameter(12)).toJs should deepEqual(
-            Array("game.addRemoveGold(12);"))
+        Array("game.addRemoveGold(12);"))
 
     AddRemoveGold(false, IntParameter(25)).toJs should deepEqual(
-            Array("game.addRemoveGold(25 * -1);"))
+        Array("game.addRemoveGold(25 * -1);"))
+  }
+
+  "EventCmd" should "produce correct script for HidePicture" in {
+    HidePicture(IntParameter(5)).toJs should deepEqual(
+        Array("game.hidePicture(5);"))
   }
 
   "EventCmd" should "produce correct script for ShowText" in {

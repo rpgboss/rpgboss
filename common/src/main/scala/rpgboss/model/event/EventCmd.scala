@@ -52,6 +52,7 @@ object EventCmd {
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[GetChoice],
+    classOf[HidePicture],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
@@ -129,6 +130,10 @@ case class GetChoice(var question: Array[String] = Array(),
     newArray.update(commandListI, newInnerCmds)
     copy(innerCmds = newArray)
   }
+}
+
+case class HidePicture(slot: IntParameter = IntParameter()) extends EventCmd {
+  def sections = singleCall("game.hidePicture", slot)
 }
 
 case class IncrementEventState() extends EventCmd {
