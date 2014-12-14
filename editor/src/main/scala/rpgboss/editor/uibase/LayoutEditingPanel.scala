@@ -7,6 +7,7 @@ import rpgboss.editor.uibase.SwingUtils._
 import scala.swing._
 import rpgboss.lib.SizeType
 import rpgboss.lib.LayoutType
+import rpgboss.editor.Internationalized._
 
 class PixelPercentField(initial: Float, updateF: Float => Unit,
     allowNegative: Boolean)
@@ -66,10 +67,10 @@ class LayoutEditingPanel(model: Layout) extends DesignGridPanel {
   }
   switchMode()
 
-  row().grid(lbl(needsTranslation("Size Type:"))).add(fSizeTypeId)
-  row().grid(lbl(needsTranslation("Width:"))).add(fW)
-  row().grid(lbl(needsTranslation("Height:"))).add(fH)
-  row().grid(lbl(needsTranslation("Position:"))).add(fLayoutTypeId)
-  row().grid(lbl(needsTranslation("X Offset"))).add(fXOffset)
-  row().grid(lbl(needsTranslation("Y Offset"))).add(fYOffset)
+  row().grid(lbl(getMessageColon("Size_Type"))).add(fSizeTypeId)
+  row().grid(lbl(getMessageColon("Width"))).add(fW)
+  row().grid(lbl(getMessageColon("Height"))).add(fH)
+  row().grid(lbl(getMessageColon("Position"))).add(fLayoutTypeId)
+  row().grid(lbl(getMessageColon("X_Offset"))).add(fXOffset)
+  row().grid(lbl(getMessageColon("Y_Offset"))).add(fYOffset)
 }

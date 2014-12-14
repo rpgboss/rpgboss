@@ -92,7 +92,7 @@ class GetChoiceCmdDialog(
               () => Array[EventCmd]())
         },
         minElems = 2, maxElems = 4)),
-    TitledComponent("", boolField("Allow Cancel", model.allowCancel,
+    TitledComponent("", boolField(getMessage("Allow_Cancel"), model.allowCancel,
         model.allowCancel = _)))
 }
 
@@ -102,7 +102,7 @@ class HidePictureCmdDialog(
   initial: HidePicture,
   successF: (HidePicture) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Hide Picture"), initial, successF)
+      owner, sm, getMessage("Hide_Picture"), initial, successF)
 
 class OpenStoreCmdDialog(
   owner: Window,
@@ -117,12 +117,12 @@ class ShowPictureCmdDialog(
   initial: ShowPicture,
   successF: (ShowPicture) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Show Picture"), initial, successF) {
+      owner, sm, getMessage("Show_Picture"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Picture"),
+          getMessage("Picture"),
           new PictureField(owner, sm, model.picture, model.picture = _)),
       TitledComponent(
-          needsTranslation("Layout"),
+          getMessage("Layout"),
           new LayoutEditingPanel(model.layout)))
 }
