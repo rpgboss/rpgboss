@@ -96,6 +96,10 @@ object SwingUtils {
 
       def value = spinner.getValue.toFloat / 100f
       def setValue(v: Float) = spinner.setValue((v * 100).round)
+      override def enabled_=(b: Boolean) {
+        super.enabled_=(b)
+        spinner.enabled_=(b)
+      }
     }
   }
 
@@ -109,6 +113,10 @@ object SwingUtils {
 
       def value = spinner.getValue
       def setValue(v: Float) = spinner.setValue(v.round)
+      override def enabled_=(b: Boolean) {
+        super.enabled_=(b)
+        spinner.enabled_=(b)
+      }
     }
   }
 

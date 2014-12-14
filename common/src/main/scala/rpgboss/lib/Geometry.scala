@@ -63,8 +63,8 @@ object LayoutType extends RpgEnum {
  * If SizeType(sizeTypeId) is SizeType.Fixed, then they are in pixels.
  * Otherwise, they are a ratio with respect either the screen or the source
  * image.
- * @param   xOffset   Ignored for Fill and Contain size types.
- * @param   yOffset   Ignored for Fill and Contain size types.
+ * @param   w   Ignored for Fill and Contain size types.
+ * @param   h   Ignored for Fill and Contain size types.
  */
 case class Layout(var layoutTypeId: Int = LayoutType.default.id,
                   var sizeTypeId: Int = SizeType.default.id,
@@ -93,11 +93,11 @@ case class Layout(var layoutTypeId: Int = LayoutType.default.id,
           (screenW * w, screenH * h, screenW * xOffset, screenH * yOffset)
         case Cover if srcW > 0 && srcH > 0 => {
           val scale = math.max(screenW / srcW, screenH / srcH)
-          (srcW * scale, srcH * scale, 0, 0)
+          (srcW * scale, srcH * scale, srcW * xOffset, srcH * yOffset)
         }
         case Contain if srcW > 0 && srcH > 0 => {
           val scale = math.min(screenW / srcW, screenH / srcH)
-          (srcW * scale, srcH * scale, 0, 0)
+          (srcW * scale, srcH * scale, srcW * xOffset, srcH * yOffset)
         }
         case _ => (0, 0, 0, 0)
       }

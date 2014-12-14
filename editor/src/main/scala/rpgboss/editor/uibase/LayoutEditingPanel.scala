@@ -1,16 +1,22 @@
 package rpgboss.editor.uibase
 
 import rpgboss.lib.Layout
+import rpgboss.lib.Utils
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.uibase.SwingUtils._
 import scala.swing._
 import rpgboss.lib.SizeType
 import rpgboss.lib.LayoutType
 
-class PixelPercentField(initial: Float, updateF: Float => Unit)
+class PixelPercentField(initial: Float, updateF: Float => Unit,
+    allowNegative: Boolean)
   extends BoxPanel(Orientation.Vertical) {
-  val fPx = pxField(1, 9999, initial.round, v => updateF(v))
-  val fPercent = percentField(0, 16f, initial, updateF)
+  val pxMax = 9999
+  val percentMax = 16f
+  val pxMin = if (allowNegative) -pxMax else 1
+  val percentMin = if (allowNegative) -percentMax else 0
+  val fPx = pxField(pxMin, pxMax, initial.round, v => updateF(v))
+  val fPercent = percentField(percentMin, percentMax, initial, updateF)
 
   override def enabled_=(value: Boolean) = {
     super.enabled = value
@@ -21,10 +27,10 @@ class PixelPercentField(initial: Float, updateF: Float => Unit)
   def enterMode(currentValue: Float, pixelMode: Boolean) = {
     contents.clear()
     if (pixelMode) {
-      fPx.setValue(currentValue)
+      fPx.setValue(Utils.clamped(currentValue, pxMin, pxMax))
       contents += fPx
     } else {
-      fPercent.setValue(currentValue)
+      fPercent.setValue(Utils.clamped(currentValue, percentMin, percentMax))
       contents += fPercent
     }
     revalidate()
@@ -39,10 +45,10 @@ class LayoutEditingPanel(model: Layout) extends DesignGridPanel {
   val fLayoutTypeId =
     enumIdCombo(LayoutType)(model.layoutTypeId, model.layoutTypeId = _)
 
-  val fW = new PixelPercentField(model.w, model.w = _)
-  val fH = new PixelPercentField(model.h, model.h = _)
-  val fXOffset = new PixelPercentField(model.xOffset, model.xOffset = _)
-  val fYOffset = new PixelPercentField(model.yOffset, model.yOffset = _)
+  val fW = new PixelPercentField(model.w, model.w = _, false)
+  val fH = new PixelPercentField(model.h, model.h = _, false)
+  val fXOffset = new PixelPercentField(model.xOffset, model.xOffset = _, true)
+  val fYOffset = new PixelPercentField(model.yOffset, model.yOffset = _, true)
 
   def switchMode() = {
     val pixelMode = model.sizeTypeId == SizeType.Fixed.id
@@ -57,8 +63,6 @@ class LayoutEditingPanel(model: Layout) extends DesignGridPanel {
 
     fW.enabled = sizeEnabled
     fH.enabled = sizeEnabled
-    fXOffset.enabled = sizeEnabled
-    fYOffset.enabled = sizeEnabled
   }
   switchMode()
 
