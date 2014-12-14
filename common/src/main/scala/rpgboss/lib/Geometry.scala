@@ -73,7 +73,7 @@ case class Layout(var layoutTypeId: Int = LayoutType.default.id,
                   var xOffset: Float = 0,
                   var yOffset: Float = 0) {
 
-  def toJs() = "game.layout(%d, %d, %f, %f, %f, %f)".format(
+  def toJs() = "game.layoutWithOffset(%d, %d, %f, %f, %f, %f)".format(
       layoutTypeId, sizeTypeId, w, h, xOffset, yOffset)
 
   def getRect(srcW: Float, srcH: Float, screenW: Int, screenH: Int) = {

@@ -10,6 +10,7 @@ import rpgboss.lib.Utils
 import rpgboss.model.AddOrRemove
 import rpgboss.editor.Internationalized._
 import rpgboss.lib.ArrayUtils
+import rpgboss.editor.resourceselector.PictureField
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -109,3 +110,19 @@ class OpenStoreCmdDialog(
   initial: OpenStore,
   successF: (OpenStore) => Any)
   extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
+
+class ShowPictureCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: ShowPicture,
+  successF: (ShowPicture) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("Show Picture"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          needsTranslation("Picture"),
+          new PictureField(owner, sm, model.picture, model.picture = _)),
+      TitledComponent(
+          needsTranslation("Layout"),
+          new LayoutEditingPanel(model.layout)))
+}
