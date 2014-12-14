@@ -241,7 +241,7 @@ class MapScreen(val game: RpgGame)
       math.abs(_playerEntity.y - playerOldY)
 
     mapAndAssetsOption map { mapAndAssets =>
-      val minimumDistanceFromLastBattle = 10
+      val minimumDistanceFromLastBattle = 3
 
       val encounterSettings = mapAndAssets.encounterSettings
 
