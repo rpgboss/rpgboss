@@ -66,8 +66,6 @@ function equipMenu(statusMenu) {
       getState : function(state) {
         var stats = game.getBattleStats(characterId, -1, -1);
         var lines = [];
-
-        java.lang.System.out.println(stats.current());
         
         lines.push(rightPad("Max HP:", 10) + leftPad(stats.current().mhp(), 4));
         lines.push(rightPad("Max MP:", 10) + leftPad(stats.current().mmp(), 4));

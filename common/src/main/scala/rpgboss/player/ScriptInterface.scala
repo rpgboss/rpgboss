@@ -42,8 +42,6 @@ trait HasScriptConstants {
   val CHARACTER_LEVELS = "characterLevels"
   val CHARACTER_HPS = "characterHps"
   val CHARACTER_MPS = "characterMps"
-  val CHARACTER_MAX_HPS = "characterMaxHps"
-  val CHARACTER_MAX_MPS = "characterMaxMps"
   val CHARACTER_EXPS = "characterExps"
   val CHARACTER_ROWS = "characterRow"
 
