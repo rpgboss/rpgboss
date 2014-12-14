@@ -466,8 +466,9 @@ class ScriptInterface(
     if (persistent.addRemoveItem(itemId, -1)) {
       val item = project.data.enums.items(itemId)
       val characterStatus = BattleStatus.fromCharacter(
-          project.data, persistent.getPartyParameters(project), characterId,
-          index = -1)
+          project.data,
+          persistent.getPartyParameters(project.data.enums.characters),
+          characterId, index = -1)
 
       val damages = item.effects.flatMap(_.applyAsSkillOrItem(characterStatus))
 
@@ -485,7 +486,9 @@ class ScriptInterface(
 
   def getBattleStats(characterId: Int, proposedSlotId: Int,
       proposedItemId: Int) = {
-    val partyParams = syncRun { persistent.getPartyParameters(project) }
+    val partyParams = syncRun {
+      persistent.getPartyParameters(project.data.enums.characters)
+    }
     val currentBattleStats = BattleStatus.fromCharacter(
         project.data, partyParams, characterId)
 

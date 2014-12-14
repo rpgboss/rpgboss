@@ -555,7 +555,7 @@ class BattleScreen(
 
             val exp = battle.victoryExperience
             val leveled = game.persistent.givePartyExperience(
-              battle.pData.enums.characters,
+              project.data,
               battle.partyIds,
               exp)
             val names = leveled.map(getCharacterName)

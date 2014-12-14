@@ -3,6 +3,7 @@ package rpgboss.player
 import scala.collection.mutable.{ HashMap => MutableHashMap }
 import scala.collection.mutable.Publisher
 import rpgboss.lib.ThreadChecked
+import rpgboss.model.Character
 import rpgboss.model.Project
 import rpgboss.model.battle.PartyParameters
 import rpgboss.model.MapLoc
@@ -12,6 +13,7 @@ import rpgboss.model.ItemType
 import rpgboss.model.ProjectData
 import rpgboss.lib.ArrayUtils
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import rpgboss.model.battle.BattleStatus
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
@@ -113,9 +115,9 @@ class PersistentState(
     publish(EventStateChange((mapName, eventId), newState))
   }
 
-  def getPartyParameters(project: Project) = {
+  def getPartyParameters(characters: Array[Character]) = {
     val charactersIdxs =
-      (0 until project.data.enums.characters.length).toArray
+      (0 until characters.length).toArray
     PartyParameters(
       getIntArray(CHARACTER_LEVELS),
       getIntArray(CHARACTER_HPS),
@@ -130,16 +132,24 @@ class PersistentState(
    * @return  the list of characters that leveled up by their character index.
    */
   def givePartyExperience(
-    characters: Array[rpgboss.model.Character],
+    pData: ProjectData,
     partyIds: Array[Int],
     experience: Int) = {
+    def characters = pData.enums.characters
+    val hps = getIntArray(CHARACTER_HPS)
+    val mps = getIntArray(CHARACTER_MPS)
     val levels = getIntArray(CHARACTER_LEVELS)
     val exps = getIntArray(CHARACTER_EXPS)
 
+    assert(hps.length == characters.length)
+    assert(mps.length == characters.length)
     assert(levels.length == characters.length)
     assert(exps.length == characters.length)
 
+    val oldPartyParams = getPartyParameters(characters)
+
     val leveledBuffer = collection.mutable.ArrayBuffer[Int]()
+    val oldStatsOfLeveledBuffer = collection.mutable.ArrayBuffer[BattleStatus]()
     for (i <- partyIds) {
       val character = characters(i)
       exps(i) += experience
@@ -155,11 +165,27 @@ class PersistentState(
       if (leveled) {
         character.expToLevel(levels(i))
         leveledBuffer += i
+
+        oldStatsOfLeveledBuffer +=
+          BattleStatus.fromCharacter(pData, oldPartyParams, i)
       }
     }
 
     setIntArray(CHARACTER_LEVELS, levels)
     setIntArray(CHARACTER_EXPS, exps)
+
+    val newPartyParams = getPartyParameters(characters)
+    for ((characterId, oldStats) <- leveledBuffer zip oldStatsOfLeveledBuffer) {
+      val newStats =
+        BattleStatus.fromCharacter(pData, newPartyParams, characterId)
+      val hpRatio = oldStats.hp.toDouble / oldStats.stats.mhp
+      val mpRatio = oldStats.mp.toDouble / oldStats.stats.mmp
+      hps.update(characterId, (hpRatio * newStats.stats.mhp).round.toInt)
+      mps.update(characterId, (mpRatio * newStats.stats.mmp).round.toInt)
+    }
+
+    setIntArray(CHARACTER_HPS, hps)
+    setIntArray(CHARACTER_MPS, mps)
 
     leveledBuffer.toArray
   }

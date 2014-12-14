@@ -199,7 +199,7 @@ class RpgGame(gamepath: File)
       val battle = new Battle(
         project.data,
         persistent.getIntArray(PARTY),
-        persistent.getPartyParameters(project),
+        persistent.getPartyParameters(project.data.enums.characters),
         encounter,
         aiOpt = Some(new RandomEnemyAI))
 

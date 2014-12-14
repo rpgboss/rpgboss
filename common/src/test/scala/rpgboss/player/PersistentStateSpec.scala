@@ -10,12 +10,20 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
     val character2 =
       Character(progressions = StatProgressions(exp = Curve(600, 200)))
     val characters = Array(character1, character2)
+    val pData = ProjectData()
+    pData.enums.characters = characters
 
     val persistent = new PersistentState
+    persistent.setIntArray(CHARACTER_ROWS, Array(0, 0))
+
+    persistent.setIntArray(CHARACTER_HPS, Array(50, 50))
+    persistent.setIntArray(CHARACTER_MPS, Array(20, 20))
     persistent.setIntArray(CHARACTER_LEVELS , Array(level1, level2))
     persistent.setIntArray(CHARACTER_EXPS, Array(exp1, exp2))
 
     def getState() = new {
+      val hps = persistent.getIntArray(CHARACTER_HPS)
+      val mps = persistent.getIntArray(CHARACTER_MPS)
       val levels = persistent.getIntArray(CHARACTER_LEVELS)
       val exps = persistent.getIntArray(CHARACTER_EXPS)
     }
@@ -23,10 +31,12 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
 
   "PersistentState" should "level up specified character only" in {
     val f = levelingFixture(1, 1, 0, 0)
-    val leveled = f.persistent.givePartyExperience(f.characters, Array(1), 700)
+    val leveled = f.persistent.givePartyExperience(f.pData, Array(1), 700)
     val state = f.getState()
 
     leveled should deepEqual (Array(1))
+    state.hps should deepEqual(Array(50, 60))
+    state.mps should deepEqual(Array(20, 24))
     state.levels should deepEqual (Array(1, 2))
     state.exps should deepEqual (Array(0, 100))
   }
@@ -34,10 +44,12 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
   "PersistentState" should "level up both characters" in {
     val f = levelingFixture(1, 1, 0, 0)
     val leveled =
-      f.persistent.givePartyExperience(f.characters, Array(0, 1), 600)
+      f.persistent.givePartyExperience(f.pData, Array(0, 1), 600)
     val state = f.getState()
 
     leveled should deepEqual (Array(0, 1))
+    state.hps should deepEqual(Array(60, 60))
+    state.mps should deepEqual(Array(24, 24))
     state.levels should deepEqual (Array(2, 2))
     state.exps should deepEqual (Array(300, 0))
   }
@@ -45,10 +57,12 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
   "PersistentState" should "level up through multiple levels" in {
     val f = levelingFixture(1, 1, 0, 0)
     val leveled =
-      f.persistent.givePartyExperience(f.characters, Array(0, 1), 700)
+      f.persistent.givePartyExperience(f.pData, Array(0, 1), 700)
     val state = f.getState()
 
     leveled should deepEqual (Array(0, 1))
+    state.hps should deepEqual(Array(70, 60))
+    state.mps should deepEqual(Array(28, 24))
     state.levels should deepEqual (Array(3, 2))
     state.exps should deepEqual (Array(0, 100))
   }
