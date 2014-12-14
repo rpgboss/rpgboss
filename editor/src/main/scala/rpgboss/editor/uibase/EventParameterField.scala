@@ -2,7 +2,6 @@ package rpgboss.editor.uibase
 
 import scala.swing.Component
 import scala.swing.Window
-
 import rpgboss.editor.uibase.SwingUtils.indexedCombo
 import rpgboss.editor.uibase.SwingUtils.percentField
 import rpgboss.lib.Utils
@@ -18,6 +17,7 @@ import rpgboss.model.event.HidePicture
 import rpgboss.model.event.IntArrayParameter
 import rpgboss.model.event.IntParameter
 import rpgboss.model.event.OpenStore
+import rpgboss.model.event.ShowPicture
 
 /**
  * The name of the field and a component for editing the constant value.
@@ -86,6 +86,8 @@ object EventParameterField {
             "Buy price multiplier:", 0f, 4f, c.buyPriceMultiplier),
         FloatPercentField(
             "Sell price multiplier:", 0f, 4f, c.sellPriceMultiplier))
+    case c: ShowPicture => List(
+        IntNumberField("Slot", PictureSlots.BEGIN, PictureSlots.END, c.slot))
     case _ => Nil
   }
 }

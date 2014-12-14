@@ -85,7 +85,7 @@ abstract class SoundSelectDialog(
       val currentSound = gdxPanel.getAudio.newSound(resource.getGdxFileHandle)
 
       row().grid().add(new Button(Action("Play") {
-        currentSound.play(volumeSlider.floatValue, pitchSlider.floatValue, 0f)
+        currentSound.play(volumeSlider.value, pitchSlider.value, 0f)
       }))
 
       row().grid(new Label("Volume:")).add(volumeSlider)
@@ -137,7 +137,7 @@ abstract class MusicSelectDialog(
 
       row().grid().add(new Button(Action("Play") {
         currentMusic.map(_.stop())
-        currentMusic.map(_.setVolume(volumeSlider.floatValue))
+        currentMusic.map(_.setVolume(volumeSlider.value))
         currentMusic.map(_.play())
       }))
 

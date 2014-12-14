@@ -91,10 +91,24 @@ object SwingUtils {
     new BoxPanel(Orientation.Horizontal) {
       contents += spinner
       contents += new Label("%") {
-        preferredSize = new Dimension(15, 15)
+        preferredSize = new Dimension(20, 15)
       }
 
-      def floatValue = spinner.getValue.toFloat / 100f
+      def value = spinner.getValue.toFloat / 100f
+      def setValue(v: Float) = spinner.setValue((v * 100).round)
+    }
+  }
+
+  def pxField(min: Int, max: Int, initial: Int, onUpdate: Int => Unit) = {
+    val spinner = new NumberSpinner(initial, min, max, onUpdate)
+    new BoxPanel(Orientation.Horizontal) {
+      contents += spinner
+      contents += new Label("px") {
+        preferredSize = new Dimension(20, 15)
+      }
+
+      def value = spinner.getValue
+      def setValue(v: Float) = spinner.setValue(v.round)
     }
   }
 

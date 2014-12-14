@@ -10,6 +10,7 @@ import rpgboss.player.entity.WindowText
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.lib.Utils
 import rpgboss.lib.ArrayUtils
+import rpgboss.lib.Layout
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -63,6 +64,7 @@ object EventCmd {
     classOf[SetInt],
     classOf[SetLocalVariable],
     classOf[ShowText],
+    classOf[ShowPicture],
     classOf[StartBattle],
     classOf[Teleport])) + EventRenameHints
 }
@@ -243,6 +245,14 @@ case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
   }
 
   def sections = singleCall("game.showText", processedLines)
+}
+
+case class ShowPicture(
+    slot: IntParameter = IntParameter(),
+    var picture: String = "",
+    layout: Layout = Layout.defaultForPictures) extends EventCmd {
+  def sections =
+    singleCall("game.showPicture", slot, picture, RawJs(layout.toJs()))
 }
 
 case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
