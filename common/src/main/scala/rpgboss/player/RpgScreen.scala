@@ -80,6 +80,7 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   override def hide() = {
     assertOnBoundThread()
+    inputs.releaseAllKeys()
     Gdx.input.setInputProcessor(null)
 
     musics.foreach(_.map(_.pause()))

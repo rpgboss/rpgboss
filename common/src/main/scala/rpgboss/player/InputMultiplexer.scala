@@ -86,6 +86,12 @@ class InputMultiplexer extends InputAdapter {
   def hasFocus(handler: InputHandler) =
     !inputProcessors.isEmpty && inputProcessors.head == handler
 
+  def releaseAllKeys() = {
+    for (i <- 0 until MyKeys.totalNumber; if keyIsActive(i)) {
+      myKeyUp(i)
+    }
+  }
+
   // Maps
   def mapKey(keycode: Int): Option[Int] = keycode match {
     case Keys.UP => Some(MyKeys.Up)
