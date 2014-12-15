@@ -6,6 +6,7 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import scala.swing._
 import scala.swing.event._
+import rpgboss.editor.Internationalized._ 
 
 class ImportResourcesPanel(sm: StateMaster)
   extends GridPanel(1, 3) {
@@ -39,7 +40,7 @@ class ImportResourcesPanel(sm: StateMaster)
     }
   }
 
-  val btnImport = new Button(Action("Import...") {
+  val btnImport = new Button(Action(getMessage("Import")) {
     val metaResource = resourceTypeList.selection.items.head
 
     val chooser = new FileChooser {
@@ -51,7 +52,7 @@ class ImportResourcesPanel(sm: StateMaster)
       }
     }
 
-    val result = chooser.showDialog(this, "Import")
+    val result = chooser.showDialog(this, getMessage("Import"))
     if (result == FileChooser.Result.Approve) {
       for (file <- chooser.selectedFiles) {
         metaResource.importCustom(sm.getProj, file)
@@ -61,15 +62,15 @@ class ImportResourcesPanel(sm: StateMaster)
     }
   })
 
-  val btnDelete: Button = new Button(Action("Delete...") {
+  val btnDelete: Button = new Button(Action(getMessage("Delete")) {
     val selection = resourceFileList.selection.items.head
     assert(selection.custom)
 
     val result = Dialog.showConfirmation(
       this,
-      "Are you sure you want to delete custom resource: %s?".format(
+      getMessage("Are_You_Sure_You_Want_To_Delete_Custom_Resource") + " %s?".format(
         selection.name),
-      "Delete resource")
+      getMessage("Delete_Resource"))
 
     if (result == Dialog.Result.Yes) {
       val metaResource = resourceTypeList.selection.items.head
@@ -99,14 +100,14 @@ class ImportResourcesPanel(sm: StateMaster)
 
   import SwingUtils._
   contents += new DesignGridPanel {
-    row().grid().add(lbl("Resource type:"))
+    row().grid().add(lbl(getMessageColon("Resource_Type")))
     row().grid().add(new ScrollPane {
       contents = resourceTypeList
     })
   }
 
   contents += new DesignGridPanel {
-    row().grid().add(lbl("Files:"))
+    row().grid().add(lbl(getMessageColon("Files")))
     row().grid().add(new ScrollPane {
       contents = resourceFileList
     })
