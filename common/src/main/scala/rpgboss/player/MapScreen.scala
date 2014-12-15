@@ -220,6 +220,9 @@ class MapScreen(val game: RpgGame)
 
   // Update. Called on Gdx thread before render.
   def update(delta: Float): Unit = {
+    if (!assets.update())
+      return
+
     windowManager.update(delta)
     // TODO: This makes the camera lag the player's position.
     camera.update(delta, _playerEntity.x, _playerEntity.y)

@@ -14,6 +14,7 @@ import rpgboss.player.entity._
 import rpgboss.lib.ThreadChecked
 import rpgboss.lib.Rect
 import rpgboss.lib.Layout
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 /**
  * This class renders stuff on the screen.
@@ -27,7 +28,7 @@ class WindowManager(
   val assets: RpgAssetManager,
   val project: Project,
   val screenW: Int,
-  val screenH: Int) extends ThreadChecked {
+  val screenH: Int) extends ThreadChecked with LazyLogging {
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
 
@@ -98,6 +99,9 @@ class WindowManager(
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
   def showPictureByName(slot: Int, name: String, layout: Layout) = {
+    assertOnBoundThread()
+    logger.debug("showPictureByName(%d, %s, %s)".format(slot, name, layout))
+
     val picture = Picture.readFromDisk(project, name)
     showPicture(slot, TexturePicture(assets, picture, layout))
   }

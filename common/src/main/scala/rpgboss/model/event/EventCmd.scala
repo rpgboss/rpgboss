@@ -134,7 +134,8 @@ case class GetChoice(var question: Array[String] = Array(),
   }
 }
 
-case class HidePicture(slot: IntParameter = IntParameter()) extends EventCmd {
+case class HidePicture(
+    slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP)) extends EventCmd {
   def sections = singleCall("game.hidePicture", slot)
 }
 
@@ -248,7 +249,7 @@ case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
 }
 
 case class ShowPicture(
-    slot: IntParameter = IntParameter(),
+    slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
     var picture: String = "",
     layout: Layout = Layout.defaultForPictures) extends EventCmd {
   def sections =
