@@ -56,7 +56,7 @@ class ClassesPanel(
       model.learnedSkills = _)
 
     val mainFields = new DesignGridPanel {
-      row().grid(leftLabel(getMessageColon("Name") + ":")).add(fName)
+      row().grid(leftLabel(getMessageColon("Name"))).add(fName)
       row().grid(leftLabel(getMessageColon("Unarmed_Attack"))).add(fUnarmedAttackSkillId)
     }
 
