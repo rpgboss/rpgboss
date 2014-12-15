@@ -23,14 +23,14 @@ class EnumerationsPanel(
   val fElements =
     new StringArrayEditingPanel(
       owner,
-      "Elements",
+      getMessage("Elements"),
       dbDiag.model.enums.elements,
       dbDiag.model.enums.elements = _)
 
   val fEquipTypes =
     new StringArrayEditingPanel(
       owner,
-      "Equipment Types",
+      getMessage("Equipment_Types"),
       dbDiag.model.enums.equipTypes,
       dbDiag.model.enums.equipTypes = _)
 

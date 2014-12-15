@@ -12,6 +12,7 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import scala.collection.mutable.ArrayBuffer
+import rpgboss.editor.Internationalized._
 
 class ClassesPanel(
   owner: Window,
@@ -21,7 +22,7 @@ class ClassesPanel(
     owner,
     dbDiag.model.enums.classes)
   with DatabasePanel {
-  def panelName = "Classes"
+  def panelName = getMessage("Classes")
   def newDefaultInstance() = new CharClass()
 
   def editPaneForItem(idx: Int, model: CharClass) = {
@@ -39,11 +40,11 @@ class ClassesPanel(
       new EffectPanel(owner, dbDiag, model.effects, model.effects = _,
           EffectContext.CharacterClass)
 
-    logger.info("constructing new array multiselect panel %s".format(model.canUseItems) )
+    logger.info(getMessage("constructing_New_Array_Multiselect_Panel") + " %s".format(model.canUseItems) )
 
     val fCanEquip = new ArrayMultiselectPanel(
       owner,
-      "Can equip",
+      getMessage("Can_Equip"),
       dbDiag.model.enums.items,
       model.canUseItems,
       model.canUseItems = _)
@@ -55,8 +56,8 @@ class ClassesPanel(
       model.learnedSkills = _)
 
     val mainFields = new DesignGridPanel {
-      row().grid(leftLabel("Name:")).add(fName)
-      row().grid(leftLabel("Unarmed attack:")).add(fUnarmedAttackSkillId)
+      row().grid(leftLabel(getMessageColon("Name") + ":")).add(fName)
+      row().grid(leftLabel(getMessageColon("Unarmed_Attack"))).add(fUnarmedAttackSkillId)
     }
 
     val rightFields = new GridPanel(2, 1) {
@@ -74,7 +75,7 @@ class ClassesPanel(
   }
 
   override def onListDataUpdate() = {
-    logger.info("Classes updated")
+    logger.info(getMessage("Classes_Updated"))
     dbDiag.model.enums.classes = dataAsArray
   }
 }

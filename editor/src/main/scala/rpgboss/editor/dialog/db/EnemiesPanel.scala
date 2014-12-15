@@ -109,7 +109,7 @@ class EnemiesPanel(
   }
 
   override def onListDataUpdate() = {
-    logger.info("Enemies data updated")
+    logger.info(getMessage("Enemies_Data_Updated"))
     dbDiag.model.enums.enemies = dataAsArray
   }
 }
@@ -120,14 +120,14 @@ class DroppedItemListPanel(
     initial: Array[ItemDrop],
     onUpdate: Array[ItemDrop] => Unit)
     extends TableEditor[ItemDrop] {
-  override def title = "Dropped Items"
+  override def title = getMessage("Dropped_Items")
 
   override val modelArray = ArrayBuffer(initial: _*)
   override def newInstance() = ItemDrop()
 
   override def onUpdate() = onUpdate(modelArray.toArray)
 
-  override def colHeaders = Array("Item", "% Chance")
+  override def colHeaders = Array(getMessage("Item"), getMessage("%_Chance"))
 
   override def getRowStrings(itemDrop: ItemDrop) = {
     Array(
@@ -137,7 +137,7 @@ class DroppedItemListPanel(
 
   override def showEditDialog(
       initial: ItemDrop, okCallback: ItemDrop => Unit) = {
-    val d = new StdDialog(owner, "ItemDrop") {
+    val d = new StdDialog(owner, getMessage("ItemDrop")) {
       val model = initial.copy()
       def okFunc() = {
         okCallback(model)
@@ -152,8 +152,8 @@ class DroppedItemListPanel(
       val fChance = percentField(0, 1, model.chance, model.chance = _)
 
       contents = new DesignGridPanel {
-        row().grid(lbl("Item:")).add(fItemId)
-        row().grid(lbl("Chance:")).add(fChance)
+        row().grid(lbl(getMessageColon("Item"))).add(fItemId)
+        row().grid(lbl(getMessageColon("Chance"))).add(fChance)
         addButtons(okBtn, cancelBtn)
       }
     }
