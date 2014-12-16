@@ -462,21 +462,40 @@ object MapViewTools {
       TileRect.empty
     }
   }
+
+  case object Eraser extends MapViewTool {
+    val name = "Eraser"
+
+    def onMouseDown(
+      vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+      layer: MapLayers.Value,
+      x1: Int, y1: Int) = {
+      import MapLayers._
+
+      TileRect.empty
+    }
+    def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
+                       layer: MapLayers.Value,
+                       x1: Int, y1: Int, x2: Int, y2: Int) = {
+      TileRect.empty
+    }
+  }
 }
 
 object MapViewToolsEnum extends RpgEnum {
-  val Pencil, Rectangle, Ellipse, Bucket = Value
+  val Pencil, Rectangle, Ellipse, Bucket, Eraser = Value
 
   val toolMap = Map(
     Pencil -> MapViewTools.Pencil,
     Rectangle -> MapViewTools.Rectangle,
     Ellipse -> MapViewTools.Ellipse,
-    Bucket -> MapViewTools.Bucket)
+    Bucket -> MapViewTools.Bucket,
+    Eraser -> MapViewTools.Eraser)
 
   def getTool(value: Value) = {
     toolMap.get(value).get
   }
-  val valueList = List(Pencil, Rectangle, Ellipse, Bucket)
+  val valueList = List(Pencil, Rectangle, Ellipse, Bucket,Eraser)
 
   def default = Pencil
 }

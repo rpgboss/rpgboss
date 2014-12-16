@@ -100,7 +100,8 @@ class MapEditor(
           "hendrik-weiler-theme/pencil.png",
           "hendrik-weiler-theme/rectangle.png",
           "hendrik-weiler-theme/circle.png",
-          "hendrik-weiler-theme/bucket.png"))
+          "hendrik-weiler-theme/bucket.png",
+          "hendrik-weiler-theme/eraser.png"))
 
   addBtnsAsGrp(toolbar.contents, toolsButtons)
 
