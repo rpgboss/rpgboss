@@ -11,6 +11,7 @@ import net.java.dev.designgridlayout._
 import rpgboss.editor.dialog.DatabaseDialog
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import rpgboss.editor.resourceselector._
+import rpgboss.editor.Internationalized._
 
 class SystemPanel(
   owner: Window,
@@ -19,7 +20,7 @@ class SystemPanel(
   extends DesignGridPanel
   with DatabasePanel
   with LazyLogging {
-  def panelName = "Startup"
+  def panelName = getMessage("Startup")
   layout.labelAlignment(LabelAlignment.RIGHT)
 
   def model = dbDiag.model
@@ -56,19 +57,19 @@ class SystemPanel(
   val fSoundCannot = new SoundField(owner, sm, model.startup.soundCannot,
       model.startup.soundCannot = _)
 
-  row().grid(lbl("Game title:")).add(fGameTitle)
-  row().grid(lbl("Title picture:")).add(fTitlepic)
-  row().grid(lbl("Title music:")).add(fTitleMusic)
+  row().grid(lbl(getMessageColon("Game_Title"))).add(fGameTitle)
+  row().grid(lbl(getMessageColon("Title_Picture"))).add(fTitlepic)
+  row().grid(lbl(getMessageColon("Title_Music"))).add(fTitleMusic)
 
-  row().grid(lbl("X Resolution:")).add(fScreenW)
-  row().grid(lbl("Y Resolution:")).add(fScreenH)
+  row().grid(lbl(getMessageColon("X_Resolution"))).add(fScreenW)
+  row().grid(lbl(getMessageColon("Y_Resolution"))).add(fScreenH)
 
-  row().grid(lbl("Windowskin:")).add(fWindowskin)
-  row().grid(lbl("Message font:")).add(fMsgfont)
-  row().grid(lbl("Font size:")).add(fFontsize)
+  row().grid(lbl(getMessageColon("Windowskin"))).add(fWindowskin)
+  row().grid(lbl(getMessageColon("Message_Font"))).add(fMsgfont)
+  row().grid(lbl(getMessageColon("Font_Size"))).add(fFontsize)
 
-  row().grid(lbl("Cursor sound:")).add(fSoundCursor)
-  row().grid(lbl("Select sound:")).add(fSoundSelect)
-  row().grid(lbl("Cancel sound:")).add(fSoundCancel)
-  row().grid(lbl("Cannot sound:")).add(fSoundCannot)
+  row().grid(lbl(getMessageColon("Cursor_Sound"))).add(fSoundCursor)
+  row().grid(lbl(getMessageColon("Select_Sound"))).add(fSoundSelect)
+  row().grid(lbl(getMessageColon("Cancel_Sound"))).add(fSoundCancel)
+  row().grid(lbl(getMessageColon("Cannot_Sound"))).add(fSoundCannot)
 }

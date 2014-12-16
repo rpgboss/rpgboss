@@ -9,6 +9,7 @@ import rpgboss.editor.cache._
 import scala.math._
 import scala.collection.mutable.ArrayBuffer
 
+
 object MapLayers extends RpgEnum {
   val Bot, Mid, Top, Evt = Value
 

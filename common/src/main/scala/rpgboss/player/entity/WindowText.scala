@@ -65,6 +65,8 @@ object WindowText {
 
     newText.toArray
   }
+
+  def DefaultLineHeight = 32
 }
 
 class WindowText(
@@ -73,7 +75,8 @@ class WindowText(
   private var rect: Rect,
   fontbmp: BitmapFont,
   justification: Int = Window.Left,
-  val lineHeight: Int = 32) extends ThreadChecked with LazyLogging {
+  val lineHeight: Int = WindowText.DefaultLineHeight)
+  extends ThreadChecked with LazyLogging {
 
   protected var _text: Array[String] =
     WindowText.processText(initialText, persistent)
@@ -172,20 +175,22 @@ class PrintingWindowText(
   skin: Windowskin,
   skinRegion: TextureRegion,
   fontbmp: BitmapFont,
-  timePerChar: Float = 0.05f,
-  linesPerBlock: Int = 4,
-  justification: Int = Window.Left)
+  options: PrintingTextWindowOptions)
   extends WindowText(
-    persistent, initialText, rect, fontbmp, justification) {
-  assume(timePerChar >= 0)
+    persistent, initialText, rect, fontbmp, options.justification) {
+  assume(options.timePerChar >= 0)
 
   def drawAwaitingArrow = true
 
   /**
    * When this is in the next block, the whole block has been printed.
    */
-  private var _lineI =
-    if (timePerChar == 0) math.min(_text.length, linesPerBlock) else 0
+  private var _lineI = {
+    if (options.timePerChar == 0)
+      math.min(_text.length, options.linesPerBlock)
+    else
+      0
+  }
 
   private var _charI = 0
   private var _blockI = 0
@@ -197,7 +202,7 @@ class PrintingWindowText(
    */
   private var _timeSinceLastCharacter: Float = 0
 
-  def wholeBlockPrinted = _lineI >= (_blockI + 1) * linesPerBlock
+  def wholeBlockPrinted = _lineI >= (_blockI + 1) * options.linesPerBlock
   def allTextPrinted = !(_lineI < _text.length)
 
   def awaitingInput = allTextPrinted || wholeBlockPrinted
@@ -206,10 +211,10 @@ class PrintingWindowText(
     _blockI += 1
     _timeSinceLastCharacter = 0
 
-    if (timePerChar == 0) {
-      _lineI = math.min(_text.length, (_blockI + 1) * linesPerBlock)
+    if (options.timePerChar == 0) {
+      _lineI = math.min(_text.length, (_blockI + 1) * options.linesPerBlock)
     } else {
-      assert(_lineI == _blockI * linesPerBlock)
+      assert(_lineI == _blockI * options.linesPerBlock)
       assert(_charI == 0)
     }
   }
@@ -223,7 +228,11 @@ class PrintingWindowText(
   override def updateText(newText: Array[String]) = {
     super.updateText(newText)
 
-    _lineI = 0
+    _lineI = if (options.timePerChar == 0)
+      math.min(_text.length, options.linesPerBlock)
+    else
+      0
+
     _charI = 0
     _blockI = 0
     _timeSinceLastCharacter = 0
@@ -237,13 +246,13 @@ class PrintingWindowText(
 
     // This loop advances at most one line per iteration.
     while (!wholeBlockPrinted && !allTextPrinted &&
-           _timeSinceLastCharacter > timePerChar) {
+           _timeSinceLastCharacter > options.timePerChar) {
       assert(_lineI <= _text.length)
       val line = _text(_lineI)
 
       val charsLeftInLine = line.length() - _charI
       val charsWeHaveTimeToPrint =
-        (_timeSinceLastCharacter / timePerChar).toInt
+        (_timeSinceLastCharacter / options.timePerChar).toInt
       val charsAdvanced = math.min(charsLeftInLine, charsWeHaveTimeToPrint)
 
       _charI += charsAdvanced
@@ -253,25 +262,25 @@ class PrintingWindowText(
         _charI = 0
       }
 
-      _timeSinceLastCharacter -= charsAdvanced * timePerChar
+      _timeSinceLastCharacter -= charsAdvanced * options.timePerChar
     }
   }
 
   override def render(b: SpriteBatch): Unit = {
     // Draw all complete lines in current block
-    for (i <- _blockI * linesPerBlock to (_lineI - 1)) {
-      val idxInBlock = i % linesPerBlock
+    for (i <- _blockI * options.linesPerBlock to (_lineI - 1)) {
+      val idxInBlock = i % options.linesPerBlock
       drawLine(b, _text(i), 0, idxInBlock * lineHeight)
     }
 
     // Draw the currently writing line
     if (_lineI < _text.length) {
-      val idxInBlock = _lineI % linesPerBlock
+      val idxInBlock = _lineI % options.linesPerBlock
       drawLine(b, _text(_lineI).take(_charI), 0, idxInBlock * lineHeight)
     }
 
     // If waiting for user input to finish, draw the arrow
-    if (awaitingInput) {
+    if (options.showArrow && awaitingInput) {
       skin.drawArrow(b, skinRegion, rect.x - 8, rect.bot)
     }
   }

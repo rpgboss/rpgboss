@@ -11,6 +11,7 @@ import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.model._
 import rpgboss.model.Constants._
 import rpgboss.model.event.EventClass
+import rpgboss.editor.Internationalized._
 
 class EventClassesPanel(
   owner: Window,
@@ -20,7 +21,7 @@ class EventClassesPanel(
     owner,
     dbDiag.model.enums.eventClasses)
   with DatabasePanel {
-  def panelName = "Event Classes"
+  def panelName = getMessage("Event_Classes")
   def newDefaultInstance() = new EventClass()
 
   def editPaneForItem(idx: Int, model: EventClass) = {
@@ -38,7 +39,7 @@ class EventClassesPanel(
   }
 
   override def onListDataUpdate() = {
-    logger.info("Event classes updated")
+    logger.info(getMessage("Event_Classes_Updated"))
     dbDiag.model.enums.eventClasses = dataAsArray
   }
 }

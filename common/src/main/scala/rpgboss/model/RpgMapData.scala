@@ -178,18 +178,7 @@ case object RpgMapData {
       val events =
         eventsIntermediate.events.map(e => e.id->e).toMap
 
-      // TODO: Move to a more mature system for schema migration.
-      val fixedEvents = events.map {
-        case (k, event) => {
-          val newStates = event.states.map { state =>
-            val newCmds = state.cmds.filter(!_.isInstanceOf[EndOfScript])
-            state.copy(cmds = newCmds)
-          }
-          (k, event.copy(states = newStates))
-        }
-      }
-
-      RpgMapData(botAry, midAry, topAry, fixedEvents)
+      RpgMapData(botAry, midAry, topAry, events)
     }
   }
 }

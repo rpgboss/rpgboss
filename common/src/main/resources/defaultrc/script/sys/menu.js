@@ -32,15 +32,15 @@ function itemsMenu() {
     itemsTopWin.window.takeFocus();
   }
 
-  var itemsMenu = 
-    new ItemMenu(true, layout.southwest(sizer.prop(1.0, 0.87)), 32);
+  var itemsMenu = new ItemMenu(
+      true, game.layout(game.SOUTHWEST(), game.SCREEN(), 1.0, 0.87), 32);
   var itemsTopWin = new Menu({
     getState : function() {
       return {
         lines : [ "Use", "Organize" ]
       };
     },
-    layout : layout.northwest(sizer.prop(1.0, 0.13)),
+    layout : game.layout(game.NORTHWEST(), game.SCREEN(), 1.0, 0.13),
     windowDetails : {
       justification : game.CENTER(),
       columns : 2,
@@ -66,8 +66,6 @@ function equipMenu(statusMenu) {
       getState : function(state) {
         var stats = game.getBattleStats(characterId, -1, -1);
         var lines = [];
-
-        java.lang.System.out.println(stats.current());
         
         lines.push(rightPad("Max HP:", 10) + leftPad(stats.current().mhp(), 4));
         lines.push(rightPad("Max MP:", 10) + leftPad(stats.current().mmp(), 4));
@@ -81,7 +79,7 @@ function equipMenu(statusMenu) {
           lines : lines
         }
       },
-      layout : layout.southwest(sizer.prop(0.5, 0.6)),
+      layout : game.layout(game.SOUTHWEST(), game.SCREEN(), 0.5, 0.6),
       windowDetails : {}
     });
   }
@@ -108,7 +106,7 @@ function equipMenu(statusMenu) {
           lines: lines
         }
       },
-      layout : layout.north(sizer.prop(1.0, 0.4)),
+      layout : game.layout(game.NORTH(), game.SCREEN(), 1.0, 0.4),
       windowDetails : {
         allowCancel: true
       }
@@ -139,7 +137,7 @@ function equipMenu(statusMenu) {
             lines: itemNames
           }
         },
-        layout : layout.southeast(sizer.prop(0.5, 0.6)),
+        layout : game.layout(game.SOUTHEAST(), game.SCREEN(), 0.5, 0.6),
         windowDetails : {
           allowCancel : true
         }
@@ -175,7 +173,7 @@ function menu() {
         lines : [ "Item", "Skills", "Equip", "Status", "Save" ],
       };
     },
-    layout : layout.northeast(sizer.prop(0.2, 0.8)),
+    layout : game.layout(game.NORTHEAST(), game.SCREEN(), 0.2, 0.8),
     windowDetails : {
       justification : game.CENTER(),
       allowCancel : true

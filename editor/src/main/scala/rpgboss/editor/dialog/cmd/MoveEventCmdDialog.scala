@@ -41,10 +41,10 @@ class MoveEventCmdDialog(
   contents = new BoxPanel(Orientation.Vertical) {
     contents += fieldWhichEvent
     contents += new DesignGridPanel {
-      row().grid(lbl(getMessage("X_Movement") + ":")).add(fieldDx)
-      row().grid(lbl(getMessage("Y_Movement") + ":")).add(fieldDy)
-      row().grid(lbl(getMessage("Affix_Direction") + ":")).add(fieldAffixDirection)
-      row().grid(lbl(getMessage("Async") + ":")).add(fieldAsync)
+      row().grid(lbl(getMessageColon("X_Movement"))).add(fieldDx)
+      row().grid(lbl(getMessageColon("Y_Movement"))).add(fieldDy)
+      row().grid(lbl(getMessageColon("Affix_direction"))).add(fieldAffixDirection)
+      row().grid(lbl(getMessageColon("Async"))).add(fieldAsync)
       addButtons(okBtn, cancelBtn)
     }
   }

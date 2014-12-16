@@ -11,6 +11,7 @@ import scala.swing._
 import rpgboss.player.GdxGraphicsUtils
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Disposable
+import rpgboss.editor.Internationalized._
 
 object AnimationPlayerGdxPanel {
   def width = 320
@@ -134,7 +135,7 @@ class AnimationPlayerPanel(project: Project, animation: Animation)
 
   def onStatusUpdate(status: AnimationPlayerStatus): Unit = {
     btnPlay.enabled = !status.playing
-    btnPlay.text = if (status.playing) "Playing" else "Play"
+    btnPlay.text = if (status.playing) getMessage("Playing") else getMessage("Play")
 
     lblStatus.text = "%f / %f s".format(status.currentTime, status.totalTime)
   }

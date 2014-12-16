@@ -142,8 +142,6 @@ class RpgGame(gamepath: File)
 
     persistent.setIntArray(CHARACTER_HPS, characterStats.map(_.mhp))
     persistent.setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
-    persistent.setIntArray(CHARACTER_MAX_HPS, characterStats.map(_.mhp))
-    persistent.setIntArray(CHARACTER_MAX_MPS, characterStats.map(_.mmp))
 
     persistent.setIntArray(CHARACTER_EXPS , characters.map(x => 0))
 
@@ -201,7 +199,7 @@ class RpgGame(gamepath: File)
       val battle = new Battle(
         project.data,
         persistent.getIntArray(PARTY),
-        persistent.getPartyParameters(project),
+        persistent.getPartyParameters(project.data.enums.characters),
         encounter,
         aiOpt = Some(new RandomEnemyAI))
 

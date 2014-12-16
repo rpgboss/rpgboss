@@ -45,10 +45,10 @@ class NewProjectDialog(owner: Window, onSuccess: Project => Any)
 
   contents = new DesignGridPanel {
 
-    row().grid().add(leftLabel(getMessage("Directory_Project") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Directory_Project")))
     row().grid().add(rootChooser)
 
-    row().grid().add(leftLabel(getMessage("Project_Shortname") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Project_Shortname")))
     row().grid().add(shortnameField)
 
     addButtons(okBtn, cancelBtn)

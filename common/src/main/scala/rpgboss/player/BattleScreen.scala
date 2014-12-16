@@ -32,10 +32,11 @@ class BattleScreen(
   val assets: RpgAssetManager,
   atlasSprites: TextureAtlas,
   val project: Project,
-  val screenW: Float,
-  val screenH: Float)
+  val screenW: Int,
+  val screenH: Int)
   extends ThreadChecked
-  with RpgScreen {
+  with RpgScreen
+  with HasScriptConstants {
   assume(atlasSprites != null)
 
   val scriptInterface = gameOpt.map(new ScriptInterface(_, this)).orNull
@@ -103,7 +104,7 @@ class BattleScreen(
             }
 
             val skillWindow = scriptInterface.newChoiceWindow(
-              skillChoices.map(_.name), layout.south(640, 180),
+              skillChoices.map(_.name), Layout(SOUTH, FIXED, 640, 180),
               TextChoiceWindowOptions(columns = 2, allowCancel = true))
 
             while (true) {
@@ -144,7 +145,7 @@ class BattleScreen(
               battleItems.map(x => battle.pData.enums.items(x._1))
 
             val window = scriptInterface.newChoiceWindow(
-              battleItemInstances.map(_.name), layout.south(640, 180),
+              battleItemInstances.map(_.name), Layout(SOUTH, FIXED, 640, 180),
               TextChoiceWindowOptions(columns = 2, allowCancel = true))
 
             while (true) {
@@ -192,7 +193,7 @@ class BattleScreen(
           currentOpt = Some(this)
 
           _window = scriptInterface.newChoiceWindow(
-            Array("Attack", "Skill", "Item"), layout.south(140, 180),
+            Array("Attack", "Skill", "Item"), Layout(SOUTH, FIXED, 140, 180),
             TextChoiceWindowOptions(allowCancel = true))
         }
 
@@ -303,8 +304,8 @@ class BattleScreen(
   private def defeatedMessageTime = 4.0f
   private var _victorySequenceStarted = false
 
-  private var enemyListWindow: TextWindow = null
-  private var partyListWindow: TextWindow = null
+  private var enemyListWindow: PrintingTextWindow = null
+  private var partyListWindow: PrintingTextWindow = null
 
   /**
    * Contains the state of the currently displaying battle notification.
@@ -366,7 +367,7 @@ class BattleScreen(
 
     val enemyLines =
       Encounter.getEnemyLabels(aliveUnits, project.data)
-    enemyListWindow.updateText(enemyLines)
+    enemyListWindow.updateLines(enemyLines)
 
     // TODO: Handle enemy revive
     for (enemyStatus <- _battle.get.enemyStatus; if !enemyStatus.alive) {
@@ -385,7 +386,7 @@ class BattleScreen(
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
       "%-10s  %3d HP | %2d MP %3d%% ".format(name, status.hp, status.mp, readiness)
     }
-    partyListWindow.updateText(partyLines)
+    partyListWindow.updateLines(partyLines)
 
     // TODO: Handle party revive
     for (status <- _battle.get.partyStatus; if !status.alive) {
@@ -402,23 +403,25 @@ class BattleScreen(
 
     if (gameOpt.isDefined) {
       enemyListWindow = {
-        new TextWindow(
+        new PrintingTextWindow(
           persistentState,
           windowManager,
           null,
           Array(),
-          layout.southwest(200, 180)) {
+          Layout(SOUTHWEST, FIXED, 200, 180),
+          PrintingTextWindowOptions(timePerChar = 0)) {
           override def openCloseTime = 0
         }
       }
 
       partyListWindow = {
-        new TextWindow(
+        new PrintingTextWindow(
           persistentState,
           windowManager,
           null,
           Array(),
-          layout.southeast(440, 180)) {
+          Layout(SOUTHEAST, FIXED, 440, 180),
+          PrintingTextWindowOptions(timePerChar = 0)) {
           override def openCloseTime = 0
         }
       }
@@ -428,7 +431,7 @@ class BattleScreen(
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       windowManager.showPicture(
         PictureSlots.BATTLE_BACKGROUND,
-        TexturePicture(assets, bg, layout.north(sizer.fit(640, 320))))
+        TexturePicture(assets, bg, Layout(NORTH, COVER, 0, 0)))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -440,13 +443,15 @@ class BattleScreen(
         val battlerWidth = (battler.img.getWidth() * battlerSpec.scale).toInt
         val battlerHeight = (battler.img.getHeight() * battlerSpec.scale).toInt
 
-        val rect = Rect(unit.x, unit.y, battlerWidth, battlerHeight)
+        val layout =
+          Layout(NORTHWEST, FIXED, battlerWidth, battlerHeight, unit.x, unit.y)
+        val rect = layout.getRect(unit.x, unit.y, screenW, screenH)
         windowManager.showPicture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           TexturePicture(
             assets,
             battler,
-            rect))
+            layout))
 
         _enemyBattlers.append(rect)
       }
@@ -505,12 +510,9 @@ class BattleScreen(
   }
 
   def postTextNotice(msg: String) = {
-    new TextWindow(gameOpt.get.persistent, windowManager, null, Array(msg),
-        layout.north(640, 60)) {
-      override def openCloseTime = 0.0
-
-      override def ypad = 20
-    }
+    new PrintingTextWindow(gameOpt.get.persistent, windowManager, null,
+        Array(msg), Layout(NORTH, FIXED, 640, 60),
+        PrintingTextWindowOptions(timePerChar = 0.01f, stayOpenTime = 1.0f))
   }
 
   def update(delta: Float): Unit = {
@@ -553,7 +555,7 @@ class BattleScreen(
 
             val exp = battle.victoryExperience
             val leveled = game.persistent.givePartyExperience(
-              battle.pData.enums.characters,
+              project.data,
               battle.partyIds,
               exp)
             val names = leveled.map(getCharacterName)

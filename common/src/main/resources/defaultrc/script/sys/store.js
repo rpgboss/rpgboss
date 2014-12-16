@@ -23,7 +23,7 @@ function StoreBuyMenu(itemIds, priceMultiplier) {
         itemPrices: itemPrices
       }
     },
-    layout : layout.southwest(sizer.prop(0.6, 0.87)),
+    layout : game.layout(game.SOUTHWEST(), game.SCREEN(), 0.6, 0.87),
     windowDetails : {
       displayedItems : 10,
       allowCancel : true
@@ -36,18 +36,20 @@ function StoreBuyMenu(itemIds, priceMultiplier) {
 function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
   var items = project.data().enums().items();
 
-  var storeHeaderWin = game.newStaticTextWindow(
+  var storeHeaderWin = game.newTextWindow(
     ["Store"],
-    layout.northwest(sizer.prop(0.5, 0.13)),
+    game.layout(game.NORTHWEST(), game.SCREEN(), 0.5, 0.13),
     { justification : game.CENTER() });
   
-  var storeRightPane = game.newStaticTextWindow(
-    [], layout.southeast(sizer.prop(0.4, 0.87)), {})
+  var storeRightPane = game.newTextWindow(
+    [], game.layout(game.SOUTHEAST(), game.SCREEN(), 0.4, 0.87), {
+      timePerChar: 0,
+    })
     
   function updateStoreRightPane(itemId) {
     lines = [];
     lines.push("Gold: ");
-    lines.push("  "  + game.getInt(Constants.GOLD()));
+    lines.push("  "  + game.getInt(game.GOLD()));
     
     if (itemId >= 0) {
       lines.push("Owned: ");
@@ -63,7 +65,7 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
         lines : ["Buy", "Sell"]
       };
     },
-    layout : layout.northeast(sizer.prop(0.5, 0.13)),
+    layout : game.layout(game.NORTHEAST(), game.SCREEN(), 0.5, 0.13),
     windowDetails : {
       justification : game.CENTER(),
       columns : 2,
@@ -74,6 +76,13 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
   storeTopWin.loopChoice(function(choiceId) {
     if (choiceId == 0) {
       var buyMenu = new StoreBuyMenu(itemIdsSold, buyPriceMultiplier);
+      buyMenu.window.setChoiceChangeCallback(function(choiceId) {
+        if (choiceId < itemIdsSold.length) {
+          var itemId = itemIdsSold[choiceId];
+          updateStoreRightPane(itemId);
+        }
+      });
+      
       buyMenu.loopChoice(function(choiceId) {
         var itemId = itemIdsSold[choiceId];
         var item = items[itemId];
@@ -87,8 +96,15 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
       });
       buyMenu.close();
     } else {
-      var itemsMenu = 
-        new ItemMenu(false, layout.southwest(sizer.prop(0.6, 0.87)), 20);
+      var itemsMenu = new ItemMenu(
+          false, game.layout(game.SOUTHWEST(), game.SCREEN(), 0.6, 0.87), 20);
+      itemsMenu.window.setChoiceChangeCallback(function(choiceId) {
+        if (choiceId < itemsMenu.state.itemIds.length) {
+          var itemId = itemsMenu.state.itemIds[choiceId];
+          updateStoreRightPane(itemId);
+        }
+      });
+      
       itemsMenu.loopChoice(function(choiceId) {
         if (itemsMenu.state.itemIds.length == 0)
           return false;

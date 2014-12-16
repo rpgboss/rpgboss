@@ -82,7 +82,8 @@ class ProjectTest extends ShouldMatchers {
   ProjectCreator.copyResources(
     ResourceConstants.testRcDir,
     ResourceConstants.testRcList,
-    projectDirectory)
+    projectDirectory,
+    copyAllFiles = true)
 
   val mapName = RpgMap.generateName(project.data.lastCreatedMapId)
 

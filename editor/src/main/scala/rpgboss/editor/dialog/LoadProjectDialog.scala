@@ -11,9 +11,11 @@ import net.java.dev.designgridlayout._
 import java.io.File
 import rpgboss.editor.Settings
 import rpgboss.editor.uibase.StdDialog
+import rpgboss.editor.Internationalized._
+
 
 class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
-  extends StdDialog(owner, "Load Project") {
+  extends StdDialog(owner, getMessage("Load_Project")) {
   val rootChooser = Paths.getRootChooserPanel(() => populateList())
 
   centerDialog(new Dimension(400, 400))
@@ -42,7 +44,7 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       def getColumnCount = 2
       def getRowCount = projects.length
 
-      val cols = Array("Shortname", "Title")
+      val cols = Array(getMessage("Shortname"), getMessage("Title"))
 
       override def getColumnName(col: Int) = cols(col)
 
@@ -72,17 +74,17 @@ class LoadProjectDialog(owner: Window, onSuccess: Project => Any)
       pOpt.map(p => onSuccess(p))
       close()
     } else {
-      Dialog.showMessage(okBtn, "No project selected", "Error",
+      Dialog.showMessage(okBtn, getMessage("No_Project_Selected"), getMessage("Error"),
         Dialog.Message.Error)
     }
   }
 
   contents = new DesignGridPanel {
 
-    row().grid().add(leftLabel("Directory for all projects:"))
+    row().grid().add(leftLabel(getMessageColon("Directory_For_All_Projects")))
     row().grid().add(rootChooser)
 
-    row().grid().add(leftLabel("Projects:"))
+    row().grid().add(leftLabel(getMessageColon("Projects")))
     row().grid().add(new ScrollPane {
       preferredSize = new Dimension(300, 150)
       contents = projList

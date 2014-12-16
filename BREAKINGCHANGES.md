@@ -15,3 +15,6 @@ v0.3.3
 ------
  - Some battle backgrounds have been moved. This may break event commands that start battles.
 
+v0.5.4
+------
+ - (Very) old Events with an EndOfScript marker will no longer deserialize correctly.

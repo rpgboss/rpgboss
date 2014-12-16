@@ -15,6 +15,7 @@ import rpgboss.editor.resourceselector._
 import rpgboss.editor.misc.RandomEncounterSettingsPanel
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.lib.Utils
+import rpgboss.editor.Internationalized._
 
 
 class EnemiesPanel(
@@ -24,7 +25,7 @@ class EnemiesPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     dbDiag.model.enums.enemies) {
-  def panelName = "Enemies"
+  def panelName = getMessage("Enemies")
   def newDefaultInstance() = new Enemy()
 
   def editPaneForItem(idx: Int, model: Enemy) = {
@@ -61,26 +62,26 @@ class EnemiesPanel(
           model.attackSkillId,
           model.attackSkillId = _)
 
-      row().grid(leftLabel("Name:")).add(fName)
+      row().grid(leftLabel(getMessageColon("Name"))).add(fName)
 
-      row().grid(leftLabel("Battler:")).add(fBattler)
+      row().grid(leftLabel(getMessageColon("Battler"))).add(fBattler)
 
-      row().grid(leftLabel("Level:")).add(fLevel)
+      row().grid(leftLabel(getMessageColon("Level"))).add(fLevel)
 
-      row().grid(leftLabel("Max HP:")).add(fMhp)
-      row().grid(leftLabel("Max MP:")).add(fMmp)
+      row().grid(leftLabel(getMessageColon("Max_HP"))).add(fMhp)
+      row().grid(leftLabel(getMessageColon("Max_MP"))).add(fMmp)
 
-      row().grid(leftLabel("Attack:")).add(fAtk)
-      row().grid(leftLabel("Magic:")).add(fMag)
+      row().grid(leftLabel(getMessageColon("Attack"))).add(fAtk)
+      row().grid(leftLabel(getMessageColon("Magic"))).add(fMag)
 
-      row().grid(leftLabel("Armor:")).add(fArm)
-      row().grid(leftLabel("Magic Resist:")).add(fMre)
+      row().grid(leftLabel(getMessageColon("Armor"))).add(fArm)
+      row().grid(leftLabel(getMessageColon("Magic_Resist"))).add(fMre)
 
-      row().grid(leftLabel("Speed:")).add(fSpd)
-      row().grid(leftLabel("EXP Value:")).add(fExpValue)
-      row().grid(leftLabel("Dropped Gold:")).add(fDroppedGold)
+      row().grid(leftLabel(getMessageColon("Speed"))).add(fSpd)
+      row().grid(leftLabel(getMessageColon("EXP_Value"))).add(fExpValue)
+      row().grid(leftLabel(getMessageColon("Dropped_Gold"))).add(fDroppedGold)
 
-      row().grid(leftLabel("Attack skill:")).add(fAttackSkillId)
+      row().grid(leftLabel(getMessageColon("Attack_Skill"))).add(fAttackSkillId)
     }
 
     val fItemDrops = new DroppedItemListPanel(
@@ -108,7 +109,7 @@ class EnemiesPanel(
   }
 
   override def onListDataUpdate() = {
-    logger.info("Enemies data updated")
+    logger.info(getMessage("Enemies_Data_Updated"))
     dbDiag.model.enums.enemies = dataAsArray
   }
 }
@@ -119,14 +120,14 @@ class DroppedItemListPanel(
     initial: Array[ItemDrop],
     onUpdate: Array[ItemDrop] => Unit)
     extends TableEditor[ItemDrop] {
-  override def title = "Dropped Items"
+  override def title = getMessage("Dropped_Items")
 
   override val modelArray = ArrayBuffer(initial: _*)
   override def newInstance() = ItemDrop()
 
   override def onUpdate() = onUpdate(modelArray.toArray)
 
-  override def colHeaders = Array("Item", "% Chance")
+  override def colHeaders = Array(getMessage("Item"), getMessage("%_Chance"))
 
   override def getRowStrings(itemDrop: ItemDrop) = {
     Array(
@@ -136,7 +137,7 @@ class DroppedItemListPanel(
 
   override def showEditDialog(
       initial: ItemDrop, okCallback: ItemDrop => Unit) = {
-    val d = new StdDialog(owner, "ItemDrop") {
+    val d = new StdDialog(owner, getMessage("ItemDrop")) {
       val model = initial.copy()
       def okFunc() = {
         okCallback(model)
@@ -151,8 +152,8 @@ class DroppedItemListPanel(
       val fChance = percentField(0, 1, model.chance, model.chance = _)
 
       contents = new DesignGridPanel {
-        row().grid(lbl("Item:")).add(fItemId)
-        row().grid(lbl("Chance:")).add(fChance)
+        row().grid(lbl(getMessageColon("Item"))).add(fItemId)
+        row().grid(lbl(getMessageColon("Chance"))).add(fChance)
         addButtons(okBtn, cancelBtn)
       }
     }

@@ -6,13 +6,14 @@ import rpgboss.model._
 import rpgboss.model.event._
 import rpgboss.editor.dialog.cmd._
 import rpgboss.editor.StateMaster
-import rpgboss.editor.dialog.cmd.NewEvtCmdBox
+import rpgboss.editor.dialog.cmd.NewEventCmdBox
 import java.awt.event.MouseEvent
 import rpgboss.editor.uibase.RpgPopupMenu
 import javax.swing.UIManager
 import javax.swing.BorderFactory
 import java.awt.Font
 import scala.collection.mutable.ArrayBuffer
+import rpgboss.editor.Internationalized._ 
 
 object EventCmdPanel {
   val textFont = new Font("Monospaced", Font.BOLD, 14)
@@ -32,6 +33,7 @@ class EventCmdPanel(
 
   background = UIManager.getColor("TextArea.background")
 
+  var commandListI = 0
   initial.sections.zipWithIndex.foreach {
     case (PlainLines(lines), i) => {
       contents += new BoxPanel(Orientation.Horizontal) {
@@ -50,8 +52,10 @@ class EventCmdPanel(
         contents += Swing.HGlue
       }
     }
-    case (EventCmd.CommandList(innerCmds, indent), sectionI) => {
+    case (EventCmd.CommandList(innerCmds, indent), _) => {
       contents += new BoxPanel(Orientation.Horizontal) {
+        val currentCommandListI = commandListI
+
         opaque = true
         // TODO: Pick a better color
         //background = UIManager.getColor("TextArea.inactiveBackground")
@@ -61,10 +65,13 @@ class EventCmdPanel(
         contents += Swing.RigidBox(new Dimension(indentPx, 1))
 
         def updateInnerCmds(newInnerCmds: Array[EventCmd]) =
-          onUpdate(initial.copyWithNewInnerCmds(sectionI, newInnerCmds))
+          onUpdate(initial.copyWithNewInnerCmds(currentCommandListI,
+              newInnerCmds))
 
         contents += new CommandBox(owner, sm, eventLoc, innerCmds,
                                    updateInnerCmds, inner = true)
+
+        commandListI += 1
       }
     }
   }
@@ -75,13 +82,13 @@ class EventCmdPanel(
       requestFocus()
       if (e.peer.getButton() == MouseEvent.BUTTON3) {
         val menu = new RpgPopupMenu {
-          contents += new MenuItem(Action("Insert command above...") {
+          contents += new MenuItem(Action(getMessage("Insert_Command_Above") + "...") {
             parentCmdBox.newCmdDialog(index)
           })
-          contents += new MenuItem(Action("Edit...") {
+          contents += new MenuItem(Action(getMessage("Edit") + "...") {
             parentCmdBox.editSelectedCmd(index)
           })
-          contents += new MenuItem(Action("Delete") {
+          contents += new MenuItem(Action(getMessage("Delete")) {
             parentCmdBox.deleteCmd(index)
           })
         }
@@ -146,7 +153,7 @@ class CommandBox(
         requestFocus()
         if (e.peer.getButton() == MouseEvent.BUTTON3) {
           val menu = new RpgPopupMenu {
-            contents += new MenuItem(Action("Insert command...") {
+            contents += new MenuItem(Action(getMessage("Insert_Command") + "...") {
               newCmdDialog(model.length)
             })
           }
@@ -171,7 +178,7 @@ class CommandBox(
     case e: MouseClicked =>
       if (e.peer.getButton() == MouseEvent.BUTTON3) {
         val menu = new RpgPopupMenu {
-          contents += new MenuItem(Action("Insert command...") {
+          contents += new MenuItem(Action(getMessage("Insert_Command") + "...") {
             newCmdDialog(model.length)
           })
         }
@@ -185,7 +192,7 @@ class CommandBox(
   def newCmdDialog(indexToInsert: Int) = {
     assert(indexToInsert >= 0)
     assert(indexToInsert <= model.length)
-    val d = new NewEvtCmdBox(sm, owner, eventLoc, this, indexToInsert)
+    val d = new NewEventCmdBox(sm, owner, eventLoc, this, indexToInsert)
     d.open()
   }
 
@@ -198,7 +205,7 @@ class CommandBox(
     if (d != null)
       d.open()
     else
-      Dialog.showMessage(this, "Nothing to edit", "Info")
+      Dialog.showMessage(this, getMessage("Nothing_To_Edit"), getMessage("Info"))
   }
 
   def insertCmd(idx: Int, cmd: EventCmd) = {

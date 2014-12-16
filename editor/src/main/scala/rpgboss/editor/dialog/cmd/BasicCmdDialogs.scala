@@ -9,6 +9,8 @@ import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.lib.Utils
 import rpgboss.model.AddOrRemove
 import rpgboss.editor.Internationalized._
+import rpgboss.lib.ArrayUtils
+import rpgboss.editor.resourceselector.PictureField
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -38,10 +40,10 @@ class StartBattleCmdDialog(
   }
 
   contents = new DesignGridPanel {
-    row().grid().add(leftLabel(getMessage("Encounter") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Encounter")))
     row().grid().add(encounterSelect)
 
-    row().grid().add(leftLabel(getMessage("Battle_Background") + ":"))
+    row().grid().add(leftLabel(getMessageColon("Battle_Background")))
     row().grid().add(battleBgSelect)
 
     addButtons(okBtn, cancelBtn)
@@ -72,9 +74,55 @@ class AddRemoveGoldCmdDialog(
   )
 }
 
+class GetChoiceCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: GetChoice,
+  successF: (GetChoice) => Any)
+  extends EventCmdDialog(owner, sm, getMessage("Get_Choice"), initial, successF) {
+
+  override def extraFields = Seq(
+    TitledComponent("Question",
+        textAreaField(model.question, model.question = _)),
+    TitledComponent("", new StringArrayEditingPanel(
+        owner, "Choices", model.choices,
+        newChoices => {
+          model.choices = newChoices
+          model.innerCmds = ArrayUtils.resized(model.innerCmds, newChoices.size,
+              () => Array[EventCmd]())
+        },
+        minElems = 2, maxElems = 4)),
+    TitledComponent("", boolField(getMessage("Allow_Cancel"), model.allowCancel,
+        model.allowCancel = _)))
+}
+
+class HidePictureCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: HidePicture,
+  successF: (HidePicture) => Any)
+  extends EventCmdDialog(
+      owner, sm, getMessage("Hide_Picture"), initial, successF)
+
 class OpenStoreCmdDialog(
   owner: Window,
   sm: StateMaster,
   initial: OpenStore,
   successF: (OpenStore) => Any)
   extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
+
+class ShowPictureCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: ShowPicture,
+  successF: (ShowPicture) => Any)
+  extends EventCmdDialog(
+      owner, sm, getMessage("Show_Picture"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          getMessage("Picture"),
+          new PictureField(owner, sm, model.picture, model.picture = _)),
+      TitledComponent(
+          getMessage("Layout"),
+          new LayoutEditingPanel(model.layout)))
+}

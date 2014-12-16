@@ -20,25 +20,31 @@ import rpgboss.lib.FileHelper
 import rpgboss.lib.JsonUtils
 import rpgboss.model.Item
 import rpgboss.lib.Utils
+import rpgboss.lib.Layout
+
+object TextChoiceWindow {
+  val xpad = 24
+  val ypad = 24
+}
 
 class TextChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
   var lines: Array[String],
-  rect: Rect,
+  layout: Layout,
   options: TextChoiceWindowOptions)
-  extends ChoiceWindow(persistent, manager, inputs, rect,
+  extends ChoiceWindow(persistent, manager, inputs, layout,
                        invisible = false,
                        options.defaultChoice, options.allowCancel) {
+  import TextChoiceWindow._
   assert(options.linesPerChoice != 0)
 
   def columns = options.columns
   def displayedLines = options.displayedLines
   def linesPerChoice = options.linesPerChoice
 
-  val xpad = 24
-  val ypad = 24
+  val rect = getRectFromLines(lines, options.displayedLines, xpad)
   val textWTotal = rect.w - 2*xpad
   val textHTotal = rect.h - 2*ypad
   val textColW = textWTotal / columns
@@ -80,9 +86,9 @@ class TextChoiceWindow(
     updateTextImages()
 
     if (lines.length == 0) {
-      curChoice = 0
+      setCurChoice(0)
     } else {
-      curChoice = math.min(curChoice, lines.length / linesPerChoice - 1)
+      setCurChoice(math.min(curChoice, lines.length / linesPerChoice - 1))
     }
 
     updateScrollPosition()
@@ -109,28 +115,28 @@ class TextChoiceWindow(
     assets.finishLoading()
 
     if (key == Up) {
-      curChoice -= columns
+      setCurChoice(curChoice - columns)
       if (curChoice < 0) {
         if (wrapChoices && nChoices > 0) {
-          curChoice += nChoices
+          setCurChoice(curChoice + nChoices)
           soundCursor.map(_.getAsset(assets).play())
         } else {
           // Undo the subtraction we just did.
-          curChoice += columns
+          setCurChoice(curChoice + columns)
           soundCannot.map(_.getAsset(assets).play())
         }
       } else {
         soundCursor.map(_.getAsset(assets).play())
       }
     } else if (key == Down) {
-      curChoice += columns
+      setCurChoice(curChoice + columns)
       if (curChoice >= nChoices) {
         if (wrapChoices && nChoices > 0) {
-          curChoice -= nChoices
+          setCurChoice(curChoice - nChoices)
           soundCursor.map(_.getAsset(assets).play())
         } else {
           // Undo the addition we just did
-          curChoice -= columns
+          setCurChoice(curChoice - columns)
           soundCannot.map(_.getAsset(assets).play())
         }
       } else {
@@ -140,17 +146,17 @@ class TextChoiceWindow(
       if (key == Right) {
         // Go back to left if all the way on right
         if (curChoice % columns == columns - 1)
-          curChoice -= (columns - 1)
+          setCurChoice(curChoice - columns + 1)
         else
-          curChoice += 1
+          setCurChoice(curChoice + 1)
 
         soundCursor.map(_.getAsset(assets).play())
       } else if (key == Left) {
         // Go back to right if all the way on left
         if (curChoice % columns == 0)
-          curChoice += (columns - 1)
+          setCurChoice(curChoice + columns - 1)
         else
-          curChoice -= 1
+          setCurChoice(curChoice - 1)
 
         soundCursor.map(_.getAsset(assets).play())
       }

@@ -7,15 +7,19 @@ import org.json4s.ShortTypeHints
 import EventCmd._
 import EventJavascript._
 import rpgboss.player.entity.WindowText
+import scala.collection.mutable.ArrayBuffer
+import rpgboss.lib.Utils
+import rpgboss.lib.ArrayUtils
+import rpgboss.lib.Layout
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
 
   /**
    *  Returns a copy of this EventCmd with a new set of inner commands placed
-   *  in section |sectionI|.
+   *  in section |commandListI|.
    */
-  def copyWithNewInnerCmds(sectionI: Int,
+  def copyWithNewInnerCmds(commandListI: Int,
     newInnerCmds: Array[EventCmd]): EventCmd = {
     throw new NotImplementedError
   }
@@ -46,61 +50,23 @@ object EventCmd {
   }
 
   val hints = ShortTypeHints(List(
-    classOf[EndOfScript],
-    classOf[SetLocalVariable],
-    classOf[LockPlayerMovement],
-    classOf[ModifyParty],
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
-    classOf[OpenStore],
-    classOf[ShowText],
-    classOf[Teleport],
-    classOf[SetEventState],
+    classOf[GetChoice],
+    classOf[HidePicture],
     classOf[IncrementEventState],
+    classOf[LockPlayerMovement],
+    classOf[ModifyParty],
     classOf[MoveEvent],
+    classOf[OpenStore],
     classOf[RunJs],
+    classOf[SetEventState],
+    classOf[SetInt],
+    classOf[SetLocalVariable],
+    classOf[ShowText],
+    classOf[ShowPicture],
     classOf[StartBattle],
-    classOf[SetInt])) + EventRenameHints
-}
-
-/**
- * @deprecated  Scripts no longer end with this, but this will stick around to
- *              allow old scripts to still deserialize correctly.
- */
-case class EndOfScript() extends EventCmd {
-  def sections = Array(PlainLines(Array("")))
-}
-
-case class SetLocalVariable(parameter: EventParameter[_]) extends EventCmd {
-  def sections = Array(PlainLines(
-      Array("var %s = %s;".format(
-          parameter.localVariable, parameter.constant))))
-}
-
-case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
-  // TODO: Clean this up. Probably need a better JS DSL.
-  def sections = Array(
-    PlainLines(Array(
-      jsStatement("game.setInt", PLAYER_MOVEMENT_LOCKS,
-        RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " + 1")),
-      RawJs("try {").exp)),
-    CommandList(body, 1),
-    PlainLines(Array(
-      RawJs("} finally {").exp,
-      jsStatement("  game.setInt", PLAYER_MOVEMENT_LOCKS,
-        RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " - 1")),
-      RawJs("}").exp)))
-
-  override def copyWithNewInnerCmds(sectionI: Int,
-    newInnerCmds: Array[EventCmd]): EventCmd = {
-    assert(sectionI == 1)
-    copy(body = newInnerCmds)
-  }
-}
-
-case class ModifyParty(add: Boolean = true, characterId: Int = 0)
-  extends EventCmd {
-  def sections = singleCall("game.modifyParty", add, characterId)
+    classOf[Teleport])) + EventRenameHints
 }
 
 case class AddRemoveItem(
@@ -108,10 +74,6 @@ case class AddRemoveItem(
   itemId: IntParameter = IntParameter(),
   quantity: IntParameter = IntParameter(1))
   extends EventCmd {
-  // Backwards-compatibility constructor
-  def this(itemId: Int, add: Boolean, qty: Int) =
-    this(add, IntParameter(itemId), IntParameter(qty))
-
   def qtyDelta =
     RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
@@ -130,58 +92,81 @@ case class AddRemoveGold(
   override def getParameters() = List(quantity)
 }
 
-case class OpenStore(
-  itemIdsSold: IntArrayParameter = IntArrayParameter(),
-  buyPriceMultiplier: FloatParameter = FloatParameter(1.0f),
-  sellPriceMultiplier: FloatParameter = FloatParameter(0.5f)) extends EventCmd {
-  def sections = singleCall("game.openStore", itemIdsSold, buyPriceMultiplier,
-      sellPriceMultiplier)
-
-  override def getParameters() =
-    List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
-}
-
-case class ShowText(lines: Array[String] = Array()) extends EventCmd {
-  def processedLines = lines.map { l =>
-    // The local variables need to be processed here rather than in the
-    // WindowText class, because only the Javascript has access to the local
-    // variables.
-    val l1 = EventJavascript.toJs(l)
-    val l2 = WindowText.javascriptCtrl.replaceAllIn(
-        l1, rMatch => {
-          """" + %s + """".format(rMatch.group(1))
-        })
-
-    RawJs(l2)
-  }
-
-  def sections = singleCall("game.showText", processedLines)
-}
-
-case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
-  def sections =
-    singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
-}
-
-case class SetEventState(
-  var entitySpec: EntitySpec = EntitySpec(),
-  var state: Int = 0) extends EventCmd {
+/**
+ * @param   innerCmds   Has one more element than choices to account for the
+ *                      default case.
+ */
+case class GetChoice(var question: Array[String] = Array(),
+                     var choices: Array[String] = Array("Yes", "No"),
+                     var allowCancel: Boolean = false,
+                     var innerCmds: Array[Array[EventCmd]] =
+                       Array(Array(), Array(), Array())) extends EventCmd {
   def sections = {
-    val (mapName, eventId) = WhichEntity(entitySpec.whichEntityId) match {
-      case WhichEntity.THIS_EVENT =>
-        (RawJs("event.mapName()"), RawJs("event.id()"))
-      case WhichEntity.EVENT_ON_MAP =>
-        (RawJs("event.mapName()"), entitySpec.eventId)
-      case WhichEntity.EVENT_ON_OTHER_MAP =>
-        (entitySpec.mapName, entitySpec.eventId)
+    val buf = new ArrayBuffer[CodeSection]()
+
+    def caseSections(caseLabel: String, code: Array[EventCmd]) = Array(
+      PlainLines(Array("  %s:".format(caseLabel))),
+      CommandList(code, 2),
+      PlainLines(Array("    break;")))
+
+    buf += PlainLines(Array(
+      RawJs("switch(game.getChoice(%s, %s, %b)) {".format(
+          EventJavascript.toJs(question),
+          EventJavascript.toJs(choices), allowCancel)).exp))
+
+    for (i <- 0 until choices.size) {
+      caseSections("case %d".format(i), innerCmds(i)).foreach(buf += _)
     }
 
-    singleCall("game.setEventState", mapName, eventId, state)
+    caseSections("default", innerCmds.last).foreach(buf += _)
+
+    buf += PlainLines(Array(RawJs("}").exp))
+
+    buf.toArray
   }
+
+  override def copyWithNewInnerCmds(commandListI: Int,
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    val newArray = ArrayUtils.normalizedAry(
+        innerCmds, choices.size + 1, choices.size + 1, () => Array[EventCmd]())
+    newArray.update(commandListI, newInnerCmds)
+    copy(innerCmds = newArray)
+  }
+}
+
+case class HidePicture(
+    slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP)) extends EventCmd {
+  def sections = singleCall("game.hidePicture", slot)
 }
 
 case class IncrementEventState() extends EventCmd {
   def sections = singleCall("game.incrementEventState", RawJs("event.id()"))
+}
+
+case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
+  // TODO: Clean this up. Probably need a better JS DSL.
+  def sections = Array(
+    PlainLines(Array(
+      jsStatement("game.setInt", PLAYER_MOVEMENT_LOCKS,
+        RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " + 1")),
+      RawJs("try {").exp)),
+    CommandList(body, 1),
+    PlainLines(Array(
+      RawJs("} finally {").exp,
+      jsStatement("  game.setInt", PLAYER_MOVEMENT_LOCKS,
+        RawJs(jsCall("game.getInt", PLAYER_MOVEMENT_LOCKS).exp + " - 1")),
+      RawJs("}").exp)))
+
+  override def copyWithNewInnerCmds(commandListI: Int,
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    assert(commandListI == 0)
+    copy(body = newInnerCmds)
+  }
+}
+
+case class ModifyParty(add: Boolean = true, characterId: Int = 0)
+  extends EventCmd {
+  def sections = singleCall("game.modifyParty", add, characterId)
 }
 
 case class MoveEvent(
@@ -204,15 +189,79 @@ case class MoveEvent(
   }
 }
 
-case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
-  extends EventCmd {
-  def sections = singleCall("game.startBattle", encounterId, battleBackground)
+case class OpenStore(
+  itemIdsSold: IntArrayParameter = IntArrayParameter(),
+  buyPriceMultiplier: FloatParameter = FloatParameter(1.0f),
+  sellPriceMultiplier: FloatParameter = FloatParameter(0.5f)) extends EventCmd {
+  def sections = singleCall("game.openStore", itemIdsSold, buyPriceMultiplier,
+      sellPriceMultiplier)
+
+  override def getParameters() =
+    List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
 }
 
+case class SetEventState(
+  var entitySpec: EntitySpec = EntitySpec(),
+  var state: Int = 0) extends EventCmd {
+  def sections = {
+    val (mapName, eventId) = WhichEntity(entitySpec.whichEntityId) match {
+      case WhichEntity.THIS_EVENT =>
+        (RawJs("event.mapName()"), RawJs("event.id()"))
+      case WhichEntity.EVENT_ON_MAP =>
+        (RawJs("event.mapName()"), entitySpec.eventId)
+      case WhichEntity.EVENT_ON_OTHER_MAP =>
+        (entitySpec.mapName, entitySpec.eventId)
+    }
+
+    singleCall("game.setEventState", mapName, eventId, state)
+  }
+}
+
+case class SetLocalVariable(parameter: EventParameter[_]) extends EventCmd {
+  def sections = Array(PlainLines(
+      Array("var %s = %s;".format(
+          parameter.localVariable, parameter.constant))))
+}
+
 case class SetInt(key: String, value: Int) extends EventCmd {
   def sections = singleCall("game.setInt", key, value)
+}
+
+case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
+  def processedLines = lines.map { l =>
+    // The local variables need to be processed here rather than in the
+    // WindowText class, because only the Javascript has access to the local
+    // variables.
+    val l1 = EventJavascript.toJs(l)
+    val l2 = WindowText.javascriptCtrl.replaceAllIn(
+        l1, rMatch => {
+          """" + %s + """".format(rMatch.group(1))
+        })
+
+    RawJs(l2)
+  }
+
+  def sections = singleCall("game.showText", processedLines)
+}
+
+case class ShowPicture(
+    slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
+    var picture: String = "",
+    layout: Layout = Layout.defaultForPictures) extends EventCmd {
+  def sections =
+    singleCall("game.showPicture", slot, picture, RawJs(layout.toJs()))
+}
+
+case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
+  extends EventCmd {
+  def sections = singleCall("game.startBattle", encounterId, battleBackground)
+}
+
+case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
+  def sections =
+    singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }

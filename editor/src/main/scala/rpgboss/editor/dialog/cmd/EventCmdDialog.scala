@@ -11,15 +11,17 @@ import rpgboss.lib.Utils
 import rpgboss.model.event.AddRemoveGold
 import rpgboss.model.event.AddRemoveItem
 import rpgboss.model.event.EventCmd
+import rpgboss.model.event.GetChoice
+import rpgboss.model.event.HidePicture
 import rpgboss.model.event.ModifyParty
 import rpgboss.model.event.MoveEvent
+import rpgboss.model.event.OpenStore
 import rpgboss.model.event.RunJs
 import rpgboss.model.event.SetEventState
 import rpgboss.model.event.ShowText
 import rpgboss.model.event.StartBattle
 import rpgboss.model.event.Teleport
-import rpgboss.model.event.OpenStore
-import rpgboss.editor.Internationalized._
+import rpgboss.model.event.ShowPicture
 
 abstract class EventCmdDialog[T <: EventCmd](
   owner: Window,
@@ -41,11 +43,11 @@ abstract class EventCmdDialog[T <: EventCmd](
   }
 
   contents = new DesignGridPanel {
+    ParameterFullComponent.addParameterFullComponentsToPanel(
+        owner, sm.getProjData, this, model)
     for (TitledComponent(fieldName, fieldComponent) <- extraFields) {
       row().grid(lbl(fieldName)).add(fieldComponent)
     }
-    ParameterFullComponent.addParameterFullComponentsToPanel(
-        owner, sm.getProjData, this, model)
 
     addButtons(okBtn, cancelBtn)
   }
@@ -73,9 +75,12 @@ object EventCmdDialog {
         new AddRemoveItemCmdDialog(owner, sm, e, successF)
       case e: AddRemoveGold =>
         new AddRemoveGoldCmdDialog(owner, sm, e, successF)
+      case e: GetChoice => new GetChoiceCmdDialog(owner, sm, e, successF)
+      case e: HidePicture => new HidePictureCmdDialog(owner, sm, e, successF)
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: OpenStore => new OpenStoreCmdDialog(owner, sm, e, successF)
-      case e: ShowText => new ShowTextCmdDialog(owner, e, successF)
+      case e: ShowText => new ShowTextCmdDialog(owner, sm, e, successF)
+      case e: ShowPicture => new ShowPictureCmdDialog(owner, sm, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
       case e: SetEventState =>
         new SetEventStateDialog(owner, sm, mapName, e, successF)

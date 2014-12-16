@@ -15,7 +15,7 @@ class ProjectCreatorSpec extends UnitSpec {
     val resources = io.Source.fromInputStream(rcStream).getLines().toList
 
     for (fileName <- resources;
-         if fileName.endsWith(Resource.jsonSuffix)) {
+         if fileName.endsWith(Resource.jsonSuffix) && !fileName.contains("/")) {
       val f = new File(tempDir, fileName)
       f.exists() should equal (true)
       f.isFile() should equal (true)

@@ -42,8 +42,6 @@ trait HasScriptConstants {
   val CHARACTER_LEVELS = "characterLevels"
   val CHARACTER_HPS = "characterHps"
   val CHARACTER_MPS = "characterMps"
-  val CHARACTER_MAX_HPS = "characterMaxHps"
-  val CHARACTER_MAX_MPS = "characterMaxMps"
   val CHARACTER_EXPS = "characterExps"
   val CHARACTER_ROWS = "characterRow"
 
@@ -54,6 +52,24 @@ trait HasScriptConstants {
     "characterStatusEffects-%d".format(characterId)
 
   val PICTURE_SLOTS = PictureSlots.END
+
+  // Synchronized with LayoutType RpgEnum.
+  val CENTERED = 0
+  val NORTH = 1
+  val EAST = 2
+  val SOUTH = 3
+  val WEST = 4
+  val NORTHEAST = 5
+  val SOUTHEAST = 6
+  val SOUTHWEST = 7
+  val NORTHWEST = 8
+
+  // Synchronized with SizeType RpgEnum.
+  val FIXED = 0
+  val SCALE_SOURCE = 1
+  val SCREEN = 2
+  val COVER = 3
+  val CONTAIN = 4
 }
 
 /**
@@ -94,6 +110,14 @@ class ScriptInterface(
    */
   def getMap(loc: MapLoc) =
     RpgMap.readFromDisk(project, loc.map)
+
+  def layout(layoutTypeId: Int, sizeTypeId: Int, wArg: Float, hArg: Float) =
+    Layout(layoutTypeId, sizeTypeId, wArg, hArg)
+
+  def layoutWithOffset(layoutTypeId: Int, sizeTypeId: Int,
+                       wArg: Float, hArg: Float,
+                       xOffset: Float, yOffset: Float) =
+    Layout(layoutTypeId, sizeTypeId, wArg, hArg, xOffset, yOffset)
 
   /*
    * Things to do with the player's location and camera
@@ -174,8 +198,8 @@ class ScriptInterface(
     }
   }
 
-  def showPicture(slot: Int, name: String, rect: Rect) = syncRun {
-    activeScreen.windowManager.showPictureByName(slot, name, rect)
+  def showPicture(slot: Int, name: String, layout: Layout) = syncRun {
+    activeScreen.windowManager.showPictureByName(slot, name, layout)
   }
 
   def hidePicture(slot: Int) = syncRun {
@@ -200,16 +224,16 @@ class ScriptInterface(
    */
   def newChoiceWindow(
     lines: Array[String],
-    rect: Rect,
+    layout: Layout,
     options: NativeObject): ChoiceWindow#ChoiceWindowScriptInterface = {
     newChoiceWindow(
-        lines, rect,
+        lines, layout,
         JsonUtils.nativeObjectToCaseClass[TextChoiceWindowOptions](options))
   }
 
   def newChoiceWindow(
     lines: Array[String],
-    rect: Rect,
+    layout: Layout,
     options: TextChoiceWindowOptions): ChoiceWindow#ChoiceWindowScriptInterface = {
     val window = syncRun {
       new TextChoiceWindow(
@@ -217,34 +241,8 @@ class ScriptInterface(
         activeScreen.windowManager,
         activeScreen.inputs,
         lines,
-        rect,
+        layout,
         options)
-    }
-
-    window.scriptInterface
-  }
-
-  def newStaticTextWindow(
-    lines: Array[String],
-    rect: Rect,
-    options: NativeObject): TextWindow#TextWindowScriptInterface = {
-    newStaticTextWindow(
-        lines, rect,
-        JsonUtils.nativeObjectToCaseClass[TextWindowOptions](options))
-  }
-
-  def newStaticTextWindow(
-    lines: Array[String],
-    rect: Rect,
-    options: TextWindowOptions): TextWindow#TextWindowScriptInterface = {
-    val window = syncRun {
-      new TextWindow(
-          game.persistent,
-          activeScreen.windowManager,
-          activeScreen.inputs,
-          lines,
-          rect,
-          options)
     }
 
     window.scriptInterface
@@ -291,24 +289,72 @@ class ScriptInterface(
     choice
   }
 
-  def showText(text: Array[String], rect: Rect, timePerChar: Float) = {
+  def newTextWindow(text: Array[String], layout: Layout,
+      options: NativeObject):
+      PrintingTextWindow#PrintingTextWindowScriptInterface = {
+    newTextWindow(text, layout,
+        JsonUtils.nativeObjectToCaseClass[PrintingTextWindowOptions](options))
+  }
+
+  def newTextWindow(text: Array[String], layout: Layout,
+      options: PrintingTextWindowOptions):
+      PrintingTextWindow#PrintingTextWindowScriptInterface = {
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
         activeScreen.windowManager,
         activeScreen.inputs,
         text,
-        rect,
-        timePerChar)
+        layout,
+        options)
     }
-    window.scriptInterface.awaitClose()
+    window.scriptInterface
   }
 
-  def showText(text: Array[String]): Unit =
-    showText(
+  def showText(text: Array[String]): Int = {
+    val window = newTextWindow(
       text,
-      activeScreen.layout.south(640, 180),
-      timePerChar = 0.02f)
+      layout(SOUTH, FIXED, 640, 180),
+      PrintingTextWindowOptions(showArrow = true))
+    window.awaitClose()
+  }
+
+  def getChoice(question: Array[String], choices: Array[String],
+      allowCancel: Boolean) = {
+    val questionLayout =
+      layout(SOUTH, FIXED, 640, 180)
+    val questionWindow = syncRun {
+      new PrintingTextWindow(
+        game.persistent,
+        activeScreen.windowManager,
+        activeScreen.inputs,
+        question,
+        questionLayout)
+    }
+
+    val fontbmp = activeScreen.windowManager.fontbmp
+    val choicesWidth = Window.maxWidth(choices, fontbmp, TextChoiceWindow.xpad)
+    // Removing 0.5*xpad at the end makes it look better.
+    val choicesHeight =
+      choices.length * WindowText.DefaultLineHeight +
+      1.5f * TextChoiceWindow.ypad
+
+    val choiceLayout = layoutWithOffset(
+        SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0, -questionLayout.h)
+
+    val choiceWindow = newChoiceWindow(
+        choices,
+        choiceLayout,
+        TextChoiceWindowOptions(
+            allowCancel = allowCancel, justification = RIGHT))
+
+    val choice = choiceWindow.getChoice()
+    choiceWindow.close()
+
+    questionWindow.scriptInterface.close()
+
+    choice
+  }
 
   def getPlayerEntityInfo(): EntityInfo = syncRun {
     mapScreen.getPlayerEntityInfo()
@@ -420,8 +466,9 @@ class ScriptInterface(
     if (persistent.addRemoveItem(itemId, -1)) {
       val item = project.data.enums.items(itemId)
       val characterStatus = BattleStatus.fromCharacter(
-          project.data, persistent.getPartyParameters(project), characterId,
-          index = -1)
+          project.data,
+          persistent.getPartyParameters(project.data.enums.characters),
+          characterId, index = -1)
 
       val damages = item.effects.flatMap(_.applyAsSkillOrItem(characterStatus))
 
@@ -439,7 +486,9 @@ class ScriptInterface(
 
   def getBattleStats(characterId: Int, proposedSlotId: Int,
       proposedItemId: Int) = {
-    val partyParams = syncRun { persistent.getPartyParameters(project) }
+    val partyParams = syncRun {
+      persistent.getPartyParameters(project.data.enums.characters)
+    }
     val currentBattleStats = BattleStatus.fromCharacter(
         project.data, partyParams, characterId)
 

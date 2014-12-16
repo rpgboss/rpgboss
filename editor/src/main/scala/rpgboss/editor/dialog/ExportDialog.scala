@@ -24,19 +24,20 @@ import ExecutionContext.Implicits.global
 import scala.util.{ Success, Failure }
 import net.coobird.thumbnailator._
 import org.apache.commons.io.FileUtils
+import rpgboss.editor.Internationalized._ 
 
 class PleaseWaitFrame extends Frame {
   title = "Please Wait"
   minimumSize = new Dimension(320, 240)
   centerOnScreen()
-  contents = new Label("Now exporting...")
+  contents = new Label(getMessage("Now_Exporting"))
 }
 
 class ExportDialog(
   owner: Window,
   sm: StateMaster,
   mainp: MainPanel)
-  extends StdDialog(owner, "Export Project") {
+  extends StdDialog(owner, getMessage("Export_Project")) {
 
   var exportType = 0
 
@@ -55,23 +56,23 @@ class ExportDialog(
 
       if (jarFile.isFile()) {
         Export.export(sm.getProj, jarFile)
-        val exportedDir = new File(sm.getProj.dir, "export")
+        val exportedDir = new File(sm.getProj.dir, getMessage("Export"))
         Dialog.showMessage(
           mainp,
-          "Export complete. Packages in: \n" +
+          getMessage("Export_Complete_Packages_In") + ": \n" +
             exportedDir.getCanonicalPath(),
-          "Export Complete",
+          getMessage("Export_Complete"),
           Dialog.Message.Info)
         if (Desktop.isDesktopSupported())
           Desktop.getDesktop().browse(exportedDir.toURI)
       } else {
         Dialog.showMessage(
           mainp,
-          "Cannot locate rpgboss JAR for export. Path tried: \n" +
+          getMessage("Cannot_Locate_Rpgboss_JAR_For_Export_Path_Tried") + ": \n" +
             jarFile.getCanonicalPath() + "\n\n" +
-            "If you are running from an IDE or SBT for development,\n" +
-            "set the RPGBOSS_EXPORT_JAR_PATH environment variable.",
-          "Cannot export",
+            getMessage("If_You_Are_Running_From_An_IDE_Or_SBT_For_Development") + "\n" +
+            getMessage("Set_The_RPGBOSS_EXPORT_JAR_PATH_Environment_Variable"),
+          getMessage("Cannot_Export"),
           Dialog.Message.Error)
       }
     }
@@ -95,21 +96,21 @@ class ExportDialog(
     } else {
       Dialog.showMessage(
         mainp,
-        "These Options are not implemented yet.",
-        "Not available",
+       getMessage("These_Options_Are_Not_Implemented_Yet"),
+        getMessage("Not_Available"),
         Dialog.Message.Error)
     }
   }
 
-  okBtn.text = "Export"
+  okBtn.text = getMessage("Export")
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new Label("Export type")
 
     val dirFileSelector = List(
       new RadioButton() {
-        name = "desktop"
-        text = "Windows/Osx/Linux"
+        name = getMessage("Desktop")
+        text = getMessage("Windows_Osx_Linux")
         selected = true
       })
 

@@ -18,6 +18,7 @@ import scala.swing.BoxPanel
 import scala.swing.Orientation
 import rpgboss.editor.uibase.NumberSpinner
 import java.awt.Dimension
+import rpgboss.editor.Internationalized._
 
 class RandomEncounterSettingsPanel(
     owner: Window,
@@ -31,7 +32,7 @@ class RandomEncounterSettingsPanel(
 
   contents += fEncounterList
   contents += new DesignGridPanel {
-    row().grid(lbl("Steps between battles:")).add(fStepsAverage)
+    row().grid(lbl(getMessage("Steps_Between_Battles") + ":")).add(fStepsAverage)
   }
 }
 
@@ -48,7 +49,7 @@ class RandomEncounterListPanel(
 
   override def onUpdate() = onUpdate(modelArray.toArray)
 
-  override def colHeaders = Array("Encounter", "Weight", "% Chance")
+  override def colHeaders = Array(getMessage("Encounter"), getMessage("Weight"), "%" +  getMessage("Chance"))
 
   def totalWeights = modelArray.map(_.weight).sum
 
@@ -61,7 +62,7 @@ class RandomEncounterListPanel(
 
   override def showEditDialog(
       initial: RandomEncounter, okCallback: RandomEncounter => Unit) = {
-    val d = new StdDialog(owner, "Random Encounter") {
+    val d = new StdDialog(owner, getMessage("Random_Encounter")) {
       val model = initial.copy()
       def okFunc() = {
         okCallback(model)
@@ -77,8 +78,8 @@ class RandomEncounterListPanel(
         new NumberSpinner(model.weight, 1, 100, model.weight = _)
 
       contents = new DesignGridPanel {
-        row().grid(lbl("Encounter:")).add(fEncounterId)
-        row().grid(lbl("Weight:")).add(fWeight)
+        row().grid(lbl(getMessage("Encounter") + ":")).add(fEncounterId)
+        row().grid(lbl(getMessage("Weight") + ":")).add(fWeight)
         addButtons(okBtn, cancelBtn)
       }
     }

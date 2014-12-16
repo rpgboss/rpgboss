@@ -13,6 +13,7 @@ import net.java.dev.designgridlayout._
 import rpgboss.editor.resourceselector._
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.lib.Utils
+import rpgboss.editor.Internationalized._
 
 class AnimationsPanel(
   owner: Window,
@@ -21,11 +22,11 @@ class AnimationsPanel(
   extends RightPaneArrayDatabasePanel(
     owner,
     dbDiag.model.enums.animations) {
-  def panelName = "Animations"
+  def panelName = getMessage("Animations")
   def newDefaultInstance() = new Animation()
 
   def editPaneForItem(idx: Int, model: Animation) = {
-    logger.debug("New edit pane for animationId=%d".format(idx))
+    logger.debug(getMessage("New_Edit_Pane_For_Animation") + "Id=%d".format(idx))
     val fName = textField(model.name, v => {
       model.name = v
       refreshModel()
@@ -33,10 +34,10 @@ class AnimationsPanel(
 
     val fVisuals = new TableEditor[AnimationVisual]() {
       val buffer = ArrayBuffer(model.visuals: _*)
-      def title = "Visuals"
+      def title = getMessage("Visuals")
       def modelArray = buffer
       def newInstance() = AnimationVisual()
-      def colHeaders = Array("Start", "End", "Animation File")
+      def colHeaders = Array(getMessage("Start"), getMessage("End"), getMessage("Animation_File"))
       def getRowStrings(visual: AnimationVisual) = {
         Array(visual.start.time.toString, visual.end.time.toString,
           visual.animationImage)
@@ -52,10 +53,10 @@ class AnimationsPanel(
 
     val fSounds = new TableEditor[AnimationSound]() {
       val buffer = ArrayBuffer(model.sounds: _*)
-      def title = "Sounds"
+      def title = getMessage("Sounds")
       def modelArray = buffer
       def newInstance() = AnimationSound()
-      def colHeaders = Array("Start", "Sound")
+      def colHeaders = Array(getMessage("Start"), getMessage("Sound"))
       def getRowStrings(item: AnimationSound) = {
         Array(item.time.toString, item.sound.sound)
       }
@@ -72,7 +73,7 @@ class AnimationsPanel(
 
     new BoxPanel(Orientation.Vertical) with DisposableComponent {
       contents += new DesignGridPanel {
-        row().grid(lbl("Name:")).add(fName)
+        row().grid(lbl(getMessageColon("Name"))).add(fName)
       }
       contents += new BoxPanel(Orientation.Horizontal) {
         contents += animationPlayerPanel
@@ -99,7 +100,7 @@ class AnimationVisualDialog(
   sm: StateMaster,
   initial: AnimationVisual,
   onOk: (AnimationVisual) => Unit)
-  extends StdDialog(owner, "Animation Visual") {
+  extends StdDialog(owner, getMessage("Animation_Visual")) {
   import SwingUtils._
 
   val model = Utils.deepCopy(initial)
@@ -122,10 +123,10 @@ class AnimationVisualDialog(
     })
 
   contents = new DesignGridPanel {
-    row().grid(leftLabel("Image:")).add(fAnimationImage)
+    row().grid(leftLabel(getMessageColon("Image"))).add(fAnimationImage)
 
-    row().grid(leftLabel("Start:")).add(fStartFrame)
-    row().grid(leftLabel("End:")).add(fEndFrame)
+    row().grid(leftLabel(getMessageColon("Start"))).add(fStartFrame)
+    row().grid(leftLabel(getMessageColon("End"))).add(fEndFrame)
 
     addButtons(okBtn, cancelBtn)
   }
@@ -152,9 +153,9 @@ class AnimationKeyframePanel(model: AnimationKeyframe) extends DesignGridPanel {
   val fX = new NumberSpinner(model.x, -999, 999, model.x = _)
   val fY = new NumberSpinner(model.y, -999, 999, model.y = _)
 
-  row().grid(leftLabel("Time:")).add(fStartTime)
-  row().grid(leftLabel("Frame index:")).add(fFrameIndex, 2)
-  row().grid(leftLabel("x:")).add(fX).grid(leftLabel("y:")).add(fY)
+  row().grid(leftLabel(getMessageColon("Time"))).add(fStartTime)
+  row().grid(leftLabel(getMessageColon("Frame_Index"))).add(fFrameIndex, 2)
+  row().grid(leftLabel(getMessageColon("X"))).add(fX).grid(leftLabel("y:")).add(fY)
 }
 
 class AnimationSoundDialog(
@@ -162,7 +163,7 @@ class AnimationSoundDialog(
   sm: StateMaster,
   initial: AnimationSound,
   onOk: (AnimationSound) => Unit)
-  extends StdDialog(owner, "Animation Sound") {
+  extends StdDialog(owner, getMessage("Animation_Sound")) {
   import SwingUtils._
 
   val model = Utils.deepCopy(initial)
@@ -175,8 +176,8 @@ class AnimationSoundDialog(
   }
 
   contents = new DesignGridPanel {
-    row().grid(leftLabel("Start time:")).add(fTime)
-    row().grid(leftLabel("Sound:")).add(fSound)
+    row().grid(leftLabel(getMessageColon("Start_Time"))).add(fTime)
+    row().grid(leftLabel(getMessageColon("Sound"))).add(fSound)
 
     addButtons(okBtn, cancelBtn)
   }

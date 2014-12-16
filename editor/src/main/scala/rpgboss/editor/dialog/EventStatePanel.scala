@@ -11,6 +11,7 @@ import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.model.event.EventTrigger
 import javax.swing.BorderFactory
 import rpgboss.model.MapLoc
+import rpgboss.editor.Internationalized._ 
 
 /**
  * @param   model   Mutated in-place.
@@ -25,14 +26,14 @@ class EventStatePane(
   extends BoxPanel(Orientation.Horizontal) {
 
   val fSameAppearanceAsPrevState: CheckBox =
-    boolField("Same Appearance As Previous State",
+    boolField(getMessage("Same_Appearance_As_Previous_State"),
         model.sameAppearanceAsPrevState,
         model.sameAppearanceAsPrevState = _,
         Some(updateAppearanceFieldsState))
   val heightBox =
     enumIdCombo(EventHeight)(model.height, model.height = _)
   val fAffixDirection =
-    boolField("Affix Direction", model.affixDirection, model.affixDirection = _)
+    boolField(getMessage("Affix_Direction"), model.affixDirection, model.affixDirection = _)
 
   val spriteBox = new SpriteField(
     owner,
@@ -71,27 +72,27 @@ class EventStatePane(
     enumIdCombo(EventTrigger)(model.trigger, model.trigger = _)
 
   val fRunOnce =
-    boolField("Run Once, then increment state",
+    boolField(getMessage("Run_Once_Then_Increment_State"),
         model.runOnceThenIncrementState,
         model.runOnceThenIncrementState = _,
         Some(runOnceChangeCallback))
 
   contents += new BoxPanel(Orientation.Vertical) {
     contents += new DesignGridPanel {
-      border = BorderFactory.createTitledBorder("Appearance")
+      border = BorderFactory.createTitledBorder(getMessage("Appearance"))
 
       row().grid().add(fSameAppearanceAsPrevState)
 
-      row().grid().add(leftLabel("Height:"))
+      row().grid().add(leftLabel(getMessageColon("Height")))
       row().grid().add(heightBox)
-      row().grid().add(leftLabel("Sprite:"))
+      row().grid().add(leftLabel(getMessageColon("Sprite")))
       row().grid().add(spriteBox)
       row().grid().add(fAffixDirection)
     }
 
     contents += new DesignGridPanel {
-      border = BorderFactory.createTitledBorder("Behavior")
-      row().grid().add(leftLabel("Trigger:"))
+      border = BorderFactory.createTitledBorder(getMessage("Behavior"))
+      row().grid().add(leftLabel(getMessageColon("Trigger")))
       row().grid().add(triggerBox)
       row().grid().add(fRunOnce)
     }
@@ -115,17 +116,17 @@ class EventStatePane(
     def updateMessages() = {
       val freeVars = model.getFreeVariables()
       if (!freeVars.isEmpty) {
-        text = "Free variables (normal for event classes): %s.".format(
+        text = getMessage("Free_Variables_Normal_For_Event_Classes") + ": %s.".format(
             freeVars.map(_.localVariable).mkString(", "))
       } else {
-        text = "No errors."
+        text = getMessage("No_Errors")
       }
     }
     updateMessages()
   }
 
   contents += new DesignGridPanel {
-    row.grid.add(leftLabel("Commands:"))
+    row.grid.add(leftLabel(getMessageColon("Commands")))
     row.grid.add(new ScrollPane {
       preferredSize = new Dimension(400, 400)
       contents = commandBox

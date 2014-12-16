@@ -1,20 +1,23 @@
 package rpgboss.editor.uibase
 
 import scala.swing.Component
-import rpgboss.editor.uibase.SwingUtils._
+import scala.swing.Window
+import rpgboss.editor.uibase.SwingUtils.indexedCombo
+import rpgboss.editor.uibase.SwingUtils.percentField
+import rpgboss.lib.Utils
 import rpgboss.model.HasName
-import rpgboss.model.event.IntParameter
-import rpgboss.model.event.EventCmd
-import rpgboss.model.event.AddRemoveItem
+import rpgboss.model.PictureSlots
 import rpgboss.model.ProjectData
 import rpgboss.model.event.AddRemoveGold
-import rpgboss.model.event.OpenStore
-import rpgboss.model.event.FloatParameter
-import scala.swing.Window
-import rpgboss.model.event.IntArrayParameter
-import rpgboss.model.event.IntArrayParameter
+import rpgboss.model.event.AddRemoveItem
+import rpgboss.model.event.EventCmd
 import rpgboss.model.event.EventParameter
-import rpgboss.lib.Utils
+import rpgboss.model.event.FloatParameter
+import rpgboss.model.event.HidePicture
+import rpgboss.model.event.IntArrayParameter
+import rpgboss.model.event.IntParameter
+import rpgboss.model.event.OpenStore
+import rpgboss.model.event.ShowPicture
 
 /**
  * The name of the field and a component for editing the constant value.
@@ -74,6 +77,9 @@ object EventParameterField {
         IntNumberField("Quantity", 1, 99, c.quantity))
     case c: AddRemoveGold => List(
         IntNumberField("Quantity", 1, 9999, c.quantity))
+    case c: HidePicture => List(
+        IntNumberField("Slot", PictureSlots.ABOVE_MAP,
+            PictureSlots.BATTLE_BEGIN - 1, c.slot))
     case c: OpenStore => List(
         IntMultiselectField(
             owner, "Items Sold", pData.enums.items, c.itemIdsSold),
@@ -81,6 +87,9 @@ object EventParameterField {
             "Buy price multiplier:", 0f, 4f, c.buyPriceMultiplier),
         FloatPercentField(
             "Sell price multiplier:", 0f, 4f, c.sellPriceMultiplier))
+    case c: ShowPicture => List(
+        IntNumberField("Slot", PictureSlots.ABOVE_MAP,
+            PictureSlots.BATTLE_BEGIN - 1, c.slot))
     case _ => Nil
   }
 }

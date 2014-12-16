@@ -12,17 +12,14 @@ import rpgboss.model.resource.RpgAssetManager
 trait RpgScreen extends Screen with ThreadChecked {
   def project: Project
   def assets: RpgAssetManager
-  def screenW: Float
-  def screenH: Float
+  def screenW: Int
+  def screenH: Int
 
   def scriptInterface: ScriptInterface
 
   val inputs = new InputMultiplexer()
   def createWindowManager(): WindowManager =
     new WindowManager(assets, project, screenW, screenH)
-
-  val layout = new LayoutProvider(screenW, screenH)
-  val sizer = new SizeProvider(screenW, screenH)
 
   val musics = Array.fill[Option[MusicPlayer]](8)(None)
   val windowManager = createWindowManager()
@@ -83,6 +80,7 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   override def hide() = {
     assertOnBoundThread()
+    inputs.releaseAllKeys()
     Gdx.input.setInputProcessor(null)
 
     musics.foreach(_.map(_.pause()))

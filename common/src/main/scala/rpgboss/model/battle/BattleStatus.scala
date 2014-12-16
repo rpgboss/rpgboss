@@ -42,7 +42,7 @@ class BattleStatus(
 
   private var _tempStatusEffects = initialTempStatusEffects
 
-  def calculateStats() =
+  private def calculateStats() =
     BattleStats(pData, baseStats, equipment, _tempStatusEffects)
 
   private var _stats = calculateStats()

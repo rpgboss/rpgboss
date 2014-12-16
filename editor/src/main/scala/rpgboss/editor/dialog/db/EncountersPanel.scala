@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx
 import rpgboss.model.battle.Battle
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import rpgboss.model.battle.PartyParameters
+import rpgboss.editor.Internationalized._
 
 object EncounterFieldGdxPanel {
   val width = 640
@@ -104,7 +105,7 @@ class EncountersPanel(
   def yOffset = 100
   def xOffset = 80
 
-  def panelName = "Encounters"
+  def panelName = getMessage("Encounters")
   def newDefaultInstance() = Encounter()
 
   def editPaneForItem(idx: Int, model: Encounter) = {
@@ -157,7 +158,7 @@ class EncountersPanel(
     }
     fEnemySelector.selectIndices(0)
 
-    val btnAdd = new Button(Action("<= Add") {
+    val btnAdd = new Button(Action(getMessage("Add")) {
       if (!fEnemySelector.selection.indices.isEmpty) {
         val unit = EncounterUnit(fEnemySelector.selection.indices.head, 0, 0)
         model.units = model.units ++ Seq(unit)
@@ -167,7 +168,7 @@ class EncountersPanel(
       }
     })
 
-    val btnRemove = new Button(Action("=> Remove") {
+    val btnRemove = new Button(Action(getMessage("Remove")) {
       if (!model.units.isEmpty) {
         model.units = model.units.dropRight(1)
         autoArrangeModel()
@@ -179,7 +180,7 @@ class EncountersPanel(
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {
-          row().grid(lbl("Encounter Name:")).add(fName)
+          row().grid(lbl(getMessageColon("Encounter_Name"))).add(fName)
         }
         contents += fDisplay
       }
@@ -188,7 +189,7 @@ class EncountersPanel(
         contents += btnRemove
       }
       contents += new BoxPanel(Orientation.Vertical) {
-        contents += leftLabel("Enemies:")
+        contents += leftLabel(getMessageColon("Enemies"))
         contents += new ScrollPane(fEnemySelector) {
           preferredSize = new Dimension(200, 120)
         }

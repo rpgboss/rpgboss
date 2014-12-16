@@ -1,9 +1,9 @@
 package rpgboss.player.entity
 
 import scala.concurrent.Channel
-
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-
 import rpgboss.lib.GdxUtils.syncRun
 import rpgboss.lib.Rect
 import rpgboss.lib.Utils
@@ -20,19 +20,36 @@ import rpgboss.player.MyKeys.Right
 import rpgboss.player.MyKeys.Up
 import rpgboss.player.PersistentState
 import rpgboss.player.WindowManager
+import rpgboss.lib.Layout
+
+trait HasIntCallback {
+  def intCallback(value: Int): Unit
+}
 
 abstract class ChoiceWindow(
   persistent: PersistentState,
   manager: WindowManager,
   inputs: InputMultiplexer,
-  rect: Rect,
+  layout: Layout,
   invisible: Boolean = false,
   defaultChoice: Int = 0,
   allowCancel: Boolean = true)
-  extends Window(manager, inputs, rect, invisible)
+  extends Window(manager, inputs, layout, invisible)
   with ChoiceInputHandler {
 
-  protected var curChoice = defaultChoice
+  private var choiceChangeCallback: HasIntCallback = null
+  private var _curChoice = defaultChoice
+
+  def curChoice = _curChoice
+  def setCurChoice(choiceId: Int) = {
+    assertOnBoundThread()
+    _curChoice = choiceId
+    if (choiceChangeCallback != null) {
+      Future {
+        choiceChangeCallback.intCallback(choiceId)
+      }
+    }
+  }
 
   override def capturedKeys =
     Set(MyKeys.Left, MyKeys.Right, MyKeys.Up, MyKeys.Down,
@@ -62,6 +79,13 @@ abstract class ChoiceWindow(
   class ChoiceWindowScriptInterface extends WindowScriptInterface {
     def getChoice() = choiceChannel.read
 
+    def setChoiceChangeCallback(callback: HasIntCallback) = {
+      choiceChangeCallback = callback
+      syncRun {
+        setCurChoice(curChoice)
+      }
+    }
+
     def takeFocus(): Unit = syncRun {
       inputs.remove(ChoiceWindow.this)
       inputs.prepend(ChoiceWindow.this)
@@ -83,7 +107,7 @@ class SpatialChoiceWindow(
   inputs: InputMultiplexer,
   choices: Array[Set[Rect]] = Array(),
   defaultChoice: Int = 0)
-  extends ChoiceWindow(persistent, manager, inputs, Rect(0, 0, 0, 0),
+  extends ChoiceWindow(persistent, manager, inputs, Layout.empty,
                        invisible = true, defaultChoice, allowCancel = true) {
   def keyActivate(key: Int): Unit = {
     import MyKeys._
@@ -97,10 +121,10 @@ class SpatialChoiceWindow(
 
     import MyKeys._
     if (key == Up || key == Left) {
-      curChoice = Utils.pmod(curChoice - 1, choices.length)
+      setCurChoice(Utils.pmod(curChoice - 1, choices.length))
       soundCursor.map(_.getAsset(assets).play())
     } else if (key == Down || key == Right) {
-      curChoice = Utils.pmod(curChoice + 1, choices.length)
+      setCurChoice(Utils.pmod(curChoice + 1, choices.length))
       soundCursor.map(_.getAsset(assets).play())
     }
 

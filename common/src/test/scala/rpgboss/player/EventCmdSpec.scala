@@ -29,19 +29,24 @@ class EventCmdSpec extends UnitSpec {
 
   "EventCmd" should "produce correct script for AddRemoveItem" in {
     AddRemoveItem(true, IntParameter(1), IntParameter(5)).toJs should deepEqual(
-            Array("game.addRemoveItem(1, 5);"))
+        Array("game.addRemoveItem(1, 5);"))
 
     AddRemoveItem(
         false, IntParameter(12), IntParameter(25)).toJs should deepEqual(
-            Array("game.addRemoveItem(12, 25 * -1);"))
+        Array("game.addRemoveItem(12, 25 * -1);"))
   }
 
   "EventCmd" should "produce correct script for AddRemoveGold" in {
     AddRemoveGold(true, IntParameter(12)).toJs should deepEqual(
-            Array("game.addRemoveGold(12);"))
+        Array("game.addRemoveGold(12);"))
 
     AddRemoveGold(false, IntParameter(25)).toJs should deepEqual(
-            Array("game.addRemoveGold(25 * -1);"))
+        Array("game.addRemoveGold(25 * -1);"))
+  }
+
+  "EventCmd" should "produce correct script for HidePicture" in {
+    HidePicture(IntParameter(5)).toJs should deepEqual(
+        Array("game.hidePicture(5);"))
   }
 
   "EventCmd" should "produce correct script for ShowText" in {
@@ -60,6 +65,28 @@ class EventCmdSpec extends UnitSpec {
     val e4 = ShowText(Array("Hello \\J[getItemName(itemId)]"))
     e4.toJs should deepEqual (Array(
       """game.showText(["Hello " + getItemName(itemId) + ""]);"""))
+  }
+
+  "EventCmd" should "produce correct script for GetChoice" in {
+    val e = GetChoice(Array("Question text"), Array("Yes", "No"), true,
+        Array(
+            Array(ShowText(Array("Hello"))),
+            Array(ShowText(Array("Goodbye"))),
+            Array(ShowText(Array("Default")))))
+
+    e.toJs should deepEqual(Array(
+      """switch(game.getChoice(["Question text"], ["Yes", "No"], true)) {""",
+      """  case 0:""",
+      """    game.showText(["Hello"]);""",
+      """    break;""",
+      """  case 1:""",
+      """    game.showText(["Goodbye"]);""",
+      """    break;""",
+      """  default:""",
+      """    game.showText(["Default"]);""",
+      """    break;""",
+      """}"""
+    ))
   }
 
   "EventCmd" should "produce correct script in comma-decimal locales" in {
@@ -158,23 +185,5 @@ class EventCmdSpec extends UnitSpec {
       Array(ShowText(Array("Hi")),
           SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 1))
     result should deepEqual (expected)
-  }
-
-  "EventCmd" should "deserialize legacy AddRemoveItem correctly" in {
-    implicit val formats = RpgMapData.formats
-    val legacyJson1 = """
-      [
-        {
-          "jsonClass":"AddRemoveItem",
-          "itemId":12,
-          "add":true,
-          "qty":5
-        }
-      ]"""
-
-    val result1 = Serialization.read[Array[EventCmd]](legacyJson1)
-    val expected: Array[EventCmd] =
-      Array(AddRemoveItem(true, IntParameter(12), IntParameter(5)))
-    result1 should deepEqual (expected)
   }
 }

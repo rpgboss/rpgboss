@@ -66,6 +66,20 @@ object SwingUtils {
       }
     }
 
+  def textAreaField(initial: Array[String], onUpdate: Array[String] => Unit) = {
+    val textEdit = new TextArea(initial.mkString("\n")) {
+      listenTo(this)
+      reactions += {
+        case e: ValueChanged => onUpdate(text.split("\n"))
+      }
+    }
+
+    new ScrollPane {
+      contents = textEdit
+      preferredSize = new Dimension(300, 150)
+    }
+  }
+
   def percentField(min: Float, max: Float, initial: Float,
       onUpdate: Float => Unit) = {
     val spinner = new NumberSpinner(
@@ -77,10 +91,32 @@ object SwingUtils {
     new BoxPanel(Orientation.Horizontal) {
       contents += spinner
       contents += new Label("%") {
-        preferredSize = new Dimension(15, 15)
+        preferredSize = new Dimension(20, 15)
       }
 
-      def floatValue = spinner.getValue.toFloat / 100f
+      def value = spinner.getValue.toFloat / 100f
+      def setValue(v: Float) = spinner.setValue((v * 100).round)
+      override def enabled_=(b: Boolean) {
+        super.enabled_=(b)
+        spinner.enabled_=(b)
+      }
+    }
+  }
+
+  def pxField(min: Int, max: Int, initial: Int, onUpdate: Int => Unit) = {
+    val spinner = new NumberSpinner(initial, min, max, onUpdate)
+    new BoxPanel(Orientation.Horizontal) {
+      contents += spinner
+      contents += new Label("px") {
+        preferredSize = new Dimension(20, 15)
+      }
+
+      def value = spinner.getValue
+      def setValue(v: Float) = spinner.setValue(v.round)
+      override def enabled_=(b: Boolean) {
+        super.enabled_=(b)
+        spinner.enabled_=(b)
+      }
     }
   }
 

@@ -9,18 +9,19 @@ import rpgboss.lib._
 import java.util.Arrays
 
 object ProjectCreator {
-  def copyResource(resourcePath: String, targetFile: File) = {
-    val source = Resources.asByteSource(Resources.getResource(resourcePath))
-    source.copyTo(Files.asByteSink(targetFile))
-  }
-
   def copyResources(resourceDirectoryName: String,
-                    resourceList: Seq[String], targetRcDirectory: File) = {
+                    resourceList: Seq[String], targetRcDirectory: File,
+                    copyAllFiles: Boolean = false) = {
     for (resourceName <- resourceList) {
       val target = new File(targetRcDirectory, resourceName)
       target.getParentFile.mkdirs()
 
-      copyResource("%s/%s".format(resourceDirectoryName, resourceName), target)
+      if (copyAllFiles ||
+          (!resourceName.contains("/") &&
+              resourceName.endsWith(Resource.jsonSuffix))) {
+        Utils.copyResource(
+          "%s/%s".format(resourceDirectoryName, resourceName), target)
+      }
     }
   }
 
@@ -44,7 +45,7 @@ object ProjectCreator {
 
     copyResources(
       ResourceConstants.defaultRcDir,
-      ResourceConstants.defaultRcList.filter(_.endsWith(Resource.jsonSuffix)),
+      ResourceConstants.defaultRcList,
       projRcDir)
 
     if (allSavedOkay) {

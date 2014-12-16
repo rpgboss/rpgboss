@@ -42,13 +42,21 @@ class MapScreen(val game: RpgGame)
   private def moveEntity(
       entity: Entity, dx: Float, dy: Float,
       affixDirection: Boolean): EntityMove = {
-    import SpriteSpec.Directions._
     if (dx != 0 || dy != 0) {
       if (!affixDirection) {
         val direction =
           if (math.abs(dx) > math.abs(dy))
-            if (dx > 0) EAST else WEST
-          else if (dy > 0) SOUTH else NORTH
+            if (dx > 0)
+              SpriteSpec.Directions.EAST
+            else
+              SpriteSpec.Directions.WEST
+          else {
+            if (dy > 0)
+              SpriteSpec.Directions.SOUTH
+            else
+              SpriteSpec.Directions.NORTH
+          }
+
         entity.enqueueMove(EntityFaceDirection(direction))
       }
 
@@ -212,6 +220,9 @@ class MapScreen(val game: RpgGame)
 
   // Update. Called on Gdx thread before render.
   def update(delta: Float): Unit = {
+    if (!assets.update())
+      return
+
     windowManager.update(delta)
     // TODO: This makes the camera lag the player's position.
     camera.update(delta, _playerEntity.x, _playerEntity.y)
@@ -233,7 +244,7 @@ class MapScreen(val game: RpgGame)
       math.abs(_playerEntity.y - playerOldY)
 
     mapAndAssetsOption map { mapAndAssets =>
-      val minimumDistanceFromLastBattle = 10
+      val minimumDistanceFromLastBattle = 3
 
       val encounterSettings = mapAndAssets.encounterSettings
 

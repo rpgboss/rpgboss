@@ -1,5 +1,7 @@
 package rpgboss.lib
 
+import rpgboss.model.RpgEnum
+
 /**
  * @param   x   Refers to center of the rectangle.
  * @param   y   Refers to center of the rectangle.
@@ -24,85 +26,103 @@ trait BoxLike {
  */
 case class Rect(x: Float, y: Float, w: Float, h: Float) extends BoxLike
 
-case class Size(w: Float, h: Float)
+object SizeType extends RpgEnum {
+  case class Val(i: Int, name: String, needParameters: Boolean)
+    extends super.Val(i, name)
 
-/**
- * @param   screenW   Should always be an integer, but treated as a float for
- *                    convenience.
- * @param   screenH   Should always be an integer, but treated as a float for
- *                    convenience.
- */
-class LayoutProvider(screenW: Float, screenH: Float) {
-  def proportional(xProportion: Float, yProportion: Float, w: Float, h: Float) =
-    Rect(xProportion * screenW, yProportion * screenH, w, h)
-  def proportional(xProportion: Float, yProportion: Float, s: Size): Rect =
-    proportional(xProportion, yProportion, s.w, s.h)
+  implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
 
-  def north(w: Float, h: Float) =
-    Rect(screenW / 2, h / 2, w, h)
-  def north(s: Size): Rect = north(s.w, s.h)
+  val Fixed = Val(0, "Fixed", true)
+  val ScaleSource = Val(1, "Scale source", true)
+  val ProportionalToScreen = Val(2, "Proportional to Screen", true)
+  val Cover = Val(3, "Cover screen", false)
+  val Contain = Val(4, "Contain in screen", false)
 
-  def south(w: Float, h: Float) =
-    Rect(screenW / 2, screenH - h / 2, w, h)
-  def south(s: Size): Rect = south(s.w, s.h)
-
-  def east(w: Float, h: Float) =
-    Rect(w / 2, screenH / 2, w, h)
-  def east(s: Size): Rect = east(s.w, s.h)
-
-  def west(w: Float, h: Float) =
-    Rect(screenW - w /2, screenH / 2, w, h)
-  def west(s: Size): Rect = west(s.w, s.h)
-
-  def northeast(w: Float, h: Float) =
-    Rect(screenW - w / 2, h / 2, w, h)
-  def northeast(s: Size): Rect = northeast(s.w, s.h)
-
-  def northwest(w: Float, h: Float) =
-    Rect(w / 2, h / 2, w, h)
-  def northwest(s: Size): Rect = northwest(s.w, s.h)
-
-  def southeast(w: Float, h: Float) =
-    Rect(screenW - w / 2, screenH - h / 2, w, h)
-  def southeast(s: Size): Rect = southeast(s.w, s.h)
-
-  def southwest(w: Float, h: Float) =
-    Rect(w / 2, screenH - h / 2, w, h)
-  def southwest(s: Size): Rect = southwest(s.w, s.h)
-
-  def centered(w: Float, h: Float) =
-    Rect(screenW / 2, screenH / 2, w, h)
-  def centered(s: Size): Rect = centered(s.w, s.h)
+  def default = Fixed
 }
 
-class SizeProvider(screenW: Float, screenH: Float) {
-  def fixed(w: Float, h: Float) = Size(w, h)
+object LayoutType extends RpgEnum {
+  case class Val(i: Int, name: String, functionName: String)
+    extends super.Val(i, name)
 
-  def prop(xProportion: Float, yProportion: Float) =
-    Size(xProportion * screenW, yProportion * screenH)
+  val Centered = Value(0)
+  val North = Value(1)
+  val East = Value(2)
+  val South = Value(3)
+  val West = Value(4)
+  val NorthEast = Value(5)
+  val SouthEast = Value(6)
+  val SouthWest = Value(7)
+  val NorthWest = Value(8)
 
-  /**
-   * Fills whole screen. May cause some portions of image to be beyond the
-   * screen borders.
-   */
-  def fill(w: Float, h: Float) = {
-    val scale = math.max(screenW / w, screenH / h)
-    Size(w * scale, h * scale)
+  def default = Centered
+}
+
+/**
+ * The parameters have different units depending on the sizeTypeId.
+ * If SizeType(sizeTypeId) is SizeType.Fixed, then they are in pixels.
+ * Otherwise, they are a ratio with respect either the screen or the source
+ * image.
+ * @param   w   Ignored for Fill and Contain size types.
+ * @param   h   Ignored for Fill and Contain size types.
+ */
+case class Layout(var layoutTypeId: Int = LayoutType.default.id,
+                  var sizeTypeId: Int = SizeType.default.id,
+                  var w: Float = 1.0f,
+                  var h: Float = 1.0f,
+                  var xOffset: Float = 0,
+                  var yOffset: Float = 0) {
+
+  def toJs() = "game.layoutWithOffset(%d, %d, %f, %f, %f, %f)".format(
+      layoutTypeId, sizeTypeId, w, h, xOffset, yOffset)
+
+  def getRect(srcW: Float, srcH: Float, screenW: Int, screenH: Int) = {
+    import LayoutType._
+    import SizeType._
+
+    assume(srcW > 0)
+    assume(srcH > 0)
+    assume(screenW > 0)
+    assume(screenH > 0)
+
+    val (dstW, dstH, xOffsetPx, yOffsetPx): (Float, Float, Float, Float) =
+      SizeType(sizeTypeId) match {
+        case Fixed => (w, h, xOffset, yOffset)
+        case ScaleSource => (srcW * w, srcH * h, srcW * xOffset, srcH * yOffset)
+        case ProportionalToScreen =>
+          (screenW * w, screenH * h, screenW * xOffset, screenH * yOffset)
+        case Cover if srcW > 0 && srcH > 0 => {
+          val scale = math.max(screenW / srcW, screenH / srcH)
+          (srcW * scale, srcH * scale, srcW * xOffset, srcH * yOffset)
+        }
+        case Contain if srcW > 0 && srcH > 0 => {
+          val scale = math.min(screenW / srcW, screenH / srcH)
+          (srcW * scale, srcH * scale, srcW * xOffset, srcH * yOffset)
+        }
+        case _ => (0, 0, 0, 0)
+      }
+
+    val (x1, y1): (Float, Float) = LayoutType(layoutTypeId) match {
+      case Centered => (screenW / 2, screenH / 2)
+      case North => (screenW / 2, dstH / 2)
+      case East => (dstW / 2, screenH / 2)
+      case South => (screenW / 2, screenH - dstH / 2)
+      case West => (screenW - dstW / 2, screenH / 2)
+      case NorthEast => (screenW - dstW / 2, dstH / 2)
+      case SouthEast => (screenW - dstW / 2, screenH - dstH / 2)
+      case SouthWest => (dstW / 2, screenH - dstH / 2)
+      case NorthWest => (dstW / 2, dstH / 2)
+      case _ => (0, 0)
+    }
+
+    Rect(x1 + xOffsetPx, y1 + yOffsetPx, dstW, dstH)
   }
+}
 
-  /**
-   * Tries to fill the whole screen, but will be smaller than the screen
-   * and letterboxed if the aspect ratio does not match.
-   */
-  def fit(w: Float, h: Float) = {
-    val scale = math.min(screenW / w, screenH / h)
-    Size(w * scale, h * scale)
-  }
+object Layout {
+  def defaultForPictures =
+    Layout(LayoutType.default.id, SizeType.ScaleSource.id, 1.0f, 1.0f)
 
-  /**
-   * Image stretched to fill the whole screen. Does not preserve aspect ratio.
-   */
-  def stretch(w: Float, h: Float) = {
-    Size(screenW, screenH)
-  }
+  def empty = Layout(LayoutType.default.id, SizeType.default.id, 0, 0)
+  def dummy = Layout(LayoutType.default.id, SizeType.default.id, 100, 100)
 }

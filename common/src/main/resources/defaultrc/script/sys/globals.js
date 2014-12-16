@@ -142,17 +142,17 @@ function StatusMenu() {
       var characterLevels = game.getIntArray(game.CHARACTER_LEVELS());
       var characterHps = game.getIntArray(game.CHARACTER_HPS());
       var characterMps = game.getIntArray(game.CHARACTER_MPS());
-      var characterMaxHps = game.getIntArray(game.CHARACTER_MAX_HPS());
-      var characterMaxMps = game.getIntArray(game.CHARACTER_MAX_MPS());
 
       for (var i = 0; i < party.length; ++i) {
+        var stats = game.getBattleStats(i, -1, -1);
+        
         lines.push(rightPad(characterNames[i], 10)
             + leftPad(characters[i].subtitle(), 20));
         lines.push(" LVL " + leftPad(characterLevels[i].toString(), 3));
         lines.push("  HP " + leftPad(characterHps[i].toString(), 4) + " / "
-            + leftPad(characterMaxHps[i].toString(), 4));
+            + leftPad(stats.current().mhp(), 4));
         lines.push("  MP " + leftPad(characterMps[i].toString(), 4) + " / "
-            + leftPad(characterMaxMps[i].toString(), 4));
+            + leftPad(stats.current().mmp(), 4));
       }
 
       return {
@@ -160,7 +160,7 @@ function StatusMenu() {
         party : party
       }
     },
-    layout : layout.northwest(sizer.prop(0.8, 1.0)),
+    layout : game.layout(game.NORTHWEST(), game.SCREEN(), 0.8, 1.0),
     windowDetails : {
       allowCancel : true,
       linesPerChoice : 4,
@@ -200,7 +200,7 @@ function SaveAndLoadMenu() {
         saveInfos : saveInfos
       }
     },
-    layout : layout.centered(sizer.fixed(320, 320)),
+    layout : game.layout(game.CENTERED(), game.FIXED(), 320, 320),
     windowDetails : {
       allowCancel : true,
       linesPerChoice : 3,
