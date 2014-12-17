@@ -3,6 +3,8 @@ package rpgboss.editor
 import java.awt.Toolkit
 import java.io._
 import java.util.Scanner
+import java.awt.Desktop
+import java.net.URL
 
 import scala.collection.JavaConversions._
 import scala.swing._
@@ -123,6 +125,22 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "crystal_project/16x16/actions/fileexport.png"))
+    }
+
+    contents += new Button(Action(getMessage("Asset_Server") + "...") {
+      if(Desktop.isDesktopSupported()) {
+        var desktop =  Desktop.getDesktop();
+        if (desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+              desktop.browse(new URL("http://assets.rpgboss.com").toURI());
+            } catch {
+              case e: Exception => e.printStackTrace();
+            }
+        }
+      }
+    }) {
+      icon = new ImageIcon(Utils.readClasspathImage(
+        "hendrik-weiler-theme/asset-server.png"))
     }
   }
 
