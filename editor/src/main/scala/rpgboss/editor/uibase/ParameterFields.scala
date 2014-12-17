@@ -10,6 +10,7 @@ import rpgboss.model.event.EventParameter
 import rpgboss.lib.Utils
 import rpgboss.model.event.EventCmd
 import rpgboss.model.ProjectData
+import rpgboss.editor.Internationalized._
 
 class ParameterDialog[T](
     owner: Window,
@@ -21,10 +22,15 @@ class ParameterDialog[T](
   val model = Utils.deepCopy(initial)
 
   val fLocalVariable = textField(model.localVariable, model.localVariable = _)
+  val fGlobalVariable =
+    textField(model.globalVariable, model.globalVariable = _)
 
   def updateFields() = {
     fLocalVariable.enabled =
       model.valueTypeId == EventParameterValueType.LocalVariable.id
+    fGlobalVariable.enabled =
+      model.valueTypeId == EventParameterValueType.GlobalVariable.id
+
   }
   updateFields()
 
@@ -36,7 +42,27 @@ class ParameterDialog[T](
       })
   val group = makeButtonGroup(valueTypeBtns)
 
-  def okFunc() = {
+  override def okFunc(): Unit = {
+    import EventParameterValueType._
+    if (model.valueTypeId == LocalVariable.id && model.localVariable.isEmpty) {
+      Dialog.showMessage(
+          fLocalVariable,
+          needsTranslation("Local variable cannot be blank."),
+          needsTranslation("Validation Error"),
+          Dialog.Message.Error)
+      return
+    }
+
+    if (model.supportsGlobalVariable &&
+        model.valueTypeId == GlobalVariable.id &&
+        model.globalVariable.isEmpty) {
+      Dialog.showMessage(
+          fGlobalVariable,
+          needsTranslation("Global variable cannot be blank."),
+          needsTranslation("Validation Error"),
+          Dialog.Message.Error)
+      return
+    }
     onOk(model)
     close()
   }
@@ -46,6 +72,12 @@ class ParameterDialog[T](
     row().grid().add(Swing.HGlue)
     row().grid().add(valueTypeBtns(1))
     row().grid().add(fLocalVariable)
+
+    if (model.supportsGlobalVariable) {
+      row().grid().add(valueTypeBtns(2))
+      row().grid().add(fGlobalVariable)
+    }
+
     addButtons(okBtn, cancelBtn)
   }
 }
@@ -89,7 +121,9 @@ class ParameterFullComponent[T](
       container.contents += label
       label.text = EventParameterValueType(model.valueTypeId) match {
         case EventParameterValueType.LocalVariable =>
-          "Local Variable: %s".format(model.localVariable)
+          needsTranslation("Local Variable: %s").format(model.localVariable)
+        case EventParameterValueType.GlobalVariable =>
+          needsTranslation("Global Variable: %s").format(model.globalVariable)
       }
     }
 

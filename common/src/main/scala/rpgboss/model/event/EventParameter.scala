@@ -9,6 +9,7 @@ import rpgboss.model.ProjectDataEnums
 object EventParameterValueType extends RpgEnum {
   val Constant = Value(0, "Constant")
   val LocalVariable = Value(1, "Local Variable")
+  val GlobalVariable = Value(2, "Global Variable")
 
   def default = Constant
 }
@@ -23,10 +24,20 @@ trait EventParameter[T] {
   def localVariable: String
   def localVariable_=(v: String)
 
+  def supportsGlobalVariable = false
+  def globalVariable: String = {
+    "Error: Global Variables unsupported for this type."
+  }
+  def globalVariable_=(v: String): Unit = {
+    throw new RuntimeException("Global Variable not supported for this type.")
+  }
+
   def copyValuesFrom(other: EventParameter[T]) = {
     valueTypeId = other.valueTypeId
     constant = other.constant
     localVariable = other.localVariable
+    if (supportsGlobalVariable && other.supportsGlobalVariable)
+      globalVariable = other.globalVariable
   }
 
   import EventParameterValueType._
@@ -34,6 +45,7 @@ trait EventParameter[T] {
   def jsString = EventParameterValueType(valueTypeId) match {
     case Constant => EventJavascript.toJs(constant)
     case LocalVariable => localVariable
+    case GlobalVariable => "GLOBAL_VARIABLES_UNSUPPORTED"
   }
 }
 
@@ -63,7 +75,16 @@ case class IntArrayParameter(
 case class IntParameter(
     var constant: Int = 0,
     var valueTypeId: Int = EventParameterValueType.Constant.id,
-    var localVariable: String = "") extends EventParameter[Int]
+    var localVariable: String = "",
+    override var globalVariable: String = "") extends EventParameter[Int] {
+  override def supportsGlobalVariable = true
+
+  override def jsString =  EventParameterValueType(valueTypeId) match {
+    case EventParameterValueType.GlobalVariable =>
+      EventJavascript.jsCall("game.getInt", globalVariable).exp
+    case _ => super.jsString
+  }
+}
 
 case class EventClass(
   var name: String = "",
