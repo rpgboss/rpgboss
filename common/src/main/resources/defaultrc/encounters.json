@@ -1,6 +1,6 @@
 [
   {
-    "name":"# Goblin",
+    "name":"# Basilisk",
     "units":[
       {
         "enemyIdx":0,
@@ -10,35 +10,15 @@
     ]
   },
   {
-    "name":"# 3 x Goblin",
+    "name":"# 3 x Birdman",
     "units":[
       {
-        "enemyIdx":0,
+        "enemyIdx":1,
         "x":167,
         "y":155
       },
       {
-        "enemyIdx":0,
-        "x":152,
-        "y":265
-      },
-      {
-        "enemyIdx":0,
-        "x":342,
-        "y":210
-      }
-    ]
-  },
-  {
-    "name":"# 2 x Goblin, Goblin Commander",
-    "units":[
-      {
-        "enemyIdx":0,
-        "x":167,
-        "y":155
-      },
-      {
-        "enemyIdx":0,
+        "enemyIdx":1,
         "x":152,
         "y":265
       },
@@ -50,61 +30,66 @@
     ]
   },
   {
-    "name":"# 2 x Goblin, Goblin Wizard",
+    "name":"# Basilisk, 2 x Birdman",
     "units":[
       {
-        "enemyIdx":2,
+        "enemyIdx":0,
         "x":167,
         "y":155
       },
       {
-        "enemyIdx":0,
+        "enemyIdx":1,
         "x":152,
         "y":265
       },
       {
-        "enemyIdx":0,
+        "enemyIdx":1,
         "x":342,
         "y":210
       }
     ]
   },
   {
-    "name":"# 2 x Goblin Commander",
+    "name":"# 3 x Golem",
     "units":[
       {
-        "enemyIdx":1,
+        "enemyIdx":22,
+        "x":167,
+        "y":155
+      },
+      {
+        "enemyIdx":22,
+        "x":152,
+        "y":265
+      },
+      {
+        "enemyIdx":22,
+        "x":342,
+        "y":210
+      }
+    ]
+  },
+  {
+    "name":"# Eagler",
+    "units":[
+      {
+        "enemyIdx":170,
+        "x":255,
+        "y":210
+      }
+    ]
+  },
+  {
+    "name":"# Eaglel, Eagler",
+    "units":[
+      {
+        "enemyIdx":170,
         "x":255,
         "y":155
       },
       {
-        "enemyIdx":1,
+        "enemyIdx":169,
         "x":240,
-        "y":265
-      }
-    ]
-  },
-  {
-    "name":"# 2 x Goblin Commander, 2 x Goblin Wizard",
-    "units":[
-      {
-        "enemyIdx":2,
-        "x":167,
-        "y":155
-      },
-      {
-        "enemyIdx":2,
-        "x":152,
-        "y":265
-      },
-      {
-        "enemyIdx":1,
-        "x":342,
-        "y":155
-      },
-      {
-        "enemyIdx":1,
-        "x":327,
         "y":265
       }
     ]
