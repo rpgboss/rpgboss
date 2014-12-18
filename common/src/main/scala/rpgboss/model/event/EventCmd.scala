@@ -61,8 +61,8 @@ object EventCmd {
     classOf[OpenStore],
     classOf[RunJs],
     classOf[SetEventState],
-    classOf[SetInt],
-    classOf[SetLocalVariable],
+    classOf[SetGlobalInt],
+    classOf[SetLocalInt],
     classOf[ShowText],
     classOf[ShowPicture],
     classOf[StartBattle],
@@ -221,14 +221,27 @@ case class SetEventState(
   }
 }
 
-case class SetLocalVariable(parameter: EventParameter[_]) extends EventCmd {
-  def sections = Array(PlainLines(
-      Array("var %s = %s;".format(
-          parameter.localVariable, parameter.constant))))
+case class SetGlobalInt(
+    var key: String = "globalVariableName",
+    var operatorId: Int = OperatorType.default.id,
+    value1: IntParameter = IntParameter(),
+    value2: IntParameter = IntParameter()) extends EventCmd {
+  def sections = {
+    val operator = OperatorType(operatorId)
+    val operatorString = operator.jsString
+
+    if (operatorString.isEmpty)
+      singleCall("game.setInt", key, value1)
+    else
+      singleCall("game.setInt", key, RawJs(
+          "%s %s %s".format(value1.jsString, operatorString, value2.jsString)))
+  }
 }
 
-case class SetInt(key: String, value: Int) extends EventCmd {
-  def sections = singleCall("game.setInt", key, value)
+case class SetLocalInt(variableName: String,
+                       value: EventParameter[_]) extends EventCmd {
+  def sections = Array(PlainLines(
+      Array("var %s = %s;".format(variableName, value.jsString))))
 }
 
 case class ShowText(var lines: Array[String] = Array()) extends EventCmd {

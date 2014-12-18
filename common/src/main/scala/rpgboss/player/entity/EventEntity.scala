@@ -35,7 +35,7 @@ class EventEntity(
     val eventClassStates = eventClass.states
 
     val bindCmds = mapEvent.params map { p =>
-      SetLocalVariable(p)
+      SetLocalInt(p.localVariable, p)
     }
 
     // Bind local variables.

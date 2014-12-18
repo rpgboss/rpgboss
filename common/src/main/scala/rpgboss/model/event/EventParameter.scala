@@ -6,6 +6,18 @@ import rpgboss.model.ProjectData
 import org.json4s.ShortTypeHints
 import rpgboss.model.ProjectDataEnums
 
+object OperatorType extends RpgEnum {
+  case class Val(i: Int, name: String, jsString: String)
+    extends super.Val(i, name)
+
+  implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
+
+  val IgnoreSecondValue = Val(0, "Ignore Second Value", "")
+  val Add = Val(1, "Add", "+")
+
+  override def default = IgnoreSecondValue
+}
+
 object EventParameterValueType extends RpgEnum {
   val Constant = Value(0, "Constant")
   val LocalVariable = Value(1, "Local Variable")

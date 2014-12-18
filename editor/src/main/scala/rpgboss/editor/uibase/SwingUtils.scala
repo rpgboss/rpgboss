@@ -227,6 +227,15 @@ object SwingUtils {
     }
   }
 
+  def enumVerticalBox(
+    enum: RpgEnum,
+    initial: Int,
+    onUpdate: Int => Any) = {
+    new BoxPanel(Orientation.Vertical) {
+      addBtnsAsGrp(contents, enumIdRadios(enum)(initial, onUpdate))
+    }
+  }
+
   def showErrorDialog(parent: Component, message: String) = {
     Dialog.showMessage(parent, message, "Error", Dialog.Message.Error)
   }

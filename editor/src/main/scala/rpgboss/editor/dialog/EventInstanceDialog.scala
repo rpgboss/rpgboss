@@ -56,6 +56,9 @@ class EventInstanceDialog(
              EventParameterValueType.LocalVariable.id) {
         val (paramCopy, component) = field.getModelCopyComponent()
 
+        // TODO: Necessary to change the parameter type to constant here.
+        paramCopy.valueTypeId = EventParameterValueType.Constant.id
+
         freeVariableMap.update(field.model.localVariable, paramCopy)
         componentMap.update(field.model.localVariable, component)
       }
