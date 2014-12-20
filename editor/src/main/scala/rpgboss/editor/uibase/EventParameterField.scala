@@ -9,6 +9,7 @@ import rpgboss.model.HasName
 import rpgboss.model.PictureSlots
 import rpgboss.model.ProjectData
 import rpgboss.model.event._
+import rpgboss.editor.Internationalized._
 
 /**
  * The name of the field and a component for editing the constant value.
@@ -64,25 +65,25 @@ object EventParameterField {
       owner: Window, pData: ProjectData, cmd: EventCmd):
       Seq[EventParameterField[_]] = cmd match {
     case c: AddRemoveItem => List(
-        IntEnumIdField("Item", pData.enums.items, c.itemId),
-        IntNumberField("Quantity", 1, 99, c.quantity))
+        IntEnumIdField(getMessage("Item"), pData.enums.items, c.itemId),
+        IntNumberField(getMessage("Quantity"), 1, 99, c.quantity))
     case c: AddRemoveGold => List(
-        IntNumberField("Quantity", 1, 9999, c.quantity))
+        IntNumberField(getMessage("Quantity"), 1, 9999, c.quantity))
     case c: HidePicture => List(
-        IntNumberField("Slot", PictureSlots.ABOVE_MAP,
+        IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
             PictureSlots.BATTLE_BEGIN - 1, c.slot))
     case c: OpenStore => List(
         IntMultiselectField(
-            owner, "Items Sold", pData.enums.items, c.itemIdsSold),
+            owner, getMessage("Items_Sold"), pData.enums.items, c.itemIdsSold),
         FloatPercentField(
-            "Buy price multiplier:", 0f, 4f, c.buyPriceMultiplier),
+            getMessageColon("Buy_Price_Multiplier"), 0f, 4f, c.buyPriceMultiplier),
         FloatPercentField(
-            "Sell price multiplier:", 0f, 4f, c.sellPriceMultiplier))
+            getMessageColon("Sell_Price_Multiplier"), 0f, 4f, c.sellPriceMultiplier))
     case c: SetGlobalInt => List(
-        IntNumberField("Value 1", -9999, 9999, c.value1),
-        IntNumberField("Value 2", -9999, 9999, c.value2))
+        IntNumberField(getMessage("Value") + " 1", -9999, 9999, c.value1),
+        IntNumberField(getMessage("Value") + " 2", -9999, 9999, c.value2))
     case c: ShowPicture => List(
-        IntNumberField("Slot", PictureSlots.ABOVE_MAP,
+        IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
             PictureSlots.BATTLE_BEGIN - 1, c.slot))
     case _ => Nil
   }

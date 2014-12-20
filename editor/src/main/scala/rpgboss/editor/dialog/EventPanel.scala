@@ -49,7 +49,7 @@ class EventPanel(
                 newState(false, false)
               }
             })
-        pages += new Page("State %d".format(i), pane)
+        pages += new Page(getMessage("State") + " %d".format(i), pane)
       }
     }
 
@@ -94,7 +94,7 @@ class EventPanel(
   }
 
   row().grid()
-    .add(leftLabel("Name:")).add(nameField)
+    .add(leftLabel(getMessage("Name"))).add(nameField)
     .add(
       new Button(Action(getMessage("New_State")) {
         newState(false, true)

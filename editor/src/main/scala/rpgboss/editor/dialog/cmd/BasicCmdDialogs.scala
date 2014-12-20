@@ -117,13 +117,13 @@ class SetGlobalIntDialog(
   initial: SetGlobalInt,
   successF: (SetGlobalInt) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Set Global Integer"), initial, successF) {
+      owner, sm, getMessage("Set_Global_Integer"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Global Variable Name"),
+          getMessage("Global_Variable_Name"),
           textField(model.key, model.key = _)),
       TitledComponent(
-          needsTranslation("Operation"),
+          getMessage("Operation"),
           enumVerticalBox(
               OperatorType, model.operatorId, model.operatorId = _)))
 }

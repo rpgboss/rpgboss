@@ -11,6 +11,7 @@ import java.awt.{ Font, Color }
 import scala.swing.ListView.Renderer
 import scala.collection.mutable.ArrayBuffer
 import com.badlogic.gdx.utils.Disposable
+import rpgboss.editor.Internationalized._
 
 trait DisposableComponent extends Component with Disposable {
   def dispose() = {}
@@ -79,7 +80,7 @@ abstract class ArrayEditingPanel[T <: AnyRef](
     }
   }
 
-  val btnSetListSize = new Button(Action("Set array size...") {
+  val btnSetListSize = new Button(Action(getMessage("Set_Array_Size")) {
     val dialog = new ArraySizeDialog(
       owner,
       listView.listData.size,
@@ -103,14 +104,14 @@ abstract class ArrayEditingPanel[T <: AnyRef](
     dialog.open()
   })
 
-  val btnDuplicateItem = new Button(Action("Duplicate item...") {
+  val btnDuplicateItem = new Button(Action(getMessage("Duplicate_Item")) {
     if (listView.selection.indices.isEmpty) {
-      SwingUtils.showErrorDialog(this, "No item selected.")
+      SwingUtils.showErrorDialog(this, getMessage("No_Item_Selected"))
     } else {
       val originalItemIdx = listView.selection.indices.head
       val availableSlots = listView.listData.size - originalItemIdx - 1
       if (availableSlots < 1) {
-        SwingUtils.showErrorDialog(this, "No slots to duplicate into.")
+        SwingUtils.showErrorDialog(this, getMessage("No_Slots_To_Duplicate_Into"))
       } else {
         val origItem: T = listView.selection.items.head
         val dialog = new ArrayDuplicateDialog(
@@ -140,8 +141,8 @@ class ArraySizeDialog(
   okCallback: Int => Unit)
   extends SingleIntegerDialog(
     owner,
-    "Set array size",
-    "Array size:",
+    getMessage("Set_Array_Size"),
+    getMessageColon("Array_Size"),
     "",
     initial,
     min,
@@ -154,9 +155,9 @@ class ArrayDuplicateDialog(
   okCallback: Int => Unit)
   extends SingleIntegerDialog(
     owner,
-    "Duplicate item",
-    "No. of duplicates:",
-    "Duplicates are copied to slots below item.",
+    getMessage("Duplicate_Item"),
+    getMessageColon("No_Of_Duplicates"),
+    getMessage("Duplicates_Are_Copied_To_Slots_Below_Item"),
     1,
     1,
     maxDuplicates,
@@ -187,7 +188,7 @@ class StringArrayEditingPanel(
   }
   def editPaneEmpty = new TextField with DisposableComponent {
     enabled = false
-    text = "Select an item to edit"
+    text = getMessage("Select_An_Item_To_Edit")
   }
 
   val scrollPane = new ScrollPane {
