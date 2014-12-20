@@ -59,7 +59,7 @@ object RpgEvent {
  *                                      running the commands.
  */
 case class RpgEventState(
-  var switchCondition: Option[Condition] = None,
+  var conditions: Array[Condition] = Array(),
   var sameAppearanceAsPrevState: Boolean = true,
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,

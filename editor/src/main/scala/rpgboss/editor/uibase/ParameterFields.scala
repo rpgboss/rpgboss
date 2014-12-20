@@ -84,10 +84,12 @@ class ParameterDialog[T](
 
 class ParameterFullComponent[T](
     owner: Window,
-    model: EventParameter[T],
-    component: Component)
+    field: EventParameterField[T])
     (implicit m: reflect.Manifest[EventParameter[T]])
       extends BoxPanel(Orientation.Horizontal) {
+  val model = field.model
+  val component = field.getModelComponent()
+
   val container = new BoxPanel(Orientation.Horizontal)
   val detailsBtn = new Button(Action("...") {
     val d: ParameterDialog[T] = new ParameterDialog[T](
@@ -143,8 +145,7 @@ object ParameterFullComponent {
       panel: DesignGridPanel,
       cmd: EventCmd) = {
     for (field <- EventParameterField.getParameterFields(owner, pData, cmd)) {
-      val fullComponent = new ParameterFullComponent(
-          owner, field.model, field.getModelComponent())
+      val fullComponent = new ParameterFullComponent(owner, field)
       panel.row().grid((new Label(field.name)).peer).add(fullComponent.peer)
     }
   }
