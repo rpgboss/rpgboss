@@ -2,6 +2,7 @@ package rpgboss.editor.uibase
 
 import scala.swing.ListView
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import rpgboss.editor.Internationalized._
 
 trait HasEnhancedListView[T] extends LazyLogging {
   def listView: ListView[T]
@@ -43,7 +44,7 @@ trait HasEnhancedListView[T] extends LazyLogging {
   }
 
   def onListDataUpdate() = {
-    logger.info("Empty list update call")
+    logger.info(getMessage("Empty_List_Update_Call"))
   }
 }
 
