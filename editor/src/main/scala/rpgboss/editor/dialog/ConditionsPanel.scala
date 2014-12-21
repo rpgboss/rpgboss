@@ -14,11 +14,13 @@ import rpgboss.editor.uibase.EventParameterField
 import rpgboss.model.event.IntParameter
 import rpgboss.model.event.ComparisonOperator
 import rpgboss.model.ProjectData
+import scala.swing.Button
+import scala.swing.Action
+import scala.collection.mutable.ArrayBuffer
 
 class ConditionsPanel(
   owner: Window,
-  initial: Array[Condition],
-  onOk: Array[Condition] => Unit,
+  model: ArrayBuffer[Condition],
   pData: ProjectData)
   extends BoxPanel(Orientation.Vertical) {
 
@@ -28,7 +30,7 @@ class ConditionsPanel(
 
   }
 
-  def paneForElement(index: Int, model: Condition) = {
+  def paneForElement(index: Int, element: Condition) = {
     import ConditionType._
 
     def intField(parameter: IntParameter) = {
@@ -36,33 +38,38 @@ class ConditionsPanel(
           owner, EventParameterField.IntNumberField("", -9999, 9999, parameter))
     }
 
-    new BoxPanel(Orientation.Vertical) {
-      contents += boolField("NOT", model.negate, model.negate = _)
+    new BoxPanel(Orientation.Horizontal) {
+      contents += new BoxPanel(Orientation.Vertical) {
+        contents += boolField("NOT", element.negate, element.negate = _)
 
-      contents += new BoxPanel(Orientation.Horizontal) {
-        ConditionType(model.conditionTypeId) match {
-          case IsTrue =>
-            contents += intField(model.intValue1)
-            contents += lbl(needsTranslation("is TRUE."))
-          case NumericComparison =>
-            contents += intField(model.intValue1)
-            contents += enumIdCombo(ComparisonOperator)(
-                model.operatorId, model.operatorId = _)
-            contents += intField(model.intValue2)
-          case HasItemsInInventory =>
-            contents += lbl(needsTranslation("Inventory contains "))
-            contents += intField(model.intValue2)
-            contents += lbl(needsTranslation(" or more of "))
-            contents += new ParameterFullComponent(
-                owner, EventParameterField.IntEnumIdField(
-                    "", pData.enums.items, model.intValue1))
-          case HasCharacterInParty =>
-            contents += new ParameterFullComponent(
-                owner, EventParameterField.IntEnumIdField(
-                    "", pData.enums.characters, model.intValue1))
-            contents += lbl(needsTranslation("is in the party."))
+        contents += new BoxPanel(Orientation.Horizontal) {
+          ConditionType(element.conditionTypeId) match {
+            case IsTrue =>
+              contents += intField(element.intValue1)
+              contents += lbl(needsTranslation("is TRUE."))
+            case NumericComparison =>
+              contents += intField(element.intValue1)
+              contents += enumIdCombo(ComparisonOperator)(
+                  element.operatorId, element.operatorId = _)
+              contents += intField(element.intValue2)
+            case HasItemsInInventory =>
+              contents += lbl(needsTranslation("Inventory contains "))
+              contents += intField(element.intValue2)
+              contents += lbl(needsTranslation(" or more of "))
+              contents += new ParameterFullComponent(
+                  owner, EventParameterField.IntEnumIdField(
+                      "", pData.enums.items, element.intValue1))
+            case HasCharacterInParty =>
+              contents += new ParameterFullComponent(
+                  owner, EventParameterField.IntEnumIdField(
+                      "", pData.enums.characters, element.intValue1))
+              contents += lbl(needsTranslation("is in the party."))
+          }
         }
       }
+
+      contents += new Button(Action(needsTranslation("Delete")) {
+      })
     }
   }
 
