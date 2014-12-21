@@ -25,7 +25,7 @@ class EventInstanceDialog(
   initialEvent: RpgEvent,
   onOk: RpgEvent => Any,
   onCancel: RpgEvent => Any)
-  extends StdDialog(owner, getMessage("Event_Instance") + ": " + initialEvent.name) {
+  extends StdDialog(owner, getMessageColon("Event_Instance") + initialEvent.name) {
 
   val model = Utils.deepCopy(initialEvent)
 
@@ -89,7 +89,7 @@ class EventInstanceDialog(
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new DesignGridPanel {
-      row().grid(lbl(getMessage("Event_Class") + ":")).add(fClassId)
+      row().grid(lbl(getMessageColon("Event_Class"))).add(fClassId)
     }
 
     contents += container

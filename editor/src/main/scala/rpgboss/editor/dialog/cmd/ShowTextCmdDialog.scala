@@ -16,5 +16,5 @@ class ShowTextCmdDialog(
       owner, sm, getMessage("Show_Text"), initial, successF) {
 
   override def extraFields = Seq(
-    TitledComponent("Text", textAreaField(model.lines, model.lines = _)))
+    TitledComponent(getMessage("Text"), textAreaField(model.lines, model.lines = _)))
 }

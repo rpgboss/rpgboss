@@ -77,12 +77,12 @@ class NewEventCmdBox(
       }
 
       contents += new DesignGridPanel {
-        row().grid().add(leftLabel(needsTranslation("Battles")))
+        row().grid().add(leftLabel(getMessage("Battles")))
         row().grid().add(btnEvtCmd(getMessage("Start_Battle"), StartBattle()))
 
-        row().grid().add(leftLabel(needsTranslation("Programming")))
+        row().grid().add(leftLabel(getMessage("Programming")))
         row().grid().add(
-            btnEvtCmd(needsTranslation("Set Global Integer"), SetGlobalInt()))
+            btnEvtCmd(getMessage("Set_Global_Integer"), SetGlobalInt()))
         row().grid().add(
             btnEvtCmd(getMessage("Change_Event_State"), SetEventState()))
         row().grid().add(btnEvtCmd(getMessage("Run_Javascript"), RunJs()))

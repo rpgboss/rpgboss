@@ -25,7 +25,7 @@ class EventDialog(
   initialEvent: RpgEvent,
   onOk: RpgEvent => Any,
   onCancel: RpgEvent => Any)
-  extends StdDialog(owner, getMessage("Event") + ": " + initialEvent.name) {
+  extends StdDialog(owner, getMessageColon("Event") + initialEvent.name) {
 
   centerDialog(new Dimension(600, 600))
 
