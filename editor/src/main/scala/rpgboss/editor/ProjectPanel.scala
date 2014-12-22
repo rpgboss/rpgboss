@@ -142,6 +142,14 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
       icon = new ImageIcon(Utils.readClasspathImage(
         "hendrik-weiler-theme/asset-server.png"))
     }
+
+
+    contents += new Button(Action("Show community chat" + "...") {
+      mainP.getChat.show
+    }) {
+      icon = new ImageIcon(Utils.readClasspathImage(
+        "hendrik-weiler-theme/community_chat.png"))
+    }
   }
 
   val sidePane =
