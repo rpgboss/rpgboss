@@ -17,7 +17,7 @@ class ParameterDialog[T](
     initial: EventParameter[T],
     onOk: EventParameter[T] => Unit)
     (implicit m: reflect.Manifest[EventParameter[T]])
-    extends StdDialog(owner, "Parameter") {
+    extends StdDialog(owner, getMessage("Parameter")) {
 
   val model = Utils.deepCopy(initial)
 
@@ -47,8 +47,8 @@ class ParameterDialog[T](
     if (model.valueTypeId == LocalVariable.id && model.localVariable.isEmpty) {
       Dialog.showMessage(
           fLocalVariable,
-          needsTranslation("Local variable cannot be blank."),
-          needsTranslation("Validation Error"),
+          getMessage("Local_Variable_Cannot_Be_Blank"),
+          getMessage("Validation_Error"),
           Dialog.Message.Error)
       return
     }
@@ -58,8 +58,8 @@ class ParameterDialog[T](
         model.globalVariable.isEmpty) {
       Dialog.showMessage(
           fGlobalVariable,
-          needsTranslation("Global variable cannot be blank."),
-          needsTranslation("Validation Error"),
+          getMessage("Global_Variable_Cannot_Be_Blank"),
+          getMessage("Validation_Error"),
           Dialog.Message.Error)
       return
     }
@@ -123,9 +123,9 @@ class ParameterFullComponent[T](
       container.contents += label
       label.text = EventParameterValueType(model.valueTypeId) match {
         case EventParameterValueType.LocalVariable =>
-          needsTranslation("Local Variable: %s").format(model.localVariable)
+          getMessageColon("Local_Variable") + " %s".format(model.localVariable)
         case EventParameterValueType.GlobalVariable =>
-          needsTranslation("Global Variable: %s").format(model.globalVariable)
+          getMessageColon("Global_Variable") + " %s".format(model.globalVariable)
       }
     }
 
