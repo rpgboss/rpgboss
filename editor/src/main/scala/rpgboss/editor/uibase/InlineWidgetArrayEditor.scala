@@ -9,16 +9,45 @@ import java.awt.Font
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.editor.Internationalized._
 import scala.reflect.ClassTag
+import javax.swing.border.BevelBorder
 
 class InlineWidgetWrapper(
+    parent: InlineWidgetArrayEditor[_],
     var index: Int,
-    widget: Component,
-    deleteCall: Int => Unit)
+    widget: Component)
     extends BoxPanel(Orientation.Horizontal) {
-  contents += widget
-  contents += new Button(Action(needsTranslation("Delete")) {
-    deleteCall(index)
+  border = BorderFactory.createBevelBorder(BevelBorder.RAISED)
+
+  val deleteButton = new Button(Action(needsTranslation("Delete")) {
+    parent.deleteElement(index)
   })
+  contents += widget
+  contents += deleteButton
+
+  listenTo(mouse.clicks)
+  reactions += {
+    case e: MouseClicked =>
+      requestFocus()
+      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+        val menu = new RpgPopupMenu {
+          contents += new MenuItem(Action(needsTranslation("Insert_Above") + "...") {
+            parent.addAction(index)
+          })
+          parent.genericEditAction.map { editAction =>
+            contents += new MenuItem(Action(getMessage("Edit") + "...") {
+              editAction(index)
+            })
+          }
+          contents += new MenuItem(Action(getMessage("Delete")) {
+            parent.deleteElement(index)
+          })
+        }
+
+        menu.show(this, e.point.x, e.point.y)
+      } else if (e.clicks == 2) {
+        parent.genericEditAction.map(editAction => editAction(index))
+      }
+  }
 }
 
 /**
@@ -37,36 +66,71 @@ abstract class InlineWidgetArrayEditor[T: ClassTag](
   onUpdate: (Array[T]) => Unit)
   extends BoxPanel(Orientation.Vertical) {
 
-  background = UIManager.getColor("TextArea.background")
-
+  def title: String
   def addAction(index: Int)
-
-  val model = ArrayBuffer(initial : _*)
-
   def newInlineWidget(elementModel: T): Component
 
+  def genericEditAction: Option[Int => Unit] = None
+
+  def getAddPanel(): Option[Component] = {
+    val panel = new BoxPanel(Orientation.Horizontal) {
+      contents += Swing.HGlue
+      contents += new Button(Action(needsTranslation("Add") + "...") {
+        addAction(model.length)
+      })
+      contents += Swing.HGlue
+    }
+    Some(panel)
+  }
+
+  border = BorderFactory.createTitledBorder(title)
+
+  val model = ArrayBuffer(initial : _*)
+  def sendUpdate() = onUpdate(model.toArray)
+
   def newWrappedInlineWidget(index: Int, elementModel: T) = {
-    new InlineWidgetWrapper(index, newInlineWidget(elementModel), deleteCmd)
+    new InlineWidgetWrapper(this, index, newInlineWidget(elementModel))
+  }
+
+  val arrayPanel = new BoxPanel(Orientation.Vertical) {
+    background = UIManager.getColor("TextArea.background")
+
+    listenTo(mouse.clicks)
+    reactions += {
+      case e: MouseClicked =>
+        if (e.peer.getButton() == MouseEvent.BUTTON3) {
+          val menu = new RpgPopupMenu {
+            contents +=
+              new MenuItem(Action(needsTranslation("Add") + "...") {
+                addAction(model.length)
+              })
+          }
+
+          menu.show(this, e.point.x, e.point.y)
+        } else if (e.clicks == 2) {
+          addAction(model.length)
+        }
+    }
   }
 
   for ((element, i) <- model.zipWithIndex) {
-    contents += newWrappedInlineWidget(i, element)
+    arrayPanel.contents += newWrappedInlineWidget(i, element)
+  }
+  getAddPanel.map(arrayPanel.contents += _)
+  arrayPanel.contents += Swing.VGlue
+
+  val scrollPane = new ScrollPane {
+    preferredSize = new Dimension(300, 200)
+    contents = arrayPanel
+    horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
+    verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
   }
 
-  listenTo(mouse.clicks)
-  reactions += {
-    case e: MouseClicked =>
-      if (e.peer.getButton() == MouseEvent.BUTTON3) {
-        val menu = new RpgPopupMenu {
-          contents += new MenuItem(Action(needsTranslation("Add") + "...") {
-            addAction(model.length)
-          })
-        }
+  contents += scrollPane
 
-        menu.show(this, e.point.x, e.point.y)
-      } else if (e.clicks == 2) {
-        addAction(model.length)
-      }
+  def revalidateAndRepaint() = {
+    scrollPane.revalidate()
+    scrollPane.repaint()
   }
 
   def insertElement(index: Int, element: T) = {
@@ -74,36 +138,27 @@ abstract class InlineWidgetArrayEditor[T: ClassTag](
     assert(index <= model.length)
 
     model.insert(index, element)
-    onUpdate(model.toArray)
+    sendUpdate()
 
     // Insert a new panel.
-    contents.insert(index, newWrappedInlineWidget(index, element))
+    arrayPanel.contents.insert(index, newWrappedInlineWidget(index, element))
     // Update the index of all the event panels following this one.
     for (i <- (index + 1) until model.length) {
-      contents(i).asInstanceOf[InlineWidgetWrapper].index += 1
+      arrayPanel.contents(i).asInstanceOf[InlineWidgetWrapper].index += 1
     }
-    revalidate()
+    revalidateAndRepaint()
   }
 
-  def updateElement(index: Int, element: T): Unit = {
-    model.update(index, element)
-    onUpdate(model.toArray)
-
-    // Insert a new panel.
-    contents.update(index, newWrappedInlineWidget(index, element))
-    revalidate()
-  }
-
-  def deleteCmd(index: Int) = {
+  def deleteElement(index: Int) = {
     assert(index >= 0)
     assert(index < model.length)
     model.remove(index)
-    onUpdate(model.toArray)
+    sendUpdate()
 
-    contents.remove(index)
+    arrayPanel.contents.remove(index)
     for (i <- index until model.length) {
-      contents(i).asInstanceOf[InlineWidgetWrapper].index -= 1
+      arrayPanel.contents(i).asInstanceOf[InlineWidgetWrapper].index -= 1
     }
-    revalidate()
+    revalidateAndRepaint()
   }
 }

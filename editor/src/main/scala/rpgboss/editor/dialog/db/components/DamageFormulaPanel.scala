@@ -7,6 +7,7 @@ import rpgboss.editor.uibase.DesignGridPanel
 import javax.swing.BorderFactory
 import rpgboss.editor.dialog.DatabaseDialog
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.uibase.InlineWidgetArrayEditor
 
 /**
  * Updates model in-place.
@@ -18,6 +19,11 @@ class DamageFormulaPanel(
   extends DesignGridPanel {
   val model = initial
 
+  val fType = enumIdCombo(DamageType)(model.typeId, v => {
+    model.typeId = v
+    onUpdate()
+  })
+
   val fElement = indexedCombo(
     dbDiag.model.enums.elements,
     model.elementId,
@@ -26,15 +32,7 @@ class DamageFormulaPanel(
 
   val fFormula = textField(model.formula, model.formula = _, Some(onUpdate))
 
-  val radiosType = enumIdRadios(DamageType)(model.typeId, v => {
-    model.typeId = v
-    onUpdate()
-  })
-
-  val panelType = new BoxPanel(Orientation.Horizontal)
-  addBtnsAsGrp(panelType.contents, radiosType)
-
-  row().grid(lbl(getMessageColon("Damage_Type"))).add(panelType)
+  row().grid(lbl(getMessageColon("Damage_Type"))).add(fType)
   row().grid(lbl(getMessageColon("Element"))).add(fElement)
   row().grid(lbl(getMessageColon("Formula"))).add(fFormula)
 }
@@ -47,39 +45,9 @@ class DamageFormulaArrayPanel(
     dbDiag: DatabaseDialog,
     initial: Array[DamageFormula],
     onUpdate: Array[DamageFormula] => Unit)
-  extends BoxPanel(Orientation.Vertical) {
-
-  minimumSize = new Dimension(0, 500)
-
-  var model = initial
-
-  val buttonPanel = new BoxPanel(Orientation.Horizontal) {
-    contents += new Button(Action(getMessage("Add")) {
-      model = model :+ DamageFormula()
-      damagesPanel.contents +=
-        new DamageFormulaPanel(dbDiag, model.last, () => onUpdate(model))
-      damagesPanel.revalidate()
-      onUpdate(model)
-    })
-
-    contents += new Button(Action(getMessage("Remove_Last")) {
-      if (model.length > 0) {
-        model = model.dropRight(1)
-        damagesPanel.contents.trimEnd(1)
-        damagesPanel.revalidate()
-        damagesPanel.repaint()
-        onUpdate(model)
-      }
-    })
-  }
-
-  val damagesPanel = new BoxPanel(Orientation.Vertical)
-  model.foreach(v =>
-    damagesPanel.contents += new DamageFormulaPanel(dbDiag, v, () => onUpdate(model)))
-
-  border = BorderFactory.createTitledBorder(getMessage("Damage"))
-  contents += buttonPanel
-  contents += new ScrollPane {
-    contents = damagesPanel
-  }
+  extends InlineWidgetArrayEditor(dbDiag, initial, onUpdate) {
+  override def title = getMessage("Damage")
+  override def addAction(index: Int) = insertElement(index, DamageFormula())
+  override def newInlineWidget(elementModel: DamageFormula) =
+    new DamageFormulaPanel(dbDiag, elementModel, sendUpdate)
 }
