@@ -14,6 +14,7 @@ import java.io._
 import java.net._
 import java.util.concurrent._
 import org.glassfish.tyrus.client._
+import rpgboss.editor.Internationalized._ 
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -27,7 +28,7 @@ object chatArea extends TextArea(rows = 20, columns = 20) {
 }
 
 class Chat extends MainFrame {
-  val la = new Label("RPGBoss Global Chat")
+  val la = new Label(getMessage("RPGBoss_Global_Chat"))
 
   la.foreground = Color.BLUE
   title = "RPGBoss Global Chat"
