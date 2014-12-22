@@ -35,7 +35,28 @@ case class Condition(
   var intValue1: IntParameter = IntParameter(),
   var intValue2: IntParameter = IntParameter(),
   var operatorId: Int = OperatorType.default.id,
-  var negate: Boolean = false)
+  var negate: Boolean = false) {
+  def rawJs = {
+    import ConditionType._
+    import EventJavascript._
+    ConditionType(conditionTypeId) match {
+      case IsTrue => intValue1.rawJs
+      case NumericComparison =>
+        applyOperator(
+            intValue1.rawJs,
+            ComparisonOperator(operatorId).jsOperator,
+            intValue2.rawJs)
+      case HasItemsInInventory =>
+        applyOperator(
+            jsCall("game.countItems", intValue1),
+            ComparisonOperator.GE.jsOperator,
+            intValue2.rawJs)
+      case HasCharacterInParty =>
+        RawJs("""game.getIntArray(game.PARTY()).indexOf(%s) != -1""".format(
+            intValue1.rawJs.exp))
+    }
+  }
+}
 
 object Condition {
   def defaultInstance(conditionType: ConditionType.Value) = {

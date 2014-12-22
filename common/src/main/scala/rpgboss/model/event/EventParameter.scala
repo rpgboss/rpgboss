@@ -54,10 +54,10 @@ trait EventParameter[T] {
 
   import EventParameterValueType._
 
-  def jsString = EventParameterValueType(valueTypeId) match {
-    case Constant => EventJavascript.toJs(constant)
-    case LocalVariable => localVariable
-    case GlobalVariable => "GLOBAL_VARIABLES_UNSUPPORTED"
+  def rawJs: RawJs = EventParameterValueType(valueTypeId) match {
+    case Constant => RawJs(EventJavascript.toJs(constant))
+    case LocalVariable => RawJs(localVariable)
+    case GlobalVariable => RawJs("GLOBAL_VARIABLES_UNSUPPORTED")
   }
 }
 
@@ -91,10 +91,10 @@ case class IntParameter(
     override var globalVariable: String = "") extends EventParameter[Int] {
   override def supportsGlobalVariable = true
 
-  override def jsString =  EventParameterValueType(valueTypeId) match {
+  override def rawJs =  EventParameterValueType(valueTypeId) match {
     case EventParameterValueType.GlobalVariable =>
-      EventJavascript.jsCall("game.getInt", globalVariable).exp
-    case _ => super.jsString
+      EventJavascript.jsCall("game.getInt", globalVariable)
+    case _ => super.rawJs
   }
 }
 

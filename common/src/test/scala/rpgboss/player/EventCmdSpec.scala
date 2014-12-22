@@ -143,13 +143,13 @@ class EventCmdSpec extends UnitSpec {
   }
 
   "EventCmd" should "render IntParameters correctly" in {
-    IntParameter(12).jsString should equal ("12")
+    IntParameter(12).rawJs.exp should equal ("12")
     IntParameter(
         valueTypeId = EventParameterValueType.LocalVariable.id,
-        localVariable = "foo").jsString should equal ("foo")
+        localVariable = "foo").rawJs.exp should equal ("foo")
     IntParameter(
         valueTypeId = EventParameterValueType.GlobalVariable.id,
-        globalVariable = "bar").jsString should equal ("game.getInt(\"bar\")")
+        globalVariable = "bar").rawJs.exp should equal ("game.getInt(\"bar\")")
   }
 
   "EventCmd" should "deserialize legacy names correctly" in {

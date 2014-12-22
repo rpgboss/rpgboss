@@ -75,7 +75,7 @@ case class AddRemoveItem(
   quantity: IntParameter = IntParameter(1))
   extends EventCmd {
   def qtyDelta =
-    RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
+    RawJs(if (add) quantity.rawJs.exp else "%s * -1".format(quantity.rawJs.exp))
   def sections = singleCall("game.addRemoveItem", itemId, qtyDelta)
 
   override def getParameters() = List(itemId, quantity)
@@ -86,7 +86,7 @@ case class AddRemoveGold(
   quantity: IntParameter = IntParameter())
   extends EventCmd {
   def qtyDelta =
-    RawJs(if (add) quantity.jsString else "%s * -1".format(quantity.jsString))
+    RawJs(if (add) quantity.rawJs.exp else "%s * -1".format(quantity.rawJs.exp))
   def sections = singleCall("game.addRemoveGold", qtyDelta)
 
   override def getParameters() = List(quantity)
@@ -233,15 +233,15 @@ case class SetGlobalInt(
     if (operatorString.isEmpty)
       singleCall("game.setInt", key, value1)
     else
-      singleCall("game.setInt", key, RawJs(
-          "%s %s %s".format(value1.jsString, operatorString, value2.jsString)))
+      singleCall("game.setInt", key,
+          applyOperator(value1.rawJs, operatorString, value2.rawJs))
   }
 }
 
 case class SetLocalInt(variableName: String,
                        value: EventParameter[_]) extends EventCmd {
   def sections = Array(PlainLines(
-      Array("var %s = %s;".format(variableName, value.jsString))))
+      Array("var %s = %s;".format(variableName, value.rawJs.exp))))
 }
 
 case class ShowText(var lines: Array[String] = Array()) extends EventCmd {

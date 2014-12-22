@@ -65,8 +65,9 @@ class ConditionsPanel(
                   customRenderer = Some(_.jsOperator))
               contents += intField(element.intValue2)
             case HasItemsInInventory =>
-              contents += lbl(needsTranslation("Inventory contains at least "))
+              contents += lbl(needsTranslation("Player has"))
               contents += intField(element.intValue2)
+              contents += lbl(needsTranslation("or more"))
               contents += new ParameterFullComponent(
                   owner, EventParameterField.IntEnumIdField(
                       "", pData.enums.items, element.intValue1,
