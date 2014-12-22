@@ -144,7 +144,8 @@ object SwingUtils {
     initialId: Int,
     onUpdate: Int => Any,
     additionalAction: Option[() => Unit] = None,
-    overrideChoiceSet: Option[Seq[enum.Value]] = None) = {
+    overrideChoiceSet: Option[Seq[enum.Value]] = None,
+    customRenderer: Option[enum.Value => Any] = None) = {
 
     val choices = overrideChoiceSet.getOrElse(enum.values.toSeq)
 
@@ -155,6 +156,10 @@ object SwingUtils {
         case SelectionChanged(_) =>
           onUpdate(selection.item.id)
           additionalAction.foreach(_.apply())
+      }
+
+      if (customRenderer.isDefined) {
+        renderer = ListView.Renderer(customRenderer.get)
       }
     }
   }

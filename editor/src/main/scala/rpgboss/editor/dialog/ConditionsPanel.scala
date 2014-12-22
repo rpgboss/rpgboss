@@ -42,35 +42,41 @@ class ConditionsPanel(
 
     def intField(parameter: IntParameter) = {
       new ParameterFullComponent(
-          owner, EventParameterField.IntNumberField("", -9999, 9999, parameter))
+          owner,
+          EventParameterField.IntNumberField(
+              "", -9999, 9999, parameter, Some(sendUpdate)))
     }
 
     new BoxPanel(Orientation.Horizontal) {
       contents += new BoxPanel(Orientation.Vertical) {
         contents += boolField("NOT", element.negate, element.negate = _)
 
-        contents += new BoxPanel(Orientation.Horizontal) {
+        contents += new BoxPanel(Orientation.Vertical) {
           ConditionType(element.conditionTypeId) match {
             case IsTrue =>
               contents += intField(element.intValue1)
-              contents += lbl(needsTranslation("is TRUE."))
+              contents += lbl(" " + needsTranslation("is TRUE."))
             case NumericComparison =>
               contents += intField(element.intValue1)
+              contents += lbl(" " + needsTranslation("is") + " ")
               contents += enumIdCombo(ComparisonOperator)(
-                  element.operatorId, element.operatorId = _)
+                  element.operatorId, element.operatorId = _,
+                  additionalAction = Some(sendUpdate),
+                  customRenderer = Some(_.jsOperator))
               contents += intField(element.intValue2)
             case HasItemsInInventory =>
-              contents += lbl(needsTranslation("Inventory contains "))
+              contents += lbl(needsTranslation("Inventory contains at least "))
               contents += intField(element.intValue2)
-              contents += lbl(needsTranslation(" or more of "))
               contents += new ParameterFullComponent(
                   owner, EventParameterField.IntEnumIdField(
-                      "", pData.enums.items, element.intValue1))
+                      "", pData.enums.items, element.intValue1,
+                       Some(sendUpdate)))
             case HasCharacterInParty =>
               contents += new ParameterFullComponent(
                   owner, EventParameterField.IntEnumIdField(
-                      "", pData.enums.characters, element.intValue1))
-              contents += lbl(needsTranslation("is in the party."))
+                      "", pData.enums.characters, element.intValue1,
+                       Some(sendUpdate)))
+              contents += lbl(needsTranslation(" is in the party."))
           }
         }
       }

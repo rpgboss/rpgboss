@@ -29,17 +29,21 @@ abstract class EventParameterField[T](
 }
 
 object EventParameterField {
-  def IntNumberField(name: String, min: Int, max: Int, model: IntParameter) =
+  def IntNumberField(
+      name: String, min: Int, max: Int, model: IntParameter,
+      additionalAction: Option[() => Unit] = None) =
     new EventParameterField[Int](name, model) {
       override def constantComponentFactory(p: EventParameter[Int]) =
-        new NumberSpinner(min, max, p.constant, p.constant = _)
+        new NumberSpinner(
+            min, max, p.constant, p.constant = _, additionalAction)
     }
 
-  def IntEnumIdField[T <: HasName]
-      (name: String, choices: Array[T], model: IntParameter) =
+  def IntEnumIdField[T <: HasName](
+      name: String, choices: Array[T], model: IntParameter,
+      additionalAction: Option[() => Unit] = None) =
     new EventParameterField[Int](name, model) {
       override def constantComponentFactory(p: EventParameter[Int]) =
-        indexedCombo(choices, p.constant, p.constant = _)
+        indexedCombo(choices, p.constant, p.constant = _, additionalAction)
     }
 
   def FloatPercentField(

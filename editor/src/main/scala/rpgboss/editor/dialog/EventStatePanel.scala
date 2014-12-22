@@ -11,7 +11,7 @@ import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.model.event.EventTrigger
 import javax.swing.BorderFactory
 import rpgboss.model.MapLoc
-import rpgboss.editor.Internationalized._ 
+import rpgboss.editor.Internationalized._
 
 /**
  * @param   model   Mutated in-place.
@@ -96,6 +96,9 @@ class EventStatePane(
       row().grid().add(triggerBox)
       row().grid().add(fRunOnce)
     }
+
+    contents += new ConditionsPanel(
+        owner, sm.getProjData, model.conditions, model.conditions = _)
   }
 
   val commandBox = new CommandBox(

@@ -23,6 +23,7 @@ class NumberSpinner(
   spinner.addChangeListener(new ChangeListener() {
     override def stateChanged(e: ChangeEvent) {
       onUpdate(getValue)
+      additionalAction.foreach(_.apply())
     }
   })
   contents += Component.wrap(spinner)

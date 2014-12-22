@@ -125,7 +125,7 @@ class ParameterFullComponent[T](
         case EventParameterValueType.LocalVariable =>
           getMessageColon("Local_Variable") + " %s".format(model.localVariable)
         case EventParameterValueType.GlobalVariable =>
-          getMessageColon("Global_Variable") + " %s".format(model.globalVariable)
+          "%s".format(model.globalVariable)
       }
     }
 
