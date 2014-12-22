@@ -31,7 +31,7 @@ class Chat extends MainFrame {
   val la = new Label(getMessage("RPGBoss_Global_Chat"))
 
   la.foreground = Color.BLUE
-  title = "RPGBoss Global Chat"
+  title = getMessage("RPGBoss_Global_Chat")
 
   minimumSize = new Dimension(800, 300)
   resizable =false 
@@ -59,7 +59,7 @@ class Chat extends MainFrame {
               session.addMessageHandler(new MessageHandler.Whole[String]() {
 
                 override def onMessage(message: String) {
-                  println("Received message: " + message)
+                  println(getMessageColon("Received_Message") + message)
                   chatArea.text += message
                   messageLatch.countDown()
                 }
@@ -86,17 +86,17 @@ class Chat extends MainFrame {
     contents += Swing.Glue
     contents += new ScrollPane(chatArea)
     contents += Swing.VStrut(1)
-    contents += new Label("Your username")
+    contents += new Label(getMessage("Your_Username"))
     contents += username_textfield
     contents += Swing.VStrut(1)
     contents += textfield
     contents += Swing.VStrut(1)
     contents += new BoxPanel(Orientation.Horizontal) {
-      contents += Button("Send") { sendText() }
+      contents += Button(getMessage("Send")) { sendText() }
       contents += Swing.HStrut(5)
-      contents += Button("Hide") { hideMe() }
+      contents += Button(getMessage("Hide")) { hideMe() }
       contents += Swing.HStrut(5)
-      contents += Button("How much users") { showUsers() }
+      contents += Button(getMessage("How_Much_Users")) { showUsers() }
     }
     border = Swing.EmptyBorder(10, 10, 10, 10)
   }
