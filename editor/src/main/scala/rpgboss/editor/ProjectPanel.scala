@@ -144,7 +144,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     }
 
 
-    contents += new Button(Action("Show community chat" + "...") {
+    contents += new Button(Action(getMessage("Show_Community_Chat") + "...") {
       mainP.getChat.show
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
