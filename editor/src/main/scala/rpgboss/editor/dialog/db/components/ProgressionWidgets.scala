@@ -23,11 +23,10 @@ class StatProgressionPanel(model: StatProgressions)
     }
 
     def numSpinner(initial: Float, mutateF: (Float) => Unit) = {
-      new FloatSpinner(initial, 0, 1000, onUpdate = { v =>
+      new FloatSpinner(initial, 0, 1000, 0.1f, onUpdate = { v =>
         mutateF(v)
         lvl50Val.text = model(50).toString
-      },
-      step = 0.1f)
+      })
     }
 
     new DesignGridPanel {

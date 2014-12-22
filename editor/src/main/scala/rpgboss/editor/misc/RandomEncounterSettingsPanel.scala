@@ -28,7 +28,7 @@ class RandomEncounterSettingsPanel(
   val fEncounterList = new RandomEncounterListPanel(
       owner, projectData, model.encounters, model.encounters = _)
   val fStepsAverage =
-    new NumberSpinner(model.stepsAverage, 4, 100, model.stepsAverage = _)
+    new NumberSpinner(4, 100, model.stepsAverage, model.stepsAverage = _)
 
   contents += fEncounterList
   contents += new DesignGridPanel {
@@ -75,7 +75,7 @@ class RandomEncounterListPanel(
           model.encounterId = _)
 
       val fWeight =
-        new NumberSpinner(model.weight, 1, 100, model.weight = _)
+        new NumberSpinner(1, 100, model.weight, model.weight = _)
 
       contents = new DesignGridPanel {
         row().grid(lbl(getMessage("Encounter") + ":")).add(fEncounterId)

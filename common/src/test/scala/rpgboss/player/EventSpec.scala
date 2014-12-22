@@ -12,7 +12,8 @@ class EventSpec extends UnitSpec {
     val test = new MapScreenTest {
       override def setupMapData(mapData: RpgMapData) = {
         super.setupMapData(mapData)
-        mapData.events = singleTestEvent(SetInt("testKey", testIntValue))
+        mapData.events = singleTestEvent(
+            SetGlobalInt("testKey", value1 = IntParameter(testIntValue)))
       }
 
       def testScript() = {
@@ -90,6 +91,30 @@ class EventSpec extends UnitSpec {
         waiter {
           s1 should equal (0)
           s2 should equal (1)
+        }
+      }
+    }
+
+    test.runTest()
+  }
+
+  "Events" should "should work with RunJs" in {
+    val test = new MapScreenTest {
+      override def setupMapData(mapData: RpgMapData) = {
+        super.setupMapData(mapData)
+        mapData.events = singleTestEvent(RunJs(
+          """game.setInt("one", 1); game.setInt("two", 2);"""))
+      }
+
+      def testScript() = {
+        scriptInterface.teleport(mapName, 0.5f, 0.5f);
+        scriptInterface.activateEvent(1, true)
+        val oneVal = scriptInterface.getInt("one")
+        val twoVal = scriptInterface.getInt("two")
+
+        waiter {
+          oneVal should equal (1)
+          twoVal should equal (2)
         }
       }
     }

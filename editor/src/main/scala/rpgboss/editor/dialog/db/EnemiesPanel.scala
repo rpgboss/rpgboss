@@ -43,19 +43,19 @@ class EnemiesPanel(
         model.battler,
         model.battler = _)
 
-      val fLevel = new NumberSpinner(model.level, 1, 50, model.level = _)
-      val fMhp = new NumberSpinner(model.mhp, 5, 5000, model.mhp = _)
-      val fMmp = new NumberSpinner(model.mmp, 0, 500, model.mhp = _)
-      val fAtk = new NumberSpinner(model.atk, 1, 50, model.atk = _)
-      val fSpd = new NumberSpinner(model.spd, 1, 50, model.spd = _)
-      val fMag = new NumberSpinner(model.mag, 1, 50, model.mag = _)
-      val fArm = new NumberSpinner(model.arm, 1, 50, model.arm = _)
-      val fMre = new NumberSpinner(model.mre, 1, 50, model.mre = _)
+      val fLevel = new NumberSpinner(1, 50, model.level, model.level = _)
+      val fMhp = new NumberSpinner(5, 5000, model.mhp, model.mhp = _)
+      val fMmp = new NumberSpinner(0, 500, model.mmp, model.mhp = _)
+      val fAtk = new NumberSpinner(1, 50, model.atk, model.atk = _)
+      val fSpd = new NumberSpinner(1, 50, model.spd, model.spd = _)
+      val fMag = new NumberSpinner(1, 50, model.mag, model.mag = _)
+      val fArm = new NumberSpinner(1, 50, model.arm, model.arm = _)
+      val fMre = new NumberSpinner(1, 50, model.mre, model.mre = _)
 
       val fExpValue =
-        new NumberSpinner(model.expValue, 10, 50000, model.expValue = _)
+        new NumberSpinner(10, 50000, model.expValue, model.expValue = _)
       val fDroppedGold =
-        new NumberSpinner(model.droppedGold, 0, 9999, model.droppedGold = _)
+        new NumberSpinner(0, 9999, model.droppedGold, model.droppedGold = _)
 
       val fAttackSkillId = indexedCombo(
           dbDiag.model.enums.skills,

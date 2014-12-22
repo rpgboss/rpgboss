@@ -72,7 +72,7 @@ class EffectPanel(
       val initialValue =
         statEffects.find(metaEffect.matches _).map(_.v1).getOrElse(0)
 
-      new NumberSpinner(initialValue, -999, 999, spinFunc)
+      new NumberSpinner(-999, 999, initialValue, spinFunc)
     }
 
     row()

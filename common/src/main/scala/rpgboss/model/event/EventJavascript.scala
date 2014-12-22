@@ -17,7 +17,7 @@ object EventJavascript {
       case RawJs(exp) =>
         exp
       case x: EventParameter[_] =>
-        x.jsString
+        x.rawJs.exp
       case x: String =>
         """"%s"""".format(x.replaceAll("\"", "\\\\\""))
       case x: Array[_] =>
@@ -49,4 +49,13 @@ object EventJavascript {
   def singleCall(functionName: String, args: Any*): Array[CodeSection] = {
     Array(PlainLines(Array(jsStatement(functionName, args: _*))))
   }
+
+  def applyOperator(
+      operand1: RawJs,
+      operator: String,
+      operand2: RawJs): RawJs =
+        RawJs("%s %s %s".format(
+            operand1.exp,
+            operator,
+            operand2.exp))
 }

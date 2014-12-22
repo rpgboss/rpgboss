@@ -37,27 +37,27 @@ class StatusPanel(
                                             model.releaseOnBattleEnd = _)
 
         val fReleaseTime = new NumberSpinner(
-          model.releaseTime,
           0,
           50,
+          model.releaseTime,
           model.releaseTime = _)
 
         val fReleaseChance = new NumberSpinner(
-          model.releaseChance,
           0,
           100,
+          model.releaseChance,
           model.releaseChance = _)
 
         val fReleaseDmgChance = new NumberSpinner(
-          model.releaseDmgChance,
           0,
           100,
+          model.releaseDmgChance,
           model.releaseDmgChance = _)
 
         val fMaxStacks = new NumberSpinner(
-          model.maxStacks,
           0,
           50,
+          model.maxStacks,
           model.maxStacks = _)
 
         row().grid(lbl(getMessageColon("Name"))).add(fName)

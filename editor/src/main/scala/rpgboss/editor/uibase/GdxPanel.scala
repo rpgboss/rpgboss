@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.backends.lwjgl.audio.OpenALAudio
 import rpgboss.model.resource.RpgAssetManager
 import rpgboss.model.Project
+import rpgboss.editor.Internationalized._
 
 class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
   extends Component

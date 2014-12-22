@@ -51,15 +51,15 @@ class CharactersPanel(
         model.charClass = _)
 
       val fInitLevel = new NumberSpinner(
-        model.initLevel,
         MINLEVEL,
         MAXLEVEL,
+        model.initLevel,
         model.initLevel = _)
 
       val fMaxLevel = new NumberSpinner(
-        model.maxLevel,
         MINLEVEL,
         MAXLEVEL,
+        model.maxLevel,
         model.maxLevel = _)
 
       row().grid(leftLabel(getMessageColon("Default_name"))).add(fName)

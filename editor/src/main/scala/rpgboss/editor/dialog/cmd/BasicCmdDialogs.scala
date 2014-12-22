@@ -111,6 +111,23 @@ class OpenStoreCmdDialog(
   successF: (OpenStore) => Any)
   extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
 
+class SetGlobalIntDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: SetGlobalInt,
+  successF: (SetGlobalInt) => Any)
+  extends EventCmdDialog(
+      owner, sm, getMessage("Set_Global_Integer"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          getMessage("Global_Variable_Name"),
+          textField(model.key, model.key = _)),
+      TitledComponent(
+          getMessage("Operation"),
+          enumVerticalBox(
+              OperatorType, model.operatorId, model.operatorId = _)))
+}
+
 class ShowPictureCmdDialog(
   owner: Window,
   sm: StateMaster,

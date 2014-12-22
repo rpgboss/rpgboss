@@ -83,9 +83,9 @@ object SwingUtils {
   def percentField(min: Float, max: Float, initial: Float,
       onUpdate: Float => Unit) = {
     val spinner = new NumberSpinner(
-      (initial * 100).round,
       (min * 100).toInt,
       (max * 100).toInt,
+      (initial * 100).round,
       v => onUpdate(v.toFloat / 100))
 
     new BoxPanel(Orientation.Horizontal) {
@@ -104,7 +104,7 @@ object SwingUtils {
   }
 
   def pxField(min: Int, max: Int, initial: Int, onUpdate: Int => Unit) = {
-    val spinner = new NumberSpinner(initial, min, max, onUpdate)
+    val spinner = new NumberSpinner(min, max, initial, onUpdate)
     new BoxPanel(Orientation.Horizontal) {
       contents += spinner
       contents += new Label("px") {
@@ -144,7 +144,8 @@ object SwingUtils {
     initialId: Int,
     onUpdate: Int => Any,
     additionalAction: Option[() => Unit] = None,
-    overrideChoiceSet: Option[Seq[enum.Value]] = None) = {
+    overrideChoiceSet: Option[Seq[enum.Value]] = None,
+    customRenderer: Option[enum.Value => Any] = None) = {
 
     val choices = overrideChoiceSet.getOrElse(enum.values.toSeq)
 
@@ -156,7 +157,34 @@ object SwingUtils {
           onUpdate(selection.item.id)
           additionalAction.foreach(_.apply())
       }
+
+      if (customRenderer.isDefined) {
+        renderer = ListView.Renderer(customRenderer.get)
+      }
     }
+  }
+
+  def openEnumSelectDialog[T <: Enumeration](enum: T)(
+    owner: Window,
+    windowTitle: String,
+    onSelect: enum.Value => Any) = {
+    val d = new StdDialog(owner, windowTitle) {
+      // Noop, as there is no okay button
+      def okFunc() = {}
+
+      contents = new BoxPanel(Orientation.Vertical) {
+        enum.values.foreach { value =>
+          contents += new Button(Action(value.toString) {
+            onSelect(value)
+            close()
+          })
+        }
+        contents += new DesignGridPanel {
+          addCancel(cancelBtn)
+        }
+      }
+    }
+    d.open()
   }
 
   def makeButtonGroup(btns: Seq[AbstractButton]) = {
@@ -224,6 +252,15 @@ object SwingUtils {
 
     new BoxPanel(Orientation.Horizontal) {
       addBtnsAsGrp(contents, radios)
+    }
+  }
+
+  def enumVerticalBox(
+    enum: RpgEnum,
+    initial: Int,
+    onUpdate: Int => Any) = {
+    new BoxPanel(Orientation.Vertical) {
+      addBtnsAsGrp(contents, enumIdRadios(enum)(initial, onUpdate))
     }
   }
 

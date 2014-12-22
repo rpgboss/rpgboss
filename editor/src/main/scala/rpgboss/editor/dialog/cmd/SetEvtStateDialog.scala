@@ -26,7 +26,7 @@ class SetEventStateDialog(
 
   val fieldWhichEvent = new EntitySelectPanel(owner, sm, mapName,
       model.entitySpec, allowPlayer = false, allowEventOnOtherMap = true)
-  val fieldNewState = new NumberSpinner(model.state, 0, 127, model.state = _)
+  val fieldNewState = new NumberSpinner(0, 127, model.state, model.state = _)
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += fieldWhichEvent

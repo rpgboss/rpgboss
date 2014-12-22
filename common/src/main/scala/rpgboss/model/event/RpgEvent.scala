@@ -59,7 +59,7 @@ object RpgEvent {
  *                                      running the commands.
  */
 case class RpgEventState(
-  var switchCondition: Option[EventCondition] = None,
+  var conditions: Array[Condition] = Array(),
   var sameAppearanceAsPrevState: Boolean = true,
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,
@@ -81,12 +81,3 @@ case class RpgEventState(
 object RpgEventState {
   def defaultCmds: Array[EventCmd] = Array()
 }
-
-case class EventCondition(
-  globalVariableConditions: Array[EventGlobalVariableCondition],
-  itemCondition: Option[EventItemCondition],
-  partyMemberCondition: Option[EventPartyMemberCondition])
-
-case class EventGlobalVariableCondition(globalName: String, value: Int)
-case class EventItemCondition(item: Int)
-case class EventPartyMemberCondition(partyMember: Int)

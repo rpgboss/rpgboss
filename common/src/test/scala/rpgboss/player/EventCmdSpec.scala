@@ -6,27 +6,6 @@ import rpgboss.model.event._
 import org.json4s.native.Serialization
 
 class EventCmdSpec extends UnitSpec {
-  "EventCmd" should "produce correct script for LockPlayerMovement" in {
-    val e = LockPlayerMovement(Array(
-      ShowText(Array("Hello")),
-      SetInt("foo", 1)))
-
-    e.toJs should deepEqual(Array(
-      """game.setInt("playerMovementLocks", game.getInt("playerMovementLocks") + 1);""",
-      """try {""",
-      """  game.showText(["Hello"]);""",
-      """  game.setInt("foo", 1);""",
-      """} finally {""",
-      """  game.setInt("playerMovementLocks", game.getInt("playerMovementLocks") - 1);""",
-      """}"""
-    ))
-  }
-
-  "EventCmd" should "produce correct script for ModifyParty" in {
-    ModifyParty(true, 5).toJs should deepEqual(
-      Array("game.modifyParty(true, 5);"))
-  }
-
   "EventCmd" should "produce correct script for AddRemoveItem" in {
     AddRemoveItem(true, IntParameter(1), IntParameter(5)).toJs should deepEqual(
         Array("game.addRemoveItem(1, 5);"))
@@ -42,29 +21,6 @@ class EventCmdSpec extends UnitSpec {
 
     AddRemoveGold(false, IntParameter(25)).toJs should deepEqual(
         Array("game.addRemoveGold(25 * -1);"))
-  }
-
-  "EventCmd" should "produce correct script for HidePicture" in {
-    HidePicture(IntParameter(5)).toJs should deepEqual(
-        Array("game.hidePicture(5);"))
-  }
-
-  "EventCmd" should "produce correct script for ShowText" in {
-    val e1 = ShowText(Array("Hello"))
-    e1.toJs should deepEqual (Array(
-      """game.showText(["Hello"]);"""))
-
-    val e2 = ShowText(Array("Hello", "World"))
-    e2.toJs should deepEqual (Array(
-      """game.showText(["Hello", "World"]);"""))
-
-    val e3 = ShowText(Array("Hello", "World", "Quote mark: \""))
-    e3.toJs should deepEqual (Array(
-      """game.showText(["Hello", "World", "Quote mark: \""]);"""))
-
-    val e4 = ShowText(Array("Hello \\J[getItemName(itemId)]"))
-    e4.toJs should deepEqual (Array(
-      """game.showText(["Hello " + getItemName(itemId) + ""]);"""))
   }
 
   "EventCmd" should "produce correct script for GetChoice" in {
@@ -89,34 +45,30 @@ class EventCmdSpec extends UnitSpec {
     ))
   }
 
-  "EventCmd" should "produce correct script in comma-decimal locales" in {
-    val e = Teleport(MapLoc("mapname", 1.5f, 5.5f), 0)
-
-    e.toJs should deepEqual (Array(
-      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
-
-    import java.util.Locale
-    val defaultLocale = Locale.getDefault()
-
-    Locale.setDefault(Locale.FRANCE)
-
-    e.toJs should deepEqual (Array(
-      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
-
-    Locale.setDefault(defaultLocale)
+  "EventCmd" should "produce correct script for HidePicture" in {
+    HidePicture(IntParameter(5)).toJs should deepEqual(
+        Array("game.hidePicture(5);"))
   }
 
-  "EventCmd" should "produce correct script for SetEventState" in {
-    val e1 = SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 5)
-    e1.toJs should deepEqual(
-      Array("game.setEventState(event.mapName(), event.id(), 5);"))
-    val e2 = SetEventState(EntitySpec(WhichEntity.EVENT_ON_MAP.id, "", 20), 6)
-    e2.toJs should deepEqual(
-      Array("game.setEventState(event.mapName(), 20, 6);"))
-    val e3 = SetEventState(EntitySpec(
-        WhichEntity.EVENT_ON_OTHER_MAP.id, "foo", 1), 2)
-    e3.toJs should deepEqual(
-      Array("game.setEventState(\"foo\", 1, 2);"))
+  "EventCmd" should "produce correct script for LockPlayerMovement" in {
+    val e = LockPlayerMovement(Array(
+      ShowText(Array("Hello")),
+      SetGlobalInt("foo", value1 = IntParameter(1))))
+
+    e.toJs should deepEqual(Array(
+      """game.setInt("playerMovementLocks", game.getInt("playerMovementLocks") + 1);""",
+      """try {""",
+      """  game.showText(["Hello"]);""",
+      """  game.setInt("foo", 1);""",
+      """} finally {""",
+      """  game.setInt("playerMovementLocks", game.getInt("playerMovementLocks") - 1);""",
+      """}"""
+    ))
+  }
+
+  "EventCmd" should "produce correct script for ModifyParty" in {
+    ModifyParty(true, 5).toJs should deepEqual(
+      Array("game.modifyParty(true, 5);"))
   }
 
   "EventCmd" should "produce correct script for IncrementEventState" in {
@@ -141,28 +93,63 @@ class EventCmdSpec extends UnitSpec {
       Array("game.moveEvent(10, 1.000000, 5.000000, false, false);"))
   }
 
-  "EventCmd" should "should work with RunJs" in {
-    val test = new MapScreenTest {
-      override def setupMapData(mapData: RpgMapData) = {
-        super.setupMapData(mapData)
-        mapData.events = singleTestEvent(RunJs(
-          """game.setInt("one", 1); game.setInt("two", 2);"""))
-      }
+  "EventCmd" should "produce correct script for SetEventState" in {
+    val e1 = SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 5)
+    e1.toJs should deepEqual(
+      Array("game.setEventState(event.mapName(), event.id(), 5);"))
+    val e2 = SetEventState(EntitySpec(WhichEntity.EVENT_ON_MAP.id, "", 20), 6)
+    e2.toJs should deepEqual(
+      Array("game.setEventState(event.mapName(), 20, 6);"))
+    val e3 = SetEventState(EntitySpec(
+        WhichEntity.EVENT_ON_OTHER_MAP.id, "foo", 1), 2)
+    e3.toJs should deepEqual(
+      Array("game.setEventState(\"foo\", 1, 2);"))
+  }
 
-      def testScript() = {
-        scriptInterface.teleport(mapName, 0.5f, 0.5f);
-        scriptInterface.activateEvent(1, true)
-        val oneVal = scriptInterface.getInt("one")
-        val twoVal = scriptInterface.getInt("two")
+  "EventCmd" should "produce correct script for SetGlobalInt" in {
+    val e1 = SetGlobalInt("foo", OperatorType.IgnoreSecondValue.id,
+        IntParameter(42), IntParameter(20))
+    e1.toJs should deepEqual(
+      Array("game.setInt(\"foo\", 42);"))
+    val e2 = SetGlobalInt("bar", OperatorType.Add.id,
+        IntParameter(10), IntParameter(12))
+    e2.toJs should deepEqual(
+      Array("game.setInt(\"bar\", 10 + 12);"))
+    val e3 = SetGlobalInt("foo", OperatorType.Add.id,
+        IntParameter(10),
+        IntParameter(
+            valueTypeId = EventParameterValueType.LocalVariable.id,
+            localVariable = "bar"))
+    e3.toJs should deepEqual(
+      Array("game.setInt(\"foo\", 10 + bar);"))
+  }
 
-        waiter {
-          oneVal should equal (1)
-          twoVal should equal (2)
-        }
-      }
-    }
+  "EventCmd" should "produce correct script for ShowText" in {
+    val e1 = ShowText(Array("Hello"))
+    e1.toJs should deepEqual (Array(
+      """game.showText(["Hello"]);"""))
 
-    test.runTest()
+    val e2 = ShowText(Array("Hello", "World"))
+    e2.toJs should deepEqual (Array(
+      """game.showText(["Hello", "World"]);"""))
+
+    val e3 = ShowText(Array("Hello", "World", "Quote mark: \""))
+    e3.toJs should deepEqual (Array(
+      """game.showText(["Hello", "World", "Quote mark: \""]);"""))
+
+    val e4 = ShowText(Array("Hello \\J[getItemName(itemId)]"))
+    e4.toJs should deepEqual (Array(
+      """game.showText(["Hello " + getItemName(itemId) + ""]);"""))
+  }
+
+  "EventCmd" should "render IntParameters correctly" in {
+    IntParameter(12).rawJs.exp should equal ("12")
+    IntParameter(
+        valueTypeId = EventParameterValueType.LocalVariable.id,
+        localVariable = "foo").rawJs.exp should equal ("foo")
+    IntParameter(
+        valueTypeId = EventParameterValueType.GlobalVariable.id,
+        globalVariable = "bar").rawJs.exp should equal ("game.getInt(\"bar\")")
   }
 
   "EventCmd" should "deserialize legacy names correctly" in {
@@ -185,5 +172,22 @@ class EventCmdSpec extends UnitSpec {
       Array(ShowText(Array("Hi")),
           SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 1))
     result should deepEqual (expected)
+  }
+
+  "EventCmd" should "produce correct script in comma-decimal locales" in {
+    val e = Teleport(MapLoc("mapname", 1.5f, 5.5f), 0)
+
+    e.toJs should deepEqual (Array(
+      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
+
+    import java.util.Locale
+    val defaultLocale = Locale.getDefault()
+
+    Locale.setDefault(Locale.FRANCE)
+
+    e.toJs should deepEqual (Array(
+      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
+
+    Locale.setDefault(defaultLocale)
   }
 }

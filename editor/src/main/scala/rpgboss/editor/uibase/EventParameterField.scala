@@ -8,16 +8,8 @@ import rpgboss.lib.Utils
 import rpgboss.model.HasName
 import rpgboss.model.PictureSlots
 import rpgboss.model.ProjectData
-import rpgboss.model.event.AddRemoveGold
-import rpgboss.model.event.AddRemoveItem
-import rpgboss.model.event.EventCmd
-import rpgboss.model.event.EventParameter
-import rpgboss.model.event.FloatParameter
-import rpgboss.model.event.HidePicture
-import rpgboss.model.event.IntArrayParameter
-import rpgboss.model.event.IntParameter
-import rpgboss.model.event.OpenStore
-import rpgboss.model.event.ShowPicture
+import rpgboss.model.event._
+import rpgboss.editor.Internationalized._
 
 /**
  * The name of the field and a component for editing the constant value.
@@ -37,17 +29,21 @@ abstract class EventParameterField[T](
 }
 
 object EventParameterField {
-  def IntNumberField(name: String, min: Int, max: Int, model: IntParameter) =
+  def IntNumberField(
+      name: String, min: Int, max: Int, model: IntParameter,
+      additionalAction: Option[() => Unit] = None) =
     new EventParameterField[Int](name, model) {
       override def constantComponentFactory(p: EventParameter[Int]) =
-        new NumberSpinner(p.constant, min, max, p.constant = _)
+        new NumberSpinner(
+            min, max, p.constant, p.constant = _, additionalAction)
     }
 
-  def IntEnumIdField[T <: HasName]
-      (name: String, choices: Array[T], model: IntParameter) =
+  def IntEnumIdField[T <: HasName](
+      name: String, choices: Array[T], model: IntParameter,
+      additionalAction: Option[() => Unit] = None) =
     new EventParameterField[Int](name, model) {
       override def constantComponentFactory(p: EventParameter[Int]) =
-        indexedCombo(choices, p.constant, p.constant = _)
+        indexedCombo(choices, p.constant, p.constant = _, additionalAction)
     }
 
   def FloatPercentField(
@@ -73,22 +69,25 @@ object EventParameterField {
       owner: Window, pData: ProjectData, cmd: EventCmd):
       Seq[EventParameterField[_]] = cmd match {
     case c: AddRemoveItem => List(
-        IntEnumIdField("Item", pData.enums.items, c.itemId),
-        IntNumberField("Quantity", 1, 99, c.quantity))
+        IntEnumIdField(getMessage("Item"), pData.enums.items, c.itemId),
+        IntNumberField(getMessage("Quantity"), 1, 99, c.quantity))
     case c: AddRemoveGold => List(
-        IntNumberField("Quantity", 1, 9999, c.quantity))
+        IntNumberField(getMessage("Quantity"), 1, 9999, c.quantity))
     case c: HidePicture => List(
-        IntNumberField("Slot", PictureSlots.ABOVE_MAP,
+        IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
             PictureSlots.BATTLE_BEGIN - 1, c.slot))
     case c: OpenStore => List(
         IntMultiselectField(
-            owner, "Items Sold", pData.enums.items, c.itemIdsSold),
+            owner, getMessage("Items_Sold"), pData.enums.items, c.itemIdsSold),
         FloatPercentField(
-            "Buy price multiplier:", 0f, 4f, c.buyPriceMultiplier),
+            getMessageColon("Buy_Price_Multiplier"), 0f, 4f, c.buyPriceMultiplier),
         FloatPercentField(
-            "Sell price multiplier:", 0f, 4f, c.sellPriceMultiplier))
+            getMessageColon("Sell_Price_Multiplier"), 0f, 4f, c.sellPriceMultiplier))
+    case c: SetGlobalInt => List(
+        IntNumberField(getMessage("Value") + " 1", -9999, 9999, c.value1),
+        IntNumberField(getMessage("Value") + " 2", -9999, 9999, c.value2))
     case c: ShowPicture => List(
-        IntNumberField("Slot", PictureSlots.ABOVE_MAP,
+        IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
             PictureSlots.BATTLE_BEGIN - 1, c.slot))
     case _ => Nil
   }

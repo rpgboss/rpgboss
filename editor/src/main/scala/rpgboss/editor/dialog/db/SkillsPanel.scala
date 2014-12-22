@@ -35,7 +35,7 @@ class SkillsPanel(
 
         val fScope = enumIdCombo(Scope)(model.scopeId, model.scopeId = _)
 
-        val fCost = new NumberSpinner(model.cost, 0, 100, model.cost = _)
+        val fCost = new NumberSpinner(0, 100, model.cost, model.cost = _)
 
         val fAnimationId = indexedCombo(
           dbDiag.model.enums.animations,
