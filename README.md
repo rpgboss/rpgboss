@@ -23,6 +23,7 @@ http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
 
 -Install Java Manualy with the exemple:
 Download the java jre or jdk and launch an terminal. When the terminal is launch please use this commande (This commande is for exemple, please rename it)
+
 sudo mkdir -p -v /opt/java/32
 cd Téléchargements && tar xvzf ~/Téléchargements/jre-7u55-linux-i586.tar.gz
 sudo mv -v ~/Téléchargements/jre1.7.0_55 /opt/java/32
