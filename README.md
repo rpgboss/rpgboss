@@ -25,9 +25,13 @@ http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
 Download the java jre or jdk and launch an terminal. When the terminal is launch please use this commande (This commande is for exemple, please rename it)
 
 sudo mkdir -p -v /opt/java/32
+
 cd Téléchargements && tar xvzf ~/Téléchargements/jre-7u55-linux-i586.tar.gz
+
 sudo mv -v ~/Téléchargements/jre1.7.0_55 /opt/java/32
+
 sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/32/jre1.7.0_55/bin/java" 1
+
 sudo update-alternatives --install "/usr/bin/javac" "javac" "/opt/java/32/jre1.7.0_55/bin/javac" 1
 
 Build instructions:
