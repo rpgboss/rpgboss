@@ -12,6 +12,7 @@ import rpgboss.model.WhichEntity
 import javax.swing.BorderFactory
 import rpgboss.editor.misc.MapSelector
 import rpgboss.model.resource.RpgMap
+import rpgboss.editor.Internationalized._ 
 
 object EventArrayComboBox {
   // Returns a ComboBox, plus a boolean indicating whether or not 'initial' was
@@ -165,10 +166,10 @@ class EntitySelectPanel(
     addBtnsAsGrp(contents, btns)
   })
 
-  row().grid(new Label("Event: ")).add(fieldEventIdContainer)
+  row().grid(new Label(getMessageColon("Event"))).add(fieldEventIdContainer)
 
   if (allowEventOnOtherMap)
-    row().grid(new Label("Map: ")).add(mapSelector)
+    row().grid(new Label(getMessageColon("Map"))).add(mapSelector)
 
   updateFieldState(model.whichEntityId, model.whichEntityId)
 }

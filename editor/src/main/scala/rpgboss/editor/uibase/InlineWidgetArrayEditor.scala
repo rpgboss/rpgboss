@@ -18,7 +18,7 @@ class InlineWidgetWrapper(
     extends BoxPanel(Orientation.Horizontal) {
   border = BorderFactory.createBevelBorder(BevelBorder.RAISED)
 
-  val deleteButton = new Button(Action(needsTranslation("Delete")) {
+  val deleteButton = new Button(Action(getMessage("Delete")) {
     parent.deleteElement(index)
   })
   contents += widget
@@ -30,7 +30,7 @@ class InlineWidgetWrapper(
       requestFocus()
       if (e.peer.getButton() == MouseEvent.BUTTON3) {
         val menu = new RpgPopupMenu {
-          contents += new MenuItem(Action(needsTranslation("Insert_Above") + "...") {
+          contents += new MenuItem(Action(getMessage("Insert_Above") + "...") {
             parent.addAction(index)
           })
           parent.genericEditAction.map { editAction =>
@@ -75,7 +75,7 @@ abstract class InlineWidgetArrayEditor[T: ClassTag](
   def getAddPanel(): Option[Component] = {
     val panel = new BoxPanel(Orientation.Horizontal) {
       contents += Swing.HGlue
-      contents += new Button(Action(needsTranslation("Add") + "...") {
+      contents += new Button(Action(getMessage("Add") + "...") {
         addAction(model.length)
       })
       contents += Swing.HGlue
@@ -101,7 +101,7 @@ abstract class InlineWidgetArrayEditor[T: ClassTag](
         if (e.peer.getButton() == MouseEvent.BUTTON3) {
           val menu = new RpgPopupMenu {
             contents +=
-              new MenuItem(Action(needsTranslation("Add") + "...") {
+              new MenuItem(Action(getMessage("Add") + "...") {
                 addAction(model.length)
               })
           }
