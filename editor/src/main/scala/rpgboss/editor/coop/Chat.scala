@@ -31,7 +31,6 @@ class Chat extends MainFrame {
   val la = new Label(getMessage("RPGBoss_Global_Chat"))
 
   la.foreground = Color.BLUE
-  title = getMessage("RPGBoss_Global_Chat")
 
   minimumSize = new Dimension(800, 300)
   resizable =false 
@@ -81,15 +80,19 @@ class Chat extends MainFrame {
 
 
   contents = new BoxPanel(Orientation.Vertical) {
-    contents += la
     contents += Swing.VStrut(10)
     contents += Swing.Glue
     contents += new ScrollPane(chatArea)
     contents += Swing.VStrut(1)
-    contents += new Label(getMessage("Your_Username"))
-    contents += username_textfield
+    contents += new BoxPanel(Orientation.Horizontal) {
+      contents += new Label(getMessage("Your_Username"))
+      contents += username_textfield
+    }
     contents += Swing.VStrut(1)
-    contents += textfield
+    contents += new BoxPanel(Orientation.Horizontal) {
+      contents += new Label(getMessage("Your_Message"))
+      contents += textfield
+    }
     contents += Swing.VStrut(1)
     contents += new BoxPanel(Orientation.Horizontal) {
       contents += Button(getMessage("Send")) { sendText() }
