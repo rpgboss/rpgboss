@@ -16,6 +16,16 @@ import java.util.concurrent._
 import org.glassfish.tyrus.client._
 import rpgboss.editor.Internationalized._ 
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import event.{KeyPressed, Key}
+
+object chatArea extends TextArea(rows = 20, columns = 20) {
+    editable = false
+    background = Color.WHITE
+}
 
 class Chat extends MainFrame {
   val la = new Label(getMessage("RPGBoss_Global_Chat"))
@@ -24,13 +34,12 @@ class Chat extends MainFrame {
   title = "RPGBoss Global Chat"
 
   minimumSize = new Dimension(800, 300)
+  resizable =false 
   centerOnScreen()
   open()
 
-  val myList = new ListBuffer[String]()
-  val listView = new ListView[String](myList)
-
   val textfield:TextField = new TextField("")
+  val username_textfield:TextField = new TextField("")
 
   var messageLatch: CountDownLatch = _
 
@@ -51,8 +60,7 @@ class Chat extends MainFrame {
 
                 override def onMessage(message: String) {
                   println("Received message: " + message)
-                  myList += message
-                  listView.listData = myList
+                  chatArea.text += message
                   messageLatch.countDown()
                 }
               })
@@ -76,7 +84,10 @@ class Chat extends MainFrame {
     contents += la
     contents += Swing.VStrut(10)
     contents += Swing.Glue
-    contents += new ScrollPane(listView)
+    contents += new ScrollPane(chatArea)
+    contents += Swing.VStrut(1)
+    contents += new Label("Your username")
+    contents += username_textfield
     contents += Swing.VStrut(1)
     contents += textfield
     contents += Swing.VStrut(1)
@@ -92,11 +103,21 @@ class Chat extends MainFrame {
 
   def sendText() = {
     if(SocketSession!=null) {
-      SocketSession.getBasicRemote.sendText("msg<>"+textfield.text)
-      myList += textfield.text
-      listView.listData = myList
+      val today = Calendar.getInstance().getTime()
+      var minuteFormat = new SimpleDateFormat("hh:mm")
+      var currentMinuteAsString = minuteFormat.format(today)
+      var message = username_textfield.text+"("+currentMinuteAsString+"): "+textfield.text + "\n"
+
+      SocketSession.getBasicRemote.sendText("msg<>"+message)
+      chatArea.text += message
       textfield.text = ""
     }
+  }
+
+  listenTo(textfield.keys)
+  reactions += {
+    case KeyPressed(`textfield`, Key.Enter, _, _) =>
+      sendText()
   }
 
   def showUsers() = {
