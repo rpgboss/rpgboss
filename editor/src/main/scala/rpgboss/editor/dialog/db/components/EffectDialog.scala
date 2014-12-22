@@ -101,9 +101,9 @@ class EffectDialog(
 
   def intEffect(meta: MetaEffect): EffectControls = {
     val spinner = new NumberSpinner(
-      0,
       MINEFFECTARG,
       MAXEFFECTARG,
+      0,
       onUpdate = v => onValueChange())
 
     val control = new BoxPanel(Orientation.Horizontal) {
@@ -127,9 +127,9 @@ class EffectDialog(
 
   def percentEffect(meta: MetaEffect): EffectControls = {
     val spinner = new NumberSpinner(
-      0,
       -100,
       100,
+      0,
       onUpdate = v => onValueChange())
 
     val control = new BoxPanel(Orientation.Horizontal) {
@@ -171,9 +171,9 @@ class EffectDialog(
     label: String): EffectControls = {
     val combo = indexedCombo(choices, 0, i => onValueChange())
     val spinner = new NumberSpinner(
-      initial,
       min,
       max,
+      initial,
       onUpdate = v => onValueChange()) {
       maximumSize = new Dimension(90, Int.MaxValue)
     }

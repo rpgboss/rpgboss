@@ -7,10 +7,11 @@ import javax.swing.event.ChangeListener
 import javax.swing.event.ChangeEvent
 
 class NumberSpinner(
-  initial: Int,
   min: Int,
   max: Int,
+  initial: Int,
   onUpdate: ((Int) => Unit) = (v) => {},
+  additionalAction: Option[() => Unit] = None,
   step: Int = 1)
   extends BoxPanel(Orientation.Horizontal) {
   val normalizedInitial = math.min(math.max(initial, min), max)
@@ -36,11 +37,11 @@ class NumberSpinner(
 }
 
 class FloatSpinner(
-  initial: Float,
   min: Float,
   max: Float,
-  onUpdate: ((Float) => Unit) = (v) => {},
-  step: Float)
+  step: Float,
+  initial: Float,
+  onUpdate: ((Float) => Unit) = (v) => {})
   extends BoxPanel(Orientation.Horizontal) {
   val normalizedInitial = math.min(math.max(initial, min), max)
 

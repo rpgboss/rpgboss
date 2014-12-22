@@ -44,13 +44,13 @@ class MapPropertiesDialog(
   val fTitle = textField(model.title, model.title = _)
 
   val fWidth = new NumberSpinner(
-    model.xSize,
     RpgMap.minXSize, RpgMap.maxXSize,
+    model.xSize,
     model.xSize = _)
 
   val fHeight = new NumberSpinner(
-    initialMap.metadata.ySize,
     RpgMap.minYSize, RpgMap.maxYSize,
+    initialMap.metadata.ySize,
     model.ySize = _)
 
   val fChangeMusic = boolField(

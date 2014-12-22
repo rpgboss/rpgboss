@@ -33,10 +33,10 @@ class SystemPanel(
   val fTitleMusic = new MusicField(owner, sm, model.startup.titleMusic,
 	  model.startup.titleMusic = _)
 
-  val fScreenW = new NumberSpinner(model.startup.screenW, 640, 1920,
+  val fScreenW = new NumberSpinner(640, 1920, model.startup.screenW,
       model.startup.screenW = _)
 
-  val fScreenH = new NumberSpinner(model.startup.screenH, 480, 1080,
+  val fScreenH = new NumberSpinner(480, 1080, model.startup.screenH,
       model.startup.screenH = _)
 
   val fWindowskin = new WindowskinField(owner, sm, model.startup.windowskin,
@@ -45,7 +45,7 @@ class SystemPanel(
   val fMsgfont = new MsgfontField(owner, sm, model.startup.msgfont,
       model.startup.msgfont = _)
 
-  val fFontsize = new NumberSpinner(model.startup.fontsize, 12, 48,
+  val fFontsize = new NumberSpinner(12, 48, model.startup.fontsize,
       model.startup.fontsize = _)
 
   val fSoundCursor = new SoundField(owner, sm, model.startup.soundCursor,

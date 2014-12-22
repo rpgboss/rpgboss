@@ -94,11 +94,11 @@ class BattlerSelector(
   }
 
   val fScale = new FloatSpinner(
-    initial.scale,
     0.1f,
     10.0f,
-    v => updateModel(initial.copy(scale = v)),
-    0.1f)
+    0.1f,
+    initial.scale,
+    v => updateModel(initial.copy(scale = v)))
 
   updateModel(initial)
 

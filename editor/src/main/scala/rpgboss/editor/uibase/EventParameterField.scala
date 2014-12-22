@@ -32,7 +32,7 @@ object EventParameterField {
   def IntNumberField(name: String, min: Int, max: Int, model: IntParameter) =
     new EventParameterField[Int](name, model) {
       override def constantComponentFactory(p: EventParameter[Int]) =
-        new NumberSpinner(p.constant, min, max, p.constant = _)
+        new NumberSpinner(min, max, p.constant, p.constant = _)
     }
 
   def IntEnumIdField[T <: HasName]

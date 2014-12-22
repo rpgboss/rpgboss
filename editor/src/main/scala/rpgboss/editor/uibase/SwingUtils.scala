@@ -83,9 +83,9 @@ object SwingUtils {
   def percentField(min: Float, max: Float, initial: Float,
       onUpdate: Float => Unit) = {
     val spinner = new NumberSpinner(
-      (initial * 100).round,
       (min * 100).toInt,
       (max * 100).toInt,
+      (initial * 100).round,
       v => onUpdate(v.toFloat / 100))
 
     new BoxPanel(Orientation.Horizontal) {
@@ -104,7 +104,7 @@ object SwingUtils {
   }
 
   def pxField(min: Int, max: Int, initial: Int, onUpdate: Int => Unit) = {
-    val spinner = new NumberSpinner(initial, min, max, onUpdate)
+    val spinner = new NumberSpinner(min, max, initial, onUpdate)
     new BoxPanel(Orientation.Horizontal) {
       contents += spinner
       contents += new Label("px") {

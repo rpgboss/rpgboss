@@ -25,8 +25,8 @@ class MoveEventCmdDialog(
                                               allowPlayer = true,
                                               allowEventOnOtherMap = false)
 
-  val fieldDx = new FloatSpinner(model.dx, -100, 100, model.dx = _, 0.1f)
-  val fieldDy = new FloatSpinner(model.dy, -100, 100, model.dy = _, 0.1f)
+  val fieldDx = new FloatSpinner(-100, 100, 0.1f, model.dx, model.dx = _)
+  val fieldDy = new FloatSpinner(-100, 100, 0.1f, model.dy, model.dy = _)
 
   val fieldAffixDirection =
     boolField("", model.affixDirection, model.affixDirection = _)

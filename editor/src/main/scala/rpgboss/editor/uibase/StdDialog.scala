@@ -68,9 +68,7 @@ class SingleIntegerDialog(
   max: Int,
   okCallback: Int => Unit)
   extends StdDialog(owner, title) {
-  val fieldInt = new NumberSpinner(initial, min, max)
-
-  centerDialog(new Dimension(300,100))
+  val fieldInt = new NumberSpinner(min, max, initial)
 
   def okFunc() = {
     okCallback(fieldInt.getValue)

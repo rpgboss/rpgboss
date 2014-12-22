@@ -53,9 +53,9 @@ class ItemsPanel(
           Some(setEnabledFields _))
 
         val fPrice = new NumberSpinner(
-          model.price,
           MINPRICE,
           MAXPRICE,
+          model.price,
           onUpdate = model.price = _)
 
         val fItemType = enumIdCombo(ItemType)(

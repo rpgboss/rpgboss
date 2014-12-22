@@ -59,7 +59,7 @@ class LearnedSkillDialog(
 
   val model = initial
 
-  val fLevel = new NumberSpinner(model.level, 1, 100, model.level = _)
+  val fLevel = new NumberSpinner(1, 100, model.level, model.level = _)
   val fSkill =
     indexedCombo(dbDiag.model.enums.skills, model.skillId, model.skillId = _)
 

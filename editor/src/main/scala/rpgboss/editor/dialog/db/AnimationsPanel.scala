@@ -147,11 +147,11 @@ class AnimationVisualDialog(
  */
 class AnimationKeyframePanel(model: AnimationKeyframe) extends DesignGridPanel {
   val fStartTime =
-    new FloatSpinner(model.time, 0f, 30f, model.time = _, 0.1f)
+    new FloatSpinner(0f, 30f, 0.1f, model.time, model.time = _)
   val fFrameIndex =
-    new NumberSpinner(model.frameIndex, 0, 100, model.frameIndex = _)
-  val fX = new NumberSpinner(model.x, -999, 999, model.x = _)
-  val fY = new NumberSpinner(model.y, -999, 999, model.y = _)
+    new NumberSpinner(0, 100, model.frameIndex, model.frameIndex = _)
+  val fX = new NumberSpinner(-999, 999, model.x, model.x = _)
+  val fY = new NumberSpinner(-999, 999, model.y, model.y = _)
 
   row().grid(leftLabel(getMessageColon("Time"))).add(fStartTime)
   row().grid(leftLabel(getMessageColon("Frame_Index"))).add(fFrameIndex, 2)
@@ -167,7 +167,7 @@ class AnimationSoundDialog(
   import SwingUtils._
 
   val model = Utils.deepCopy(initial)
-  val fTime = new FloatSpinner(model.time, 0f, 30f, model.time = _, 0.1f)
+  val fTime = new FloatSpinner(0f, 30f, 0.1f, model.time, model.time = _)
   val fSound = {
     val initialModel =
       if (model.sound.sound.isEmpty()) None else Some(model.sound)
