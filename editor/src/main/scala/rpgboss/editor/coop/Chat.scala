@@ -14,10 +14,11 @@ import java.io._
 import java.net._
 import java.util.concurrent._
 import org.glassfish.tyrus.client._
+import rpgboss.editor.Internationalized._ 
 
 
 class Chat extends MainFrame {
-  val la = new Label("RPGBoss Global Chat")
+  val la = new Label(getMessage("RPGBoss_Global_Chat"))
 
   la.foreground = Color.BLUE
   title = "RPGBoss Global Chat"
