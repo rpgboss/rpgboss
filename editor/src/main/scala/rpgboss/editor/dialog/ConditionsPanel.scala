@@ -17,20 +17,27 @@ import rpgboss.model.ProjectData
 import scala.swing.Button
 import scala.swing.Action
 import scala.collection.mutable.ArrayBuffer
+import rpgboss.editor.uibase.InlineWidgetArrayEditor
+import rpgboss.editor.uibase.RpgPopupMenu
+import scala.swing.MenuItem
 
 class ConditionsPanel(
   owner: Window,
-  model: ArrayBuffer[Condition],
-  pData: ProjectData)
-  extends BoxPanel(Orientation.Vertical) {
+  pData: ProjectData,
+  initial: Array[Condition],
+  onUpdate: Array[Condition] => Unit)
+  extends InlineWidgetArrayEditor(owner, initial, onUpdate) {
 
-  border = BorderFactory.createTitledBorder(getMessage("Conditions"))
-
-  val arrayContainer = new BoxPanel(Orientation.Vertical) {
-
+  override def title: String = needsTranslation("Event Conditions")
+  override def addAction(index: Int) = {
+    openEnumSelectDialog(ConditionType)(
+        owner,
+        needsTranslation("Condition Type"),
+        conditionType => {
+          insertElement(index, Condition.defaultInstance(conditionType))
+        })
   }
-
-  def paneForElement(index: Int, element: Condition) = {
+  def newInlineWidget(element: Condition) = {
     import ConditionType._
 
     def intField(parameter: IntParameter) = {
@@ -67,11 +74,6 @@ class ConditionsPanel(
           }
         }
       }
-
-      contents += new Button(Action(needsTranslation("Delete")) {
-      })
     }
   }
-
-  contents += new ScrollPane(arrayContainer)
 }

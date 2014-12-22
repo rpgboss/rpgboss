@@ -159,6 +159,29 @@ object SwingUtils {
     }
   }
 
+  def openEnumSelectDialog[T <: Enumeration](enum: T)(
+    owner: Window,
+    windowTitle: String,
+    onSelect: enum.Value => Any) = {
+    val d = new StdDialog(owner, windowTitle) {
+      // Noop, as there is no okay button
+      def okFunc() = {}
+
+      contents = new BoxPanel(Orientation.Vertical) {
+        enum.values.foreach { value =>
+          contents += new Button(Action(value.toString) {
+            onSelect(value)
+            close()
+          })
+        }
+        contents += new DesignGridPanel {
+          addCancel(cancelBtn)
+        }
+      }
+    }
+    d.open()
+  }
+
   def makeButtonGroup(btns: Seq[AbstractButton]) = {
     val firstSelected = btns.find(_.selected)
     val group = new ButtonGroup(btns: _*)

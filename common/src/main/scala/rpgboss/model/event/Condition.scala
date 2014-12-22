@@ -32,7 +32,31 @@ object ConditionType extends RpgEnum {
 
 case class Condition(
   conditionTypeId: Int,
-  var negate: Boolean,
-  var operatorId: Int,
-  var intValue1: IntParameter,
-  var intValue2: IntParameter)
+  var intValue1: IntParameter = IntParameter(),
+  var intValue2: IntParameter = IntParameter(),
+  var operatorId: Int = OperatorType.default.id,
+  var negate: Boolean = false)
+
+object Condition {
+  def defaultInstance(conditionType: ConditionType.Value) = {
+    import ConditionType._
+    conditionType match {
+      case IsTrue => Condition(IsTrue.id, IntParameter.globalVariable())
+      case NumericComparison =>
+        Condition(
+            NumericComparison.id,
+            IntParameter.globalVariable(),
+            IntParameter(1),
+            operatorId = ComparisonOperator.GE.id)
+      case HasItemsInInventory =>
+        Condition(
+            HasItemsInInventory.id,
+            IntParameter(),
+            IntParameter(1))
+      case HasCharacterInParty =>
+        Condition(
+            HasCharacterInParty.id,
+            IntParameter())
+    }
+  }
+}

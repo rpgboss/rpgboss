@@ -34,4 +34,15 @@ object Internationalized extends LazyLogging {
     logger.warn("Accessed key \"%s\" needs translation.".format(key))
     key
   }
+
+  def obsoleteMessage(key: String) = {
+    if (messages.containsKey(key)) {
+      logger.error("""Key "%s" may be no longer needed. Remove from translation
+          message files, then remove obsoleteMessage("%s") call.""".format(
+              key, key))
+    } else {
+      logger.error(
+          """Call to obsoleteMessage("%s") should be removed.""".format(key))
+    }
+  }
 }

@@ -98,6 +98,13 @@ case class IntParameter(
   }
 }
 
+object IntParameter {
+  def globalVariable() =
+    IntParameter(
+        valueTypeId = EventParameterValueType.GlobalVariable.id,
+        globalVariable = "globalVariable")
+}
+
 case class EventClass(
   var name: String = "",
   var states: Array[RpgEventState] = Array(RpgEventState())) extends HasName
