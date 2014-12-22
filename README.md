@@ -34,9 +34,6 @@ sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/32/jre1.7.0
 
 sudo update-alternatives --install "/usr/bin/javac" "javac" "/opt/java/32/jre1.7.0_55/bin/javac" 1
 
-IF YOU USE LINUX DON'T INSTALL OPENJDK-8, INSTALL JAVA 8 with the PPA  <br>
-http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
-
 Build instructions:
 
 1. Check that your Java install is working. It can be Java 6, 7, or 8. If this does not work, make sure Java is installed an in your PATH.
