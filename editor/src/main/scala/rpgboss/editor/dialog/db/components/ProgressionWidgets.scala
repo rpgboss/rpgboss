@@ -23,7 +23,7 @@ class StatProgressionPanel(model: StatProgressions)
     }
 
     def numSpinner(initial: Float, mutateF: (Float) => Unit) = {
-      new FloatSpinner(initial, 0, 1000, 0.1f, onUpdate = { v =>
+      new FloatSpinner(0, 1000, 0.1f, initial, onUpdate = { v =>
         mutateF(v)
         lvl50Val.text = model(50).toString
       })
@@ -41,7 +41,7 @@ class StatProgressionPanel(model: StatProgressions)
     }
   }
 
-  val fExp = progressionEditor(getMessage("EXP_To_Level-Up"), model.exp)
+  val fExp = progressionEditor(getMessage("EXP_To_Level_Up"), model.exp)
   val fMhp = progressionEditor(getMessage("Max_HP"), model.mhp)
   val fMmp = progressionEditor(getMessage("Max_MP"), model.mmp)
   val fAtk = progressionEditor(getMessage("Attack"), model.atk)
