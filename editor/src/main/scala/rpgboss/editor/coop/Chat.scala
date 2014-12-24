@@ -3,6 +3,7 @@ package rpgboss.editor.coop
 import java.awt.Color
 import scala.swing._
 import scala.collection.mutable._
+import rpgboss.editor._
 
 import javax.websocket._
 import scala.collection.JavaConversions._
@@ -20,6 +21,8 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import java.awt.event._
+
 import event.{KeyPressed, Key}
 
 object chatArea extends TextArea(rows = 20, columns = 20) {
@@ -27,7 +30,7 @@ object chatArea extends TextArea(rows = 20, columns = 20) {
     background = Color.WHITE
 }
 
-class Chat extends MainFrame {
+class Chat(val mainP: MainPanel, val chatNotifier:Label) extends MainFrame {
   val la = new Label(getMessage("RPGBoss_Global_Chat"))
 
   la.foreground = Color.BLUE
@@ -36,6 +39,8 @@ class Chat extends MainFrame {
   resizable =false 
   centerOnScreen()
   open()
+
+  var missingMessageCounter = 0
 
   val textfield:TextField = new TextField("")
   val username_textfield:TextField = new TextField("")
@@ -61,6 +66,8 @@ class Chat extends MainFrame {
                   println(getMessageColon("Received_Message") + message)
                   chatArea.text += message
                   messageLatch.countDown()
+                  missingMessageCounter += 1
+                  updateCounter()
                 }
               })
               //session.getBasicRemote.sendText("me<>get-users")
@@ -104,6 +111,10 @@ class Chat extends MainFrame {
     border = Swing.EmptyBorder(10, 10, 10, 10)
   }
 
+  def updateCounter() = {
+    chatNotifier.text = missingMessageCounter + " unread messages from chat"
+  }
+
   def sendText() = {
     if(SocketSession!=null) {
       val today = Calendar.getInstance().getTime()
@@ -111,11 +122,22 @@ class Chat extends MainFrame {
       var currentMinuteAsString = minuteFormat.format(today)
       var message = username_textfield.text+"("+currentMinuteAsString+"): "+textfield.text + "\n"
 
-      SocketSession.getBasicRemote.sendText("msg<>"+message)
-      chatArea.text += message
-      textfield.text = ""
+      if(username_textfield.text!="" && textfield.text!="") {
+        SocketSession.getBasicRemote.sendText("msg<>"+message)
+        chatArea.text += message
+        textfield.text = ""
+      } else {
+        Dialog.showMessage(contents.head, "You need to fill in your name and a message!", title="Missing Input")
+      }
     }
   }
+
+  // Should hide window by pressing X button, but doenst work
+  peer.addWindowListener(new WindowAdapter() {
+    override def windowClosing(evt:WindowEvent) {
+      hideMe()
+    }
+  })
 
   listenTo(textfield.keys)
   reactions += {
@@ -135,6 +157,8 @@ class Chat extends MainFrame {
 
   def show = {
     visible = true
+    missingMessageCounter = 0
+    updateCounter()
   }
 
 }

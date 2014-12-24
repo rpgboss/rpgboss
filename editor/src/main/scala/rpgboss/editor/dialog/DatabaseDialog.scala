@@ -15,7 +15,7 @@ import rpgboss.editor.Internationalized._
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, getMessage("Database")) {
 
-  centerDialog(new Dimension(1200, 730))
+  centerDialog(new Dimension(1200, 830))
 
   val model = Utils.deepCopy(sm.getProjData)
 
