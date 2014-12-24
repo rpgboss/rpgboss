@@ -10,7 +10,7 @@ class MenuSpec extends UnitSpec {
     val test = new MapScreenTest {
       override def dismissWaiterAtEndOfTestScript = false
 
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.syncRun {
           game.mapScreen.scriptFactory.runFromFile(
             "sys/menu.js",
@@ -33,14 +33,12 @@ class MenuSpec extends UnitSpec {
     val test = new MapScreenTest {
       override def dismissWaiterAtEndOfTestScript = false
 
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.modifyParty(true, 3)
         scriptInterface.modifyParty(true, 4)
 
         scriptInterface.syncRun {
           TestScriptThread.fromTestScript(
-            game,
-            game.mapScreen,
             game.mapScreen.scriptInterface,
             "menutest.js",
             "testStatusMenu()",

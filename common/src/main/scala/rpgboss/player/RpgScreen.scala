@@ -125,7 +125,6 @@ trait RpgScreenWithGame extends RpgScreen {
   def screenH = project.data.startup.screenH
   def assets = game.assets
   val scriptInterface = new ScriptInterface(game, this)
-  val scriptFactory =
-    new GameScriptThreadFactory(game, this, scriptInterface)
+  val scriptFactory = new GameScriptThreadFactory(scriptInterface)
 
 }

@@ -1,9 +1,12 @@
 package rpgboss.model.event
 
+import org.mozilla.javascript.{ Context, ScriptableObject, Scriptable }
 import rpgboss.model.RpgEnum
 import rpgboss.player.PersistentState
 import rpgboss.player.PersistentState
 import rpgboss.player.HasScriptConstants
+import rpgboss.player.ScriptInterface
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 object ComparisonOperator extends RpgEnum {
   case class Val(i: Int, name: String, jsOperator: String)
@@ -58,7 +61,7 @@ case class Condition(
   }
 }
 
-object Condition {
+object Condition extends LazyLogging {
   def defaultInstance(conditionType: ConditionType.Value) = {
     import ConditionType._
     conditionType match {
@@ -79,5 +82,41 @@ object Condition {
             HasCharacterInParty.id,
             IntParameter())
     }
+  }
+
+  def allConditionsTrue(
+      conditions: Array[Condition],
+      scriptInterface: ScriptInterface): Boolean = {
+    val jsContext = Context.enter()
+    val jsScope = jsContext.initStandardObjects()
+
+    ScriptableObject.putProperty(
+      jsScope, "game", Context.javaToJS(scriptInterface, jsScope))
+//    try {
+      for (condition <- conditions) {
+        val conditionExp = condition.rawJs.exp
+        val jsResult = jsContext.evaluateString(
+          jsScope,
+          conditionExp,
+          "Condition: %s".format(conditionExp),
+          1,
+          null)
+
+        val result = Context.toBoolean(jsResult)
+        if (!result)
+          return false
+      }
+
+      Context.exit()
+//    } catch {
+//      case e: Throwable => {
+//        logger.error(
+//          "Error while calculating conditions: %s. ".format(conditions.deep) +
+//          "Error: %s".format(e.getMessage()))
+//        return false
+//      }
+//    }
+
+    return true
   }
 }

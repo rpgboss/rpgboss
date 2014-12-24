@@ -80,8 +80,6 @@ case class Layout(var layoutTypeId: Int = LayoutType.default.id,
     import LayoutType._
     import SizeType._
 
-    assume(srcW > 0)
-    assume(srcH > 0)
     assume(screenW > 0)
     assume(screenH > 0)
 

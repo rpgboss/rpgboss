@@ -15,6 +15,7 @@ case class EventScriptInterface(mapName: String, id: Int)
 class EventEntity(
     project: Project,
     persistent: PersistentState,
+    scriptInterface: ScriptInterface,
     scriptFactory: ScriptThreadFactory,
     spritesets: Map[String, Spriteset],
     mapAndAssetsOption: Option[MapAndAssets],
@@ -70,6 +71,8 @@ class EventEntity(
     def notify(pub: PersistentState#Pub, evt: PersistentStateUpdate) =
       evt match {
         case EventStateChange((mapName, id), _) => updateState()
+        case IntChange(_, _) => updateState()
+        case IntArrayChange(_) => updateState()
         case _ => Unit
       }
     persistent.subscribe(this)
@@ -77,6 +80,14 @@ class EventEntity(
 
   def updateState(): Unit = {
     evtStateIdx = persistent.getEventState(mapName, mapEvent.id)
+
+    for (i <- 0 until states.length;
+         if !states(i).conditions.isEmpty) {
+      if (Condition.allConditionsTrue(states(i).conditions, scriptInterface)) {
+        evtStateIdx = i
+      }
+    }
+
     for (i <- evtStateIdx to 1 by -1) {
       if (!states(i).sameAppearanceAsPrevState)
         return setSprite(states(i).sprite)

@@ -384,7 +384,7 @@ class BattleScreen(
       assert(status.entityId < _battle.get.pData.enums.characters.length)
       val name = getCharacterName(status.entityId)
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
-      "%-10s  %3d HP | %2d MP %3d%% ".format(name, status.hp, status.mp, readiness)
+      "%-10s %3dHP | %2dMP %3d%% ".format(name, status.hp, status.mp, readiness)
     }
     partyListWindow.updateLines(partyLines)
 

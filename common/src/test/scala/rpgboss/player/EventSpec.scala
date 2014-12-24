@@ -16,7 +16,7 @@ class EventSpec extends UnitSpec {
             SetGlobalInt("testKey", value1 = IntParameter(testIntValue)))
       }
 
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f);
         scriptInterface.activateEvent(1, true)
         val retrievedInt = scriptInterface.getInt("testKey")
@@ -46,7 +46,7 @@ class EventSpec extends UnitSpec {
         )
       }
 
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f)
         def getIntTuple() =
           (scriptInterface.getInt("one"), scriptInterface.getInt("two"))
@@ -82,7 +82,7 @@ class EventSpec extends UnitSpec {
         )
       }
 
-      def testScript() = {
+      override def testScript() = {
         val mapName = RpgMap.generateName(project.data.lastCreatedMapId)
         val s1 = scriptInterface.getEventState(mapName, 1)
         scriptInterface.activateEvent(1, true)
@@ -106,7 +106,7 @@ class EventSpec extends UnitSpec {
           """game.setInt("one", 1); game.setInt("two", 2);"""))
       }
 
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f);
         scriptInterface.activateEvent(1, true)
         val oneVal = scriptInterface.getInt("one")

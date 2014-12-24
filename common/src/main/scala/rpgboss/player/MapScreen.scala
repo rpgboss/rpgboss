@@ -97,6 +97,7 @@ class MapScreen(val game: RpgGame)
         case (k, v) => ((k, new EventEntity(
             game.project,
             game.persistent,
+            scriptInterface,
             scriptFactory,
             game.spritesets,
             mapAndAssetsOption,

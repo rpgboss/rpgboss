@@ -5,7 +5,7 @@ import rpgboss._
 class ScriptInterfaceSpec extends UnitSpec {
   "game.modifyParty call" should "work" in {
     val test = new MapScreenTest {
-      def testScript() = {
+      override def testScript() = {
         val party0 = scriptInterface.getIntArray(PARTY)
         waiter {
           party0 should deepEqual(Array(0))

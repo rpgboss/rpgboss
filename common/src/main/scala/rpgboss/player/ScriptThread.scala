@@ -27,8 +27,6 @@ import rpgboss.player.entity.EventEntity
  *
  */
 class ScriptThread(
-  game: RpgGame,
-  screen: RpgScreen,
   scriptInterface: ScriptInterface,
   scriptName: String,
   scriptBody: String,
@@ -44,7 +42,7 @@ class ScriptThread(
 
     putProperty("game", scriptInterface)
 
-    putProperty("project", game.project)
+    putProperty("project", scriptInterface.project)
     putProperty("out", System.out)
 
     // Some models to be imported
@@ -64,7 +62,8 @@ class ScriptThread(
       initScope(jsScope)
 
       val globalScript =
-        Script.readFromDisk(game.project, ResourceConstants.globalsScript)
+        Script.readFromDisk(scriptInterface.project,
+            ResourceConstants.globalsScript)
 
       jsContext.evaluateString(
         jsScope,
@@ -130,18 +129,14 @@ trait ScriptThreadFactory {
     onFinish: Option[() => Unit] = None): Finishable
 }
 
-class GameScriptThreadFactory(
-    game: RpgGame,
-    screen: RpgScreen,
-    scriptInterface: ScriptInterface) extends ScriptThreadFactory {
+class GameScriptThreadFactory(scriptInterface: ScriptInterface)
+extends ScriptThreadFactory {
   override def runFromFile(
     scriptName: String,
     fnToRun: String = "",
     onFinish: Option[() => Unit] = None) = {
-    val script = Script.readFromDisk(game.project, scriptName)
+    val script = Script.readFromDisk(scriptInterface.project, scriptName)
     val s = new ScriptThread(
-      game,
-      screen,
       scriptInterface,
       script.name,
       script.readAsString,
@@ -167,8 +162,6 @@ class GameScriptThreadFactory(
 
     val scriptBody = cmds.flatMap(_.toJs).mkString("\n")
     val s = new ScriptThread(
-      game,
-      screen,
       scriptInterface,
       scriptName,
       scriptBody,

@@ -97,8 +97,10 @@ class ScriptInterface(
   def project = game.project
 
   def syncRun[T](op: => T): T = {
-    assertOnDifferentThread()
-    GdxUtils.syncRun(op)
+    if (onBoundThread())
+      op
+    else
+      GdxUtils.syncRun(op)
   }
 
   /*
@@ -409,30 +411,11 @@ class ScriptInterface(
     }
   }
 
-  def modifyParty(add: Boolean, characterId: Int): Boolean = {
-    // Can't be anonymous due to use of 'return', which breaks out of closures.
-    def f(): Boolean = {
-      if (characterId >= project.data.enums.characters.size)
-        return false
+  def modifyParty(add: Boolean, characterId: Int): Boolean = syncRun {
+    if (characterId >= project.data.enums.characters.size)
+      return false
 
-      val existing = persistent.getIntArray(PARTY)
-      if (add) {
-        if (existing.contains(characterId))
-          return false
-
-        val newParty = existing :+ characterId
-        persistent.setIntArray(PARTY, newParty)
-        return true
-      } else {
-        if (!existing.contains(characterId))
-          return false
-
-        persistent.setIntArray(PARTY, existing.filter(_ != characterId))
-        return true
-      }
-    }
-
-    syncRun { f() }
+    persistent.modifyParty(add, characterId)
   }
 
   def openStore(itemIdsSold: Array[Int], buyPriceMultiplier: Float,
