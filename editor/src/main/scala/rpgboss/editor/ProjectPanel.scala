@@ -18,12 +18,20 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 
+import rpgboss.editor.coop._
+
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
   with SelectsMap {
   val tileSelector = new TabbedTileSelector(sm)
   val mapSelector = new ProjectPanelMapSelector(sm, this)
   val mapView = new MapEditor(this, sm, tileSelector)
+
+  // Chat ingegration
+  var chatNotifier = new Label("0 unread messages from chat")
+  val chat = new Chat(mainP, chatNotifier)
+  chat.visible = false
+  ////////////////////
 
   val window = mainP.getWindow()
   window.resizable = true
@@ -44,6 +52,8 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   def selectMap(mapOpt: Option[RpgMap]) = {
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
   }
+
+  
 
   val topBar = new BoxPanel(Orientation.Horizontal) {
     import rpgboss.editor.dialog._
@@ -145,11 +155,13 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
 
     contents += new Button(Action(getMessage("Show_Community_Chat") + "...") {
-      mainP.getChat.show
+      chat.show
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "hendrik-weiler-theme/community_chat.png"))
     }
+
+    contents += chatNotifier
   }
 
   val sidePane =

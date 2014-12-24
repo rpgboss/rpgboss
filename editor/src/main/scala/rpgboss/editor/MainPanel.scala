@@ -7,8 +7,6 @@ import rpgboss.editor.dialog._
 import java.io.File
 import rpgboss.editor.Internationalized._ 
 
-import rpgboss.editor.coop._
-
 class MainPanel(val topWin: Frame)
   extends BoxPanel(Orientation.Vertical) {
   var smOpt: Option[StateMaster] = None
@@ -88,13 +86,6 @@ class MainPanel(val topWin: Frame)
   def error(s: String) = {
     println("Error: " + s)
     //setContent(new Label(s))
-  }
-
-  val chat = new Chat
-  chat.visible = false
-  
-  def getChat:Chat = {
-    return chat
   }
 
 }
