@@ -59,6 +59,8 @@ abstract class ArrayEditingPanel[T <: AnyRef](
     ArrayUtils.normalizedAry(
       initialAry, minElems, maxElems, newDefaultInstance _)
 
+  def onListSelectionChangedHook() = {}
+
   val listView = new ArrayListView(normalizedInitialAry) {
     override def label(a: T) = ArrayEditingPanel.this.label(a)
 
@@ -77,6 +79,11 @@ abstract class ArrayEditingPanel[T <: AnyRef](
 
       editPaneContainer.revalidate()
       editPaneContainer.repaint()
+
+      editPane.revalidate()
+      editPane.repaint()
+
+      onListSelectionChangedHook()
     }
   }
 
@@ -229,11 +236,31 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
     contents = listView
   }
 
+  val editPaneScroll = new ScrollPane {
+    preferredSize = new Dimension(400, 400)
+    contents = editPaneContainer
+  }
+
+  override def onListSelectionChangedHook() = {
+    super.onListSelectionChangedHook()
+    editPaneScroll.revalidate()
+    editPaneScroll.repaint()
+    editPaneScroll.contents.foreach(_.revalidate())
+    editPaneScroll.contents.foreach(_.repaint())
+
+
+      editPaneContainer.revalidate()
+      editPaneContainer.repaint()
+
+      editPaneContainer.contents.foreach(_.revalidate())
+      editPaneContainer.contents.foreach(_.repaint())
+  }
+
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
       maximumSize = new Dimension(250, 5000)
-      preferredSize = new Dimension(250, 500)
-      minimumSize = new Dimension(250, 250)
+      preferredSize = new Dimension(250, 300)
+      minimumSize = new Dimension(250, 150)
 
       row().grid().add(bigLbl)
       row().grid().add(scrollPane)
@@ -241,7 +268,7 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
       row().grid().add(btnDuplicateItem)
     }
 
-    contents += (editPaneContainer)
+    contents += editPaneScroll
   })
 
   // Lazily select the first index both for performance, and also so that we

@@ -10,15 +10,20 @@ import com.badlogic.gdx.backends.lwjgl.audio.OpenALAudio
 import rpgboss.model.resource.RpgAssetManager
 import rpgboss.model.Project
 import rpgboss.editor.Internationalized._
+import javax.swing.JPanel
 
 class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
-  extends Component
+  extends Panel
   with LazyLogging
   with Disposable {
 
-  override lazy val peer = new javax.swing.JComponent with SuperMixin {
-    add(gdxCanvas.getCanvas())
-  }
+  val jPanel = new JPanel
+  peer.add(jPanel)
+
+  val panel = new java.awt.Panel
+  jPanel.add(panel)
+
+  panel.add(gdxCanvas.getCanvas())
 
   preferredSize = new Dimension(canvasW, canvasH)
 

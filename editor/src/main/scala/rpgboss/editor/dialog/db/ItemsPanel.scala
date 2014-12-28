@@ -107,6 +107,7 @@ class ItemsPanel(
         row().grid(lbl(getMessageColon("Description"))).add(fDesc)
         row()
           .grid(lbl(getMessageColon("Sellable"))).add(fSellable)
+        row()
           .grid(lbl(getMessageColon("Price"))).add(fPrice)
 
         row()
@@ -114,6 +115,7 @@ class ItemsPanel(
 
         row()
           .grid(lbl(getMessageColon("Effect_Scope"))).add(fScope)
+        row()
           .grid(lbl(getMessageColon("Item_Access"))).add(fAccess)
 
         row()

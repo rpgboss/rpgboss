@@ -78,6 +78,7 @@ class CharactersPanel(
       row()
         .grid(leftLabel(getMessageColon("Initial_level")))
         .add(fInitLevel)
+      row()
         .grid(leftLabel(getMessageColon("Max_level")))
         .add(fMaxLevel)
     }

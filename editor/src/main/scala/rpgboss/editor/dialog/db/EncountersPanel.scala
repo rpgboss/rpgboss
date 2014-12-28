@@ -178,6 +178,7 @@ class EncountersPanel(
     })
 
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
+
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {
           row().grid(lbl(getMessageColon("Encounter_Name"))).add(fName)
