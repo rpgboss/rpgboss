@@ -128,7 +128,7 @@ object Settings {
     
     // Declare names
     val gdxBaseUrl = "http://libgdx.badlogicgames.com/releases"
-    val gdxName = "libgdx-1.2.0"
+    val gdxName = "libgdx-1.5.0"
 
     // Fetch the file.
     val gdxZipName = "%s.zip" format(gdxName)
