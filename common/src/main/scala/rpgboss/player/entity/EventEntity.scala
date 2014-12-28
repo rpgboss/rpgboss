@@ -56,7 +56,7 @@ class EventEntity(
 
   def getScriptInterface() = EventScriptInterface(mapName, id)
 
-  def evtState = states(evtStateIdx)
+  def evtState: RpgEventState = states(evtStateIdx)
   def height = evtState.height
 
   val persistentListener =
