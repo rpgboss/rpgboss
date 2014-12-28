@@ -105,8 +105,8 @@ class SpriteField(
     spriteset.srcTileImg(s)
   }
 
-  def componentW = tilesize * 2
-  def componentH = tilesize * 3
+  def componentW = tilesize * 1
+  def componentH = tilesize * 2
 
   def getSelectDialog() =
     new SpriteSelectDialog(owner, sm, getValue) {

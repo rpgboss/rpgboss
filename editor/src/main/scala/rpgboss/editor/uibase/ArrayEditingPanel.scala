@@ -59,8 +59,6 @@ abstract class ArrayEditingPanel[T <: AnyRef](
     ArrayUtils.normalizedAry(
       initialAry, minElems, maxElems, newDefaultInstance _)
 
-  def onListSelectionChangedHook() = {}
-
   val listView = new ArrayListView(normalizedInitialAry) {
     override def label(a: T) = ArrayEditingPanel.this.label(a)
 
@@ -82,8 +80,6 @@ abstract class ArrayEditingPanel[T <: AnyRef](
 
       editPane.revalidate()
       editPane.repaint()
-
-      onListSelectionChangedHook()
     }
   }
 
@@ -239,21 +235,6 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
   val editPaneScroll = new ScrollPane {
     preferredSize = new Dimension(400, 400)
     contents = editPaneContainer
-  }
-
-  override def onListSelectionChangedHook() = {
-    super.onListSelectionChangedHook()
-    editPaneScroll.revalidate()
-    editPaneScroll.repaint()
-    editPaneScroll.contents.foreach(_.revalidate())
-    editPaneScroll.contents.foreach(_.repaint())
-
-
-      editPaneContainer.revalidate()
-      editPaneContainer.repaint()
-
-      editPaneContainer.contents.foreach(_.revalidate())
-      editPaneContainer.contents.foreach(_.repaint())
   }
 
   row().grid().add(new BoxPanel(Orientation.Horizontal) {

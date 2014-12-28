@@ -2,6 +2,8 @@ package rpgboss.model.event
 
 import rpgboss.model._
 
+import rpgboss.lib.Utils
+
 object EventTrigger extends RpgEnum {
   val NONE = Value(0, "None")
   val BUTTON = Value(1, "Button")
@@ -20,8 +22,6 @@ object EventHeight extends RpgEnum {
 
   def default = UNDER
 }
-
-import EventTrigger._
 
 /**
  * @param   states          Guaranteed to be size at least 1, unless this event
@@ -53,14 +53,11 @@ object RpgEvent {
 
 /**
  * @param   cmds                        May be empty.
- * @param   sameAppearanceAsPrevState   If true, takes on the height and sprite
- *                                      of the preceding state.
  * @param   runOnceThenIncrementState   If true, increments the state after
  *                                      running the commands.
  */
 case class RpgEventState(
   var conditions: Array[Condition] = Array(),
-  var sameAppearanceAsPrevState: Boolean = true,
   var sprite: Option[SpriteSpec] = None,
   var height: Int = EventHeight.UNDER.id,
   var affixDirection: Boolean = false,
@@ -76,6 +73,9 @@ case class RpgEventState(
     cmds.flatMap(_.getParameters().filter(
         _.valueTypeId == EventParameterValueType.LocalVariable.id))
   }
+
+  def copyEssentials() = copy(conditions = Array(), cmds = Array())
+  def copyAll() = Utils.deepCopy(this)
 }
 
 object RpgEventState {

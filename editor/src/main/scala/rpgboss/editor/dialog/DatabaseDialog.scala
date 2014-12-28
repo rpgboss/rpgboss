@@ -18,11 +18,9 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, getMessage("Database")) {
 
   val screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-  if(screenSize.width > 1280 && screenSize.height > 900) {
-    centerDialog(new Dimension(screenSize.width/2, screenSize.height/2))
-  } else {
-    centerDialog(new Dimension(1024, 600))
-  }
+  centerDialog(new Dimension(
+      math.max(1024, screenSize.width / 2),
+      math.max(600, screenSize.height / 2)))
 
   val model = Utils.deepCopy(sm.getProjData)
 

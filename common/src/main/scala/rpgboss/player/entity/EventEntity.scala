@@ -57,14 +57,7 @@ class EventEntity(
   def getScriptInterface() = EventScriptInterface(mapName, id)
 
   def evtState = states(evtStateIdx)
-
-  def height: Int = {
-    for (i <- evtStateIdx to 1 by -1) {
-      if (!states(i).sameAppearanceAsPrevState)
-        return states(i).height
-    }
-    return states.head.height
-  }
+  def height = evtState.height
 
   val persistentListener =
     new Subscriber[PersistentStateUpdate, PersistentState#Pub] {
@@ -88,11 +81,7 @@ class EventEntity(
       }
     }
 
-    for (i <- evtStateIdx to 1 by -1) {
-      if (!states(i).sameAppearanceAsPrevState)
-        return setSprite(states(i).sprite)
-    }
-    return setSprite(states.head.sprite)
+    return setSprite(evtState.sprite)
   }
   updateState()
 
