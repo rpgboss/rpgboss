@@ -15,7 +15,7 @@ import java.io._
 import java.net._
 import java.util.concurrent._
 import org.glassfish.tyrus.client._
-import rpgboss.editor.Internationalized._ 
+import rpgboss.editor.Internationalized._
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -30,13 +30,13 @@ object chatArea extends TextArea(rows = 20, columns = 20) {
     background = Color.WHITE
 }
 
-class Chat(val mainP: MainPanel, val chatNotifier:Label) extends MainFrame {
+class Chat(val mainP: MainPanel, val chatNotifier:Label) extends Frame {
   val la = new Label(getMessage("RPGBoss_Global_Chat"))
 
   la.foreground = Color.BLUE
 
   minimumSize = new Dimension(800, 300)
-  resizable =false 
+  resizable =false
   centerOnScreen()
   open()
 
@@ -131,13 +131,6 @@ class Chat(val mainP: MainPanel, val chatNotifier:Label) extends MainFrame {
       }
     }
   }
-
-  // Should hide window by pressing X button, but doenst work
-  peer.addWindowListener(new WindowAdapter() {
-    override def windowClosing(evt:WindowEvent) {
-      hideMe()
-    }
-  })
 
   listenTo(textfield.keys)
   reactions += {
