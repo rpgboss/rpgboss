@@ -79,31 +79,31 @@ class EventCmdSpec extends UnitSpec {
   "EventCmd" should "produce correct script for MoveEvent" in {
     val e1 = MoveEvent(EntitySpec(WhichEntity.PLAYER.id), 1, 5, false, true)
     e1.toJs should deepEqual(
-      Array("game.movePlayer(1.000000, 5.000000, false, true);"))
+      Array("game.movePlayer(1.0, 5.0, false, true);"))
 
     val e2 =
       MoveEvent(EntitySpec(WhichEntity.THIS_EVENT.id, "", 0), 4, 1, true, true)
     e2.toJs should deepEqual(
-      Array("game.moveEvent(event.id(), 4.000000, 1.000000, true, true);"))
+      Array("game.moveEvent(event.id(), 4.0, 1.0, true, true);"))
 
     val e3 =
       MoveEvent(EntitySpec(
           WhichEntity.EVENT_ON_MAP.id, "", 10), 1, 5, false, false)
     e3.toJs should deepEqual(
-      Array("game.moveEvent(10, 1.000000, 5.000000, false, false);"))
+      Array("game.moveEvent(10, 1.0, 5.0, false, false);"))
   }
 
   "EventCmd" should "produce correct script for PlayMusic" in {
     val e1 = PlayMusic(IntParameter(5), SoundSpec("test.mp3", 1.2f, 1.3f),
         false, 0.4f)
     e1.toJs should deepEqual(
-      Array("game.playMusic(5, \"test.mp3\", 1.200000, false, 0.400000);"))
+      Array("game.playMusic(5, \"test.mp3\", 1.2, false, 0.4);"))
   }
 
   "EventCmd" should "produce correct script for PlaySound" in {
     val e1 = PlaySound(SoundSpec("test.mp3", 1.2f, 1.3f))
     e1.toJs should deepEqual(
-      Array("game.playSound(\"test.mp3\", 1.200000, 1.300000);"))
+      Array("game.playSound(\"test.mp3\", 1.2, 1.3);"))
   }
 
   "EventCmd" should "produce correct script for SetEventState" in {
@@ -158,7 +158,7 @@ class EventCmdSpec extends UnitSpec {
   "EventCmd" should "produce correct script for StopMusic" in {
     val e1 = StopMusic(IntParameter(12), 0.8f)
     e1.toJs should deepEqual(
-      Array("game.stopMusic(12, 0.800000);"))
+      Array("game.stopMusic(12, 0.8);"))
   }
 
   "EventCmd" should "render IntParameters correctly" in {
@@ -197,7 +197,7 @@ class EventCmdSpec extends UnitSpec {
     val e = Teleport(MapLoc("mapname", 1.5f, 5.5f), 0)
 
     e.toJs should deepEqual (Array(
-      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
+      """game.teleport("mapname", 1.5, 5.5, 0);"""))
 
     import java.util.Locale
     val defaultLocale = Locale.getDefault()
@@ -205,7 +205,7 @@ class EventCmdSpec extends UnitSpec {
     Locale.setDefault(Locale.FRANCE)
 
     e.toJs should deepEqual (Array(
-      """game.teleport("mapname", 1.500000, 5.500000, 0);"""))
+      """game.teleport("mapname", 1.5, 5.5, 0);"""))
 
     Locale.setDefault(defaultLocale)
   }

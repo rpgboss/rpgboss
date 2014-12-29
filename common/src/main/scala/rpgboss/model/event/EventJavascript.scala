@@ -23,9 +23,9 @@ object EventJavascript {
       case x: Array[_] =>
         x.map(toJs).mkString("[", ", ", "]")
       case x: Double =>
-        "%f".formatLocal(Locale.US, x)
+        "%s".formatLocal(Locale.US, x)
       case x: Float =>
-        "%f".formatLocal(Locale.US, x)
+        "%s".formatLocal(Locale.US, x)
       case x: Int =>
         "%d".formatLocal(Locale.US, x)
       case x: Long =>
