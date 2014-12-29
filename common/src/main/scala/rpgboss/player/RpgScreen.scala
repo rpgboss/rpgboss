@@ -18,6 +18,10 @@ import rpgboss.model.AnimationSound
 import rpgboss.model.Animation
 import rpgboss.player.entity.AnimationPlayer
 
+object RpgScreen {
+  val MAX_MUSIC_SLOTS = 8
+}
+
 trait RpgScreen extends Screen with ThreadChecked {
   def project: Project
   def assets: RpgAssetManager
@@ -30,7 +34,7 @@ trait RpgScreen extends Screen with ThreadChecked {
   def createWindowManager(): WindowManager =
     new WindowManager(assets, project, screenW, screenH)
 
-  val musics = Array.fill[Option[MusicPlayer]](8)(None)
+  val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
 
   val windowManager = createWindowManager()
 
@@ -39,8 +43,11 @@ trait RpgScreen extends Screen with ThreadChecked {
   val tweenManager = new TweenManager()
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
-    loop: Boolean, fadeDuration: Float) = {
+    loop: Boolean, fadeDuration: Float): Unit = {
     assertOnBoundThread()
+
+    if (slot < 0 || slot >= RpgScreen.MAX_MUSIC_SLOTS)
+      return
 
     musics(slot).map({ oldMusic =>
       val tweenMusic = new MusicPlayerTweenable(oldMusic)

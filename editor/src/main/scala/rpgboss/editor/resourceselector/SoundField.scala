@@ -31,10 +31,11 @@ class MusicField(
   owner: Window,
   sm: StateMaster,
   initial: Option[SoundSpec],
-  onUpdate: Option[SoundSpec] => Unit)
+  onUpdate: Option[SoundSpec] => Unit,
+  allowNone: Boolean = true)
   extends BrowseField[SoundSpec](owner, sm, initial, onUpdate) {
   def doBrowse() = {
-    val diag = new MusicSelectDialog(owner, sm, model) {
+    val diag = new MusicSelectDialog(owner, sm, model, allowNone) {
       def onSuccess(result: Option[SoundSpec]) =
         model = result
     }
@@ -98,8 +99,9 @@ abstract class SoundSelectDialog(
 abstract class MusicSelectDialog(
   owner: Window,
   sm: StateMaster,
-  initial: Option[SoundSpec])
-  extends ResourceSelectDialog(owner, sm, initial, true, Music)
+  initial: Option[SoundSpec],
+  allowNone: Boolean = true)
+  extends ResourceSelectDialog(owner, sm, initial, allowNone, Music)
   with LazyLogging {
 
   override def specToResourceName(spec: SoundSpec): String = spec.sound

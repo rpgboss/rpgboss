@@ -5,12 +5,11 @@ import rpgboss.model.event._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.uibase._
 import rpgboss.editor._
-import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.lib.Utils
 import rpgboss.model.AddOrRemove
 import rpgboss.editor.Internationalized._
 import rpgboss.lib.ArrayUtils
-import rpgboss.editor.resourceselector.PictureField
+import rpgboss.editor.resourceselector._
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -111,6 +110,41 @@ class OpenStoreCmdDialog(
   successF: (OpenStore) => Any)
   extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
 
+class PlayMusicCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: PlayMusic,
+  successF: (PlayMusic) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("Play Music"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          needsTranslation("Music"),
+          new MusicField(owner, sm, Some(model.spec), v => model.spec = v.get,
+              allowNone = false)),
+      TitledComponent(
+          "",
+          boolField(needsTranslation("Loop"), model.loop, model.loop = _)),
+      TitledComponent(
+          needsTranslation("Fade duration"),
+          new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
+              model.fadeDuration = _)))
+}
+
+class PlaySoundCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: PlaySound,
+  successF: (PlaySound) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("Play Sound"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          needsTranslation("Sound"),
+          new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
+              allowNone = false)))
+}
+
 class SetGlobalIntDialog(
   owner: Window,
   sm: StateMaster,
@@ -142,4 +176,18 @@ class ShowPictureCmdDialog(
       TitledComponent(
           getMessage("Layout"),
           new LayoutEditingPanel(model.layout)))
+}
+
+class StopMusicCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: StopMusic,
+  successF: (StopMusic) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("Stop Music"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          needsTranslation("Fade duration"),
+          new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
+              model.fadeDuration = _)))
 }

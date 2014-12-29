@@ -10,6 +10,7 @@ import rpgboss.model.PictureSlots
 import rpgboss.model.ProjectData
 import rpgboss.model.event._
 import rpgboss.editor.Internationalized._
+import rpgboss.player.RpgScreen
 
 /**
  * The name of the field and a component for editing the constant value.
@@ -83,12 +84,18 @@ object EventParameterField {
             getMessageColon("Buy_Price_Multiplier"), 0f, 4f, c.buyPriceMultiplier),
         FloatPercentField(
             getMessageColon("Sell_Price_Multiplier"), 0f, 4f, c.sellPriceMultiplier))
+    case c: PlayMusic => List(
+        IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
+            c.slot))
     case c: SetGlobalInt => List(
         IntNumberField(getMessage("Value") + " 1", -9999, 9999, c.value1),
         IntNumberField(getMessage("Value") + " 2", -9999, 9999, c.value2))
     case c: ShowPicture => List(
         IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
             PictureSlots.BATTLE_BEGIN - 1, c.slot))
+    case c: StopMusic => List(
+        IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
+            c.slot))
     case _ => Nil
   }
 }

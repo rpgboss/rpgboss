@@ -93,6 +93,19 @@ class EventCmdSpec extends UnitSpec {
       Array("game.moveEvent(10, 1.000000, 5.000000, false, false);"))
   }
 
+  "EventCmd" should "produce correct script for PlayMusic" in {
+    val e1 = PlayMusic(IntParameter(5), SoundSpec("test.mp3", 1.2f, 1.3f),
+        false, 0.4f)
+    e1.toJs should deepEqual(
+      Array("game.playMusic(5, \"test.mp3\", 1.200000, false, 0.400000);"))
+  }
+
+  "EventCmd" should "produce correct script for PlaySound" in {
+    val e1 = PlaySound(SoundSpec("test.mp3", 1.2f, 1.3f))
+    e1.toJs should deepEqual(
+      Array("game.playSound(\"test.mp3\", 1.200000, 1.300000);"))
+  }
+
   "EventCmd" should "produce correct script for SetEventState" in {
     val e1 = SetEventState(EntitySpec(WhichEntity.THIS_EVENT.id), 5)
     e1.toJs should deepEqual(
@@ -140,6 +153,12 @@ class EventCmdSpec extends UnitSpec {
     val e4 = ShowText(Array("Hello \\J[getItemName(itemId)]"))
     e4.toJs should deepEqual (Array(
       """game.showText(["Hello " + getItemName(itemId) + ""]);"""))
+  }
+
+  "EventCmd" should "produce correct script for StopMusic" in {
+    val e1 = StopMusic(IntParameter(12), 0.8f)
+    e1.toJs should deepEqual(
+      Array("game.stopMusic(12, 0.800000);"))
   }
 
   "EventCmd" should "render IntParameters correctly" in {

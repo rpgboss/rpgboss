@@ -59,6 +59,8 @@ object EventCmd {
     classOf[ModifyParty],
     classOf[MoveEvent],
     classOf[OpenStore],
+    classOf[PlayMusic],
+    classOf[PlaySound],
     classOf[RunJs],
     classOf[SetEventState],
     classOf[SetGlobalInt],
@@ -66,6 +68,7 @@ object EventCmd {
     classOf[ShowText],
     classOf[ShowPicture],
     classOf[StartBattle],
+    classOf[StopMusic],
     classOf[Teleport])) + EventRenameHints
 }
 
@@ -200,6 +203,21 @@ case class OpenStore(
     List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
+case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
+  def sections =
+    singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
+}
+
+case class PlayMusic(
+  slot: IntParameter = IntParameter(0),
+  var spec: SoundSpec = SoundSpec(),
+  var loop: Boolean = true,
+  var fadeDuration: Float = 0.5f) extends EventCmd {
+  def sections =
+    singleCall("game.playMusic", slot, spec.sound, spec.volume, loop,
+        fadeDuration)
+}
+
 case class RunJs(scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
 }
@@ -272,6 +290,12 @@ case class ShowPicture(
 case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
   extends EventCmd {
   def sections = singleCall("game.startBattle", encounterId, battleBackground)
+}
+
+case class StopMusic(
+    slot: IntParameter = IntParameter(0),
+    var fadeDuration: Float = 0.5f) extends EventCmd {
+  def sections = singleCall("game.stopMusic", slot, fadeDuration)
 }
 
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {

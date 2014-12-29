@@ -213,8 +213,23 @@ class ScriptInterface(
     activeScreen.playMusic(slot, specOpt, loop, fadeDuration)
   }
 
+  def playMusic(slot: Int, music: String, volume: Float, loop: Boolean,
+                fadeDuration: Float) = syncRun {
+    activeScreen.playMusic(
+        slot, Some(SoundSpec(music, volume)), loop, fadeDuration)
+  }
+
+  def stopMusic(slot: Int, fadeDuration: Float) = syncRun {
+    activeScreen.playMusic(
+        slot, None, false, fadeDuration)
+  }
+
   def playSound(sound: String) = syncRun {
     activeScreen.playSound(SoundSpec(sound))
+  }
+
+  def playSound(sound: String, volume: Float, pitch: Float) = syncRun {
+    activeScreen.playSound(SoundSpec(sound, volume, pitch))
   }
 
   /*
