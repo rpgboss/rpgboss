@@ -1,13 +1,22 @@
 package rpgboss.player
 
-import com.badlogic.gdx.Screen
 import com.badlogic.gdx.Gdx
-import rpgboss.lib._
-import rpgboss.model.SoundSpec
-import aurelienribon.tweenengine._
-import rpgboss.model.resource.{ Music, MusicPlayer }
+import com.badlogic.gdx.Screen
+import aurelienribon.tweenengine.BaseTween
+import aurelienribon.tweenengine.Tween
+import aurelienribon.tweenengine.TweenCallback
+import aurelienribon.tweenengine.TweenManager
+import rpgboss.lib.ThreadChecked
 import rpgboss.model.Project
+import rpgboss.model.SoundSpec
+import rpgboss.model.resource.Music
+import rpgboss.model.resource.MusicPlayer
 import rpgboss.model.resource.RpgAssetManager
+import rpgboss.model.resource.Sound
+import rpgboss.model.resource.SoundPlayer
+import rpgboss.model.AnimationSound
+import rpgboss.model.Animation
+import rpgboss.player.entity.AnimationPlayer
 
 trait RpgScreen extends Screen with ThreadChecked {
   def project: Project
@@ -22,6 +31,7 @@ trait RpgScreen extends Screen with ThreadChecked {
     new WindowManager(assets, project, screenW, screenH)
 
   val musics = Array.fill[Option[MusicPlayer]](8)(None)
+
   val windowManager = createWindowManager()
 
   val animationManager = new AnimationManager()
@@ -64,6 +74,14 @@ trait RpgScreen extends Screen with ThreadChecked {
     }
   }
 
+  def playSound(soundSpec: SoundSpec): Unit = {
+    val animationSound = AnimationSound(0.0f, soundSpec)
+    val animation = Animation(sounds = Array(animationSound))
+    val player = new AnimationPlayer(project, animation, assets, 0f, 0f)
+    animationManager.addAnimation(player)
+    player.play()
+  }
+
   def render()
   def update(delta: Float)
 
@@ -90,11 +108,21 @@ trait RpgScreen extends Screen with ThreadChecked {
     assertOnBoundThread()
   }
 
-  override def render(delta: Float) = {
+  override def render(delta: Float): Unit = {
     assertOnBoundThread()
+
+    if (!assets.update())
+      return
 
     // Update tweens
     tweenManager.update(delta)
+
+    windowManager.update(delta)
+
+    if (windowManager.inTransition)
+      return
+
+    animationManager.update(delta)
 
     update(delta)
     render()

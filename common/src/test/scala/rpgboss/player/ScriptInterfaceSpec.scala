@@ -1,8 +1,21 @@
 package rpgboss.player
 
 import rpgboss._
+import rpgboss.model.SoundSpec
 
 class ScriptInterfaceSpec extends UnitSpec {
+  "game.playSound call" should "work" in {
+    val test = new MapScreenTest {
+      override def testScript() = {
+        scriptInterface.playSound("sys/rpgboss-menu/MenuSelect.mp3")
+        scriptInterface.playSound("")
+        scriptInterface.playSound("nonexistent.mp3")
+      }
+    }
+
+    test.runTest()
+  }
+
   "game.modifyParty call" should "work" in {
     val test = new MapScreenTest {
       override def testScript() = {

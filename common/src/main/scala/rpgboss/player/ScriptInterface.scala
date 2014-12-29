@@ -213,6 +213,10 @@ class ScriptInterface(
     activeScreen.playMusic(slot, specOpt, loop, fadeDuration)
   }
 
+  def playSound(sound: String) = syncRun {
+    activeScreen.playSound(SoundSpec(sound))
+  }
+
   /*
    * Things to do with user interaction
    */

@@ -192,6 +192,6 @@ class GdxMusicPlayer(assets: RpgAssetManager, music: Music)
   }
 
   def dispose() = {
-    music.unloadAsset(assets)
+    music.dispose(assets)
   }
 }

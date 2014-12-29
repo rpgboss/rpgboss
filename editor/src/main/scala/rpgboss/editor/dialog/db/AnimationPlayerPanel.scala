@@ -77,8 +77,8 @@ class AnimationPlayerGdxPanel(
         animationPlayer.dispose()
       }
 
-      background.unloadAsset(assets)
-      battler.unloadAsset(assets)
+      background.dispose(assets)
+      battler.dispose(assets)
 
       if (assets != null) {
         assets.dispose()

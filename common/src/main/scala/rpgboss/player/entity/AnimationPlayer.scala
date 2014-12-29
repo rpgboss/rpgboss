@@ -39,7 +39,7 @@ class AnimationPlayer(
     animationSound: AnimationSound, resource: Sound, var played: Boolean)
 
   // Load all the assets used in this animation.
-  val animationImages = animation.visuals.map(
+  val animationImages: Array[AnimationImage] = animation.visuals.map(
     v => AnimationImage.readFromDisk(proj, v.animationImage))
   val animationSounds = animation.sounds.map(s => {
     val sound = Sound.readFromDisk(proj, s.sound.sound)
@@ -66,6 +66,11 @@ class AnimationPlayer(
       animationSounds.forall(_.resource.isLoaded(assets))
   }
 
+  def anyFailed = {
+    animationImages.exists(_.failed) ||
+      animationSounds.exists(_.resource.failed)
+  }
+
   def time = _time
 
   def reset() = {
@@ -80,8 +85,15 @@ class AnimationPlayer(
   }
 
   def update(delta: Float): Unit = {
-    if (!allResourcesLoaded)
+    if (anyFailed) {
+      _state = Expired
       return
+    }
+
+
+    if (!allResourcesLoaded) {
+      return
+    }
 
     if (_state != Idle) {
       _time += delta
@@ -93,6 +105,16 @@ class AnimationPlayer(
           _state = Expired
         case _ =>
           Unit
+      }
+    }
+
+    for (soundState <- animationSounds) {
+      if (!soundState.played && time >= soundState.animationSound.time &&
+          soundState.resource.isLoaded(assets)) {
+        val soundSpec = soundState.animationSound.sound
+        soundState.resource.getAsset(assets).play(
+          soundSpec.volume, soundSpec.pitch, 0f)
+        soundState.played = true
       }
     }
   }
@@ -120,20 +142,10 @@ class AnimationPlayer(
         image.drawTileCentered(batch, assets, dstX, dstY, xTile, yTile)
       }
     }
-
-    for (soundState <- animationSounds) {
-      if (!soundState.played && time >= soundState.animationSound.time &&
-          soundState.resource.isLoaded(assets)) {
-        val soundSpec = soundState.animationSound.sound
-        soundState.resource.getAsset(assets).play(
-          soundSpec.volume, soundSpec.pitch, 0f)
-        soundState.played = true
-      }
-    }
   }
 
   def dispose() = {
-    animationImages.map(_.unloadAsset(assets))
-    animationSounds.map(_.resource.unloadAsset(assets))
+    animationImages.map(_.dispose(assets))
+    animationSounds.map(_.resource.dispose(assets))
   }
 }

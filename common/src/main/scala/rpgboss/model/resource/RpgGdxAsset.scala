@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import java.io.File
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Disposable
 
 trait RpgGdxAsset[T] extends LazyLogging {
   def rcType: String
@@ -11,12 +12,17 @@ trait RpgGdxAsset[T] extends LazyLogging {
 
   def gdxPath: String = "%s/%s".format(rcType, name)
 
-  def loadAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): Unit = {
+  var failed = false
+
+  def loadAsset(assets: RpgAssetManager)(implicit m: Manifest[T]): Boolean = {
     try {
+      assets.loadedAssets.add(this)
       assets.load(gdxPath, m.runtimeClass.asInstanceOf[Class[T]])
+      true
     } catch {
       case e: Throwable =>
         logger.error("Could not load an asset: " + gdxPath, e)
+        false
     }
   }
 
@@ -26,8 +32,10 @@ trait RpgGdxAsset[T] extends LazyLogging {
     assets.get(gdxPath, m.runtimeClass.asInstanceOf[Class[T]])
   }
 
-  def unloadAsset(assets: RpgAssetManager): Unit = {
+  def dispose(assets: RpgAssetManager) = {
     if (assets.isLoaded(gdxPath))
       assets.unload(gdxPath)
+
+    assets.loadedAssets.remove(this)
   }
 }

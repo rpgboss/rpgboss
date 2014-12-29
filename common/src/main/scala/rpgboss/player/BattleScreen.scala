@@ -516,17 +516,6 @@ class BattleScreen(
   }
 
   def update(delta: Float): Unit = {
-    assertOnBoundThread()
-
-    if (!assets.update())
-      return
-
-    windowManager.update(delta)
-    if (windowManager.inTransition)
-      return
-
-    animationManager.update(delta)
-
     // All these actions should not take place if this is an in-editor session.
     gameOpt map { game =>
       _battle.map { battle =>
