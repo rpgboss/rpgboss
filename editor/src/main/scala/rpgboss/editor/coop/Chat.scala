@@ -50,11 +50,43 @@ class Chat(val mainP: MainPanel, val chatNotifier:Label) extends Frame {
   var SocketSession:Session = null
 
   new Thread(new Runnable() {
+
     override def run() {
       try {
         messageLatch = new CountDownLatch(1)
         val cec = ClientEndpointConfig.Builder.create().build()
         val client = ClientManager.createClient()
+
+        var reconnectHandler = new ClientManager.ReconnectHandler() {
+
+          private var counter = 0
+
+          override def onDisconnect(closeReason:CloseReason):Boolean = {
+            counter+=1
+            if (counter <= 3) {
+              println("### Reconnecting... (reconnect count: " + counter + ")")
+              return true
+            } else {
+              return false
+            }
+          }
+
+          override def onConnectFailure(exception:Exception):Boolean = {
+            counter+=1
+            if (counter <= 3) {
+              println("### Reconnecting... (reconnect count: " + counter + ") " + exception.getMessage())
+
+              // Thread.sleep(...) or something other "sleep-like" expression can be put here - you might want
+              // to do it here to avoid potential DDoS when you don't limit number of reconnects.
+              return true
+            } else {
+              return false
+            }
+          }
+
+        }
+        client.getProperties().put(ClientManager.RECONNECT_HANDLER, reconnectHandler);
+
         client.connectToServer(new Endpoint() {
 
           override def onOpen(session: Session, config: EndpointConfig) {
@@ -73,11 +105,13 @@ class Chat(val mainP: MainPanel, val chatNotifier:Label) extends Frame {
               //session.getBasicRemote.sendText("me<>get-users")
             } catch {
               case e: IOException => e.printStackTrace()
+              case e: java.lang.IllegalStateException =>
             }
           }
         //}, cec, new URI("ws://localhost:8080/"))
         }, cec, new URI("ws://rpgboss.hendrikweiler.com:8080/"))
         messageLatch.await(100, TimeUnit.SECONDS)
+
       } catch {
         case e: Exception => e.printStackTrace()
       }
