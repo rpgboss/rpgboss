@@ -127,20 +127,7 @@ class MapScreen(val game: RpgGame)
       _playerEntity.y = loc.y
       _playerEntity.mapName = Some(loc.map)
 
-      updateParty()
-    }
-  }
-
-  def updateParty(): Unit = {
-    if (_playerEntity == null)
-      return
-
-    val partyArray = game.persistent.getIntArray(PARTY)
-    if (partyArray.length > 0) {
-      val spritespec = project.data.enums.characters(partyArray(0)).sprite
-      _playerEntity.setSprite(spritespec)
-    } else {
-      _playerEntity.setSprite(None)
+      _playerEntity.updateSprite()
     }
   }
 

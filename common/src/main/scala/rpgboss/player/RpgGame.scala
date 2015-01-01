@@ -122,7 +122,6 @@ class RpgGame(gamepath: File)
   def setParty(partyArray: Array[Int]) = {
     assertOnBoundThread()
     persistent.setIntArray(PARTY, partyArray)
-    mapScreen.updateParty()
   }
 
   def startNewGame() = {

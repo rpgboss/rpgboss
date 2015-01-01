@@ -9,13 +9,15 @@ import MyKeys.Down
 import MyKeys.Left
 import MyKeys.Right
 import MyKeys.Up
+import scala.collection.mutable.Subscriber
 
 class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
   extends Entity(
       game.spritesets,
       game.mapScreen.mapAndAssetsOption,
       game.mapScreen.eventEntities)
-  with PlayerInputHandler {
+  with PlayerInputHandler
+  with HasScriptConstants {
   assume(game != null)
   assume(mapScreen != null)
 
@@ -29,6 +31,26 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
 
   // Set to a large number, as we expect to cancel this move when we lift button
   val moveSize = 1000f
+
+  def updateSprite() = {
+    val partyArray = game.persistent.getIntArray(PARTY)
+    if (partyArray.length > 0) {
+      val spritespec = game.project.data.enums.characters(partyArray(0)).sprite
+      setSprite(spritespec)
+    } else {
+      setSprite(None)
+    }
+  }
+
+  val persistentListener =
+    new Subscriber[PersistentStateUpdate, PersistentState#Pub] {
+    def notify(pub: PersistentState#Pub, evt: PersistentStateUpdate) =
+      evt match {
+        case IntArrayChange(_) => updateSprite()
+        case _ => Unit
+      }
+    game.persistent.subscribe(this)
+  }
 
   def getScriptInterface() = EventScriptInterface(mapName.getOrElse(""), -1)
 
