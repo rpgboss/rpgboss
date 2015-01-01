@@ -1,95 +1,110 @@
 [
   {
-    "name":"# Basilisk",
+    "name":"# Goblin",
     "units":[
       {
-        "enemyIdx":0,
+        "enemyIdx":13,
         "x":255,
         "y":210
       }
     ]
   },
   {
-    "name":"# 3 x Birdman",
+    "name":"# 3 x Goblin",
     "units":[
       {
-        "enemyIdx":1,
+        "enemyIdx":13,
         "x":167,
         "y":155
       },
       {
-        "enemyIdx":1,
+        "enemyIdx":13,
         "x":152,
         "y":265
       },
       {
-        "enemyIdx":1,
+        "enemyIdx":13,
         "x":342,
         "y":210
       }
     ]
   },
   {
-    "name":"# Basilisk, 2 x Birdman",
+    "name":"# 2 x Goblin, Goblincmdr",
     "units":[
       {
-        "enemyIdx":0,
+        "enemyIdx":13,
         "x":167,
         "y":155
       },
       {
-        "enemyIdx":1,
+        "enemyIdx":13,
         "x":152,
         "y":265
       },
       {
-        "enemyIdx":1,
+        "enemyIdx":15,
         "x":342,
         "y":210
       }
     ]
   },
   {
-    "name":"# 3 x Golem",
+    "name":"# Goblin, Goblinwiz",
     "units":[
       {
-        "enemyIdx":22,
-        "x":167,
-        "y":155
-      },
-      {
-        "enemyIdx":22,
-        "x":152,
-        "y":265
-      },
-      {
-        "enemyIdx":22,
-        "x":342,
-        "y":210
-      }
-    ]
-  },
-  {
-    "name":"# Eagler",
-    "units":[
-      {
-        "enemyIdx":170,
-        "x":255,
-        "y":210
-      }
-    ]
-  },
-  {
-    "name":"# Eaglel, Eagler",
-    "units":[
-      {
-        "enemyIdx":170,
+        "enemyIdx":13,
         "x":255,
         "y":155
       },
       {
-        "enemyIdx":169,
+        "enemyIdx":21,
         "x":240,
+        "y":265
+      }
+    ]
+  },
+  {
+    "name":"# 2 x Goblinninja, Goblinrider",
+    "units":[
+      {
+        "enemyIdx":16,
+        "x":167,
+        "y":155
+      },
+      {
+        "enemyIdx":16,
+        "x":152,
+        "y":265
+      },
+      {
+        "enemyIdx":17,
+        "x":342,
+        "y":210
+      }
+    ]
+  },
+  {
+    "name":"# 2 x Goblinshaman, 2 x Goblinwat",
+    "units":[
+      {
+        "enemyIdx":18,
+        "x":167,
+        "y":155
+      },
+      {
+        "enemyIdx":18,
+        "x":152,
+        "y":265
+      },
+      {
+        "enemyIdx":20,
+        "x":342,
+        "y":155
+      },
+      {
+        "enemyIdx":20,
+        "x":327,
         "y":265
       }
     ]
