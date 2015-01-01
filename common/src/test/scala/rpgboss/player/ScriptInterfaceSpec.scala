@@ -49,11 +49,11 @@ class ScriptInterfaceSpec extends UnitSpec {
         }
 
         // Test removing existing party member
-        val result4 = scriptInterface.modifyParty(add = false, characterId = 1)
+        val result4 = scriptInterface.modifyParty(add = false, characterId = 0)
         val party4 = scriptInterface.getIntArray(PARTY)
         waiter {
           result4 should equal(true)
-          party4 should deepEqual(Array(0))
+          party4 should deepEqual(Array(1))
         }
       }
     }
