@@ -90,9 +90,9 @@ class MapPropertiesDialog(
         row().grid(leftLabel(getMessageColon("Music")))
           .add(fMusic)
 
-        row().grid(leftLabel(needsTranslation("Battle Background:")))
+        row().grid(leftLabel(getMessageColon("Battle_Background")))
           .add(fBattleback)
-        row().grid(leftLabel(needsTranslation("Battle Music:")))
+        row().grid(leftLabel(getMessageColon("Battle_Music")))
           .add(fBattleMusic)
 
         row().grid(leftLabel(getMessageColon("Tilesets"))).add(fTilesets)
