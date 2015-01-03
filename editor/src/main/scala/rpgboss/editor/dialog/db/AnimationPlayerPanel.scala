@@ -37,7 +37,7 @@ class AnimationPlayerGdxPanel(
     var animationPlayer: AnimationPlayer = null
 
     val background =
-      BattleBackground.readFromDisk(project, ResourceConstants.editorBattleback)
+      BattleBackground.readFromDisk(project, ResourceConstants.defaultBattleback)
     val battler =
       Battler.readFromDisk(project, ResourceConstants.battlerTarget)
     var batch: SpriteBatch = null

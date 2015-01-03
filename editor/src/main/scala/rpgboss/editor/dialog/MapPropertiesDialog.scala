@@ -11,6 +11,7 @@ import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.misc.RandomEncounterSettingsPanel
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.resourceselector.BattleBackgroundField
 
 class MapPropertiesDialog(
   owner: Window,
@@ -57,6 +58,13 @@ class MapPropertiesDialog(
     owner, sm, model.music,
     model.music = _)
 
+  val fBattleback = new BattleBackgroundField(
+    owner, sm, model.battleBackground, model.battleBackground = _,
+    allowNone = false)
+
+  val fBattleMusic = new MusicField(
+    owner, sm, model.battleMusic, model.battleMusic = _, allowNone = false)
+
   val fTilesets =
     new TilesetArrayField(owner, sm, model.tilesets, model.tilesets = _)
 
@@ -81,6 +89,11 @@ class MapPropertiesDialog(
 
         row().grid(leftLabel(getMessageColon("Music")))
           .add(fMusic)
+
+        row().grid(leftLabel(needsTranslation("Battle Background:")))
+          .add(fBattleback)
+        row().grid(leftLabel(needsTranslation("Battle Music:")))
+          .add(fBattleMusic)
 
         row().grid(leftLabel(getMessageColon("Tilesets"))).add(fTilesets)
       }

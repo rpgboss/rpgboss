@@ -230,6 +230,7 @@ class MapScreen(val game: RpgGame)
       val minimumDistanceFromLastBattle = 3
 
       val encounterSettings = mapAndAssets.encounterSettings
+      val mapMetadata = mapAndAssets.map.metadata
 
       val distFromLastBattle =
         mapAndAssets.manhattanDistanceFromLastBattle(
@@ -245,7 +246,9 @@ class MapScreen(val game: RpgGame)
           val encounterId = Utils.randomChoose(
               encounterSettings.encounters.map(_.encounterId),
               encounterSettings.encounters.map(_.weight.floatValue))
-          game.startBattle(encounterId, "")
+          game.startBattle(encounterId, mapMetadata.battleBackground,
+              mapMetadata.battleMusic.map(_.sound).getOrElse(""),
+              mapMetadata.battleMusic.map(_.volume).getOrElse(1))
         }
       }
     }

@@ -287,9 +287,17 @@ case class ShowPicture(
     singleCall("game.showPicture", slot, picture, RawJs(layout.toJs()))
 }
 
-case class StartBattle(encounterId: Int = 0, battleBackground: String = "")
+case class StartBattle(
+    var encounterId: Int = 0,
+    var battleMusic: Option[SoundSpec] = None,
+    var battleBackground: String = "")
   extends EventCmd {
-  def sections = singleCall("game.startBattle", encounterId, battleBackground)
+  def sections = battleMusic.map { music =>
+    singleCall("game.startBattle", encounterId, battleBackground,
+        music.sound, music.volume)
+  }.getOrElse {
+    singleCall("game.startBattle", encounterId, battleBackground, "", 1.0f)
+  }
 }
 
 case class StopMusic(

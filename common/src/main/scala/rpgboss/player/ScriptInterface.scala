@@ -177,9 +177,24 @@ class ScriptInterface(
     activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
   }
 
-  def startBattle(encounterId: Int, battleBackground: String) = {
+  def startBattle(encounterId: Int, overrideBattleBackground: String,
+      overrideBattleMusic: String, overrideBattleMusicVolume: Float) = {
+    val mapMetadata = mapScreen.mapAndAssetsOption.get.map.metadata
+    val battleBackground =
+      if (overrideBattleBackground.isEmpty)
+        mapMetadata.battleBackground
+      else
+        overrideBattleBackground
+
+    val (battleMusic, battleMusicVolume) =
+      if (overrideBattleMusic.isEmpty)
+        (mapMetadata.battleMusic.get.sound, mapMetadata.battleMusic.get.volume)
+      else
+        (overrideBattleMusic, overrideBattleMusicVolume)
+
     syncRun {
-      game.startBattle(encounterId, battleBackground)
+      game.startBattle(encounterId, battleBackground, battleMusic,
+          battleMusicVolume)
     }
 
     // Blocks until the battle screen finishes on way or the other

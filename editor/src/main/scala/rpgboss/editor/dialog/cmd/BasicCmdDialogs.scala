@@ -25,13 +25,16 @@ class StartBattleCmdDialog(
   val encounterSelect = indexedCombo(
     sm.getProjData.enums.encounters,
     model.encounterId,
-    v => model = model.copy(encounterId = v))
+    model.encounterId = _)
 
   val battleBgSelect = new BattleBackgroundField(
     owner,
     sm,
     model.battleBackground,
-    v => model = model.copy(battleBackground = v))
+    model.battleBackground = _)
+
+  val battleMusicField =
+    new MusicField(owner, sm, model.battleMusic, model.battleMusic = _)
 
   def okFunc() = {
     successF(model)
@@ -42,8 +45,11 @@ class StartBattleCmdDialog(
     row().grid().add(leftLabel(getMessageColon("Encounter")))
     row().grid().add(encounterSelect)
 
-    row().grid().add(leftLabel(getMessageColon("Battle_Background")))
+    row().grid().add(leftLabel(getMessageColon("Override_Battle_Background")))
     row().grid().add(battleBgSelect)
+
+    row().grid().add(leftLabel(needsTranslation("Override Battle Music:")))
+    row().grid().add(battleMusicField)
 
     addButtons(okBtn, cancelBtn)
   }

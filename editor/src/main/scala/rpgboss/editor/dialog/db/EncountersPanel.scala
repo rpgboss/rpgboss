@@ -56,7 +56,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
       if (battleScreen.battleActive)
         battleScreen.endBattle()
 
-      battleScreen.startBattle(battle, ResourceConstants.editorBattleback)
+      battleScreen.startBattle(battle, ResourceConstants.defaultBattleback)
     }
 
     override def create() = {
