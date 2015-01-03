@@ -166,6 +166,7 @@ abstract class BrowseField[SpecType](
   var model = initial
 
   val textField = new TextField {
+    preferredSize = new Dimension(100, preferredSize.height)
     editable = false
     enabled = true
   }

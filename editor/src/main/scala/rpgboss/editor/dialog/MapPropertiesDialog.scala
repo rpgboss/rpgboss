@@ -80,7 +80,7 @@ class MapPropertiesDialog(
           .add(fWidth).add(fHeight)
 
         row().grid(leftLabel(getMessageColon("Music")))
-        row().grid().add(fMusic)
+          .add(fMusic)
 
         row().grid(leftLabel(getMessageColon("Tilesets"))).add(fTilesets)
       }
