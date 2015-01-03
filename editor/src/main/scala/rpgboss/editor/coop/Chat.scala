@@ -140,7 +140,7 @@ class Chat(val mainP: MainPanel, val chatNotifier:Label) extends Frame {
       contents += Swing.HStrut(5)
       contents += Button(getMessage("Hide")) { hideMe() }
       contents += Swing.HStrut(5)
-      contents += Button(getMessage("How_Much_Users")) { showUsers() }
+      contents += Button(getMessage("How_Many_Users")) { showUsers() }
     }
     border = Swing.EmptyBorder(10, 10, 10, 10)
   }
