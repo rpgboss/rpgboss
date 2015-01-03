@@ -126,12 +126,11 @@ trait RpgScreen extends Screen with ThreadChecked {
 
     windowManager.update(delta)
 
-    if (windowManager.inTransition)
-      return
-
     animationManager.update(delta)
 
-    update(delta)
+    if (!windowManager.inTransition)
+      update(delta)
+
     render()
   }
 
