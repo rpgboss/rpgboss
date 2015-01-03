@@ -53,12 +53,6 @@ class MapPropertiesDialog(
     initialMap.metadata.ySize,
     model.ySize = _)
 
-  val fChangeMusic = boolField(
-    "Change music on enter",
-    model.changeMusicOnEnter,
-    model.changeMusicOnEnter = _,
-    Some(setEnabledFields))
-
   val fMusic = new MusicField(
     owner, sm, model.music,
     model.music = _)
@@ -68,11 +62,6 @@ class MapPropertiesDialog(
 
   val fRandomEncounters = new RandomEncounterSettingsPanel(
       owner, sm.getProjData, model.randomEncounterSettings)
-
-  def setEnabledFields() =
-    fMusic.enabled = model.changeMusicOnEnter
-
-  setEnabledFields()
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
@@ -90,7 +79,7 @@ class MapPropertiesDialog(
         row().grid()
           .add(fWidth).add(fHeight)
 
-        row().grid(leftLabel(getMessageColon("Music"))).add(fChangeMusic)
+        row().grid(leftLabel(getMessageColon("Music")))
         row().grid().add(fMusic)
 
         row().grid(leftLabel(getMessageColon("Tilesets"))).add(fTilesets)

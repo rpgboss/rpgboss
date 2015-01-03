@@ -107,8 +107,7 @@ class MapScreen(val game: RpgGame)
       }
 
       playMusic(0, mapAndAssets.map.metadata.music, true,
-          Transitions.fadeLength);
-
+          Transitions.fadeLength)
     } else {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None

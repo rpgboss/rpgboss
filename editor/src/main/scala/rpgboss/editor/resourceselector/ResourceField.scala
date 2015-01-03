@@ -156,6 +156,12 @@ abstract class BrowseField[SpecType](
   initial: Option[SpecType],
   onUpdate: Option[SpecType] => Unit)
   extends BoxPanel(Orientation.Horizontal) with LazyLogging {
+  
+  override def enabled_=(enabled: Boolean) = {
+    super.enabled_=(enabled)
+    textField.enabled = enabled
+    browseBtn.enabled = enabled
+  }
 
   var model = initial
 
