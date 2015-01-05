@@ -547,7 +547,7 @@ class BattleScreen(
               project.data,
               battle.partyIds,
               exp)
-            val names = leveled.map(getCharacterName)
+            val leveledCharacterNames = leveled.map(getCharacterName)
 
             val gold = battle.goldDrops
             game.persistent.addRemoveGold(gold)
@@ -561,8 +561,8 @@ class BattleScreen(
 
             concurrent.Future {
               scriptInterface.showText(Array("Received %d XP.".format(exp)))
-              for (i <- leveled) {
-                scriptInterface.showText(Array("%s leveled!".format(names(i))))
+              for (name <- leveledCharacterNames) {
+                scriptInterface.showText(Array("%s leveled!".format(name)))
               }
 
               if (gold > 0)
