@@ -54,6 +54,7 @@ object EventCmd {
     classOf[AddRemoveGold],
     classOf[GetChoice],
     classOf[HidePicture],
+    classOf[IfEventCmd],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
@@ -113,9 +114,9 @@ case class GetChoice(var question: Array[String] = Array(),
       PlainLines(Array("    break;")))
 
     buf += PlainLines(Array(
-      RawJs("switch(game.getChoice(%s, %s, %b)) {".format(
+      "switch (game.getChoice(%s, %s, %b)) {".format(
           EventJavascript.toJs(question),
-          EventJavascript.toJs(choices), allowCancel)).exp))
+          EventJavascript.toJs(choices), allowCancel)))
 
     for (i <- 0 until choices.size) {
       caseSections("case %d".format(i), innerCmds(i)).foreach(buf += _)
@@ -123,7 +124,7 @@ case class GetChoice(var question: Array[String] = Array(),
 
     caseSections("default", innerCmds.last).foreach(buf += _)
 
-    buf += PlainLines(Array(RawJs("}").exp))
+    buf += PlainLines(Array("}"))
 
     buf.toArray
   }
@@ -134,6 +135,45 @@ case class GetChoice(var question: Array[String] = Array(),
         innerCmds, choices.size + 1, choices.size + 1, () => Array[EventCmd]())
     newArray.update(commandListI, newInnerCmds)
     copy(innerCmds = newArray)
+  }
+}
+
+case class IfEventCmd(
+    var conditions: Array[Condition] = Array(),
+    var elseBranch: Boolean = false,
+    var trueCmds: Array[EventCmd] = Array(),
+    var elseCmds: Array[EventCmd] = Array())
+    extends EventCmd {
+  def sections = {
+    val buf = new ArrayBuffer[CodeSection]()
+
+    def caseSections(caseLabel: String, code: Array[EventCmd]) = Array(
+      PlainLines(Array("  %s:".format(caseLabel))),
+      CommandList(code, 2),
+      PlainLines(Array("    break;")))
+
+    buf += PlainLines(Array("if (%s) {".format(
+        Condition.allConditionsExp(conditions).exp)))
+    buf += CommandList(trueCmds, 1)
+
+    if (elseBranch) {
+      buf += PlainLines(Array("} else {"))
+      buf += CommandList(elseCmds, 1)
+    }
+
+    buf += PlainLines(Array("}"))
+
+    buf.toArray
+  }
+
+  override def copyWithNewInnerCmds(commandListI: Int,
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    assert(commandListI == 0 || commandListI == 1)
+    if (commandListI == 0) {
+      copy(trueCmds = newInnerCmds)
+    } else {
+      copy(elseCmds = newInnerCmds)
+    }
   }
 }
 

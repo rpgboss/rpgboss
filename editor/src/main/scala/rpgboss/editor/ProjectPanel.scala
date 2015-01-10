@@ -45,8 +45,6 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
   }
 
-
-
   val topBar = new BoxPanel(Orientation.Horizontal) {
     import rpgboss.editor.dialog._
 
