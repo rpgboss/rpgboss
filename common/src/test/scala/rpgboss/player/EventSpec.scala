@@ -58,7 +58,6 @@ class EventSpec extends UnitSpec {
         scriptInterface.activateEvent(1, true)
         val (c1, c2) = getIntTuple()
 
-
         waiter {
           (a1, a2) should equal (1, 0)
           (b1, b2) should equal (1, 1)

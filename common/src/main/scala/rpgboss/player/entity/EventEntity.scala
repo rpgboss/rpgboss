@@ -86,6 +86,8 @@ class EventEntity(
       return
     }
 
+    evtStateIdx = proposedEvtStateIdx
+
     for (i <- 0 until states.length;
          if !states(i).conditions.isEmpty) {
       if (Condition.allConditionsTrue(states(i).conditions, scriptInterface)) {
