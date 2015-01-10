@@ -214,3 +214,17 @@ class StopMusicCmdDialog(
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
               model.fadeDuration = _)))
 }
+
+class WhileLoopCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: WhileLoop,
+  successF: (WhileLoop) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("While Loop"), initial, successF) {
+
+  override def extraFields = Seq(
+    TitledComponent(needsTranslation("Conditions"),
+        new ConditionsPanel(owner, sm.getProjData, model.conditions,
+            model.conditions = _)))
+}

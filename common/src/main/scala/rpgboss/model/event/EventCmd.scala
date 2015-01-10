@@ -52,6 +52,7 @@ object EventCmd {
   val hints = ShortTypeHints(List(
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
+    classOf[BreakLoop],
     classOf[GetChoice],
     classOf[HidePicture],
     classOf[IfCondition],
@@ -70,7 +71,8 @@ object EventCmd {
     classOf[ShowPicture],
     classOf[StartBattle],
     classOf[StopMusic],
-    classOf[Teleport])) + EventRenameHints
+    classOf[Teleport],
+    classOf[WhileLoop])) + EventRenameHints
 }
 
 case class AddRemoveItem(
@@ -94,6 +96,10 @@ case class AddRemoveGold(
   def sections = singleCall("game.addRemoveGold", qtyDelta)
 
   override def getParameters() = List(quantity)
+}
+
+case class BreakLoop() extends EventCmd {
+  def sections = Array(PlainLines(Array("break;")))
 }
 
 /**
@@ -146,11 +152,6 @@ case class IfCondition(
     extends EventCmd {
   def sections = {
     val buf = new ArrayBuffer[CodeSection]()
-
-    def caseSections(caseLabel: String, code: Array[EventCmd]) = Array(
-      PlainLines(Array("  %s:".format(caseLabel))),
-      CommandList(code, 2),
-      PlainLines(Array("    break;")))
 
     buf += PlainLines(Array("if (%s) {".format(
         Condition.allConditionsExp(conditions).exp)))
@@ -349,4 +350,26 @@ case class StopMusic(
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
+}
+
+case class WhileLoop(
+    var conditions: Array[Condition] = Array(),
+    var innerCmds: Array[EventCmd] = Array())
+    extends EventCmd {
+  def sections = {
+    val buf = new ArrayBuffer[CodeSection]()
+
+    buf += PlainLines(Array("while (%s) {".format(
+        Condition.allConditionsExp(conditions).exp)))
+    buf += CommandList(innerCmds, 1)
+    buf += PlainLines(Array("}"))
+
+    buf.toArray
+  }
+
+  override def copyWithNewInnerCmds(commandListI: Int,
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    assert(commandListI == 0)
+    copy(innerCmds = newInnerCmds)
+  }
 }

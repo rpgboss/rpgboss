@@ -89,6 +89,10 @@ class NewEventCmdBox(
         row().grid().add(
             btnEvtCmd(needsTranslation("If Condition"), IfCondition()))
         row().grid().add(
+            btnEvtCmd(needsTranslation("While Loop"), WhileLoop()))
+        row().grid().add(
+            btnEvtCmd(needsTranslation("Break Loop"), BreakLoop()))
+        row().grid().add(
             btnEvtCmd(getMessage("Set_Global_Integer"), SetGlobalInt()))
         row().grid().add(
             btnEvtCmd(getMessage("Change_Event_State"), SetEventState()))
