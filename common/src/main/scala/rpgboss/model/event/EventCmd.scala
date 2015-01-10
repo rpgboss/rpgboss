@@ -284,7 +284,7 @@ case class ShowPicture(
     var picture: String = "",
     layout: Layout = Layout.defaultForPictures) extends EventCmd {
   def sections =
-    singleCall("game.showPicture", slot, picture, RawJs(layout.toJs()))
+    singleCall("game.showPicture", slot, picture, layout.toJs())
 }
 
 case class StartBattle(

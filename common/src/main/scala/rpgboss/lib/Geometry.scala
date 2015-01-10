@@ -1,6 +1,8 @@
 package rpgboss.lib
 
 import rpgboss.model.RpgEnum
+import rpgboss.model.event.RawJs
+import rpgboss.model.event.EventJavascript
 
 /**
  * @param   x   Refers to center of the rectangle.
@@ -73,8 +75,8 @@ case class Layout(var layoutTypeId: Int = LayoutType.default.id,
                   var xOffset: Float = 0,
                   var yOffset: Float = 0) {
 
-  def toJs() = "game.layoutWithOffset(%d, %d, %f, %f, %f, %f)".format(
-      layoutTypeId, sizeTypeId, w, h, xOffset, yOffset)
+  def toJs(): RawJs = EventJavascript.jsCall(
+      "game.layoutWithOffset", layoutTypeId, sizeTypeId, w, h, xOffset, yOffset)
 
   def getRect(srcW: Float, srcH: Float, screenW: Int, screenH: Int) = {
     import LayoutType._
