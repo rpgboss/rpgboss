@@ -28,6 +28,8 @@ class ConditionsPanel(
   onUpdate: Array[Condition] => Unit)
   extends InlineWidgetArrayEditor(owner, initial, onUpdate) {
 
+  override def preferredWidth = 350
+
   override def title: String = needsTranslation("Event Conditions")
   override def addAction(index: Int) = {
     openEnumSelectDialog(ConditionType)(

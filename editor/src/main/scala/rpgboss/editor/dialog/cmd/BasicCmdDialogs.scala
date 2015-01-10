@@ -10,6 +10,7 @@ import rpgboss.model.AddOrRemove
 import rpgboss.editor.Internationalized._
 import rpgboss.lib.ArrayUtils
 import rpgboss.editor.resourceselector._
+import rpgboss.editor.dialog.ConditionsPanel
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -108,6 +109,22 @@ class HidePictureCmdDialog(
   successF: (HidePicture) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Hide_Picture"), initial, successF)
+
+class IfConditionCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: IfCondition,
+  successF: (IfCondition) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("If Condition"), initial, successF) {
+
+  override def extraFields = Seq(
+    TitledComponent(needsTranslation("Conditions"),
+        new ConditionsPanel(owner, sm.getProjData, model.conditions,
+            model.conditions = _)),
+    TitledComponent("", boolField(needsTranslation("Else Branch"),
+        model.elseBranch, model.elseBranch = _)))
+}
 
 class OpenStoreCmdDialog(
   owner: Window,

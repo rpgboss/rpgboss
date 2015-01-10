@@ -50,8 +50,8 @@ class EventCmdSpec extends UnitSpec {
         Array("game.hidePicture(5);"))
   }
 
-  "EventCmd" should "produce correct script for IfEventCmd" in {
-    val e1 = IfEventCmd(Array(), false, Array(ShowText(Array("a"))), Array())
+  "EventCmd" should "produce correct script for IfCondition" in {
+    val e1 = IfCondition(Array(), false, Array(ShowText(Array("a"))), Array())
 
     e1.toJs should deepEqual(Array(
       """if (true) {""",
@@ -59,7 +59,7 @@ class EventCmdSpec extends UnitSpec {
       """}"""
     ))
 
-    val e2 = IfEventCmd(Array(), true, Array(ShowText(Array("a"))),
+    val e2 = IfCondition(Array(), true, Array(ShowText(Array("a"))),
         Array(ShowText(Array("b"))))
 
     e2.toJs should deepEqual(Array(

@@ -119,8 +119,9 @@ abstract class InlineWidgetArrayEditor[T: ClassTag](
   getAddPanel.map(arrayPanel.contents += _)
   arrayPanel.contents += Swing.VGlue
 
+  def preferredWidth = 200
   val scrollPane = new ScrollPane {
-    preferredSize = new Dimension(150, 200)
+    preferredSize = new Dimension(preferredWidth, 200)
     contents = arrayPanel
     horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
     verticalScrollBarPolicy = ScrollPane.BarPolicy.Always

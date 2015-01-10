@@ -54,7 +54,7 @@ object EventCmd {
     classOf[AddRemoveGold],
     classOf[GetChoice],
     classOf[HidePicture],
-    classOf[IfEventCmd],
+    classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
@@ -138,7 +138,7 @@ case class GetChoice(var question: Array[String] = Array(),
   }
 }
 
-case class IfEventCmd(
+case class IfCondition(
     var conditions: Array[Condition] = Array(),
     var elseBranch: Boolean = false,
     var trueCmds: Array[EventCmd] = Array(),
