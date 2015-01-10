@@ -1,11 +1,24 @@
 package rpgboss.player
 
 import rpgboss._
+import rpgboss.model.SoundSpec
 
 class ScriptInterfaceSpec extends UnitSpec {
+  "game.playSound call" should "work" in {
+    val test = new MapScreenTest {
+      override def testScript() = {
+        scriptInterface.playSound("sys/rpgboss-menu/MenuSelect.mp3")
+        scriptInterface.playSound("")
+        scriptInterface.playSound("nonexistent.mp3")
+      }
+    }
+
+    test.runTest()
+  }
+
   "game.modifyParty call" should "work" in {
     val test = new MapScreenTest {
-      def testScript() = {
+      override def testScript() = {
         val party0 = scriptInterface.getIntArray(PARTY)
         waiter {
           party0 should deepEqual(Array(0))
@@ -36,11 +49,11 @@ class ScriptInterfaceSpec extends UnitSpec {
         }
 
         // Test removing existing party member
-        val result4 = scriptInterface.modifyParty(add = false, characterId = 1)
+        val result4 = scriptInterface.modifyParty(add = false, characterId = 0)
         val party4 = scriptInterface.getIntArray(PARTY)
         waiter {
           result4 should equal(true)
-          party4 should deepEqual(Array(0))
+          party4 should deepEqual(Array(1))
         }
       }
     }

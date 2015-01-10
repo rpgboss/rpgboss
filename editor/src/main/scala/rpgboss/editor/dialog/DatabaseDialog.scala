@@ -12,10 +12,15 @@ import scala.swing._
 import scala.swing.event._
 import rpgboss.editor.Internationalized._
 
+import java.awt.Toolkit
+
 class DatabaseDialog(owner: Window, sm: StateMaster)
   extends StdDialog(owner, getMessage("Database")) {
 
-  centerDialog(new Dimension(1200, 730))
+  val screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+  centerDialog(new Dimension(
+      math.max(1024, screenSize.width / 2),
+      math.max(600, screenSize.height / 2)))
 
   val model = Utils.deepCopy(sm.getProjData)
 

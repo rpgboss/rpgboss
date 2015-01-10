@@ -23,16 +23,12 @@ import org.mozilla.javascript.Context
 
 object TestScriptThread {
   def fromTestScript(
-    game: RpgGame,
-    screen: RpgScreen,
     scriptInterface: ScriptInterface,
     scriptName: String,
     fnToRun: String = "",
     waiter: Waiter) = {
-    val script = Script.readFromDisk(game.project, scriptName)
+    val script = Script.readFromDisk(scriptInterface.project, scriptName)
     new ScriptThread(
-      game,
-      screen,
       scriptInterface,
       script.name,
       script.readAsString,
@@ -106,7 +102,8 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
       paintPassable(mapData.botLayer, x, y)
   }
 
-  def testScript()
+  def testScriptOnGdxThread() = {}
+  def testScript() = {}
 
   val game = new RpgGame(projectDirectory) {
     override def beginGame() = {
@@ -116,6 +113,8 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
 
       // Allow test to start immediately
       mapScreen.windowManager.clearTransition()
+
+      testScriptOnGdxThread()
 
       // Run this asynchronously so it doesn't block the main render thread.
       Future {
@@ -129,6 +128,7 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
     def setup() = MapScreenTest.this.setup()
   }
 
+  def persistent = game.persistent
   def scriptInterface = game.mapScreen.scriptInterface
 
   def runTest() = {

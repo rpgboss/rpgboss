@@ -7,9 +7,5 @@ class StartScreen(val game: RpgGame) extends RpgScreenWithGame {
   }
 
   override def update(delta: Float): Unit = {
-    if (!game.assets.update())
-      return
-
-    windowManager.update(delta)
   }
 }

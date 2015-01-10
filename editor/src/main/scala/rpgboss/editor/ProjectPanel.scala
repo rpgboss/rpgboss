@@ -45,6 +45,8 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
   }
 
+
+
   val topBar = new BoxPanel(Orientation.Horizontal) {
     import rpgboss.editor.dialog._
 
@@ -144,8 +146,17 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     }
 
 
-    contents += new Button(Action("Show community chat" + "...") {
-      mainP.getChat.show
+    contents += new Button(Action(getMessage("Show_Community_Chat") + "...") {
+      if(Desktop.isDesktopSupported()) {
+        var desktop =  Desktop.getDesktop();
+        if (desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+              desktop.browse(new URL("http://assets.rpgboss.com/login?type=showchat").toURI());
+            } catch {
+              case e: Exception => e.printStackTrace();
+            }
+        }
+      }
     }) {
       icon = new ImageIcon(Utils.readClasspathImage(
         "hendrik-weiler-theme/community_chat.png"))

@@ -37,7 +37,7 @@ class AnimationPlayerGdxPanel(
     var animationPlayer: AnimationPlayer = null
 
     val background =
-      BattleBackground.readFromDisk(project, ResourceConstants.editorBattleback)
+      BattleBackground.readFromDisk(project, ResourceConstants.defaultBattleback)
     val battler =
       Battler.readFromDisk(project, ResourceConstants.battlerTarget)
     var batch: SpriteBatch = null
@@ -77,8 +77,8 @@ class AnimationPlayerGdxPanel(
         animationPlayer.dispose()
       }
 
-      background.unloadAsset(assets)
-      battler.unloadAsset(assets)
+      background.dispose(assets)
+      battler.dispose(assets)
 
       if (assets != null) {
         assets.dispose()

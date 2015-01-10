@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.utils.Disposable
 
 case class SoundMetadata()
 
@@ -19,12 +20,6 @@ case class Sound(
   extends Resource[Sound, SoundMetadata]
   with RpgGdxAsset[com.badlogic.gdx.audio.Sound] {
   def meta = Sound
-
-  def playBySpec(assets: RpgAssetManager, spec: SoundSpec) = {
-    assert(isLoaded(assets))
-    val gdxSound = getAsset(assets)
-    gdxSound.play(spec.volume, spec.pitch, 0f /* pan */)
-  }
 }
 
 object Sound extends MetaResource[Sound, SoundMetadata] {
@@ -33,4 +28,22 @@ object Sound extends MetaResource[Sound, SoundMetadata] {
 
   def defaultInstance(proj: Project, name: String) =
     Sound(proj, name, SoundMetadata())
+}
+
+class SoundPlayer(assets: RpgAssetManager, sound: Sound, soundSpec: SoundSpec)
+  extends Disposable {
+  sound.loadAsset(assets)
+
+  def play() = {
+    assert(sound.isLoaded(assets))
+    val gdxSound = sound.getAsset(assets)
+    gdxSound.play(soundSpec.volume, soundSpec.pitch, 0f /* pan */)
+  }
+
+  def failed = sound.failed
+  def isLoaded = sound.isLoaded(assets)
+
+  def dispose() = {
+    sound.dispose(assets)
+  }
 }

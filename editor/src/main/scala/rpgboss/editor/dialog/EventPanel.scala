@@ -45,7 +45,8 @@ class EventPanel(
             i,
             eventLoc,
             () => {
-              if (i == statesModel.length - 1) {
+              if (state.runOnceThenIncrementState &&
+                  i == statesModel.length - 1) {
                 newState(false, false)
               }
             })
@@ -61,11 +62,13 @@ class EventPanel(
   def newState(copyCurrent: Boolean, switchPane: Boolean): Unit = {
     // Add to list of states
     val newPaneIdx = tabPane.curPane.idx + 1
+    val currentState = statesModel(tabPane.curPane.idx)
     val newState =
       if (copyCurrent)
-        statesModel(tabPane.curPane.idx).copy()
+        currentState.copyAll()
       else
-        RpgEventState()
+        currentState.copyEssentials()
+
     updateStates(
       statesModel.take(newPaneIdx) ++ Array(newState) ++
         statesModel.takeRight(statesModel.size - newPaneIdx))

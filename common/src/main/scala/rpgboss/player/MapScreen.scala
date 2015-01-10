@@ -97,6 +97,7 @@ class MapScreen(val game: RpgGame)
         case (k, v) => ((k, new EventEntity(
             game.project,
             game.persistent,
+            scriptInterface,
             scriptFactory,
             game.spritesets,
             mapAndAssetsOption,
@@ -106,8 +107,7 @@ class MapScreen(val game: RpgGame)
       }
 
       playMusic(0, mapAndAssets.map.metadata.music, true,
-          Transitions.fadeLength);
-
+          Transitions.fadeLength)
     } else {
       mapAndAssetsOption.map(_.dispose())
       mapAndAssetsOption = None
@@ -126,20 +126,7 @@ class MapScreen(val game: RpgGame)
       _playerEntity.y = loc.y
       _playerEntity.mapName = Some(loc.map)
 
-      updateParty()
-    }
-  }
-
-  def updateParty(): Unit = {
-    if (_playerEntity == null)
-      return
-
-    val partyArray = game.persistent.getIntArray(PARTY)
-    if (partyArray.length > 0) {
-      val spritespec = project.data.enums.characters(partyArray(0)).sprite
-      _playerEntity.setSprite(spritespec)
-    } else {
-      _playerEntity.setSprite(None)
+      _playerEntity.updateSprite()
     }
   }
 
@@ -220,10 +207,6 @@ class MapScreen(val game: RpgGame)
 
   // Update. Called on Gdx thread before render.
   def update(delta: Float): Unit = {
-    if (!assets.update())
-      return
-
-    windowManager.update(delta)
     // TODO: This makes the camera lag the player's position.
     camera.update(delta, _playerEntity.x, _playerEntity.y)
 
@@ -247,6 +230,7 @@ class MapScreen(val game: RpgGame)
       val minimumDistanceFromLastBattle = 3
 
       val encounterSettings = mapAndAssets.encounterSettings
+      val mapMetadata = mapAndAssets.map.metadata
 
       val distFromLastBattle =
         mapAndAssets.manhattanDistanceFromLastBattle(
@@ -262,7 +246,9 @@ class MapScreen(val game: RpgGame)
           val encounterId = Utils.randomChoose(
               encounterSettings.encounters.map(_.encounterId),
               encounterSettings.encounters.map(_.weight.floatValue))
-          game.startBattle(encounterId, "")
+          game.startBattle(encounterId, mapMetadata.battleBackground,
+              mapMetadata.battleMusic.map(_.sound).getOrElse(""),
+              mapMetadata.battleMusic.map(_.volume).getOrElse(1))
         }
       }
     }

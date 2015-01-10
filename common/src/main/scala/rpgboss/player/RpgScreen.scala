@@ -1,13 +1,26 @@
 package rpgboss.player
 
-import com.badlogic.gdx.Screen
 import com.badlogic.gdx.Gdx
-import rpgboss.lib._
-import rpgboss.model.SoundSpec
-import aurelienribon.tweenengine._
-import rpgboss.model.resource.{ Music, MusicPlayer }
+import com.badlogic.gdx.Screen
+import aurelienribon.tweenengine.BaseTween
+import aurelienribon.tweenengine.Tween
+import aurelienribon.tweenengine.TweenCallback
+import aurelienribon.tweenengine.TweenManager
+import rpgboss.lib.ThreadChecked
 import rpgboss.model.Project
+import rpgboss.model.SoundSpec
+import rpgboss.model.resource.Music
+import rpgboss.model.resource.MusicPlayer
 import rpgboss.model.resource.RpgAssetManager
+import rpgboss.model.resource.Sound
+import rpgboss.model.resource.SoundPlayer
+import rpgboss.model.AnimationSound
+import rpgboss.model.Animation
+import rpgboss.player.entity.AnimationPlayer
+
+object RpgScreen {
+  val MAX_MUSIC_SLOTS = 8
+}
 
 trait RpgScreen extends Screen with ThreadChecked {
   def project: Project
@@ -21,7 +34,8 @@ trait RpgScreen extends Screen with ThreadChecked {
   def createWindowManager(): WindowManager =
     new WindowManager(assets, project, screenW, screenH)
 
-  val musics = Array.fill[Option[MusicPlayer]](8)(None)
+  val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
+
   val windowManager = createWindowManager()
 
   val animationManager = new AnimationManager()
@@ -29,8 +43,11 @@ trait RpgScreen extends Screen with ThreadChecked {
   val tweenManager = new TweenManager()
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
-    loop: Boolean, fadeDuration: Float) = {
+    loop: Boolean, fadeDuration: Float): Unit = {
     assertOnBoundThread()
+
+    if (slot < 0 || slot >= RpgScreen.MAX_MUSIC_SLOTS)
+      return
 
     musics(slot).map({ oldMusic =>
       val tweenMusic = new MusicPlayerTweenable(oldMusic)
@@ -64,6 +81,14 @@ trait RpgScreen extends Screen with ThreadChecked {
     }
   }
 
+  def playSound(soundSpec: SoundSpec): Unit = {
+    val animationSound = AnimationSound(0.0f, soundSpec)
+    val animation = Animation(sounds = Array(animationSound))
+    val player = new AnimationPlayer(project, animation, assets, 0f, 0f)
+    animationManager.addAnimation(player)
+    player.play()
+  }
+
   def render()
   def update(delta: Float)
 
@@ -90,13 +115,22 @@ trait RpgScreen extends Screen with ThreadChecked {
     assertOnBoundThread()
   }
 
-  override def render(delta: Float) = {
+  override def render(delta: Float): Unit = {
     assertOnBoundThread()
+
+    if (!assets.update())
+      return
 
     // Update tweens
     tweenManager.update(delta)
 
-    update(delta)
+    windowManager.update(delta)
+
+    animationManager.update(delta)
+
+    if (!windowManager.inTransition)
+      update(delta)
+
     render()
   }
 
@@ -125,7 +159,6 @@ trait RpgScreenWithGame extends RpgScreen {
   def screenH = project.data.startup.screenH
   def assets = game.assets
   val scriptInterface = new ScriptInterface(game, this)
-  val scriptFactory =
-    new GameScriptThreadFactory(game, this, scriptInterface)
+  val scriptFactory = new GameScriptThreadFactory(scriptInterface)
 
 }

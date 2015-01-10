@@ -80,6 +80,11 @@ class NewEventCmdBox(
         row().grid().add(leftLabel(getMessage("Battles")))
         row().grid().add(btnEvtCmd(getMessage("Start_Battle"), StartBattle()))
 
+        row().grid().add(leftLabel(needsTranslation("Audio")))
+        row().grid().add(btnEvtCmd(needsTranslation("Play Sound"), PlaySound()))
+        row().grid().add(btnEvtCmd(needsTranslation("Play Music"), PlayMusic()))
+        row().grid().add(btnEvtCmd(needsTranslation("Stop Sound"), StopMusic()))
+
         row().grid().add(leftLabel(getMessage("Programming")))
         row().grid().add(
             btnEvtCmd(getMessage("Set_Global_Integer"), SetGlobalInt()))

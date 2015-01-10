@@ -97,8 +97,10 @@ class ScriptInterface(
   def project = game.project
 
   def syncRun[T](op: => T): T = {
-    assertOnDifferentThread()
-    GdxUtils.syncRun(op)
+    if (onBoundThread())
+      op
+    else
+      GdxUtils.syncRun(op)
   }
 
   /*
@@ -175,9 +177,24 @@ class ScriptInterface(
     activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
   }
 
-  def startBattle(encounterId: Int, battleBackground: String) = {
+  def startBattle(encounterId: Int, overrideBattleBackground: String,
+      overrideBattleMusic: String, overrideBattleMusicVolume: Float) = {
+    val mapMetadata = mapScreen.mapAndAssetsOption.get.map.metadata
+    val battleBackground =
+      if (overrideBattleBackground.isEmpty)
+        mapMetadata.battleBackground
+      else
+        overrideBattleBackground
+
+    val (battleMusic, battleMusicVolume) =
+      if (overrideBattleMusic.isEmpty)
+        (mapMetadata.battleMusic.get.sound, mapMetadata.battleMusic.get.volume)
+      else
+        (overrideBattleMusic, overrideBattleMusicVolume)
+
     syncRun {
-      game.startBattle(encounterId, battleBackground)
+      game.startBattle(encounterId, battleBackground, battleMusic,
+          battleMusicVolume)
     }
 
     // Blocks until the battle screen finishes on way or the other
@@ -209,6 +226,25 @@ class ScriptInterface(
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
                 loop: Boolean, fadeDuration: Float) = syncRun {
     activeScreen.playMusic(slot, specOpt, loop, fadeDuration)
+  }
+
+  def playMusic(slot: Int, music: String, volume: Float, loop: Boolean,
+                fadeDuration: Float) = syncRun {
+    activeScreen.playMusic(
+        slot, Some(SoundSpec(music, volume)), loop, fadeDuration)
+  }
+
+  def stopMusic(slot: Int, fadeDuration: Float) = syncRun {
+    activeScreen.playMusic(
+        slot, None, false, fadeDuration)
+  }
+
+  def playSound(sound: String) = syncRun {
+    activeScreen.playSound(SoundSpec(sound))
+  }
+
+  def playSound(sound: String, volume: Float, pitch: Float) = syncRun {
+    activeScreen.playSound(SoundSpec(sound, volume, pitch))
   }
 
   /*
@@ -404,35 +440,17 @@ class ScriptInterface(
 
   def incrementEventState(eventId: Int) = syncRun {
     mapScreen.mapName.map { mapName =>
+      println("Increment event state! - eventId %d".format(eventId))
       val newState = persistent.getEventState(mapName, eventId) + 1
       persistent.setEventState(mapName, eventId, newState)
     }
   }
 
-  def modifyParty(add: Boolean, characterId: Int): Boolean = {
-    // Can't be anonymous due to use of 'return', which breaks out of closures.
-    def f(): Boolean = {
-      if (characterId >= project.data.enums.characters.size)
-        return false
+  def modifyParty(add: Boolean, characterId: Int): Boolean = syncRun {
+    if (characterId >= project.data.enums.characters.size)
+      return false
 
-      val existing = persistent.getIntArray(PARTY)
-      if (add) {
-        if (existing.contains(characterId))
-          return false
-
-        val newParty = existing :+ characterId
-        persistent.setIntArray(PARTY, newParty)
-        return true
-      } else {
-        if (!existing.contains(characterId))
-          return false
-
-        persistent.setIntArray(PARTY, existing.filter(_ != characterId))
-        return true
-      }
-    }
-
-    syncRun { f() }
+    persistent.modifyParty(add, characterId)
   }
 
   def openStore(itemIdsSold: Array[Int], buyPriceMultiplier: Float,

@@ -42,7 +42,7 @@ class RandomEncounterListPanel(
     initial: Array[RandomEncounter],
     onUpdate: Array[RandomEncounter] => Unit)
     extends TableEditor[RandomEncounter] {
-  override def title = "Random Encounters"
+  override def title = getMessage("Random_Encounters")
 
   override val modelArray = ArrayBuffer(initial: _*)
   override def newInstance() = RandomEncounter()

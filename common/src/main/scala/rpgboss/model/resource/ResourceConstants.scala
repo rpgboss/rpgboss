@@ -18,8 +18,11 @@ object ResourceConstants {
   def systemStartScript = "sys/start.js"
   def systemStartCall = "start()"
 
-  def editorBattleback = "sys/Crownlesswish/crownlesswish_rrr.jpg"
+  def defaultBattleback = "sys/Etolier/01sougen.jpg"
   def battlerTarget = "sys/Redshrike/goblinrider.png"
+
+  def defaultBattleMusic =
+    Some(SoundSpec("sys/sean_m_stephens/Battle1.mid"))
 
   def defaultTilesets = Array(
     "sys/Refmap-TileA5.png",

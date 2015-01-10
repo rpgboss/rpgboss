@@ -77,6 +77,9 @@ abstract class ArrayEditingPanel[T <: AnyRef](
 
       editPaneContainer.revalidate()
       editPaneContainer.repaint()
+
+      editPane.revalidate()
+      editPane.repaint()
     }
   }
 
@@ -229,11 +232,16 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
     contents = listView
   }
 
+  val editPaneScroll = new ScrollPane {
+    preferredSize = new Dimension(400, 400)
+    contents = editPaneContainer
+  }
+
   row().grid().add(new BoxPanel(Orientation.Horizontal) {
     contents += new DesignGridPanel {
       maximumSize = new Dimension(250, 5000)
-      preferredSize = new Dimension(250, 500)
-      minimumSize = new Dimension(250, 250)
+      preferredSize = new Dimension(250, 300)
+      minimumSize = new Dimension(250, 150)
 
       row().grid().add(bigLbl)
       row().grid().add(scrollPane)
@@ -241,7 +249,7 @@ abstract class RightPaneArrayEditingPanel[T <: AnyRef](
       row().grid().add(btnDuplicateItem)
     }
 
-    contents += (editPaneContainer)
+    contents += editPaneScroll
   })
 
   // Lazily select the first index both for performance, and also so that we

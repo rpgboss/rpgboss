@@ -216,7 +216,7 @@ case class TexturePicture[MT <: AnyRef](
   layout: Layout) extends PictureLike {
 
   resource.loadAsset(assets)
-  def dispose() = resource.unloadAsset(assets)
+  def dispose() = resource.dispose(assets)
 
   override def render(manager: WindowManager, batch: SpriteBatch) = {
     if (resource.isLoaded(assets)) {

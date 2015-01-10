@@ -15,6 +15,7 @@ Pre-requisites:
 +  git
 +  sbt - http://www.scala-sbt.org/
 +  Java 6, 7, or 8.
++  WARNING: If you use GNU/Linux please don't install openjdk-8-jre or jdk because RPGBoss doesn't work with it. Use Oracle Java or Java 7 instead. Oracle Java PPA: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html 
 
 Build instructions:
 

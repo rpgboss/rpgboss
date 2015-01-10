@@ -144,14 +144,18 @@ function StatusMenu() {
       var characterMps = game.getIntArray(game.CHARACTER_MPS());
 
       for (var i = 0; i < party.length; ++i) {
-        var stats = game.getBattleStats(i, -1, -1);
+        var characterId = party[i];
+        var stats = game.getBattleStats(characterId, -1, -1);
         
-        lines.push(rightPad(characterNames[i], 10)
-            + leftPad(characters[i].subtitle(), 20));
-        lines.push(" LVL " + leftPad(characterLevels[i].toString(), 3));
-        lines.push("  HP " + leftPad(characterHps[i].toString(), 4) + " / "
+        lines.push(rightPad(characterNames[characterId], 10)
+            + leftPad(characters[characterId].subtitle(), 20));
+        lines.push(
+            " LVL " + leftPad(characterLevels[characterId].toString(), 3));
+        lines.push(
+            "  HP " + leftPad(characterHps[characterId].toString(), 4) + " / "
             + leftPad(stats.current().mhp(), 4));
-        lines.push("  MP " + leftPad(characterMps[i].toString(), 4) + " / "
+        lines.push(
+            "  MP " + leftPad(characterMps[characterId].toString(), 4) + " / "
             + leftPad(stats.current().mmp(), 4));
       }
 

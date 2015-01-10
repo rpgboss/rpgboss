@@ -11,6 +11,7 @@ import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.misc.RandomEncounterSettingsPanel
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.resourceselector.BattleBackgroundField
 
 class MapPropertiesDialog(
   owner: Window,
@@ -53,26 +54,22 @@ class MapPropertiesDialog(
     initialMap.metadata.ySize,
     model.ySize = _)
 
-  val fChangeMusic = boolField(
-    "Change music on enter",
-    model.changeMusicOnEnter,
-    model.changeMusicOnEnter = _,
-    Some(setEnabledFields))
-
   val fMusic = new MusicField(
     owner, sm, model.music,
     model.music = _)
+
+  val fBattleback = new BattleBackgroundField(
+    owner, sm, model.battleBackground, model.battleBackground = _,
+    allowNone = false)
+
+  val fBattleMusic = new MusicField(
+    owner, sm, model.battleMusic, model.battleMusic = _, allowNone = false)
 
   val fTilesets =
     new TilesetArrayField(owner, sm, model.tilesets, model.tilesets = _)
 
   val fRandomEncounters = new RandomEncounterSettingsPanel(
       owner, sm.getProjData, model.randomEncounterSettings)
-
-  def setEnabledFields() =
-    fMusic.enabled = model.changeMusicOnEnter
-
-  setEnabledFields()
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
@@ -90,8 +87,13 @@ class MapPropertiesDialog(
         row().grid()
           .add(fWidth).add(fHeight)
 
-        row().grid(leftLabel(getMessageColon("Music"))).add(fChangeMusic)
-        row().grid().add(fMusic)
+        row().grid(leftLabel(getMessageColon("Music")))
+          .add(fMusic)
+
+        row().grid(leftLabel(getMessageColon("Battle_Background")))
+          .add(fBattleback)
+        row().grid(leftLabel(getMessageColon("Battle_Music")))
+          .add(fBattleMusic)
 
         row().grid(leftLabel(getMessageColon("Tilesets"))).add(fTilesets)
       }

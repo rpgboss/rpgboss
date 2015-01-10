@@ -384,7 +384,7 @@ class BattleScreen(
       assert(status.entityId < _battle.get.pData.enums.characters.length)
       val name = getCharacterName(status.entityId)
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
-      "%-10s  %3d HP | %2d MP %3d%% ".format(name, status.hp, status.mp, readiness)
+      "%-10s %3dHP | %2dMP %3d%% ".format(name, status.hp, status.mp, readiness)
     }
     partyListWindow.updateLines(partyLines)
 
@@ -516,17 +516,6 @@ class BattleScreen(
   }
 
   def update(delta: Float): Unit = {
-    assertOnBoundThread()
-
-    if (!assets.update())
-      return
-
-    windowManager.update(delta)
-    if (windowManager.inTransition)
-      return
-
-    animationManager.update(delta)
-
     // All these actions should not take place if this is an in-editor session.
     gameOpt map { game =>
       _battle.map { battle =>
@@ -558,7 +547,7 @@ class BattleScreen(
               project.data,
               battle.partyIds,
               exp)
-            val names = leveled.map(getCharacterName)
+            val leveledCharacterNames = leveled.map(getCharacterName)
 
             val gold = battle.goldDrops
             game.persistent.addRemoveGold(gold)
@@ -572,8 +561,8 @@ class BattleScreen(
 
             concurrent.Future {
               scriptInterface.showText(Array("Received %d XP.".format(exp)))
-              for (i <- leveled) {
-                scriptInterface.showText(Array("%s leveled!".format(names(i))))
+              for (name <- leveledCharacterNames) {
+                scriptInterface.showText(Array("%s leveled!".format(name)))
               }
 
               if (gold > 0)

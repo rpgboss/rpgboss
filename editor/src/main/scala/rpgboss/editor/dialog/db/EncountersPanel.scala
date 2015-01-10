@@ -56,7 +56,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
       if (battleScreen.battleActive)
         battleScreen.endBattle()
 
-      battleScreen.startBattle(battle, ResourceConstants.editorBattleback)
+      battleScreen.startBattle(battle, ResourceConstants.defaultBattleback)
     }
 
     override def create() = {
@@ -178,6 +178,7 @@ class EncountersPanel(
     })
 
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
+
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {
           row().grid(lbl(getMessageColon("Encounter_Name"))).add(fName)

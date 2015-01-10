@@ -17,6 +17,7 @@ import rpgboss.model.battle.BattleStatus
 
 trait PersistentStateUpdate
 case class IntChange(key: String, value: Int) extends PersistentStateUpdate
+case class IntArrayChange(key: String) extends PersistentStateUpdate
 case class EventStateChange(key: (String, Int), value: Int)
   extends PersistentStateUpdate
 
@@ -87,6 +88,7 @@ class PersistentState(
   def setIntArray(key: String, value: Array[Int]) = {
     assertOnBoundThread()
     intArrayMap.update(key, value.toArray)
+    publish(IntArrayChange(key))
   }
 
   /**
@@ -202,6 +204,24 @@ class PersistentState(
     setIntArray(CHARACTER_MPS, mps.updated(characterId, mp))
 
     setIntArray(CHARACTER_STATUS_EFFECTS(characterId), tempStatusEffects)
+  }
+
+  def modifyParty(add: Boolean, characterId: Int): Boolean = {
+    val existing = getIntArray(PARTY)
+    if (add) {
+      if (existing.contains(characterId))
+        return false
+
+      val newParty = existing :+ characterId
+      setIntArray(PARTY, newParty)
+      return true
+    } else {
+      if (!existing.contains(characterId))
+        return false
+
+      setIntArray(PARTY, existing.filter(_ != characterId))
+      return true
+    }
   }
 
   /**

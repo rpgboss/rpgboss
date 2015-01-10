@@ -25,11 +25,6 @@ class EventStatePane(
   runOnceChangeCallback: () => Unit)
   extends BoxPanel(Orientation.Horizontal) {
 
-  val fSameAppearanceAsPrevState: CheckBox =
-    boolField(getMessage("Same_Appearance_As_Previous_State"),
-        model.sameAppearanceAsPrevState,
-        model.sameAppearanceAsPrevState = _,
-        Some(updateAppearanceFieldsState))
   val heightBox =
     enumIdCombo(EventHeight)(model.height, model.height = _)
   val fAffixDirection =
@@ -52,22 +47,6 @@ class EventStatePane(
       model.sprite = spriteSpec
     })
 
-  def updateAppearanceFieldsState() = {
-    if (idx == 0) {
-      fSameAppearanceAsPrevState.selected = true
-      fSameAppearanceAsPrevState.enabled = false
-      heightBox.enabled = true
-      spriteBox.enabled = true
-      fAffixDirection.enabled = true
-    } else {
-      val sameAppearance = fSameAppearanceAsPrevState.selected
-      heightBox.enabled = !sameAppearance
-      spriteBox.enabled = !sameAppearance
-      fAffixDirection.enabled = !sameAppearance
-    }
-  }
-  updateAppearanceFieldsState()
-
   val triggerBox =
     enumIdCombo(EventTrigger)(model.trigger, model.trigger = _)
 
@@ -81,12 +60,14 @@ class EventStatePane(
     contents += new DesignGridPanel {
       border = BorderFactory.createTitledBorder(getMessage("Appearance"))
 
-      row().grid().add(fSameAppearanceAsPrevState)
-
-      row().grid().add(leftLabel(getMessageColon("Height")))
-      row().grid().add(heightBox)
-      row().grid().add(leftLabel(getMessageColon("Sprite")))
-      row().grid().add(spriteBox)
+      row()
+        .grid().add(leftLabel(getMessageColon("Height")))
+      row()
+        .grid().add(heightBox)
+      row()
+        .grid().add(leftLabel(getMessageColon("Sprite")))
+      row()
+        .grid().add(spriteBox)
       row().grid().add(fAffixDirection)
     }
 

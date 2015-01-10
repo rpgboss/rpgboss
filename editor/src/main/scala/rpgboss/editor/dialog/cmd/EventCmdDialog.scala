@@ -74,8 +74,11 @@ object EventCmdDialog {
         new SetEventStateDialog(owner, sm, mapName, e, successF)
       case e: MoveEvent =>
         new MoveEventCmdDialog(owner, sm, mapName, e, successF)
+      case e: PlayMusic => new PlayMusicCmdDialog(owner, sm, e, successF)
+      case e: PlaySound => new PlaySoundCmdDialog(owner, sm, e, successF)
       case e: StartBattle =>
         new StartBattleCmdDialog(owner, sm, e, successF)
+      case e: StopMusic => new StopMusicCmdDialog(owner, sm, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
       case _ => null
     }

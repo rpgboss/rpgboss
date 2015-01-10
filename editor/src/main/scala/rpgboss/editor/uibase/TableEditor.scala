@@ -6,6 +6,7 @@ import scala.swing.event.MouseClicked
 import java.awt.event.MouseEvent
 import javax.swing.BorderFactory
 import scala.collection.mutable.ArrayBuffer
+import rpgboss.editor.Internationalized._
 
 /**
  * A table that can be edited by context menu. Can add a new element by double
@@ -99,15 +100,15 @@ abstract class TableEditor[T] extends ScrollPane {
           selection.rows.clear()
           selection.rows += row
           val menu = new RpgPopupMenu {
-            contents += new MenuItem(Action("New...") {
+            contents += new MenuItem(Action(getMessage("New")) {
               newDialog()
             })
 
             if (row != rowCount - 1) {
-              contents += new MenuItem(Action("Edit...") {
+              contents += new MenuItem(Action(getMessage("Edit")) {
                 editDialog(row)
               })
-              contents += new MenuItem(Action("Delete") {
+              contents += new MenuItem(Action(getMessage("Delete")) {
                 modelArray.remove(row)
                 tableModel.fireTableRowsDeleted(row, row)
                 onUpdate()

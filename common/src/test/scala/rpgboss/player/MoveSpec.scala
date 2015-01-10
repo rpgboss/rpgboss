@@ -16,7 +16,7 @@ import rpgboss.player.entity.EntityMove
 class MoveSpec extends UnitSpec {
   "Move" should "move right simple" in {
     val test = new MapScreenTest {
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f);
         scriptInterface.movePlayer(1f, 0)
 
@@ -35,7 +35,7 @@ class MoveSpec extends UnitSpec {
 
   "Move" should "should work in reponse to key press" in {
     val test = new MapScreenTest {
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f)
 
         // TODO: fix hardcoded speed here
@@ -65,7 +65,7 @@ class MoveSpec extends UnitSpec {
           2f)
       }
 
-      def testScript() = {
+      override def testScript() = {
         scriptInterface.teleport(mapName, 0.5f, 0.5f)
         scriptInterface.activateEvent(1, true)
 

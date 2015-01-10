@@ -122,7 +122,6 @@ class RpgGame(gamepath: File)
   def setParty(partyArray: Array[Int]) = {
     assertOnBoundThread()
     persistent.setIntArray(PARTY, partyArray)
-    mapScreen.updateParty()
   }
 
   def startNewGame() = {
@@ -138,12 +137,12 @@ class RpgGame(gamepath: File)
 
     val characterStats = for (c <- characters)
       yield BattleStats(project.data, c.baseStats(project.data, c.initLevel),
-                        c.startingEquipment)
+      c.startingEquipment)
 
     persistent.setIntArray(CHARACTER_HPS, characterStats.map(_.mhp))
     persistent.setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
 
-    persistent.setIntArray(CHARACTER_EXPS , characters.map(x => 0))
+    persistent.setIntArray(CHARACTER_EXPS, characters.map(x => 0))
 
     persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
 
@@ -180,7 +179,9 @@ class RpgGame(gamepath: File)
       mapScreen.setPlayerLoc(loc)
   }
 
-  def startBattle(encounterId: Int, battleBackground: String): Unit = {
+  def startBattle(
+    encounterId: Int, battleBackground: String,
+    battleMusic: String, battleMusicVolume: Float): Unit = {
     assert(encounterId >= 0)
     assert(encounterId < project.data.enums.encounters.length)
 
@@ -204,6 +205,13 @@ class RpgGame(gamepath: File)
         aiOpt = Some(new RandomEnemyAI))
 
       battleScreen.startBattle(battle, battleBackground)
+      if (!battleMusic.isEmpty) {
+        battleScreen.playMusic(
+          0,
+          Some(SoundSpec(battleMusic, battleMusicVolume)),
+          true,
+          Transitions.fadeLength)
+      }
     })
   }
 

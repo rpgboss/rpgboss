@@ -78,12 +78,13 @@ class BattleBackgroundSelectDialog(
   owner: Window,
   sm: StateMaster,
   initialSelectionOpt: Option[String],
-  onSuccessF: (Option[String]) => Unit)
+  onSuccessF: (Option[String]) => Unit,
+  allowNone: Boolean = false)
   extends StringSpecSelectDialog(
     owner,
     sm,
     initialSelectionOpt,
-    false,
+    allowNone,
     BattleBackground,
     onSuccessF) {
   override def rightPaneFor(selection: String, unused: String => Unit) = {
@@ -156,10 +157,17 @@ abstract class BrowseField[SpecType](
   initial: Option[SpecType],
   onUpdate: Option[SpecType] => Unit)
   extends BoxPanel(Orientation.Horizontal) with LazyLogging {
+  
+  override def enabled_=(enabled: Boolean) = {
+    super.enabled_=(enabled)
+    textField.enabled = enabled
+    browseBtn.enabled = enabled
+  }
 
   var model = initial
 
   val textField = new TextField {
+    preferredSize = new Dimension(100, preferredSize.height)
     editable = false
     enabled = true
   }
@@ -219,10 +227,12 @@ class BattleBackgroundField(
   owner: Window,
   sm: StateMaster,
   initial: String,
-  onUpdate: String => Unit)
+  onUpdate: String => Unit,
+  allowNone: Boolean = false)
   extends StringBrowseField(owner, sm, initial, onUpdate) {
   override def doBrowse() = {
-    val diag = new BattleBackgroundSelectDialog(owner, sm, model, model = _)
+    val diag = 
+      new BattleBackgroundSelectDialog(owner, sm, model, model = _, allowNone)
     diag.open()
   }
 }

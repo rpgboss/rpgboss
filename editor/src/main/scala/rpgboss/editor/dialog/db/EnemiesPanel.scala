@@ -68,16 +68,22 @@ class EnemiesPanel(
 
       row().grid(leftLabel(getMessageColon("Level"))).add(fLevel)
 
-      row().grid(leftLabel(getMessageColon("Max_HP"))).add(fMhp)
-      row().grid(leftLabel(getMessageColon("Max_MP"))).add(fMmp)
+      row()
+        .grid(leftLabel(getMessageColon("Max_HP"))).add(fMhp)
+        .grid(leftLabel(getMessageColon("Max_MP"))).add(fMmp)
 
-      row().grid(leftLabel(getMessageColon("Attack"))).add(fAtk)
-      row().grid(leftLabel(getMessageColon("Magic"))).add(fMag)
+      row()
+        .grid(leftLabel(getMessageColon("Attack"))).add(fAtk)
+        .grid(leftLabel(getMessageColon("Magic"))).add(fMag)
 
-      row().grid(leftLabel(getMessageColon("Armor"))).add(fArm)
-      row().grid(leftLabel(getMessageColon("Magic_Resist"))).add(fMre)
+      row()
+        .grid(leftLabel(getMessageColon("Armor"))).add(fArm)
+        .grid(leftLabel(getMessageColon("Magic_Resist"))).add(fMre)
 
-      row().grid(leftLabel(getMessageColon("Speed"))).add(fSpd)
+      row()
+        .grid(leftLabel(getMessageColon("Speed"))).add(fSpd)
+        .grid()
+
       row().grid(leftLabel(getMessageColon("EXP_Value"))).add(fExpValue)
       row().grid(leftLabel(getMessageColon("Dropped_Gold"))).add(fDroppedGold)
 
