@@ -78,7 +78,7 @@ class EventEntity(
     if (proposedEvtStateIdx < 0 || proposedEvtStateIdx >= states.length) {
       val clampedState =
         Utils.clamped(proposedEvtStateIdx, 0, states.length - 1)
-      logger.warn(
+      logger.error(
           "Event %s->%d doesn't have state %d. ".format(
               mapName, mapEvent.id, proposedEvtStateIdx) +
           "Clamping state to %d.".format(clampedState))
