@@ -45,7 +45,8 @@ class EventPanel(
             i,
             eventLoc,
             () => {
-              if (i == statesModel.length - 1) {
+              if (state.runOnceThenIncrementState &&
+                  i == statesModel.length - 1) {
                 newState(false, false)
               }
             })

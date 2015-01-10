@@ -152,11 +152,15 @@ extends ScriptThreadFactory {
     state: Int,
     onFinish: Option[() => Unit] = None) = {
     val extraCmdsAtEnd: Array[EventCmd] =
-      if (eventState.runOnceThenIncrementState)
+      if (eventState.runOnceThenIncrementState &&
+          state != entity.states.length - 1) {
         Array(IncrementEventState())
-      else
+      } else {
         Array()
+      }
     val cmds = eventState.cmds ++ extraCmdsAtEnd
+
+    println("runFromEventEntity " + entity.mapEvent.id.toString)
 
     val scriptName = "%s/%d".format(entity.mapEvent.name, entity.evtStateIdx)
 

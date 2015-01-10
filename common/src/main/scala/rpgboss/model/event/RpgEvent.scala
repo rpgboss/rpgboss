@@ -74,7 +74,13 @@ case class RpgEventState(
         _.valueTypeId == EventParameterValueType.LocalVariable.id))
   }
 
-  def copyEssentials() = copy(conditions = Array(), cmds = Array())
+  def copyEssentials() = {
+    val newState = RpgEventState()
+    newState.sprite = sprite
+    newState.height = height
+    newState.affixDirection = affixDirection
+    newState
+  }
   def copyAll() = Utils.deepCopy(this)
 }
 
