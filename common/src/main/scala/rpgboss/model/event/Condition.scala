@@ -84,6 +84,17 @@ object Condition extends LazyLogging {
     }
   }
 
+  def allConditionsExp(conditions: Array[Condition]): RawJs = {
+    if (conditions.size == 1) {
+      conditions.head.rawJs
+    } else {
+      val conditionsString = conditions
+        .map(c => "(%s)".format(c.rawJs.exp))
+        .mkString(" && ")
+      RawJs(conditionsString)
+    }
+  }
+
   def allConditionsTrue(
       conditions: Array[Condition],
       scriptInterface: ScriptInterface): Boolean = {
@@ -92,7 +103,6 @@ object Condition extends LazyLogging {
 
     ScriptableObject.putProperty(
       jsScope, "game", Context.javaToJS(scriptInterface, jsScope))
-//    try {
       for (condition <- conditions) {
         val conditionExp = condition.rawJs.exp
         val jsResult = jsContext.evaluateString(
@@ -108,15 +118,6 @@ object Condition extends LazyLogging {
       }
 
       Context.exit()
-//    } catch {
-//      case e: Throwable => {
-//        logger.error(
-//          "Error while calculating conditions: %s. ".format(conditions.deep) +
-//          "Error: %s".format(e.getMessage()))
-//        return false
-//      }
-//    }
-
     return true
   }
 }
