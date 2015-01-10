@@ -440,7 +440,6 @@ class ScriptInterface(
 
   def incrementEventState(eventId: Int) = syncRun {
     mapScreen.mapName.map { mapName =>
-      println("Increment event state! - eventId %d".format(eventId))
       val newState = persistent.getEventState(mapName, eventId) + 1
       persistent.setEventState(mapName, eventId, newState)
     }

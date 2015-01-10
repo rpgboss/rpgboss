@@ -160,8 +160,6 @@ extends ScriptThreadFactory {
       }
     val cmds = eventState.cmds ++ extraCmdsAtEnd
 
-    println("runFromEventEntity " + entity.mapEvent.id.toString)
-
     val scriptName = "%s/%d".format(entity.mapEvent.name, entity.evtStateIdx)
 
     val scriptBody = cmds.flatMap(_.toJs).mkString("\n")
