@@ -9,6 +9,7 @@ import scala.concurrent.Promise
 import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
 import rpgboss.lib.Utils
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 case class EventScriptInterface(mapName: String, id: Int)
 
@@ -27,7 +28,8 @@ class EventEntity(
       mapAndAssetsOption,
       eventEntities,
       mapEvent.x,
-      mapEvent.y) {
+      mapEvent.y)
+  with LazyLogging {
 
   def id = mapEvent.id
 
@@ -72,7 +74,17 @@ class EventEntity(
   }
 
   def updateState(): Unit = {
-    evtStateIdx = persistent.getEventState(mapName, mapEvent.id)
+    val proposedEvtStateIdx = persistent.getEventState(mapName, mapEvent.id)
+    if (proposedEvtStateIdx < 0 || proposedEvtStateIdx >= states.length) {
+      val clampedState =
+        Utils.clamped(proposedEvtStateIdx, 0, states.length - 1)
+      logger.warn(
+          "Event %s->%d doesn't have state %d. ".format(
+              mapName, mapEvent.id, proposedEvtStateIdx) +
+          "Clamping state to %d.".format(clampedState))
+      persistent.setEventState(mapName, mapEvent.id, clampedState)
+      return
+    }
 
     for (i <- 0 until states.length;
          if !states(i).conditions.isEmpty) {

@@ -152,8 +152,7 @@ extends ScriptThreadFactory {
     state: Int,
     onFinish: Option[() => Unit] = None) = {
     val extraCmdsAtEnd: Array[EventCmd] =
-      if (eventState.runOnceThenIncrementState &&
-          state != entity.states.length - 1) {
+      if (eventState.runOnceThenIncrementState) {
         Array(IncrementEventState())
       } else {
         Array()
