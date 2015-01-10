@@ -127,6 +127,7 @@ class MapScreen(val game: RpgGame)
       _playerEntity.mapName = Some(loc.map)
 
       _playerEntity.updateSprite()
+      windowManager.reset()
     }
   }
 

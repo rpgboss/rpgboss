@@ -7,8 +7,15 @@ import rpgboss.editor.dialog._
 import java.io.File
 import rpgboss.editor.Internationalized._ 
 
+import javax.swing.event._
+import javax.swing.KeyStroke
+import java.awt.event.KeyEvent
+import java.awt.event.InputEvent
+import com.typesafe.scalalogging.slf4j.LazyLogging
+
 class MainPanel(val topWin: Frame)
-  extends BoxPanel(Orientation.Vertical) {
+  extends BoxPanel(Orientation.Vertical) 
+  with LazyLogging {
   var smOpt: Option[StateMaster] = None
 
   minimumSize = new Dimension(800, 600)
@@ -38,7 +45,14 @@ class MainPanel(val topWin: Frame)
 
   val actionSave = Action(getMessage("Save_Project")) {
     smOpt.map(_.save())
+    logger.info("Project saved.")
   }
+
+  peer
+    .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK), getMessage("Save_Project"))
+  peer
+    .getActionMap.put(getMessage("Save_Project"), actionSave.peer)
 
   def setContent(c: Component) = {
     contents.clear()
