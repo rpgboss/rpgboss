@@ -181,6 +181,7 @@ case class IfCondition(
 case class HidePicture(
     slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP)) extends EventCmd {
   def sections = singleCall("game.hidePicture", slot)
+  override def getParameters() = List(slot)
 }
 
 case class IncrementEventState() extends EventCmd {
@@ -257,6 +258,7 @@ case class PlayMusic(
   def sections =
     singleCall("game.playMusic", slot, spec.sound, spec.volume, loop,
         fadeDuration)
+  override def getParameters() = List(slot)
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {
@@ -295,6 +297,8 @@ case class SetGlobalInt(
       singleCall("game.setInt", key,
           applyOperator(value1.rawJs, operatorString, value2.rawJs))
   }
+
+  override def getParameters() = List(value1, value2)
 }
 
 case class SetLocalInt(variableName: String,
@@ -326,6 +330,7 @@ case class ShowPicture(
     layout: Layout = Layout.defaultForPictures) extends EventCmd {
   def sections =
     singleCall("game.showPicture", slot, picture, layout.toJs())
+  override def getParameters() = List(slot)
 }
 
 case class StartBattle(
@@ -345,6 +350,7 @@ case class StopMusic(
     slot: IntParameter = IntParameter(0),
     var fadeDuration: Float = 0.5f) extends EventCmd {
   def sections = singleCall("game.stopMusic", slot, fadeDuration)
+  override def getParameters() = List(slot)
 }
 
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
