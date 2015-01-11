@@ -80,18 +80,18 @@ class NewEventCmdBox(
         row().grid().add(leftLabel(getMessage("Battles")))
         row().grid().add(btnEvtCmd(getMessage("Start_Battle"), StartBattle()))
 
-        row().grid().add(leftLabel(needsTranslation("Audio")))
-        row().grid().add(btnEvtCmd(needsTranslation("Play Sound"), PlaySound()))
-        row().grid().add(btnEvtCmd(needsTranslation("Play Music"), PlayMusic()))
-        row().grid().add(btnEvtCmd(needsTranslation("Stop Sound"), StopMusic()))
+        row().grid().add(leftLabel(getMessage("Audio")))
+        row().grid().add(btnEvtCmd(getMessage("Play_Sound"), PlaySound()))
+        row().grid().add(btnEvtCmd(getMessage("Play_Music"), PlayMusic()))
+        row().grid().add(btnEvtCmd(getMessage("Stop_Sound"), StopMusic()))
 
         row().grid().add(leftLabel(getMessage("Programming")))
         row().grid().add(
-            btnEvtCmd(needsTranslation("If Condition"), IfCondition()))
+            btnEvtCmd(getMessage("If_Condition"), IfCondition()))
         row().grid().add(
-            btnEvtCmd(needsTranslation("While Loop"), WhileLoop()))
+            btnEvtCmd(getMessage("While_Loop"), WhileLoop()))
         row().grid().add(
-            btnEvtCmd(needsTranslation("Break Loop"), BreakLoop()))
+            btnEvtCmd(getMessage("Break_Loop"), BreakLoop()))
         row().grid().add(
             btnEvtCmd(getMessage("Set_Global_Integer"), SetGlobalInt()))
         row().grid().add(

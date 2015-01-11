@@ -49,7 +49,7 @@ class StartBattleCmdDialog(
     row().grid().add(leftLabel(getMessageColon("Override_Battle_Background")))
     row().grid().add(battleBgSelect)
 
-    row().grid().add(leftLabel(needsTranslation("Override Battle Music:")))
+    row().grid().add(leftLabel(getMessageColon("Override_Battle_Music")))
     row().grid().add(battleMusicField)
 
     addButtons(okBtn, cancelBtn)
@@ -88,10 +88,10 @@ class GetChoiceCmdDialog(
   extends EventCmdDialog(owner, sm, getMessage("Get_Choice"), initial, successF) {
 
   override def extraFields = Seq(
-    TitledComponent("Question",
+    TitledComponent(getMessage("Question"),
         textAreaField(model.question, model.question = _)),
     TitledComponent("", new StringArrayEditingPanel(
-        owner, "Choices", model.choices,
+        owner, getMessage("Choices"), model.choices,
         newChoices => {
           model.choices = newChoices
           model.innerCmds = ArrayUtils.resized(model.innerCmds, newChoices.size,
@@ -116,13 +116,13 @@ class IfConditionCmdDialog(
   initial: IfCondition,
   successF: (IfCondition) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("If Condition"), initial, successF) {
+      owner, sm, getMessage("IF_Condition"), initial, successF) {
 
   override def extraFields = Seq(
-    TitledComponent(needsTranslation("Conditions"),
+    TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)),
-    TitledComponent("", boolField(needsTranslation("Else Branch"),
+    TitledComponent("", boolField(getMessage("ELSE_Branch"),
         model.elseBranch, model.elseBranch = _)))
 }
 
@@ -139,17 +139,17 @@ class PlayMusicCmdDialog(
   initial: PlayMusic,
   successF: (PlayMusic) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Play Music"), initial, successF) {
+      owner, sm, getMessage("Play_Music"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Music"),
+          getMessage("Music"),
           new MusicField(owner, sm, Some(model.spec), v => model.spec = v.get,
               allowNone = false)),
       TitledComponent(
           "",
-          boolField(needsTranslation("Loop"), model.loop, model.loop = _)),
+          boolField(getMessage("Loop"), model.loop, model.loop = _)),
       TitledComponent(
-          needsTranslation("Fade duration"),
+          getMessage("Fade_Duration"),
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
               model.fadeDuration = _)))
 }
@@ -160,10 +160,10 @@ class PlaySoundCmdDialog(
   initial: PlaySound,
   successF: (PlaySound) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Play Sound"), initial, successF) {
+      owner, sm, getMessage("Play_Sound"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Sound"),
+          getMessage("Sound"),
           new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
               allowNone = false)))
 }
@@ -207,10 +207,10 @@ class StopMusicCmdDialog(
   initial: StopMusic,
   successF: (StopMusic) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Stop Music"), initial, successF) {
+      owner, sm, getMessage("Stop_Music"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Fade duration"),
+          getMessage("Fade_Duration"),
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
               model.fadeDuration = _)))
 }
@@ -221,10 +221,10 @@ class WhileLoopCmdDialog(
   initial: WhileLoop,
   successF: (WhileLoop) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("While Loop"), initial, successF) {
+      owner, sm, getMessage("While_Loop"), initial, successF) {
 
   override def extraFields = Seq(
-    TitledComponent(needsTranslation("Conditions"),
+    TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)))
 }
