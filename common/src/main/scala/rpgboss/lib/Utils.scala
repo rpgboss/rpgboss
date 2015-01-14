@@ -147,6 +147,12 @@ object Utils {
     return items.head
   }
 
+  def randomWithPercent(chance: Int) = {
+    assert(chance >= 0)
+    assert(chance <= 100)
+    util.Random.nextInt(100) < chance
+  }
+
   def floatToPercent(x: Float) =
     "%d%%".format((x * 100).round)
 

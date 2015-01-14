@@ -6,7 +6,7 @@ import rpgboss.model.battle._
 import rpgboss.lib._
 
 object DamageType extends RpgEnum {
-  val Physical, Magic, MPDamage = Value
+  val Physical, Magic, MPDamage, StatusEffect = Value
   def default = Physical
 }
 
@@ -29,6 +29,12 @@ class JSBattleEntity(status: BattleStatus) extends ScriptableObject {
   }
 }
 
+/**
+ * @param   elementId       Doesn't have meaning when damageType is a status
+ *                          effect.
+ * @param   value           Normally is the damage amount. However, in the
+ *                          status effect case, is the status effect added.
+ */
 case class Damage(damageType: DamageType.Value, elementId: Int, value: Int)
 
 case class DamageFormula(

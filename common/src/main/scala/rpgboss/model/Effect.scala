@@ -46,7 +46,7 @@ trait MetaEffect {
    * @return  The damage (or healing) performed. Used for display purposes.
    */
   def applyAsSkillOrItem(
-      effect: Effect, target: BattleStatus): Option[Damage] = None
+      effect: Effect, target: BattleStatus): Seq[Damage] = Nil
 
   Effect.registerMetaEffect(id, this)
 }
@@ -146,7 +146,7 @@ object Effect {
    * Renders the value of the enum index stored in id, and then shows the number
    * stored in value.
    */
-  def getEnumOfValue2[T <: HasName]
+  def getEnumWithExtraValue[T <: HasName]
       (getChoices: ProjectData => Array[T])
       (pData: ProjectData, effect: Effect) = {
     val value1string = getEnumOfValue1(getChoices)(pData, effect)
@@ -194,19 +194,19 @@ object Effect {
   /**
    * Recovery Utility functions
    */
-  def recoverHp(target: BattleStatus, amount: Double): Option[Damage] = {
+  def recoverHp(target: BattleStatus, amount: Double): Seq[Damage] = {
     if (!target.alive)
-      return None
+      return Nil
 
     val amountInt = amount.round.toInt
     target.hp += amountInt
-    Some(Damage(DamageType.Magic, 0, -amountInt))
+    List(Damage(DamageType.Magic, 0, -amountInt))
   }
 
   def recoverMp(target: BattleStatus, amount: Double) = {
     val amountInt = amount.round.toInt
     target.mp += amountInt
-    Some(Damage(DamageType.MPDamage, 0, -amountInt))
+    List(Damage(DamageType.MPDamage, 0, -amountInt))
   }
 }
 
@@ -254,15 +254,49 @@ object RecoverMpMul extends MetaEffect {
 object AddStatusEffect extends MetaEffect {
   def id = 200
   def name = "Add status effect"
-  override def renderer = Effect.getEnumOfValue2(_.enums.statusEffects) _
+  override def renderer = Effect.getEnumWithExtraValue(_.enums.statusEffects) _
   override def usability = Effect.itemEquipSkillOnlyHelp _
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) = {
+    if (Utils.randomWithPercent(effect.v2)) {
+      target.updateTempStatusEffects(target.tempStatusEffects :+ effect.v1)
+      List(Damage(DamageType.StatusEffect, 0, effect.v1))
+    } else {
+      Nil
+    }
+  }
 }
 
 object RemoveStatusEffect extends MetaEffect {
   def id = 201
   def name = "Remove status effect"
-  override def renderer = Effect.getEnumOfValue2(_.enums.statusEffects) _
+  override def renderer = Effect.getEnumWithExtraValue(_.enums.statusEffects) _
   override def usability = Effect.itemEquipSkillOnlyHelp _
+
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) = {
+    if (Utils.randomWithPercent(effect.v2)) {
+      target.updateTempStatusEffects(
+          target.tempStatusEffects.filter(_ != effect.v1))
+      List(Damage(DamageType.StatusEffect, 0, effect.v1))
+    } else {
+      Nil
+    }
+  }
+}
+
+object RemoveAllStatusEffect extends MetaEffect {
+  def id = 202
+  def name = "Remove all status effects"
+  override def usability = Effect.itemEquipSkillOnlyHelp _
+
+  override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) = {
+    val origEffects = target.tempStatusEffects
+    if (!origEffects.isEmpty && Utils.randomWithPercent(effect.v2)) {
+      target.updateTempStatusEffects(Array())
+      origEffects.distinct.map(Damage(DamageType.StatusEffect, 0, _))
+    } else {
+      Nil
+    }
+  }
 }
 
 object MhpAdd extends MetaEffect {
@@ -331,7 +365,7 @@ object MreAdd extends MetaEffect {
 object ResistElement extends MetaEffect {
   def id = 400
   def name = "Resist Element"
-  override def renderer = Effect.getEnumOfValue2(_.enums.statusEffects) _
+  override def renderer = Effect.getEnumWithExtraValue(_.enums.statusEffects) _
   override def usability = Effect.classEquipOrStatus _
   override def applyToStats(effect: Effect, stats: BattleStats) = {
     val newResists = stats.elementResists.updated(
