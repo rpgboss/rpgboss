@@ -66,7 +66,7 @@ case class PartyParameters(
   initialCharacterHps: Array[Int],
   initialCharacterMps: Array[Int],
   characterEquip: Array[Array[Int]],
-  initialCharacterTempStatusEffects: Array[Array[Int]],
+  initialCharacterTempStatusEffectIds: Array[Array[Int]],
   characterRows: Array[Int])
 
 /**
@@ -186,7 +186,7 @@ class Battle(
         equipment = Array(),
         onAttackSkillIds = Array(enemy.attackSkillId),
         knownSkillIds = enemy.skillIds,
-        initialTempStatusEffects = Array(),
+        initialTempStatusEffectIds = Array(),
         row)
     }
   }
@@ -222,10 +222,12 @@ class Battle(
 
     time += deltaSeconds
 
+    val ticked = deltaSeconds >= (time - time.intValue())
+
     for (status <- allStatus) {
       val pendingAction = actionQueue.exists(_.actor == status)
 
-      status.update(pendingAction, deltaSeconds, baseTurnTime)
+      status.update(pendingAction, deltaSeconds, baseTurnTime, ticked)
     }
 
     // Enqueue any newly ready entities.

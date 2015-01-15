@@ -31,7 +31,7 @@ object BattleTest {
         initialCharacterHps = initialCharacterHps,
         initialCharacterMps = Array(1, 1),
         characterEquip = Array(Array(), Array()),
-        initialCharacterTempStatusEffects = Array(Array(), Array()),
+        initialCharacterTempStatusEffectIds = Array(Array(), Array()),
         characterRows = Array(0, 0)),
       encounter = encounter,
       aiOpt = aiOpt)

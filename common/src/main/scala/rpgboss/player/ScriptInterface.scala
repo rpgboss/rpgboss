@@ -497,7 +497,7 @@ class ScriptInterface(
       characterStatus.clampVitals()
 
       persistent.saveCharacterVitals(characterId, characterStatus.hp,
-          characterStatus.mp, characterStatus.tempStatusEffects)
+          characterStatus.mp, characterStatus.tempStatusEffectIds)
     }
   }
 

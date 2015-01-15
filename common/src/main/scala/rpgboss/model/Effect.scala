@@ -72,6 +72,7 @@ object Effect {
 
         AddStatusEffect,
         RemoveStatusEffect,
+        RemoveAllStatusEffect,
 
         MhpAdd,
         MmpAdd,
@@ -258,7 +259,7 @@ object AddStatusEffect extends MetaEffect {
   override def usability = Effect.itemEquipSkillOnlyHelp _
   override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) = {
     if (Utils.randomWithPercent(effect.v2)) {
-      target.updateTempStatusEffects(target.tempStatusEffects :+ effect.v1)
+      target.updateTempStatusEffectIds(target.tempStatusEffectIds :+ effect.v1)
       List(Damage(DamageType.StatusEffect, 0, effect.v1))
     } else {
       Nil
@@ -274,8 +275,8 @@ object RemoveStatusEffect extends MetaEffect {
 
   override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) = {
     if (Utils.randomWithPercent(effect.v2)) {
-      target.updateTempStatusEffects(
-          target.tempStatusEffects.filter(_ != effect.v1))
+      target.updateTempStatusEffectIds(
+          target.tempStatusEffectIds.filter(_ != effect.v1))
       List(Damage(DamageType.StatusEffect, 0, effect.v1))
     } else {
       Nil
@@ -289,9 +290,9 @@ object RemoveAllStatusEffect extends MetaEffect {
   override def usability = Effect.itemEquipSkillOnlyHelp _
 
   override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) = {
-    val origEffects = target.tempStatusEffects
+    val origEffects = target.tempStatusEffectIds
     if (!origEffects.isEmpty && Utils.randomWithPercent(effect.v2)) {
-      target.updateTempStatusEffects(Array())
+      target.updateTempStatusEffectIds(Array())
       origEffects.distinct.map(Damage(DamageType.StatusEffect, 0, _))
     } else {
       Nil

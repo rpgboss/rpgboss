@@ -539,7 +539,7 @@ class BattleScreen(
                   status.entityId,
                   status.hp,
                   status.mp,
-                  status.tempStatusEffects)
+                  status.tempStatusEffectIds)
             }
 
             val exp = battle.victoryExperience
@@ -603,7 +603,7 @@ class BattleScreen(
                 }
 
               val animations =
-                for (hit <- notification.hits) yield {
+                for (hit <- notification.hits; if hit.animationId >= 0) yield {
                   assert(hit.animationId < battle.pData.enums.animations.length)
                   val animation = battle.pData.enums.animations(hit.animationId)
 

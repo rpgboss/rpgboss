@@ -1,5 +1,11 @@
 package rpgboss.model
 
+import rpgboss.model.battle.BattleStatus
+import rpgboss.lib.Utils
+import com.typesafe.scalalogging.slf4j.LazyLogging
+import scala.collection.mutable.ArrayBuffer
+import rpgboss.model.battle.Hit
+
 case class Curve(var base: Float, var perLevel: Float) {
   def apply(x: Int): Int = {
     (perLevel * (x - 1) + base).round.toInt
@@ -29,14 +35,42 @@ case class BaseStats(
   mre: Int,
   effects: Array[Effect])
 
+/**
+ * @param   releaseChancePerTick    Chance of wearing off per tick.
+ */
 case class StatusEffect(
   var name: String = "",
   var effects: Array[Effect] = Array(),
-  var releaseOnBattleEnd: Boolean = false,
-  var releaseTime: Int = 0,
-  var releaseChance: Int = 0,
-  var releaseDmgChance: Int = 0,
+  var releaseChancePerTick: Int = 20,
   var maxStacks: Int = 1) extends HasName
+
+case class StatusEffectSpec(
+    id: Int, temporary: Boolean, statusEffect: StatusEffect)
+    extends LazyLogging {
+  /**
+   * @param   id          The id of this status effect. Used for releasing.
+   * @param   temporary   Used for random releasing.
+   */
+  def applyTick(target: BattleStatus): Array[Hit] = {
+    logger.debug("Applying %s effect to %s".format(statusEffect.name, target))
+    val tickHits =
+      statusEffect.effects
+        .flatMap(_.applyAsSkillOrItem(target).map(Hit(target, _, -1)))
+
+    // Release a stack
+    if (temporary && statusEffect.releaseChancePerTick > 0 &&
+        Utils.randomWithPercent(statusEffect.releaseChancePerTick)) {
+      logger.debug("  Releasing status effect.")
+      val newTempStatusEffects = ArrayBuffer(target.tempStatusEffectIds: _*)
+      newTempStatusEffects -= id
+      target.updateTempStatusEffectIds(newTempStatusEffects.toArray)
+
+      tickHits :+ Hit(target, Damage(DamageType.StatusEffect, 0, id), -1)
+    } else {
+      tickHits
+    }
+  }
+}
 
 case class BattleStats(
   mhp: Int,
@@ -47,7 +81,7 @@ case class BattleStats(
   arm: Int,
   mre: Int,
   elementResists: Array[Int],
-  statusEffects: Array[StatusEffect])
+  statusEffects: Array[StatusEffectSpec])
 
 object BattleStats {
   def apply(pData: ProjectData, baseStats: BaseStats,
@@ -62,31 +96,34 @@ object BattleStats {
     val equipmentEffects = equipment.flatMap(_.effects)
 
     // Make sure we don't apply more than max-stacks of each status effect
-    val stackedStatusEffects: Array[StatusEffect] = {
+    val stackedStatusEffects: Array[StatusEffectSpec] = {
       val statusEffectStackMap = collection.mutable.Map[Int, Int]()
-      val statusEffectBuffer = collection.mutable.ArrayBuffer[StatusEffect]()
+      val statusEffectBuffer =
+        collection.mutable.ArrayBuffer[StatusEffectSpec]()
 
-      def isValidStatusId(id: Int) =
-        id >= 0 && id < pData.enums.statusEffects.length
       val equipmentStatusEffectIds =
         equipmentEffects.filter(AddStatusEffect.matches).map(_.v1)
 
-      for (statusEffectId <- equipmentStatusEffectIds ++ tempStatusEffectIds) {
-        val statusEffect = pData.enums.statusEffects(statusEffectId)
-        val currentCount =
-          statusEffectStackMap.getOrElseUpdate(statusEffectId, 0)
+      def addIfValid(id: Int, temporary: Boolean) = {
+        assert(id >= 0 && id < pData.enums.statusEffects.length)
+
+        val statusEffect = pData.enums.statusEffects(id)
+        val currentCount = statusEffectStackMap.getOrElseUpdate(id, 0)
 
         if (currentCount < statusEffect.maxStacks) {
-          statusEffectStackMap.update(statusEffectId, currentCount + 1)
-          statusEffectBuffer.append(statusEffect)
+          statusEffectStackMap.update(id, currentCount + 1)
+          statusEffectBuffer.append(
+              StatusEffectSpec(id, temporary, statusEffect))
         }
       }
 
+      equipmentStatusEffectIds.foreach(addIfValid(_, false))
+      tempStatusEffectIds.foreach(addIfValid(_, true))
       statusEffectBuffer.toArray
     }
 
     val allEffects = baseStats.effects ++ equipmentEffects ++
-                     stackedStatusEffects.flatMap(_.effects)
+                     stackedStatusEffects.flatMap(_.statusEffect.effects)
 
     val statsWithoutEffects = apply(
       mhp = baseStats.mhp,
