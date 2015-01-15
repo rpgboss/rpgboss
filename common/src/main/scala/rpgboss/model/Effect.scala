@@ -260,7 +260,7 @@ object AddStatusEffect extends MetaEffect {
   override def applyAsSkillOrItem(effect: Effect, target: BattleStatus) = {
     if (Utils.randomWithPercent(effect.v2)) {
       target.updateTempStatusEffectIds(target.tempStatusEffectIds :+ effect.v1)
-      List(Damage(DamageType.StatusEffect, 0, effect.v1))
+      List(Damage(DamageType.AddStatusEffect, 0, effect.v1))
     } else {
       Nil
     }
@@ -277,7 +277,7 @@ object RemoveStatusEffect extends MetaEffect {
     if (Utils.randomWithPercent(effect.v2)) {
       target.updateTempStatusEffectIds(
           target.tempStatusEffectIds.filter(_ != effect.v1))
-      List(Damage(DamageType.StatusEffect, 0, effect.v1))
+      List(Damage(DamageType.AddStatusEffect, 0, effect.v1))
     } else {
       Nil
     }
@@ -293,7 +293,7 @@ object RemoveAllStatusEffect extends MetaEffect {
     val origEffects = target.tempStatusEffectIds
     if (!origEffects.isEmpty && Utils.randomWithPercent(effect.v2)) {
       target.updateTempStatusEffectIds(Array())
-      origEffects.distinct.map(Damage(DamageType.StatusEffect, 0, _))
+      origEffects.distinct.map(Damage(DamageType.AddStatusEffect, 0, _))
     } else {
       Nil
     }

@@ -41,7 +41,7 @@ case class BaseStats(
 case class StatusEffect(
   var name: String = "",
   var effects: Array[Effect] = Array(),
-  var releaseChancePerTick: Int = 20,
+  var releaseChancePerTick: Int = 10,
   var maxStacks: Int = 1) extends HasName
 
 case class StatusEffectSpec(
@@ -52,7 +52,6 @@ case class StatusEffectSpec(
    * @param   temporary   Used for random releasing.
    */
   def applyTick(target: BattleStatus): Array[Hit] = {
-    logger.debug("Applying %s effect to %s".format(statusEffect.name, target))
     val tickHits =
       statusEffect.effects
         .flatMap(_.applyAsSkillOrItem(target).map(Hit(target, _, -1)))
@@ -60,12 +59,11 @@ case class StatusEffectSpec(
     // Release a stack
     if (temporary && statusEffect.releaseChancePerTick > 0 &&
         Utils.randomWithPercent(statusEffect.releaseChancePerTick)) {
-      logger.debug("  Releasing status effect.")
       val newTempStatusEffects = ArrayBuffer(target.tempStatusEffectIds: _*)
       newTempStatusEffects -= id
       target.updateTempStatusEffectIds(newTempStatusEffects.toArray)
 
-      tickHits :+ Hit(target, Damage(DamageType.StatusEffect, 0, id), -1)
+      tickHits :+ Hit(target, Damage(DamageType.RemoveStatusEffect, 0, id), -1)
     } else {
       tickHits
     }

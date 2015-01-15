@@ -190,8 +190,9 @@ class Window(
 class DamageTextWindow(
   persistent: PersistentState,
   manager: WindowManager,
-  damage: Int,
-  initialX: Float, initialY: Float)
+  damageString: String,
+  initialX: Float, initialY: Float,
+  delayTime: Float)
   // TODO: We pass 'null' as inputs here because we don't want to accept input.
   // Window has zeros for x, y, w, and h because the window itself is invisible.
   extends Window(manager, null, Layout.empty, invisible = true) {
@@ -199,11 +200,11 @@ class DamageTextWindow(
   private val expiryTime = 0.8
   private val yDisplacement = -25.0
 
-  private var age = 0.0
+  private var age = -delayTime
 
   val textImage = new WindowText(
     persistent,
-    initialText = Array(damage.toString()),
+    initialText = Array(damageString),
     rect = Rect(initialX, initialY, 20, 20),
     fontbmp = manager.fontbmp,
     justification = Window.Center)
@@ -216,11 +217,13 @@ class DamageTextWindow(
 
     age += delta;
 
+    if (age < 0)
+      return
+
     textImage.updatePosition(
         initialX,
         ((age / expiryTime * yDisplacement) + initialY).toFloat)
 
-    super.update(delta)
     textImage.update(delta)
 
     if (age > expiryTime) {
@@ -228,7 +231,10 @@ class DamageTextWindow(
     }
   }
 
-  override def render(b: SpriteBatch) = {
+  override def render(b: SpriteBatch): Unit = {
+    if (age < 0)
+      return
+
     super.render(b)
     textImage.render(b)
   }

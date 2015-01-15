@@ -121,11 +121,11 @@ class Battle(
    */
   val baseTurnTime = 4.0
 
-  private var _currentNotification: Option[BattleActionNotification] = None
+  private var _notifications =
+    collection.mutable.Queue[BattleActionNotification]()
 
-  def getNotification = _currentNotification
-  def dismissNotification() =
-    _currentNotification = None
+  def getNotification = _notifications.headOption
+  def dismissNotification() = _notifications.dequeue()
 
   /**
    * BattleActions that have been queued up, but have not yet executed.
@@ -222,12 +222,18 @@ class Battle(
 
     time += deltaSeconds
 
-    val ticked = deltaSeconds >= (time - time.intValue())
+    // TODO: This method is wrong, but right enough most of the time.
+    val ticked = (time % baseTurnTime) <= deltaSeconds
 
-    for (status <- allStatus) {
+    val statusEffectHits = for (status <- allStatus) yield {
       val pendingAction = actionQueue.exists(_.actor == status)
 
       status.update(pendingAction, deltaSeconds, baseTurnTime, ticked)
+    }
+    val flattenedStatusEffectHits = statusEffectHits.flatten
+    if (!flattenedStatusEffectHits.isEmpty) {
+      _notifications.enqueue(BattleActionNotification(
+          StatusEffectAction, flattenedStatusEffectHits))
     }
 
     // Enqueue any newly ready entities.
@@ -240,11 +246,10 @@ class Battle(
     aiOpt.map(_.update(this))
 
     // Only do an action if there's no outstanding notification.
-    if (!actionQueue.isEmpty && _currentNotification.isEmpty) {
+    if (!actionQueue.isEmpty) {
       val action = actionQueue.dequeue()
       val hits = action.process(this)
-      _currentNotification = Some(
-        BattleActionNotification(action, hits))
+      _notifications.enqueue(BattleActionNotification(action, hits))
     }
 
     // Remove dead items from the ready queue.

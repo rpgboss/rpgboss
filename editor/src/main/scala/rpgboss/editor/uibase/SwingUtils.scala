@@ -105,6 +105,25 @@ object SwingUtils {
     }
   }
 
+  def percentIntField(min: Int, max: Int, initial: Int,
+      onUpdate: Int => Unit) = {
+    val spinner = new NumberSpinner(min, max, initial, onUpdate)
+
+    new BoxPanel(Orientation.Horizontal) {
+      contents += spinner
+      contents += new Label("%") {
+        preferredSize = new Dimension(20, 15)
+      }
+
+      def value = spinner.getValue
+      def setValue(v: Int) = spinner.setValue(v)
+      override def enabled_=(b: Boolean) {
+        super.enabled_=(b)
+        spinner.enabled_=(b)
+      }
+    }
+  }
+
   def pxField(min: Int, max: Int, initial: Int, onUpdate: Int => Unit) = {
     val spinner = new NumberSpinner(min, max, initial, onUpdate)
     new BoxPanel(Orientation.Horizontal) {

@@ -24,6 +24,14 @@ case class NullAction(actor: BattleStatus) extends BattleAction {
   }
 }
 
+object StatusEffectAction extends BattleAction {
+  override def actor = null
+  override def targets = Array()
+  def process(battle: Battle) = {
+    Array()
+  }
+}
+
 case class AttackAction(actor: BattleStatus, targets: Array[BattleStatus])
   extends BattleAction {
   def process(battle: Battle) = {
