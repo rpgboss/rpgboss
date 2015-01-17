@@ -215,6 +215,29 @@ class StopMusicCmdDialog(
               model.fadeDuration = _)))
 }
 
+class TintScreenCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: TintScreen,
+  successF: TintScreen => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("Tint Screen"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          needsTranslation("Color and alpha:"),
+          colorField(
+              (initial.r, initial.g, initial.b, initial.a),
+              (r, g, b, a) => {
+                model.r = r
+                model.g = g
+                model.b = b
+                model.a = a
+              })),
+      TitledComponent(needsTranslation("Fade duration:"),
+          new FloatSpinner(
+              0, 10f, 0.1f, model.fadeDuration, model.fadeDuration = _)))
+}
+
 class WhileLoopCmdDialog(
   owner: Window,
   sm: StateMaster,

@@ -72,6 +72,7 @@ object EventCmd {
     classOf[StartBattle],
     classOf[StopMusic],
     classOf[Teleport],
+    classOf[TintScreen],
     classOf[WhileLoop])) + EventRenameHints
 }
 
@@ -356,6 +357,16 @@ case class StopMusic(
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
+}
+
+case class TintScreen(
+    var r: Float = 1.0f,
+    var g: Float = 0,
+    var b: Float = 0,
+    var a: Float = 0.5f,
+    var fadeDuration: Float = 1) extends EventCmd {
+  def sections =
+    singleCall("game.tintScreen", r, g, b, a, fadeDuration)
 }
 
 case class WhileLoop(

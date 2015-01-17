@@ -80,6 +80,7 @@ object EventCmdDialog {
       case e: StartBattle =>
         new StartBattleCmdDialog(owner, sm, e, successF)
       case e: StopMusic => new StopMusicCmdDialog(owner, sm, e, successF)
+      case e: TintScreen => new TintScreenCmdDialog(owner, sm, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
       case e: WhileLoop => new WhileLoopCmdDialog(owner, sm, e, successF)
       case _ => null
