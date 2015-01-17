@@ -14,6 +14,7 @@ import org.mozilla.javascript.NativeObject
 import rpgboss.save.SaveFile
 import rpgboss.save.SaveInfo
 import rpgboss.model.event.EventJavascript
+import com.badlogic.gdx.graphics.Color
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -173,6 +174,25 @@ class ScriptInterface(
     endAlpha: Float,
     duration: Float) = syncRun {
     activeScreen.windowManager.setTransition(endAlpha, duration)
+  }
+
+  /**
+   * @param   r               Between 0.0f and 1.0f.
+   * @param   g               Between 0.0f and 1.0f.
+   * @param   b               Between 0.0f and 1.0f.
+   * @param   a               Between 0.0f and 1.0f.
+   * @param   fadeDuration    In seconds. 0f means instantaneous
+   */
+  def tintScreen(r: Float, g: Float, b: Float, a: Float,
+      fadeDuration: Float) = syncRun {
+    def activeScreenTint = activeScreen.windowManager.tintColor
+    // If no existing tint, set color immediately and tween alpha only.
+    if (activeScreenTint.a == 0) {
+      activeScreenTint.set(r, g, b, 0f)
+    }
+
+    activeScreen.windowManager.tintTweener.tweenTo(new Color(r, g, b, a),
+        fadeDuration)
   }
 
   def startBattle(encounterId: Int, overrideBattleBackground: String,

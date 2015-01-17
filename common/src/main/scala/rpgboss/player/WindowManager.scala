@@ -134,6 +134,7 @@ class WindowManager(
     for (i <- 0 until pictures.length) {
       hidePicture(i)
     }
+    tintColor.set(0, 0, 0, 0)
 
     windows.foreach(_.startClosing())
 
@@ -144,6 +145,7 @@ class WindowManager(
 
   def update(delta: Float) = {
     transitionTweener.update(delta)
+    tintTweener.update(delta)
     windows.foreach(_.update(delta))
 
     // TODO: Avoid a memory alloc here
@@ -197,6 +199,7 @@ class WindowManager(
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 
       shapeRenderer.setColor(tintColor)
+      shapeRenderer.rect(0, 0, screenW, screenH)
 
       shapeRenderer.setColor(0, 0, 0, transitionAlpha)
       shapeRenderer.rect(0, 0, screenW, screenH)
