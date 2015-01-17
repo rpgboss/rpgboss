@@ -592,6 +592,7 @@ class ScriptInterface(
     logger.debug(text)
   }
 
+  // TODO: outofbounds exception, dont know how to solve this
   def takeDamage(characterId: Int, hp:Int, mp:Int) = syncRun {
       val characterStatus = BattleStatus.fromCharacter(
           project.data,
@@ -602,6 +603,11 @@ class ScriptInterface(
 
       persistent.saveCharacterVitals(characterId, characterStatus.hp + hp,
           characterStatus.mp + mp, characterStatus.tempStatusEffectIds)
+  }
+
+  // TODO: built it in
+  def keyPress(key: String) = {
+    
   }
 
   /**
