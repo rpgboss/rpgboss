@@ -15,6 +15,8 @@ import rpgboss.save.SaveFile
 import rpgboss.save.SaveInfo
 import rpgboss.model.event.EventJavascript
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
 object EntityInfo {
@@ -566,6 +568,15 @@ class ScriptInterface(
 
   def quit() = syncRun {
     game.quit()
+  }
+
+  def drawText(id:Int,text:String , x:Int, y:Int) = syncRun {
+      logger.debug("drawText: "+text+" on ");
+      mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y))
+  }
+
+  def removeDrawedText(id:Int) = syncRun {
+    mapScreen.windowManager.removeDrawText(id)
   }
 
   /**
