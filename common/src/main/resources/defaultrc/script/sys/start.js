@@ -1,5 +1,5 @@
 function newGame() {
-  game.setTransition(0, 1, 0.4);
+  game.setTransition(1, 0.4);
   game.sleep(0.4);
   game.startNewGame();
 }
@@ -22,7 +22,7 @@ function showStartDialog() {
 
       loadMenu.loopChoice(function(choiceId) {
         if (loadMenu.state.saveInfos[choiceId].isDefined()) {
-          game.setTransition(0, 1, 0.4);
+          game.setTransition(1, 0.4);
           game.sleep(0.4);
           game.loadFromSaveSlot(choiceId);
         }
@@ -39,7 +39,7 @@ function showStartDialog() {
 }
 
 function start() {
-  game.setTransition(1, 0, 1.0);
+  game.setTransition(0, 1.0);
   game.playMusic(0, project.data().startup().titleMusic(), true, 0.4);
   game.showPicture(0, project.data().startup().titlePic(), 
       game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));

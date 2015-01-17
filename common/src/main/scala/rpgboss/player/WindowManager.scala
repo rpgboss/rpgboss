@@ -33,7 +33,26 @@ class WindowManager(
   val shapeRenderer = new ShapeRenderer()
 
   // Should only be modified on the Gdx thread
-  private var curTransition: Option[Transition] = None
+  /**
+   * Should start all black.
+   */
+  var transitionAlpha = 1.0f
+  val transitionTweener =
+    new FloatTweener(() => transitionAlpha, transitionAlpha = _)
+
+  val tintColor = new Color
+  val tintTweener = new Tweener[Color] {
+    var _startValue = new Color()
+    var _endValue = new Color()
+
+    def get() = tintColor
+    def set(newValue: Color) = tintColor.set(newValue)
+    def interpolate(startValue: Color, endValue: Color, alpha: Float) = {
+      val newColor = new Color(startValue)
+      newColor.lerp(endValue, alpha)
+      newColor
+    }
+  }
 
   val windowskin =
     Windowskin.readFromDisk(project, project.data.startup.windowskin)
@@ -46,10 +65,9 @@ class WindowManager(
   val pictures = Array.fill[Option[PictureLike]](64)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
-  def setTransition(startAlpha: Float, endAlpha: Float, duration: Float) = {
+  def setTransition(endAlpha: Float, duration: Float) = {
     assertOnBoundThread()
-    curTransition.map(_.flushPendingClosures())
-    curTransition = Some(Transition(startAlpha, endAlpha, duration))
+    transitionTweener.tweenTo(endAlpha, duration)
   }
 
   /**
@@ -58,20 +76,15 @@ class WindowManager(
    *                    transition.
    */
   def runAfterTransition(closure: () => Unit) {
-    curTransition map { transition =>
-      transition.pendingClosures += closure
-    } getOrElse {
-      closure()
-    }
+    transitionTweener.runAfterDone(closure)
   }
 
-  def clearTransition() = {
+  def finishTransition() = {
     assertOnBoundThread()
-    curTransition.map(_.flushPendingClosures())
-    curTransition = None
+    transitionTweener.finish()
   }
 
-  def inTransition = curTransition.isDefined && !curTransition.get.done
+  def inTransition = !transitionTweener.done
 
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
@@ -130,11 +143,7 @@ class WindowManager(
   }
 
   def update(delta: Float) = {
-    // We don't ever reap curTransition after completion, as we want to keep
-    // drawing the black screen or whatever until the next transition comes to
-    // take it over.
-    curTransition.map(_.update(delta))
-
+    transitionTweener.update(delta)
     windows.foreach(_.update(delta))
 
     // TODO: Avoid a memory alloc here
@@ -182,14 +191,16 @@ class WindowManager(
     batch.end()
 
     // Render transition
-    curTransition map { transition =>
-
+    if (transitionAlpha != 0 || tintColor.a != 0) {
       // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL20.GL_BLEND)
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 
-      shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
+      shapeRenderer.setColor(tintColor)
+
+      shapeRenderer.setColor(0, 0, 0, transitionAlpha)
       shapeRenderer.rect(0, 0, screenW, screenH)
+
       shapeRenderer.end()
     }
   }

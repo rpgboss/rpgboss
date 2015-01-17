@@ -1,6 +1,5 @@
 package rpgboss.player
 
-import aurelienribon.tweenengine._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import rpgboss.lib._
@@ -134,7 +133,7 @@ class ScriptInterface(
 
     if (transition == Transitions.FADE) {
       syncRun {
-        mapScreen.windowManager.setTransition(0, 1, fadeDuration)
+        mapScreen.windowManager.setTransition(1, fadeDuration)
       }
       sleep(fadeDuration);
     }
@@ -145,7 +144,7 @@ class ScriptInterface(
 
     if (transition == Transitions.FADE) {
       syncRun {
-        mapScreen.windowManager.setTransition(1, 0, fadeDuration);
+        mapScreen.windowManager.setTransition(0, fadeDuration);
       }
     }
   }
@@ -171,10 +170,9 @@ class ScriptInterface(
    */
 
   def setTransition(
-    startAlpha: Float,
     endAlpha: Float,
     duration: Float) = syncRun {
-    activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
+    activeScreen.windowManager.setTransition(endAlpha, duration)
   }
 
   def startBattle(encounterId: Int, overrideBattleBackground: String,
@@ -202,14 +200,14 @@ class ScriptInterface(
   }
 
   def endBattleBackToMap() = {
-    setTransition(0, 1, 0.5f)
+    setTransition(1, 0.5f)
     sleep(0.5f)
 
     syncRun {
       game.setScreen(game.mapScreen)
 
       // TODO fix hack of manipulating mapScreen directly
-      game.mapScreen.windowManager.setTransition(1, 0, 0.5f)
+      game.mapScreen.windowManager.setTransition(0, 0.5f)
 
       game.battleScreen.endBattle()
     }

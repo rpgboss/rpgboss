@@ -2,10 +2,6 @@ package rpgboss.player
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import aurelienribon.tweenengine.BaseTween
-import aurelienribon.tweenengine.Tween
-import aurelienribon.tweenengine.TweenCallback
-import aurelienribon.tweenengine.TweenManager
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.Project
 import rpgboss.model.SoundSpec
@@ -40,8 +36,6 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   val animationManager = new AnimationManager()
 
-  val tweenManager = new TweenManager()
-
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDuration: Float): Unit = {
     assertOnBoundThread()
@@ -50,16 +44,10 @@ trait RpgScreen extends Screen with ThreadChecked {
       return
 
     musics(slot).map({ oldMusic =>
-      val tweenMusic = new MusicPlayerTweenable(oldMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
-        .target(0f)
-        .setCallback(new TweenCallback {
-          override def onEvent(typeArg: Int, x: BaseTween[_]) = {
-            if (typeArg == TweenCallback.COMPLETE) {
-              oldMusic.stop()
-            }
-          }
-        }).start(tweenManager)
+      oldMusic.volumeTweener.tweenTo(0f, fadeDuration)
+      oldMusic.volumeTweener.runAfterDone(() => {
+        oldMusic.stop()
+      })
     })
 
     musics(slot) = specOpt.map { spec =>
@@ -71,11 +59,7 @@ trait RpgScreen extends Screen with ThreadChecked {
       newMusic.setVolume(0f)
       newMusic.setLooping(loop)
       newMusic.play()
-
-      // Setup volume tween
-      val tweenMusic = new MusicPlayerTweenable(newMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
-        .target(spec.volume).start(tweenManager)
+      newMusic.volumeTweener.tweenTo(spec.volume, fadeDuration)
 
       newMusic
     }
@@ -108,6 +92,9 @@ trait RpgScreen extends Screen with ThreadChecked {
     inputs.releaseAllKeys()
     Gdx.input.setInputProcessor(null)
 
+    // Sholud start all black again
+    windowManager.transitionAlpha = 1.0f
+
     musics.foreach(_.map(_.pause()))
   }
 
@@ -121,9 +108,9 @@ trait RpgScreen extends Screen with ThreadChecked {
     if (!assets.update())
       return
 
-    // Update tweens
-    tweenManager.update(delta)
+    musics.foreach(_.map(_.update(delta)))
 
+    // Update tweens
     windowManager.update(delta)
 
     animationManager.update(delta)

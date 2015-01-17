@@ -97,9 +97,6 @@ class RpgGame(gamepath: File)
         project.data.startup.screenW, project.data.startup.screenH)
     mapScreen = new MapScreen(this)
 
-    // Register accessors
-    TweenAccessors.registerAccessors()
-
     beginGame()
   }
 
@@ -147,7 +144,7 @@ class RpgGame(gamepath: File)
     persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
 
     setPlayerLoc(project.data.startup.startingLoc)
-    mapScreen.windowManager.setTransition(1, 0, 1.0f)
+    mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
   }
 
@@ -168,7 +165,7 @@ class RpgGame(gamepath: File)
     // Restore player location.
     setPlayerLoc(persistent.getLoc(PLAYER_LOC))
 
-    mapScreen.windowManager.setTransition(1, 0, 1.0f)
+    mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
   }
 
@@ -190,10 +187,10 @@ class RpgGame(gamepath: File)
       return
 
     // Fade out map
-    currentScreen.windowManager.setTransition(0, 1, 0.6f)
+    currentScreen.windowManager.setTransition(1, 0.6f)
     currentScreen.windowManager.runAfterTransition(() => {
       setScreen(battleScreen)
-      battleScreen.windowManager.setTransition(1, 0, 0.6f)
+      battleScreen.windowManager.setTransition(0, 0.6f)
 
       val encounter = project.data.enums.encounters(encounterId)
 

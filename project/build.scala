@@ -149,16 +149,6 @@ object Settings {
     
     IO.unzip(gdxZipFile, commonDest, commonFilter)
     
-    val tweenZipName = "tween-engine-api-6.3.3.zip"
-    
-    val tweenZipFile = new File(downloadDir, tweenZipName)
-    val tweenUrl = new URL(
-      "https://java-universal-tween-engine.googlecode.com/" + 
-      "files/" + tweenZipName)
-    
-    downloadIfNeeded(tweenZipName, tweenZipFile, tweenUrl)
-    IO.unzip(tweenZipFile, file("common/lib"))
-    
     s.log.info("Complete")
   }
 }
