@@ -144,11 +144,11 @@ class ScriptThread(
     assert(!thread.isAlive())
     thread.start()
 
-    val customScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.customScript)
-    if(customScript.newDataStream != null) {
-      assert(!customThread.isAlive())
-      customThread.start()
-    }
+    //val customScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.customScript)
+    //if(customScript.newDataStream != null) {
+    //  assert(!customThread.isAlive())
+    //  customThread.start()
+    //}
     this
   }
 

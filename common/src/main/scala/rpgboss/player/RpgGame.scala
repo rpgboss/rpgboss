@@ -105,6 +105,13 @@ class RpgGame(gamepath: File)
 
     setScreen(startScreen)
 
+    //val customScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.customScript)
+    //if(customScript.newDataStream != null) {
+      startScreen.scriptFactory.runFromFile(
+        ResourceConstants.customScript,
+        ResourceConstants.systemStartCall)
+    //}
+
     startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
       ResourceConstants.systemStartCall)
