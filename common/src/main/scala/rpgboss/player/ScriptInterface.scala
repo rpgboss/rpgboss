@@ -657,15 +657,8 @@ class ScriptInterface(
         persistent.getPartyParameters(project.data.enums.characters),
         characterId, index = -1)
 
-    characterStatus.hp += hp
-    if (characterStatus.hp<=0) {
-      characterStatus.hp = 0
-    }
-
-    characterStatus.mp += mp
-    if (characterStatus.mp<=0) {
-      characterStatus.mp = 0
-    }
+    characterStatus.hp -= hp
+    characterStatus.mp -= mp
 
     characterStatus.clampVitals()
 
@@ -675,7 +668,7 @@ class ScriptInterface(
 
   // TODO: built it in
   def keyPress(key: String) = {
-    
+
   }
 
   /**
