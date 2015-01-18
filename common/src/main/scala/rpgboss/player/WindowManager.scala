@@ -277,6 +277,7 @@ case class TexturePicture[MT <: AnyRef](
         rect.left, rect.top, rect.w, rect.h,
         0, 0, texture.getWidth(), texture.getHeight(),
         false, true)
+      batch.setColor(c.r, c.g, c.b, 1);
     }
   }
 }
