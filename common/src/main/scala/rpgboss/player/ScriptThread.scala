@@ -97,11 +97,58 @@ class ScriptThread(
     }
   }
 
+  val customRunnable = new Runnable() {
+    override def run() = {
+      Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
+
+      val jsContext = Context.enter()
+      val jsScope = jsContext.initStandardObjects()
+
+      initScope(jsScope)
+
+      val customScript =
+        Script.readFromDisk(scriptInterface.project,
+            ResourceConstants.customScript)
+
+        
+      jsContext.evaluateString(
+        jsScope,
+        customScript.readAsString,
+        customScript.name,
+        1, null)
+
+      if (!fnToRun.isEmpty) {
+        jsContext.evaluateString(
+          jsScope,
+          fnToRun,
+          fnToRun,
+          1, null)
+      }
+
+      Context.exit()
+
+      onFinish.map { f =>
+        GdxUtils.syncRun {
+          f()
+        }
+      }
+
+      finish()
+    }
+  }
+
   val thread = new Thread(runnable)
+  val customThread = new Thread(customRunnable)
 
   def run() = {
     assert(!thread.isAlive())
     thread.start()
+
+    val customScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.customScript)
+    if(customScript.newDataStream != null) {
+      assert(!customThread.isAlive())
+      customThread.start()
+    }
     this
   }
 
