@@ -16,6 +16,9 @@ import rpgboss.save.SaveInfo
 import rpgboss.model.event.EventJavascript
 import com.badlogic.gdx.graphics.Color
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.Color
+
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
 object EntityInfo {
@@ -624,6 +627,55 @@ class ScriptInterface(
 
   def quit() = syncRun {
     game.quit()
+  }
+
+  def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
+      logger.debug("drawText: "+text+" on ");
+      mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
+  }
+
+  def removeDrawedText(id:Int) = syncRun {
+    mapScreen.windowManager.removeDrawText(id)
+  }
+
+  def color(r:Float, g:Float, b:Float, alpha:Float):Color = {
+    var R = r/255
+    var G = g/255
+    var B = b/255
+
+    return new Color(R,G,B,alpha)
+  }
+
+  def log(text: String) = syncRun {
+    logger.debug(text)
+  }
+
+  // TODO: outofbounds exception, dont know how to solve this
+  def takeDamage(characterId: Int, hp:Int, mp:Int) = syncRun {
+    val characterStatus = BattleStatus.fromCharacter(
+        project.data,
+        persistent.getPartyParameters(project.data.enums.characters),
+        characterId, index = -1)
+
+    characterStatus.hp += hp
+    if (characterStatus.hp<=0) {
+      characterStatus.hp = 0
+    }
+
+    characterStatus.mp += mp
+    if (characterStatus.mp<=0) {
+      characterStatus.mp = 0
+    }
+
+    characterStatus.clampVitals()
+
+    persistent.saveCharacterVitals(characterId, characterStatus.hp,
+        characterStatus.mp, characterStatus.tempStatusEffectIds)
+  }
+
+  // TODO: built it in
+  def keyPress(key: String) = {
+    
   }
 
   /**

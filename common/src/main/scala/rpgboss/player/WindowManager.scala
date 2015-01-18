@@ -16,6 +16,8 @@ import rpgboss.lib.Rect
 import rpgboss.lib.Layout
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
+import scala.collection.mutable.MutableList
+
 /**
  * This class renders stuff on the screen.
  *
@@ -165,6 +167,34 @@ class WindowManager(
     batch.end()
   }
 
+  var screenTextArray = MutableList[ScreenText]()
+
+  def addDrawText(text: ScreenText):Boolean = {
+    screenTextArray.foreach { text2:ScreenText =>
+      if(text2.id == text.id) {
+        removeDrawText(text.id)
+      }
+    }
+    screenTextArray += text
+    
+    return true
+  }
+
+  def removeDrawText(id: Int):Boolean = {
+    var removedSomething:Boolean = false
+    var newTextArray = MutableList[ScreenText]()
+    screenTextArray.foreach { text:ScreenText =>
+      if(text.id!=id){
+        newTextArray += text
+      } else {
+        removedSomething = true
+      }
+    }
+    screenTextArray = newTextArray
+
+    return removedSomething
+  }
+
   def render() = {
     /*
      * We define our screen coordinates to be 640x480.
@@ -180,6 +210,10 @@ class WindowManager(
     for (i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
          pic <- pictures(i)) {
       pic.render(this, batch)
+    }
+
+    screenTextArray.foreach { text:ScreenText =>
+      text.render(this,batch)
     }
 
     // Render all windows

@@ -195,4 +195,6 @@ object ResourceConstants {
   def defaultSpriteSpec = SpriteSpec("sys/vx_chara01_a.png", 0)
 
   def globalsScript = "sys/globals.js"
+
+  def customScript = "sys/custom.js"
 }
