@@ -109,7 +109,7 @@ class HealOrDamageCmdDialog(
   initial: HealOrDamage,
   successF: (HealOrDamage) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Heal/Damage"), initial, successF) {
+      owner, sm, getMessage("Heal_Damage"), initial, successF) {
   override def extraFields = Seq(
     TitledComponent("", boolEnumHorizBox(
         HealOrDamageEnum, model.heal, model.heal = _)),
@@ -244,10 +244,10 @@ class TintScreenCmdDialog(
   initial: TintScreen,
   successF: TintScreen => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Tint Screen"), initial, successF) {
+      owner, sm, getMessage("Tint_Screen"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Color and alpha:"),
+          getMessageColon("Color_And_Alpha"),
           colorField(
               (initial.r, initial.g, initial.b, initial.a),
               (r, g, b, a) => {
@@ -256,7 +256,7 @@ class TintScreenCmdDialog(
                 model.b = b
                 model.a = a
               })),
-      TitledComponent(needsTranslation("Fade duration:"),
+      TitledComponent(getMessageColon("Fade_Duration"),
           new FloatSpinner(
               0, 10f, 0.1f, model.fadeDuration, model.fadeDuration = _)))
 }
