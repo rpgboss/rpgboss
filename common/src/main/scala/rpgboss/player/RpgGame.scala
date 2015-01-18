@@ -105,16 +105,18 @@ class RpgGame(gamepath: File)
 
     setScreen(startScreen)
 
-    //val customScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.customScript)
-    //if(customScript.newDataStream != null) {
-      startScreen.scriptFactory.runFromFile(
-        ResourceConstants.customScript,
-        ResourceConstants.systemStartCall)
-    //}
-
     startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
       ResourceConstants.systemStartCall)
+  }
+
+  def loadUserMainScript = {
+    val customScript = Script.readFromDisk(project, ResourceConstants.mainScript)
+    if(customScript.newDataStream != null) {
+      mapScreen.scriptFactory.runFromFile(
+        ResourceConstants.mainScript,
+        "main()")
+    }
   }
 
   /**
@@ -153,6 +155,8 @@ class RpgGame(gamepath: File)
     setPlayerLoc(project.data.startup.startingLoc)
     mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
+
+    loadUserMainScript
   }
 
   def saveGame(slot: Int) = {
@@ -174,6 +178,8 @@ class RpgGame(gamepath: File)
 
     mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
+
+    loadUserMainScript
   }
 
   def setPlayerLoc(loc: MapLoc) = {
