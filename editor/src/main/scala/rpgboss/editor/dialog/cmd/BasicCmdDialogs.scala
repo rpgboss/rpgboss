@@ -7,6 +7,7 @@ import rpgboss.editor.uibase._
 import rpgboss.editor._
 import rpgboss.lib.Utils
 import rpgboss.model.AddOrRemove
+import rpgboss.model.HealOrDamageEnum
 import rpgboss.editor.Internationalized._
 import rpgboss.lib.ArrayUtils
 import rpgboss.editor.resourceselector._
@@ -101,6 +102,28 @@ class GetChoiceCmdDialog(
     TitledComponent("", boolField(getMessage("Allow_Cancel"), model.allowCancel,
         model.allowCancel = _)))
 }
+
+class HealOrDamageCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: HealOrDamage,
+  successF: (HealOrDamage) => Any)
+  extends EventCmdDialog(
+      owner, sm, needsTranslation("Heal/Damage"), initial, successF) {
+  override def extraFields = Seq(
+    TitledComponent("", boolEnumHorizBox(
+        HealOrDamageEnum, model.heal, model.heal = _)),
+    TitledComponent("", boolField(
+        "Whole party", model.wholeParty, model.wholeParty = _)),
+    TitledComponent("Character", indexedCombo(
+        sm.getProjData.enums.characters, model.characterId,
+        model.characterId = _)),
+    TitledComponent("HP Percentage", percentField(0.01f, 1, model.hpPercentage,
+        model.hpPercentage = _)),
+    TitledComponent("MP Percentage", percentField(0.01f, 1, model.mpPercentage,
+        model.mpPercentage = _)))
+}
+
 
 class HidePictureCmdDialog(
   owner: Window,

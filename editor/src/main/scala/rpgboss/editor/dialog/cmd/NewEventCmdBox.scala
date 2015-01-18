@@ -69,6 +69,7 @@ class NewEventCmdBox(
 
         row().grid().add(leftLabel(getMessageColon("Party")))
         row().grid().add(btnEvtCmd(getMessage("Modify_Party"), ModifyParty()))
+        row().grid().add(btnEvtCmd(needsTranslation("Heal/Damage Party"), HealOrDamage()))
 
         row().grid().add(leftLabel(getMessageColon("Inventory")))
         row().grid().add(

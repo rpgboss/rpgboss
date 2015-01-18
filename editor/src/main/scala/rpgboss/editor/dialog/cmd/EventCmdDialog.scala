@@ -63,6 +63,7 @@ object EventCmdDialog {
       case e: AddRemoveGold =>
         new AddRemoveGoldCmdDialog(owner, sm, e, successF)
       case e: GetChoice => new GetChoiceCmdDialog(owner, sm, e, successF)
+      case e: HealOrDamage => new HealOrDamageCmdDialog(owner, sm, e, successF)
       case e: HidePicture => new HidePictureCmdDialog(owner, sm, e, successF)
       case e: IfCondition => new IfConditionCmdDialog(owner, sm, e, successF)
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)

@@ -54,6 +54,7 @@ object EventCmd {
     classOf[AddRemoveGold],
     classOf[BreakLoop],
     classOf[GetChoice],
+    classOf[HealOrDamage],
     classOf[HidePicture],
     classOf[IfCondition],
     classOf[IncrementEventState],
@@ -142,6 +143,33 @@ case class GetChoice(var question: Array[String] = Array(),
         innerCmds, choices.size + 1, choices.size + 1, () => Array[EventCmd]())
     newArray.update(commandListI, newInnerCmds)
     copy(innerCmds = newArray)
+  }
+}
+
+case class HealOrDamage(
+    var heal: Boolean = true,
+    var wholeParty: Boolean = true,
+    var characterId: Int = 0,
+    var hpPercentage: Float = 1.0f,
+    var mpPercentage: Float = 1.0f,
+    var removeStatusEffects: Boolean = true) extends EventCmd {
+  def sections = {
+    if (heal) {
+      if (wholeParty) {
+        singleCall("game.healParty", hpPercentage, mpPercentage,
+            removeStatusEffects)
+      } else {
+        singleCall("game.healCharacter", characterId, hpPercentage,
+            mpPercentage, removeStatusEffects)
+      }
+    } else {
+      if (wholeParty) {
+        singleCall("game.damageParty", hpPercentage, mpPercentage)
+      } else {
+        singleCall("game.damageCharacter", characterId, hpPercentage,
+            mpPercentage)
+      }
+    }
   }
 }
 
