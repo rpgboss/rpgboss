@@ -240,7 +240,11 @@ class ScriptInterface(
   }
 
   def showPicture(slot: Int, name: String, layout: Layout) = syncRun {
-    activeScreen.windowManager.showPictureByName(slot, name, layout)
+    activeScreen.windowManager.showPictureByName(slot, name, layout, 1.0f)
+  }
+
+  def showPicture(slot: Int, name: String, layout: Layout, alpha:Float) = syncRun {
+    activeScreen.windowManager.showPictureByName(slot, name, layout, alpha)
   }
 
   def hidePicture(slot: Int) = syncRun {
