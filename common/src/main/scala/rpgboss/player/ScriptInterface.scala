@@ -652,15 +652,25 @@ class ScriptInterface(
 
   // TODO: outofbounds exception, dont know how to solve this
   def takeDamage(characterId: Int, hp:Int, mp:Int) = syncRun {
-      val characterStatus = BattleStatus.fromCharacter(
-          project.data,
-          persistent.getPartyParameters(project.data.enums.characters),
-          characterId, index = -1)
+    val characterStatus = BattleStatus.fromCharacter(
+        project.data,
+        persistent.getPartyParameters(project.data.enums.characters),
+        characterId, index = -1)
 
-      characterStatus.clampVitals()
+    characterStatus.hp += hp
+    if (characterStatus.hp<=0) {
+      characterStatus.hp = 0
+    }
 
-      persistent.saveCharacterVitals(characterId, characterStatus.hp + hp,
-          characterStatus.mp + mp, characterStatus.tempStatusEffectIds)
+    characterStatus.mp += mp
+    if (characterStatus.mp<=0) {
+      characterStatus.mp = 0
+    }
+
+    characterStatus.clampVitals()
+
+    persistent.saveCharacterVitals(characterId, characterStatus.hp,
+        characterStatus.mp, characterStatus.tempStatusEffectIds)
   }
 
   // TODO: built it in
