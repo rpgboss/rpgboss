@@ -196,5 +196,5 @@ object ResourceConstants {
 
   def globalsScript = "sys/globals.js"
 
-  def customScript = "sys/custom.js"
+  def mainScript = "sys/main.js"
 }

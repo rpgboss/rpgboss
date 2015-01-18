@@ -19,6 +19,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.Color
 
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.ScriptableObject
+
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
 object EntityInfo {
@@ -650,7 +653,6 @@ class ScriptInterface(
     logger.debug(text)
   }
 
-  // TODO: outofbounds exception, dont know how to solve this
   def takeDamage(characterId: Int, hp:Int, mp:Int) = syncRun {
     val characterStatus = BattleStatus.fromCharacter(
         project.data,
@@ -664,6 +666,11 @@ class ScriptInterface(
 
     persistent.saveCharacterVitals(characterId, characterStatus.hp,
         characterStatus.mp, characterStatus.tempStatusEffectIds)
+  }
+
+  def includeFile(scriptPath: String) = {
+      mapScreen.scriptFactory.addFileToScope(scriptPath)
+      mapScreen.scriptFactory.reEvaluate()
   }
 
   // TODO: built it in

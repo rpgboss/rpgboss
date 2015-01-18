@@ -16,6 +16,8 @@ import rpgboss.model.resource.ResourceConstants
 import rpgboss.model.resource.Script
 import rpgboss.player.entity.EventEntity
 
+import scala.collection.mutable.MutableList
+
 /**
  * Thread used to run a javascript script...
  *
@@ -52,24 +54,41 @@ class ScriptThread(
     putProperty("None", None)
   }
 
+  var sciptsToScopeArray:MutableList[String] = MutableList[String]()
+  var needsToBeReloaded = false
+
+  def addScripts(scriptArray:MutableList[String]) = {
+    sciptsToScopeArray = scriptArray
+    needsToBeReloaded = true
+  }
+
   val runnable = new Runnable() {
+
     override def run() = {
       Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
 
       val jsContext = Context.enter()
       val jsScope = jsContext.initStandardObjects()
-
       initScope(jsScope)
 
-      val globalScript =
-        Script.readFromDisk(scriptInterface.project,
-            ResourceConstants.globalsScript)
+      val globalScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.globalsScript)
 
       jsContext.evaluateString(
         jsScope,
         globalScript.readAsString,
         globalScript.name,
         1, null)
+
+      sciptsToScopeArray.foreach { filepath : String =>
+        val script = Script.readFromDisk(scriptInterface.project, filepath)
+        if(script.newDataStream != null) {
+          jsContext.evaluateString(
+            jsScope,
+            script.readAsString,
+            script.name,
+            1, null)
+        }
+      }
 
       jsContext.evaluateString(
         jsScope,
@@ -86,7 +105,7 @@ class ScriptThread(
       }
 
       Context.exit()
-
+      
       onFinish.map { f =>
         GdxUtils.syncRun {
           f()
@@ -97,59 +116,25 @@ class ScriptThread(
     }
   }
 
-  val customRunnable = new Runnable() {
-    override def run() = {
-      Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
-
-      val jsContext = Context.enter()
-      val jsScope = jsContext.initStandardObjects()
-
-      initScope(jsScope)
-
-      val customScript =
-        Script.readFromDisk(scriptInterface.project,
-            ResourceConstants.customScript)
-
-        
-      jsContext.evaluateString(
-        jsScope,
-        customScript.readAsString,
-        customScript.name,
-        1, null)
-
-      if (!fnToRun.isEmpty) {
-        jsContext.evaluateString(
-          jsScope,
-          fnToRun,
-          fnToRun,
-          1, null)
-      }
-
-      Context.exit()
-
-      onFinish.map { f =>
-        GdxUtils.syncRun {
-          f()
-        }
-      }
-
-      finish()
-    }
-  }
-
-  val thread = new Thread(runnable)
-  val customThread = new Thread(customRunnable)
+  var thread = new Thread(runnable)
 
   def run() = {
     assert(!thread.isAlive())
     thread.start()
-
-    val customScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.customScript)
-    if(customScript.newDataStream != null) {
-      assert(!customThread.isAlive())
-      customThread.start()
-    }
     this
+  }
+
+  def reEvaluate() = {
+    if(needsToBeReloaded) {
+      needsToBeReloaded = false
+      try { 
+        thread.interrupt()
+        thread.join()
+      } catch {
+        case e: java.lang.InterruptedException => 
+      }
+      new Thread(runnable).start()
+    }
   }
 
   def uncaughtException(thread: Thread, ex: Throwable) = {
@@ -178,6 +163,28 @@ trait ScriptThreadFactory {
 
 class GameScriptThreadFactory(scriptInterface: ScriptInterface)
 extends ScriptThreadFactory {
+
+  var sciptsToScopeArray:MutableList[String] = MutableList[String]()
+  var threads:MutableList[ScriptThread] = MutableList[ScriptThread]()
+
+  def addFileToScope(filepath: String) = {
+    var isInArray = false
+    sciptsToScopeArray.foreach { path : String =>
+      if(path==filepath) {
+        isInArray=true
+      }
+    }
+    if(!isInArray) {
+      sciptsToScopeArray += filepath
+    }
+  }
+
+  def reEvaluate() = {
+    threads.foreach { thread : ScriptThread =>
+      thread.reEvaluate()
+    }
+  }
+
   override def runFromFile(
     scriptName: String,
     fnToRun: String = "",
@@ -189,6 +196,10 @@ extends ScriptThreadFactory {
       script.readAsString,
       fnToRun,
       onFinish)
+    s.addScripts(sciptsToScopeArray)
+
+    threads += s
+
     s.run()
     s
   }

@@ -110,6 +110,15 @@ class RpgGame(gamepath: File)
       ResourceConstants.systemStartCall)
   }
 
+  def loadUserMainScript = {
+    val customScript = Script.readFromDisk(project, ResourceConstants.mainScript)
+    if(customScript.newDataStream != null) {
+      mapScreen.scriptFactory.runFromFile(
+        ResourceConstants.mainScript,
+        "main()")
+    }
+  }
+
   /**
    * Sets the members of the player's party. Controls the sprite for both
    * walking on the map, as well as the party members in a battle.
@@ -146,6 +155,8 @@ class RpgGame(gamepath: File)
     setPlayerLoc(project.data.startup.startingLoc)
     mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
+
+    loadUserMainScript
   }
 
   def saveGame(slot: Int) = {
@@ -167,6 +178,8 @@ class RpgGame(gamepath: File)
 
     mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
+
+    loadUserMainScript
   }
 
   def setPlayerLoc(loc: MapLoc) = {
