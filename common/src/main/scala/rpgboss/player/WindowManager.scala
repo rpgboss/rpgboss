@@ -113,12 +113,12 @@ class WindowManager(
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
-  def showPictureByName(slot: Int, name: String, layout: Layout) = {
+  def showPictureByName(slot: Int, name: String, layout: Layout, alpha:Float=1.0f) = {
     assertOnBoundThread()
     logger.debug("showPictureByName(%d, %s, %s)".format(slot, name, layout))
 
     val picture = Picture.readFromDisk(project, name)
-    showPicture(slot, TexturePicture(assets, picture, layout))
+    showPicture(slot, TexturePicture(assets, picture, layout, alpha))
   }
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
@@ -261,7 +261,7 @@ trait PictureLike {
  */
 case class TexturePicture[MT <: AnyRef](
   assets: RpgAssetManager, resource: ImageResource[_, MT],
-  layout: Layout) extends PictureLike {
+  layout: Layout, alpha:Float=1.0f) extends PictureLike {
 
   resource.loadAsset(assets)
   def dispose() = resource.dispose(assets)
@@ -271,6 +271,8 @@ case class TexturePicture[MT <: AnyRef](
       val texture = resource.getAsset(assets)
       val rect = layout.getRect(texture.getWidth(), texture.getHeight(),
                                 manager.screenW, manager.screenH)
+      var c = batch.getColor();
+      batch.setColor(c.r, c.g, c.b, alpha);
       batch.draw(texture,
         rect.left, rect.top, rect.w, rect.h,
         0, 0, texture.getWidth(), texture.getHeight(),
