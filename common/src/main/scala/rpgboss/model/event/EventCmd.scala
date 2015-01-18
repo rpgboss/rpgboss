@@ -54,6 +54,7 @@ object EventCmd {
     classOf[AddRemoveGold],
     classOf[BreakLoop],
     classOf[GetChoice],
+    classOf[HealOrDamage],
     classOf[HidePicture],
     classOf[IfCondition],
     classOf[IncrementEventState],
@@ -72,6 +73,7 @@ object EventCmd {
     classOf[StartBattle],
     classOf[StopMusic],
     classOf[Teleport],
+    classOf[TintScreen],
     classOf[WhileLoop])) + EventRenameHints
 }
 
@@ -141,6 +143,33 @@ case class GetChoice(var question: Array[String] = Array(),
         innerCmds, choices.size + 1, choices.size + 1, () => Array[EventCmd]())
     newArray.update(commandListI, newInnerCmds)
     copy(innerCmds = newArray)
+  }
+}
+
+case class HealOrDamage(
+    var heal: Boolean = true,
+    var wholeParty: Boolean = true,
+    var characterId: Int = 0,
+    var hpPercentage: Float = 1.0f,
+    var mpPercentage: Float = 1.0f,
+    var removeStatusEffects: Boolean = true) extends EventCmd {
+  def sections = {
+    if (heal) {
+      if (wholeParty) {
+        singleCall("game.healParty", hpPercentage, mpPercentage,
+            removeStatusEffects)
+      } else {
+        singleCall("game.healCharacter", characterId, hpPercentage,
+            mpPercentage, removeStatusEffects)
+      }
+    } else {
+      if (wholeParty) {
+        singleCall("game.damageParty", hpPercentage, mpPercentage)
+      } else {
+        singleCall("game.damageCharacter", characterId, hpPercentage,
+            mpPercentage)
+      }
+    }
   }
 }
 
@@ -356,6 +385,16 @@ case class StopMusic(
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
+}
+
+case class TintScreen(
+    var r: Float = 1.0f,
+    var g: Float = 0,
+    var b: Float = 0,
+    var a: Float = 0.5f,
+    var fadeDuration: Float = 1) extends EventCmd {
+  def sections =
+    singleCall("game.tintScreen", r, g, b, a, fadeDuration)
 }
 
 case class WhileLoop(

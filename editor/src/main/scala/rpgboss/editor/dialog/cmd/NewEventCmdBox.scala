@@ -57,6 +57,8 @@ class NewEventCmdBox(
         row().grid().add(btnEvtCmd(getMessage("Get_Choice"), GetChoice()))
         row().grid().add(btnEvtCmd(getMessage("Show_Picture"), ShowPicture()))
         row().grid().add(btnEvtCmd(getMessage("Hide_Picture"), HidePicture()))
+        row().grid().add(
+            btnEvtCmd(needsTranslation("Tint Screen"), TintScreen()))
 
         row().grid().add(leftLabel(getMessageColon("Movement")))
         row().grid().add(btnEvtCmd(getMessage("Teleport_Player"),
@@ -67,6 +69,7 @@ class NewEventCmdBox(
 
         row().grid().add(leftLabel(getMessageColon("Party")))
         row().grid().add(btnEvtCmd(getMessage("Modify_Party"), ModifyParty()))
+        row().grid().add(btnEvtCmd(needsTranslation("Heal/Damage Party"), HealOrDamage()))
 
         row().grid().add(leftLabel(getMessageColon("Inventory")))
         row().grid().add(

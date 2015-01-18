@@ -14,6 +14,7 @@ import org.mozilla.javascript.NativeObject
 import rpgboss.save.SaveFile
 import rpgboss.save.SaveInfo
 import rpgboss.model.event.EventJavascript
+import com.badlogic.gdx.graphics.Color
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.Color
@@ -176,6 +177,25 @@ class ScriptInterface(
     endAlpha: Float,
     duration: Float) = syncRun {
     activeScreen.windowManager.setTransition(endAlpha, duration)
+  }
+
+  /**
+   * @param   r               Between 0.0f and 1.0f.
+   * @param   g               Between 0.0f and 1.0f.
+   * @param   b               Between 0.0f and 1.0f.
+   * @param   a               Between 0.0f and 1.0f.
+   * @param   fadeDuration    In seconds. 0f means instantaneous
+   */
+  def tintScreen(r: Float, g: Float, b: Float, a: Float,
+      fadeDuration: Float) = syncRun {
+    def activeScreenTint = activeScreen.windowManager.tintColor
+    // If no existing tint, set color immediately and tween alpha only.
+    if (activeScreenTint.a == 0) {
+      activeScreenTint.set(r, g, b, 0f)
+    }
+
+    activeScreen.windowManager.tintTweener.tweenTo(new Color(r, g, b, a),
+        fadeDuration)
   }
 
   def startBattle(encounterId: Int, overrideBattleBackground: String,
@@ -501,6 +521,44 @@ class ScriptInterface(
           characterStatus.mp, characterStatus.tempStatusEffectIds)
     }
   }
+
+  /**
+   * @param   hpPercentage    Between 0.0f and 1.0f.
+   * @param   mpPercentage    Between 0.0f and 1.0f.
+   */
+  def healCharacter(characterId: Int, hpPercentage: Float,
+      mpPercentage: Float, removeStatusEffects: Boolean = false) = syncRun {
+    val characterStatus = BattleStatus.fromCharacter(
+        project.data,
+        persistent.getPartyParameters(project.data.enums.characters),
+        characterId, index = -1)
+
+    if (removeStatusEffects) {
+      characterStatus.updateTempStatusEffectIds(Array.empty)
+    }
+
+    characterStatus.hp +=
+      (characterStatus.stats.mhp * hpPercentage).round
+    characterStatus.mp +=
+      (characterStatus.stats.mhp * mpPercentage).round
+
+    characterStatus.clampVitals()
+
+    persistent.saveCharacterVitals(characterId, characterStatus.hp,
+        characterStatus.mp, characterStatus.tempStatusEffectIds)
+  }
+
+  def healParty(hpPercentage: Float, mpPercentage: Float) = syncRun {
+    for (characterId <- persistent.getIntArray(PARTY))
+      healCharacter(characterId, hpPercentage, mpPercentage)
+  }
+
+  def damageCharacter(characterId: Int, hpPercentage: Float,
+      mpPercentage: Float) =
+    healCharacter(characterId, -hpPercentage, -mpPercentage)
+
+  def damageParty(hpPercentage: Float, mpPercentage: Float) =
+    healParty(-hpPercentage, -mpPercentage)
 
   def getBattleStats(characterId: Int, proposedSlotId: Int,
       proposedItemId: Int) = {

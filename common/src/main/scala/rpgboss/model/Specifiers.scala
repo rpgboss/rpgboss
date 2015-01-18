@@ -54,6 +54,14 @@ object AddOrRemove extends BooleanRpgEnum {
   def toBoolean(id: Int) = id == Add.id
 }
 
+object HealOrDamageEnum extends BooleanRpgEnum {
+  val Heal, Damage = Value
+  def default = Heal
+
+  def fromBoolean(x: Boolean) = if (x) Heal else Damage
+  def toBoolean(id: Int) = id == Heal.id
+}
+
 case class BattlerSpec(var name: String, var scale: Float = 1.0f)
 
 // Specifies an entity: Either the player or an event on the current map.
