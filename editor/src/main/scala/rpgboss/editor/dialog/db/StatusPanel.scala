@@ -47,7 +47,7 @@ class StatusPanel(
 
         row().grid(lbl(getMessageColon("Name"))).add(fName)
 
-        row().grid(lbl(needsTranslation("Release chance per tick:")))
+        row().grid(lbl(getMessageColon("Release_Chance_Per_Tick")))
           .add(fReleaseChancePerTick)
 
         row().grid(lbl(getMessageColon("Maximum_Stacks"))).add(fMaxStacks)
