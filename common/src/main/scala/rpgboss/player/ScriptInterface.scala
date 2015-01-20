@@ -147,12 +147,8 @@ class ScriptInterface(
 
     syncRun {
       game.setPlayerLoc(loc);
-    }
-
-    if (transition == Transitions.FADE) {
-      syncRun {
+      if (transition == Transitions.FADE)
         mapScreen.windowManager.setTransition(0, fadeDuration);
-      }
     }
   }
 

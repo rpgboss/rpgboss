@@ -32,6 +32,11 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
 
+  /*
+   * Music instances 'on their way out'.
+   */
+  val oldMusics = collection.mutable.Set[MusicPlayer]()
+
   val windowManager = createWindowManager()
 
   val animationManager = new AnimationManager()
@@ -44,9 +49,12 @@ trait RpgScreen extends Screen with ThreadChecked {
       return
 
     musics(slot).map({ oldMusic =>
+      oldMusics.add(oldMusic)
       oldMusic.volumeTweener.tweenTo(0f, fadeDuration)
       oldMusic.volumeTweener.runAfterDone(() => {
         oldMusic.stop()
+        oldMusic.dispose()
+        oldMusics.remove(oldMusic)
       })
     })
 
@@ -78,21 +86,20 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   def reset() = {
     windowManager.reset()
-    musics.foreach(_.map(music => {
-      music.stop()
-      music.dispose()
-    }))
+    for (i <- 0 until musics.length) {
+      musics(i).map(_.stop())
+      musics(i).map(_.dispose())
+      musics(i) = None
+    }
+
+    oldMusics.foreach(_.dispose())
+    oldMusics.clear()
   }
 
   override def dispose() = {
-    windowManager.dispose()
+    reset()
 
     animationManager.dispose()
-
-    musics.foreach(_.map(music => {
-      music.stop()
-      music.dispose()
-    }))
   }
 
   override def hide() = {
@@ -104,6 +111,7 @@ trait RpgScreen extends Screen with ThreadChecked {
     windowManager.transitionAlpha = 1.0f
 
     musics.foreach(_.map(_.pause()))
+    oldMusics.foreach(_.pause())
   }
 
   override def pause() = {
@@ -117,6 +125,7 @@ trait RpgScreen extends Screen with ThreadChecked {
       return
 
     musics.foreach(_.map(_.update(delta)))
+    oldMusics.foreach(_.update(delta))
 
     // Update tweens
     windowManager.update(delta)
@@ -143,6 +152,7 @@ trait RpgScreen extends Screen with ThreadChecked {
 
     Gdx.input.setInputProcessor(inputs)
     musics.foreach(_.map(_.play()))
+    oldMusics.foreach(_.play())
   }
 }
 
