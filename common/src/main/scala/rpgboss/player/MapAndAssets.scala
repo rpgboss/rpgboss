@@ -165,7 +165,7 @@ class MapAndAssets(project: Project, val mapName: String) {
     if (dx == 0 && dy == 0)
       return (false, 0)
 
-    val box = entity.getBoundingBox().offseted(dx, dy)
+    val box = entity.getBoundingBox().offsetted(dx, dy)
     val newX = x + dx
     val newY = y + dy
     val (minX, minY, maxX, maxY) = (box.minX, box.minY, box.maxX, box.maxY)
