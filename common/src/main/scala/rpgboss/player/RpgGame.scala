@@ -232,6 +232,9 @@ class RpgGame(gamepath: File)
   }
 
   def gameOver() {
+    battleScreen.reset()
+    mapScreen.reset()
+    startScreen.reset()
     // TODO: Ghetto but effective to just land on the start screen again.
     beginGame()
   }

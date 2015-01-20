@@ -501,7 +501,7 @@ class BattleScreen(
     enemyListWindow = null
     partyListWindow = null
 
-    windowManager.reset()
+    reset()
 
     _enemyBattlers.clear()
     _partyBattlers.clear()

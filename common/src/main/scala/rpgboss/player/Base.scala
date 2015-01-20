@@ -37,6 +37,10 @@ trait Finishable {
   def awaitFinish(): Unit
 }
 
+trait FinishableStoppable extends Finishable {
+  def stop(): Unit
+}
+
 trait Tweener[T] {
   def get(): T
   def set(newValue: T): Unit

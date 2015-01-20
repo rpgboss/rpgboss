@@ -76,6 +76,14 @@ trait RpgScreen extends Screen with ThreadChecked {
   def render()
   def update(delta: Float)
 
+  def reset() = {
+    windowManager.reset()
+    musics.foreach(_.map(music => {
+      music.stop()
+      music.dispose()
+    }))
+  }
+
   override def dispose() = {
     windowManager.dispose()
 
@@ -146,6 +154,6 @@ trait RpgScreenWithGame extends RpgScreen {
   def screenH = project.data.startup.screenH
   def assets = game.assets
   val scriptInterface = new ScriptInterface(game, this)
-  val scriptFactory = new GameScriptThreadFactory(scriptInterface)
+  val scriptFactory = new ScriptThreadFactory(scriptInterface)
 
 }

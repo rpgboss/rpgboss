@@ -10,6 +10,7 @@ import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
 import rpgboss.lib.Utils
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import com.badlogic.gdx.utils.Disposable
 
 case class EventScriptInterface(mapName: String, id: Int)
 
@@ -29,7 +30,8 @@ class EventEntity(
       eventEntities,
       mapEvent.x,
       mapEvent.y)
-  with LazyLogging {
+  with LazyLogging
+  with Disposable {
 
   def id = mapEvent.id
 
@@ -47,7 +49,7 @@ class EventEntity(
     mapEvent.states
   }
 
-  private var curThread: Option[Finishable] = None
+  private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
 
@@ -159,5 +161,10 @@ class EventEntity(
         _activateCooldown <= 0) {
       activate(SpriteSpec.Directions.NONE)
     }
+  }
+
+  override def dispose() = {
+    // Kill any outstanding threads
+    curThread.map(_.stop())
   }
 }

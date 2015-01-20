@@ -15,8 +15,9 @@ import rpgboss.model.event._
 import rpgboss.model.resource.ResourceConstants
 import rpgboss.model.resource.Script
 import rpgboss.player.entity.EventEntity
-
 import scala.collection.mutable.MutableList
+import org.mozilla.javascript.debug.Debugger
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 /**
  * Thread used to run a javascript script...
@@ -35,7 +36,8 @@ class ScriptThread(
   fnToRun: String = "",
   onFinish: Option[() => Unit] = None)
   extends UncaughtExceptionHandler
-  with FinishableByPromise {
+  with FinishableByPromise
+  with LazyLogging {
   def initScope(jsScope: ScriptableObject): Any = {
     def putProperty(objName: String, obj: Object) = {
       ScriptableObject.putProperty(jsScope, objName,
@@ -63,7 +65,6 @@ class ScriptThread(
   }
 
   val runnable = new Runnable() {
-
     override def run() = {
       Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
 
@@ -105,7 +106,7 @@ class ScriptThread(
       }
 
       Context.exit()
-      
+
       onFinish.map { f =>
         GdxUtils.syncRun {
           f()
@@ -118,6 +119,11 @@ class ScriptThread(
 
   var thread = new Thread(runnable)
 
+  def stop() = {
+    // TODO: This is unsafe, but in practice, won't do anything bad... I think.
+    thread.stop()
+  }
+
   def run() = {
     assert(!thread.isAlive())
     thread.start()
@@ -127,11 +133,11 @@ class ScriptThread(
   def reEvaluate() = {
     if(needsToBeReloaded) {
       needsToBeReloaded = false
-      try { 
+      try {
         thread.interrupt()
         thread.join()
       } catch {
-        case e: java.lang.InterruptedException => 
+        case e: java.lang.InterruptedException =>
       }
       new Thread(runnable).start()
     }
@@ -139,6 +145,8 @@ class ScriptThread(
 
   def uncaughtException(thread: Thread, ex: Throwable) = {
     ex match {
+      case e: ThreadDeath =>
+        System.err.println("Thread death")
       case e: org.mozilla.javascript.EcmaError => {
         System.err.println(e.getErrorMessage())
         System.err.println("%s:%d".format(e.sourceName(), e.lineNumber()))
@@ -148,21 +156,7 @@ class ScriptThread(
   }
 }
 
-trait ScriptThreadFactory {
-  def runFromFile(
-    scriptName: String,
-    fnToRun: String = "",
-    onFinish: Option[() => Unit] = None): Finishable
-
-  def runFromEventEntity(
-    entity: EventEntity,
-    eventState: RpgEventState,
-    state: Int,
-    onFinish: Option[() => Unit] = None): Finishable
-}
-
-class GameScriptThreadFactory(scriptInterface: ScriptInterface)
-extends ScriptThreadFactory {
+class ScriptThreadFactory(scriptInterface: ScriptInterface) {
 
   var sciptsToScopeArray:MutableList[String] = MutableList[String]()
   var threads:MutableList[ScriptThread] = MutableList[ScriptThread]()
@@ -185,7 +179,7 @@ extends ScriptThreadFactory {
     }
   }
 
-  override def runFromFile(
+  def runFromFile(
     scriptName: String,
     fnToRun: String = "",
     onFinish: Option[() => Unit] = None) = {
@@ -204,7 +198,7 @@ extends ScriptThreadFactory {
     s
   }
 
-  override def runFromEventEntity(
+  def runFromEventEntity(
     entity: EventEntity,
     eventState: RpgEventState,
     state: Int,
