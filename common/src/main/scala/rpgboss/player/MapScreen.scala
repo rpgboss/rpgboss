@@ -84,15 +84,18 @@ class MapScreen(val game: RpgGame)
   val eventEntities = collection.mutable.Map[Int, EventEntity]()
 
   def updateMapAssets(loc: MapLoc) = {
+    mapAndAssetsOption.map(_.dispose())
+    mapAndAssetsOption = None
+    eventEntities.map(_._2.dispose())
+    eventEntities.clear()
+
     if (!loc.map.isEmpty()) {
       val mapName = loc.map
-      mapAndAssetsOption.map(_.dispose())
 
       val mapAndAssets = new MapAndAssets(project, loc.map)
       mapAndAssets.setLastBattlePosition(loc.x, loc.y)
 
       mapAndAssetsOption = Some(mapAndAssets)
-      eventEntities.clear()
       eventEntities ++= mapAndAssets.mapData.events.map {
         case (k, v) => ((k, new EventEntity(
             game.project,
@@ -108,10 +111,6 @@ class MapScreen(val game: RpgGame)
 
       playMusic(0, mapAndAssets.map.metadata.music, true,
           Transitions.fadeLength)
-    } else {
-      mapAndAssetsOption.map(_.dispose())
-      mapAndAssetsOption = None
-      eventEntities.clear()
     }
   }
 
@@ -127,6 +126,7 @@ class MapScreen(val game: RpgGame)
       _playerEntity.mapName = Some(loc.map)
 
       _playerEntity.updateSprite()
+      windowManager.reset()
     }
   }
 
@@ -348,5 +348,10 @@ class MapScreen(val game: RpgGame)
     batch.dispose()
 
     super.dispose()
+  }
+
+  override def reset() = {
+    super.reset()
+    setPlayerLoc(MapLoc())
   }
 }

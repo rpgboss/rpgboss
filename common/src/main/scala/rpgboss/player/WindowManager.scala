@@ -16,6 +16,8 @@ import rpgboss.lib.Rect
 import rpgboss.lib.Layout
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
+import scala.collection.mutable.MutableList
+
 /**
  * This class renders stuff on the screen.
  *
@@ -33,7 +35,26 @@ class WindowManager(
   val shapeRenderer = new ShapeRenderer()
 
   // Should only be modified on the Gdx thread
-  private var curTransition: Option[Transition] = None
+  /**
+   * Should start all black.
+   */
+  var transitionAlpha = 1.0f
+  val transitionTweener =
+    new FloatTweener(() => transitionAlpha, transitionAlpha = _)
+
+  val tintColor = new Color
+  val tintTweener = new Tweener[Color] {
+    var _startValue = new Color()
+    var _endValue = new Color()
+
+    def get() = tintColor
+    def set(newValue: Color) = tintColor.set(newValue)
+    def interpolate(startValue: Color, endValue: Color, alpha: Float) = {
+      val newColor = new Color(startValue)
+      newColor.lerp(endValue, alpha)
+      newColor
+    }
+  }
 
   val windowskin =
     Windowskin.readFromDisk(project, project.data.startup.windowskin)
@@ -46,10 +67,9 @@ class WindowManager(
   val pictures = Array.fill[Option[PictureLike]](64)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
-  def setTransition(startAlpha: Float, endAlpha: Float, duration: Float) = {
+  def setTransition(endAlpha: Float, duration: Float) = {
     assertOnBoundThread()
-    curTransition.map(_.flushPendingClosures())
-    curTransition = Some(Transition(startAlpha, endAlpha, duration))
+    transitionTweener.tweenTo(endAlpha, duration)
   }
 
   /**
@@ -58,20 +78,15 @@ class WindowManager(
    *                    transition.
    */
   def runAfterTransition(closure: () => Unit) {
-    curTransition map { transition =>
-      transition.pendingClosures += closure
-    } getOrElse {
-      closure()
-    }
+    transitionTweener.runAfterDone(closure)
   }
 
-  def clearTransition() = {
+  def finishTransition() = {
     assertOnBoundThread()
-    curTransition.map(_.flushPendingClosures())
-    curTransition = None
+    transitionTweener.finish()
   }
 
-  def inTransition = curTransition.isDefined && !curTransition.get.done
+  def inTransition = !transitionTweener.done
 
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
@@ -98,12 +113,12 @@ class WindowManager(
   batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
   shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
-  def showPictureByName(slot: Int, name: String, layout: Layout) = {
+  def showPictureByName(slot: Int, name: String, layout: Layout, alpha:Float=1.0f) = {
     assertOnBoundThread()
     logger.debug("showPictureByName(%d, %s, %s)".format(slot, name, layout))
 
     val picture = Picture.readFromDisk(project, name)
-    showPicture(slot, TexturePicture(assets, picture, layout))
+    showPicture(slot, TexturePicture(assets, picture, layout, alpha))
   }
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
@@ -121,6 +136,7 @@ class WindowManager(
     for (i <- 0 until pictures.length) {
       hidePicture(i)
     }
+    tintColor.set(0, 0, 0, 0)
 
     windows.foreach(_.startClosing())
 
@@ -130,11 +146,8 @@ class WindowManager(
   }
 
   def update(delta: Float) = {
-    // We don't ever reap curTransition after completion, as we want to keep
-    // drawing the black screen or whatever until the next transition comes to
-    // take it over.
-    curTransition.map(_.update(delta))
-
+    transitionTweener.update(delta)
+    tintTweener.update(delta)
     windows.foreach(_.update(delta))
 
     // TODO: Avoid a memory alloc here
@@ -154,6 +167,34 @@ class WindowManager(
     batch.end()
   }
 
+  var screenTextArray = MutableList[ScreenText]()
+
+  def addDrawText(text: ScreenText):Boolean = {
+    screenTextArray.foreach { text2:ScreenText =>
+      if(text2.id == text.id) {
+        removeDrawText(text.id)
+      }
+    }
+    screenTextArray += text
+    
+    return true
+  }
+
+  def removeDrawText(id: Int):Boolean = {
+    var removedSomething:Boolean = false
+    var newTextArray = MutableList[ScreenText]()
+    screenTextArray.foreach { text:ScreenText =>
+      if(text.id!=id){
+        newTextArray += text
+      } else {
+        removedSomething = true
+      }
+    }
+    screenTextArray = newTextArray
+
+    return removedSomething
+  }
+
   def render() = {
     /*
      * We define our screen coordinates to be 640x480.
@@ -171,6 +212,10 @@ class WindowManager(
       pic.render(this, batch)
     }
 
+    screenTextArray.foreach { text:ScreenText =>
+      text.render(this,batch)
+    }
+
     // Render all windows
     windows.reverseIterator.foreach(_.render(batch))
 
@@ -182,14 +227,17 @@ class WindowManager(
     batch.end()
 
     // Render transition
-    curTransition map { transition =>
-
+    if (transitionAlpha != 0 || tintColor.a != 0) {
       // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL20.GL_BLEND)
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 
-      shapeRenderer.setColor(0, 0, 0, transition.curAlpha)
+      shapeRenderer.setColor(tintColor)
       shapeRenderer.rect(0, 0, screenW, screenH)
+
+      shapeRenderer.setColor(0, 0, 0, transitionAlpha)
+      shapeRenderer.rect(0, 0, screenW, screenH)
+
       shapeRenderer.end()
     }
   }
@@ -213,7 +261,7 @@ trait PictureLike {
  */
 case class TexturePicture[MT <: AnyRef](
   assets: RpgAssetManager, resource: ImageResource[_, MT],
-  layout: Layout) extends PictureLike {
+  layout: Layout, alpha:Float=1.0f) extends PictureLike {
 
   resource.loadAsset(assets)
   def dispose() = resource.dispose(assets)
@@ -223,10 +271,13 @@ case class TexturePicture[MT <: AnyRef](
       val texture = resource.getAsset(assets)
       val rect = layout.getRect(texture.getWidth(), texture.getHeight(),
                                 manager.screenW, manager.screenH)
+      var c = batch.getColor();
+      batch.setColor(c.r, c.g, c.b, alpha);
       batch.draw(texture,
         rect.left, rect.top, rect.w, rect.h,
         0, 0, texture.getWidth(), texture.getHeight(),
         false, true)
+      batch.setColor(c.r, c.g, c.b, 1);
     }
   }
 }

@@ -85,7 +85,9 @@ object Condition extends LazyLogging {
   }
 
   def allConditionsExp(conditions: Array[Condition]): RawJs = {
-    if (conditions.size == 1) {
+    if (conditions.isEmpty) {
+      RawJs(EventJavascript.toJs(true))
+    } else if (conditions.size == 1) {
       conditions.head.rawJs
     } else {
       val conditionsString = conditions

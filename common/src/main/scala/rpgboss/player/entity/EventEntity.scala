@@ -9,6 +9,8 @@ import scala.concurrent.Promise
 import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
 import rpgboss.lib.Utils
+import com.typesafe.scalalogging.slf4j.LazyLogging
+import com.badlogic.gdx.utils.Disposable
 
 case class EventScriptInterface(mapName: String, id: Int)
 
@@ -27,7 +29,9 @@ class EventEntity(
       mapAndAssetsOption,
       eventEntities,
       mapEvent.x,
-      mapEvent.y) {
+      mapEvent.y)
+  with LazyLogging
+  with Disposable {
 
   def id = mapEvent.id
 
@@ -45,7 +49,7 @@ class EventEntity(
     mapEvent.states
   }
 
-  private var curThread: Option[Finishable] = None
+  private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
 
@@ -72,7 +76,19 @@ class EventEntity(
   }
 
   def updateState(): Unit = {
-    evtStateIdx = persistent.getEventState(mapName, mapEvent.id)
+    val proposedEvtStateIdx = persistent.getEventState(mapName, mapEvent.id)
+    if (proposedEvtStateIdx < 0 || proposedEvtStateIdx >= states.length) {
+      val clampedState =
+        Utils.clamped(proposedEvtStateIdx, 0, states.length - 1)
+      logger.error(
+          "Event %s->%d doesn't have state %d. ".format(
+              mapName, mapEvent.id, proposedEvtStateIdx) +
+          "Clamping state to %d.".format(clampedState))
+      persistent.setEventState(mapName, mapEvent.id, clampedState)
+      return
+    }
+
+    evtStateIdx = proposedEvtStateIdx
 
     for (i <- 0 until states.length;
          if !states(i).conditions.isEmpty) {
@@ -145,5 +161,10 @@ class EventEntity(
         _activateCooldown <= 0) {
       activate(SpriteSpec.Directions.NONE)
     }
+  }
+
+  override def dispose() = {
+    // Kill any outstanding threads
+    curThread.map(_.stop())
   }
 }

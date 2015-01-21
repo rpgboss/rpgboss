@@ -2,10 +2,6 @@ package rpgboss.player
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import aurelienribon.tweenengine.BaseTween
-import aurelienribon.tweenengine.Tween
-import aurelienribon.tweenengine.TweenCallback
-import aurelienribon.tweenengine.TweenManager
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.Project
 import rpgboss.model.SoundSpec
@@ -36,11 +32,14 @@ trait RpgScreen extends Screen with ThreadChecked {
 
   val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
 
+  /*
+   * Music instances 'on their way out'.
+   */
+  val oldMusics = collection.mutable.Set[MusicPlayer]()
+
   val windowManager = createWindowManager()
 
   val animationManager = new AnimationManager()
-
-  val tweenManager = new TweenManager()
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDuration: Float): Unit = {
@@ -50,16 +49,13 @@ trait RpgScreen extends Screen with ThreadChecked {
       return
 
     musics(slot).map({ oldMusic =>
-      val tweenMusic = new MusicPlayerTweenable(oldMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
-        .target(0f)
-        .setCallback(new TweenCallback {
-          override def onEvent(typeArg: Int, x: BaseTween[_]) = {
-            if (typeArg == TweenCallback.COMPLETE) {
-              oldMusic.stop()
-            }
-          }
-        }).start(tweenManager)
+      oldMusics.add(oldMusic)
+      oldMusic.volumeTweener.tweenTo(0f, fadeDuration)
+      oldMusic.volumeTweener.runAfterDone(() => {
+        oldMusic.stop()
+        oldMusic.dispose()
+        oldMusics.remove(oldMusic)
+      })
     })
 
     musics(slot) = specOpt.map { spec =>
@@ -71,11 +67,7 @@ trait RpgScreen extends Screen with ThreadChecked {
       newMusic.setVolume(0f)
       newMusic.setLooping(loop)
       newMusic.play()
-
-      // Setup volume tween
-      val tweenMusic = new MusicPlayerTweenable(newMusic)
-      Tween.to(tweenMusic, GdxMusicAccessor.VOLUME, fadeDuration)
-        .target(spec.volume).start(tweenManager)
+      newMusic.volumeTweener.tweenTo(spec.volume, fadeDuration)
 
       newMusic
     }
@@ -92,15 +84,22 @@ trait RpgScreen extends Screen with ThreadChecked {
   def render()
   def update(delta: Float)
 
+  def reset() = {
+    windowManager.reset()
+    for (i <- 0 until musics.length) {
+      musics(i).map(_.stop())
+      musics(i).map(_.dispose())
+      musics(i) = None
+    }
+
+    oldMusics.foreach(_.dispose())
+    oldMusics.clear()
+  }
+
   override def dispose() = {
-    windowManager.dispose()
+    reset()
 
     animationManager.dispose()
-
-    musics.foreach(_.map(music => {
-      music.stop()
-      music.dispose()
-    }))
   }
 
   override def hide() = {
@@ -108,7 +107,11 @@ trait RpgScreen extends Screen with ThreadChecked {
     inputs.releaseAllKeys()
     Gdx.input.setInputProcessor(null)
 
+    // Sholud start all black again
+    windowManager.transitionAlpha = 1.0f
+
     musics.foreach(_.map(_.pause()))
+    oldMusics.foreach(_.pause())
   }
 
   override def pause() = {
@@ -121,9 +124,10 @@ trait RpgScreen extends Screen with ThreadChecked {
     if (!assets.update())
       return
 
-    // Update tweens
-    tweenManager.update(delta)
+    musics.foreach(_.map(_.update(delta)))
+    oldMusics.foreach(_.update(delta))
 
+    // Update tweens
     windowManager.update(delta)
 
     animationManager.update(delta)
@@ -148,6 +152,7 @@ trait RpgScreen extends Screen with ThreadChecked {
 
     Gdx.input.setInputProcessor(inputs)
     musics.foreach(_.map(_.play()))
+    oldMusics.foreach(_.play())
   }
 }
 
@@ -159,6 +164,6 @@ trait RpgScreenWithGame extends RpgScreen {
   def screenH = project.data.startup.screenH
   def assets = game.assets
   val scriptInterface = new ScriptInterface(game, this)
-  val scriptFactory = new GameScriptThreadFactory(scriptInterface)
+  val scriptFactory = new ScriptThreadFactory(scriptInterface)
 
 }

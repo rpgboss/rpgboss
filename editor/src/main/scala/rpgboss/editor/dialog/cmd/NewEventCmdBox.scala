@@ -57,6 +57,8 @@ class NewEventCmdBox(
         row().grid().add(btnEvtCmd(getMessage("Get_Choice"), GetChoice()))
         row().grid().add(btnEvtCmd(getMessage("Show_Picture"), ShowPicture()))
         row().grid().add(btnEvtCmd(getMessage("Hide_Picture"), HidePicture()))
+        row().grid().add(
+            btnEvtCmd(getMessage("Tint_Screen"), TintScreen()))
 
         row().grid().add(leftLabel(getMessageColon("Movement")))
         row().grid().add(btnEvtCmd(getMessage("Teleport_Player"),
@@ -67,6 +69,7 @@ class NewEventCmdBox(
 
         row().grid().add(leftLabel(getMessageColon("Party")))
         row().grid().add(btnEvtCmd(getMessage("Modify_Party"), ModifyParty()))
+        row().grid().add(btnEvtCmd(getMessage("Heal_Damage_Party"), HealOrDamage()))
 
         row().grid().add(leftLabel(getMessageColon("Inventory")))
         row().grid().add(
@@ -80,12 +83,18 @@ class NewEventCmdBox(
         row().grid().add(leftLabel(getMessage("Battles")))
         row().grid().add(btnEvtCmd(getMessage("Start_Battle"), StartBattle()))
 
-        row().grid().add(leftLabel(needsTranslation("Audio")))
-        row().grid().add(btnEvtCmd(needsTranslation("Play Sound"), PlaySound()))
-        row().grid().add(btnEvtCmd(needsTranslation("Play Music"), PlayMusic()))
-        row().grid().add(btnEvtCmd(needsTranslation("Stop Sound"), StopMusic()))
+        row().grid().add(leftLabel(getMessage("Audio")))
+        row().grid().add(btnEvtCmd(getMessage("Play_Sound"), PlaySound()))
+        row().grid().add(btnEvtCmd(getMessage("Play_Music"), PlayMusic()))
+        row().grid().add(btnEvtCmd(getMessage("Stop_Sound"), StopMusic()))
 
         row().grid().add(leftLabel(getMessage("Programming")))
+        row().grid().add(
+            btnEvtCmd(getMessage("If_Condition"), IfCondition()))
+        row().grid().add(
+            btnEvtCmd(getMessage("While_Loop"), WhileLoop()))
+        row().grid().add(
+            btnEvtCmd(getMessage("Break_Loop"), BreakLoop()))
         row().grid().add(
             btnEvtCmd(getMessage("Set_Global_Integer"), SetGlobalInt()))
         row().grid().add(

@@ -14,6 +14,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.utils.Disposable
 import com.google.common.io.Files
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import rpgboss.player.FloatTweener
 
 case class MusicMetadata()
 
@@ -55,6 +56,12 @@ trait MusicPlayer extends Disposable {
   def setLooping(loop: Boolean)
   def stop()
   def dispose()
+
+  val volumeTweener = new FloatTweener(getVolume, setVolume _)
+
+  def update(delta: Float) = {
+    volumeTweener.update(delta)
+  }
 }
 
 class MidiMusicPlayer(music: Music) extends MusicPlayer with LazyLogging {

@@ -120,7 +120,7 @@ class Entity(
    * Finds all events with which this dxArg and dyArg touches
    */
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
-    val boundingBox = getBoundingBox()
+    val boundingBox = getBoundingBox().offsetted(dxArg, dyArg)
     eventEntities.values.filter(npc => {
       npc.getBoundingBox().contains(boundingBox)
     })
@@ -178,7 +178,7 @@ case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
   def contains(x: Float, y: Float) =
     minX <= x && x <= maxX && minY <= y && y <= maxY
 
-  def offseted(dx: Float, dy: Float) =
+  def offsetted(dx: Float, dy: Float) =
     copy(minX + dx, minY + dy, maxX + dx, maxY + dy)
 }
 

@@ -15,11 +15,11 @@ class SkillSpec extends UnitSpec {
       50,
       20,
       BaseStats(50, 20, 10, 10, 10, arm = 100, mre = 200, effects = Array()),
-      Array(),
-      Array(),
-      Array(),
-      Array(0),
-      0)
+      equipment = Array(),
+      onAttackSkillIds = Array(),
+      knownSkillIds = Array(),
+      initialTempStatusEffectIds = Array(),
+      row = 0)
   }
 
   "Skill" should "use RecoverHpAdd effects" in {
@@ -72,5 +72,50 @@ class SkillSpec extends UnitSpec {
     hits.head.damage.value should equal (-4)
 
     f.status.mp should equal (5)
+  }
+
+  "Skill" should "apply and remove status effects" in {
+    val f = fixture
+    f.pData.enums.statusEffects = Array.fill(4)(StatusEffect())
+
+    // Use a skill to add a status effect.
+    val addSkill = Skill(
+        damages = Array(), effects = Array(Effect(AddStatusEffect.id, 3, 100)))
+    val addHits = addSkill.applySkill(f.status, f.status)
+    addHits.length should equal (1)
+    addHits.head.damage.value should equal (3)
+
+    f.status.tempStatusEffectIds should deepEqual(Array(3))
+
+    // Add another stack
+    addSkill.applySkill(f.status, f.status)
+    f.status.tempStatusEffectIds should deepEqual(Array(3, 3))
+
+    // Use a skill to remove a status effect.
+    val removeSkill = Skill(
+        damages = Array(),
+        effects = Array(Effect(RemoveStatusEffect.id, 3, 100)))
+    val removeHits = removeSkill.applySkill(f.status, f.status)
+    removeHits.length should equal (1)
+    removeHits.head.damage.value should equal (3)
+
+    f.status.tempStatusEffectIds should deepEqual(Array[Int]())
+
+    // Add two stacks of the status effect
+    val addDifferentStatusEffect = Skill(
+        damages = Array(), effects = Array(Effect(AddStatusEffect.id, 1, 100)))
+
+    addDifferentStatusEffect.applySkill(f.status, f.status)
+    addSkill.applySkill(f.status, f.status)
+    addSkill.applySkill(f.status, f.status)
+    f.status.tempStatusEffectIds should deepEqual(Array(1, 3, 3))
+
+    // Remove all status effects.
+    val removeAllStatusEffect = Skill(
+        damages = Array(),
+        effects = Array(Effect(RemoveAllStatusEffect.id, 0, 100)))
+    removeAllStatusEffect.applySkill(f.status, f.status)
+
+    f.status.tempStatusEffectIds should deepEqual(Array[Int]())
   }
 }

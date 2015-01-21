@@ -99,7 +99,7 @@ case class IntParameter(
 }
 
 object IntParameter {
-  def globalVariable(key: String = "globalVariable") =
+  def globalVariable(key: String = "globalVariableName") =
     IntParameter(
         valueTypeId = EventParameterValueType.GlobalVariable.id,
         globalVariable = key)

@@ -15,6 +15,9 @@ import rpgboss.model.event._
 import rpgboss.model.resource.ResourceConstants
 import rpgboss.model.resource.Script
 import rpgboss.player.entity.EventEntity
+import scala.collection.mutable.MutableList
+import org.mozilla.javascript.debug.Debugger
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 /**
  * Thread used to run a javascript script...
@@ -33,7 +36,8 @@ class ScriptThread(
   fnToRun: String = "",
   onFinish: Option[() => Unit] = None)
   extends UncaughtExceptionHandler
-  with FinishableByPromise {
+  with FinishableByPromise
+  with LazyLogging {
   def initScope(jsScope: ScriptableObject): Any = {
     def putProperty(objName: String, obj: Object) = {
       ScriptableObject.putProperty(jsScope, objName,
@@ -52,24 +56,40 @@ class ScriptThread(
     putProperty("None", None)
   }
 
+  var sciptsToScopeArray:MutableList[String] = MutableList[String]()
+  var needsToBeReloaded = false
+
+  def addScripts(scriptArray:MutableList[String]) = {
+    sciptsToScopeArray = scriptArray
+    needsToBeReloaded = true
+  }
+
   val runnable = new Runnable() {
     override def run() = {
       Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
 
       val jsContext = Context.enter()
       val jsScope = jsContext.initStandardObjects()
-
       initScope(jsScope)
 
-      val globalScript =
-        Script.readFromDisk(scriptInterface.project,
-            ResourceConstants.globalsScript)
+      val globalScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.globalsScript)
 
       jsContext.evaluateString(
         jsScope,
         globalScript.readAsString,
         globalScript.name,
         1, null)
+
+      sciptsToScopeArray.foreach { filepath : String =>
+        val script = Script.readFromDisk(scriptInterface.project, filepath)
+        if(script.newDataStream != null) {
+          jsContext.evaluateString(
+            jsScope,
+            script.readAsString,
+            script.name,
+            1, null)
+        }
+      }
 
       jsContext.evaluateString(
         jsScope,
@@ -97,7 +117,12 @@ class ScriptThread(
     }
   }
 
-  val thread = new Thread(runnable)
+  var thread = new Thread(runnable)
+
+  def stop() = {
+    // TODO: This is unsafe, but in practice, won't do anything bad... I think.
+    thread.stop()
+  }
 
   def run() = {
     assert(!thread.isAlive())
@@ -105,8 +130,23 @@ class ScriptThread(
     this
   }
 
+  def reEvaluate() = {
+    if(needsToBeReloaded) {
+      needsToBeReloaded = false
+      try {
+        thread.interrupt()
+        thread.join()
+      } catch {
+        case e: java.lang.InterruptedException =>
+      }
+      new Thread(runnable).start()
+    }
+  }
+
   def uncaughtException(thread: Thread, ex: Throwable) = {
     ex match {
+      case e: ThreadDeath =>
+        System.err.println("Thread death")
       case e: org.mozilla.javascript.EcmaError => {
         System.err.println(e.getErrorMessage())
         System.err.println("%s:%d".format(e.sourceName(), e.lineNumber()))
@@ -116,22 +156,30 @@ class ScriptThread(
   }
 }
 
-trait ScriptThreadFactory {
+class ScriptThreadFactory(scriptInterface: ScriptInterface) {
+
+  var sciptsToScopeArray:MutableList[String] = MutableList[String]()
+  var threads:MutableList[ScriptThread] = MutableList[ScriptThread]()
+
+  def addFileToScope(filepath: String) = {
+    var isInArray = false
+    sciptsToScopeArray.foreach { path : String =>
+      if(path==filepath) {
+        isInArray=true
+      }
+    }
+    if(!isInArray) {
+      sciptsToScopeArray += filepath
+    }
+  }
+
+  def reEvaluate() = {
+    threads.foreach { thread : ScriptThread =>
+      thread.reEvaluate()
+    }
+  }
+
   def runFromFile(
-    scriptName: String,
-    fnToRun: String = "",
-    onFinish: Option[() => Unit] = None): Finishable
-
-  def runFromEventEntity(
-    entity: EventEntity,
-    eventState: RpgEventState,
-    state: Int,
-    onFinish: Option[() => Unit] = None): Finishable
-}
-
-class GameScriptThreadFactory(scriptInterface: ScriptInterface)
-extends ScriptThreadFactory {
-  override def runFromFile(
     scriptName: String,
     fnToRun: String = "",
     onFinish: Option[() => Unit] = None) = {
@@ -142,25 +190,26 @@ extends ScriptThreadFactory {
       script.readAsString,
       fnToRun,
       onFinish)
+    s.addScripts(sciptsToScopeArray)
+
+    threads += s
+
     s.run()
     s
   }
 
-  override def runFromEventEntity(
+  def runFromEventEntity(
     entity: EventEntity,
     eventState: RpgEventState,
     state: Int,
     onFinish: Option[() => Unit] = None) = {
     val extraCmdsAtEnd: Array[EventCmd] =
-      if (eventState.runOnceThenIncrementState &&
-          state != entity.states.length - 1) {
+      if (eventState.runOnceThenIncrementState) {
         Array(IncrementEventState())
       } else {
         Array()
       }
     val cmds = eventState.cmds ++ extraCmdsAtEnd
-
-    println("runFromEventEntity " + entity.mapEvent.id.toString)
 
     val scriptName = "%s/%d".format(entity.mapEvent.name, entity.evtStateIdx)
 

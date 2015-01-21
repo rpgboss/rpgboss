@@ -63,7 +63,9 @@ object EventCmdDialog {
       case e: AddRemoveGold =>
         new AddRemoveGoldCmdDialog(owner, sm, e, successF)
       case e: GetChoice => new GetChoiceCmdDialog(owner, sm, e, successF)
+      case e: HealOrDamage => new HealOrDamageCmdDialog(owner, sm, e, successF)
       case e: HidePicture => new HidePictureCmdDialog(owner, sm, e, successF)
+      case e: IfCondition => new IfConditionCmdDialog(owner, sm, e, successF)
       case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: OpenStore => new OpenStoreCmdDialog(owner, sm, e, successF)
       case e: SetGlobalInt => new SetGlobalIntDialog(owner, sm, e, successF)
@@ -79,7 +81,9 @@ object EventCmdDialog {
       case e: StartBattle =>
         new StartBattleCmdDialog(owner, sm, e, successF)
       case e: StopMusic => new StopMusicCmdDialog(owner, sm, e, successF)
+      case e: TintScreen => new TintScreenCmdDialog(owner, sm, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
+      case e: WhileLoop => new WhileLoopCmdDialog(owner, sm, e, successF)
       case _ => null
     }
   }

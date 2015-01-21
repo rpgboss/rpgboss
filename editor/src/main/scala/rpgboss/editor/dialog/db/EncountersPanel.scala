@@ -70,6 +70,10 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         project,
         EncounterFieldGdxPanel.width,
         EncounterFieldGdxPanel.height)
+
+      // Start visible
+      battleScreen.windowManager.transitionAlpha = 0
+
       updateBattleScreen(initial)
     }
 

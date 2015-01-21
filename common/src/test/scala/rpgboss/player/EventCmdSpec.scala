@@ -31,7 +31,7 @@ class EventCmdSpec extends UnitSpec {
             Array(ShowText(Array("Default")))))
 
     e.toJs should deepEqual(Array(
-      """switch(game.getChoice(["Question text"], ["Yes", "No"], true)) {""",
+      """switch (game.getChoice(["Question text"], ["Yes", "No"], true)) {""",
       """  case 0:""",
       """    game.showText(["Hello"]);""",
       """    break;""",
@@ -48,6 +48,27 @@ class EventCmdSpec extends UnitSpec {
   "EventCmd" should "produce correct script for HidePicture" in {
     HidePicture(IntParameter(5)).toJs should deepEqual(
         Array("game.hidePicture(5);"))
+  }
+
+  "EventCmd" should "produce correct script for IfCondition" in {
+    val e1 = IfCondition(Array(), false, Array(ShowText(Array("a"))), Array())
+
+    e1.toJs should deepEqual(Array(
+      """if (true) {""",
+      """  game.showText(["a"]);""",
+      """}"""
+    ))
+
+    val e2 = IfCondition(Array(), true, Array(ShowText(Array("a"))),
+        Array(ShowText(Array("b"))))
+
+    e2.toJs should deepEqual(Array(
+      """if (true) {""",
+      """  game.showText(["a"]);""",
+      """} else {""",
+      """  game.showText(["b"]);""",
+      """}"""
+    ))
   }
 
   "EventCmd" should "produce correct script for LockPlayerMovement" in {

@@ -6,7 +6,7 @@ import rpgboss.model.battle._
 import rpgboss.lib._
 
 object DamageType extends RpgEnum {
-  val Physical, Magic, MPDamage = Value
+  val Physical, Magic, MPDamage, AddStatusEffect, RemoveStatusEffect = Value
   def default = Physical
 }
 
@@ -29,7 +29,22 @@ class JSBattleEntity(status: BattleStatus) extends ScriptableObject {
   }
 }
 
-case class Damage(damageType: DamageType.Value, elementId: Int, value: Int)
+/**
+ * @param   elementId       Doesn't have meaning when damageType is a status
+ *                          effect.
+ * @param   value           Normally is the damage amount. However, in the
+ *                          status effect case, is the status effect added.
+ */
+case class Damage(damageType: DamageType.Value, elementId: Int, value: Int) {
+  import DamageType._
+  def damageString(pData: ProjectData) = damageType match {
+    case Physical => value.toString
+    case Magic => value.toString
+    case MPDamage => "-%s MP".format(value)
+    case AddStatusEffect => pData.enums.statusEffects(value).name
+    case RemoveStatusEffect => "-" + pData.enums.statusEffects(value).name
+  }
+}
 
 case class DamageFormula(
   var typeId: Int = DamageType.Physical.id,

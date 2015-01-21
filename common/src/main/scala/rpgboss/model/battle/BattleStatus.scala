@@ -35,20 +35,20 @@ class BattleStatus(
   val equipment: Array[Int] = Array(),
   val onAttackSkillIds: Array[Int],
   val knownSkillIds: Array[Int],
-  initialTempStatusEffects: Array[Int],
+  initialTempStatusEffectIds: Array[Int],
   val row: Int) {
 
   def alive = hp > 0
 
-  private var _tempStatusEffects = initialTempStatusEffects
+  private var _tempStatusEffectIds = initialTempStatusEffectIds
 
   private def calculateStats() =
-    BattleStats(pData, baseStats, equipment, _tempStatusEffects)
+    BattleStats(pData, baseStats, equipment, _tempStatusEffectIds)
 
   private var _stats = calculateStats()
 
-  def updateTempStatusEffects(newTempStatusEffects: Array[Int]) = {
-    _tempStatusEffects = newTempStatusEffects;
+  def updateTempStatusEffectIds(newTempStatusEffects: Array[Int]) = {
+    _tempStatusEffectIds = newTempStatusEffects
     _stats = calculateStats()
   }
 
@@ -58,19 +58,27 @@ class BattleStatus(
   }
 
   def update(pendingAction: Boolean, deltaSeconds: Double,
-             baseTurnTime: Double) = {
+             baseTurnTime: Double, ticked: Boolean): Array[Hit] = {
     if (!alive) {
       readiness = 0
     } else if (!pendingAction) {
       val turnTime = baseTurnTime / (1.0 + stats.spd / 100.0)
       readiness += deltaSeconds / turnTime
     }
+
+    if (ticked) {
+      val hits = stats.statusEffects.flatMap(_.applyTick(this))
+      clampVitals()
+      hits
+    } else {
+      Array()
+    }
   }
 
   var readiness: Double = 0
 
   def stats = _stats
-  def tempStatusEffects = _tempStatusEffects
+  def tempStatusEffectIds = _tempStatusEffectIds
 
   override def toString = "BattleStatus(%s, %d)".format(entityType, index)
 }
@@ -112,7 +120,7 @@ object BattleStatus {
       partyParams.characterEquip(characterId),
       onAttackSkills,
       knownSkillIds,
-      partyParams.initialCharacterTempStatusEffects(characterId),
+      partyParams.initialCharacterTempStatusEffectIds(characterId),
       partyParams.characterRows(characterId))
   }
 }

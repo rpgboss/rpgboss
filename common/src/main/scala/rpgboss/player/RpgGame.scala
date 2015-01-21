@@ -97,9 +97,6 @@ class RpgGame(gamepath: File)
         project.data.startup.screenW, project.data.startup.screenH)
     mapScreen = new MapScreen(this)
 
-    // Register accessors
-    TweenAccessors.registerAccessors()
-
     beginGame()
   }
 
@@ -111,6 +108,15 @@ class RpgGame(gamepath: File)
     startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
       ResourceConstants.systemStartCall)
+  }
+
+  def loadUserMainScript = {
+    val customScript = Script.readFromDisk(project, ResourceConstants.mainScript)
+    if(customScript.newDataStream != null) {
+      mapScreen.scriptFactory.runFromFile(
+        ResourceConstants.mainScript,
+        "main()")
+    }
   }
 
   /**
@@ -147,8 +153,10 @@ class RpgGame(gamepath: File)
     persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
 
     setPlayerLoc(project.data.startup.startingLoc)
-    mapScreen.windowManager.setTransition(1, 0, 1.0f)
+    mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
+
+    loadUserMainScript
   }
 
   def saveGame(slot: Int) = {
@@ -168,8 +176,10 @@ class RpgGame(gamepath: File)
     // Restore player location.
     setPlayerLoc(persistent.getLoc(PLAYER_LOC))
 
-    mapScreen.windowManager.setTransition(1, 0, 1.0f)
+    mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
+
+    loadUserMainScript
   }
 
   def setPlayerLoc(loc: MapLoc) = {
@@ -190,10 +200,10 @@ class RpgGame(gamepath: File)
       return
 
     // Fade out map
-    currentScreen.windowManager.setTransition(0, 1, 0.6f)
+    currentScreen.windowManager.setTransition(1, 0.6f)
     currentScreen.windowManager.runAfterTransition(() => {
       setScreen(battleScreen)
-      battleScreen.windowManager.setTransition(1, 0, 0.6f)
+      battleScreen.windowManager.setTransition(0, 0.6f)
 
       val encounter = project.data.enums.encounters(encounterId)
 
@@ -222,6 +232,9 @@ class RpgGame(gamepath: File)
   }
 
   def gameOver() {
+    battleScreen.reset()
+    mapScreen.reset()
+    startScreen.reset()
     // TODO: Ghetto but effective to just land on the start screen again.
     beginGame()
   }

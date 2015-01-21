@@ -53,6 +53,34 @@ object SwingUtils {
       }
     }
 
+  def colorField(initial: (Float, Float, Float, Float),
+      onUpdate: (Float, Float, Float, Float) => Unit) = {
+    val initialColor = new Color(initial._1, initial._2, initial._3, initial._4)
+    new ColorChooser(initialColor) {
+
+        for(p <- peer.getChooserPanels()) {
+          p.getDisplayName() match {
+            case "Swatches" => peer.removeChooserPanel(p)
+            case "HSL" => peer.removeChooserPanel(p)
+            case _ =>
+          }
+        }
+
+      val previewPane = new ImagePanel(
+          Utils.readClasspathImage("inGamePreview.png"))
+      peer.setPreviewPanel(previewPane.peer)
+      previewPane.tintColor = initialColor
+
+      listenTo(this)
+      reactions += {
+        case ColorChanged(_, newColor) =>
+          val components = newColor.getRGBComponents(null)
+          onUpdate(components(0), components(1), components(2), components(3))
+          previewPane.tintColor = newColor
+      }
+    }
+  }
+
   def textField(initial: String, onUpdate: String => Unit,
                 additionalAction: Option[() => Unit] = None,
                 preferredWidth: Int = 100) =
@@ -98,6 +126,25 @@ object SwingUtils {
 
       def value = spinner.getValue.toFloat / 100f
       def setValue(v: Float) = spinner.setValue((v * 100).round)
+      override def enabled_=(b: Boolean) {
+        super.enabled_=(b)
+        spinner.enabled_=(b)
+      }
+    }
+  }
+
+  def percentIntField(min: Int, max: Int, initial: Int,
+      onUpdate: Int => Unit) = {
+    val spinner = new NumberSpinner(min, max, initial, onUpdate)
+
+    new BoxPanel(Orientation.Horizontal) {
+      contents += spinner
+      contents += new Label("%") {
+        preferredSize = new Dimension(20, 15)
+      }
+
+      def value = spinner.getValue
+      def setValue(v: Int) = spinner.setValue(v)
       override def enabled_=(b: Boolean) {
         super.enabled_=(b)
         spinner.enabled_=(b)

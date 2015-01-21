@@ -8,6 +8,8 @@ import rpgboss.model.resource._
 
 import scala.swing._
 
+import rpgboss.editor.Internationalized._
+
 object Dirtiness extends Enumeration {
   val Clean, Dirty, Deleted = Value
 }
@@ -74,7 +76,7 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project) {
   def askSaveUnchanged(diagParent: Component) = {
     if (stateDirty) {
       Dialog.showConfirmation(diagParent,
-        "Save changes to project?",
+        getMessage("Save_Changes_To_Project"),
         "rpgboss",
         Dialog.Options.YesNoCancel) match {
           case Dialog.Result.Yes =>
@@ -128,7 +130,7 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project) {
     val mapState = mapStates.get(mapName).get
     mapState.mapDataOpt getOrElse {
       val mapData = mapState.map.readMapData() getOrElse {
-        Dialog.showMessage(null, "Map data file missing. Recreating.",
+        Dialog.showMessage(null, getMessage("Map_Data_File_Missing_Recreating"),
           "Error", Dialog.Message.Error)
         RpgMap.emptyMapData(mapState.map.metadata.xSize,
           mapState.map.metadata.ySize)

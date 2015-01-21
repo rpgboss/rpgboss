@@ -501,7 +501,7 @@ class BattleScreen(
     enemyListWindow = null
     partyListWindow = null
 
-    windowManager.reset()
+    reset()
 
     _enemyBattlers.clear()
     _partyBattlers.clear()
@@ -539,7 +539,7 @@ class BattleScreen(
                   status.entityId,
                   status.hp,
                   status.mp,
-                  status.tempStatusEffects)
+                  status.tempStatusEffectIds)
             }
 
             val exp = battle.victoryExperience
@@ -595,15 +595,21 @@ class BattleScreen(
             battle.getNotification.map { notification =>
               val source = notification.action.actor
 
+              val windowCounts = collection.mutable.Map[BattleStatus, Int]()
               val windows =
                 for (hit <- notification.hits) yield {
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
-                  new DamageTextWindow(game.persistent, windowManager,
-                      hit.damage.value, box.x, box.y)
+                  val curWindowCount = windowCounts.getOrElse(hit.hitActor, 0)
+                  windowCounts.update(hit.hitActor, curWindowCount + 1)
+
+                  new DamageTextWindow(
+                      game.persistent, windowManager,
+                      hit.damage.damageString(project.data), box.x, box.y,
+                      delayTime = curWindowCount * 0.8f)
                 }
 
               val animations =
-                for (hit <- notification.hits) yield {
+                for (hit <- notification.hits; if hit.animationId >= 0) yield {
                   assert(hit.animationId < battle.pData.enums.animations.length)
                   val animation = battle.pData.enums.animations(hit.animationId)
 
@@ -629,7 +635,7 @@ class BattleScreen(
                   val item = battle.pData.enums.items(action.itemId)
                   postTextNotice("%s uses %s.".format(
                       getEntityName(source), item.name))
-
+                case StatusEffectAction =>
                 case _ =>
                   postTextNotice("Not implemented yet.")
               }

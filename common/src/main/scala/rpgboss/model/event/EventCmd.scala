@@ -52,8 +52,11 @@ object EventCmd {
   val hints = ShortTypeHints(List(
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
+    classOf[BreakLoop],
     classOf[GetChoice],
+    classOf[HealOrDamage],
     classOf[HidePicture],
+    classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
@@ -69,7 +72,9 @@ object EventCmd {
     classOf[ShowPicture],
     classOf[StartBattle],
     classOf[StopMusic],
-    classOf[Teleport])) + EventRenameHints
+    classOf[Teleport],
+    classOf[TintScreen],
+    classOf[WhileLoop])) + EventRenameHints
 }
 
 case class AddRemoveItem(
@@ -95,6 +100,10 @@ case class AddRemoveGold(
   override def getParameters() = List(quantity)
 }
 
+case class BreakLoop() extends EventCmd {
+  def sections = Array(PlainLines(Array("break;")))
+}
+
 /**
  * @param   innerCmds   Has one more element than choices to account for the
  *                      default case.
@@ -113,9 +122,9 @@ case class GetChoice(var question: Array[String] = Array(),
       PlainLines(Array("    break;")))
 
     buf += PlainLines(Array(
-      RawJs("switch(game.getChoice(%s, %s, %b)) {".format(
+      "switch (game.getChoice(%s, %s, %b)) {".format(
           EventJavascript.toJs(question),
-          EventJavascript.toJs(choices), allowCancel)).exp))
+          EventJavascript.toJs(choices), allowCancel)))
 
     for (i <- 0 until choices.size) {
       caseSections("case %d".format(i), innerCmds(i)).foreach(buf += _)
@@ -123,7 +132,7 @@ case class GetChoice(var question: Array[String] = Array(),
 
     caseSections("default", innerCmds.last).foreach(buf += _)
 
-    buf += PlainLines(Array(RawJs("}").exp))
+    buf += PlainLines(Array("}"))
 
     buf.toArray
   }
@@ -137,9 +146,71 @@ case class GetChoice(var question: Array[String] = Array(),
   }
 }
 
+case class HealOrDamage(
+    var heal: Boolean = true,
+    var wholeParty: Boolean = true,
+    var characterId: Int = 0,
+    var hpPercentage: Float = 1.0f,
+    var mpPercentage: Float = 1.0f,
+    var removeStatusEffects: Boolean = true) extends EventCmd {
+  def sections = {
+    if (heal) {
+      if (wholeParty) {
+        singleCall("game.healParty", hpPercentage, mpPercentage,
+            removeStatusEffects)
+      } else {
+        singleCall("game.healCharacter", characterId, hpPercentage,
+            mpPercentage, removeStatusEffects)
+      }
+    } else {
+      if (wholeParty) {
+        singleCall("game.damageParty", hpPercentage, mpPercentage)
+      } else {
+        singleCall("game.damageCharacter", characterId, hpPercentage,
+            mpPercentage)
+      }
+    }
+  }
+}
+
+case class IfCondition(
+    var conditions: Array[Condition] = Array(),
+    var elseBranch: Boolean = false,
+    var trueCmds: Array[EventCmd] = Array(),
+    var elseCmds: Array[EventCmd] = Array())
+    extends EventCmd {
+  def sections = {
+    val buf = new ArrayBuffer[CodeSection]()
+
+    buf += PlainLines(Array("if (%s) {".format(
+        Condition.allConditionsExp(conditions).exp)))
+    buf += CommandList(trueCmds, 1)
+
+    if (elseBranch) {
+      buf += PlainLines(Array("} else {"))
+      buf += CommandList(elseCmds, 1)
+    }
+
+    buf += PlainLines(Array("}"))
+
+    buf.toArray
+  }
+
+  override def copyWithNewInnerCmds(commandListI: Int,
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    assert(commandListI == 0 || commandListI == 1)
+    if (commandListI == 0) {
+      copy(trueCmds = newInnerCmds)
+    } else {
+      copy(elseCmds = newInnerCmds)
+    }
+  }
+}
+
 case class HidePicture(
     slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP)) extends EventCmd {
   def sections = singleCall("game.hidePicture", slot)
+  override def getParameters() = List(slot)
 }
 
 case class IncrementEventState() extends EventCmd {
@@ -216,6 +287,7 @@ case class PlayMusic(
   def sections =
     singleCall("game.playMusic", slot, spec.sound, spec.volume, loop,
         fadeDuration)
+  override def getParameters() = List(slot)
 }
 
 case class RunJs(scriptBody: String = "") extends EventCmd {
@@ -254,6 +326,8 @@ case class SetGlobalInt(
       singleCall("game.setInt", key,
           applyOperator(value1.rawJs, operatorString, value2.rawJs))
   }
+
+  override def getParameters() = List(value1, value2)
 }
 
 case class SetLocalInt(variableName: String,
@@ -285,6 +359,7 @@ case class ShowPicture(
     layout: Layout = Layout.defaultForPictures) extends EventCmd {
   def sections =
     singleCall("game.showPicture", slot, picture, layout.toJs())
+  override def getParameters() = List(slot)
 }
 
 case class StartBattle(
@@ -304,9 +379,42 @@ case class StopMusic(
     slot: IntParameter = IntParameter(0),
     var fadeDuration: Float = 0.5f) extends EventCmd {
   def sections = singleCall("game.stopMusic", slot, fadeDuration)
+  override def getParameters() = List(slot)
 }
 
 case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
+}
+
+case class TintScreen(
+    var r: Float = 1.0f,
+    var g: Float = 0,
+    var b: Float = 0,
+    var a: Float = 0.5f,
+    var fadeDuration: Float = 1) extends EventCmd {
+  def sections =
+    singleCall("game.tintScreen", r, g, b, a, fadeDuration)
+}
+
+case class WhileLoop(
+    var conditions: Array[Condition] = Array(),
+    var innerCmds: Array[EventCmd] = Array())
+    extends EventCmd {
+  def sections = {
+    val buf = new ArrayBuffer[CodeSection]()
+
+    buf += PlainLines(Array("while (%s) {".format(
+        Condition.allConditionsExp(conditions).exp)))
+    buf += CommandList(innerCmds, 1)
+    buf += PlainLines(Array("}"))
+
+    buf.toArray
+  }
+
+  override def copyWithNewInnerCmds(commandListI: Int,
+    newInnerCmds: Array[EventCmd]): EventCmd = {
+    assert(commandListI == 0)
+    copy(innerCmds = newInnerCmds)
+  }
 }

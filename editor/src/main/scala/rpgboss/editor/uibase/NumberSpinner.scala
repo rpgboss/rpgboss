@@ -46,10 +46,15 @@ class FloatSpinner(
   extends BoxPanel(Orientation.Horizontal) {
   val normalizedInitial = math.min(math.max(initial, min), max)
 
-  // TODO: Can't press down button to get to the minimum due to floating point
-  // math business. Need to implement an epsilon compare or something.
-  val model =
-    new SpinnerNumberModel(normalizedInitial, min, max, step)
+  val model = new SpinnerNumberModel(normalizedInitial, min, max, step) {
+    override def getPreviousValue() = {
+      new java.lang.Float(math.max(getNumber().floatValue() - step, min))
+    }
+
+    override def getNextValue() = {
+      new java.lang.Float(math.min(getNumber().floatValue() + step, max))
+    }
+  }
 
   val spinner = new JSpinner(model)
 

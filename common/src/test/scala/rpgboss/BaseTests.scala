@@ -112,7 +112,7 @@ abstract class MapScreenTest extends ProjectTest with HasScriptConstants {
       startNewGame()
 
       // Allow test to start immediately
-      mapScreen.windowManager.clearTransition()
+      mapScreen.windowManager.finishTransition()
 
       testScriptOnGdxThread()
 

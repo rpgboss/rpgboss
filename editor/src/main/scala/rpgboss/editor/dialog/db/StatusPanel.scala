@@ -33,26 +33,11 @@ class StatusPanel(
         val fName = textField(model.name, model.name = _,
                               Some(() => updatePreserveSelection(idx, model)))
 
-        val fReleaseOnBattleEnd = boolField("", model.releaseOnBattleEnd,
-                                            model.releaseOnBattleEnd = _)
-
-        val fReleaseTime = new NumberSpinner(
-          0,
-          50,
-          model.releaseTime,
-          model.releaseTime = _)
-
-        val fReleaseChance = new NumberSpinner(
+        val fReleaseChancePerTick = percentIntField(
           0,
           100,
-          model.releaseChance,
-          model.releaseChance = _)
-
-        val fReleaseDmgChance = new NumberSpinner(
-          0,
-          100,
-          model.releaseDmgChance,
-          model.releaseDmgChance = _)
+          model.releaseChancePerTick,
+          model.releaseChancePerTick = _)
 
         val fMaxStacks = new NumberSpinner(
           0,
@@ -62,10 +47,8 @@ class StatusPanel(
 
         row().grid(lbl(getMessageColon("Name"))).add(fName)
 
-        row().grid(lbl(getMessageColon("State_Expiration_In_Rounds"))).add(fReleaseTime)
-        row().grid(lbl(getMessageColon("Release_Chance_After_Expiry"))).add(fReleaseChance)
-
-        row().grid(lbl(getMessageColon("Release_After_Battle"))).add(fReleaseOnBattleEnd)
+        row().grid(lbl(getMessageColon("Release_Chance_Per_Tick")))
+          .add(fReleaseChancePerTick)
 
         row().grid(lbl(getMessageColon("Maximum_Stacks"))).add(fMaxStacks)
       }

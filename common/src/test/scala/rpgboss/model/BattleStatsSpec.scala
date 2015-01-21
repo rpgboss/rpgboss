@@ -54,7 +54,7 @@ class BattleStatsSpec extends UnitSpec {
       BattleStats(f.pData, f.baseStats, tempStatusEffectIds = Array(0))
     stats1 should deepEqual (BattleStats(
       50, 20, 20, 10, 10, 10, 10, Array(0, 0),
-      Array(f.pData.enums.statusEffects(0))))
+      Array(StatusEffectSpec(0, true, f.pData.enums.statusEffects(0)))))
   }
 
   "BattleStats" should "work with equipment effects" in {
@@ -77,7 +77,7 @@ class BattleStatsSpec extends UnitSpec {
     val stats1 = BattleStats(f.pData, f.baseStats, equippedIds = Array(0))
     stats1 should deepEqual (BattleStats(
       50, 20, 20, 10, 10, 10, 10, Array(0, 0),
-      Array(f.pData.enums.statusEffects(0))))
+      Array(StatusEffectSpec(0, false, f.pData.enums.statusEffects(0)))))
   }
 
   "BattleStats" should "work with elemental resist effects from items" in {

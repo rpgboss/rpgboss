@@ -193,7 +193,7 @@ class PersistentState(
   }
 
   def saveCharacterVitals(
-    characterId: Int, hp: Int, mp: Int, tempStatusEffects: Array[Int]) = {
+    characterId: Int, hp: Int, mp: Int, tempStatusEffectIds: Array[Int]) = {
     val hps = getIntArray(CHARACTER_HPS)
     val mps = getIntArray(CHARACTER_MPS)
 
@@ -203,7 +203,7 @@ class PersistentState(
     setIntArray(CHARACTER_HPS, hps.updated(characterId, hp))
     setIntArray(CHARACTER_MPS, mps.updated(characterId, mp))
 
-    setIntArray(CHARACTER_STATUS_EFFECTS(characterId), tempStatusEffects)
+    setIntArray(CHARACTER_STATUS_EFFECTS(characterId), tempStatusEffectIds)
   }
 
   def modifyParty(add: Boolean, characterId: Int): Boolean = {

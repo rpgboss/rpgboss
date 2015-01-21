@@ -96,7 +96,6 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
   }
 
   override def keyActivated(key: Int) = {
-    game.logger.info("keyActivated: " + key.toString)
     import MyKeys._
     // Handle BUTTON interaction
     if (key == OK) {

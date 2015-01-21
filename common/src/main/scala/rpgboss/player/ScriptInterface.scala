@@ -1,6 +1,5 @@
 package rpgboss.player
 
-import aurelienribon.tweenengine._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import rpgboss.lib._
@@ -15,6 +14,13 @@ import org.mozilla.javascript.NativeObject
 import rpgboss.save.SaveFile
 import rpgboss.save.SaveInfo
 import rpgboss.model.event.EventJavascript
+import com.badlogic.gdx.graphics.Color
+
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.Color
+
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.ScriptableObject
 
 case class EntityInfo(x: Float, y: Float, dir: Int)
 
@@ -134,19 +140,15 @@ class ScriptInterface(
 
     if (transition == Transitions.FADE) {
       syncRun {
-        mapScreen.windowManager.setTransition(0, 1, fadeDuration)
+        mapScreen.windowManager.setTransition(1, fadeDuration)
       }
       sleep(fadeDuration);
     }
 
     syncRun {
       game.setPlayerLoc(loc);
-    }
-
-    if (transition == Transitions.FADE) {
-      syncRun {
-        mapScreen.windowManager.setTransition(1, 0, fadeDuration);
-      }
+      if (transition == Transitions.FADE)
+        mapScreen.windowManager.setTransition(0, fadeDuration);
     }
   }
 
@@ -171,10 +173,28 @@ class ScriptInterface(
    */
 
   def setTransition(
-    startAlpha: Float,
     endAlpha: Float,
     duration: Float) = syncRun {
-    activeScreen.windowManager.setTransition(startAlpha, endAlpha, duration)
+    activeScreen.windowManager.setTransition(endAlpha, duration)
+  }
+
+  /**
+   * @param   r               Between 0.0f and 1.0f.
+   * @param   g               Between 0.0f and 1.0f.
+   * @param   b               Between 0.0f and 1.0f.
+   * @param   a               Between 0.0f and 1.0f.
+   * @param   fadeDuration    In seconds. 0f means instantaneous
+   */
+  def tintScreen(r: Float, g: Float, b: Float, a: Float,
+      fadeDuration: Float) = syncRun {
+    def activeScreenTint = activeScreen.windowManager.tintColor
+    // If no existing tint, set color immediately and tween alpha only.
+    if (activeScreenTint.a == 0) {
+      activeScreenTint.set(r, g, b, 0f)
+    }
+
+    activeScreen.windowManager.tintTweener.tweenTo(new Color(r, g, b, a),
+        fadeDuration)
   }
 
   def startBattle(encounterId: Int, overrideBattleBackground: String,
@@ -202,21 +222,25 @@ class ScriptInterface(
   }
 
   def endBattleBackToMap() = {
-    setTransition(0, 1, 0.5f)
+    setTransition(1, 0.5f)
     sleep(0.5f)
 
     syncRun {
       game.setScreen(game.mapScreen)
 
       // TODO fix hack of manipulating mapScreen directly
-      game.mapScreen.windowManager.setTransition(1, 0, 0.5f)
+      game.mapScreen.windowManager.setTransition(0, 0.5f)
 
       game.battleScreen.endBattle()
     }
   }
 
   def showPicture(slot: Int, name: String, layout: Layout) = syncRun {
-    activeScreen.windowManager.showPictureByName(slot, name, layout)
+    activeScreen.windowManager.showPictureByName(slot, name, layout, 1.0f)
+  }
+
+  def showPicture(slot: Int, name: String, layout: Layout, alpha:Float) = syncRun {
+    activeScreen.windowManager.showPictureByName(slot, name, layout, alpha)
   }
 
   def hidePicture(slot: Int) = syncRun {
@@ -440,7 +464,6 @@ class ScriptInterface(
 
   def incrementEventState(eventId: Int) = syncRun {
     mapScreen.mapName.map { mapName =>
-      println("Increment event state! - eventId %d".format(eventId))
       val newState = persistent.getEventState(mapName, eventId) + 1
       persistent.setEventState(mapName, eventId, newState)
     }
@@ -498,9 +521,47 @@ class ScriptInterface(
       characterStatus.clampVitals()
 
       persistent.saveCharacterVitals(characterId, characterStatus.hp,
-          characterStatus.mp, characterStatus.tempStatusEffects)
+          characterStatus.mp, characterStatus.tempStatusEffectIds)
     }
   }
+
+  /**
+   * @param   hpPercentage    Between 0.0f and 1.0f.
+   * @param   mpPercentage    Between 0.0f and 1.0f.
+   */
+  def healCharacter(characterId: Int, hpPercentage: Float,
+      mpPercentage: Float, removeStatusEffects: Boolean = false) = syncRun {
+    val characterStatus = BattleStatus.fromCharacter(
+        project.data,
+        persistent.getPartyParameters(project.data.enums.characters),
+        characterId, index = -1)
+
+    if (removeStatusEffects) {
+      characterStatus.updateTempStatusEffectIds(Array.empty)
+    }
+
+    characterStatus.hp +=
+      (characterStatus.stats.mhp * hpPercentage).round
+    characterStatus.mp +=
+      (characterStatus.stats.mhp * mpPercentage).round
+
+    characterStatus.clampVitals()
+
+    persistent.saveCharacterVitals(characterId, characterStatus.hp,
+        characterStatus.mp, characterStatus.tempStatusEffectIds)
+  }
+
+  def healParty(hpPercentage: Float, mpPercentage: Float) = syncRun {
+    for (characterId <- persistent.getIntArray(PARTY))
+      healCharacter(characterId, hpPercentage, mpPercentage)
+  }
+
+  def damageCharacter(characterId: Int, hpPercentage: Float,
+      mpPercentage: Float) =
+    healCharacter(characterId, -hpPercentage, -mpPercentage)
+
+  def damageParty(hpPercentage: Float, mpPercentage: Float) =
+    healParty(-hpPercentage, -mpPercentage)
 
   def getBattleStats(characterId: Int, proposedSlotId: Int,
       proposedItemId: Int) = {
@@ -569,6 +630,52 @@ class ScriptInterface(
 
   def quit() = syncRun {
     game.quit()
+  }
+
+  def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
+      logger.debug("drawText: "+text+" on ");
+      mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
+  }
+
+  def removeDrawedText(id:Int) = syncRun {
+    mapScreen.windowManager.removeDrawText(id)
+  }
+
+  def color(r:Float, g:Float, b:Float, alpha:Float):Color = {
+    var R = r/255
+    var G = g/255
+    var B = b/255
+
+    return new Color(R,G,B,alpha)
+  }
+
+  def log(text: String) = syncRun {
+    logger.debug(text)
+  }
+
+  def takeDamage(characterId: Int, hp:Int, mp:Int) = syncRun {
+    val characterStatus = BattleStatus.fromCharacter(
+        project.data,
+        persistent.getPartyParameters(project.data.enums.characters),
+        characterId, index = -1)
+
+    characterStatus.hp -= hp
+    characterStatus.mp -= mp
+
+    characterStatus.clampVitals()
+
+    persistent.saveCharacterVitals(characterId, characterStatus.hp,
+        characterStatus.mp, characterStatus.tempStatusEffectIds)
+  }
+
+  def includeFile(scriptPath: String) = {
+      mapScreen.scriptFactory.addFileToScope(scriptPath)
+      mapScreen.scriptFactory.reEvaluate()
+  }
+
+  // TODO: built it in
+  def keyPress(key: String) = {
+
   }
 
   /**

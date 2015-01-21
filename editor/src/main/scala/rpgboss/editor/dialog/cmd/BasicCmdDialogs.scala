@@ -7,9 +7,11 @@ import rpgboss.editor.uibase._
 import rpgboss.editor._
 import rpgboss.lib.Utils
 import rpgboss.model.AddOrRemove
+import rpgboss.model.HealOrDamageEnum
 import rpgboss.editor.Internationalized._
 import rpgboss.lib.ArrayUtils
 import rpgboss.editor.resourceselector._
+import rpgboss.editor.dialog.ConditionsPanel
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -48,7 +50,7 @@ class StartBattleCmdDialog(
     row().grid().add(leftLabel(getMessageColon("Override_Battle_Background")))
     row().grid().add(battleBgSelect)
 
-    row().grid().add(leftLabel(needsTranslation("Override Battle Music:")))
+    row().grid().add(leftLabel(getMessageColon("Override_Battle_Music")))
     row().grid().add(battleMusicField)
 
     addButtons(okBtn, cancelBtn)
@@ -87,10 +89,10 @@ class GetChoiceCmdDialog(
   extends EventCmdDialog(owner, sm, getMessage("Get_Choice"), initial, successF) {
 
   override def extraFields = Seq(
-    TitledComponent("Question",
+    TitledComponent(getMessage("Question"),
         textAreaField(model.question, model.question = _)),
     TitledComponent("", new StringArrayEditingPanel(
-        owner, "Choices", model.choices,
+        owner, getMessage("Choices"), model.choices,
         newChoices => {
           model.choices = newChoices
           model.innerCmds = ArrayUtils.resized(model.innerCmds, newChoices.size,
@@ -101,6 +103,28 @@ class GetChoiceCmdDialog(
         model.allowCancel = _)))
 }
 
+class HealOrDamageCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: HealOrDamage,
+  successF: (HealOrDamage) => Any)
+  extends EventCmdDialog(
+      owner, sm, getMessage("Heal_Damage"), initial, successF) {
+  override def extraFields = Seq(
+    TitledComponent("", boolEnumHorizBox(
+        HealOrDamageEnum, model.heal, model.heal = _)),
+    TitledComponent("", boolField(
+        "Whole party", model.wholeParty, model.wholeParty = _)),
+    TitledComponent("Character", indexedCombo(
+        sm.getProjData.enums.characters, model.characterId,
+        model.characterId = _)),
+    TitledComponent("HP Percentage", percentField(0.01f, 1, model.hpPercentage,
+        model.hpPercentage = _)),
+    TitledComponent("MP Percentage", percentField(0.01f, 1, model.mpPercentage,
+        model.mpPercentage = _)))
+}
+
+
 class HidePictureCmdDialog(
   owner: Window,
   sm: StateMaster,
@@ -108,6 +132,22 @@ class HidePictureCmdDialog(
   successF: (HidePicture) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Hide_Picture"), initial, successF)
+
+class IfConditionCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: IfCondition,
+  successF: (IfCondition) => Any)
+  extends EventCmdDialog(
+      owner, sm, getMessage("IF_Condition"), initial, successF) {
+
+  override def extraFields = Seq(
+    TitledComponent(getMessage("Conditions"),
+        new ConditionsPanel(owner, sm.getProjData, model.conditions,
+            model.conditions = _)),
+    TitledComponent("", boolField(getMessage("ELSE_Branch"),
+        model.elseBranch, model.elseBranch = _)))
+}
 
 class OpenStoreCmdDialog(
   owner: Window,
@@ -122,17 +162,17 @@ class PlayMusicCmdDialog(
   initial: PlayMusic,
   successF: (PlayMusic) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Play Music"), initial, successF) {
+      owner, sm, getMessage("Play_Music"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Music"),
+          getMessage("Music"),
           new MusicField(owner, sm, Some(model.spec), v => model.spec = v.get,
               allowNone = false)),
       TitledComponent(
           "",
-          boolField(needsTranslation("Loop"), model.loop, model.loop = _)),
+          boolField(getMessage("Loop"), model.loop, model.loop = _)),
       TitledComponent(
-          needsTranslation("Fade duration"),
+          getMessage("Fade_Duration"),
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
               model.fadeDuration = _)))
 }
@@ -143,10 +183,10 @@ class PlaySoundCmdDialog(
   initial: PlaySound,
   successF: (PlaySound) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Play Sound"), initial, successF) {
+      owner, sm, getMessage("Play_Sound"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Sound"),
+          getMessage("Sound"),
           new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
               allowNone = false)))
 }
@@ -190,10 +230,47 @@ class StopMusicCmdDialog(
   initial: StopMusic,
   successF: (StopMusic) => Any)
   extends EventCmdDialog(
-      owner, sm, needsTranslation("Stop Music"), initial, successF) {
+      owner, sm, getMessage("Stop_Music"), initial, successF) {
   override def extraFields = Seq(
       TitledComponent(
-          needsTranslation("Fade duration"),
+          getMessage("Fade_Duration"),
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
               model.fadeDuration = _)))
+}
+
+class TintScreenCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: TintScreen,
+  successF: TintScreen => Any)
+  extends EventCmdDialog(
+      owner, sm, getMessage("Tint_Screen"), initial, successF) {
+  override def extraFields = Seq(
+      TitledComponent(
+          getMessageColon("Color_And_Alpha"),
+          colorField(
+              (initial.r, initial.g, initial.b, initial.a),
+              (r, g, b, a) => {
+                model.r = r
+                model.g = g
+                model.b = b
+                model.a = a
+              })),
+      TitledComponent(getMessageColon("Fade_Duration"),
+          new FloatSpinner(
+              0, 10f, 0.1f, model.fadeDuration, model.fadeDuration = _)))
+}
+
+class WhileLoopCmdDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: WhileLoop,
+  successF: (WhileLoop) => Any)
+  extends EventCmdDialog(
+      owner, sm, getMessage("While_Loop"), initial, successF) {
+
+  override def extraFields = Seq(
+    TitledComponent(getMessage("Conditions"),
+        new ConditionsPanel(owner, sm.getProjData, model.conditions,
+            model.conditions = _)))
 }

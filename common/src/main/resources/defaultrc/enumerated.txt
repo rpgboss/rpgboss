@@ -574,6 +574,7 @@ music/sys/sean_m_stephens/World2.mid
 music/sys/sean_m_stephens/World3.mid
 picture/sys/LordSpirit.jpg
 script/sys/globals.js
+script/sys/main.js
 script/sys/menu.js
 script/sys/start.js
 script/sys/store.js
