@@ -97,6 +97,7 @@ object BattleStatus {
     val weaponSkills =
       partyParams
         .characterEquip(characterId)
+        .filter(_ < allItems.length)
         .filter(id => allItems(id).useOnAttack)
         .map(id => allItems(id).onUseSkillId)
     val onAttackSkills =
