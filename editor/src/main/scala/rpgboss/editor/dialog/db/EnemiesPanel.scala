@@ -45,17 +45,17 @@ class EnemiesPanel(
 
       val fLevel = new NumberSpinner(1, 9999, model.level, model.level = _)
       val fMhp = new NumberSpinner(5, 999999, model.mhp, model.mhp = _)
-      val fMmp = new NumberSpinner(0, 9999, model.mmp, model.mhp = _)
-      val fAtk = new NumberSpinner(1, 9999, model.atk, model.atk = _)
-      val fSpd = new NumberSpinner(1, 9999, model.spd, model.spd = _)
-      val fMag = new NumberSpinner(1, 9999, model.mag, model.mag = _)
-      val fArm = new NumberSpinner(1, 9999, model.arm, model.arm = _)
-      val fMre = new NumberSpinner(1, 9999, model.mre, model.mre = _)
+      val fMmp = new NumberSpinner(0, 99999, model.mmp, model.mhp = _)
+      val fAtk = new NumberSpinner(1, 99999, model.atk, model.atk = _)
+      val fSpd = new NumberSpinner(1, 100, model.spd, model.spd = _)
+      val fMag = new NumberSpinner(1, 99999, model.mag, model.mag = _)
+      val fArm = new NumberSpinner(1, 99999, model.arm, model.arm = _)
+      val fMre = new NumberSpinner(1, 99999, model.mre, model.mre = _)
 
       val fExpValue =
-        new NumberSpinner(10, 50000, model.expValue, model.expValue = _)
+        new NumberSpinner(10, 9999999, model.expValue, model.expValue = _)
       val fDroppedGold =
-        new NumberSpinner(0, 9999, model.droppedGold, model.droppedGold = _)
+        new NumberSpinner(0, 9999999, model.droppedGold, model.droppedGold = _)
 
       val fAttackSkillId = indexedCombo(
           dbDiag.model.enums.skills,
