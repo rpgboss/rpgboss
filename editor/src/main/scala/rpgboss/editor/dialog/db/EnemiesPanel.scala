@@ -43,7 +43,7 @@ class EnemiesPanel(
         model.battler,
         model.battler = _)
 
-      val fLevel = new NumberSpinner( model.level, model.level = _)
+      val fLevel = new NumberSpinner(1, model.level, model.level = _)
       val fMhp = new NumberSpinner(5, 5000, model.mhp, model.mhp = _)
       val fMmp = new NumberSpinner(0, 500, model.mmp, model.mhp = _)
       val fAtk = new NumberSpinner(1, 50, model.atk, model.atk = _)
