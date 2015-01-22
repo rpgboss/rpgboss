@@ -53,7 +53,7 @@ class EnemiesPanel(
       val fMre = new NumberSpinner(1, 99999, model.mre, model.mre = _)
 
       val fExpValue =
-        new NumberSpinner(10, 9999999, model.expValue, model.expValue = _)
+        new NumberSpinner(0, 9999999, model.expValue, model.expValue = _)
       val fDroppedGold =
         new NumberSpinner(0, 9999999, model.droppedGold, model.droppedGold = _)
 
