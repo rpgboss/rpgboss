@@ -16,9 +16,9 @@ object EventTrigger extends RpgEnum {
 }
 
 object EventHeight extends RpgEnum {
-  val UNDER = Value(0, "Under player")
-  val SAME = Value(1, "Same level as player")
-  val OVER = Value(2, "Always on top of player")
+  val UNDER = Value(0, "Under_Player")
+  val SAME = Value(1, "Same_Level_As_Player")
+  val OVER = Value(2, "Always_On_Top_Of_Player")
 
   def default = UNDER
 }
