@@ -6,6 +6,7 @@ import scala.collection.mutable.Buffer
 import scala.swing._
 import scala.swing.event._
 import javax.swing.ImageIcon
+import rpgboss.editor.Internationalized
 
 object SwingUtils {
   def lbl(s: String) = new Label(s)
@@ -209,6 +210,9 @@ object SwingUtils {
 
       if (customRenderer.isDefined) {
         renderer = ListView.Renderer(customRenderer.get)
+      } else {
+        renderer = ListView.Renderer(v =>
+          Internationalized.getMessage(v.toString()))
       }
     }
   }
@@ -223,7 +227,8 @@ object SwingUtils {
 
       contents = new BoxPanel(Orientation.Vertical) {
         enum.values.foreach { value =>
-          contents += new Button(Action(value.toString) {
+          contents += new Button(Action(
+              Internationalized.getMessage(value.toString)) {
             onSelect(value)
             close()
           })
@@ -259,7 +264,13 @@ object SwingUtils {
 
     enumValues.zipWithIndex.map { case (eVal, i) =>
       new ToggleButton() {
-        action = Action(if (iconPaths.isEmpty) eVal.toString else "") {
+        val buttonString =
+          if (iconPaths.isEmpty)
+            Internationalized.getMessage(eVal.toString)
+          else
+            ""
+
+        action = Action(buttonString) {
           selectF(eVal)
         }
 
@@ -281,7 +292,7 @@ object SwingUtils {
       val actualChoices = if (choices.isEmpty) enum.values.toSeq else choices
       actualChoices.map { eVal =>
         new RadioButton() {
-          action = Action(eVal.toString) {
+          action = Action(Internationalized.getMessage(eVal.toString)) {
             onUpdate(eVal.id)
           }
 
