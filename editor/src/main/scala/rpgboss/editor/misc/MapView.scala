@@ -23,9 +23,9 @@ import javax.swing.event._
 import rpgboss.editor.cache.EventImageCache
 
 object MapScales extends RpgEnum {
-  val scale1 = Value(1, "1/1")
-  val scale2 = Value(2, "1/2")
-  val scale4 = Value(4, "1/4")
+  val scale1 = Value(1, "1_div_1")
+  val scale2 = Value(2, "1_div_2")
+  val scale4 = Value(4, "1_div_4")
 
   def default = scale1
 }
