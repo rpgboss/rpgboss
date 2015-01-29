@@ -3,10 +3,10 @@ scala:
   - 2.9.3
 
 install:
-  - lib32z1
-  - lib32ncurses5
-  - lib32bz2-1.0
-  - lib32stdc++6
-  - launch4j
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install lib32z1 || true
+  - sudo apt-get -qq install lib32ncurses5 || true
+  - sudo apt-get -qq install lib32bz2-1.0 || true
+  - sudo apt-get -qq install lib32stdc++6 || true
 
 script: ./package/package.sh
