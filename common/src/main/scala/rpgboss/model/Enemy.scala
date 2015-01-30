@@ -34,6 +34,9 @@ case class Enemy(
       effects = effects)
 }
 
+/**
+ * @param   x     Defines x-center of unit.
+ */
 case class EncounterUnit(
   enemyIdx: Int,
   var x: Int,
