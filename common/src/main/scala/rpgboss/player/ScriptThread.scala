@@ -18,6 +18,7 @@ import rpgboss.player.entity.EventEntity
 import scala.collection.mutable.MutableList
 import org.mozilla.javascript.debug.Debugger
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.mozilla.javascript.tools.shell.Global
 
 /**
  * Thread used to run a javascript script...
@@ -56,14 +57,6 @@ class ScriptThread(
     putProperty("None", None)
   }
 
-  var sciptsToScopeArray:MutableList[String] = MutableList[String]()
-  var needsToBeReloaded = false
-
-  def addScripts(scriptArray:MutableList[String]) = {
-    sciptsToScopeArray = scriptArray
-    needsToBeReloaded = true
-  }
-
   val runnable = new Runnable() {
     override def run() = {
       Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
@@ -72,24 +65,17 @@ class ScriptThread(
       val jsScope = jsContext.initStandardObjects()
       initScope(jsScope)
 
-      val globalScript = Script.readFromDisk(scriptInterface.project, ResourceConstants.globalsScript)
-
-      jsContext.evaluateString(
-        jsScope,
-        globalScript.readAsString,
-        globalScript.name,
-        1, null)
-
-      sciptsToScopeArray.foreach { filepath : String =>
-        val script = Script.readFromDisk(scriptInterface.project, filepath)
-        if(script.newDataStream != null) {
-          jsContext.evaluateString(
-            jsScope,
-            script.readAsString,
-            script.name,
-            1, null)
-        }
+      def evalScriptFromFile(scriptPath: String) = {
+        val script =
+          Script.readFromDisk(scriptInterface.project, scriptPath)
+        jsContext.evaluateString(
+          jsScope,
+          script.readAsString,
+          script.name,
+          1, null)
       }
+
+      evalScriptFromFile(ResourceConstants.globalsScript)
 
       jsContext.evaluateString(
         jsScope,
@@ -130,19 +116,6 @@ class ScriptThread(
     this
   }
 
-  def reEvaluate() = {
-    if(needsToBeReloaded) {
-      needsToBeReloaded = false
-      try {
-        thread.interrupt()
-        thread.join()
-      } catch {
-        case e: java.lang.InterruptedException =>
-      }
-      new Thread(runnable).start()
-    }
-  }
-
   def uncaughtException(thread: Thread, ex: Throwable) = {
     ex match {
       case e: ThreadDeath =>
@@ -158,27 +131,6 @@ class ScriptThread(
 
 class ScriptThreadFactory(scriptInterface: ScriptInterface) {
 
-  var sciptsToScopeArray:MutableList[String] = MutableList[String]()
-  var threads:MutableList[ScriptThread] = MutableList[ScriptThread]()
-
-  def addFileToScope(filepath: String) = {
-    var isInArray = false
-    sciptsToScopeArray.foreach { path : String =>
-      if(path==filepath) {
-        isInArray=true
-      }
-    }
-    if(!isInArray) {
-      sciptsToScopeArray += filepath
-    }
-  }
-
-  def reEvaluate() = {
-    threads.foreach { thread : ScriptThread =>
-      thread.reEvaluate()
-    }
-  }
-
   def runFromFile(
     scriptName: String,
     fnToRun: String = "",
@@ -190,9 +142,6 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
       script.readAsString,
       fnToRun,
       onFinish)
-    s.addScripts(sciptsToScopeArray)
-
-    threads += s
 
     s.run()
     s

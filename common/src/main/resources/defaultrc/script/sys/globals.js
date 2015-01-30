@@ -1,3 +1,13 @@
+function includeFile(scriptPath) {
+  // Need to convert to JavaScript String, as eval does not play nice with 
+  // java.lang.String.
+  var scriptString = String(game.getScriptAsString(scriptPath));
+  
+  // Evaluate at the global scope. I hope users are only calling this function
+  // at the global scope.
+  return eval.call(this, scriptString);
+}
+
 // Casting to support both Javascript and Java strings.
 function leftPad(string, totalLen) {
   assert(typeof string != 'undefined');
