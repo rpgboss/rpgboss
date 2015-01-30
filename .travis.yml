@@ -8,6 +8,7 @@ install:
   - sudo apt-get -qq install lib32ncurses5 || true
   - sudo apt-get -qq install lib32bz2-1.0 || true
   - sudo apt-get -qq install lib32stdc++6 || true
+  - sudo apt-get -qq install libopenal1 || true
 
 before_script:
   - curl -L  http://sourceforge.net/projects/launch4j/files/launch4j-3/3.6/launch4j-3.6-linux.tgz/download > launch4j.tgz
