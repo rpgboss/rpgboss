@@ -7,10 +7,10 @@ import rpgboss.lib.Utils
 object EventTrigger extends RpgEnum {
   val NONE = Value(0, "None")
   val BUTTON = Value(1, "Button")
-  val PLAYERTOUCH = Value(2, "Touch by Player")
-  val EVENTTOUCH = Value(3, "Touch by Other Event")
-  val ANYTOUCH = Value(4, "Touch by Any")
-  val AUTORUN = Value(5, "Autorun (parallel)")
+  val PLAYERTOUCH = Value(2, "Touch_8y_Player")
+  val EVENTTOUCH = Value(3, "Touch_By_Other_Event")
+  val ANYTOUCH = Value(4, "Touch_By_Any")
+  val AUTORUN = Value(5, "Autorun_parallel")
 
   def default = BUTTON
 }
