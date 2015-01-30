@@ -13,65 +13,8 @@ import scala.collection.mutable.ArrayBuffer
 import com.badlogic.gdx.utils.Disposable
 import rpgboss.editor.Internationalized._
 
-import scala.collection.mutable.ListBuffer
-import scala.collection.JavaConversions._
-
-import rpgboss.model.Project
-import scala.reflect.io.Path
-import java.io.File
-
 trait DisposableComponent extends Component with Disposable {
   def dispose() = {}
-}
-
-object ScriptOption {
-  var script = ""
-  var upKey = false
-  var leftKey = false
-  var rightKey = false
-  var downKey = false
-  var enterKey = false
-  var escapeKey = false
-}
-
-class ScriptsListView(project:Project) extends ListView[String] {
-  val stringList = ListBuffer[String]()
-  val optionList = ListBuffer[ScriptOption]()
-  var path = project.rcDir
-  var selected = ""
-
-  def getSelection = selected
-
-  def onScriptSelected(selection:String):Unit = {}
-
-  def walkTree(file: File): Iterable[File] = {
-    val children = new Iterable[File] {
-      def iterator = if (file.isDirectory) file.listFiles.iterator else Iterator.empty
-    }
-    Seq(file) ++: children.flatMap(walkTree(_))
-  }
-  
-  for(f <- walkTree(path)) {
-    if (f.getName.endsWith(".js")) {
-      var scriptname = f.getAbsolutePath().replaceAll(path.toString,"")
-      var option = ScriptOption()
-      option.script = scriptname
-      stringList.add(scriptname)
-      optionList.add(option)
-    }
-  }
-
-
-  listData = stringList
-
-  listenTo(mouse.clicks)
-  reactions += {
-    case e: MouseClicked => {
-      var index = selection.anchorIndex
-      selected = optionList(index)
-      onScriptSelected(selected)
-    }
-  }
 }
 
 class ArrayListView[T](initialAry: Array[T]) extends ListView(initialAry) {
