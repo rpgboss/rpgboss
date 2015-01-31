@@ -632,6 +632,18 @@ class ScriptInterface(
     game.quit()
   }
 
+  var savedWindowSkin:String = ""
+  def changeWindowSkin(skin:String) = syncRun {
+    println("change window skin")
+    var savedWindowSkin = game.project.data.startup.windowskin
+    game.project.data.startup.windowskin = skin
+  }
+
+  def restoreWindowSkin = syncRun {
+    println("restore window skin")
+    game.project.data.startup.windowskin = savedWindowSkin
+  }
+
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
       logger.debug("drawText: "+text+" on ");
       mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
