@@ -1,6 +1,8 @@
 rpgboss-editor
 ==============
 
+[![Build Status](https://travis-ci.org/rpgboss/rpgboss.svg?branch=master)](https://travis-ci.org/rpgboss/rpgboss)
+
 RPG game editor. Runs on Windows, Linux, and Mac. Authored games eventually will run on mobile platforms also. Based on libgdx.
 
 Licensed under AGPL3.
