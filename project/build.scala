@@ -22,6 +22,7 @@ object Settings {
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
       "org.json4s" %% "json4s-native" % "3.2.10" withSources(),
       "org.scalatest" %% "scalatest" % "2.1.5" % "test",
+      "org.mockito" % "mockito-core" % "1.9.5" % "test",
       "org.mozilla" % "rhino" % "1.7R4"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
@@ -126,7 +127,7 @@ object Settings {
     
     // Declare names
     val gdxBaseUrl = "http://libgdx.badlogicgames.com/releases"
-    val gdxName = "libgdx-1.5.0"
+    val gdxName = "libgdx-1.5.3"
 
     // Fetch the file.
     val gdxZipName = "%s.zip" format(gdxName)
@@ -142,6 +143,7 @@ object Settings {
       new ExactFilter("extensions/gdx-freetype/gdx-freetype.jar") |
       new ExactFilter("extensions/gdx-audio/gdx-audio.jar") |
       new ExactFilter("gdx-natives.jar") |
+      new ExactFilter("gdx-backend-headless.jar") |
       new ExactFilter("gdx-backend-lwjgl.jar") |
       new ExactFilter("gdx-backend-lwjgl-natives.jar") |
       new ExactFilter("gdx-tools.jar") |
