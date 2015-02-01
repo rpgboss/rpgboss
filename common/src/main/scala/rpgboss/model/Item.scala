@@ -2,15 +2,15 @@ package rpgboss.model
 
 object ItemType extends RpgEnum {
   val Consumable, Reusable, Equipment = Value
-  val KeyItem = Value("Key item")
+  val KeyItem = Value("Key_Item")
 
   def default = Consumable
 }
 
 object ItemAccessibility extends RpgEnum {
   val Always = Value
-  val MenuOnly = Value("Menu only")
-  val BattleOnly = Value("Battle only")
+  val MenuOnly = Value("Menu_Only")
+  val BattleOnly = Value("Battle_Only")
   val Never = Value
 
   def default = Always

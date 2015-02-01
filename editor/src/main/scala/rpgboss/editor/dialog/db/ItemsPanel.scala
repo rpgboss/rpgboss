@@ -76,7 +76,7 @@ class ItemsPanel(
           Some(setEnabledFields _))
 
         val fUseOnAttack = boolField(
-          "Use on Attack",
+          getMessage("Use_On_Attack"),
           model.useOnAttack,
           model.useOnAttack = _,
           Some(setEnabledFields _))
