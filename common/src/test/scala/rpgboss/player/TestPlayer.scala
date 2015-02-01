@@ -1,12 +1,18 @@
 package rpgboss.player
 
-import java.io.File
-import com.badlogic.gdx.backends.lwjgl._
-import com.badlogic.gdx._
-import org.scalatest.concurrent.AsyncAssertions.Waiter
-import rpgboss.model.MapLoc
-import java.util.Date
-import org.lwjgl.opengl.Display
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import com.badlogic.gdx.ApplicationListener
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.backends.headless.HeadlessApplication
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.GL30
+import java.nio.IntBuffer
+import org.mockito.Matchers
 
 /** Can hold a delegate MyGame that can be replaced for running multiple tests.
  */
@@ -50,17 +56,46 @@ class TestGameContainer extends ApplicationListener {
 
 object TestPlayer {
   val container = new TestGameContainer
-  var app: LwjglApplication = null
+  private var lwjglApp: LwjglApplication = null
+  private var headlessApp: HeadlessApplication = null
 
-  def launch(game: RpgGame) = {
-    val conf = new LwjglApplicationConfiguration();
-    conf.title = game.project.data.title;
-    conf.width = 32 * 20;
-    conf.height = 32 * 15;
-    conf.forceExit = false;
+  def launch(game: RpgGame, interactive: Boolean = false) = {
+    if (interactive && lwjglApp == null) {
+      val conf = new LwjglApplicationConfiguration();
+      conf.title = game.project.data.title;
+      conf.width = 32 * 20;
+      conf.height = 32 * 15;
+      conf.forceExit = false;
+      lwjglApp = new LwjglApplication(container, conf)
+    } else if (headlessApp == null) {
+      headlessApp = new HeadlessApplication(container)
+      {
+        import org.mockito.stubbing.Answer
 
-    if (app == null) {
-      app = new LwjglApplication(container, conf)
+        val mockGL20 = mock(classOf[GL20])
+        Gdx.gl = mockGL20
+        Gdx.gl20 = mockGL20
+        Gdx.gl30 = mock(classOf[GL30])
+
+        def getFakeGLAnswer(intAnswer: Int) = new Answer[Unit]() {
+          override def answer(invocation: InvocationOnMock) = {
+            val list = invocation.getArguments
+            list(2).asInstanceOf[IntBuffer].put(0, intAnswer)
+          }
+        }
+
+        when(mockGL20.glCreateShader(anyInt())).thenReturn(5)
+        when(mockGL20.glCreateProgram()).thenReturn(5)
+
+        doAnswer(getFakeGLAnswer(5))
+          .when(mockGL20).glGetShaderiv(anyInt(), anyInt(), anyObject())
+        doAnswer(getFakeGLAnswer(5))
+          .when(mockGL20).glGetProgramiv(
+              anyInt(), Matchers.eq(GL20.GL_LINK_STATUS), anyObject())
+        doAnswer(getFakeGLAnswer(0))
+          .when(mockGL20).glGetProgramiv(
+              anyInt(), Matchers.eq(GL20.GL_ACTIVE_ATTRIBUTES), anyObject())
+      }
     }
 
     container.replace(game)
