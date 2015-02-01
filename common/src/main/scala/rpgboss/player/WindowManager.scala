@@ -176,7 +176,7 @@ class WindowManager(
       }
     }
     screenTextArray += text
-    
+
     return true
   }
 
@@ -205,6 +205,17 @@ class WindowManager(
      * really complicating the code...
      */
 
+    if (tintColor.a != 0) {
+      // Spritebatch seems to turn off blending after it's done. Turn it on.
+      Gdx.gl.glEnable(GL20.GL_BLEND)
+      shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+
+      shapeRenderer.setColor(tintColor)
+      shapeRenderer.rect(0, 0, screenW, screenH)
+
+      shapeRenderer.end()
+    }
+
     batch.begin()
 
     for (i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
@@ -227,13 +238,10 @@ class WindowManager(
     batch.end()
 
     // Render transition
-    if (transitionAlpha != 0 || tintColor.a != 0) {
+    if (transitionAlpha != 0) {
       // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL20.GL_BLEND)
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-
-      shapeRenderer.setColor(tintColor)
-      shapeRenderer.rect(0, 0, screenW, screenH)
 
       shapeRenderer.setColor(0, 0, 0, transitionAlpha)
       shapeRenderer.rect(0, 0, screenW, screenH)

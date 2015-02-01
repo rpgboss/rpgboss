@@ -443,9 +443,12 @@ class BattleScreen(
         val battlerWidth = (battler.img.getWidth() * battlerSpec.scale).toInt
         val battlerHeight = (battler.img.getHeight() * battlerSpec.scale).toInt
 
+        val unitL = unit.x - battlerWidth / 2
+        val unitT = unit.y - battlerHeight / 2
+
         val layout =
-          Layout(NORTHWEST, FIXED, battlerWidth, battlerHeight, unit.x, unit.y)
-        val rect = layout.getRect(unit.x, unit.y, screenW, screenH)
+          Layout(NORTHWEST, FIXED, battlerWidth, battlerHeight, unitL, unitT)
+        val rect = layout.getRect(unitL, unitT, screenW, screenH)
         windowManager.showPicture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i,
           TexturePicture(

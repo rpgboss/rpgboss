@@ -1,0 +1,18 @@
+language: scala
+scala:
+  - 2.11.2
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install lib32z1 lib32ncurses5 lib32bz2-1.0 lib32stdc++6
+
+install:
+  - curl -L  http://sourceforge.net/projects/launch4j/files/launch4j-3/3.6/launch4j-3.6-linux.tgz/download > launch4j.tgz
+  - tar xvzf launch4j.tgz
+
+before_script:
+  - PATH=$PATH:$PWD/launch4j
+
+script:
+  - sbt package 
+  - ./package/package.sh

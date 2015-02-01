@@ -7,18 +7,18 @@ import rpgboss.lib.Utils
 object EventTrigger extends RpgEnum {
   val NONE = Value(0, "None")
   val BUTTON = Value(1, "Button")
-  val PLAYERTOUCH = Value(2, "Touch by Player")
-  val EVENTTOUCH = Value(3, "Touch by Other Event")
-  val ANYTOUCH = Value(4, "Touch by Any")
-  val AUTORUN = Value(5, "Autorun (parallel)")
+  val PLAYERTOUCH = Value(2, "Touch_8y_Player")
+  val EVENTTOUCH = Value(3, "Touch_By_Other_Event")
+  val ANYTOUCH = Value(4, "Touch_By_Any")
+  val AUTORUN = Value(5, "Autorun_parallel")
 
   def default = BUTTON
 }
 
 object EventHeight extends RpgEnum {
-  val UNDER = Value(0, "Under player")
-  val SAME = Value(1, "Same level as player")
-  val OVER = Value(2, "Always on top of player")
+  val UNDER = Value(0, "Under_Player")
+  val SAME = Value(1, "Same_Level_As_Player")
+  val OVER = Value(2, "Always_On_Top_Of_Player")
 
   def default = UNDER
 }

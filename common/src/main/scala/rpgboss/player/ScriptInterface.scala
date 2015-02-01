@@ -668,14 +668,13 @@ class ScriptInterface(
         characterStatus.mp, characterStatus.tempStatusEffectIds)
   }
 
-  def includeFile(scriptPath: String) = {
-      mapScreen.scriptFactory.addFileToScope(scriptPath)
-      mapScreen.scriptFactory.reEvaluate()
-  }
-
   // TODO: built it in
   def keyPress(key: String) = {
 
+  }
+
+  def getScriptAsString(scriptPath: String): String = {
+    Script.readFromDisk(project, scriptPath).readAsString
   }
 
   /**
