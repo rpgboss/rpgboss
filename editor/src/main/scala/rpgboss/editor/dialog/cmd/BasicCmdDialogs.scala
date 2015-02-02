@@ -114,7 +114,10 @@ class HealOrDamageCmdDialog(
     TitledComponent("", boolEnumHorizBox(
         HealOrDamageEnum, model.heal, model.heal = _)),
     TitledComponent("", boolField(
-        "Whole party", model.wholeParty, model.wholeParty = _)),
+        needsTranslation("Whole party"), model.wholeParty, model.wholeParty = _)),
+    TitledComponent("", boolField(
+        needsTranslation("Cure status effects (heal only)"),
+        model.removeStatusEffects, model.removeStatusEffects = _)),
     TitledComponent("Character", indexedCombo(
         sm.getProjData.enums.characters, model.characterId,
         model.characterId = _)),
