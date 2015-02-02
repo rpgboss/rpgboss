@@ -17,8 +17,10 @@ case class ProjectDataStartup(
   var screenH: Int,
 
   var windowskin: String,
+
   var msgfont: String,
   var fontsize: Int,
+  var extraFontCharacters: String,
 
   var soundCursor: Option[SoundSpec],
   var soundSelect: Option[SoundSpec],

@@ -22,6 +22,9 @@ case class Msgfont(proj: Project, name: String,
     val params = new FreeTypeFontGenerator.FreeTypeFontParameter
     params.size = proj.data.startup.fontsize
     params.flip = true
+    params.characters =
+      (FreeTypeFontGenerator.DEFAULT_CHARS +
+          proj.data.startup.extraFontCharacters).distinct
     val result = generator.generateFont(params)
 
     generator.dispose()
