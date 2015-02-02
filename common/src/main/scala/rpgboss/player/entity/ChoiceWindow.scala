@@ -3,8 +3,11 @@ package rpgboss.player.entity
 import scala.concurrent.Channel
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+
 import rpgboss.lib.GdxUtils.syncRun
+import rpgboss.lib.Layout
 import rpgboss.lib.Rect
 import rpgboss.lib.Utils
 import rpgboss.model.SoundSpec
@@ -20,7 +23,6 @@ import rpgboss.player.MyKeys.Right
 import rpgboss.player.MyKeys.Up
 import rpgboss.player.PersistentState
 import rpgboss.player.WindowManager
-import rpgboss.lib.Layout
 
 trait HasIntCallback {
   def intCallback(value: Int): Unit
@@ -147,7 +149,7 @@ class SpatialChoiceWindow(
       return
 
     for (choiceRect <- choices(curChoice)) {
-      skin.draw(b, skinRegion,
+      skin.draw(b, skinTexture,
                 choiceRect.left, choiceRect.top, choiceRect.w, choiceRect.h,
                 bordersOnly = true)
     }

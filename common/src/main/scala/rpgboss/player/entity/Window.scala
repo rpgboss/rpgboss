@@ -79,7 +79,7 @@ class Window(
   }
 
   def skin = manager.windowskin
-  def skinRegion = manager.windowskinRegion
+  def skinTexture = manager.windowskinTexture
 
   private def changeState(newState: Int) = synchronized {
     assertOnBoundThread()
@@ -111,19 +111,19 @@ class Window(
 
     state match {
         case Window.Open => {
-        skin.draw(b, skinRegion, rect.left, rect.top, rect.w, rect.h)
+        skin.draw(b, skinTexture, rect.left, rect.top, rect.w, rect.h)
       }
       case Window.Opening => {
         val hVisible =
           math.max(32 + (stateAge / openCloseTime * (rect.h - 32)).toInt, 32)
 
-        skin.draw(b, skinRegion, rect.left, rect.top, rect.w, hVisible)
+        skin.draw(b, skinTexture, rect.left, rect.top, rect.w, hVisible)
       }
       case Window.Closing => {
         val hVisible = math.max(
           rect.h - (stateAge / openCloseTime * (rect.h - 32)).toInt, 32)
 
-        skin.draw(b, skinRegion, rect.left, rect.top, rect.w, hVisible)
+        skin.draw(b, skinTexture, rect.left, rect.top, rect.w, hVisible)
       }
       case _ => Unit
     }
@@ -264,7 +264,7 @@ class PrintingTextWindow(
     initialLines,
     rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad),
     skin,
-    skinRegion,
+    skinTexture,
     manager.fontbmp,
     options)
 

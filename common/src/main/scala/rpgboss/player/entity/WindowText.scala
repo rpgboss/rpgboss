@@ -1,21 +1,17 @@
 package rpgboss.player.entity
 
-import rpgboss.lib._
-import rpgboss.model._
-import rpgboss.model.resource._
-import java.awt._
-import java.awt.image._
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.assets.AssetManager
-import scala.concurrent.Promise
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-import rpgboss.player._
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.typesafe.scalalogging.slf4j.LazyLogging
+
+import rpgboss.lib.Rect
+import rpgboss.lib.ThreadChecked
+import rpgboss.model.resource.Windowskin
+import rpgboss.player.PersistentState
+import rpgboss.player.ScriptInterfaceConstants
 
 object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
@@ -173,7 +169,7 @@ class PrintingWindowText(
   initialText: Array[String],
   rect: Rect,
   skin: Windowskin,
-  skinRegion: TextureRegion,
+  skinTexture: Texture,
   fontbmp: BitmapFont,
   options: PrintingTextWindowOptions)
   extends WindowText(
@@ -281,7 +277,7 @@ class PrintingWindowText(
 
     // If waiting for user input to finish, draw the arrow
     if (options.showArrow && awaitingInput) {
-      skin.drawArrow(b, skinRegion, rect.x - 8, rect.bot)
+      skin.drawArrow(b, skinTexture, rect.x - 8, rect.bot)
     }
   }
 }
