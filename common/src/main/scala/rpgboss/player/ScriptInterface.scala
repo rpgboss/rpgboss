@@ -131,6 +131,15 @@ class ScriptInterface(
    * Things to do with the player's location and camera
    */
 
+  var canUseScriptableTransition = false
+  def useScriptableTransition(value:Boolean) = {
+    canUseScriptableTransition = value
+  }
+
+  def setPlayerLoc(mapName: String, x: Float, y: Float) = syncRun {
+    game.setPlayerLoc(MapLoc(mapName, x, y))
+  }
+
   def teleport(mapName: String, x: Float, y: Float,
       transitionId: Int = Transitions.NONE.id) = {
     val loc = MapLoc(mapName, x, y)
@@ -138,17 +147,28 @@ class ScriptInterface(
     val transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
 
-    if (transition == Transitions.FADE) {
+    if(canUseScriptableTransition) {
       syncRun {
-        mapScreen.windowManager.setTransition(1, fadeDuration)
+        game.mapScreen.scriptFactory.runFromFile(
+          ResourceConstants.systemStartScript,
+          "gameTransition('"+mapName+"',"+x.toString()+","+y.toString()+")")
       }
       sleep(fadeDuration);
-    }
+    } else {
 
-    syncRun {
-      game.setPlayerLoc(loc);
-      if (transition == Transitions.FADE)
-        mapScreen.windowManager.setTransition(0, fadeDuration);
+      if (transition == Transitions.FADE) {
+        syncRun {
+          mapScreen.windowManager.setTransition(1, fadeDuration)
+        }
+        sleep(fadeDuration);
+      }
+
+      syncRun {
+        game.setPlayerLoc(loc);
+        if (transition == Transitions.FADE)
+          mapScreen.windowManager.setTransition(0, fadeDuration);
+      }
+
     }
   }
 
@@ -637,18 +657,6 @@ class ScriptInterface(
 
   def quit() = syncRun {
     game.quit()
-  }
-
-  var savedWindowSkin:String = ""
-  def changeWindowSkin(skin:String) = syncRun {
-    println("change window skin")
-    var savedWindowSkin = game.project.data.startup.windowskin
-    game.project.data.startup.windowskin = skin
-  }
-
-  def restoreWindowSkin = syncRun {
-    println("restore window skin")
-    game.project.data.startup.windowskin = savedWindowSkin
   }
 
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {

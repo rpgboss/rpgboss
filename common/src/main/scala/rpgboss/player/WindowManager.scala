@@ -78,7 +78,7 @@ class WindowManager(
     _fontbmp = font.getBitmapFont(distinctChars)
   }
 
-  val pictures = Array.fill[Option[PictureLike]](64)(None)
+  val pictures = Array.fill[Option[PictureLike]](164)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
   def setTransition(endAlpha: Float, duration: Float) = {
