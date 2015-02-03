@@ -26,22 +26,22 @@ case class MapLoc(
 
 object WhichEntity extends RpgEnum {
   val PLAYER = Value(0, "Player")
-  val THIS_EVENT = Value(1, "This event")
-  val EVENT_ON_MAP = Value(2, "Event on Map")
-  val EVENT_ON_OTHER_MAP = Value(3, "Event on Other Map")
+  val THIS_EVENT = Value(1, "This_Event")
+  val EVENT_ON_MAP = Value(2, "Event_On_Map")
+  val EVENT_ON_OTHER_MAP = Value(3, "Event_On_Other_Map")
 
   def default = THIS_EVENT
 }
 
 object Scope extends RpgEnum {
   val None = Value
-  val SelfOnly = Value("User only")
-  val OneEnemy = Value("One enemy")
-  val AllEnemies = Value("All enemies")
-  val OneAlly = Value("One ally")
-  val AllAllies = Value("All allies")
-  val OneAllyDead = Value("One dead ally")
-  val AllAlliesDead = Value("All dead allies")
+  val SelfOnly = Value("User_Only")
+  val OneEnemy = Value("One_Enemy")
+  val AllEnemies = Value("All_Enemies")
+  val OneAlly = Value("One_Ally")
+  val AllAllies = Value("All_Allies")
+  val OneAllyDead = Value("One_Dead_Ally")
+  val AllAlliesDead = Value("All_Dead_Allies")
 
   def default = OneAlly
 }

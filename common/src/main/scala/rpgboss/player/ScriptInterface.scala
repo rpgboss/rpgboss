@@ -416,6 +416,10 @@ class ScriptInterface(
     choice
   }
 
+  def setWindowskin(windowskinPath: String) = syncRun {
+    game.setWindowskin(windowskinPath)
+  }
+
   def getPlayerEntityInfo(): EntityInfo = syncRun {
     mapScreen.getPlayerEntityInfo()
   }
@@ -551,9 +555,12 @@ class ScriptInterface(
         characterStatus.mp, characterStatus.tempStatusEffectIds)
   }
 
-  def healParty(hpPercentage: Float, mpPercentage: Float) = syncRun {
-    for (characterId <- persistent.getIntArray(PARTY))
-      healCharacter(characterId, hpPercentage, mpPercentage)
+  def healParty(hpPercentage: Float, mpPercentage: Float,
+      removeStatusEffects: Boolean = false) = syncRun {
+    for (characterId <- persistent.getIntArray(PARTY)) {
+      healCharacter(characterId, hpPercentage, mpPercentage,
+          removeStatusEffects)
+    }
   }
 
   def damageCharacter(characterId: Int, hpPercentage: Float,

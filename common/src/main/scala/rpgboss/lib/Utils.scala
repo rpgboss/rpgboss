@@ -96,7 +96,8 @@ class FileHelper(file: File) {
     else None
 
   def useWriter[T](useFunc: (Writer) => T): Option[T] = {
-    getFos().map(new OutputStreamWriter(_)) map { writer =>
+    getFos().map(
+        new OutputStreamWriter(_, "UTF-8")) map { writer =>
       val retVal = useFunc(writer)
       writer.close()
       retVal
@@ -106,7 +107,7 @@ class FileHelper(file: File) {
   def getReader(): Option[BufferedReader] =
     if (file.isFile && file.canRead)
       Some(new BufferedReader(new InputStreamReader(
-        new FileInputStream(file))))
+        new FileInputStream(file), "UTF-8")))
     else None
 }
 
