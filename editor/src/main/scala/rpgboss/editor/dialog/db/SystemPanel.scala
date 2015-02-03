@@ -48,9 +48,6 @@ class SystemPanel(
   val fFontsize = new NumberSpinner(12, 48, model.startup.fontsize,
       model.startup.fontsize = _)
 
-  val fExtraFontCharacters = textField(
-      model.startup.extraFontCharacters, model.startup.extraFontCharacters = _)
-
   val fSoundCursor = new SoundField(owner, sm, model.startup.soundCursor,
       model.startup.soundCursor = _)
   val fSoundSelect = new SoundField(owner, sm, model.startup.soundSelect,
@@ -70,8 +67,6 @@ class SystemPanel(
   row().grid(lbl(getMessageColon("Windowskin"))).add(fWindowskin)
   row().grid(lbl(getMessageColon("Message_Font"))).add(fMsgfont)
   row().grid(lbl(getMessageColon("Font_Size"))).add(fFontsize)
-  row().grid(lbl(needsTranslation("Unicode Chars:")))
-    .add(fExtraFontCharacters)
 
   row().grid(lbl(getMessageColon("Cursor_Sound"))).add(fSoundCursor)
   row().grid(lbl(getMessageColon("Select_Sound"))).add(fSoundSelect)

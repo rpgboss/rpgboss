@@ -1,8 +1,8 @@
 package rpgboss.model.event
 
 import rpgboss.model._
-
 import rpgboss.lib.Utils
+import rpgboss.lib.DistinctCharacterSet
 
 object EventTrigger extends RpgEnum {
   val NONE = Value(0, "None")
@@ -66,6 +66,17 @@ case class RpgEventState(
   var runOnceThenIncrementState: Boolean = false,
 
   var cmds: Array[EventCmd] = RpgEventState.defaultCmds) {
+
+  def distinctChars = {
+    val set = new DistinctCharacterSet
+    for (cmd <- cmds) {
+      cmd match {
+        case ShowText(lines) => set.addAll(lines)
+        case _ => Unit
+      }
+    }
+    set
+  }
 
   def getFreeVariables() = {
     // All variables are free right now since there's exposed EventCmd to

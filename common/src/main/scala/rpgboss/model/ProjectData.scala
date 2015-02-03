@@ -1,10 +1,10 @@
 package rpgboss.model
 
 import java.io.File
-
 import rpgboss.lib.JsonUtils
 import rpgboss.model.event.EventClass
 import rpgboss.model.resource.ResourceConstants
+import rpgboss.lib.DistinctCharacterSet
 
 case class ProjectDataStartup(
   var startingLoc: MapLoc,
@@ -20,7 +20,6 @@ case class ProjectDataStartup(
 
   var msgfont: String,
   var fontsize: Int,
-  var extraFontCharacters: String,
 
   var soundCursor: Option[SoundSpec],
   var soundSelect: Option[SoundSpec],
@@ -42,7 +41,28 @@ case class ProjectDataEnums(
   var equipTypes: Array[String] = ProjectData.defaultEquipTypes,
   var items: Array[Item] = Array(Item()),
   var skills: Array[Skill] = Array(Skill()),
-  var statusEffects: Array[StatusEffect] = Array(StatusEffect()))
+  var statusEffects: Array[StatusEffect] = Array(StatusEffect())) {
+  lazy val distinctChars = {
+    val set = new DistinctCharacterSet
+    set.addAll(characters)
+    set.addAll(characters.map(_.description))
+    set.addAll(classes)
+    set.addAll(elements)
+    set.addAll(enemies)
+    set.addAll(encounters)
+    set.addAll(equipTypes)
+    set.addAll(items)
+    set.addAll(items.map(_.desc))
+    set.addAll(skills)
+    set.addAll(statusEffects)
+
+    for (eventClass <- eventClasses; state <- eventClass.states) {
+      set ++= state.distinctChars
+    }
+
+    set
+  }
+}
 
 case class ProjectData(
   var uuid: String = java.util.UUID.randomUUID().toString(),

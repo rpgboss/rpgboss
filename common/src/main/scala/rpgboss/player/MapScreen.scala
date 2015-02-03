@@ -83,7 +83,7 @@ class MapScreen(val game: RpgGame)
   // All the events on the current map, including the player event
   val eventEntities = collection.mutable.Map[Int, EventEntity]()
 
-  def updateMapAssets(loc: MapLoc) = {
+  def setPlayerLoc(loc: MapLoc) = {
     mapAndAssetsOption.map(_.dispose())
     mapAndAssetsOption = None
     eventEntities.map(_._2.dispose())
@@ -109,13 +109,13 @@ class MapScreen(val game: RpgGame)
             v)))
       }
 
+      val distinctChars =
+        project.data.enums.distinctChars ++ mapAndAssets.mapData.distinctChars
+      windowManager.updateBitmapFont(distinctChars.mkString)
+
       playMusic(0, mapAndAssets.map.metadata.music, true,
           Transitions.fadeLength)
     }
-  }
-
-  def setPlayerLoc(loc: MapLoc) = {
-    updateMapAssets(loc)
 
     if (loc.map.isEmpty()) {
       _playerEntity = null

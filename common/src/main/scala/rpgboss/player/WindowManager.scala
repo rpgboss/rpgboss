@@ -66,7 +66,17 @@ class WindowManager(
   var windowskinTexture: Texture = null
 
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
-  var fontbmp: BitmapFont = font.getBitmapFont()
+
+  def fontbmp = {
+    if (_fontbmp == null)
+      updateBitmapFont("")
+    _fontbmp
+  }
+
+  var _fontbmp: BitmapFont = null
+  def updateBitmapFont(distinctChars: String) = {
+    _fontbmp = font.getBitmapFont(distinctChars)
+  }
 
   val pictures = Array.fill[Option[PictureLike]](64)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
