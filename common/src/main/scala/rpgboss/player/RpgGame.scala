@@ -225,6 +225,11 @@ class RpgGame(gamepath: File)
     })
   }
 
+  def setWindowskin(windowskinPath: String) = {
+    battleScreen.windowManager.setWindowskin(windowskinPath)
+    mapScreen.windowManager.setWindowskin(windowskinPath)
+  }
+
   def quit() {
     assertOnBoundThread()
 

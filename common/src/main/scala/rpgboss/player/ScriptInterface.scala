@@ -416,6 +416,10 @@ class ScriptInterface(
     choice
   }
 
+  def setWindowskin(windowskinPath: String) = syncRun {
+    game.setWindowskin(windowskinPath)
+  }
+
   def getPlayerEntityInfo(): EntityInfo = syncRun {
     mapScreen.getPlayerEntityInfo()
   }

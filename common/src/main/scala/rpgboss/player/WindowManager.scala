@@ -62,9 +62,8 @@ class WindowManager(
     }
   }
 
-  val windowskin =
-    Windowskin.readFromDisk(project, project.data.startup.windowskin)
-  val windowskinTexture = new Texture(windowskin.getGdxFileHandle)
+  var windowskin: Windowskin = null
+  var windowskinTexture: Texture = null
 
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
   var fontbmp: BitmapFont = font.getBitmapFont()
@@ -92,6 +91,15 @@ class WindowManager(
   }
 
   def inTransition = !transitionTweener.done
+
+  def setWindowskin(windowskinPath: String) = {
+    if (windowskinTexture != null)
+      windowskinTexture.dispose()
+
+    windowskin = Windowskin.readFromDisk(project, windowskinPath)
+    windowskinTexture = new Texture(windowskin.getGdxFileHandle)
+  }
+  setWindowskin(project.data.startup.windowskin)
 
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
