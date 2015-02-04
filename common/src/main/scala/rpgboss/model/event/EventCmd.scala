@@ -238,7 +238,7 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
   }
 }
 
-case class ModifyParty(add: Boolean = true, characterId: Int = 0)
+case class ModifyParty(var add: Boolean = true, var characterId: Int = 0)
   extends EventCmd {
   def sections = singleCall("game.modifyParty", add, characterId)
 }

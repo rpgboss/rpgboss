@@ -75,6 +75,6 @@ object EventParameterField {
     if (ui == null)
       Nil
     else
-      ui.getParameterFields(owner, sm, cmd.asInstanceOf[ui.EventCmdType])
+      ui.getParameterFields(owner, sm, None, cmd.asInstanceOf[ui.EventCmdType])
   }
 }

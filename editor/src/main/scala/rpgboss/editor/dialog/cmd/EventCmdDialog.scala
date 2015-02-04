@@ -55,6 +55,8 @@ object EventCmdDialog {
       HealOrDamageUI,
       HidePictureUI,
       IfConditionUI,
+      ModifyPartyUI,
+      MoveEventUI,
       OpenStoreUI,
       PlayMusicUI,
       PlaySoundUI,
@@ -90,17 +92,15 @@ object EventCmdDialog {
     evtCmd: EventCmd,
     successF: EventCmd => Any): Dialog = {
     evtCmd match {
-      case e: ModifyParty => new ModifyPartyCmdDialog(owner, sm, e, successF)
       case e: ShowText => new ShowTextCmdDialog(owner, sm, e, successF)
       case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
       case e: SetEventState =>
         new SetEventStateDialog(owner, sm, mapName, e, successF)
-      case e: MoveEvent =>
-        new MoveEventCmdDialog(owner, sm, mapName, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
       case e =>
         val ui = uiFor(evtCmd)
-        ui.getDialog(owner, sm, evtCmd.asInstanceOf[ui.EventCmdType],
+        ui.getDialog(owner, sm, mapName,
+            evtCmd.asInstanceOf[ui.EventCmdType],
             successF.asInstanceOf[ui.EventCmdType => Any])
     }
   }
@@ -111,19 +111,19 @@ abstract class EventCmdUI[T <: EventCmd](implicit val m: reflect.Manifest[T]) {
 
   def title: String
   def getNormalFields(
-      owner: Window, sm: StateMaster, model: EventCmdType):
+      owner: Window, sm: StateMaster, mapName: Option[String], model: EventCmdType):
       Seq[TitledComponent] = Nil
   def getParameterFields(
-      owner: Window, sm: StateMaster, model: EventCmdType):
+      owner: Window, sm: StateMaster, mapName: Option[String], model: EventCmdType):
       Seq[EventParameterField[_]] = Nil
 
   def getDialog(
-      owner: Window, sm: StateMaster, initial: EventCmdType,
+      owner: Window, sm: StateMaster, mapName: Option[String], initial: EventCmdType,
       successF: EventCmdType => Any) =
     new EventCmdDialog(owner, sm, title, initial, successF) {
       override def normalFields =
-        EventCmdUI.this.getNormalFields(owner, sm, model)
+        EventCmdUI.this.getNormalFields(owner, sm, mapName, model)
       override def parameterFields =
-        EventCmdUI.this.getParameterFields(owner, sm, model)
+        EventCmdUI.this.getParameterFields(owner, sm, mapName, model)
     }
 }

@@ -21,11 +21,11 @@ import rpgboss.player.RpgScreen
 object AddRemoveItemUI extends EventCmdUI[AddRemoveItem] {
   override def title = getMessage("Add_Remove_Item")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: AddRemoveItem) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: AddRemoveItem) = Seq(
     TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add,
         model.add = _)))
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: AddRemoveItem) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: AddRemoveItem) = List(
     IntEnumIdField(getMessage("Item"), sm.getProjData.enums.items, model.itemId),
     IntNumberField(getMessage("Quantity"), 1, 99, model.quantity))
 }
@@ -34,18 +34,18 @@ object AddRemoveGoldUI extends EventCmdUI[AddRemoveGold] {
   override def title = getMessage("Add_Remove_Gold")
 
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: AddRemoveGold) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: AddRemoveGold) = Seq(
     TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add,
         model.add = _)))
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: AddRemoveGold) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: AddRemoveGold) = List(
     IntNumberField(getMessage("Quantity"), 1, 9999, model.quantity))
 }
 
 object GetChoiceUI extends EventCmdUI[GetChoice] {
   override def title = getMessage("Get_Choice")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: GetChoice) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: GetChoice) = Seq(
     TitledComponent(getMessage("Question"),
         textAreaField(model.question, model.question = _)),
     TitledComponent("", new StringArrayEditingPanel(
@@ -63,7 +63,7 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
 object HealOrDamageUI extends EventCmdUI[HealOrDamage] {
   override def title = getMessage("Heal_Damage")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: HealOrDamage) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: HealOrDamage) = Seq(
     TitledComponent("", boolEnumHorizBox(
         HealOrDamageEnum, model.heal, model.heal = _)),
     TitledComponent("", boolField(
@@ -83,7 +83,7 @@ object HealOrDamageUI extends EventCmdUI[HealOrDamage] {
 object HidePictureUI extends EventCmdUI[HidePicture] {
   override def title = getMessage("Hide_Picture")
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: HidePicture) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: HidePicture) = List(
     IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
         PictureSlots.BATTLE_BEGIN - 1, model.slot))
 }
@@ -91,7 +91,7 @@ object HidePictureUI extends EventCmdUI[HidePicture] {
 object IfConditionUI extends EventCmdUI[IfCondition] {
   override def title = getMessage("IF_Condition")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: IfCondition) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: IfCondition) = Seq(
     TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)),
@@ -99,10 +99,37 @@ object IfConditionUI extends EventCmdUI[IfCondition] {
         model.elseBranch, model.elseBranch = _)))
 }
 
+object ModifyPartyUI extends EventCmdUI[ModifyParty] {
+  override def title = getMessage("Modify_Party")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: ModifyParty) = Seq(
+    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add,
+        model.add = _)),
+    TitledComponent(getMessage("Character"), indexedCombo(
+        sm.getProjData.enums.characters, model.characterId,
+        model.characterId = _)))
+}
+
+object MoveEventUI extends EventCmdUI[MoveEvent] {
+  override def title = getMessage("Move_Event")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: MoveEvent) = Seq(
+    TitledComponent("", new EntitySelectPanel(owner, sm, mapName,
+        model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
+    TitledComponent(getMessage("X_Movement"),
+        new FloatSpinner(-100, 100, 0.1f, model.dx, model.dx = _)),
+    TitledComponent(getMessage("Y_Movement"),
+        new FloatSpinner(-100, 100, 0.1f, model.dy, model.dy = _)),
+    TitledComponent("", boolField(getMessage("Affix_direction"),
+        model.affixDirection, model.affixDirection = _)),
+    TitledComponent("", boolField(getMessage("Async"), model.async,
+        model.async = _)))
+}
+
 object OpenStoreUI extends EventCmdUI[OpenStore] {
   override def title = getMessage("Open_Store")
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: OpenStore) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: OpenStore) = List(
     IntMultiselectField(owner, getMessage("Items_Sold"),
         sm.getProjData.enums.items, model.itemIdsSold),
     FloatPercentField(getMessageColon("Buy_Price_Multiplier"), 0f, 4f,
@@ -114,7 +141,7 @@ object OpenStoreUI extends EventCmdUI[OpenStore] {
 object PlayMusicUI extends EventCmdUI[PlayMusic] {
   override def title = getMessage("Play_Music")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: PlayMusic) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: PlayMusic) = Seq(
     TitledComponent(
         getMessage("Music"),
         new MusicField(owner, sm, Some(model.spec), v => model.spec = v.get,
@@ -127,7 +154,7 @@ object PlayMusicUI extends EventCmdUI[PlayMusic] {
         new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
             model.fadeDuration = _)))
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: PlayMusic) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: PlayMusic) = List(
     IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
         model.slot))
 }
@@ -135,7 +162,7 @@ object PlayMusicUI extends EventCmdUI[PlayMusic] {
 object PlaySoundUI extends EventCmdUI[PlaySound] {
   override def title = getMessage("Play_Sound")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: PlaySound) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: PlaySound) = Seq(
     TitledComponent(
         getMessage("Sound"),
         new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
@@ -145,7 +172,7 @@ object PlaySoundUI extends EventCmdUI[PlaySound] {
 object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
   override def title = getMessage("Set_Global_Integer")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: SetGlobalInt) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: SetGlobalInt) = Seq(
     TitledComponent(
         getMessage("Global_Variable_Name"),
         textField(model.key, model.key = _)),
@@ -154,7 +181,7 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
         enumVerticalBox(
             OperatorType, model.operatorId, model.operatorId = _)))
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: SetGlobalInt) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: SetGlobalInt) = List(
     IntNumberField(getMessage("Value") + " 1", -9999, 9999, model.value1),
     IntNumberField(getMessage("Value") + " 2", -9999, 9999, model.value2))
 }
@@ -162,7 +189,7 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
 object ShowPictureUI extends EventCmdUI[ShowPicture] {
   override def title = getMessage("Show_Picture")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: ShowPicture) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: ShowPicture) = Seq(
     TitledComponent(
         getMessage("Picture"),
         new PictureField(owner, sm, model.picture, model.picture = _)),
@@ -170,7 +197,7 @@ object ShowPictureUI extends EventCmdUI[ShowPicture] {
         getMessage("Layout"),
         new LayoutEditingPanel(model.layout)))
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: ShowPicture) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: ShowPicture) = List(
     IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
         PictureSlots.BATTLE_BEGIN - 1, model.slot))
 }
@@ -178,7 +205,7 @@ object ShowPictureUI extends EventCmdUI[ShowPicture] {
 object StartBattleUI extends EventCmdUI[StartBattle] {
   override def title = getMessage("StartBattle")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: StartBattle) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: StartBattle) = Seq(
     TitledComponent(
         getMessage("Encounter"),
         indexedCombo(sm.getProjData.enums.encounters, model.encounterId,
@@ -198,13 +225,13 @@ object StartBattleUI extends EventCmdUI[StartBattle] {
 object StopMusicUI extends EventCmdUI[StopMusic] {
   override def title = getMessage("Stop_Music")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: StopMusic) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: StopMusic) = Seq(
       TitledComponent(
           getMessage("Fade_Duration"),
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
               model.fadeDuration = _)))
   override def getParameterFields(
-      owner: Window, sm: StateMaster, model: StopMusic) = List(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: StopMusic) = List(
     IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
         model.slot))
 }
@@ -212,7 +239,7 @@ object StopMusicUI extends EventCmdUI[StopMusic] {
 object TintScreenUI extends EventCmdUI[TintScreen] {
   override def title = getMessage("Tint_Screen")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: TintScreen) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: TintScreen) = Seq(
     TitledComponent(
         getMessageColon("Color_And_Alpha"),
         colorField(
@@ -231,7 +258,7 @@ object TintScreenUI extends EventCmdUI[TintScreen] {
 object WhileLoopUI extends EventCmdUI[WhileLoop] {
   override def title = getMessage("While_Loop")
   override def getNormalFields(
-      owner: Window, sm: StateMaster, model: WhileLoop) = Seq(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: WhileLoop) = Seq(
     TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)))
