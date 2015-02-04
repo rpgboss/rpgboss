@@ -18,50 +18,6 @@ import rpgboss.editor.uibase.EventParameterField._
 import rpgboss.model.PictureSlots
 import rpgboss.player.RpgScreen
 
-class StartBattleCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: StartBattle,
-  successF: (StartBattle) => Any)
-  extends StdDialog(owner, getMessage("StartBattle")) {
-
-  centerDialog(new Dimension(300, 200))
-
-  var model = Utils.deepCopy(initial)
-
-  val encounterSelect = indexedCombo(
-    sm.getProjData.enums.encounters,
-    model.encounterId,
-    model.encounterId = _)
-
-  val battleBgSelect = new BattleBackgroundField(
-    owner,
-    sm,
-    model.battleBackground,
-    model.battleBackground = _)
-
-  val battleMusicField =
-    new MusicField(owner, sm, model.battleMusic, model.battleMusic = _)
-
-  def okFunc() = {
-    successF(model)
-    close()
-  }
-
-  contents = new DesignGridPanel {
-    row().grid().add(leftLabel(getMessageColon("Encounter")))
-    row().grid().add(encounterSelect)
-
-    row().grid().add(leftLabel(getMessageColon("Override_Battle_Background")))
-    row().grid().add(battleBgSelect)
-
-    row().grid().add(leftLabel(getMessageColon("Override_Battle_Music")))
-    row().grid().add(battleMusicField)
-
-    addButtons(okBtn, cancelBtn)
-  }
-}
-
 object AddRemoveItemUI extends EventCmdUI[AddRemoveItem] {
   override def title = getMessage("Add_Remove_Item")
   override def getNormalFields(
@@ -219,6 +175,26 @@ object ShowPictureUI extends EventCmdUI[ShowPicture] {
         PictureSlots.BATTLE_BEGIN - 1, model.slot))
 }
 
+object StartBattleUI extends EventCmdUI[StartBattle] {
+  override def title = getMessage("StartBattle")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: StartBattle) = Seq(
+    TitledComponent(
+        getMessage("Encounter"),
+        indexedCombo(sm.getProjData.enums.encounters, model.encounterId,
+            model.encounterId = _)),
+    TitledComponent(
+        getMessage("Override_Battle_Background"),
+        new BattleBackgroundField(
+            owner,
+            sm,
+            model.battleBackground,
+            model.battleBackground = _)),
+    TitledComponent(
+        getMessage("Override_Battle_Music"),
+        new MusicField(owner, sm, model.battleMusic, model.battleMusic = _)))
+}
+
 object StopMusicUI extends EventCmdUI[StopMusic] {
   override def title = getMessage("Stop_Music")
   override def getNormalFields(
@@ -252,15 +228,10 @@ object TintScreenUI extends EventCmdUI[TintScreen] {
             0, 10f, 0.1f, model.fadeDuration, model.fadeDuration = _)))
 }
 
-class WhileLoopCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: WhileLoop,
-  successF: (WhileLoop) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("While_Loop"), initial, successF) {
-
-  override def normalFields = Seq(
+object WhileLoopUI extends EventCmdUI[WhileLoop] {
+  override def title = getMessage("While_Loop")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: WhileLoop) = Seq(
     TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)))

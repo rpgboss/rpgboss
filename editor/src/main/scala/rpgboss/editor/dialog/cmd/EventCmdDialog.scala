@@ -60,8 +60,10 @@ object EventCmdDialog {
       PlaySoundUI,
       SetGlobalIntUI,
       ShowPictureUI,
+      StartBattleUI,
       StopMusicUI,
-      TintScreenUI)
+      TintScreenUI,
+      WhileLoopUI)
 
   def uiFor(cmd: EventCmd): EventCmdUI[_] = {
     for (ui <- eventCmdUis) {
@@ -95,10 +97,7 @@ object EventCmdDialog {
         new SetEventStateDialog(owner, sm, mapName, e, successF)
       case e: MoveEvent =>
         new MoveEventCmdDialog(owner, sm, mapName, e, successF)
-      case e: StartBattle =>
-        new StartBattleCmdDialog(owner, sm, e, successF)
       case e: RunJs => new RunJsCmdDialog(owner, e, successF)
-      case e: WhileLoop => new WhileLoopCmdDialog(owner, sm, e, successF)
       case e =>
         val ui = uiFor(evtCmd)
         ui.getDialog(owner, sm, evtCmd.asInstanceOf[ui.EventCmdType],
