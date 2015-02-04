@@ -175,7 +175,6 @@ object ResourceConstants {
     windowskin = "sys/LastPhantasmScanlines.png",
     msgfont = "sys/VeraMono.ttf",
     fontsize = 24,
-    extraFontCharacters = "",
 
     soundCursor =
       Some(SoundSpec("sys/rpgboss-menu/MenuCursor.mp3")),

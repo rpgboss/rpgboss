@@ -16,15 +16,18 @@ case class Msgfont(proj: Project, name: String,
   extends Resource[Msgfont, MsgfontMetadata] {
   def meta = Msgfont
 
-  def getBitmapFont(): BitmapFont = {
+  def getBitmapFont(distinctChars: String): BitmapFont = {
     val generator = new FreeTypeFontGenerator(getGdxFileHandle)
 
     val params = new FreeTypeFontGenerator.FreeTypeFontParameter
     params.size = proj.data.startup.fontsize
     params.flip = true
-    params.characters =
-      (FreeTypeFontGenerator.DEFAULT_CHARS +
-          proj.data.startup.extraFontCharacters).distinct
+
+    if (!distinctChars.isEmpty()) {
+      params.characters =
+        (FreeTypeFontGenerator.DEFAULT_CHARS + distinctChars).distinct
+    }
+
     val result = generator.generateFont(params)
 
     generator.dispose()
