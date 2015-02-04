@@ -12,6 +12,11 @@ import rpgboss.editor.Internationalized._
 import rpgboss.lib.ArrayUtils
 import rpgboss.editor.resourceselector._
 import rpgboss.editor.dialog.ConditionsPanel
+import rpgboss.model.ProjectData
+import rpgboss.editor.uibase.EventParameterField
+import rpgboss.editor.uibase.EventParameterField._
+import rpgboss.model.PictureSlots
+import rpgboss.player.RpgScreen
 
 class StartBattleCmdDialog(
   owner: Window,
@@ -57,26 +62,34 @@ class StartBattleCmdDialog(
   }
 }
 
-class AddRemoveGoldCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: AddRemoveGold,
-  successF: (AddRemoveGold) => Any)
-  extends EventCmdDialog(owner, sm, getMessage("Add_Remove_Item"), initial, successF) {
-
-  override def normalFields = Seq(
-    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
-  )
+object AddRemoveItemUI extends EventCmdUI[AddRemoveItem] {
+  override def title = getMessage("Add_Remove_Item")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: AddRemoveItem) = Seq(
+    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add,
+        model.add = _)))
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: AddRemoveItem) = List(
+    IntEnumIdField(getMessage("Item"), sm.getProjData.enums.items, model.itemId),
+    IntNumberField(getMessage("Quantity"), 1, 99, model.quantity))
 }
 
-class GetChoiceCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: GetChoice,
-  successF: (GetChoice) => Any)
-  extends EventCmdDialog(owner, sm, getMessage("Get_Choice"), initial, successF) {
+object AddRemoveGoldUI extends EventCmdUI[AddRemoveGold] {
+  override def title = getMessage("Add_Remove_Gold")
 
-  override def normalFields = Seq(
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: AddRemoveGold) = Seq(
+    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add,
+        model.add = _)))
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: AddRemoveGold) = List(
+    IntNumberField(getMessage("Quantity"), 1, 9999, model.quantity))
+}
+
+object GetChoiceUI extends EventCmdUI[GetChoice] {
+  override def title = getMessage("Get_Choice")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: GetChoice) = Seq(
     TitledComponent(getMessage("Question"),
         textAreaField(model.question, model.question = _)),
     TitledComponent("", new StringArrayEditingPanel(
@@ -91,14 +104,10 @@ class GetChoiceCmdDialog(
         model.allowCancel = _)))
 }
 
-class HealOrDamageCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: HealOrDamage,
-  successF: (HealOrDamage) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Heal_Damage"), initial, successF) {
-  override def normalFields = Seq(
+object HealOrDamageUI extends EventCmdUI[HealOrDamage] {
+  override def title = getMessage("Heal_Damage")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: HealOrDamage) = Seq(
     TitledComponent("", boolEnumHorizBox(
         HealOrDamageEnum, model.heal, model.heal = _)),
     TitledComponent("", boolField(
@@ -115,24 +124,18 @@ class HealOrDamageCmdDialog(
         model.mpPercentage = _)))
 }
 
+object HidePictureUI extends EventCmdUI[HidePicture] {
+  override def title = getMessage("Hide_Picture")
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: HidePicture) = List(
+    IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
+        PictureSlots.BATTLE_BEGIN - 1, model.slot))
+}
 
-class HidePictureCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: HidePicture,
-  successF: (HidePicture) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Hide_Picture"), initial, successF)
-
-class IfConditionCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: IfCondition,
-  successF: (IfCondition) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("IF_Condition"), initial, successF) {
-
-  override def normalFields = Seq(
+object IfConditionUI extends EventCmdUI[IfCondition] {
+  override def title = getMessage("IF_Condition")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: IfCondition) = Seq(
     TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)),
@@ -140,116 +143,113 @@ class IfConditionCmdDialog(
         model.elseBranch, model.elseBranch = _)))
 }
 
-class OpenStoreCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: OpenStore,
-  successF: (OpenStore) => Any)
-  extends EventCmdDialog(owner, sm, getMessage("Open_Store"), initial, successF)
+object OpenStoreUI extends EventCmdUI[OpenStore] {
+  override def title = getMessage("Open_Store")
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: OpenStore) = List(
+    IntMultiselectField(owner, getMessage("Items_Sold"),
+        sm.getProjData.enums.items, model.itemIdsSold),
+    FloatPercentField(getMessageColon("Buy_Price_Multiplier"), 0f, 4f,
+        model.buyPriceMultiplier),
+    FloatPercentField(getMessageColon("Sell_Price_Multiplier"), 0f, 4f,
+        model.sellPriceMultiplier))
+}
 
-class PlayMusicCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: PlayMusic,
-  successF: (PlayMusic) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Play_Music"), initial, successF) {
-  override def normalFields = Seq(
-      TitledComponent(
-          getMessage("Music"),
-          new MusicField(owner, sm, Some(model.spec), v => model.spec = v.get,
-              allowNone = false)),
-      TitledComponent(
-          "",
-          boolField(getMessage("Loop"), model.loop, model.loop = _)),
+object PlayMusicUI extends EventCmdUI[PlayMusic] {
+  override def title = getMessage("Play_Music")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: PlayMusic) = Seq(
+    TitledComponent(
+        getMessage("Music"),
+        new MusicField(owner, sm, Some(model.spec), v => model.spec = v.get,
+            allowNone = false)),
+    TitledComponent(
+        "",
+        boolField(getMessage("Loop"), model.loop, model.loop = _)),
+    TitledComponent(
+        getMessage("Fade_Duration"),
+        new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
+            model.fadeDuration = _)))
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: PlayMusic) = List(
+    IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
+        model.slot))
+}
+
+object PlaySoundUI extends EventCmdUI[PlaySound] {
+  override def title = getMessage("Play_Sound")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: PlaySound) = Seq(
+    TitledComponent(
+        getMessage("Sound"),
+        new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
+            allowNone = false)))
+}
+
+object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
+  override def title = getMessage("Set_Global_Integer")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: SetGlobalInt) = Seq(
+    TitledComponent(
+        getMessage("Global_Variable_Name"),
+        textField(model.key, model.key = _)),
+    TitledComponent(
+        getMessage("Operation"),
+        enumVerticalBox(
+            OperatorType, model.operatorId, model.operatorId = _)))
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: SetGlobalInt) = List(
+    IntNumberField(getMessage("Value") + " 1", -9999, 9999, model.value1),
+    IntNumberField(getMessage("Value") + " 2", -9999, 9999, model.value2))
+}
+
+object ShowPictureUI extends EventCmdUI[ShowPicture] {
+  override def title = getMessage("Show_Picture")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: ShowPicture) = Seq(
+    TitledComponent(
+        getMessage("Picture"),
+        new PictureField(owner, sm, model.picture, model.picture = _)),
+    TitledComponent(
+        getMessage("Layout"),
+        new LayoutEditingPanel(model.layout)))
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: ShowPicture) = List(
+    IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
+        PictureSlots.BATTLE_BEGIN - 1, model.slot))
+}
+
+object StopMusicUI extends EventCmdUI[StopMusic] {
+  override def title = getMessage("Stop_Music")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: StopMusic) = Seq(
       TitledComponent(
           getMessage("Fade_Duration"),
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
               model.fadeDuration = _)))
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, model: StopMusic) = List(
+    IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
+        model.slot))
 }
 
-class PlaySoundCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: PlaySound,
-  successF: (PlaySound) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Play_Sound"), initial, successF) {
-  override def normalFields = Seq(
-      TitledComponent(
-          getMessage("Sound"),
-          new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
-              allowNone = false)))
-}
-
-class SetGlobalIntDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: SetGlobalInt,
-  successF: (SetGlobalInt) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Set_Global_Integer"), initial, successF) {
-  override def normalFields = Seq(
-      TitledComponent(
-          getMessage("Global_Variable_Name"),
-          textField(model.key, model.key = _)),
-      TitledComponent(
-          getMessage("Operation"),
-          enumVerticalBox(
-              OperatorType, model.operatorId, model.operatorId = _)))
-}
-
-class ShowPictureCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: ShowPicture,
-  successF: (ShowPicture) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Show_Picture"), initial, successF) {
-  override def normalFields = Seq(
-      TitledComponent(
-          getMessage("Picture"),
-          new PictureField(owner, sm, model.picture, model.picture = _)),
-      TitledComponent(
-          getMessage("Layout"),
-          new LayoutEditingPanel(model.layout)))
-}
-
-class StopMusicCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: StopMusic,
-  successF: (StopMusic) => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Stop_Music"), initial, successF) {
-  override def normalFields = Seq(
-      TitledComponent(
-          getMessage("Fade_Duration"),
-          new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
-              model.fadeDuration = _)))
-}
-
-class TintScreenCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: TintScreen,
-  successF: TintScreen => Any)
-  extends EventCmdDialog(
-      owner, sm, getMessage("Tint_Screen"), initial, successF) {
-  override def normalFields = Seq(
-      TitledComponent(
-          getMessageColon("Color_And_Alpha"),
-          colorField(
-              (initial.r, initial.g, initial.b, initial.a),
-              (r, g, b, a) => {
-                model.r = r
-                model.g = g
-                model.b = b
-                model.a = a
-              })),
-      TitledComponent(getMessageColon("Fade_Duration"),
-          new FloatSpinner(
-              0, 10f, 0.1f, model.fadeDuration, model.fadeDuration = _)))
+object TintScreenUI extends EventCmdUI[TintScreen] {
+  override def title = getMessage("Tint_Screen")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, model: TintScreen) = Seq(
+    TitledComponent(
+        getMessageColon("Color_And_Alpha"),
+        colorField(
+            (model.r, model.g, model.b, model.a),
+            (r, g, b, a) => {
+              model.r = r
+              model.g = g
+              model.b = b
+              model.a = a
+            })),
+    TitledComponent(getMessageColon("Fade_Duration"),
+        new FloatSpinner(
+            0, 10f, 0.1f, model.fadeDuration, model.fadeDuration = _)))
 }
 
 class WhileLoopCmdDialog(
