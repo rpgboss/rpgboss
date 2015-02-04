@@ -20,7 +20,7 @@ object HasName {
  * This means that the center of the tiles are actually at 0.5 intervals.
  */
 case class MapLoc(
-  map: String = "",
+  var map: String = "",
   var x: Float = 0f,
   var y: Float = 0f)
 
@@ -44,6 +44,11 @@ object Scope extends RpgEnum {
   val AllAlliesDead = Value("All_Dead_Allies")
 
   def default = OneAlly
+}
+
+object MetadataMode extends Enumeration {
+  type MetadataMode = Value
+  val Passability, Height = Value
 }
 
 object AddOrRemove extends BooleanRpgEnum {

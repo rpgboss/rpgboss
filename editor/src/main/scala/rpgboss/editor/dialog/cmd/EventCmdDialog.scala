@@ -60,10 +60,14 @@ object EventCmdDialog {
       OpenStoreUI,
       PlayMusicUI,
       PlaySoundUI,
+      RunJsUI,
+      SetEventStateUI,
       SetGlobalIntUI,
       ShowPictureUI,
+      ShowTextUI,
       StartBattleUI,
       StopMusicUI,
+      TeleportUI,
       TintScreenUI,
       WhileLoopUI)
 
@@ -77,13 +81,6 @@ object EventCmdDialog {
 
   /**
    * This function gets a dialog for the given EventCmd
-   *
-   * One may argue here that it's not object oriented to case match through
-   * all the possible types searching for the right dialog, and that we should
-   * use polymorphism.
-   *
-   * I generally agree, but feel that adding UI details to the model is
-   * more disgusting than this hack.
    */
   def dialogFor(
     owner: Window,
@@ -91,18 +88,10 @@ object EventCmdDialog {
     mapName: Option[String],
     evtCmd: EventCmd,
     successF: EventCmd => Any): Dialog = {
-    evtCmd match {
-      case e: ShowText => new ShowTextCmdDialog(owner, sm, e, successF)
-      case e: Teleport => new TeleportCmdDialog(owner, sm, e, successF)
-      case e: SetEventState =>
-        new SetEventStateDialog(owner, sm, mapName, e, successF)
-      case e: RunJs => new RunJsCmdDialog(owner, e, successF)
-      case e =>
-        val ui = uiFor(evtCmd)
-        ui.getDialog(owner, sm, mapName,
-            evtCmd.asInstanceOf[ui.EventCmdType],
-            successF.asInstanceOf[ui.EventCmdType => Any])
-    }
+    val ui = uiFor(evtCmd)
+    ui.getDialog(owner, sm, mapName,
+        evtCmd.asInstanceOf[ui.EventCmdType],
+        successF.asInstanceOf[ui.EventCmdType => Any])
   }
 }
 

@@ -290,7 +290,7 @@ case class PlayMusic(
   override def getParameters() = List(slot)
 }
 
-case class RunJs(scriptBody: String = "") extends EventCmd {
+case class RunJs(var scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
 }
 
@@ -382,7 +382,7 @@ case class StopMusic(
   override def getParameters() = List(slot)
 }
 
-case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
+case class Teleport(loc: MapLoc, var transitionId: Int) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }

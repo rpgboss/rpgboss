@@ -17,6 +17,13 @@ import rpgboss.editor.uibase.EventParameterField
 import rpgboss.editor.uibase.EventParameterField._
 import rpgboss.model.PictureSlots
 import rpgboss.player.RpgScreen
+import rpgboss.model.Transitions
+import rpgboss.editor.misc.MapLocPanel
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
+import org.fife.ui.rtextarea.RTextScrollPane
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants
+import javax.swing.event.DocumentListener
+import javax.swing.event.DocumentEvent
 
 object AddRemoveItemUI extends EventCmdUI[AddRemoveItem] {
   override def title = getMessage("Add_Remove_Item")
@@ -161,12 +168,45 @@ object PlayMusicUI extends EventCmdUI[PlayMusic] {
 
 object PlaySoundUI extends EventCmdUI[PlaySound] {
   override def title = getMessage("Play_Sound")
-  override def getNormalFields(
-      owner: Window, sm: StateMaster, mapName: Option[String], model: PlaySound) = Seq(
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: PlaySound) = Seq(
     TitledComponent(
         getMessage("Sound"),
         new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
             allowNone = false)))
+}
+
+object RunJsUI extends EventCmdUI[RunJs] {
+  override def title = getMessage("Run_Javascript")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: RunJs) = Seq(
+    TitledComponent("", {
+      val textArea = new RSyntaxTextArea(20, 60)
+      textArea.setText(model.scriptBody)
+      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT)
+      textArea.setCodeFoldingEnabled(true)
+
+      textArea.getDocument().addDocumentListener(new DocumentListener {
+        override def changedUpdate(e: DocumentEvent) = Unit
+        override def insertUpdate(e: DocumentEvent) =
+          model.scriptBody = textArea.getText()
+        override def removeUpdate(e: DocumentEvent) =
+          model.scriptBody = textArea.getText()
+      })
+
+      val scrollPane = new RTextScrollPane(textArea)
+      Component.wrap(scrollPane)
+    }))
+}
+
+object SetEventStateUI extends EventCmdUI[SetEventState] {
+  override def title = getMessage("Set_Event_State")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: SetEventState) = Seq(
+    TitledComponent("", new EntitySelectPanel(owner, sm, mapName,
+        model.entitySpec, allowPlayer = false, allowEventOnOtherMap = true)),
+    TitledComponent(getMessage("New_State"),
+        new NumberSpinner(0, 127, model.state, model.state = _)))
 }
 
 object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
@@ -188,8 +228,8 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
 
 object ShowPictureUI extends EventCmdUI[ShowPicture] {
   override def title = getMessage("Show_Picture")
-  override def getNormalFields(
-      owner: Window, sm: StateMaster, mapName: Option[String], model: ShowPicture) = Seq(
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: ShowPicture) = Seq(
     TitledComponent(
         getMessage("Picture"),
         new PictureField(owner, sm, model.picture, model.picture = _)),
@@ -200,6 +240,14 @@ object ShowPictureUI extends EventCmdUI[ShowPicture] {
       owner: Window, sm: StateMaster, mapName: Option[String], model: ShowPicture) = List(
     IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
         PictureSlots.BATTLE_BEGIN - 1, model.slot))
+}
+
+object ShowTextUI extends EventCmdUI[ShowText] {
+  override def title = getMessage("Show_Text")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: ShowText) = Seq(
+    TitledComponent(getMessage("Text"),
+        textAreaField(model.lines, model.lines = _)))
 }
 
 object StartBattleUI extends EventCmdUI[StartBattle] {
@@ -224,16 +272,26 @@ object StartBattleUI extends EventCmdUI[StartBattle] {
 
 object StopMusicUI extends EventCmdUI[StopMusic] {
   override def title = getMessage("Stop_Music")
-  override def getNormalFields(
-      owner: Window, sm: StateMaster, mapName: Option[String], model: StopMusic) = Seq(
-      TitledComponent(
-          getMessage("Fade_Duration"),
-          new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
-              model.fadeDuration = _)))
-  override def getParameterFields(
-      owner: Window, sm: StateMaster, mapName: Option[String], model: StopMusic) = List(
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: StopMusic) = Seq(
+    TitledComponent(
+        getMessage("Fade_Duration"),
+        new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
+            model.fadeDuration = _)))
+  override def getParameterFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: StopMusic) = List(
     IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
         model.slot))
+}
+
+object TeleportUI extends EventCmdUI[Teleport] {
+  override def title = getMessage("Teleport_Player")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: Teleport) = Seq(
+    TitledComponent(getMessage("Transition"), enumVerticalBox(Transitions,
+        model.transitionId, model.transitionId = _)),
+    TitledComponent(getMessage("Destination"),
+        new MapLocPanel(owner, sm, model.loc, false)))
 }
 
 object TintScreenUI extends EventCmdUI[TintScreen] {
