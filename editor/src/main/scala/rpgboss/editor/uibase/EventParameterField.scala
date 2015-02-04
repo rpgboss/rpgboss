@@ -11,6 +11,7 @@ import rpgboss.model.ProjectData
 import rpgboss.model.event._
 import rpgboss.editor.Internationalized._
 import rpgboss.player.RpgScreen
+import rpgboss.editor.dialog.cmd.EventCmdDialog
 
 /**
  * The name of the field and a component for editing the constant value.
@@ -69,9 +70,6 @@ object EventParameterField {
   def getParameterFields(
       owner: Window, pData: ProjectData, cmd: EventCmd):
       Seq[EventParameterField[_]] = cmd match {
-    case c: AddRemoveItem => List(
-        IntEnumIdField(getMessage("Item"), pData.enums.items, c.itemId),
-        IntNumberField(getMessage("Quantity"), 1, 99, c.quantity))
     case c: AddRemoveGold => List(
         IntNumberField(getMessage("Quantity"), 1, 9999, c.quantity))
     case c: HidePicture => List(
@@ -96,6 +94,11 @@ object EventParameterField {
     case c: StopMusic => List(
         IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
             c.slot))
-    case _ => Nil
+    case c =>
+      val ui = EventCmdDialog.uiFor(c)
+      if (ui == null)
+        Nil
+      else
+        ui.getParameterFields(owner, pData, c.asInstanceOf[ui.EventCmdType])
   }
 }

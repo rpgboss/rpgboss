@@ -57,18 +57,6 @@ class StartBattleCmdDialog(
   }
 }
 
-class AddRemoveItemCmdDialog(
-  owner: Window,
-  sm: StateMaster,
-  initial: AddRemoveItem,
-  successF: (AddRemoveItem) => Any)
-  extends EventCmdDialog(owner, sm, getMessage("Add_Remove_Item"), initial, successF) {
-
-  override def extraFields = Seq(
-    TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
-  )
-}
-
 class AddRemoveGoldCmdDialog(
   owner: Window,
   sm: StateMaster,
@@ -76,7 +64,7 @@ class AddRemoveGoldCmdDialog(
   successF: (AddRemoveGold) => Any)
   extends EventCmdDialog(owner, sm, getMessage("Add_Remove_Item"), initial, successF) {
 
-  override def extraFields = Seq(
+  override def normalFields = Seq(
     TitledComponent("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _))
   )
 }
@@ -88,7 +76,7 @@ class GetChoiceCmdDialog(
   successF: (GetChoice) => Any)
   extends EventCmdDialog(owner, sm, getMessage("Get_Choice"), initial, successF) {
 
-  override def extraFields = Seq(
+  override def normalFields = Seq(
     TitledComponent(getMessage("Question"),
         textAreaField(model.question, model.question = _)),
     TitledComponent("", new StringArrayEditingPanel(
@@ -110,7 +98,7 @@ class HealOrDamageCmdDialog(
   successF: (HealOrDamage) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Heal_Damage"), initial, successF) {
-  override def extraFields = Seq(
+  override def normalFields = Seq(
     TitledComponent("", boolEnumHorizBox(
         HealOrDamageEnum, model.heal, model.heal = _)),
     TitledComponent("", boolField(
@@ -144,7 +132,7 @@ class IfConditionCmdDialog(
   extends EventCmdDialog(
       owner, sm, getMessage("IF_Condition"), initial, successF) {
 
-  override def extraFields = Seq(
+  override def normalFields = Seq(
     TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)),
@@ -166,7 +154,7 @@ class PlayMusicCmdDialog(
   successF: (PlayMusic) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Play_Music"), initial, successF) {
-  override def extraFields = Seq(
+  override def normalFields = Seq(
       TitledComponent(
           getMessage("Music"),
           new MusicField(owner, sm, Some(model.spec), v => model.spec = v.get,
@@ -187,7 +175,7 @@ class PlaySoundCmdDialog(
   successF: (PlaySound) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Play_Sound"), initial, successF) {
-  override def extraFields = Seq(
+  override def normalFields = Seq(
       TitledComponent(
           getMessage("Sound"),
           new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
@@ -201,7 +189,7 @@ class SetGlobalIntDialog(
   successF: (SetGlobalInt) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Set_Global_Integer"), initial, successF) {
-  override def extraFields = Seq(
+  override def normalFields = Seq(
       TitledComponent(
           getMessage("Global_Variable_Name"),
           textField(model.key, model.key = _)),
@@ -218,7 +206,7 @@ class ShowPictureCmdDialog(
   successF: (ShowPicture) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Show_Picture"), initial, successF) {
-  override def extraFields = Seq(
+  override def normalFields = Seq(
       TitledComponent(
           getMessage("Picture"),
           new PictureField(owner, sm, model.picture, model.picture = _)),
@@ -234,7 +222,7 @@ class StopMusicCmdDialog(
   successF: (StopMusic) => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Stop_Music"), initial, successF) {
-  override def extraFields = Seq(
+  override def normalFields = Seq(
       TitledComponent(
           getMessage("Fade_Duration"),
           new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
@@ -248,7 +236,7 @@ class TintScreenCmdDialog(
   successF: TintScreen => Any)
   extends EventCmdDialog(
       owner, sm, getMessage("Tint_Screen"), initial, successF) {
-  override def extraFields = Seq(
+  override def normalFields = Seq(
       TitledComponent(
           getMessageColon("Color_And_Alpha"),
           colorField(
@@ -272,7 +260,7 @@ class WhileLoopCmdDialog(
   extends EventCmdDialog(
       owner, sm, getMessage("While_Loop"), initial, successF) {
 
-  override def extraFields = Seq(
+  override def normalFields = Seq(
     TitledComponent(getMessage("Conditions"),
         new ConditionsPanel(owner, sm.getProjData, model.conditions,
             model.conditions = _)))
