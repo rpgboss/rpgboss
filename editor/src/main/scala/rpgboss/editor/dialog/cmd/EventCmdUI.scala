@@ -84,6 +84,7 @@ import rpgboss.model.event.TintScreen
 import rpgboss.model.event.WhileLoop
 import rpgboss.player.RpgScreen
 
+
 case class EventField(title: String, component: Component)
 
 object EventCmdUI {
@@ -221,16 +222,16 @@ object HealOrDamageUI extends EventCmdUI[HealOrDamage] {
     EventField("", boolEnumHorizBox(
         HealOrDamageEnum, model.heal, model.heal = _)),
     EventField("", boolField(
-        needsTranslation("Whole party"), model.wholeParty, model.wholeParty = _)),
+        getMessage("Whole_Party"), model.wholeParty, model.wholeParty = _)),
     EventField("", boolField(
-        needsTranslation("Cure status effects (heal only)"),
+        getMessage("Cure_Status_Effects"),
         model.removeStatusEffects, model.removeStatusEffects = _)),
-    EventField("Character", indexedCombo(
+    EventField(getMessage("Character"), indexedCombo(
         sm.getProjData.enums.characters, model.characterId,
         model.characterId = _)),
-    EventField("HP Percentage", percentField(0.01f, 1, model.hpPercentage,
+    EventField(getMessage("HP_Percentage"), percentField(0.01f, 1, model.hpPercentage,
         model.hpPercentage = _)),
-    EventField("MP Percentage", percentField(0.01f, 1, model.mpPercentage,
+    EventField(getMessage("MP_Percentage"), percentField(0.01f, 1, model.mpPercentage,
         model.mpPercentage = _)))
 }
 

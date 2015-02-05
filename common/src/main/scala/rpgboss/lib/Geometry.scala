@@ -35,10 +35,10 @@ object SizeType extends RpgEnum {
   implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
 
   val Fixed = Val(0, "Fixed", true)
-  val ScaleSource = Val(1, "Scale source", true)
-  val ProportionalToScreen = Val(2, "Proportional to Screen", true)
-  val Cover = Val(3, "Cover screen", false)
-  val Contain = Val(4, "Contain in screen", false)
+  val ScaleSource = Val(1, "Scale_Source", true)
+  val ProportionalToScreen = Val(2, "Proportional_To_Screen", true)
+  val Cover = Val(3, "Cover_Screen", false)
+  val Contain = Val(4, "Contain_In_Screen", false)
 
   def default = Fixed
 }

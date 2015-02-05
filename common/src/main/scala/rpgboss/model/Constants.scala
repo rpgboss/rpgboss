@@ -46,7 +46,7 @@ object PictureSlots {
 
 object Transitions extends RpgEnum {
   val NONE = Value(0, "None")
-  val FADE = Value(1, "Fade out")
+  val FADE = Value(1, "Fade_Out")
 
   def default = FADE
 
