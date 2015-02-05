@@ -11,7 +11,7 @@ import rpgboss.model.ProjectData
 import rpgboss.model.event._
 import rpgboss.editor.Internationalized._
 import rpgboss.player.RpgScreen
-import rpgboss.editor.dialog.cmd.EventCmdDialog
+import rpgboss.editor.dialog.cmd.EventCmdUI
 import rpgboss.editor.StateMaster
 
 /**
@@ -71,7 +71,7 @@ object EventParameterField {
   def getParameterFields(
       owner: Window, sm: StateMaster, cmd: EventCmd):
       Seq[EventParameterField[_]] = {
-    val ui = EventCmdDialog.uiFor(cmd)
+    val ui = EventCmdUI.uiFor(cmd)
     if (ui == null)
       Nil
     else

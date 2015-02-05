@@ -69,7 +69,7 @@ class NewEventCmdBox(
           for (i <- startI until startI + 4; if i < nCategories) {
             val category = EventCmdCategory(i)
             val cmdUisInCategory =
-              EventCmdDialog.eventCmdUis.filter(_.category == category)
+              EventCmdUI.eventCmdUis.filter(_.category == category)
 
             row().grid().add(leftLabel(getMessageColon(category.toString)))
             for (cmdUi <- cmdUisInCategory) {
