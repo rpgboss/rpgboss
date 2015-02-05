@@ -68,6 +68,7 @@ object EventCmd {
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetLocalInt],
+    classOf[SetWindowskin],
     classOf[ShowText],
     classOf[ShowPicture],
     classOf[StartBattle],
@@ -334,6 +335,10 @@ case class SetLocalInt(variableName: String,
                        value: EventParameter[_]) extends EventCmd {
   def sections = Array(PlainLines(
       Array("var %s = %s;".format(variableName, value.rawJs.exp))))
+}
+
+case class SetWindowskin(var windowskinPath: String = "") extends EventCmd {
+  def sections = singleCall("game.setWindowskin", windowskinPath)
 }
 
 case class ShowText(var lines: Array[String] = Array()) extends EventCmd {

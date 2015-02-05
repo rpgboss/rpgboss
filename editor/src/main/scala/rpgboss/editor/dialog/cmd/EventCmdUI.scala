@@ -30,6 +30,7 @@ import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.editor.resourceselector.MusicField
 import rpgboss.editor.resourceselector.PictureField
 import rpgboss.editor.resourceselector.SoundField
+import rpgboss.editor.resourceselector.WindowskinField
 import rpgboss.editor.uibase.EntitySelectPanel
 import rpgboss.editor.uibase.EventParameterField
 import rpgboss.editor.uibase.EventParameterField.FloatPercentField
@@ -73,6 +74,7 @@ import rpgboss.model.event.PlaySound
 import rpgboss.model.event.RunJs
 import rpgboss.model.event.SetEventState
 import rpgboss.model.event.SetGlobalInt
+import rpgboss.model.event.SetWindowskin
 import rpgboss.model.event.ShowPicture
 import rpgboss.model.event.ShowText
 import rpgboss.model.event.StartBattle
@@ -102,6 +104,7 @@ object EventCmdUI {
       RunJsUI,
       SetEventStateUI,
       SetGlobalIntUI,
+      SetWindowskinUI,
       ShowPictureUI,
       ShowTextUI,
       StartBattleUI,
@@ -383,6 +386,15 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
       owner: Window, sm: StateMaster, mapName: Option[String], model: SetGlobalInt) = List(
     IntNumberField(getMessage("Value") + " 1", -9999, 9999, model.value1),
     IntNumberField(getMessage("Value") + " 2", -9999, 9999, model.value2))
+}
+
+object SetWindowskinUI extends EventCmdUI[SetWindowskin] {
+  override def category = Windows
+  override def title = needsTranslation("Set Windowskin")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: SetWindowskin) = Seq(
+    EventField(getMessage("Windowskin"), new WindowskinField(
+        owner, sm, model.windowskinPath, model.windowskinPath = _)))
 }
 
 object ShowPictureUI extends EventCmdUI[ShowPicture] {
