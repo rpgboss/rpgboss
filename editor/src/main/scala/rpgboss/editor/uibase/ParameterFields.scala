@@ -141,10 +141,9 @@ class ParameterFullComponent[T](
 object ParameterFullComponent {
   def addParameterFullComponentsToPanel(
       owner: Window,
-      pData: ProjectData,
       panel: DesignGridPanel,
-      cmd: EventCmd) = {
-    for (field <- EventParameterField.getParameterFields(owner, pData, cmd)) {
+      parameterFields: Seq[EventParameterField[_]]) = {
+    for (field <- parameterFields) {
       val fullComponent = new ParameterFullComponent(owner, field)
       panel.row().grid((new Label(field.name)).peer).add(fullComponent.peer)
     }

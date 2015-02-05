@@ -13,7 +13,7 @@ import javax.swing.UIManager
 import javax.swing.BorderFactory
 import java.awt.Font
 import scala.collection.mutable.ArrayBuffer
-import rpgboss.editor.Internationalized._ 
+import rpgboss.editor.Internationalized._
 
 object EventCmdPanel {
   val textFont = new Font("Monospaced", Font.BOLD, 14)
@@ -200,12 +200,14 @@ class CommandBox(
     assert(index >= 0)
     assert(index < model.length)
     val selectedCmd = model(index)
-    val d = EventCmdDialog.dialogFor(owner, sm, eventLoc.map(_.map),
+    val dOpt = EventCmdDialog.dialogFor(owner, sm, eventLoc.map(_.map),
         selectedCmd, newEvt => updateCmd(index, newEvt))
-    if (d != null)
+    dOpt.map { d =>
       d.open()
-    else
-      Dialog.showMessage(this, getMessage("Nothing_To_Edit"), getMessage("Info"))
+    } getOrElse {
+      Dialog.showMessage(this, getMessage("Nothing_To_Edit"),
+          getMessage("Info"))
+    }
   }
 
   def insertCmd(idx: Int, cmd: EventCmd) = {

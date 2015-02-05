@@ -129,6 +129,16 @@ case class RpgMapData(botLayer: Array[Array[Byte]],
          topLayer = topLayer.map(_.clone()),
          events = eventsCopy)
   }
+
+  lazy val distinctChars = {
+    val set = new DistinctCharacterSet
+
+    for ((_, event) <- events; state <- event.states) {
+      set ++= state.distinctChars
+    }
+
+    set
+  }
 }
 
 case class RpgMapDataEventsIntermediate(events: Array[RpgEvent])

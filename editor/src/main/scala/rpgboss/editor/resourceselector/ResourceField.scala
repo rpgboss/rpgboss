@@ -137,11 +137,12 @@ class MapLocSelectDialog(
   onSuccessF: MapLoc => Unit)
   extends StdDialog(owner, "Select Map")
   with LazyLogging {
+  val model = initialLoc.copy()
 
-  val locPanel = new MapLocPanel(this, sm, initialLoc, selectMapOnly)
+  val locPanel = new MapLocPanel(this, sm, model, selectMapOnly)
 
   def okFunc(): Unit = {
-    onSuccessF(locPanel.loc)
+    onSuccessF(model)
     close()
   }
 

@@ -50,6 +50,7 @@ object EventCmd {
   }
 
   val hints = ShortTypeHints(List(
+    classOf[Sleep],
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[BreakLoop],
@@ -68,6 +69,7 @@ object EventCmd {
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetLocalInt],
+    classOf[SetWindowskin],
     classOf[ShowText],
     classOf[ShowPicture],
     classOf[StartBattle],
@@ -238,7 +240,7 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
   }
 }
 
-case class ModifyParty(add: Boolean = true, characterId: Int = 0)
+case class ModifyParty(var add: Boolean = true, var characterId: Int = 0)
   extends EventCmd {
   def sections = singleCall("game.modifyParty", add, characterId)
 }
@@ -290,7 +292,7 @@ case class PlayMusic(
   override def getParameters() = List(slot)
 }
 
-case class RunJs(scriptBody: String = "") extends EventCmd {
+case class RunJs(var scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
 }
 
@@ -336,29 +338,21 @@ case class SetLocalInt(variableName: String,
       Array("var %s = %s;".format(variableName, value.rawJs.exp))))
 }
 
-case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
-  def processedLines = lines.map { l =>
-    // The local variables need to be processed here rather than in the
-    // WindowText class, because only the Javascript has access to the local
-    // variables.
-    val l1 = EventJavascript.toJs(l)
-    val l2 = WindowText.javascriptCtrl.replaceAllIn(
-        l1, rMatch => {
-          """" + %s + """".format(rMatch.group(1))
-        })
+case class SetWindowskin(var windowskinPath: String = "") extends EventCmd {
+  def sections = singleCall("game.setWindowskin", windowskinPath)
+}
 
-    RawJs(l2)
-  }
-
-  def sections = singleCall("game.showText", processedLines)
+case class Sleep(var duration: Float = 0) extends EventCmd {
+  def sections = singleCall("game.sleep", duration)
 }
 
 case class ShowPicture(
     slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
     var picture: String = "",
-    layout: Layout = Layout.defaultForPictures) extends EventCmd {
+    layout: Layout = Layout.defaultForPictures,
+    var alpha:Float = 1) extends EventCmd {
   def sections =
-    singleCall("game.showPicture", slot, picture, layout.toJs())
+    singleCall("game.showPicture", slot, picture, layout.toJs(), alpha)
   override def getParameters() = List(slot)
 }
 
@@ -382,7 +376,8 @@ case class StopMusic(
   override def getParameters() = List(slot)
 }
 
-case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
+case class Teleport(loc: MapLoc = MapLoc(),
+    var transitionId: Int = Transitions.FADE.id) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }
@@ -417,4 +412,21 @@ case class WhileLoop(
     assert(commandListI == 0)
     copy(innerCmds = newInnerCmds)
   }
+}
+
+case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
+  def processedLines = lines.map { l =>
+    // The local variables need to be processed here rather than in the
+    // WindowText class, because only the Javascript has access to the local
+    // variables.
+    val l1 = EventJavascript.toJs(l)
+    val l2 = WindowText.javascriptCtrl.replaceAllIn(
+        l1, rMatch => {
+          """" + %s + """".format(rMatch.group(1))
+        })
+
+    RawJs(l2)
+  }
+
+  def sections = singleCall("game.showText", processedLines)
 }

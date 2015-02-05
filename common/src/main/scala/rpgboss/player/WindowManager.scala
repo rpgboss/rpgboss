@@ -1,22 +1,28 @@
 package rpgboss.player
 
-import com.badlogic.gdx.ApplicationListener
-import com.badlogic.gdx.utils.Logger
-import com.badlogic.gdx.graphics._
+import scala.collection.mutable.MutableList
+
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d._
-import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import rpgboss.model._
-import rpgboss.model.Constants._
-import rpgboss.model.resource._
-import rpgboss.player.entity._
-import rpgboss.lib.ThreadChecked
-import rpgboss.lib.Rect
-import rpgboss.lib.Layout
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
-import scala.collection.mutable.MutableList
+import rpgboss.lib.Layout
+import rpgboss.lib.ThreadChecked
+import rpgboss.model.PictureSlots
+import rpgboss.model.Project
+import rpgboss.model.resource.ImageResource
+import rpgboss.model.resource.Msgfont
+import rpgboss.model.resource.Picture
+import rpgboss.model.resource.RpgAssetManager
+import rpgboss.model.resource.Windowskin
+import rpgboss.player.entity.Window
 
 /**
  * This class renders stuff on the screen.
@@ -56,15 +62,23 @@ class WindowManager(
     }
   }
 
-  val windowskin =
-    Windowskin.readFromDisk(project, project.data.startup.windowskin)
-  val windowskinTexture = new Texture(windowskin.getGdxFileHandle)
-  val windowskinRegion = new TextureRegion(windowskinTexture)
+  var windowskin: Windowskin = null
+  var windowskinTexture: Texture = null
 
   val font = Msgfont.readFromDisk(project, project.data.startup.msgfont)
-  var fontbmp: BitmapFont = font.getBitmapFont()
 
-  val pictures = Array.fill[Option[PictureLike]](64)(None)
+  def fontbmp = {
+    if (_fontbmp == null)
+      updateBitmapFont("")
+    _fontbmp
+  }
+
+  var _fontbmp: BitmapFont = null
+  def updateBitmapFont(distinctChars: String) = {
+    _fontbmp = font.getBitmapFont(distinctChars)
+  }
+
+  val pictures = Array.fill[Option[PictureLike]](164)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
   def setTransition(endAlpha: Float, duration: Float) = {
@@ -87,6 +101,15 @@ class WindowManager(
   }
 
   def inTransition = !transitionTweener.done
+
+  def setWindowskin(windowskinPath: String) = {
+    if (windowskinTexture != null)
+      windowskinTexture.dispose()
+
+    windowskin = Windowskin.readFromDisk(project, windowskinPath)
+    windowskinTexture = new Texture(windowskin.getGdxFileHandle)
+  }
+  setWindowskin(project.data.startup.windowskin)
 
   // TODO: Investigate if a more advanced z-ordering is needed other than just
   // putting the last-created one on top.
@@ -256,6 +279,7 @@ class WindowManager(
     for (pictureOpt <- pictures; picture <- pictureOpt) {
       picture.dispose()
     }
+    windowskinTexture.dispose()
   }
 }
 

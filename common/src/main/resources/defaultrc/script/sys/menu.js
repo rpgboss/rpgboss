@@ -27,6 +27,7 @@ function itemsMenu() {
         return itemsLeft >= -1;
       });
       statusMenu.close();
+      return true;
     });
 
     itemsTopWin.window.takeFocus();

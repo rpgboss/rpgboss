@@ -50,8 +50,7 @@ class EventInstanceDialog(
 
       for (state <- eventClass.states;
            cmd <- state.cmds;
-           field <- EventParameterField.getParameterFields(
-               owner, sm.getProjData, cmd);
+           field <- EventParameterField.getParameterFields(owner, sm, cmd);
            if field.model.valueTypeId ==
              EventParameterValueType.LocalVariable.id) {
         val (paramCopy, component) = field.getModelCopyComponent()

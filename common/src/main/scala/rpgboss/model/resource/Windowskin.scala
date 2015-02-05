@@ -7,6 +7,7 @@ import rpgboss.lib.FileHelper._
 import java.awt.image.BufferedImage
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.Texture
 
 case class WindowskinMetadata()
 
@@ -28,7 +29,7 @@ case class Windowskin(proj: Project, name: String,
    */
   def draw(
     batch: SpriteBatch,
-    region: TextureRegion,
+    texture: Texture,
     x: Float, y: Float,
     w: Float, h: Float,
     bordersOnly: Boolean = false) = {
@@ -45,11 +46,9 @@ case class Windowskin(proj: Project, name: String,
       srcX: Int, srcY: Int, srcW: Int, srcH: Int,
       dstX: Float, dstY: Float, dstW: Float, dstH: Float) = {
       batch.draw(
-        region.getTexture(),
+        texture,
         x + dstX, y + dstY, dstW, dstH,
-        region.getRegionX() + srcX,
-        region.getRegionY() + srcY,
-        srcW, srcH,
+        srcX, srcY, srcW, srcH,
         false, true)
     }
 
@@ -107,32 +106,32 @@ case class Windowskin(proj: Project, name: String,
    */
   private def drawBlock(
     batch: SpriteBatch,
-    region: TextureRegion,
+    texture: Texture,
     dstX: Float, dstY: Float,
     dstW: Float, dstH: Float,
     blockSize: Int,
     srcXBlock: Int, srcYBlock: Int) = {
     batch.draw(
-      region.getTexture(),
+      texture,
       dstX, dstY,
       dstW, dstH,
-      region.getRegionX() + srcXBlock * blockSize,
-      region.getRegionY() + srcYBlock * blockSize,
+      srcXBlock * blockSize,
+      srcYBlock * blockSize,
       blockSize, blockSize,
       false, true)
   }
 
   def drawCursor(
     batch: SpriteBatch,
-    region: TextureRegion,
+    texture: Texture,
     dstX: Float, dstY: Float) =
-    drawBlock(batch, region, dstX, dstY, 32f, 32f, 32, 2, 3)
+    drawBlock(batch, texture, dstX, dstY, 32f, 32f, 32, 2, 3)
 
   def drawArrow(
     batch: SpriteBatch,
-    region: TextureRegion,
+    texture: Texture,
     dstX: Float, dstY: Float) =
-    drawBlock(batch, region, dstX, dstY, 16f, 16f, 16, 6, 4)
+    drawBlock(batch, texture, dstX, dstY, 16f, 16f, 16, 6, 4)
 }
 
 object Windowskin extends MetaResource[Windowskin, WindowskinMetadata] {

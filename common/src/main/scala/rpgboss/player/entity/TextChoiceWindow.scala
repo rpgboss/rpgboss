@@ -193,7 +193,7 @@ class TextChoiceWindow(
           ((curChoice * linesPerChoice) / columns) - (scrollTopLine)
         val cursorTop =
           rect.top + ypad + yRowOffset * options.lineHeight - 8
-        skin.drawCursor(b, skinRegion, cursorLeft, cursorTop)
+        skin.drawCursor(b, skinTexture, cursorLeft, cursorTop)
       }
 
       if (displayedLines != 0) {
@@ -204,7 +204,7 @@ class TextChoiceWindow(
         val sectionLength = totalScrollbarLength / sections
 
         skin.draw(
-          b, skinRegion,
+          b, skinTexture,
           rect.right - 16, rect.top + currentSection * sectionLength,
           2, sectionLength,
           bordersOnly = true)
