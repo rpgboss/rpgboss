@@ -68,6 +68,7 @@ object EventCmd {
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetLocalInt],
+    classOf[SetWindowskin],
     classOf[ShowText],
     classOf[ShowPicture],
     classOf[StartBattle],
@@ -238,7 +239,7 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
   }
 }
 
-case class ModifyParty(add: Boolean = true, characterId: Int = 0)
+case class ModifyParty(var add: Boolean = true, var characterId: Int = 0)
   extends EventCmd {
   def sections = singleCall("game.modifyParty", add, characterId)
 }
@@ -290,7 +291,7 @@ case class PlayMusic(
   override def getParameters() = List(slot)
 }
 
-case class RunJs(scriptBody: String = "") extends EventCmd {
+case class RunJs(var scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
 }
 
@@ -334,6 +335,10 @@ case class SetLocalInt(variableName: String,
                        value: EventParameter[_]) extends EventCmd {
   def sections = Array(PlainLines(
       Array("var %s = %s;".format(variableName, value.rawJs.exp))))
+}
+
+case class SetWindowskin(var windowskinPath: String = "") extends EventCmd {
+  def sections = singleCall("game.setWindowskin", windowskinPath)
 }
 
 case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
@@ -382,7 +387,8 @@ case class StopMusic(
   override def getParameters() = List(slot)
 }
 
-case class Teleport(loc: MapLoc, transitionId: Int) extends EventCmd {
+case class Teleport(loc: MapLoc = MapLoc(),
+    var transitionId: Int = Transitions.FADE.id) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }

@@ -8,10 +8,9 @@ import rpgboss.editor.misc.GraphicsUtils._
 import rpgboss.editor.uibase.SwingUtils._
 import scala.swing.event._
 
-class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
+class MapLocPanel(window: Window, sm: StateMaster, model: MapLoc,
                   selectMapOnly: Boolean)
   extends BoxPanel(Orientation.Vertical) {
-  var loc: MapLoc = initialLoc
 
   val mapView = new MapView(window, sm, MapScales.default) {
     preferredSize = new Dimension(600, 600)
@@ -23,8 +22,9 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
       vs: MapViewState): Option[(Boolean, MouseFunction, MouseFunction)] = {
 
       if (!selectMapOnly) {
-        //loc = MapLoc(vs.map.name, x0-0.5f, y0-0.5f) any loc
-        loc = MapLoc(vs.map.name, x0.toInt + 0.5f, y0.toInt + 0.5f)
+        model.map = vs.map.name
+        model.x = x0.toInt + 0.5f
+        model.y = y0.toInt + 0.5f
         curLocField.update()
         updateCursorSq(TileRect(x0.toInt, y0.toInt, 1, 1))
       }
@@ -42,13 +42,12 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
 
       mapOpt map { map =>
         if (selectMapOnly) {
-          // When selecting a map only, treat switching maps as changing the loc
-          loc = MapLoc(map.name, 0, 0)
+          model.map = map.name
           curLocField.update()
-        } else if (map.name == loc.map) {
+        } else if (map.name == model.map) {
           // Otherwise, center on the 'loc' when switched-to map contains it
-          updateCursorSq(TileRect(loc.x - 0.5f, loc.y - 0.5f))
-          scrollPane.center(loc.x, loc.y)
+          updateCursorSq(TileRect(model.x - 0.5f, model.y - 0.5f))
+          scrollPane.center(model.x, model.y)
         }
       }
 
@@ -63,19 +62,20 @@ class MapLocPanel(window: Window, sm: StateMaster, initialLoc: MapLoc,
   }
 
   // Initialize views
-  for (node <- selector.getNode(loc.map))
+  for (node <- selector.getNode(model.map))
     selector.selectNode(node)
 
   val curLocField = new TextField {
     enabled = false
 
     def update() = {
-      sm.getMap(loc.map) map { map =>
+      sm.getMap(model.map) map { map =>
         val displayId = map.displayId
         if (selectMapOnly)
           text = "Current location: %s".format(displayId)
         else
-          text = "Current location: %s (%f, %f)".format(displayId, loc.x, loc.y)
+          text = "Current location: %s (%f, %f)".format(
+              displayId, model.x, model.y)
       } getOrElse {
         text = "No map selected"
       }
