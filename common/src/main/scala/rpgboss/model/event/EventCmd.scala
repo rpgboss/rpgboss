@@ -50,6 +50,7 @@ object EventCmd {
   }
 
   val hints = ShortTypeHints(List(
+    classOf[Sleep],
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[BreakLoop],
@@ -341,29 +342,17 @@ case class SetWindowskin(var windowskinPath: String = "") extends EventCmd {
   def sections = singleCall("game.setWindowskin", windowskinPath)
 }
 
-case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
-  def processedLines = lines.map { l =>
-    // The local variables need to be processed here rather than in the
-    // WindowText class, because only the Javascript has access to the local
-    // variables.
-    val l1 = EventJavascript.toJs(l)
-    val l2 = WindowText.javascriptCtrl.replaceAllIn(
-        l1, rMatch => {
-          """" + %s + """".format(rMatch.group(1))
-        })
-
-    RawJs(l2)
-  }
-
-  def sections = singleCall("game.showText", processedLines)
+case class Sleep(var duration: Float = 0) extends EventCmd {
+  def sections = singleCall("game.sleep", duration)
 }
 
 case class ShowPicture(
     slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
     var picture: String = "",
-    layout: Layout = Layout.defaultForPictures) extends EventCmd {
+    layout: Layout = Layout.defaultForPictures,
+    var alpha:Float = 1) extends EventCmd {
   def sections =
-    singleCall("game.showPicture", slot, picture, layout.toJs())
+    singleCall("game.showPicture", slot, picture, layout.toJs(), alpha)
   override def getParameters() = List(slot)
 }
 
@@ -423,4 +412,21 @@ case class WhileLoop(
     assert(commandListI == 0)
     copy(innerCmds = newInnerCmds)
   }
+}
+
+case class ShowText(var lines: Array[String] = Array()) extends EventCmd {
+  def processedLines = lines.map { l =>
+    // The local variables need to be processed here rather than in the
+    // WindowText class, because only the Javascript has access to the local
+    // variables.
+    val l1 = EventJavascript.toJs(l)
+    val l2 = WindowText.javascriptCtrl.replaceAllIn(
+        l1, rMatch => {
+          """" + %s + """".format(rMatch.group(1))
+        })
+
+    RawJs(l2)
+  }
+
+  def sections = singleCall("game.showText", processedLines)
 }
