@@ -382,7 +382,8 @@ case class StopMusic(
   override def getParameters() = List(slot)
 }
 
-case class Teleport(loc: MapLoc, var transitionId: Int) extends EventCmd {
+case class Teleport(loc: MapLoc = MapLoc(),
+    var transitionId: Int = Transitions.FADE.id) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }

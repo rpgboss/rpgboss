@@ -21,8 +21,7 @@ abstract class StdDialog(owner: Window, titleArg: String)
     centerOnScreen()
   }
 
-  // TODO: Disabling as this is causing crashes.
-  // setLocationRelativeTo(owner)
+  setLocationRelativeTo(owner)
 
   lazy val cancelBtn = new Button(Action(getMessage("Cancel")) {
     cancelFunc()
