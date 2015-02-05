@@ -228,6 +228,7 @@ class RpgGame(gamepath: File)
   def setWindowskin(windowskinPath: String) = {
     battleScreen.windowManager.setWindowskin(windowskinPath)
     mapScreen.windowManager.setWindowskin(windowskinPath)
+    startScreen.windowManager.setWindowskin(windowskinPath)
   }
 
   def quit() {
