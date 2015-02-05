@@ -82,6 +82,7 @@ import rpgboss.model.event.StopMusic
 import rpgboss.model.event.Teleport
 import rpgboss.model.event.TintScreen
 import rpgboss.model.event.WhileLoop
+import rpgboss.model.event.Sleep
 import rpgboss.player.RpgScreen
 
 
@@ -112,7 +113,8 @@ object EventCmdUI {
       StopMusicUI,
       TeleportUI,
       TintScreenUI,
-      WhileLoopUI)
+      WhileLoopUI,
+      SleepUI)
 
   def uiFor(cmd: EventCmd): EventCmdUI[_] = {
     for (ui <- eventCmdUis) {
@@ -391,7 +393,7 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
 
 object SetWindowskinUI extends EventCmdUI[SetWindowskin] {
   override def category = Windows
-  override def title = needsTranslation("Set Windowskin")
+  override def title = getMessage("Set_Windowskin")
   override def getNormalFields(owner: Window, sm: StateMaster,
       mapName: Option[String], model: SetWindowskin) = Seq(
     EventField(getMessage("Windowskin"), new WindowskinField(
@@ -408,7 +410,11 @@ object ShowPictureUI extends EventCmdUI[ShowPicture] {
         new PictureField(owner, sm, model.picture, model.picture = _)),
     EventField(
         getMessage("Layout"),
-        new LayoutEditingPanel(model.layout)))
+        new LayoutEditingPanel(model.layout)),
+    EventField(
+        getMessage("Alpha"),
+        new FloatSpinner(0, 1f, 0.1f, model.alpha,
+            model.alpha = _)))
   override def getParameterFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: ShowPicture) = List(
     IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
@@ -492,6 +498,16 @@ object TintScreenUI extends EventCmdUI[TintScreen] {
     EventField(getMessageColon("Fade_Duration"),
         new FloatSpinner(
             0, 10f, 0.1f, model.fadeDuration, model.fadeDuration = _)))
+}
+
+object SleepUI extends EventCmdUI[Sleep] {
+  override def category = Windows
+  override def title = getMessage("Sleep")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: Sleep) = Seq(
+        EventField(getMessage("Duration"),
+        new FloatSpinner(
+            0, 999999f, 0.1f, model.duration, model.duration = _)))
 }
 
 object WhileLoopUI extends EventCmdUI[WhileLoop] {
