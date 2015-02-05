@@ -64,6 +64,7 @@ import rpgboss.model.event.GetChoice
 import rpgboss.model.event.HealOrDamage
 import rpgboss.model.event.HidePicture
 import rpgboss.model.event.IfCondition
+import rpgboss.model.event.LockPlayerMovement
 import rpgboss.model.event.ModifyParty
 import rpgboss.model.event.MoveEvent
 import rpgboss.model.event.OpenStore
@@ -82,6 +83,7 @@ import rpgboss.model.event.TintScreen
 import rpgboss.model.event.WhileLoop
 import rpgboss.player.RpgScreen
 import rpgboss.model.MapLoc
+import rpgboss.model.event.BreakLoop
 
 case class TitledComponent(title: String, component: Component)
 
@@ -118,10 +120,12 @@ object EventCmdDialog {
   val eventCmdUis: Seq[EventCmdUI[_]] = List(
       AddRemoveItemUI,
       AddRemoveGoldUI,
+      BreakLoopUI,
       GetChoiceUI,
       HealOrDamageUI,
       HidePictureUI,
       IfConditionUI,
+      LockPlayerMovementUI,
       ModifyPartyUI,
       MoveEventUI,
       OpenStoreUI,
@@ -154,7 +158,7 @@ object EventCmdDialog {
     sm: StateMaster,
     mapName: Option[String],
     evtCmd: EventCmd,
-    successF: EventCmd => Any): Dialog = {
+    successF: EventCmd => Any): Option[Dialog] = {
     val ui = uiFor(evtCmd)
     ui.getDialog(owner, sm, mapName,
         evtCmd.asInstanceOf[ui.EventCmdType],
@@ -185,15 +189,22 @@ abstract class EventCmdUI[T <: EventCmd](implicit val m: reflect.Manifest[T]) {
 
   def getDialog(
       ownerArg: Window, sm: StateMaster, mapName: Option[String],
-      initial: EventCmdType, successF: EventCmdType => Any) =
+      initial: EventCmdType, successF: EventCmdType => Any): Option[Dialog] = {
+
     // ownerArg is named differently from owner, to prevent EventCmdDialog.owner
     // (which is still null), from shadowing the non-null function argument
-    new EventCmdDialog(ownerArg, sm, title, initial, successF) {
-      override def normalFields =
-        EventCmdUI.this.getNormalFields(ownerArg, sm, mapName, model)
+    val dialog = new EventCmdDialog(ownerArg, sm, title, initial, successF) {
+      override def normalFields = getNormalFields(ownerArg, sm, mapName, model)
       override def parameterFields =
-        EventCmdUI.this.getParameterFields(ownerArg, sm, mapName, model)
+        getParameterFields(ownerArg, sm, mapName, model)
     }
+
+    if (dialog.normalFields.isEmpty && dialog.parameterFields.isEmpty) {
+      return None
+    } else {
+      return Some(dialog)
+    }
+  }
 }
 
 object AddRemoveItemUI extends EventCmdUI[AddRemoveItem] {
@@ -220,6 +231,11 @@ object AddRemoveGoldUI extends EventCmdUI[AddRemoveGold] {
   override def getParameterFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: AddRemoveGold) = List(
     IntNumberField(getMessage("Quantity"), 1, 9999, model.quantity))
+}
+
+object BreakLoopUI extends EventCmdUI[BreakLoop] {
+  override def category = Programming
+  override def title = getMessage("Break_Loop")
 }
 
 object GetChoiceUI extends EventCmdUI[GetChoice] {
@@ -281,6 +297,11 @@ object IfConditionUI extends EventCmdUI[IfCondition] {
             model.conditions = _)),
     TitledComponent("", boolField(getMessage("ELSE_Branch"),
         model.elseBranch, model.elseBranch = _)))
+}
+
+object LockPlayerMovementUI extends EventCmdUI[LockPlayerMovement] {
+  override def category = Movement
+  override def title = getMessage("Lock_Player_Movement")
 }
 
 object ModifyPartyUI extends EventCmdUI[ModifyParty] {

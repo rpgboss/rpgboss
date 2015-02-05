@@ -37,7 +37,7 @@ class NewEventCmdBox(
   def btnEvtCmd(title: String, ui: EventCmdUI[_], eventLoc: Option[MapLoc]) = {
     new Button() {
       action = Action(title) ({
-        val d = EventCmdDialog.dialogFor(
+        val dOpt = EventCmdDialog.dialogFor(
           owner,
           sm,
           eventLoc.map(_.map),
@@ -47,9 +47,9 @@ class NewEventCmdBox(
             cmdBox.insertCmd(idxToInsert, evtCmd)
           })
 
-        if (d != null) {
+        dOpt.map { d =>
           d.open()
-        } else {
+        } getOrElse {
           cmdBox.insertCmd(idxToInsert, ui.newInstance(eventLoc))
           NewEventCmdBox.this.close()
         }
