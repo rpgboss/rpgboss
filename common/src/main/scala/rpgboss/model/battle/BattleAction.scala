@@ -91,7 +91,7 @@ case class ItemAction(actor: BattleStatus, targets: Array[BattleStatus],
       assert(item.usableInBattle)
 
       val skillId = item.onUseSkillId
-      assume(skillId < battle.pData.enums.items.length)
+      assume(skillId < battle.pData.enums.skills.length)
       val skill = battle.pData.enums.skills(skillId)
 
       assert(targets.length >= 1)
