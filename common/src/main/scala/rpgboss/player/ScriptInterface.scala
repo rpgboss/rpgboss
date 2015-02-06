@@ -131,45 +131,21 @@ class ScriptInterface(
    * Things to do with the player's location and camera
    */
 
-  var canUseScriptableTransition = false
-  def useScriptableTransition(value:Boolean) = {
-    canUseScriptableTransition = value
-  }
-
   def setPlayerLoc(mapName: String, x: Float, y: Float) = syncRun {
     game.setPlayerLoc(MapLoc(mapName, x, y))
   }
 
   def teleport(mapName: String, x: Float, y: Float,
-      transitionId: Int = Transitions.NONE.id) = {
+      transitionId: Int = Transitions.NONE.id) = syncRun {
     val loc = MapLoc(mapName, x, y)
     val map = getMap(loc)
     val transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
 
-    if(canUseScriptableTransition) {
-      syncRun {
-        game.mapScreen.scriptFactory.runFromFile(
-          ResourceConstants.systemStartScript,
-          "gameTransition('"+mapName+"',"+x.toString()+","+y.toString()+")")
-      }
-      sleep(fadeDuration);
-    } else {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.systemStartScript,
+      "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")")
 
-      if (transition == Transitions.FADE) {
-        syncRun {
-          mapScreen.windowManager.setTransition(1, fadeDuration)
-        }
-        sleep(fadeDuration);
-      }
-
-      syncRun {
-        game.setPlayerLoc(loc);
-        if (transition == Transitions.FADE)
-          mapScreen.windowManager.setTransition(0, fadeDuration);
-      }
-
-    }
   }
 
   /**

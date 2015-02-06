@@ -1,3 +1,19 @@
+function transition0(mapName, x, y, fadeDuration) {
+
+  game.setTransition(1,fadeDuration);
+  game.sleep(fadeDuration);
+
+  game.setPlayerLoc(mapName,x,y);
+
+  game.setTransition(0,fadeDuration);
+
+}
+
+function transition1(mapName, x, y, fadeDuration) {
+
+  game.setPlayerLoc(mapName,x,y);
+}
+
 function newGame() {
   game.setTransition(1, 0.4);
   game.sleep(0.4);
