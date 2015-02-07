@@ -502,19 +502,12 @@ object MoveCameraUI extends EventCmdUI[MoveCamera] {
 
 object SetTransitionUI extends EventCmdUI[SetTransition] {
 
-  var TransitionsArray:Array[String] = Array[String]()
-  TransitionsArray :+ "BaseBehaviour"
-  Transitions.values.foreach { value =>
-    TransitionsArray :+ value
-  }
-
-
   override def category = Programming
   override def title = needsTranslation("SetTransition")
   override def getNormalFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: SetTransition) = Seq(
-    EventField(needsTranslation("Transitiontype"), indexedCombo(
-        TransitionsArray, model.transitionId,
+    EventField(needsTranslation("Transitiontype"), enumVerticalBox(
+        Transitions, model.transitionId,
         model.transitionId = _)))
 }
 

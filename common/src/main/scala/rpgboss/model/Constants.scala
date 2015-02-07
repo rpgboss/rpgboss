@@ -45,6 +45,8 @@ object PictureSlots {
 }
 
 object Transitions extends RpgEnum {
+  
+  val BaseBehaviour = Value(-1, "BaseBehaviour")
   val NONE = Value(0, "None")
   val FADE = Value(1, "Fade_Out")
   val Custom1 = Value(2, "Custom1")

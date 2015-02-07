@@ -105,6 +105,9 @@ class RpgGame(gamepath: File)
 
     setScreen(startScreen)
 
+    // Standard setting for transitions
+    persistent.setInt("useTransition",-1)
+
     startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
       ResourceConstants.systemStartCall)

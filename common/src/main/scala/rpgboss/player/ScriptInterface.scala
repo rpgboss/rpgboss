@@ -136,11 +136,14 @@ class ScriptInterface(
   }
 
   def teleport(mapName: String, x: Float, y: Float,
-      transitionId: Int = Transitions.NONE.id) = syncRun {
+      transitionId: Int = Transitions.FADE.id) = syncRun {
     val loc = MapLoc(mapName, x, y)
     val map = getMap(loc)
-    val transition = Transitions.get(transitionId)
+    val settedTransition = getInt("useTransition")
+    var transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
+
+    if(settedTransition != -1) transition = Transitions.get(settedTransition)
 
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
