@@ -346,8 +346,10 @@ class MapEditor(
           contents += new MenuItem(Action(getMessage("Delete")) { deleteEvent() })
           contents += new MenuItem(Action(getMessage("Copy_Event")) { copyEvent() })
         }
-        if(eventIsCopied) {
-          contents += new MenuItem(Action(getMessage("Paste_Event")) { pasteEvent() })
+        else {
+          if(eventIsCopied) {
+            contents += new MenuItem(Action(getMessage("Paste_Event")) { pasteEvent() })
+          }
         }
 
         contents += new Separator

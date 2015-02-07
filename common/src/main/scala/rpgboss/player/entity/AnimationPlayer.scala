@@ -84,6 +84,11 @@ class AnimationPlayer(
     _state = Playing
   }
 
+  def stop() = {
+    reset()
+    _state = Expired
+  }
+
   def update(delta: Float): Unit = {
     if (anyFailed) {
       _state = Expired
