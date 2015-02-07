@@ -149,6 +149,8 @@ class ScriptInterface(
       ResourceConstants.transitionsScript,
       "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")")
 
+    stopSound()
+
   }
 
   /**
@@ -268,6 +270,10 @@ class ScriptInterface(
 
   def playSound(sound: String, volume: Float, pitch: Float) = syncRun {
     activeScreen.playSound(SoundSpec(sound, volume, pitch))
+  }
+
+  def stopSound() = syncRun {
+    activeScreen.stopSound()
   }
 
   /*

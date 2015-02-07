@@ -72,6 +72,7 @@ object EventCmd {
     classOf[SetTransition],
     classOf[SetLocalInt],
     classOf[SetWindowskin],
+    classOf[StopSound],
     classOf[ShowText],
     classOf[ShowPicture],
     classOf[StartBattle],
@@ -426,6 +427,10 @@ case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = t
     extends EventCmd {
     def sections =
       singleCall("game.moveCamera", dx, dy, async)
+}
+
+case class StopSound() extends EventCmd {
+  def sections = singleCall("game.stopSound")
 }
 
 case class ShowText(var lines: Array[String] = Array()) extends EventCmd {

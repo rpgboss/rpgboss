@@ -82,6 +82,7 @@ object EventCmdUI {
       SetGlobalIntUI,
       SetTransitionUI,
       SetWindowskinUI,
+      StopSoundUI,
       ShowPictureUI,
       ShowTextUI,
       StartBattleUI,
@@ -509,6 +510,11 @@ object SetTransitionUI extends EventCmdUI[SetTransition] {
     EventField(needsTranslation("Transitiontype"), enumVerticalBox(
         Transitions, model.transitionId,
         model.transitionId = _)))
+}
+
+object StopSoundUI extends EventCmdUI[StopSound] {
+  override def category = Audio
+  override def title = getMessage("Stop_Sound")
 }
 
 object WhileLoopUI extends EventCmdUI[WhileLoop] {
