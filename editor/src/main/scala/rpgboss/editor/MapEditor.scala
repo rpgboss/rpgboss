@@ -295,6 +295,37 @@ class MapEditor(
     }
   }
 
+  var eventIsCopied = false
+
+  def copyEvent() = {
+    eventIsCopied = true
+    logger.info("Event copied.")
+  }
+
+  def pasteEvent() = {
+    logger.info("Event pasted.")
+  }
+
+  val actionCopyEvent = Action(getMessage("Copy_Event")) {
+    copyEvent()
+  }
+
+  val actionPasteEvent = Action(getMessage("Paste_Event")) {
+    pasteEvent()
+  }
+
+  peer
+    .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK), getMessage("Copy_Event"))
+  peer
+    .getActionMap.put(getMessage("Copy_Event"), actionCopyEvent.peer)
+
+  peer
+    .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK), getMessage("Paste_Event"))
+  peer
+    .getActionMap.put(getMessage("Paste_Event"), actionPasteEvent.peer)
+
   def showEventPopupMenu(px: Int, py: Int, xTile: Float, yTile: Float) = {
     viewStateOpt map { vs =>
       val evtSelected = selectedEvtId.isDefined
@@ -311,8 +342,13 @@ class MapEditor(
               Action(getMessage("New_Event_Instance") + "...") { newEvent(true) })
         }
 
-        if (evtSelected)
+        if (evtSelected) {
           contents += new MenuItem(Action(getMessage("Delete")) { deleteEvent() })
+          contents += new MenuItem(Action(getMessage("Copy_Event")) { copyEvent() })
+          if(eventIsCopied) {
+            contents += new MenuItem(Action(getMessage("Paste_Event")) { pasteEvent() })
+          }
+        }
 
         contents += new Separator
 
