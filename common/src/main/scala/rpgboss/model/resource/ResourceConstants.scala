@@ -197,4 +197,6 @@ object ResourceConstants {
   def globalsScript = "sys/globals.js"
 
   def mainScript = "sys/main.js"
+
+  def transitionsScript = "sys/transitions.js"
 }

@@ -61,6 +61,7 @@ object EventCmd {
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
+    classOf[MoveCamera],
     classOf[MoveEvent],
     classOf[OpenStore],
     classOf[PlayMusic],
@@ -68,6 +69,7 @@ object EventCmd {
     classOf[RunJs],
     classOf[SetEventState],
     classOf[SetGlobalInt],
+    classOf[SetTransition],
     classOf[SetLocalInt],
     classOf[SetWindowskin],
     classOf[ShowText],
@@ -412,6 +414,18 @@ case class WhileLoop(
     assert(commandListI == 0)
     copy(innerCmds = newInnerCmds)
   }
+}
+
+case class SetTransition(var transitionId: Int = 0) 
+    extends EventCmd {
+    def sections =
+      singleCall("game.setInt", "useTransition", transitionId)
+}
+
+case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true) 
+    extends EventCmd {
+    def sections =
+      singleCall("game.moveCamera", dx, dy, async)
 }
 
 case class ShowText(var lines: Array[String] = Array()) extends EventCmd {

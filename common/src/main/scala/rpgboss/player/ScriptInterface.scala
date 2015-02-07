@@ -143,7 +143,7 @@ class ScriptInterface(
     val fadeDuration = Transitions.fadeLength
 
     game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.systemStartScript,
+      ResourceConstants.transitionsScript,
       "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")")
 
   }
