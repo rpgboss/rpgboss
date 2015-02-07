@@ -488,16 +488,16 @@ object SleepUI extends EventCmdUI[Sleep] {
 
 object MoveCameraUI extends EventCmdUI[MoveCamera] {
   override def category = Windows
-  override def title = needsTranslation("Move Camera")
+  override def title = getMessage("Move_Camera")
   override def getNormalFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: MoveCamera) = Seq(
-        EventField(needsTranslation("X Scroll Value"),
+        EventField(getMessage("X_Scroll_Value"),
         new FloatSpinner(
             -9999f, 9999f, 1f, model.dx, model.dx = _)),
-        EventField(needsTranslation("Y Scroll Value"),
+        EventField(getMessage("Y_Scroll_Value"),
         new FloatSpinner(
             -9999f, 9999f, 1f, model.dy, model.dy = _)),
-        EventField("", boolField(needsTranslation("Async"), model.async,
+        EventField("", boolField(getMessage("Async"), model.async,
         model.async = _)))
 }
 
