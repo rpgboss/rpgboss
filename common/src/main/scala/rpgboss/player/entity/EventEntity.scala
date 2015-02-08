@@ -53,6 +53,14 @@ class EventEntity(
 
   var evtStateIdx = 0
 
+  def getX:Float = {
+    return x
+  }
+
+  def getY:Float = {
+    return y
+  }
+
   /**
    * Maintain a cooldown to prevent events from firing too quickly.
    */

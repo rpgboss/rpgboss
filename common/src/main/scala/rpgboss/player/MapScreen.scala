@@ -78,6 +78,22 @@ class MapScreen(val game: RpgGame)
     }.orNull
   }
 
+  def getEventX(id: Int):Float = {
+    val entityOpt = eventEntities.get(id)
+    entityOpt.map { entity =>
+      return entity.getX
+    }.orNull 
+    return 0
+  }
+
+  def getEventY(id: Int):Float = {
+    val entityOpt = eventEntities.get(id)
+    entityOpt.map { entity =>
+      return entity.getY
+    }.orNull 
+    return 0
+  }
+
   val camera = new MapCamera(game)
 
   // All the events on the current map, including the player event

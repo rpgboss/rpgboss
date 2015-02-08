@@ -222,6 +222,39 @@ class ScriptInterface(
     game.battleScreen.finishChannel.read
   }
 
+  def getEventX(id: Int):Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.x.toInt
+    }
+    return 0
+  }
+
+  def getEventY(id: Int):Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.y.toInt
+    }
+    return 0
+  }
+
+  def getEventDirection(id: Int):Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.dir
+    }
+    return 0
+  }
+
+  def getPlayerX():Int = {
+    return getPlayerEntityInfo.x.toInt
+  }
+
+  def getPlayerY():Int = {
+    return getPlayerEntityInfo.y.toInt
+  }
+
+  def getPlayerDirection():Int = {
+    return getPlayerEntityInfo.dir
+  }
+
   def endBattleBackToMap() = {
     setTransition(1, 0.5f)
     sleep(0.5f)

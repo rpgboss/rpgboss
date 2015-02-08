@@ -55,6 +55,7 @@ object EventCmd {
     classOf[AddRemoveGold],
     classOf[BreakLoop],
     classOf[GetChoice],
+    classOf[GetEntityInfo],
     classOf[HealOrDamage],
     classOf[HidePicture],
     classOf[IfCondition],
@@ -246,6 +247,61 @@ case class LockPlayerMovement(body: Array[EventCmd]) extends EventCmd {
 case class ModifyParty(var add: Boolean = true, var characterId: Int = 0)
   extends EventCmd {
   def sections = singleCall("game.modifyParty", add, characterId)
+}
+
+case class GetEntityInfo(
+  var entitySpec: EntitySpec = EntitySpec(),
+  var globalVariableName : String = "",
+  var kind:Int = 0) extends EventCmd {
+
+  def executeCommand(kind:Int, playerOrNot:Boolean, eventId:Int):Array[CodeSection] = {
+
+    var expr:RawJs = null
+
+    if(playerOrNot) {
+
+      if(kind==0) {
+        expr = RawJs(jsCall("game.getPlayerX").exp)
+      }
+      if(kind==1) {
+        expr = RawJs(jsCall("game.getPlayerY").exp)
+      }
+      if(kind==2) {
+        expr = RawJs(jsCall("game.getPlayerDirection").exp)
+      }
+
+    } else {
+
+      if(kind==0) {
+        expr = RawJs(jsCall("game.getEventX",eventId).exp)
+      }
+      if(kind==1) {
+        expr = RawJs(jsCall("game.getEventY",eventId).exp)
+      }
+      if(kind==2) {
+        expr = RawJs(jsCall("game.getEventDirection",eventId).exp)
+      }
+
+    }
+
+    return singleCall("game.setInt", globalVariableName, expr)
+  }
+
+  def sections:Array[CodeSection] = {
+
+    entitySpec match {
+      case EntitySpec(which, _, _) 
+      if which == WhichEntity.PLAYER.id =>
+        return executeCommand(kind, true, WhichEntity.PLAYER.id)
+      case EntitySpec(which, _, eventIdx) 
+      if which == WhichEntity.THIS_EVENT.id =>
+        return executeCommand(kind, false, eventIdx)
+      case EntitySpec(which, _, eventIdx)
+      if which == WhichEntity.EVENT_ON_MAP.id =>
+        return executeCommand(kind, false, eventIdx)
+    }
+  }
+
 }
 
 case class MoveEvent(
