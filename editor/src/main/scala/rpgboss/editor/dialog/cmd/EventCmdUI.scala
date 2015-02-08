@@ -52,6 +52,7 @@ import rpgboss.editor.uibase.SwingUtils.textField
 import rpgboss.lib.ArrayUtils
 import rpgboss.model.AddOrRemove
 import rpgboss.model.HealOrDamageEnum
+import rpgboss.model.EntityInfoEnum
 import rpgboss.model.MapLoc
 import rpgboss.model.PictureSlots
 import rpgboss.model.RpgMapData
@@ -67,6 +68,7 @@ object EventCmdUI {
       AddRemoveGoldUI,
       BreakLoopUI,
       GetChoiceUI,
+      GetEntityInfoUI,
       HealOrDamageUI,
       HidePictureUI,
       IfConditionUI,
@@ -266,6 +268,20 @@ object MoveEventUI extends EventCmdUI[MoveEvent] {
         model.affixDirection, model.affixDirection = _)),
     EventField("", boolField(getMessage("Async"), model.async,
         model.async = _)))
+}
+
+object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {
+  override def category = Movement
+  override def title = needsTranslation("Get Entity Info")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: GetEntityInfo) = Seq(
+    EventField("", new EntitySelectPanel(owner, sm, mapName,
+        model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
+    EventField(
+        getMessage("Global_Variable_Name"),
+        textField(model.globalVariableName, model.globalVariableName = _)),
+    EventField("", enumVerticalBox(
+            EntityInfoEnum, model.kind, model.kind = _)))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {

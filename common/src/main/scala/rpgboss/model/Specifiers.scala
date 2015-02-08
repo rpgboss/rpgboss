@@ -33,6 +33,14 @@ object WhichEntity extends RpgEnum {
   def default = THIS_EVENT
 }
 
+object EntityInfoEnum extends RpgEnum {
+  val X = Value(0, "X")
+  val Y = Value(1, "Y")
+  val FACE_DIRECTION = Value(2, "FACE_DIRECTION")
+
+  def default = X
+}
+
 object Scope extends RpgEnum {
   val None = Value
   val SelfOnly = Value("User_Only")
