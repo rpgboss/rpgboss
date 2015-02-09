@@ -3,6 +3,9 @@ package rpgboss.model.battle
 import rpgboss.model._
 import rpgboss.player.PersistentState
 
+/**
+ * @param   animationId     Negative means no animation.
+ */
 case class Hit(hitActor: BattleStatus, damage: Damage, animationId: Int)
 
 /**
@@ -87,7 +90,6 @@ case class ItemAction(actor: BattleStatus, targets: Array[BattleStatus],
     val removed = persistentState.addRemoveItem(itemId, -1)
 
     if (removed) {
-      assert(targets.length >= 0)
       assert(item.usableInBattle)
 
       val skillId = item.onUseSkillId
@@ -98,7 +100,10 @@ case class ItemAction(actor: BattleStatus, targets: Array[BattleStatus],
 
       val hits = new collection.mutable.ArrayBuffer[Hit]
       for (target <- targets) {
-        hits ++= skill.applySkill(actor, target)
+        val damages = item.effects.flatMap(_.applyAsSkillOrItem(target))
+
+        // TODO: Add animations to items
+        hits ++= damages.map(damage => Hit(target, damage, -1))
       }
 
       hits.toArray

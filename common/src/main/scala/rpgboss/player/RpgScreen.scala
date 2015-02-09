@@ -18,7 +18,8 @@ object RpgScreen {
   val MAX_MUSIC_SLOTS = 8
 }
 
-trait RpgScreen extends Screen with ThreadChecked {
+trait RpgScreen extends Screen 
+  with ThreadChecked {
   def project: Project
   def assets: RpgAssetManager
   def screenW: Int
@@ -73,12 +74,22 @@ trait RpgScreen extends Screen with ThreadChecked {
     }
   }
 
+  var soundPlayer:AnimationPlayer = null
+  var animationSound:AnimationSound = null
+  var animation: Animation = null
+
   def playSound(soundSpec: SoundSpec): Unit = {
-    val animationSound = AnimationSound(0.0f, soundSpec)
-    val animation = Animation(sounds = Array(animationSound))
-    val player = new AnimationPlayer(project, animation, assets, 0f, 0f)
-    animationManager.addAnimation(player)
-    player.play()
+    animationSound = AnimationSound(0.0f, soundSpec)
+    animation = Animation(sounds = Array(animationSound))
+    soundPlayer = new AnimationPlayer(project, animation, assets, 0f, 0f)
+    animationManager.addAnimation(soundPlayer)
+    soundPlayer.play()
+  }
+
+  def stopSound() = {
+    if(soundPlayer.isInstanceOf[AnimationPlayer]) {
+      soundPlayer.stop()
+    }
   }
 
   def render()

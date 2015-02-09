@@ -55,12 +55,14 @@ object EventCmd {
     classOf[AddRemoveGold],
     classOf[BreakLoop],
     classOf[GetChoice],
+    classOf[GetEntityInfo],
     classOf[HealOrDamage],
     classOf[HidePicture],
     classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
     classOf[ModifyParty],
+    classOf[MoveCamera],
     classOf[MoveEvent],
     classOf[OpenStore],
     classOf[PlayMusic],
@@ -68,8 +70,10 @@ object EventCmd {
     classOf[RunJs],
     classOf[SetEventState],
     classOf[SetGlobalInt],
+    classOf[SetTransition],
     classOf[SetLocalInt],
     classOf[SetWindowskin],
+    classOf[StopSound],
     classOf[ShowText],
     classOf[ShowPicture],
     classOf[StartBattle],
@@ -245,6 +249,61 @@ case class ModifyParty(var add: Boolean = true, var characterId: Int = 0)
   def sections = singleCall("game.modifyParty", add, characterId)
 }
 
+case class GetEntityInfo(
+  var entitySpec: EntitySpec = EntitySpec(),
+  var globalVariableName : String = "",
+  var kind:Int = 0) extends EventCmd {
+
+  def executeCommand(kind:Int, playerOrNot:Boolean, eventId:Int):Array[CodeSection] = {
+
+    var expr:RawJs = null
+
+    if(playerOrNot) {
+
+      if(kind==0) {
+        expr = RawJs(jsCall("game.getPlayerX").exp)
+      }
+      if(kind==1) {
+        expr = RawJs(jsCall("game.getPlayerY").exp)
+      }
+      if(kind==2) {
+        expr = RawJs(jsCall("game.getPlayerDirection").exp)
+      }
+
+    } else {
+
+      if(kind==0) {
+        expr = RawJs(jsCall("game.getEventX",eventId).exp)
+      }
+      if(kind==1) {
+        expr = RawJs(jsCall("game.getEventY",eventId).exp)
+      }
+      if(kind==2) {
+        expr = RawJs(jsCall("game.getEventDirection",eventId).exp)
+      }
+
+    }
+
+    return singleCall("game.setInt", globalVariableName, expr)
+  }
+
+  def sections:Array[CodeSection] = {
+
+    entitySpec match {
+      case EntitySpec(which, _, _) 
+      if which == WhichEntity.PLAYER.id =>
+        return executeCommand(kind, true, WhichEntity.PLAYER.id)
+      case EntitySpec(which, _, eventIdx) 
+      if which == WhichEntity.THIS_EVENT.id =>
+        return executeCommand(kind, false, eventIdx)
+      case EntitySpec(which, _, eventIdx)
+      if which == WhichEntity.EVENT_ON_MAP.id =>
+        return executeCommand(kind, false, eventIdx)
+    }
+  }
+
+}
+
 case class MoveEvent(
   var entitySpec: EntitySpec = EntitySpec(),
   var dx: Float = 0f,
@@ -412,6 +471,22 @@ case class WhileLoop(
     assert(commandListI == 0)
     copy(innerCmds = newInnerCmds)
   }
+}
+
+case class SetTransition(var transitionId: Int = 0) 
+    extends EventCmd {
+    def sections =
+      singleCall("game.setInt", "useTransition", transitionId)
+}
+
+case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true) 
+    extends EventCmd {
+    def sections =
+      singleCall("game.moveCamera", dx, dy, async)
+}
+
+case class StopSound() extends EventCmd {
+  def sections = singleCall("game.stopSound")
 }
 
 case class ShowText(var lines: Array[String] = Array()) extends EventCmd {

@@ -131,45 +131,26 @@ class ScriptInterface(
    * Things to do with the player's location and camera
    */
 
-  var canUseScriptableTransition = false
-  def useScriptableTransition(value:Boolean) = {
-    canUseScriptableTransition = value
-  }
-
   def setPlayerLoc(mapName: String, x: Float, y: Float) = syncRun {
     game.setPlayerLoc(MapLoc(mapName, x, y))
   }
 
   def teleport(mapName: String, x: Float, y: Float,
-      transitionId: Int = Transitions.NONE.id) = {
+      transitionId: Int = Transitions.FADE.id) = syncRun {
     val loc = MapLoc(mapName, x, y)
     val map = getMap(loc)
-    val transition = Transitions.get(transitionId)
+    val settedTransition = getInt("useTransition")
+    var transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
 
-    if(canUseScriptableTransition) {
-      syncRun {
-        game.mapScreen.scriptFactory.runFromFile(
-          ResourceConstants.systemStartScript,
-          "gameTransition('"+mapName+"',"+x.toString()+","+y.toString()+")")
-      }
-      sleep(fadeDuration);
-    } else {
+    if(settedTransition != -1) transition = Transitions.get(settedTransition)
 
-      if (transition == Transitions.FADE) {
-        syncRun {
-          mapScreen.windowManager.setTransition(1, fadeDuration)
-        }
-        sleep(fadeDuration);
-      }
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.transitionsScript,
+      "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")")
 
-      syncRun {
-        game.setPlayerLoc(loc);
-        if (transition == Transitions.FADE)
-          mapScreen.windowManager.setTransition(0, fadeDuration);
-      }
+    stopSound()
 
-    }
   }
 
   /**
@@ -241,6 +222,39 @@ class ScriptInterface(
     game.battleScreen.finishChannel.read
   }
 
+  def getEventX(id: Int):Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.x.toInt
+    }
+    return 0
+  }
+
+  def getEventY(id: Int):Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.y.toInt
+    }
+    return 0
+  }
+
+  def getEventDirection(id: Int):Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.dir
+    }
+    return 0
+  }
+
+  def getPlayerX():Int = {
+    return getPlayerEntityInfo.x.toInt
+  }
+
+  def getPlayerY():Int = {
+    return getPlayerEntityInfo.y.toInt
+  }
+
+  def getPlayerDirection():Int = {
+    return getPlayerEntityInfo.dir
+  }
+
   def endBattleBackToMap() = {
     setTransition(1, 0.5f)
     sleep(0.5f)
@@ -289,6 +303,10 @@ class ScriptInterface(
 
   def playSound(sound: String, volume: Float, pitch: Float) = syncRun {
     activeScreen.playSound(SoundSpec(sound, volume, pitch))
+  }
+
+  def stopSound() = syncRun {
+    activeScreen.stopSound()
   }
 
   /*

@@ -77,14 +77,14 @@ case class Windowskin(proj: Project, name: String,
     }
 
     // paint borders
-    if (w >= 32 && h >= 32) {
+    if (w >= 16 && h >= 16) {
       drawSubimage16(4, 0, 1, 1, 0, 0) // NW
       drawSubimage16(7, 0, 1, 1, w - 16, 0) // NE
       drawSubimage16(4, 3, 1, 1, 0, h - 16) // SW
       drawSubimage16(7, 3, 1, 1, w - 16, h - 16) // SE
     }
 
-    if (w >= 32) {
+    if (w >= 16) {
       drawSubimage16(5, 0, 2, 1, 16, 0, w - 32, 16) // N
 
       if (h >= 16) {
@@ -92,7 +92,7 @@ case class Windowskin(proj: Project, name: String,
       }
     }
 
-    if (h >= 32) {
+    if (h >= 16) {
       drawSubimage16(4, 1, 1, 2, 0, 16, 16, h - 32) // E
 
       if (w >= 16) {

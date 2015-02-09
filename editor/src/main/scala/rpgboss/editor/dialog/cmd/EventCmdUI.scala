@@ -52,39 +52,13 @@ import rpgboss.editor.uibase.SwingUtils.textField
 import rpgboss.lib.ArrayUtils
 import rpgboss.model.AddOrRemove
 import rpgboss.model.HealOrDamageEnum
+import rpgboss.model.EntityInfoEnum
 import rpgboss.model.MapLoc
 import rpgboss.model.PictureSlots
 import rpgboss.model.RpgMapData
 import rpgboss.model.Transitions
-import rpgboss.model.event.AddRemoveGold
-import rpgboss.model.event.AddRemoveItem
-import rpgboss.model.event.BreakLoop
-import rpgboss.model.event.EventCmd
-import rpgboss.model.event.GetChoice
-import rpgboss.model.event.HealOrDamage
-import rpgboss.model.event.HidePicture
-import rpgboss.model.event.IfCondition
-import rpgboss.model.event.LockPlayerMovement
-import rpgboss.model.event.ModifyParty
-import rpgboss.model.event.MoveEvent
-import rpgboss.model.event.OpenStore
-import rpgboss.model.event.OperatorType
-import rpgboss.model.event.PlayMusic
-import rpgboss.model.event.PlaySound
-import rpgboss.model.event.RunJs
-import rpgboss.model.event.SetEventState
-import rpgboss.model.event.SetGlobalInt
-import rpgboss.model.event.SetWindowskin
-import rpgboss.model.event.ShowPicture
-import rpgboss.model.event.ShowText
-import rpgboss.model.event.StartBattle
-import rpgboss.model.event.StopMusic
-import rpgboss.model.event.Teleport
-import rpgboss.model.event.TintScreen
-import rpgboss.model.event.WhileLoop
-import rpgboss.model.event.Sleep
+import rpgboss.model.event._
 import rpgboss.player.RpgScreen
-
 
 case class EventField(title: String, component: Component)
 
@@ -94,11 +68,13 @@ object EventCmdUI {
       AddRemoveGoldUI,
       BreakLoopUI,
       GetChoiceUI,
+      GetEntityInfoUI,
       HealOrDamageUI,
       HidePictureUI,
       IfConditionUI,
       LockPlayerMovementUI,
       ModifyPartyUI,
+      MoveCameraUI,
       MoveEventUI,
       OpenStoreUI,
       PlayMusicUI,
@@ -106,7 +82,9 @@ object EventCmdUI {
       RunJsUI,
       SetEventStateUI,
       SetGlobalIntUI,
+      SetTransitionUI,
       SetWindowskinUI,
+      StopSoundUI,
       ShowPictureUI,
       ShowTextUI,
       StartBattleUI,
@@ -283,13 +261,27 @@ object MoveEventUI extends EventCmdUI[MoveEvent] {
     EventField("", new EntitySelectPanel(owner, sm, mapName,
         model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
     EventField(getMessage("X_Movement"),
-        new FloatSpinner(-100, 100, 0.1f, model.dx, model.dx = _)),
+        new FloatSpinner(-100, 100, 1f, model.dx, model.dx = _)),
     EventField(getMessage("Y_Movement"),
-        new FloatSpinner(-100, 100, 0.1f, model.dy, model.dy = _)),
+        new FloatSpinner(-100, 100, 1f, model.dy, model.dy = _)),
     EventField("", boolField(getMessage("Affix_direction"),
         model.affixDirection, model.affixDirection = _)),
     EventField("", boolField(getMessage("Async"), model.async,
         model.async = _)))
+}
+
+object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {
+  override def category = Movement
+  override def title = needsTranslation("Get Entity Info")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: GetEntityInfo) = Seq(
+    EventField("", new EntitySelectPanel(owner, sm, mapName,
+        model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
+    EventField(
+        getMessage("Global_Variable_Name"),
+        textField(model.globalVariableName, model.globalVariableName = _)),
+    EventField("", enumVerticalBox(
+            EntityInfoEnum, model.kind, model.kind = _)))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {
@@ -508,6 +500,37 @@ object SleepUI extends EventCmdUI[Sleep] {
         EventField(getMessage("Duration"),
         new FloatSpinner(
             0, 999999f, 0.1f, model.duration, model.duration = _)))
+}
+
+object MoveCameraUI extends EventCmdUI[MoveCamera] {
+  override def category = Windows
+  override def title = getMessage("Move_Camera")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: MoveCamera) = Seq(
+        EventField(getMessage("X_Scroll_Value"),
+        new FloatSpinner(
+            -9999f, 9999f, 1f, model.dx, model.dx = _)),
+        EventField(getMessage("Y_Scroll_Value"),
+        new FloatSpinner(
+            -9999f, 9999f, 1f, model.dy, model.dy = _)),
+        EventField("", boolField(getMessage("Async"), model.async,
+        model.async = _)))
+}
+
+object SetTransitionUI extends EventCmdUI[SetTransition] {
+
+  override def category = Programming
+  override def title = needsTranslation("SetTransition")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: SetTransition) = Seq(
+    EventField(needsTranslation("Transitiontype"), enumVerticalBox(
+        Transitions, model.transitionId,
+        model.transitionId = _)))
+}
+
+object StopSoundUI extends EventCmdUI[StopSound] {
+  override def category = Audio
+  override def title = getMessage("Stop_Sound")
 }
 
 object WhileLoopUI extends EventCmdUI[WhileLoop] {
