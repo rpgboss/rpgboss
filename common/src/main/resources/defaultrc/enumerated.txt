@@ -533,11 +533,6 @@ face/sys/f_actor01.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png.metadata.json
 items.json
-msgfont/sys/Vera-Bold.ttf
-msgfont/sys/Vera-Italic.ttf
-msgfont/sys/Vera.ttf
-msgfont/sys/VeraMono-Bold.ttf
-msgfont/sys/VeraMono-Italic.ttf
 msgfont/sys/VeraMono.ttf
 music/sys/aaron_mcdonald/A Midsummer Night's Dream - A Duel Comences.mid
 music/sys/aaron_mcdonald/A Midsummer Night's Dream - A Forest People.mid
