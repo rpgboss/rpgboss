@@ -245,14 +245,23 @@ class MapEditor(
     showEditDialog(false, vs, event)
   }
 
+  /**
+   * Gets a new event id. Increments the last generated id.
+   */
+  def incrementEventId(vs: MapViewState): Int = {
+    val newId = vs.mapMeta.lastGeneratedEventId + 1
+    val newMetadata = vs.mapMeta.copy(lastGeneratedEventId = newId)
+    sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
+
+    newId
+  }
+
   def showEditDialog(isNewEvent: Boolean, vs: MapViewState, event: RpgEvent) = {
     vs.begin()
 
     def onOk(e: RpgEvent) = {
       if (isNewEvent) {
-        val newMetadata = vs.mapMeta.copy(
-          lastGeneratedEventId = vs.mapMeta.lastGeneratedEventId + 1)
-        sm.setMap(vs.mapName, vs.map.copy(metadata = newMetadata))
+        incrementEventId(vs)
       }
       vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
 
@@ -296,23 +305,32 @@ class MapEditor(
     }
   }
 
-  var eventIsCopied = false
-
-  def copyEvent() = {
-    eventIsCopied = true
-    logger.info("Event copied.")
-  }
-
-  def pasteEvent() = {
-    logger.info("Event pasted.")
-  }
-
   val actionCopyEvent = Action(getMessage("Copy_Event")) {
-    copyEvent()
+    logger.debug("Event copied: %s".format(selectedEvtId))
+
+    for (id <- selectedEvtId; vs <- viewStateOpt) {
+      val event = vs.nextMapData.events(id)
+      projectPanel.eventOnClipboard = Some(Utils.deepCopy(event))
+    }
   }
 
   val actionPasteEvent = Action(getMessage("Paste_Event")) {
-    pasteEvent()
+    logger.info("Event pasted: %s".format(projectPanel.eventOnClipboard))
+
+    for (eventOnClipboard <- projectPanel.eventOnClipboard;
+         vs <- viewStateOpt) {
+      vs.begin()
+      val newId = incrementEventId(vs)
+
+      val newEvent = Utils.deepCopy(eventOnClipboard).copy(id = newId)
+      newEvent.x = canvasPanel.cursorSquare.x1 + 0.5f
+      newEvent.y = canvasPanel.cursorSquare.y1 + 0.5f
+
+      vs.nextMapData.events = vs.nextMapData.events.updated(newId, newEvent)
+
+      commitVS(vs)
+      repaintRegion(TileRect(newEvent.x.toInt, newEvent.y.toInt))
+    }
   }
 
   peer
@@ -345,11 +363,11 @@ class MapEditor(
 
         if (evtSelected) {
           contents += new MenuItem(Action(getMessage("Delete")) { deleteEvent() })
-          contents += new MenuItem(Action(getMessage("Copy_Event")) { copyEvent() })
+          contents += new MenuItem(actionCopyEvent)
         }
         else {
-          if(eventIsCopied) {
-            contents += new MenuItem(Action(getMessage("Paste_Event")) { pasteEvent() })
+          contents += new MenuItem(actionPasteEvent) {
+            enabled = projectPanel.eventOnClipboard.isDefined
           }
         }
 
