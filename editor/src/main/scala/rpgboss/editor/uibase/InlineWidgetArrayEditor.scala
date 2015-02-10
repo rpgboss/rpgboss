@@ -10,6 +10,7 @@ import scala.collection.mutable.ArrayBuffer
 import rpgboss.editor.Internationalized._
 import scala.reflect.ClassTag
 import javax.swing.border.BevelBorder
+import rpgboss.editor.util.MouseUtil
 
 class InlineWidgetWrapper(
     parent: InlineWidgetArrayEditor[_],
@@ -28,7 +29,7 @@ class InlineWidgetWrapper(
   reactions += {
     case e: MouseClicked =>
       requestFocus()
-      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+      if (MouseUtil.isRightClick(e)) {
         val menu = new RpgPopupMenu {
           contents += new MenuItem(Action(getMessage("Insert_Above") + "...") {
             parent.addAction(index)
@@ -98,7 +99,7 @@ abstract class InlineWidgetArrayEditor[T: ClassTag](
     listenTo(mouse.clicks)
     reactions += {
       case e: MouseClicked =>
-        if (e.peer.getButton() == MouseEvent.BUTTON3) {
+        if (MouseUtil.isRightClick(e)) {
           val menu = new RpgPopupMenu {
             contents +=
               new MenuItem(Action(getMessage("Add") + "...") {

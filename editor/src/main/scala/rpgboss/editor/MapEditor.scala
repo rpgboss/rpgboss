@@ -29,6 +29,7 @@ import rpgboss.editor.imageset.selector.TabbedTileSelector
 import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.util.MouseUtil
 
 class MapEditor(
   projectPanel: ProjectPanel,
@@ -396,7 +397,10 @@ class MapEditor(
     if (selectedLayer == Evt) {
       updateCursorSq(TileRect(xTile0.toInt, yTile0.toInt))
 
-      if (button == MouseEvent.BUTTON1) {
+      if (MouseUtil.isRightClick(e)) {
+        showEventPopupMenu(e.point.x, e.point.y, xTile0.toInt, yTile0.toInt)
+        None
+      } else if (button == MouseEvent.BUTTON1) {
         if (selectedEvtId.isDefined) {
           vs.begin()
 
@@ -413,12 +417,13 @@ class MapEditor(
 
           Some((true, onDrag _, onDragStop _))
         } else None
-      } else if (button == MouseEvent.BUTTON3) {
-        showEventPopupMenu(e.point.x, e.point.y, xTile0.toInt, yTile0.toInt)
-        None
       } else None
     } else {
-      if (button == MouseEvent.BUTTON1) {
+      if (MouseUtil.isRightClick(e)) {
+        updateCursorSq(TileRect(xTile0.toInt, yTile0.toInt))
+        showEventPopupMenu(e.point.x, e.point.y, xTile0, yTile0)
+        None
+      } else if (button == MouseEvent.BUTTON1) {
         vs.begin()
 
         val tCodes = tileSelector.selectionBytes
@@ -449,10 +454,6 @@ class MapEditor(
         }
 
         Some((true, onDrag _, onDragStop _))
-      } else if (button == MouseEvent.BUTTON3) {
-        updateCursorSq(TileRect(xTile0.toInt, yTile0.toInt))
-        showEventPopupMenu(e.point.x, e.point.y, xTile0, yTile0)
-        None
       } else None
     }
   }

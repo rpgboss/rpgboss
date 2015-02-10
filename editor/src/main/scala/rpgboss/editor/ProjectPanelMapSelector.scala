@@ -24,6 +24,7 @@ import javax.activation.DataHandler
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeNode
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.util.MouseUtil
 
 class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
   extends MapSelector(sm) {
@@ -245,7 +246,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
     case e: MouseClicked if e.source == tree => {
       val (x0, y0) = (e.point.getX().toInt, e.point.getY().toInt)
 
-      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+      if (MouseUtil.isRightClick(e)) {
         val clickRow = tree.getRowForLocation(x0, y0)
 
         // Temporarily disable selection events while popup in action

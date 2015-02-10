@@ -14,6 +14,7 @@ import javax.swing.BorderFactory
 import java.awt.Font
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.util.MouseUtil
 
 object EventCmdPanel {
   val textFont = new Font("Monospaced", Font.BOLD, 14)
@@ -80,7 +81,7 @@ class EventCmdPanel(
   reactions += {
     case e: MouseClicked =>
       requestFocus()
-      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+      if (MouseUtil.isRightClick(e)) {
         val menu = new RpgPopupMenu {
           contents += new MenuItem(Action(getMessage("Insert_Command_Above") + "...") {
             parentCmdBox.newCmdDialog(index)
@@ -151,7 +152,7 @@ class CommandBox(
     reactions += {
       case e: MouseClicked =>
         requestFocus()
-        if (e.peer.getButton() == MouseEvent.BUTTON3) {
+        if (MouseUtil.isRightClick(e)) {
           val menu = new RpgPopupMenu {
             contents += new MenuItem(Action(getMessage("Insert_Command") + "...") {
               newCmdDialog(model.length)
@@ -176,7 +177,7 @@ class CommandBox(
   listenTo(mouse.clicks)
   reactions += {
     case e: MouseClicked =>
-      if (e.peer.getButton() == MouseEvent.BUTTON3) {
+      if (MouseUtil.isRightClick(e)) {
         val menu = new RpgPopupMenu {
           contents += new MenuItem(Action(getMessage("Insert_Command") + "...") {
             newCmdDialog(model.length)
