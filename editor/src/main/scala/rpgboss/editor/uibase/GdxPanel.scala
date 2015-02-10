@@ -11,11 +11,17 @@ import rpgboss.model.resource.RpgAssetManager
 import rpgboss.model.Project
 import javax.swing.JPanel
 
-class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
+/**
+ * @param   canvasW     Very small canvases (like 10 px), don't seem to be
+ *                      displayed and initialized properly. This is why the
+ *                      default size is 40.
+ */
+class GdxPanel(project: Project, canvasW: Int = 40, canvasH: Int = 40)
   extends Panel
   with LazyLogging
   with Disposable {
 
+  val canvasSize = new Dimension(canvasW, canvasH)
   val jPanel = new JPanel
   peer.add(jPanel)
 
@@ -24,7 +30,7 @@ class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
 
   panel.add(gdxCanvas.getCanvas())
 
-  preferredSize = new Dimension(canvasW, canvasH)
+  preferredSize = canvasSize
 
   // lazy val, otherwise an NPE crash due to wonky order of initialization
   lazy val gdxListener = new ApplicationAdapter {

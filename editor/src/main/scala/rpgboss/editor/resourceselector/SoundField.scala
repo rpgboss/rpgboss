@@ -6,6 +6,7 @@ import scala.swing.event._
 import rpgboss.model.resource._
 import rpgboss.model._
 import rpgboss.editor.uibase._
+import rpgboss.editor.Internationalized._
 import com.badlogic.gdx.audio.{ Sound => GdxSound, Music => GdxMusic }
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import com.badlogic.gdx.Gdx
@@ -137,13 +138,13 @@ abstract class MusicSelectDialog(
 
       val currentMusic: Option[MusicPlayer] = Some(resource.newPlayer(assets))
 
-      row().grid().add(new Button(Action("Play") {
+      row().grid().add(new Button(Action(needsTranslation("Play")) {
         currentMusic.map(_.stop())
         currentMusic.map(_.setVolume(volumeSlider.value))
         currentMusic.map(_.play())
       }))
 
-      row().grid(new Label("Volume:")).add(volumeSlider)
+      row().grid(new Label(needsTranslation("Volume:"))).add(volumeSlider)
       row().grid().add(gdxPanel)
     }
   }
