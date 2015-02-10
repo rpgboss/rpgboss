@@ -80,6 +80,7 @@ object EventCmd {
     classOf[StopMusic],
     classOf[Teleport],
     classOf[TintScreen],
+    classOf[WeatherEffects],
     classOf[WhileLoop])) + EventRenameHints
 }
 
@@ -176,6 +177,25 @@ case class HealOrDamage(
             mpPercentage)
       }
     }
+  }
+}
+
+case class WeatherEffects(
+    var rain: Boolean = false,
+    var fog: Boolean = false) extends EventCmd {
+  def sections = {
+    val buf = new ArrayBuffer[CodeSection]()
+
+    var rainResult = 0
+    if(rain) rainResult = 1
+
+    var fogResult = 0
+    if(fog) fogResult = 1
+
+    buf += PlainLines(Array(jsCall("game.setInt","fogVisible", fogResult).exp))
+    buf += PlainLines(Array(jsCall("game.setInt","rainVisible", rainResult).exp))
+    
+    buf.toArray
   }
 }
 
