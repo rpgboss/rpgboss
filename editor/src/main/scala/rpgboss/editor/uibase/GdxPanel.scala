@@ -38,8 +38,6 @@ class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
       logger.debug("Pause")
     }
     override def render() = {
-      //logger.debug("render() %d".format(this.hashCode()))
-      //logger.debug("gdx audio hash code %d".format(Gdx.audio.hashCode()))
     }
     override def resize(w: Int, h: Int) = {
       logger.debug("Resize" + "(%d, %d)".format(w, h))
@@ -63,31 +61,7 @@ class GdxPanel(project: Project, canvasW: Int = 10, canvasH: Int = 10)
       super.resize(w, h)
     }
 
-    override def stopped() = {
-      logger.debug("Stopped")
-      super.stopped()
-    }
-
     getCanvas().setSize(canvasW, canvasH)
-
-    override def makeCurrent() = {
-      super.makeCurrent()
-      logger.debug("MakeCurrent")
-    }
-
-    override def stop() = {
-      // This is necessary because libgdx currently has a bug where it cannot
-      // dispose of textures associated with this canvas on disposal time.
-      if (getCanvas().isDisplayable()) {
-        makeCurrent()
-      } else {
-        throw new RuntimeException(
-          "GdxPanel OpenGL Context Destroyed Before ApplicationListener" +
-            "Had A Chance To Dispose Of Its Resources")
-      }
-
-      super.stop()
-    }
   }
 
   def dispose() = {
