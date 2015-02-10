@@ -48,7 +48,7 @@ class MapCameraMove(dx: Float, dy: Float) extends MutateQueueItem[MapCamera] {
       c.y += _remaining.y
       finish()
     } else {
-      val travel = _remaining.nor().scl(maxTravel)
+      val travel = _remaining.cpy().nor().scl(maxTravel)
       c.x += travel.x
       c.y += travel.y
       _remaining.sub(travel)
