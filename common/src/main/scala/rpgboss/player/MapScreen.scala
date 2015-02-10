@@ -82,7 +82,7 @@ class MapScreen(val game: RpgGame)
     val entityOpt = eventEntities.get(id)
     entityOpt.map { entity =>
       return entity.getX
-    }.orNull 
+    }.orNull
     return 0
   }
 
@@ -90,7 +90,7 @@ class MapScreen(val game: RpgGame)
     val entityOpt = eventEntities.get(id)
     entityOpt.map { entity =>
       return entity.getY
-    }.orNull 
+    }.orNull
     return 0
   }
 
@@ -316,7 +316,7 @@ class MapScreen(val game: RpgGame)
       (_playerEntity :: eventEntities.values.toList)
         .filter(e => (e.x >= cameraL - 2) && (e.x <= cameraR + 2) &&
                      (e.y >= cameraT - 2) && (e.y <= cameraB + 2))
-        .sortBy(_.y).toArray
+        .sortBy(_.zPriority).toArray
 
     // Draw sprites and elevated tiles in order of z priority.
     {

@@ -38,6 +38,8 @@ class Entity(
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) {
 
+  def zPriority = y
+
   val moveQueue = new MutateQueue(this)
   var movesEnqueued: Long = 0
 
