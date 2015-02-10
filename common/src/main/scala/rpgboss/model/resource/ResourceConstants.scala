@@ -198,5 +198,7 @@ object ResourceConstants {
 
   def mainScript = "sys/main.js"
 
+  def weatherScript = "sys/weather.js"
+
   def transitionsScript = "sys/transitions.js"
 }

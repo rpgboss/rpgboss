@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent
 import javax.swing.BorderFactory
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.editor.Internationalized._
+import rpgboss.editor.util.MouseUtil
 
 /**
  * A table that can be edited by context menu. Can add a new element by double
@@ -91,7 +92,7 @@ abstract class TableEditor[T] extends ScrollPane {
         else
           newDialog()
       }
-      case e: MouseClicked if e.peer.getButton() == MouseEvent.BUTTON3 => {
+      case e: MouseClicked if MouseUtil.isRightClick(e) => {
         val (x0, y0) = (e.point.getX().toInt, e.point.getY().toInt)
 
         val row = peer.rowAtPoint(e.point)

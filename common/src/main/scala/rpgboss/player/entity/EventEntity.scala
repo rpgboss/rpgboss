@@ -35,6 +35,15 @@ class EventEntity(
 
   def id = mapEvent.id
 
+  override def zPriority: Float = {
+    val zAdjustment = EventHeight(evtState.height) match {
+      case EventHeight.UNDER => -10
+      case EventHeight.SAME => 0
+      case EventHeight.OVER => 10
+    }
+    return super.zPriority + zAdjustment
+  }
+
   val states = if (mapEvent.isInstance) {
     val eventClass = project.data.enums.eventClasses(mapEvent.eventClassId)
     val eventClassStates = eventClass.states

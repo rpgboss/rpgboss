@@ -91,6 +91,7 @@ object EventCmdUI {
       StopMusicUI,
       TeleportUI,
       TintScreenUI,
+      WeatherEffectsUI,
       WhileLoopUI,
       SleepUI)
 
@@ -192,6 +193,19 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
         minElems = 2, maxElems = 4)),
     EventField("", boolField(getMessage("Allow_Cancel"), model.allowCancel,
         model.allowCancel = _)))
+}
+
+object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
+  override def category = Party
+  override def title = getMessage("Weather_Effects")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: WeatherEffects) = Seq(
+    EventField("", boolField(
+        getMessage("Rain"), model.rain, model.rain = _)),
+    EventField("", boolField(
+        getMessage("Fog"),
+        model.fog, model.fog = _))
+    )
 }
 
 object HealOrDamageUI extends EventCmdUI[HealOrDamage] {

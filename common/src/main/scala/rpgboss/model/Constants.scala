@@ -44,6 +44,14 @@ object PictureSlots {
   val END = 64
 }
 
+object WeatherEffects extends RpgEnum {
+
+  val RAIN = Value(1, "Rain")
+  val FOG = Value(2, "Fog")
+
+  def default = RAIN
+}
+
 object Transitions extends RpgEnum {
   
   val BaseBehaviour = Value(-1, "BaseBehaviour")

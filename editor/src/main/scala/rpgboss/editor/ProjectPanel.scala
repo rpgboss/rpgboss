@@ -5,10 +5,8 @@ import java.io._
 import java.util.Scanner
 import java.awt.Desktop
 import java.net.URL
-
 import scala.collection.JavaConversions._
 import scala.swing._
-
 import javax.swing.ImageIcon
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.dialog.ExportDialog
@@ -17,6 +15,7 @@ import rpgboss.editor.misc._
 import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
+import rpgboss.model.event.RpgEvent
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -33,6 +32,11 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
   window.minimumSize = new Dimension(screenSize.width/2,screenSize.height/2)
   window.maximize()
+
+  /**
+   * This is the project-wide clipboard for events.
+   */
+  var eventOnClipboard: Option[RpgEvent] = None
 
   val projMenu = new PopupMenu {
     contents += new MenuItem(mainP.actionNew)
