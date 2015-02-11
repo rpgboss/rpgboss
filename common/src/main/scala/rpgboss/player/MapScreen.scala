@@ -131,6 +131,13 @@ class MapScreen(val game: RpgGame)
 
       playMusic(0, mapAndAssets.map.metadata.music, true,
           Transitions.fadeLength)
+
+      var interiorValue = 0
+      if(mapAndAssets.map.metadata.interior) {
+        interiorValue = 1
+      }
+
+      scriptInterface.setInt("interior",interiorValue)
     }
 
     if (loc.map.isEmpty()) {

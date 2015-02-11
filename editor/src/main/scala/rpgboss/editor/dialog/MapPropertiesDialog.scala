@@ -12,6 +12,7 @@ import rpgboss.editor.resourceselector.TilesetArrayField
 import rpgboss.editor.misc.RandomEncounterSettingsPanel
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.resourceselector.BattleBackgroundField
+import rpgboss.editor.uibase.SwingUtils.boolField
 
 class MapPropertiesDialog(
   owner: Window,
@@ -43,6 +44,11 @@ class MapPropertiesDialog(
   }
 
   val fTitle = textField(model.title, model.title = _)
+
+  val interior = boolField(
+    needsTranslation("Interior"),
+    model.interior,
+    model.interior = _)
 
   val fWidth = new NumberSpinner(
     RpgMap.minXSize, RpgMap.maxXSize,
@@ -80,7 +86,7 @@ class MapPropertiesDialog(
             enabled = false
           })
 
-        row().grid(leftLabel(getMessageColon("Map_Title"))).add(fTitle)
+        row().grid(leftLabel(getMessageColon("Map_Title"))).add(fTitle).add(interior)
 
         row().grid(leftLabel(getMessageColon("Dimensions")))
           .add(leftLabel(getMessage("Width"))).add(leftLabel(getMessage("Height")))

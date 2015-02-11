@@ -7,5 +7,5 @@ while(true) {
 	ShowFog();
 	ShowRain();
 
-	game.sleep(0.1);
+	game.sleep(0.01);
 }
