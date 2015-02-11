@@ -16,6 +16,7 @@ case class RpgMapMetadata(var parent: String,
                           var ySize: Int,
                           var tilesets: Array[String],
                           var autotiles: Array[String],
+                          var interior:Boolean = false,
                           var music: Option[SoundSpec] = None,
                           var battleBackground: String =
                             ResourceConstants.defaultBattleback,
