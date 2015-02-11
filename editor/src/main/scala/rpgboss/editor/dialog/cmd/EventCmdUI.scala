@@ -286,7 +286,7 @@ object MoveEventUI extends EventCmdUI[MoveEvent] {
 
 object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {
   override def category = Movement
-  override def title = needsTranslation("Get Entity Info")
+  override def title = getMessage("Get_Entity_Info")
   override def getNormalFields(owner: Window, sm: StateMaster,
       mapName: Option[String], model: GetEntityInfo) = Seq(
     EventField("", new EntitySelectPanel(owner, sm, mapName,
@@ -534,10 +534,10 @@ object MoveCameraUI extends EventCmdUI[MoveCamera] {
 object SetTransitionUI extends EventCmdUI[SetTransition] {
 
   override def category = Programming
-  override def title = needsTranslation("SetTransition")
+  override def title = getMessage("SetTransition")
   override def getNormalFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: SetTransition) = Seq(
-    EventField(needsTranslation("Transitiontype"), enumVerticalBox(
+    EventField(getMessage("Transitiontype"), enumVerticalBox(
         Transitions, model.transitionId,
         model.transitionId = _)))
 }

@@ -65,7 +65,7 @@ class EntitySelectPanel(
   allowEventOnOtherMap: Boolean)
   extends DesignGridPanel {
 
-  border = BorderFactory.createTitledBorder("Which Entity")
+  border = BorderFactory.createTitledBorder(getMessage("Which_Entity"))
 
   var selectedOtherMap =
     if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
