@@ -22,7 +22,6 @@ import rpgboss.lib.Utils
 class MapScreen(val game: RpgGame)
   extends RpgScreenWithGame
   with HasScriptConstants {
-  val batch = new SpriteBatch()
 
   var screenWTiles: Float = screenW / Tileset.tilesize
   var screenHTiles: Float = screenH / Tileset.tilesize
@@ -37,7 +36,7 @@ class MapScreen(val game: RpgGame)
   // protagonist. Modify all these things on the Gdx thread
   private var _playerEntity: PlayerEntity = null
 
-  def getPlayerEntityInfo() = EntityInfo(_playerEntity)
+  def getPlayerEntityInfo() = EntityInfo(_playerEntity, this)
 
   private def moveEntity(
       entity: Entity, dx: Float, dy: Float,
@@ -179,10 +178,6 @@ class MapScreen(val game: RpgGame)
     tileCamera.position.x = camera.x
     tileCamera.position.y = camera.y
     tileCamera.update()
-
-    // Set the projection matrix to the combined camera matrices
-    // This seems to be the only thing that works...
-    batch.setProjectionMatrix(tileCamera.combined)
   }
 
   def drawTile(batch: SpriteBatch, mapAndAssets: MapAndAssets,
@@ -284,6 +279,10 @@ class MapScreen(val game: RpgGame)
 
     updateCameraLoc(mapAndAssets)
 
+    // Set the projection matrix to the combined camera matrices
+    // This seems to be the only thing that works...
+    batch.setProjectionMatrix(tileCamera.combined)
+
     val cameraL = camera.x - screenWTiles / 2
     val cameraR = camera.x + screenWTiles / 2
     val cameraT = camera.y - screenHTiles / 2
@@ -361,15 +360,15 @@ class MapScreen(val game: RpgGame)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL20.GL_BLEND)
 
-    windowManager.preMapRender()
+    windowManager.preMapRender(batch, screenCamera)
     renderMap()
-    windowManager.render()
+
+    animationManager.render(batch, screenCamera)
+    windowManager.render(batch, shapeRenderer, screenCamera)
   }
 
   override def dispose() = {
     mapAndAssetsOption.map(_.dispose())
-    batch.dispose()
-
     super.dispose()
   }
 

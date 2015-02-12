@@ -37,8 +37,6 @@ class WindowManager(
   val project: Project,
   val screenW: Int,
   val screenH: Int) extends ThreadChecked with LazyLogging {
-  val batch = new SpriteBatch()
-  val shapeRenderer = new ShapeRenderer()
 
   // Should only be modified on the Gdx thread
   /**
@@ -127,15 +125,6 @@ class WindowManager(
     addWindow(window)
   }
 
-  val screenCamera: OrthographicCamera = new OrthographicCamera()
-  screenCamera.setToOrtho(true, screenW, screenH) // y points down
-  screenCamera.update()
-
-  batch.setProjectionMatrix(screenCamera.combined)
-  batch.enableBlending()
-  batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-  shapeRenderer.setProjectionMatrix(screenCamera.combined)
-
   def showPictureByName(slot: Int, name: String, layout: Layout, alpha:Float=1.0f) = {
     assertOnBoundThread()
     logger.debug("showPictureByName(%d, %s, %s)".format(slot, name, layout))
@@ -179,8 +168,12 @@ class WindowManager(
   }
 
   // Render that's called before the map layer is drawn
-  def preMapRender() = {
+  def preMapRender(batch: SpriteBatch, screenCamera: OrthographicCamera) = {
     batch.begin()
+
+    batch.setProjectionMatrix(screenCamera.combined)
+    batch.enableBlending()
+    batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
     for (i <- PictureSlots.BELOW_MAP until PictureSlots.ABOVE_MAP;
          pic <- pictures(i)) {
@@ -218,7 +211,14 @@ class WindowManager(
     return removedSomething
   }
 
-  def render() = {
+  def render(batch: SpriteBatch, shapeRenderer: ShapeRenderer,
+      screenCamera: OrthographicCamera) = {
+    batch.setProjectionMatrix(screenCamera.combined)
+    batch.enableBlending()
+    batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+    shapeRenderer.setProjectionMatrix(screenCamera.combined)
+
+
     /*
      * We define our screen coordinates to be 640x480.
      * This is the easiest thing possible.
@@ -275,7 +275,6 @@ class WindowManager(
 
   def dispose() = {
     assertOnBoundThread()
-    batch.dispose()
     for (pictureOpt <- pictures; picture <- pictureOpt) {
       picture.dispose()
     }

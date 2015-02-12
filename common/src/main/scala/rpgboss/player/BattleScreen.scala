@@ -43,16 +43,6 @@ class BattleScreen(
 
   val logger = new Logger("BatleScreen", Logger.INFO)
 
-  val screenCamera: OrthographicCamera = new OrthographicCamera()
-  screenCamera.setToOrtho(true, screenW, screenH) // y points down
-  screenCamera.update()
-
-  val batch = new SpriteBatch()
-
-  batch.setProjectionMatrix(screenCamera.combined)
-  batch.enableBlending()
-  batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-
   /**
    * Read this channel to await a battle being finished.
    */
@@ -614,14 +604,8 @@ class BattleScreen(
               val animations =
                 for (hit <- notification.hits; if hit.animationId >= 0) yield {
                   assert(hit.animationId < battle.pData.enums.animations.length)
-                  val animation = battle.pData.enums.animations(hit.animationId)
-
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
-                  val player = new AnimationPlayer(project, animation, assets,
-                    box.x, box.y)
-                  player.play()
-                  animationManager.addAnimation(player)
-                  player
+                  playAnimation(hit.animationId, box.x, box.y)
                 }
 
               notification.action match {
@@ -665,11 +649,8 @@ class BattleScreen(
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL20.GL_BLEND)
 
-    windowManager.render()
-
-    batch.begin()
-    animationManager.render(batch)
-    batch.end()
+    animationManager.render(batch, screenCamera)
+    windowManager.render(batch, shapeRenderer, screenCamera)
   }
 
   /**
@@ -677,8 +658,6 @@ class BattleScreen(
    */
   override def dispose() = {
     assertOnBoundThread()
-
-    batch.dispose()
 
     if (battleActive)
       endBattle()

@@ -3,14 +3,12 @@ package rpgboss.editor.dialog.cmd
 import scala.swing.Component
 import scala.swing.Dialog
 import scala.swing.Window
-
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 import org.fife.ui.rtextarea.RTextScrollPane
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods.parse
 import org.json4s.string2JsonInput
-
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import rpgboss.editor.Internationalized.getMessage
@@ -18,7 +16,7 @@ import rpgboss.editor.Internationalized.getMessageColon
 import rpgboss.editor.Internationalized.needsTranslation
 import rpgboss.editor.StateMaster
 import rpgboss.editor.dialog.ConditionsPanel
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Audio
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Effects
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Battles
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Inventory
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Movement
@@ -59,6 +57,7 @@ import rpgboss.model.RpgMapData
 import rpgboss.model.Transitions
 import rpgboss.model.event._
 import rpgboss.player.RpgScreen
+import rpgboss.model.Origins
 
 case class EventField(title: String, component: Component)
 
@@ -77,6 +76,7 @@ object EventCmdUI {
       MoveCameraUI,
       MoveEventUI,
       OpenStoreUI,
+      PlayAnimationUI,
       PlayMusicUI,
       PlaySoundUI,
       RunJsUI,
@@ -311,8 +311,45 @@ object OpenStoreUI extends EventCmdUI[OpenStore] {
         model.sellPriceMultiplier))
 }
 
+object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
+  override def category = Effects
+  override def title = needsTranslation("Play_Animation")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: PlayAnimation) = {
+
+    val fXOffset =
+      new NumberSpinner(-2000, 2000, model.xOffset, model.xOffset = _)
+    val fYOffset =
+      new NumberSpinner(-2000, 2000, model.yOffset, model.yOffset = _)
+
+    lazy val fOrigin = enumVerticalBox(Origins, model.originId, updateOriginId)
+    lazy val fEntity = new EntitySelectPanel(owner, sm, mapName,
+        model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)
+
+    def updateOriginId(newOriginId: Int): Unit = {
+      model.originId = newOriginId
+      val onEvent = newOriginId == Origins.ON_ENTITY.id
+      fEntity.enabled = onEvent
+      fXOffset.enabled = !onEvent
+      fYOffset.enabled = !onEvent
+    }
+    updateOriginId(model.originId)
+
+    Seq(
+      EventField(needsTranslation("Animation"), indexedCombo(
+          sm.getProjData.enums.animations, model.animationId,
+          model.animationId = _)),
+      EventField(needsTranslation("Animation Origin"), fOrigin),
+      EventField(needsTranslation("Entity"), fEntity),
+      EventField(needsTranslation("X Offset"), fXOffset),
+      EventField(needsTranslation("Y Offset"), fYOffset),
+      EventField(needsTranslation("Animation speed"),
+          percentField(0.25f, 4.0f, model.speedScale, model.speedScale = _)))
+  }
+}
+
 object PlayMusicUI extends EventCmdUI[PlayMusic] {
-  override def category = Audio
+  override def category = Effects
   override def title = getMessage("Play_Music")
   override def getNormalFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: PlayMusic) = Seq(
@@ -334,7 +371,7 @@ object PlayMusicUI extends EventCmdUI[PlayMusic] {
 }
 
 object PlaySoundUI extends EventCmdUI[PlaySound] {
-  override def category = Audio
+  override def category = Effects
   override def title = getMessage("Play_Sound")
   override def getNormalFields(owner: Window, sm: StateMaster,
       mapName: Option[String], model: PlaySound) = Seq(
@@ -458,7 +495,7 @@ object StartBattleUI extends EventCmdUI[StartBattle] {
 }
 
 object StopMusicUI extends EventCmdUI[StopMusic] {
-  override def category = Audio
+  override def category = Effects
   override def title = getMessage("Stop_Music")
   override def getNormalFields(owner: Window, sm: StateMaster,
       mapName: Option[String], model: StopMusic) = Seq(
@@ -543,7 +580,7 @@ object SetTransitionUI extends EventCmdUI[SetTransition] {
 }
 
 object StopSoundUI extends EventCmdUI[StopSound] {
-  override def category = Audio
+  override def category = Effects
   override def title = getMessage("Stop_Sound")
 }
 

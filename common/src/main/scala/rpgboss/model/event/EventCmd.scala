@@ -65,6 +65,7 @@ object EventCmd {
     classOf[MoveCamera],
     classOf[MoveEvent],
     classOf[OpenStore],
+    classOf[PlayAnimation],
     classOf[PlayMusic],
     classOf[PlaySound],
     classOf[RunJs],
@@ -194,7 +195,7 @@ case class WeatherEffects(
 
     buf += PlainLines(Array(jsCall("game.setInt","fogVisible", fogResult).exp))
     buf += PlainLines(Array(jsCall("game.setInt","rainVisible", rainResult).exp))
-    
+
     buf.toArray
   }
 }
@@ -310,10 +311,10 @@ case class GetEntityInfo(
   def sections:Array[CodeSection] = {
 
     entitySpec match {
-      case EntitySpec(which, _, _) 
+      case EntitySpec(which, _, _)
       if which == WhichEntity.PLAYER.id =>
         return executeCommand(kind, true, WhichEntity.PLAYER.id)
-      case EntitySpec(which, _, eventIdx) 
+      case EntitySpec(which, _, eventIdx)
       if which == WhichEntity.THIS_EVENT.id =>
         return executeCommand(kind, false, eventIdx)
       case EntitySpec(which, _, eventIdx)
@@ -355,9 +356,40 @@ case class OpenStore(
     List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
-case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
-  def sections =
-    singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
+case class PlayAnimation(
+  var animationId: Int = 0,
+  var originId: Int = Origins.default.id,
+  var entitySpec: EntitySpec = EntitySpec(),
+  var xOffset: Int = 0,
+  var yOffset: Int = 0,
+  var speedScale: Float = 1.0f) extends EventCmd {
+  def sections = Origins(originId) match {
+    case Origins.SCREEN_TOP_LEFT =>
+      singleCall("game.playAnimation", animationId, xOffset, yOffset,
+          speedScale)
+    case Origins.SCREEN_CENTER =>
+      singleCall("game.playAnimation", animationId,
+          applyOperator(RawJs("game.getScreenW() / 2"), " + ",
+                        RawJs(EventJavascript.toJs(xOffset))),
+          applyOperator(RawJs("game.getScreenH() / 2"), " + ",
+                        RawJs(EventJavascript.toJs(yOffset))),
+          speedScale)
+    case Origins.ON_ENTITY => {
+      entitySpec match {
+        case EntitySpec(which, _, _) if which == WhichEntity.PLAYER.id =>
+          singleCall("game.playAnimationOnPlayer", animationId, speedScale)
+        case EntitySpec(which, _, _) if which == WhichEntity.THIS_EVENT.id =>
+          singleCall(
+            "game.playAnimationOnEvent", animationId, RawJs("event.id()"),
+            speedScale)
+        case EntitySpec(which, _, eventIdx)
+        if which == WhichEntity.EVENT_ON_MAP.id =>
+          singleCall(
+            "game.playAnimationOnEvent", animationId, entitySpec.eventId,
+            speedScale)
+      }
+    }
+  }
 }
 
 case class PlayMusic(
@@ -369,6 +401,11 @@ case class PlayMusic(
     singleCall("game.playMusic", slot, spec.sound, spec.volume, loop,
         fadeDuration)
   override def getParameters() = List(slot)
+}
+
+case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
+  def sections =
+    singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
 }
 
 case class RunJs(var scriptBody: String = "") extends EventCmd {
@@ -493,13 +530,13 @@ case class WhileLoop(
   }
 }
 
-case class SetTransition(var transitionId: Int = 0) 
+case class SetTransition(var transitionId: Int = 0)
     extends EventCmd {
     def sections =
       singleCall("game.setInt", "useTransition", transitionId)
 }
 
-case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true) 
+case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true)
     extends EventCmd {
     def sections =
       singleCall("game.moveCamera", dx, dy, async)

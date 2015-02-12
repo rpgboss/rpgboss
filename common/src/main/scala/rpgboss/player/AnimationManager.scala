@@ -4,6 +4,8 @@ import rpgboss.lib.ThreadChecked
 import rpgboss.player.entity.AnimationPlayer
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.OrthographicCamera
 
 class AnimationManager extends ThreadChecked with Disposable {
   val animations = new collection.mutable.HashSet[AnimationPlayer]
@@ -32,7 +34,14 @@ class AnimationManager extends ThreadChecked with Disposable {
     animations --= toRemove
   }
 
-  def render(batch: SpriteBatch) = {
+  def render(batch: SpriteBatch, screenCamera: OrthographicCamera) = {
+    batch.begin()
+
+    batch.setProjectionMatrix(screenCamera.combined)
+    batch.enableBlending()
+    batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
     animations.foreach(_.render(batch))
+    batch.end()
   }
 }

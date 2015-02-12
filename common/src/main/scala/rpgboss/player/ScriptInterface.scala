@@ -22,10 +22,19 @@ import com.badlogic.gdx.graphics.Color
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 
-case class EntityInfo(x: Float, y: Float, dir: Int)
+case class EntityInfo(x: Float, y: Float, dir: Int,
+    screenX: Float, screenY: Float)
 
 object EntityInfo {
-  def apply(e: Entity): EntityInfo = apply(e.x, e.y, e.dir)
+  def apply(e: Entity, mapScreen: MapScreen): EntityInfo = {
+    val pxPerTileX = mapScreen.screenW / mapScreen.screenWTiles
+    val pxPerTileY = mapScreen.screenH / mapScreen.screenHTiles
+    val screenX =
+      (e.x - mapScreen.camera.x) * pxPerTileX + (mapScreen.screenW / 2)
+    val screenY =
+      (e.y - mapScreen.camera.y) * pxPerTileY + (mapScreen.screenH / 2)
+    apply(e.x, e.y, e.dir, screenX, screenY)
+  }
 }
 
 case class CurrentAndProposedStats(
@@ -116,6 +125,9 @@ class ScriptInterface(
   /*
    * Accessors to various game data
    */
+  def getScreenH() = project.data.startup.screenH
+  def getScreenW() = project.data.startup.screenW
+
   def getMap(loc: MapLoc) =
     RpgMap.readFromDisk(project, loc.map)
 
@@ -297,6 +309,22 @@ class ScriptInterface(
         slot, None, false, fadeDuration)
   }
 
+  def playAnimation(animationId: Int, screenX: Float, screenY: Float,
+      speedScale: Float) = syncRun {
+    activeScreen.playAnimation(animationId, screenX, screenY, speedScale)
+  }
+
+  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Int) = {
+    getEventEntityInfo(eventId) map { info =>
+      playAnimation(animationId, info.screenX, info.screenY, speedScale)
+    }
+  }
+
+  def playAnimationOnPlayer(animationId: Int, speedScale: Int) = {
+    val info = getPlayerEntityInfo()
+    playAnimation(animationId, info.screenX, info.screenY, speedScale)
+  }
+
   def playSound(sound: String) = syncRun {
     activeScreen.playSound(SoundSpec(sound))
   }
@@ -463,7 +491,7 @@ class ScriptInterface(
   }
 
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
-    mapScreen.eventEntities.get(id).map(EntityInfo.apply)
+    mapScreen.eventEntities.get(id).map(EntityInfo.apply(_, mapScreen))
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {

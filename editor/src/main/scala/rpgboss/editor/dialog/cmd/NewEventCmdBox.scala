@@ -17,8 +17,13 @@ import rpgboss.editor.uibase.SwingUtils.leftLabel
 import rpgboss.model.MapLoc
 
 object EventCmdCategory extends Enumeration {
-  val Windows, Movement, Party, Inventory = Value
-  val Battles, Audio, Programming = Value
+  val Windows = Value
+  val Movement = Value
+  val Party = Value
+  val Inventory = Value
+  val Battles = Value
+  val Effects = Value
+  val Programming = Value
 }
 
 class NewEventCmdBox(

@@ -13,12 +13,15 @@ import rpgboss.model.resource.SoundPlayer
 import rpgboss.model.AnimationSound
 import rpgboss.model.Animation
 import rpgboss.player.entity.AnimationPlayer
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
 object RpgScreen {
   val MAX_MUSIC_SLOTS = 8
 }
 
-trait RpgScreen extends Screen 
+trait RpgScreen extends Screen
   with ThreadChecked {
   def project: Project
   def assets: RpgAssetManager
@@ -33,14 +36,33 @@ trait RpgScreen extends Screen
 
   val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
 
+  val batch = new SpriteBatch()
+  val shapeRenderer = new ShapeRenderer()
+
   /*
    * Music instances 'on their way out'.
    */
   val oldMusics = collection.mutable.Set[MusicPlayer]()
 
+  val screenCamera: OrthographicCamera = new OrthographicCamera()
+  screenCamera.setToOrtho(true, screenW, screenH) // y points down
+  screenCamera.update()
+
   val windowManager = createWindowManager()
 
   val animationManager = new AnimationManager()
+
+  def playAnimation(animationId: Int, screenX: Float, screenY: Float,
+      speedScale: Float = 1.0f) = {
+    println("Play animation %d, %f, %f, %f".format(animationId, screenX, screenY, speedScale))
+    val animation = project.data.enums.animations(animationId)
+    val player =
+      new AnimationPlayer(project, animation, assets, screenX, screenY,
+          speedScale)
+    player.play()
+    animationManager.addAnimation(player)
+    player
+  }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDuration: Float): Unit = {
@@ -111,6 +133,8 @@ trait RpgScreen extends Screen
     reset()
 
     animationManager.dispose()
+    shapeRenderer.dispose()
+    batch.dispose()
   }
 
   override def hide() = {

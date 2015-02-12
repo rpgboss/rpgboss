@@ -12,7 +12,7 @@ import rpgboss.player.GdxGraphicsUtils
  */
 class AnimationPlayer(
   proj: Project, animation: Animation, assets: RpgAssetManager,
-  dstXOffset: Float, dstYOffset: Float)
+  dstXOffset: Float, dstYOffset: Float, speedScale: Float = 1.0f)
   extends Disposable {
 
   object States {
@@ -101,7 +101,7 @@ class AnimationPlayer(
     }
 
     if (_state != Idle) {
-      _time += delta
+      _time += delta * speedScale
 
       _state match {
         case Playing if _time >= animation.totalTime =>

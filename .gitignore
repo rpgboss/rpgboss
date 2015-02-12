@@ -13,5 +13,4 @@ project/plugins/project
 .project
 .settings
 Thumbs.db
-
-editor/hs_err_pid778.log
+*.log

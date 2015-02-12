@@ -251,6 +251,7 @@ object SwingUtils {
   def addBtnsAsGrp(contents: Buffer[Component], btns: Seq[AbstractButton]) = {
     val group = makeButtonGroup(btns)
     contents ++= btns
+    group
   }
 
   def enumButtons[T <: Enumeration](enum: T)(
@@ -292,6 +293,8 @@ object SwingUtils {
       val actualChoices = if (choices.isEmpty) enum.values.toSeq else choices
       actualChoices.map { eVal =>
         new RadioButton() {
+          val value = eVal
+
           action = Action(Internationalized.getMessage(eVal.toString)) {
             onUpdate(eVal.id)
           }
@@ -311,7 +314,7 @@ object SwingUtils {
       id => onUpdate(enum.toBoolean(id)))
 
     new BoxPanel(Orientation.Horizontal) {
-      addBtnsAsGrp(contents, radios)
+      val group = addBtnsAsGrp(contents, radios)
     }
   }
 
@@ -319,8 +322,12 @@ object SwingUtils {
     enum: RpgEnum,
     initial: Int,
     onUpdate: Int => Any) = {
+    val radios = enumIdRadios(enum)(initial, onUpdate)
     new BoxPanel(Orientation.Vertical) {
-      addBtnsAsGrp(contents, enumIdRadios(enum)(initial, onUpdate))
+      val group = addBtnsAsGrp(contents, radios)
+      def updateId(newId: Int) = {
+        radios.find(_.value.id == newId).map(group.select)
+      }
     }
   }
 

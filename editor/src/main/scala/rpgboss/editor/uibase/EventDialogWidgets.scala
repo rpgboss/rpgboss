@@ -12,7 +12,7 @@ import rpgboss.model.WhichEntity
 import javax.swing.BorderFactory
 import rpgboss.editor.misc.MapSelector
 import rpgboss.model.resource.RpgMap
-import rpgboss.editor.Internationalized._ 
+import rpgboss.editor.Internationalized._
 
 object EventArrayComboBox {
   // Returns a ComboBox, plus a boolean indicating whether or not 'initial' was
@@ -67,6 +67,20 @@ class EntitySelectPanel(
 
   border = BorderFactory.createTitledBorder(getMessage("Which_Entity"))
 
+  override def enabled_=(b: Boolean) = {
+    super.enabled = b
+
+    if (!b) {
+      mapSelector.enabled = false
+      if (fieldEventId != null)
+        fieldEventId.enabled = false
+      btns.foreach(_.enabled = false)
+    } else {
+      updateFieldState(model.whichEntityId, model.whichEntityId)
+      btns.foreach(btn => btn.enabled = !disabledSet.contains(btn.value))
+    }
+  }
+
   var selectedOtherMap =
     if (model.whichEntityId == WhichEntity.EVENT_ON_OTHER_MAP.id)
       model.mapName
@@ -110,7 +124,9 @@ class EntitySelectPanel(
       val initialId = selectedEventIdPerMap.getOrElse(newMapName, -1)
 
       val (newField, found) =
-          EventArrayComboBox.fromMap(newMapData, initialId, model.eventId = _)
+          EventArrayComboBox.fromMap(newMapData, initialId, newEventId => {
+            model.eventId = newEventId
+          })
 
       if (!newMapData.events.isEmpty)
         model.eventId = newField.selection.item.id
