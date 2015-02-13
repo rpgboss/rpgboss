@@ -313,7 +313,7 @@ object OpenStoreUI extends EventCmdUI[OpenStore] {
 
 object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
   override def category = Effects
-  override def title = needsTranslation("Play_Animation")
+  override def title = getMessage("Play_Animation")
   override def getNormalFields(owner: Window, sm: StateMaster,
       mapName: Option[String], model: PlayAnimation) = {
 
@@ -336,14 +336,14 @@ object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
     updateOriginId(model.originId)
 
     Seq(
-      EventField(needsTranslation("Animation"), indexedCombo(
+      EventField(getMessage("Animation"), indexedCombo(
           sm.getProjData.enums.animations, model.animationId,
           model.animationId = _)),
-      EventField(needsTranslation("Animation Origin"), fOrigin),
-      EventField(needsTranslation("Entity"), fEntity),
-      EventField(needsTranslation("X Offset"), fXOffset),
-      EventField(needsTranslation("Y Offset"), fYOffset),
-      EventField(needsTranslation("Animation speed"),
+      EventField(getMessage("Animation_Origin"), fOrigin),
+      EventField(getMessage("Entity"), fEntity),
+      EventField(getMessage("X_Offset"), fXOffset),
+      EventField(getMessage("Y_Offset"), fYOffset),
+      EventField(getMessage("Animation_Speed"),
           percentField(0.25f, 4.0f, model.speedScale, model.speedScale = _)))
   }
 }
