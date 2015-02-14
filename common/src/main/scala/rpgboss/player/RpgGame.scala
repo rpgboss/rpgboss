@@ -108,6 +108,9 @@ class RpgGame(gamepath: File)
     // Standard setting for transitions
     persistent.setInt("useTransition",-1)
 
+    // Standard setting for menu enabled/disabled
+    persistent.setInt("menuEnabled",1)
+
     startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
       ResourceConstants.systemStartCall)

@@ -41,6 +41,13 @@ object EntityInfoEnum extends RpgEnum {
   def default = X
 }
 
+object EnabledDisabledEnum extends RpgEnum {
+  val Disabled = Value(0, "Disabled")
+  val Enabled = Value(1, "Enabled")
+
+  def default = Enabled
+}
+
 object Scope extends RpgEnum {
   val None = Value
   val SelfOnly = Value("User_Only")

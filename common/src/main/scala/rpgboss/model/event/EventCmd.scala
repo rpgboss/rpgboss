@@ -61,6 +61,7 @@ object EventCmd {
     classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
+    classOf[EnableDisableMenu],
     classOf[ModifyParty],
     classOf[MoveCamera],
     classOf[MoveEvent],
@@ -501,6 +502,12 @@ case class Teleport(loc: MapLoc = MapLoc(),
     var transitionId: Int = Transitions.FADE.id) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
+}
+
+case class EnableDisableMenu(var enabled: Int = 1) extends EventCmd {
+  def sections = {
+    singleCall("game.setInt", "menuEnabled",enabled)
+  }
 }
 
 case class TintScreen(

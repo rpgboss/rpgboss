@@ -51,6 +51,7 @@ import rpgboss.lib.ArrayUtils
 import rpgboss.model.AddOrRemove
 import rpgboss.model.HealOrDamageEnum
 import rpgboss.model.EntityInfoEnum
+import rpgboss.model.EnabledDisabledEnum
 import rpgboss.model.MapLoc
 import rpgboss.model.PictureSlots
 import rpgboss.model.RpgMapData
@@ -72,6 +73,7 @@ object EventCmdUI {
       HidePictureUI,
       IfConditionUI,
       LockPlayerMovementUI,
+      EnableDisableMenuUI,
       ModifyPartyUI,
       MoveCameraUI,
       MoveEventUI,
@@ -193,6 +195,16 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
         minElems = 2, maxElems = 4)),
     EventField("", boolField(getMessage("Allow_Cancel"), model.allowCancel,
         model.allowCancel = _)))
+}
+
+object EnableDisableMenuUI extends EventCmdUI[EnableDisableMenu] {
+  override def category = Windows
+  override def title = getMessage("Enable_Disable_Menu")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: EnableDisableMenu) = Seq(
+    EventField("", enumVerticalBox(
+        EnabledDisabledEnum, model.enabled, model.enabled = _))
+    )
 }
 
 object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
