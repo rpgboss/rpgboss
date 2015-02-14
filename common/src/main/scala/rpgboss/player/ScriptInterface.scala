@@ -168,8 +168,8 @@ class ScriptInterface(
   /**
    * Moves the map camera.
    */
-  def moveCamera(dx: Float, dy: Float, async: Boolean) = {
-    val move = syncRun { mapScreen.camera.enqueueMove(dx, dy) }
+  def moveCamera(dx: Float, dy: Float, async: Boolean, duration:Float) = {
+    val move = syncRun { mapScreen.camera.enqueueMove(dx, dy, duration) }
     if (!async)
       move.awaitFinish()
   }

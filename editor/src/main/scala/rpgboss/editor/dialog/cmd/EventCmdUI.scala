@@ -51,6 +51,7 @@ import rpgboss.lib.ArrayUtils
 import rpgboss.model.AddOrRemove
 import rpgboss.model.HealOrDamageEnum
 import rpgboss.model.EntityInfoEnum
+import rpgboss.model.EnabledDisabledEnum
 import rpgboss.model.MapLoc
 import rpgboss.model.PictureSlots
 import rpgboss.model.RpgMapData
@@ -73,6 +74,7 @@ object EventCmdUI {
       HidePictureUI,
       IfConditionUI,
       LockPlayerMovementUI,
+      EnableDisableMenuUI,
       ModifyPartyUI,
       MoveCameraUI,
       MoveEventUI,
@@ -196,6 +198,16 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
         model.allowCancel = _)))
 }
 
+object EnableDisableMenuUI extends EventCmdUI[EnableDisableMenu] {
+  override def category = Windows
+  override def title = getMessage("Enable_Disable_Menu")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: EnableDisableMenu) = Seq(
+    EventField("", enumVerticalBox(
+        EnabledDisabledEnum, model.enabled, model.enabled = _))
+    )
+}
+
 object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
   override def category = Party
   override def title = getMessage("Weather_Effects")
@@ -205,7 +217,10 @@ object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
         getMessage("Rain"), model.rain, model.rain = _)),
     EventField("", boolField(
         getMessage("Fog"),
-        model.fog, model.fog = _))
+        model.fog, model.fog = _)),
+    EventField("", boolField(
+        getMessage("Snow"),
+        model.snow, model.snow = _))
     )
 }
 
@@ -314,7 +329,7 @@ object OpenStoreUI extends EventCmdUI[OpenStore] {
 
 object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
   override def category = Effects
-  override def title = needsTranslation("Play_Animation")
+  override def title = getMessage("Play_Animation")
   override def getNormalFields(owner: Window, sm: StateMaster,
       mapName: Option[String], model: PlayAnimation) = {
 
@@ -337,14 +352,14 @@ object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
     updateOriginId(model.originId)
 
     Seq(
-      EventField(needsTranslation("Animation"), indexedCombo(
+      EventField(getMessage("Animation"), indexedCombo(
           sm.getProjData.enums.animations, model.animationId,
           model.animationId = _)),
-      EventField(needsTranslation("Animation Origin"), fOrigin),
-      EventField(needsTranslation("Entity"), fEntity),
-      EventField(needsTranslation("X Offset"), fXOffset),
-      EventField(needsTranslation("Y Offset"), fYOffset),
-      EventField(needsTranslation("Animation speed"),
+      EventField(getMessage("Animation_Origin"), fOrigin),
+      EventField(getMessage("Entity"), fEntity),
+      EventField(getMessage("X_Offset"), fXOffset),
+      EventField(getMessage("Y_Offset"), fYOffset),
+      EventField(getMessage("Animation_Speed"),
           percentField(0.25f, 4.0f, model.speedScale, model.speedScale = _)))
   }
 }
@@ -565,6 +580,9 @@ object MoveCameraUI extends EventCmdUI[MoveCamera] {
         EventField(getMessage("Y_Scroll_Value"),
         new FloatSpinner(
             -9999f, 9999f, 1f, model.dy, model.dy = _)),
+        EventField(getMessage("Duration"),
+        new FloatSpinner(
+            -9999f, 9999f, 0.1f, model.duration, model.duration = _)),
         EventField("", boolField(getMessage("Async"), model.async,
         model.async = _)))
 }

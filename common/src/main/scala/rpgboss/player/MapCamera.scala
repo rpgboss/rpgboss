@@ -31,7 +31,8 @@ class MapCamera(game: RpgGame) {
     }
   }
 
-  def enqueueMove(dx: Float, dy: Float): MapCameraMove = {
+  def enqueueMove(dx: Float, dy: Float, duration:Float): MapCameraMove = {
+    speed = duration
     val move = new MapCameraMove(dx, dy)
     moveQueue.enqueue(move)
     return move
