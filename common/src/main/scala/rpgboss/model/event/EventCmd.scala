@@ -183,7 +183,8 @@ case class HealOrDamage(
 
 case class WeatherEffects(
     var rain: Boolean = false,
-    var fog: Boolean = false) extends EventCmd {
+    var fog: Boolean = false,
+    var snow: Boolean = false) extends EventCmd {
   def sections = {
     val buf = new ArrayBuffer[CodeSection]()
 
@@ -193,8 +194,12 @@ case class WeatherEffects(
     var fogResult = 0
     if(fog) fogResult = 1
 
+    var snowResult = 0
+    if(snow) snowResult = 1
+
     buf += PlainLines(Array(jsCall("game.setInt","fogVisible", fogResult).exp))
     buf += PlainLines(Array(jsCall("game.setInt","rainVisible", rainResult).exp))
+    buf += PlainLines(Array(jsCall("game.setInt","snowVisible", snowResult).exp))
 
     buf.toArray
   }
@@ -536,10 +541,10 @@ case class SetTransition(var transitionId: Int = 0)
       singleCall("game.setInt", "useTransition", transitionId)
 }
 
-case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true)
+case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true, var duration:Float = 2f)
     extends EventCmd {
     def sections =
-      singleCall("game.moveCamera", dx, dy, async)
+      singleCall("game.moveCamera", dx, dy, async, duration)
 }
 
 case class StopSound() extends EventCmd {

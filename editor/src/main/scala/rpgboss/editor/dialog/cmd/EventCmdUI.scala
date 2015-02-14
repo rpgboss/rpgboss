@@ -204,7 +204,10 @@ object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
         getMessage("Rain"), model.rain, model.rain = _)),
     EventField("", boolField(
         getMessage("Fog"),
-        model.fog, model.fog = _))
+        model.fog, model.fog = _)),
+    EventField("", boolField(
+        getMessage("Snow"),
+        model.snow, model.snow = _))
     )
 }
 
@@ -564,6 +567,9 @@ object MoveCameraUI extends EventCmdUI[MoveCamera] {
         EventField(getMessage("Y_Scroll_Value"),
         new FloatSpinner(
             -9999f, 9999f, 1f, model.dy, model.dy = _)),
+        EventField(getMessage("Duration"),
+        new FloatSpinner(
+            -9999f, 9999f, 0.1f, model.duration, model.duration = _)),
         EventField("", boolField(getMessage("Async"), model.async,
         model.async = _)))
 }
