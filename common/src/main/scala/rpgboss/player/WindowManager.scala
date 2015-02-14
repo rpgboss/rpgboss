@@ -1,7 +1,6 @@
 package rpgboss.player
 
 import scala.collection.mutable.MutableList
-
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
@@ -12,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.typesafe.scalalogging.slf4j.LazyLogging
-
 import rpgboss.lib.Layout
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.PictureSlots
@@ -23,6 +21,8 @@ import rpgboss.model.resource.Picture
 import rpgboss.model.resource.RpgAssetManager
 import rpgboss.model.resource.Windowskin
 import rpgboss.player.entity.Window
+import rpgboss.lib.BoxLike
+import rpgboss.lib.Rect
 
 /**
  * This class renders stuff on the screen.
@@ -216,8 +216,8 @@ class WindowManager(
     batch.setProjectionMatrix(screenCamera.combined)
     batch.enableBlending()
     batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-    shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
+    shapeRenderer.setProjectionMatrix(screenCamera.combined)
 
     /*
      * We define our screen coordinates to be 640x480.
@@ -285,6 +285,8 @@ class WindowManager(
 trait PictureLike {
   def dispose()
   def render(manager: WindowManager, batch: SpriteBatch)
+  def setAnimationTint(color: Color)
+  def getRect(): Rect
 }
 
 /**
@@ -292,27 +294,44 @@ trait PictureLike {
  */
 case class TexturePicture[MT <: AnyRef](
   assets: RpgAssetManager, resource: ImageResource[_, MT],
-  layout: Layout, alpha:Float=1.0f) extends PictureLike {
+  layout: Layout, alpha: Float = 1.0f) extends PictureLike {
 
   resource.loadAsset(assets)
   def dispose() = resource.dispose(assets)
+
+  private var _rect: Option[Rect] = None
+
+  val animationTint = Color.WHITE.cpy()
+  def setAnimationTint(color: Color) = animationTint.set(color)
+  override def getRect() = _rect.getOrElse(Rect(0, 0, 100, 100))
 
   override def render(manager: WindowManager, batch: SpriteBatch) = {
     if (resource.isLoaded(assets)) {
       val texture = resource.getAsset(assets)
       val rect = layout.getRect(texture.getWidth(), texture.getHeight(),
                                 manager.screenW, manager.screenH)
-      var c = batch.getColor();
-      batch.setColor(c.r, c.g, c.b, alpha);
+      _rect = Some(rect)
       batch.draw(texture,
         rect.left, rect.top, rect.w, rect.h,
         0, 0, texture.getWidth(), texture.getHeight(),
         false, true)
-      batch.setColor(c.r, c.g, c.b, 1);
+
+      val modifiedAnimationTint = animationTint.cpy()
+      modifiedAnimationTint.a *= alpha
+      batch.setColor(modifiedAnimationTint);
+      batch.draw(texture,
+        rect.left, rect.top, rect.w, rect.h,
+        0, 0, texture.getWidth(), texture.getHeight(),
+        false, true)
+
+      batch.setColor(Color.WHITE)
     }
   }
 }
 
+/**
+ * @param   x     Specifies the left the destination X in screen coordinates.
+ */
 case class TextureAtlasRegionPicture(
   atlasSprites: TextureAtlas,
   regionName: String,
@@ -322,6 +341,11 @@ case class TextureAtlasRegionPicture(
   val region = atlasSprites.findRegion(regionName)
   val srcXInRegion = region.getRegionX() + srcX
   val srcYInRegion = region.getRegionY() + srcY
+
+  val animationTint = Color.WHITE.cpy()
+  def setAnimationTint(color: Color) = animationTint.set(color)
+
+  override def getRect() = Rect(x + w / 2, y + h / 2, w, h)
 
   def dispose() = {
     // No need to dispose since the texture is part of the TextureAtlas
@@ -336,5 +360,15 @@ case class TextureAtlasRegionPicture(
       srcW,
       srcH,
       false, true)
+    batch.setColor(animationTint)
+    batch.draw(
+      region.getTexture(),
+      x, y, w, h,
+      srcXInRegion,
+      srcYInRegion,
+      srcW,
+      srcH,
+      false, true)
+    batch.setColor(Color.WHITE)
   }
 }

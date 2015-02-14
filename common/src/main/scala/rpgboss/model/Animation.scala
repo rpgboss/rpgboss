@@ -40,7 +40,7 @@ case class AnimationFlash(
     assert(time >= startTime)
     assert(time < endTime)
     // Linearly rising to max halfway through, then fading to zero.
-    val firstHalf = time - startTime >= duration / 2
+    val firstHalf = (time - startTime) < (duration / 2)
     val percentMax =
       if (firstHalf)
         (time - startTime) / (duration / 2)
