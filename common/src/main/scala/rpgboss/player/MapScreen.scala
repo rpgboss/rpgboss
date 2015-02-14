@@ -36,6 +36,7 @@ class MapScreen(val game: RpgGame)
   // protagonist. Modify all these things on the Gdx thread
   private var _playerEntity: PlayerEntity = null
 
+  def playerEntity = _playerEntity
   def getPlayerEntityInfo() = EntityInfo(_playerEntity, this)
 
   private def moveEntity(
@@ -363,7 +364,7 @@ class MapScreen(val game: RpgGame)
     windowManager.preMapRender(batch, screenCamera)
     renderMap()
 
-    animationManager.render(batch, screenCamera)
+    animationManager.render(batch, shapeRenderer, screenCamera)
     windowManager.render(batch, shapeRenderer, screenCamera)
   }
 

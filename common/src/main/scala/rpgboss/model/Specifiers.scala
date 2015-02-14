@@ -93,6 +93,12 @@ case class RandomEncounterSettings(
   def deepcopy() = copy(encounters = encounters.map(_.copy()))
 }
 
+case class ColorSpec(
+  var r: Float = 1.0f,
+  var g: Float = 0.0f,
+  var b: Float = 0.0f,
+  var a: Float = 0.5f)
+
 case class SoundSpec(
   sound: String = "",
   var volume: Float = 1.0f,

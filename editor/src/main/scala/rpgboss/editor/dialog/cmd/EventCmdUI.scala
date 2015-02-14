@@ -58,6 +58,7 @@ import rpgboss.model.Transitions
 import rpgboss.model.event._
 import rpgboss.player.RpgScreen
 import rpgboss.model.Origins
+import rpgboss.model.ColorSpec
 
 case class EventField(title: String, component: Component)
 
@@ -531,12 +532,12 @@ object TintScreenUI extends EventCmdUI[TintScreen] {
     EventField(
         getMessageColon("Color_And_Alpha"),
         colorField(
-            (model.r, model.g, model.b, model.a),
-            (r, g, b, a) => {
-              model.r = r
-              model.g = g
-              model.b = b
-              model.a = a
+            ColorSpec(model.r, model.g, model.b, model.a),
+            v => {
+              model.r = v.r
+              model.g = v.g
+              model.b = v.b
+              model.a = v.a
             })),
     EventField(getMessageColon("Fade_Duration"),
         new FloatSpinner(

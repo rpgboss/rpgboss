@@ -605,7 +605,7 @@ class BattleScreen(
                 for (hit <- notification.hits; if hit.animationId >= 0) yield {
                   assert(hit.animationId < battle.pData.enums.animations.length)
                   val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
-                  playAnimation(hit.animationId, box.x, box.y)
+                  playAnimation(hit.animationId, new BoxAnimationTarget(box))
                 }
 
               notification.action match {
@@ -649,7 +649,8 @@ class BattleScreen(
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL20.GL_BLEND)
 
-    animationManager.render(batch, screenCamera)
+    windowManager.preMapRender(batch, screenCamera)
+    animationManager.render(batch, shapeRenderer, screenCamera)
     windowManager.render(batch, shapeRenderer, screenCamera)
   }
 

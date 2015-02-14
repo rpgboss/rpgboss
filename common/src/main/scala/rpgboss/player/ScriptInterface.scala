@@ -311,16 +311,22 @@ class ScriptInterface(
 
   def playAnimation(animationId: Int, screenX: Float, screenY: Float,
       speedScale: Float) = syncRun {
-    activeScreen.playAnimation(animationId, screenX, screenY, speedScale)
+    activeScreen.playAnimation(animationId,
+        new FixedAnimationTarget(screenX, screenY), speedScale)
   }
 
   def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Int) = {
-    getEventEntityInfo(eventId) map { info =>
-      playAnimation(animationId, info.screenX, info.screenY, speedScale)
+    mapScreen.eventEntities.get(eventId) map { entity =>
+      activeScreen.playAnimation(animationId,
+          new MapEntityAnimationTarget(mapScreen, entity),
+          speedScale)
     }
   }
 
   def playAnimationOnPlayer(animationId: Int, speedScale: Int) = {
+    activeScreen.playAnimation(animationId,
+        new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
+        speedScale)
     val info = getPlayerEntityInfo()
     playAnimation(animationId, info.screenX, info.screenY, speedScale)
   }

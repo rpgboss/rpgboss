@@ -16,6 +16,9 @@ import rpgboss.player.entity.AnimationPlayer
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import rpgboss.player.entity.FixedAnimationTarget
+import rpgboss.player.entity.AnimationTarget
+import rpgboss.player.entity.FixedAnimationTarget
 
 object RpgScreen {
   val MAX_MUSIC_SLOTS = 8
@@ -50,15 +53,14 @@ trait RpgScreen extends Screen
 
   val windowManager = createWindowManager()
 
-  val animationManager = new AnimationManager()
+  val animationManager = new AnimationManager(screenW, screenH)
 
-  def playAnimation(animationId: Int, screenX: Float, screenY: Float,
+  def playAnimation(animationId: Int, target: AnimationTarget,
       speedScale: Float = 1.0f) = {
-    println("Play animation %d, %f, %f, %f".format(animationId, screenX, screenY, speedScale))
     val animation = project.data.enums.animations(animationId)
     val player =
-      new AnimationPlayer(project, animation, assets, screenX, screenY,
-          speedScale)
+      new AnimationPlayer(project, animation, assets,
+          target, speedScale)
     player.play()
     animationManager.addAnimation(player)
     player
@@ -103,7 +105,8 @@ trait RpgScreen extends Screen
   def playSound(soundSpec: SoundSpec): Unit = {
     animationSound = AnimationSound(0.0f, soundSpec)
     animation = Animation(sounds = Array(animationSound))
-    soundPlayer = new AnimationPlayer(project, animation, assets, 0f, 0f)
+    soundPlayer = new AnimationPlayer(project, animation, assets,
+        new FixedAnimationTarget(0, 0))
     animationManager.addAnimation(soundPlayer)
     soundPlayer.play()
   }

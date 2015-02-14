@@ -54,11 +54,10 @@ object SwingUtils {
       }
     }
 
-  def colorField(initial: (Float, Float, Float, Float),
-      onUpdate: (Float, Float, Float, Float) => Unit) = {
-    val initialColor = new Color(initial._1, initial._2, initial._3, initial._4)
+  def colorField(initial: ColorSpec,
+      onUpdate: ColorSpec => Unit) = {
+    val initialColor = new Color(initial.r, initial.g, initial.b, initial.a)
     new ColorChooser(initialColor) {
-
         for(p <- peer.getChooserPanels()) {
           p.getDisplayName() match {
             case "Swatches" => peer.removeChooserPanel(p)
@@ -76,7 +75,8 @@ object SwingUtils {
       reactions += {
         case ColorChanged(_, newColor) =>
           val components = newColor.getRGBComponents(null)
-          onUpdate(components(0), components(1), components(2), components(3))
+          onUpdate(ColorSpec(
+              components(0), components(1), components(2), components(3)))
           previewPane.tintColor = newColor
       }
     }

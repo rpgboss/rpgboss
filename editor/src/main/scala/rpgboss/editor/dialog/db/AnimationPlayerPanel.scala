@@ -12,6 +12,8 @@ import rpgboss.player.GdxGraphicsUtils
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Disposable
 import rpgboss.editor.Internationalized._
+import rpgboss.player.entity.FixedAnimationTarget
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
 object AnimationPlayerGdxPanel {
   def width = 320
@@ -41,14 +43,15 @@ class AnimationPlayerGdxPanel(
     val battler =
       Battler.readFromDisk(project, ResourceConstants.battlerTarget)
     var batch: SpriteBatch = null
+    var shapeRenderer: ShapeRenderer = null
 
     def updateAnimation(animation: Animation) = {
       if (animationPlayer != null)
         animationPlayer.dispose()
 
       animationPlayer =
-        new AnimationPlayer(project, animation, assets, dstXOffset = 0,
-          dstYOffset = 0)
+        new AnimationPlayer(project, animation, assets,
+            new FixedAnimationTarget(0, 0))
       status.totalTime = animation.totalTime
     }
 
@@ -70,6 +73,8 @@ class AnimationPlayerGdxPanel(
       matrix.trn(AnimationPlayerGdxPanel.width / 2,
         AnimationPlayerGdxPanel.height / 2, 0)
       batch.setTransformMatrix(matrix)
+
+      shapeRenderer = new ShapeRenderer
     }
 
     override def dispose() = {
@@ -104,7 +109,8 @@ class AnimationPlayerGdxPanel(
         GdxGraphicsUtils.drawCentered(batch, background.getAsset(assets), 0, 0)
         GdxGraphicsUtils.drawCentered(batch, battler.getAsset(assets), 0, 0)
 
-        animationPlayer.render(batch)
+        animationPlayer.render(batch, shapeRenderer,
+            AnimationPlayerGdxPanel.width, AnimationPlayerGdxPanel.height)
 
         batch.end()
       }

@@ -6,13 +6,38 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import rpgboss.player.GdxGraphicsUtils
+import rpgboss.player.MapScreen
+import rpgboss.player.EntityInfo
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
+
+trait AnimationTarget {
+  def getScreenCoords(): (Float, Float)
+}
+
+case class FixedAnimationTarget(x: Float, y: Float) extends AnimationTarget {
+  def getScreenCoords() = (x, y)
+}
+
+class MapEntityAnimationTarget(mapScreen: MapScreen, entity: Entity)
+  extends AnimationTarget {
+  def getScreenCoords() = {
+    val info = EntityInfo.apply(entity, mapScreen)
+    (info.screenX , info.screenY)
+  }
+}
+
+class BoxAnimationTarget(box: BoxLike) extends AnimationTarget {
+  def getScreenCoords() = (box.x, box.y)
+}
 
 /**
  * Can only be used from the Gdx thread.
  */
 class AnimationPlayer(
   proj: Project, animation: Animation, assets: RpgAssetManager,
-  dstXOffset: Float, dstYOffset: Float, speedScale: Float = 1.0f)
+  target: AnimationTarget, speedScale: Float = 1.0f)
   extends Disposable {
 
   object States {
@@ -127,7 +152,8 @@ class AnimationPlayer(
   /**
    * Assumes |batch| is already centered on the animation origin.
    */
-  def render(batch: SpriteBatch): Unit = {
+  def render(batch: SpriteBatch, shapeRenderer: ShapeRenderer,
+      screenW: Int, screenH: Int): Unit = {
     if (_state != Playing)
       return
 
@@ -138,8 +164,9 @@ class AnimationPlayer(
         val frameIndex = tweenIntInclusive(
           alpha, visual.start.frameIndex, visual.end.frameIndex)
 
-        val dstX = dstXOffset + tweenFloat(alpha, visual.start.x, visual.end.x)
-        val dstY = dstYOffset + tweenFloat(alpha, visual.start.y, visual.end.y)
+        val (targetX, targetY) = target.getScreenCoords()
+        val dstX = targetX + tweenFloat(alpha, visual.start.x, visual.end.x)
+        val dstY = targetY + tweenFloat(alpha, visual.start.y, visual.end.y)
 
         val xTile = frameIndex % image.xTiles
         val yTile = frameIndex / image.xTiles
@@ -147,6 +174,24 @@ class AnimationPlayer(
         image.drawTileCentered(batch, assets, dstX, dstY, xTile, yTile)
       }
     }
+
+    val currentScreenFlashes = animation.flashes
+        .filter(_.flashTypeId == AnimationFlashType.Screen.id)
+        .filter(_.within(time))
+
+            if (!currentScreenFlashes.isEmpty) {
+       // Spritebatch seems to turn off blending after it's done. Turn it on.
+      Gdx.gl.glEnable(GL20.GL_BLEND)
+      shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+
+      for (flash <- currentScreenFlashes) {
+        shapeRenderer.setColor(flash.currentColor(time))
+        shapeRenderer.rect(0, 0, screenW, screenH)
+      }
+
+      shapeRenderer.end()
+    }
+
   }
 
   def dispose() = {
