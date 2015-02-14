@@ -14,14 +14,6 @@ import com.badlogic.gdx.graphics.GL20
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Channel
 
-case class PartyBattler(project: Project, spriteSpec: SpriteSpec, x: Float,
-                        y: Float) extends BoxLike {
-  val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
-
-  val w = spriteset.tileW.toFloat
-  val h = spriteset.tileH.toFloat
-}
-
 /**
  * This class must be created and accessed only on the Gdx thread.
  *
@@ -286,8 +278,8 @@ class BattleScreen(
 
   // Battle variables
   private var _battle: Option[Battle] = None
-  private val _enemyBattlers = new collection.mutable.ArrayBuffer[Rect]
-  private val _partyBattlers = new collection.mutable.ArrayBuffer[PartyBattler]
+  private val _enemyBattlers = new collection.mutable.ArrayBuffer[PictureLike]
+  private val _partyBattlers = new collection.mutable.ArrayBuffer[PictureLike]
 
   // How long to wait after being defeated.
   private var _defeatedTimer = 0.0f
@@ -311,7 +303,7 @@ class BattleScreen(
   }
   var currentNotificationDisplay: Option[NotificationDisplay] = None
 
-  def getBox(entityType: BattleEntityType.Value, id: Int): BoxLike = {
+  def getBattler(entityType: BattleEntityType.Value, id: Int): PictureLike = {
     assume(entityType == BattleEntityType.Party ||
         entityType == BattleEntityType.Enemy)
 
@@ -438,15 +430,12 @@ class BattleScreen(
 
         val layout =
           Layout(NORTHWEST, FIXED, battlerWidth, battlerHeight, unitL, unitT)
-        val rect = layout.getRect(unitL, unitT, screenW, screenH)
-        windowManager.showPicture(
-          PictureSlots.BATTLE_SPRITES_ENEMIES + i,
-          TexturePicture(
-            assets,
-            battler,
-            layout))
+        val picture = TexturePicture(assets, battler, layout)
 
-        _enemyBattlers.append(rect)
+        windowManager.showPicture(
+            PictureSlots.BATTLE_SPRITES_ENEMIES + i, picture)
+
+        _enemyBattlers.append(picture)
       }
     }
 
@@ -456,28 +445,34 @@ class BattleScreen(
       character.sprite.map { spriteSpec =>
         val x = 10 * i + 550
         val y = 20 * i + 180
-        val battler = PartyBattler(project, spriteSpec, x, y)
 
-        val (srcX, srcY) = battler.spriteset.srcTexels(
+        val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
+
+        val w = spriteset.tileW.toFloat
+        val h = spriteset.tileH.toFloat
+
+        val (srcX, srcY) = spriteset.srcTexels(
           spriteSpec.spriteIndex,
           SpriteSpec.Directions.WEST,
           SpriteSpec.Steps.STEP0)
 
-        windowManager.showPicture(
-          PictureSlots.BATTLE_SPRITES_PARTY + i,
-          TextureAtlasRegionPicture(
+        val newPicture = TextureAtlasRegionPicture(
             atlasSprites,
-            battler.spriteset.name,
-            battler.x,
-            battler.y,
-            battler.w,
-            battler.h,
+            spriteset.name,
+            x,
+            y,
+            w,
+            h,
             srcX,
             srcY,
-            battler.spriteset.tileW,
-            battler.spriteset.tileH))
+            spriteset.tileW,
+            spriteset.tileH)
 
-        _partyBattlers.append(battler)
+        windowManager.showPicture(
+          PictureSlots.BATTLE_SPRITES_PARTY + i,
+          newPicture)
+
+        _partyBattlers.append(newPicture)
       }
     }
   }
@@ -591,21 +586,26 @@ class BattleScreen(
               val windowCounts = collection.mutable.Map[BattleStatus, Int]()
               val windows =
                 for (hit <- notification.hits) yield {
-                  val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
+                  val battler =
+                    getBattler(hit.hitActor.entityType, hit.hitActor.index)
+                  val rect = battler.getRect()
                   val curWindowCount = windowCounts.getOrElse(hit.hitActor, 0)
                   windowCounts.update(hit.hitActor, curWindowCount + 1)
 
                   new DamageTextWindow(
                       game.persistent, windowManager,
-                      hit.damage.damageString(project.data), box.x, box.y,
+                      hit.damage.damageString(project.data), rect.x, rect.y,
                       delayTime = curWindowCount * 0.8f)
                 }
 
               val animations =
                 for (hit <- notification.hits; if hit.animationId >= 0) yield {
                   assert(hit.animationId < battle.pData.enums.animations.length)
-                  val box = getBox(hit.hitActor.entityType, hit.hitActor.index)
-                  playAnimation(hit.animationId, new BoxAnimationTarget(box))
+
+                  val battler =
+                    getBattler(hit.hitActor.entityType, hit.hitActor.index)
+                  playAnimation(hit.animationId,
+                      new PictureLikeAnimationTarget(battler))
                 }
 
               notification.action match {

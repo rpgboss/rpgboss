@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.Disposable
 import rpgboss.editor.Internationalized._
 import rpgboss.player.entity.FixedAnimationTarget
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import rpgboss.player.entity.FixedAnimationTarget
+import com.badlogic.gdx.graphics.Color
 
 object AnimationPlayerGdxPanel {
   def width = 320
@@ -45,13 +47,19 @@ class AnimationPlayerGdxPanel(
     var batch: SpriteBatch = null
     var shapeRenderer: ShapeRenderer = null
 
+    val battlerTintColor = new Color(1, 1, 1, 1)
+
     def updateAnimation(animation: Animation) = {
       if (animationPlayer != null)
         animationPlayer.dispose()
 
-      animationPlayer =
-        new AnimationPlayer(project, animation, assets,
-            new FixedAnimationTarget(0, 0))
+      val target = new FixedAnimationTarget(0, 0) {
+        override def setTint(color: Color) = {
+          battlerTintColor.set(color)
+        }
+      }
+
+      animationPlayer = new AnimationPlayer(project, animation, assets, target)
       status.totalTime = animation.totalTime
     }
 
@@ -107,8 +115,12 @@ class AnimationPlayerGdxPanel(
         batch.begin()
 
         GdxGraphicsUtils.drawCentered(batch, background.getAsset(assets), 0, 0)
+
+        GdxGraphicsUtils.drawCentered(batch, battler.getAsset(assets), 0, 0)
+        batch.setColor(battlerTintColor)
         GdxGraphicsUtils.drawCentered(batch, battler.getAsset(assets), 0, 0)
 
+        batch.setColor(Color.WHITE)
         animationPlayer.render(batch, shapeRenderer,
             AnimationPlayerGdxPanel.width, AnimationPlayerGdxPanel.height)
 

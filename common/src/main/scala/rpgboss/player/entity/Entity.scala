@@ -15,6 +15,7 @@ import scala.concurrent.Promise
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import rpgboss.player._
+import com.badlogic.gdx.graphics.Color
 
 /**
  * Position is marked as such:
@@ -58,6 +59,11 @@ class Entity(
   var boundingBoxHalfsize = 0.5f
 
   def isMoving() = isMovingVar
+
+  val tintColor = Color.WHITE.cpy()
+  def setTintColor(color: Color) = {
+    tintColor.set(color)
+  }
 
   def setBoundingBoxHalfsize(halfsizeArg: Float) = {
     // Normalize to prevent bounding boxes too large to be used on tile map
@@ -169,6 +175,12 @@ class Entity(
         batch, atlasSprites,
         spriteIdx, dir, currentStep(),
         dstOriginX, dstOriginY, graphicW, graphicH)
+      batch.setColor(tintColor)
+      spriteset.renderSprite(
+        batch, atlasSprites,
+        spriteIdx, dir, currentStep(),
+        dstOriginX, dstOriginY, graphicW, graphicH)
+      batch.setColor(Color.WHITE)
     }
   }
 }
