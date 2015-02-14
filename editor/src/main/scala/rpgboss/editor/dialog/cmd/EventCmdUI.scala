@@ -68,6 +68,8 @@ object EventCmdUI {
       AddRemoveItemUI,
       AddRemoveGoldUI,
       BreakLoopUI,
+      ClearTimerUI,
+      GameOverUI,
       GetChoiceUI,
       GetEntityInfoUI,
       HealOrDamageUI,
@@ -85,6 +87,7 @@ object EventCmdUI {
       RunJsUI,
       SetEventStateUI,
       SetGlobalIntUI,
+      SetTimerUI,
       SetTransitionUI,
       SetWindowskinUI,
       StopSoundUI,
@@ -206,6 +209,28 @@ object EnableDisableMenuUI extends EventCmdUI[EnableDisableMenu] {
     EventField("", enumVerticalBox(
         EnabledDisabledEnum, model.enabled, model.enabled = _))
     )
+}
+
+object SetTimerUI extends EventCmdUI[SetTimer] {
+  override def category = Windows
+  override def title = getMessage("Set_Timer")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: SetTimer) = Seq(
+    EventField(getMessage("Minutes"),
+        new FloatSpinner(0, 60, 1f, model.minutes, model.minutes = _)),
+    EventField(getMessage("Seconds"),
+        new FloatSpinner(0, 60, 1f, model.seconds, model.seconds = _))
+    )
+}
+
+object ClearTimerUI extends EventCmdUI[ClearTimer] {
+  override def category = Programming
+  override def title = getMessage("Clear_Timer")
+}
+
+object GameOverUI extends EventCmdUI[GameOver] {
+  override def category = Programming
+  override def title = getMessage("GameOver")
 }
 
 object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {

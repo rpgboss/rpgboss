@@ -54,6 +54,8 @@ object EventCmd {
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[BreakLoop],
+    classOf[ClearTimer],
+    classOf[GameOver],
     classOf[GetChoice],
     classOf[GetEntityInfo],
     classOf[HealOrDamage],
@@ -73,6 +75,7 @@ object EventCmd {
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetTransition],
+    classOf[SetTimer],
     classOf[SetLocalInt],
     classOf[SetWindowskin],
     classOf[StopSound],
@@ -546,6 +549,29 @@ case class SetTransition(var transitionId: Int = 0)
     extends EventCmd {
     def sections =
       singleCall("game.setInt", "useTransition", transitionId)
+}
+
+case class SetTimer(var minutes: Float = 1, var seconds : Float = 0)
+    extends EventCmd {
+    def sections = {
+
+      var timeInSeconds = minutes*60 + seconds
+
+      singleCall("game.setInt", "timer", timeInSeconds)
+    }
+}
+
+case class ClearTimer()
+    extends EventCmd {
+    def sections =
+      singleCall("game.setInt", "timer", 0)
+}
+
+case class GameOver()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.gameOver")
+    }
 }
 
 case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true, var duration:Float = 2f)

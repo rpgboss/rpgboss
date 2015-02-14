@@ -33,6 +33,12 @@ class SystemPanel(
   val fTitleMusic = new MusicField(owner, sm, model.startup.titleMusic,
 	  model.startup.titleMusic = _)
 
+  val fGameOverpic = new PictureField(owner, sm, model.startup.gameOverPic,
+      model.startup.gameOverPic = _)
+
+  val fGameOverMusic = new MusicField(owner, sm, model.startup.gameOverMusic,
+    model.startup.gameOverMusic = _)
+
   val fScreenW = new NumberSpinner(640, 1920, model.startup.screenW,
       model.startup.screenW = _)
 
@@ -60,6 +66,8 @@ class SystemPanel(
   row().grid(lbl(getMessageColon("Game_Title"))).add(fGameTitle)
   row().grid(lbl(getMessageColon("Title_Picture"))).add(fTitlepic)
   row().grid(lbl(getMessageColon("Title_Music"))).add(fTitleMusic)
+  row().grid(lbl(getMessageColon("GameOver_Picture"))).add(fGameOverpic)
+  row().grid(lbl(getMessageColon("GameOver_Music"))).add(fGameOverMusic)
 
   row().grid(lbl(getMessageColon("X_Resolution"))).add(fScreenW)
   row().grid(lbl(getMessageColon("Y_Resolution"))).add(fScreenH)

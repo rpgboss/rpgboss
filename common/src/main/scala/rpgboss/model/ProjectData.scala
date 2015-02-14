@@ -13,6 +13,9 @@ case class ProjectDataStartup(
   var titlePic: String,
   var titleMusic: Option[SoundSpec],
 
+  var gameOverPic: String,
+  var gameOverMusic: Option[SoundSpec],
+
   var screenW: Int,
   var screenH: Int,
 
