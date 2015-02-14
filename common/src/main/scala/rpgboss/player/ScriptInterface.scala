@@ -267,6 +267,14 @@ class ScriptInterface(
     return getPlayerEntityInfo.dir
   }
 
+  def setTimer(time: Int) = {
+    setInt("timer",time)
+  }
+
+  def clearTimer() = {
+    setInt("timer",0)
+  }
+
   def endBattleBackToMap() = {
     setTransition(1, 0.5f)
     sleep(0.5f)
@@ -709,6 +717,16 @@ class ScriptInterface(
 
   def quit() = syncRun {
     game.quit()
+  }
+
+  def toTitleScreen() = {
+    game.gameOver()
+  }
+
+  def gameOver = syncRun {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.systemStartScript,
+      "gameOver()")    
   }
 
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {

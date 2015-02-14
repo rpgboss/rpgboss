@@ -47,5 +47,37 @@ function start() {
   showStartDialog();
 }
 
+/// GAME OVER
+
+function showGameOverDialog() {
+  while (true) {
+    var choiceWin = game.newChoiceWindow([ "Back to titlescreen", "Quit game" ],
+        game.layout(game.CENTERED(), game.FIXED(), 300, 100), {
+          justification : game.CENTER()
+        });
+
+    var choiceIdx = choiceWin.getChoice();
+    choiceWin.close();
+
+    if (choiceIdx == 0) {
+      game.setTransition(1, 0.4);
+      game.sleep(0.4);
+      // TODO: It doenst go to the titlescreen
+      game.toTitleScreen();
+      break;
+    } else if (choiceIdx == 1) {
+      game.quit();
+      break;
+    }
+  }
+}
+
 function gameOver() {
+  game.setTransition(0, 1.0);
+  game.playMusic(0, project.data().startup().gameOverMusic(), true, 0.4);
+  // TODO: GameOver picture will not be shown
+  game.showPicture(64, project.data().startup().gameOverPic(), 
+      game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
+  game.sleep(0.1);
+  showGameOverDialog();
 }

@@ -130,6 +130,14 @@ class RpgGame(gamepath: File)
         ResourceConstants.weatherScript,
         "weather()")
     }
+
+
+    val timerScript = Script.readFromDisk(project, ResourceConstants.timerScript)
+    if(timerScript.newDataStream != null) {
+      mapScreen.scriptFactory.runFromFile(
+        ResourceConstants.timerScript,
+        "timer()")
+    }
   }
 
   /**
