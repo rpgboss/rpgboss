@@ -37,9 +37,9 @@ class BoxAnimationTarget(box: BoxLike) extends AnimationTarget {
 }
 
 class PictureLikeAnimationTarget(picture: PictureLike) extends AnimationTarget {
-  def getScreenCoords() = {
+  override def getScreenCoords() = {
     val rect = picture.getRect()
-    Some(rect.x, rect.y)
+    Some((rect.x, rect.y))
   }
   override def setTint(color: Color) = picture.setAnimationTint(color)
 }

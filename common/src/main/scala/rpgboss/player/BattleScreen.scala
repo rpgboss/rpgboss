@@ -650,8 +650,8 @@ class BattleScreen(
     Gdx.gl.glEnable(GL20.GL_BLEND)
 
     windowManager.preMapRender(batch, screenCamera)
-    animationManager.render(batch, shapeRenderer, screenCamera)
     windowManager.render(batch, shapeRenderer, screenCamera)
+    animationManager.render(batch, shapeRenderer, screenCamera)
   }
 
   /**
