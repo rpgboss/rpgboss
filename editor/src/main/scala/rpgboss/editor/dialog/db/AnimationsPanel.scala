@@ -69,6 +69,26 @@ class AnimationsPanel(
       }
     }
 
+    val fFlashes = new TableEditor[AnimationFlash]() {
+      val buffer = ArrayBuffer(model.flashes: _*)
+      def title = needsTranslation("Flashes")
+      def modelArray = buffer
+      def newInstance() = AnimationFlash()
+      def colHeaders =
+        Array(getMessage("Start"), getMessage("End"), needsTranslation("Color"))
+      def getRowStrings(item: AnimationFlash) = {
+        Array(item.startTime.toString, item.endTime.toString,
+            item.color.toString)
+      }
+      def onUpdate() =
+        model.flashes = modelArray.toArray
+      def showEditDialog(initial: AnimationFlash,
+        okCallback: AnimationFlash => Unit) = {
+        val d = new AnimationFlashDialog(owner, initial, okCallback)
+        d.open()
+      }
+    }
+
     val animationPlayerPanel = new AnimationPlayerPanel(sm.getProj, model)
 
     new BoxPanel(Orientation.Vertical) with DisposableComponent {
@@ -80,6 +100,7 @@ class AnimationsPanel(
         contents += new BoxPanel(Orientation.Vertical) {
           contents += fVisuals
           contents += fSounds
+          contents += fFlashes
         }
       }
 
@@ -186,4 +207,43 @@ class AnimationSoundDialog(
     onOk(model)
     close()
   }
+}
+
+class AnimationFlashDialog(
+  owner: Window,
+  initial: AnimationFlash,
+  onOk: (AnimationFlash) => Unit)
+  extends StdDialog(owner, needsTranslation("Animation_Flash")) {
+  import SwingUtils._
+
+  val model = Utils.deepCopy(initial)
+
+  val fStartTime =
+    new FloatSpinner(0f, 30f, 0.1f, model.startTime, model.startTime = _)
+  val fEndTime =
+    new FloatSpinner(0f, 30f, 0.1f, model.endTime, model.endTime = _)
+
+  val fColor = colorField(model.color, model.color = _)
+  val fFlashType =
+    enumIdCombo(AnimationFlashType)(model.flashTypeId, model.flashTypeId = _)
+
+  contents = new DesignGridPanel {
+    row().grid(leftLabel(needsTranslation("Color:"))).add(fColor)
+    row().grid(leftLabel(needsTranslation("Flash Type:"))).add(fFlashType)
+    row().grid(leftLabel(getMessageColon("Start_Time"))).add(fStartTime)
+    row().grid(leftLabel(needsTranslation("End Time:"))).add(fEndTime)
+
+    addButtons(okBtn, cancelBtn)
+  }
+
+  def okFunc() = {
+    val start = model.startTime
+    val end = model.endTime
+    model.startTime = math.min(start, end)
+    model.endTime = math.max(start, end)
+    onOk(model)
+    close()
+  }
+
+
 }

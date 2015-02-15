@@ -1,11 +1,12 @@
 includeFile('sys/weather/rain.js');
 includeFile('sys/weather/fog.js');
+includeFile('sys/weather/snow.js');
 
-// Update function
-while(true) {
-
+game.addScriptHook(function() {
+	// Show effects if on
 	ShowFog();
 	ShowRain();
-
-	game.sleep(0.1);
-}
+	ShowSnow();
+	
+	return true;
+});

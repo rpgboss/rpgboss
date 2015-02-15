@@ -222,3 +222,14 @@ function SaveAndLoadMenu() {
     }
   });
 }
+
+function SaveMenu() {
+
+ var saveMenu = new SaveAndLoadMenu();
+ saveMenu.loopChoice(function(choiceId) {
+   game.saveToSaveSlot(choiceId);
+   saveMenu.close();
+   return true;
+ });
+ saveMenu.close();
+}

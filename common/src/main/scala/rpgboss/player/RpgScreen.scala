@@ -13,12 +13,18 @@ import rpgboss.model.resource.SoundPlayer
 import rpgboss.model.AnimationSound
 import rpgboss.model.Animation
 import rpgboss.player.entity.AnimationPlayer
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import rpgboss.player.entity.FixedAnimationTarget
+import rpgboss.player.entity.AnimationTarget
+import rpgboss.player.entity.FixedAnimationTarget
 
 object RpgScreen {
   val MAX_MUSIC_SLOTS = 8
 }
 
-trait RpgScreen extends Screen 
+trait RpgScreen extends Screen
   with ThreadChecked {
   def project: Project
   def assets: RpgAssetManager
@@ -28,19 +34,33 @@ trait RpgScreen extends Screen
   def scriptInterface: ScriptInterface
 
   val inputs = new InputMultiplexer()
-  def createWindowManager(): WindowManager =
-    new WindowManager(assets, project, screenW, screenH)
 
   val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
+
+  val batch = new SpriteBatch()
+  val shapeRenderer = new ShapeRenderer()
 
   /*
    * Music instances 'on their way out'.
    */
   val oldMusics = collection.mutable.Set[MusicPlayer]()
 
-  val windowManager = createWindowManager()
+  val screenCamera: OrthographicCamera = new OrthographicCamera()
+  screenCamera.setToOrtho(true, screenW, screenH) // y points down
+  screenCamera.update()
 
-  val animationManager = new AnimationManager()
+  val windowManager = new WindowManager(assets, project, screenW, screenH)
+
+  def playAnimation(animationId: Int, target: AnimationTarget,
+      speedScale: Float = 1.0f) = {
+    val animation = project.data.enums.animations(animationId)
+    val player =
+      new AnimationPlayer(project, animation, assets,
+          target, speedScale)
+    player.play()
+    windowManager.animationManager.addAnimation(player)
+    player
+  }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
     loop: Boolean, fadeDuration: Float): Unit = {
@@ -81,8 +101,9 @@ trait RpgScreen extends Screen
   def playSound(soundSpec: SoundSpec): Unit = {
     animationSound = AnimationSound(0.0f, soundSpec)
     animation = Animation(sounds = Array(animationSound))
-    soundPlayer = new AnimationPlayer(project, animation, assets, 0f, 0f)
-    animationManager.addAnimation(soundPlayer)
+    soundPlayer = new AnimationPlayer(project, animation, assets,
+        new FixedAnimationTarget(0, 0))
+    windowManager.animationManager.addAnimation(soundPlayer)
     soundPlayer.play()
   }
 
@@ -110,7 +131,9 @@ trait RpgScreen extends Screen
   override def dispose() = {
     reset()
 
-    animationManager.dispose()
+    windowManager.dispose()
+    shapeRenderer.dispose()
+    batch.dispose()
   }
 
   override def hide() = {
@@ -141,10 +164,9 @@ trait RpgScreen extends Screen
     // Update tweens
     windowManager.update(delta)
 
-    animationManager.update(delta)
-
-    if (!windowManager.inTransition)
+    if (!windowManager.inTransition) {
       update(delta)
+    }
 
     render()
   }

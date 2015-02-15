@@ -22,10 +22,19 @@ import com.badlogic.gdx.graphics.Color
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 
-case class EntityInfo(x: Float, y: Float, dir: Int)
+case class EntityInfo(x: Float, y: Float, dir: Int,
+    screenX: Float, screenY: Float)
 
 object EntityInfo {
-  def apply(e: Entity): EntityInfo = apply(e.x, e.y, e.dir)
+  def apply(e: Entity, mapScreen: MapScreen): EntityInfo = {
+    val pxPerTileX = mapScreen.screenW / mapScreen.screenWTiles
+    val pxPerTileY = mapScreen.screenH / mapScreen.screenHTiles
+    val screenX =
+      (e.x - mapScreen.camera.x) * pxPerTileX + (mapScreen.screenW / 2)
+    val screenY =
+      (e.y - mapScreen.camera.y) * pxPerTileY + (mapScreen.screenH / 2)
+    apply(e.x, e.y, e.dir, screenX, screenY)
+  }
 }
 
 case class CurrentAndProposedStats(
@@ -116,6 +125,9 @@ class ScriptInterface(
   /*
    * Accessors to various game data
    */
+  def getScreenH() = project.data.startup.screenH
+  def getScreenW() = project.data.startup.screenW
+
   def getMap(loc: MapLoc) =
     RpgMap.readFromDisk(project, loc.map)
 
@@ -156,8 +168,8 @@ class ScriptInterface(
   /**
    * Moves the map camera.
    */
-  def moveCamera(dx: Float, dy: Float, async: Boolean) = {
-    val move = syncRun { mapScreen.camera.enqueueMove(dx, dy) }
+  def moveCamera(dx: Float, dy: Float, async: Boolean, duration:Float) = {
+    val move = syncRun { mapScreen.camera.enqueueMove(dx, dy, duration) }
     if (!async)
       move.awaitFinish()
   }
@@ -255,6 +267,14 @@ class ScriptInterface(
     return getPlayerEntityInfo.dir
   }
 
+  def setTimer(time: Int) = {
+    setInt("timer",time)
+  }
+
+  def clearTimer() = {
+    setInt("timer",0)
+  }
+
   def endBattleBackToMap() = {
     setTransition(1, 0.5f)
     sleep(0.5f)
@@ -295,6 +315,28 @@ class ScriptInterface(
   def stopMusic(slot: Int, fadeDuration: Float) = syncRun {
     activeScreen.playMusic(
         slot, None, false, fadeDuration)
+  }
+
+  def playAnimation(animationId: Int, screenX: Float, screenY: Float,
+      speedScale: Float) = syncRun {
+    activeScreen.playAnimation(animationId,
+        new FixedAnimationTarget(screenX, screenY), speedScale)
+  }
+
+  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Int) = {
+    mapScreen.eventEntities.get(eventId) map { entity =>
+      activeScreen.playAnimation(animationId,
+          new MapEntityAnimationTarget(mapScreen, entity),
+          speedScale)
+    }
+  }
+
+  def playAnimationOnPlayer(animationId: Int, speedScale: Int) = {
+    activeScreen.playAnimation(animationId,
+        new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
+        speedScale)
+    val info = getPlayerEntityInfo()
+    playAnimation(animationId, info.screenX, info.screenY, speedScale)
   }
 
   def playSound(sound: String) = syncRun {
@@ -463,7 +505,7 @@ class ScriptInterface(
   }
 
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
-    mapScreen.eventEntities.get(id).map(EntityInfo.apply)
+    mapScreen.eventEntities.get(id).map(EntityInfo.apply(_, mapScreen))
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
@@ -677,6 +719,28 @@ class ScriptInterface(
     game.quit()
   }
 
+  def toTitleScreen() = {
+    game.gameOver()
+  }
+
+  def gameOver = syncRun {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.systemStartScript,
+      "gameOver()")
+  }
+
+  def callSaveMenu = syncRun {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.globalsScript,
+      "SaveMenu()")
+  }
+
+  def callMenu = syncRun {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.menuScript,
+      "menu()")
+  }
+
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
       logger.debug("drawText: "+text+" on ");
       mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
@@ -720,6 +784,10 @@ class ScriptInterface(
 
   def getScriptAsString(scriptPath: String): String = {
     Script.readFromDisk(project, scriptPath).readAsString
+  }
+
+  def addScriptHook(jsFunction: org.mozilla.javascript.Function) = syncRun {
+    mapScreen.scriptHooks.addScriptHook(jsFunction)
   }
 
   /**

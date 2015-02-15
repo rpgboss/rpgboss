@@ -58,6 +58,12 @@ class EventEntity(
     mapEvent.states
   }
 
+  if(evtState.animationType == AnimationType.FOLLOW_PLAYER.id) {
+    scriptFactory.runFromFile(
+      ResourceConstants.eventEntityScript,
+      "FollowPlayer("+mapEvent.id+")")
+  }
+
   private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0

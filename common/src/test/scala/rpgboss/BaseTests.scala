@@ -33,8 +33,8 @@ object TestScriptThread {
       script.name,
       script.readAsString,
       fnToRun) {
-      override def initScope(jsScope: ScriptableObject) = {
-        super.initScope(jsScope)
+      override def extraInitScope(jsScope: ScriptableObject) = {
+        super.extraInitScope(jsScope)
 
         // Bind 'event' to the EventEntity so that we can control its movement
         ScriptableObject.putProperty(jsScope, "waiter",

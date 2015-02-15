@@ -41,6 +41,13 @@ object EntityInfoEnum extends RpgEnum {
   def default = X
 }
 
+object EnabledDisabledEnum extends RpgEnum {
+  val Disabled = Value(0, "Disabled")
+  val Enabled = Value(1, "Enabled")
+
+  def default = Enabled
+}
+
 object Scope extends RpgEnum {
   val None = Value
   val SelfOnly = Value("User_Only")
@@ -92,6 +99,12 @@ case class RandomEncounterSettings(
   var encounters: Array[RandomEncounter] = Array()) {
   def deepcopy() = copy(encounters = encounters.map(_.copy()))
 }
+
+case class ColorSpec(
+  var r: Float = 1.0f,
+  var g: Float = 0.0f,
+  var b: Float = 0.0f,
+  var a: Float = 0.5f)
 
 case class SoundSpec(
   sound: String = "",

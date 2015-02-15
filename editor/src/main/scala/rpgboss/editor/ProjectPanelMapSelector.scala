@@ -194,6 +194,10 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
               .getOrElse(selectNode(projectRoot))
           }
         })
+        contents += new MenuItem(Action(getMessage("Duplicate_Map") + "...") {
+          val answer = Dialog.showConfirmation(this, "This function is not implemented yet.", "Notice")
+          
+        })
         contents += new Separator
       }
       contents += new MenuItem(Action(getMessage("New_Map") + "...") {

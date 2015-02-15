@@ -6,13 +6,50 @@ import rpgboss.model._
 import rpgboss.model.resource._
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import rpgboss.player.GdxGraphicsUtils
+import rpgboss.player.MapScreen
+import rpgboss.player.EntityInfo
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.Color
+import rpgboss.player.PictureLike
+
+trait AnimationTarget {
+  def getScreenCoords(): Option[(Float, Float)]
+  def setTint(color: Color): Unit = Unit
+}
+
+case class FixedAnimationTarget(x: Float, y: Float) extends AnimationTarget {
+  def getScreenCoords() = Some((x, y))
+}
+
+class MapEntityAnimationTarget(mapScreen: MapScreen, entity: Entity)
+  extends AnimationTarget {
+  def getScreenCoords() = {
+    val info = EntityInfo.apply(entity, mapScreen)
+    Some((info.screenX , info.screenY))
+  }
+  override def setTint(color: Color) = entity.setTintColor(color)
+}
+
+class BoxAnimationTarget(box: BoxLike) extends AnimationTarget {
+  def getScreenCoords() = Some((box.x, box.y))
+}
+
+class PictureLikeAnimationTarget(picture: PictureLike) extends AnimationTarget {
+  override def getScreenCoords() = {
+    val rect = picture.getRect()
+    Some((rect.x, rect.y))
+  }
+  override def setTint(color: Color) = picture.setAnimationTint(color)
+}
 
 /**
  * Can only be used from the Gdx thread.
  */
 class AnimationPlayer(
   proj: Project, animation: Animation, assets: RpgAssetManager,
-  dstXOffset: Float, dstYOffset: Float)
+  target: AnimationTarget, speedScale: Float = 1.0f)
   extends Disposable {
 
   object States {
@@ -101,7 +138,7 @@ class AnimationPlayer(
     }
 
     if (_state != Idle) {
-      _time += delta
+      _time += delta * speedScale
 
       _state match {
         case Playing if _time >= animation.totalTime =>
@@ -122,12 +159,24 @@ class AnimationPlayer(
         soundState.played = true
       }
     }
+
+    val currentTargetFlashes = animation.flashes
+        .filter(_.flashTypeId == AnimationFlashType.Target.id)
+        .filter(_.within(time))
+
+    if (!currentTargetFlashes.isEmpty) {
+      val tintColor = currentTargetFlashes.map(_.currentColor(time)).maxBy(_.a)
+      target.setTint(tintColor)
+    } else {
+      target.setTint(Color.WHITE)
+    }
   }
 
   /**
    * Assumes |batch| is already centered on the animation origin.
    */
-  def render(batch: SpriteBatch): Unit = {
+  def render(batch: SpriteBatch, shapeRenderer: ShapeRenderer,
+      screenW: Int, screenH: Int): Unit = {
     if (_state != Playing)
       return
 
@@ -138,15 +187,37 @@ class AnimationPlayer(
         val frameIndex = tweenIntInclusive(
           alpha, visual.start.frameIndex, visual.end.frameIndex)
 
-        val dstX = dstXOffset + tweenFloat(alpha, visual.start.x, visual.end.x)
-        val dstY = dstYOffset + tweenFloat(alpha, visual.start.y, visual.end.y)
+        val screenCoordsOpt = target.getScreenCoords()
+        if (screenCoordsOpt.isDefined) {
+          val (targetX, targetY) = screenCoordsOpt.get
+          val dstX = targetX + tweenFloat(alpha, visual.start.x, visual.end.x)
+          val dstY = targetY + tweenFloat(alpha, visual.start.y, visual.end.y)
 
-        val xTile = frameIndex % image.xTiles
-        val yTile = frameIndex / image.xTiles
+          val xTile = frameIndex % image.xTiles
+          val yTile = frameIndex / image.xTiles
 
-        image.drawTileCentered(batch, assets, dstX, dstY, xTile, yTile)
+          image.drawTileCentered(batch, assets, dstX, dstY, xTile, yTile)
+        }
       }
     }
+
+    val currentScreenFlashes = animation.flashes
+        .filter(_.flashTypeId == AnimationFlashType.Screen.id)
+        .filter(_.within(time))
+
+    if (!currentScreenFlashes.isEmpty) {
+       // Spritebatch seems to turn off blending after it's done. Turn it on.
+      Gdx.gl.glEnable(GL20.GL_BLEND)
+      shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+
+      for (flash <- currentScreenFlashes) {
+        shapeRenderer.setColor(flash.currentColor(time))
+        shapeRenderer.rect(0, 0, screenW, screenH)
+      }
+
+      shapeRenderer.end()
+    }
+
   }
 
   def dispose() = {

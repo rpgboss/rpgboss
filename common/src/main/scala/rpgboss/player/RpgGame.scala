@@ -108,6 +108,9 @@ class RpgGame(gamepath: File)
     // Standard setting for transitions
     persistent.setInt("useTransition",-1)
 
+    // Standard setting for menu enabled/disabled
+    persistent.setInt("menuEnabled",1)
+
     startScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
       ResourceConstants.systemStartCall)
@@ -124,8 +127,15 @@ class RpgGame(gamepath: File)
     val weatherScript = Script.readFromDisk(project, ResourceConstants.weatherScript)
     if(weatherScript.newDataStream != null) {
       mapScreen.scriptFactory.runFromFile(
-        ResourceConstants.weatherScript,
-        "weather()")
+        ResourceConstants.weatherScript)
+    }
+
+
+    val timerScript = Script.readFromDisk(project, ResourceConstants.timerScript)
+    if(timerScript.newDataStream != null) {
+      mapScreen.scriptFactory.runFromFile(
+        ResourceConstants.timerScript,
+        "timer()")
     }
   }
 

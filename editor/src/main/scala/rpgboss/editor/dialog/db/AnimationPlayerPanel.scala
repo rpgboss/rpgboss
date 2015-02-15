@@ -12,6 +12,10 @@ import rpgboss.player.GdxGraphicsUtils
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Disposable
 import rpgboss.editor.Internationalized._
+import rpgboss.player.entity.FixedAnimationTarget
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import rpgboss.player.entity.FixedAnimationTarget
+import com.badlogic.gdx.graphics.Color
 
 object AnimationPlayerGdxPanel {
   def width = 320
@@ -41,14 +45,21 @@ class AnimationPlayerGdxPanel(
     val battler =
       Battler.readFromDisk(project, ResourceConstants.battlerTarget)
     var batch: SpriteBatch = null
+    var shapeRenderer: ShapeRenderer = null
+
+    val battlerTintColor = new Color(1, 1, 1, 1)
 
     def updateAnimation(animation: Animation) = {
       if (animationPlayer != null)
         animationPlayer.dispose()
 
-      animationPlayer =
-        new AnimationPlayer(project, animation, assets, dstXOffset = 0,
-          dstYOffset = 0)
+      val target = new FixedAnimationTarget(0, 0) {
+        override def setTint(color: Color) = {
+          battlerTintColor.set(color)
+        }
+      }
+
+      animationPlayer = new AnimationPlayer(project, animation, assets, target)
       status.totalTime = animation.totalTime
     }
 
@@ -70,6 +81,8 @@ class AnimationPlayerGdxPanel(
       matrix.trn(AnimationPlayerGdxPanel.width / 2,
         AnimationPlayerGdxPanel.height / 2, 0)
       batch.setTransformMatrix(matrix)
+
+      shapeRenderer = new ShapeRenderer
     }
 
     override def dispose() = {
@@ -102,9 +115,14 @@ class AnimationPlayerGdxPanel(
         batch.begin()
 
         GdxGraphicsUtils.drawCentered(batch, background.getAsset(assets), 0, 0)
+
+        GdxGraphicsUtils.drawCentered(batch, battler.getAsset(assets), 0, 0)
+        batch.setColor(battlerTintColor)
         GdxGraphicsUtils.drawCentered(batch, battler.getAsset(assets), 0, 0)
 
-        animationPlayer.render(batch)
+        batch.setColor(Color.WHITE)
+        animationPlayer.render(batch, shapeRenderer,
+            AnimationPlayerGdxPanel.width, AnimationPlayerGdxPanel.height)
 
         batch.end()
       }

@@ -22,7 +22,8 @@ import rpgboss.lib.Utils
 class MapScreen(val game: RpgGame)
   extends RpgScreenWithGame
   with HasScriptConstants {
-  val batch = new SpriteBatch()
+
+  val scriptHooks = new ScriptHookManager(scriptInterface)
 
   var screenWTiles: Float = screenW / Tileset.tilesize
   var screenHTiles: Float = screenH / Tileset.tilesize
@@ -37,7 +38,8 @@ class MapScreen(val game: RpgGame)
   // protagonist. Modify all these things on the Gdx thread
   private var _playerEntity: PlayerEntity = null
 
-  def getPlayerEntityInfo() = EntityInfo(_playerEntity)
+  def playerEntity = _playerEntity
+  def getPlayerEntityInfo() = EntityInfo(_playerEntity, this)
 
   private def moveEntity(
       entity: Entity, dx: Float, dy: Float,
@@ -131,6 +133,13 @@ class MapScreen(val game: RpgGame)
 
       playMusic(0, mapAndAssets.map.metadata.music, true,
           Transitions.fadeLength)
+
+      var interiorValue = 0
+      if(mapAndAssets.map.metadata.interior) {
+        interiorValue = 1
+      }
+
+      scriptInterface.setInt("interior",interiorValue)
     }
 
     if (loc.map.isEmpty()) {
@@ -172,10 +181,6 @@ class MapScreen(val game: RpgGame)
     tileCamera.position.x = camera.x
     tileCamera.position.y = camera.y
     tileCamera.update()
-
-    // Set the projection matrix to the combined camera matrices
-    // This seems to be the only thing that works...
-    batch.setProjectionMatrix(tileCamera.combined)
   }
 
   def drawTile(batch: SpriteBatch, mapAndAssets: MapAndAssets,
@@ -230,6 +235,8 @@ class MapScreen(val game: RpgGame)
     if (windowManager.inTransition)
       return
 
+    scriptHooks.update(delta)
+
     // Update events, including player event
     eventEntities.values.foreach(_.update(delta))
 
@@ -276,6 +283,10 @@ class MapScreen(val game: RpgGame)
     import Tileset._
 
     updateCameraLoc(mapAndAssets)
+
+    // Set the projection matrix to the combined camera matrices
+    // This seems to be the only thing that works...
+    batch.setProjectionMatrix(tileCamera.combined)
 
     val cameraL = camera.x - screenWTiles / 2
     val cameraR = camera.x + screenWTiles / 2
@@ -354,15 +365,14 @@ class MapScreen(val game: RpgGame)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     Gdx.gl.glEnable(GL20.GL_BLEND)
 
-    windowManager.preMapRender()
+    windowManager.preMapRender(batch, screenCamera)
     renderMap()
-    windowManager.render()
+
+    windowManager.render(batch, shapeRenderer, screenCamera)
   }
 
   override def dispose() = {
     mapAndAssetsOption.map(_.dispose())
-    batch.dispose()
-
     super.dispose()
   }
 

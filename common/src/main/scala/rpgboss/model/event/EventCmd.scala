@@ -54,6 +54,14 @@ object EventCmd {
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[BreakLoop],
+    classOf[CallMenu],
+    classOf[CallSaveMenu],
+    classOf[Comment],
+    classOf[ClearTimer],
+    classOf[ExitGame],
+    classOf[FadeIn],
+    classOf[FadeOut],
+    classOf[GameOver],
     classOf[GetChoice],
     classOf[GetEntityInfo],
     classOf[HealOrDamage],
@@ -61,16 +69,19 @@ object EventCmd {
     classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
+    classOf[EnableDisableMenu],
     classOf[ModifyParty],
     classOf[MoveCamera],
     classOf[MoveEvent],
     classOf[OpenStore],
+    classOf[PlayAnimation],
     classOf[PlayMusic],
     classOf[PlaySound],
     classOf[RunJs],
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetTransition],
+    classOf[SetTimer],
     classOf[SetLocalInt],
     classOf[SetWindowskin],
     classOf[StopSound],
@@ -182,7 +193,8 @@ case class HealOrDamage(
 
 case class WeatherEffects(
     var rain: Boolean = false,
-    var fog: Boolean = false) extends EventCmd {
+    var fog: Boolean = false,
+    var snow: Boolean = false) extends EventCmd {
   def sections = {
     val buf = new ArrayBuffer[CodeSection]()
 
@@ -192,9 +204,13 @@ case class WeatherEffects(
     var fogResult = 0
     if(fog) fogResult = 1
 
+    var snowResult = 0
+    if(snow) snowResult = 1
+
     buf += PlainLines(Array(jsCall("game.setInt","fogVisible", fogResult).exp))
     buf += PlainLines(Array(jsCall("game.setInt","rainVisible", rainResult).exp))
-    
+    buf += PlainLines(Array(jsCall("game.setInt","snowVisible", snowResult).exp))
+
     buf.toArray
   }
 }
@@ -310,10 +326,10 @@ case class GetEntityInfo(
   def sections:Array[CodeSection] = {
 
     entitySpec match {
-      case EntitySpec(which, _, _) 
+      case EntitySpec(which, _, _)
       if which == WhichEntity.PLAYER.id =>
         return executeCommand(kind, true, WhichEntity.PLAYER.id)
-      case EntitySpec(which, _, eventIdx) 
+      case EntitySpec(which, _, eventIdx)
       if which == WhichEntity.THIS_EVENT.id =>
         return executeCommand(kind, false, eventIdx)
       case EntitySpec(which, _, eventIdx)
@@ -355,9 +371,40 @@ case class OpenStore(
     List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
-case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
-  def sections =
-    singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
+case class PlayAnimation(
+  var animationId: Int = 0,
+  var originId: Int = Origins.default.id,
+  var entitySpec: EntitySpec = EntitySpec(),
+  var xOffset: Int = 0,
+  var yOffset: Int = 0,
+  var speedScale: Float = 1.0f) extends EventCmd {
+  def sections = Origins(originId) match {
+    case Origins.SCREEN_TOP_LEFT =>
+      singleCall("game.playAnimation", animationId, xOffset, yOffset,
+          speedScale)
+    case Origins.SCREEN_CENTER =>
+      singleCall("game.playAnimation", animationId,
+          applyOperator(RawJs("game.getScreenW() / 2"), " + ",
+                        RawJs(EventJavascript.toJs(xOffset))),
+          applyOperator(RawJs("game.getScreenH() / 2"), " + ",
+                        RawJs(EventJavascript.toJs(yOffset))),
+          speedScale)
+    case Origins.ON_ENTITY => {
+      entitySpec match {
+        case EntitySpec(which, _, _) if which == WhichEntity.PLAYER.id =>
+          singleCall("game.playAnimationOnPlayer", animationId, speedScale)
+        case EntitySpec(which, _, _) if which == WhichEntity.THIS_EVENT.id =>
+          singleCall(
+            "game.playAnimationOnEvent", animationId, RawJs("event.id()"),
+            speedScale)
+        case EntitySpec(which, _, eventIdx)
+        if which == WhichEntity.EVENT_ON_MAP.id =>
+          singleCall(
+            "game.playAnimationOnEvent", animationId, entitySpec.eventId,
+            speedScale)
+      }
+    }
+  }
 }
 
 case class PlayMusic(
@@ -371,8 +418,32 @@ case class PlayMusic(
   override def getParameters() = List(slot)
 }
 
+case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
+  def sections =
+    singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
+}
+
+case class ExitGame() extends EventCmd {
+  def sections =
+    singleCall("game.quit")
+}
+
 case class RunJs(var scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
+}
+
+case class Comment(var commentString: String = "") extends EventCmd {
+
+  def sections = {
+
+    var arr: Array[String] = commentString.split("\n")
+    var newArray:Array[String] = Array[String]()
+    for ( i <- 0 to (arr.length - 1)) {
+      newArray +:= "// " + arr(i)
+    }
+
+    Array(PlainLines(newArray))
+  }
 }
 
 case class SetEventState(
@@ -461,6 +532,12 @@ case class Teleport(loc: MapLoc = MapLoc(),
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }
 
+case class EnableDisableMenu(var enabled: Int = 1) extends EventCmd {
+  def sections = {
+    singleCall("game.setInt", "menuEnabled",enabled)
+  }
+}
+
 case class TintScreen(
     var r: Float = 1.0f,
     var g: Float = 0,
@@ -493,16 +570,67 @@ case class WhileLoop(
   }
 }
 
-case class SetTransition(var transitionId: Int = 0) 
+case class SetTransition(var transitionId: Int = 0)
     extends EventCmd {
     def sections =
       singleCall("game.setInt", "useTransition", transitionId)
 }
 
-case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true) 
+case class SetTimer(var minutes: Float = 1, var seconds : Float = 0)
+    extends EventCmd {
+    def sections = {
+
+      var timeInSeconds = minutes*60 + seconds
+
+      singleCall("game.setInt", "timer", timeInSeconds)
+    }
+}
+
+case class ClearTimer()
     extends EventCmd {
     def sections =
-      singleCall("game.moveCamera", dx, dy, async)
+      singleCall("game.setInt", "timer", 0)
+}
+
+case class GameOver()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.gameOver")
+    }
+}
+
+case class FadeIn(var duration:Float = 1f)
+    extends EventCmd {
+    def sections = {
+      singleCall("game.setTransition",0, duration)
+    }
+}
+
+case class FadeOut(var duration:Float = 0.4f)
+    extends EventCmd {
+    def sections = {
+      singleCall("game.setTransition",1, duration)
+    }
+}
+
+case class CallSaveMenu()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.callSaveMenu")
+    }
+}
+
+case class CallMenu()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.callMenu")
+    }
+}
+
+case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true, var duration:Float = 2f)
+    extends EventCmd {
+    def sections =
+      singleCall("game.moveCamera", dx, dy, async, duration)
 }
 
 case class StopSound() extends EventCmd {

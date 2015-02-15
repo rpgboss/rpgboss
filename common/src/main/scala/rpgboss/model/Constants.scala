@@ -53,7 +53,7 @@ object WeatherEffects extends RpgEnum {
 }
 
 object Transitions extends RpgEnum {
-  
+
   val BaseBehaviour = Value(-1, "BaseBehaviour")
   val NONE = Value(0, "None")
   val FADE = Value(1, "Fade_Out")
@@ -64,6 +64,14 @@ object Transitions extends RpgEnum {
   def default = FADE
 
   val fadeLength = 0.5f
+}
+
+object Origins extends RpgEnum {
+  val SCREEN_TOP_LEFT = Value(0, "Top_Left")
+  val SCREEN_CENTER = Value(1, "Screen_Center")
+  val ON_ENTITY = Value(2, "On_Event_Player")
+
+  def default = SCREEN_TOP_LEFT
 }
 
 object Constants {
