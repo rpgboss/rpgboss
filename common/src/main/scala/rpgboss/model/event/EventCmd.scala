@@ -56,7 +56,11 @@ object EventCmd {
     classOf[BreakLoop],
     classOf[CallMenu],
     classOf[CallSaveMenu],
+    classOf[Comment],
     classOf[ClearTimer],
+    classOf[ExitGame],
+    classOf[FadeIn],
+    classOf[FadeOut],
     classOf[GameOver],
     classOf[GetChoice],
     classOf[GetEntityInfo],
@@ -419,8 +423,27 @@ case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
     singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
 }
 
+case class ExitGame() extends EventCmd {
+  def sections =
+    singleCall("game.quit")
+}
+
 case class RunJs(var scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
+}
+
+case class Comment(var commentString: String = "") extends EventCmd {
+
+  def sections = {
+
+    var arr: Array[String] = commentString.split("\n")
+    var newArray:Array[String] = Array[String]()
+    for ( i <- 0 to (arr.length - 1)) {
+      newArray +:= "// " + arr(i)
+    }
+
+    Array(PlainLines(newArray))
+  }
 }
 
 case class SetEventState(
@@ -573,6 +596,20 @@ case class GameOver()
     extends EventCmd {
     def sections = {
       singleCall("game.gameOver")
+    }
+}
+
+case class FadeIn(var duration:Float = 1f)
+    extends EventCmd {
+    def sections = {
+      singleCall("game.setTransition",0, duration)
+    }
+}
+
+case class FadeOut(var duration:Float = 0.4f)
+    extends EventCmd {
+    def sections = {
+      singleCall("game.setTransition",1, duration)
     }
 }
 

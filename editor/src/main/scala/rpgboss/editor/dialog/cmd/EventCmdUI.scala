@@ -70,7 +70,11 @@ object EventCmdUI {
       BreakLoopUI,
       CallMenuUI,
       CallSaveMenuUI,
+      CommentUI,
       ClearTimerUI,
+      ExitGameUI,
+      FadeInUI,
+      FadeOutUI,
       GameOverUI,
       GetChoiceUI,
       GetEntityInfoUI,
@@ -184,6 +188,11 @@ object BreakLoopUI extends EventCmdUI[BreakLoop] {
   override def title = getMessage("Break_Loop")
 }
 
+object ExitGameUI extends EventCmdUI[ExitGame] {
+  override def category = Programming
+  override def title = getMessage("Exit_Game")
+}
+
 object GetChoiceUI extends EventCmdUI[GetChoice] {
   override def category = Windows
   override def title = getMessage("Get_Choice")
@@ -243,6 +252,26 @@ object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
 object CallMenuUI extends EventCmdUI[CallMenu] {
   override def category = Programming
   override def title = getMessage("Call_Menu")
+}
+
+object FadeInUI extends EventCmdUI[FadeIn] {
+  override def category = Programming
+  override def title = getMessage("Fade_In")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: FadeIn) = Seq(
+    EventField(getMessage("Duration"),
+        new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _))
+    )
+}
+
+object FadeOutUI extends EventCmdUI[FadeOut] {
+  override def category = Programming
+  override def title = getMessage("Fade_Out")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: FadeOut) = Seq(
+    EventField(getMessage("Duration"),
+        new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _))
+    )
 }
 
 object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
@@ -432,6 +461,30 @@ object PlaySoundUI extends EventCmdUI[PlaySound] {
         getMessage("Sound"),
         new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
             allowNone = false)))
+}
+
+object CommentUI extends EventCmdUI[Comment] {
+  override def category = Programming
+  override def title = getMessage("Comment")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: Comment) = Seq(
+    EventField("", {
+      val textArea = new RSyntaxTextArea(20, 60)
+      textArea.setText(model.commentString)
+      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE)
+      textArea.setCodeFoldingEnabled(true)
+
+      textArea.getDocument().addDocumentListener(new DocumentListener {
+        override def changedUpdate(e: DocumentEvent) = Unit
+        override def insertUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+        override def removeUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+      })
+
+      val scrollPane = new RTextScrollPane(textArea)
+      Component.wrap(scrollPane)
+    }))
 }
 
 object RunJsUI extends EventCmdUI[RunJs] {
