@@ -729,6 +729,18 @@ class ScriptInterface(
       "gameOver()")    
   }
 
+  def callSaveMenu = syncRun {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.globalsScript,
+      "SaveMenu()")    
+  }
+
+  def callMenu = syncRun {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.menuScript,
+      "menu()")    
+  }
+
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
       logger.debug("drawText: "+text+" on ");
       mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))

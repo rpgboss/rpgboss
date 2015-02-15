@@ -54,6 +54,8 @@ object EventCmd {
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[BreakLoop],
+    classOf[CallMenu],
+    classOf[CallSaveMenu],
     classOf[ClearTimer],
     classOf[GameOver],
     classOf[GetChoice],
@@ -571,6 +573,20 @@ case class GameOver()
     extends EventCmd {
     def sections = {
       singleCall("game.gameOver")
+    }
+}
+
+case class CallSaveMenu()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.callSaveMenu")
+    }
+}
+
+case class CallMenu()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.callMenu")
     }
 }
 
