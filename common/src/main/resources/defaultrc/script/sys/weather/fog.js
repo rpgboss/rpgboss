@@ -6,13 +6,14 @@ var fogSwitch = false;
 
 var fogImageWidth = 1280;
 var fogImageHeight = 960;
+
 function ShowFog () {
 
 	if(game.getInt("fogVisible")==1) {
 
 		if(game.getInt("interior")==1) {
 
-			game.hidePicture(19);
+			game.hidePicture(52);
 			
 		} else {
 
@@ -22,7 +23,7 @@ function ShowFog () {
 			var offsetX = 50*multiplier;
 			var offsetY = 50*multiplier;
 
-			game.showPicture(29, "sys/weather/fog/fog.png", game.layoutWithOffset(0,0,fogImageWidth,fogImageHeight,offsetX,offsetY),alpha);
+			game.showPicture(52, "sys/weather/fog/fog.png", game.layoutWithOffset(0,0,fogImageWidth,fogImageHeight,offsetX,offsetY),alpha);
 
 			if(fogSwitch) {
 				fogCounter-=fogSteps;
@@ -41,6 +42,8 @@ function ShowFog () {
 		}
 
 
+	} {
+		game.hidePicture(52);
 	}
 
 }

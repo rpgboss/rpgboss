@@ -7,16 +7,17 @@ var snowSwitch = false;
 var snowImageWidth = 640;
 var snowImageHeight = 480;
 var soundCounter = 70;
+
 function ShowSnow () {
 
 	if(game.getInt("snowVisible")==1) {
 
 		if(game.getInt("interior")==1) {
 
-			game.hidePicture(31);
+			game.hidePicture(54);
 
 		} else {
-			game.showPicture(31, "sys/weather/snow/0"+snowCounter+".png", game.layoutWithOffset(0,0,snowImageWidth,snowImageHeight,0,0),1);
+			game.showPicture(54, "sys/weather/snow/0"+snowCounter+".png", game.layoutWithOffset(0,0,snowImageWidth,snowImageHeight,0,0),1);
 
 			if(snowCounter>=snowCounterMax) {
 				snowCounter = snowStart;
@@ -24,6 +25,8 @@ function ShowSnow () {
 			snowCounter++;
 		}
 
+	} else {
+		game.hidePicture(54);
 	}
 
 }
