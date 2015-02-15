@@ -39,6 +39,8 @@ class WindowManager(
   val screenH: Int) extends ThreadChecked with LazyLogging {
 
   // Should only be modified on the Gdx thread
+  val animationManager = new AnimationManager(screenW, screenH)
+
   /**
    * Should start all black.
    */
@@ -165,6 +167,8 @@ class WindowManager(
     // TODO: Avoid a memory alloc here
     val toRemove = windows.filter(_.state == Window.Closed)
     toRemove.foreach(_.removeFromWindowManagerAndInputs())
+
+    animationManager.update(delta)
   }
 
   // Render that's called before the map layer is drawn
@@ -250,6 +254,12 @@ class WindowManager(
       text.render(this,batch)
     }
 
+    batch.end()
+
+    animationManager.render(batch, shapeRenderer, screenCamera)
+
+    batch.begin()
+
     // Render all windows
     windows.reverseIterator.foreach(_.render(batch))
 
@@ -279,6 +289,7 @@ class WindowManager(
       picture.dispose()
     }
     windowskinTexture.dispose()
+    animationManager.dispose()
   }
 }
 

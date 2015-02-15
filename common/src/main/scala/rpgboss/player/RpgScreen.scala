@@ -34,8 +34,6 @@ trait RpgScreen extends Screen
   def scriptInterface: ScriptInterface
 
   val inputs = new InputMultiplexer()
-  def createWindowManager(): WindowManager =
-    new WindowManager(assets, project, screenW, screenH)
 
   val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
 
@@ -51,9 +49,7 @@ trait RpgScreen extends Screen
   screenCamera.setToOrtho(true, screenW, screenH) // y points down
   screenCamera.update()
 
-  val windowManager = createWindowManager()
-
-  val animationManager = new AnimationManager(screenW, screenH)
+  val windowManager = new WindowManager(assets, project, screenW, screenH)
 
   def playAnimation(animationId: Int, target: AnimationTarget,
       speedScale: Float = 1.0f) = {
@@ -62,7 +58,7 @@ trait RpgScreen extends Screen
       new AnimationPlayer(project, animation, assets,
           target, speedScale)
     player.play()
-    animationManager.addAnimation(player)
+    windowManager.animationManager.addAnimation(player)
     player
   }
 
@@ -107,7 +103,7 @@ trait RpgScreen extends Screen
     animation = Animation(sounds = Array(animationSound))
     soundPlayer = new AnimationPlayer(project, animation, assets,
         new FixedAnimationTarget(0, 0))
-    animationManager.addAnimation(soundPlayer)
+    windowManager.animationManager.addAnimation(soundPlayer)
     soundPlayer.play()
   }
 
@@ -135,7 +131,7 @@ trait RpgScreen extends Screen
   override def dispose() = {
     reset()
 
-    animationManager.dispose()
+    windowManager.dispose()
     shapeRenderer.dispose()
     batch.dispose()
   }
@@ -167,8 +163,6 @@ trait RpgScreen extends Screen
 
     // Update tweens
     windowManager.update(delta)
-
-    animationManager.update(delta)
 
     if (!windowManager.inTransition)
       update(delta)

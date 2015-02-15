@@ -40,9 +40,6 @@ class BattleScreen(
    */
   val finishChannel = new Channel[Int]()
 
-  override def createWindowManager() =
-    new WindowManager(assets, project, screenW, screenH)
-
   object PlayerActionWindow extends ThreadChecked {
     import concurrent.ExecutionContext.Implicits.global
 
@@ -651,7 +648,6 @@ class BattleScreen(
 
     windowManager.preMapRender(batch, screenCamera)
     windowManager.render(batch, shapeRenderer, screenCamera)
-    animationManager.render(batch, shapeRenderer, screenCamera)
   }
 
   /**

@@ -365,7 +365,6 @@ class MapScreen(val game: RpgGame)
     renderMap()
 
     windowManager.render(batch, shapeRenderer, screenCamera)
-    animationManager.render(batch, shapeRenderer, screenCamera)
   }
 
   override def dispose() = {
