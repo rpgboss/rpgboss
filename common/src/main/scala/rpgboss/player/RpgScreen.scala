@@ -164,8 +164,9 @@ trait RpgScreen extends Screen
     // Update tweens
     windowManager.update(delta)
 
-    if (!windowManager.inTransition)
+    if (!windowManager.inTransition) {
       update(delta)
+    }
 
     render()
   }

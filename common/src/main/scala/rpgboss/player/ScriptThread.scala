@@ -18,7 +18,7 @@ import rpgboss.player.entity.EventEntity
 import scala.collection.mutable.MutableList
 import org.mozilla.javascript.debug.Debugger
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import org.mozilla.javascript.tools.shell.Global
+import org.mozilla.javascript.ContextFactory
 
 /**
  * Thread used to run a javascript script...
@@ -36,70 +36,50 @@ class ScriptThread(
   scriptBody: String,
   fnToRun: String = "",
   onFinish: Option[() => Unit] = None)
-  extends UncaughtExceptionHandler
-  with FinishableByPromise
+  extends FinishableByPromise
   with LazyLogging {
-  def initScope(jsScope: ScriptableObject): Any = {
-    def putProperty(objName: String, obj: Object) = {
-      ScriptableObject.putProperty(jsScope, objName,
-          Context.javaToJS(obj, jsScope))
-    }
-
-    putProperty("game", scriptInterface)
-
-    putProperty("project", scriptInterface.project)
-    putProperty("out", System.out)
-
-    // Some models to be imported
-    putProperty("MapLoc", MapLoc)
-    putProperty("Transitions", Transitions)
-    putProperty("Keys", MyKeys)
-    putProperty("None", None)
-  }
+  def extraInitScope(jsScope: ScriptableObject): Unit = {}
 
   val runnable = new Runnable() {
     override def run() = {
-      Thread.setDefaultUncaughtExceptionHandler(ScriptThread.this)
+      val (jsContext, jsScope) =
+        ScriptHelper.enterGlobalContext(scriptInterface)
 
-      val jsContext = Context.enter()
-      val jsScope = jsContext.initStandardObjects()
-      initScope(jsScope)
+      extraInitScope(jsScope)
 
-      def evalScriptFromFile(scriptPath: String) = {
-        val script =
-          Script.readFromDisk(scriptInterface.project, scriptPath)
+      try {
         jsContext.evaluateString(
           jsScope,
-          script.readAsString,
-          script.name,
+          scriptBody,
+          scriptName,
           1, null)
-      }
 
-      evalScriptFromFile(ResourceConstants.globalsScript)
-
-      jsContext.evaluateString(
-        jsScope,
-        scriptBody,
-        scriptName,
-        1, null)
-
-      if (!fnToRun.isEmpty) {
-        jsContext.evaluateString(
-          jsScope,
-          fnToRun,
-          fnToRun,
-          1, null)
-      }
-
-      Context.exit()
-
-      onFinish.map { f =>
-        GdxUtils.syncRun {
-          f()
+        if (!fnToRun.isEmpty) {
+          jsContext.evaluateString(
+            jsScope,
+            fnToRun,
+            fnToRun,
+            1, null)
         }
-      }
+      } catch {
+        case e: ThreadDeath =>
+          System.err.println("Thread death")
+        case e: org.mozilla.javascript.EcmaError => {
+          System.err.println(e.getErrorMessage())
+          System.err.println("%s:%d".format(e.sourceName(), e.lineNumber()))
+        }
+        case e: Throwable => e.printStackTrace()
+      } finally {
+        Context.exit()
 
-      finish()
+        onFinish.map { f =>
+          GdxUtils.syncRun {
+            f()
+          }
+        }
+
+        finish()
+      }
     }
   }
 
@@ -115,22 +95,43 @@ class ScriptThread(
     thread.start()
     this
   }
+}
 
-  def uncaughtException(thread: Thread, ex: Throwable) = {
-    ex match {
-      case e: ThreadDeath =>
-        System.err.println("Thread death")
-      case e: org.mozilla.javascript.EcmaError => {
-        System.err.println(e.getErrorMessage())
-        System.err.println("%s:%d".format(e.sourceName(), e.lineNumber()))
-      }
-      case e => e.printStackTrace()
+object ScriptHelper {
+  def enterGlobalContext(
+      scriptInterface: ScriptInterface): (Context, ScriptableObject) = {
+    val jsContext = ContextFactory.getGlobal().enterContext()
+    val jsScope = jsContext.initStandardObjects()
+
+    def putProperty(objName: String, obj: Object) = {
+      ScriptableObject.putProperty(jsScope, objName,
+        Context.javaToJS(obj, jsScope))
     }
+
+    putProperty("game", scriptInterface)
+
+    putProperty("project", scriptInterface.project)
+    putProperty("out", System.out)
+
+    // Some models to be imported
+    putProperty("MapLoc", MapLoc)
+    putProperty("Transitions", Transitions)
+    putProperty("Keys", MyKeys)
+    putProperty("None", None)
+
+    val script = Script.readFromDisk(scriptInterface.project,
+      ResourceConstants.globalsScript)
+    jsContext.evaluateString(
+      jsScope,
+      script.readAsString,
+      script.name,
+      1, null)
+
+    (jsContext, jsScope)
   }
 }
 
 class ScriptThreadFactory(scriptInterface: ScriptInterface) {
-
   def runFromFile(
     scriptName: String,
     fnToRun: String = "",
@@ -169,11 +170,11 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
       scriptBody,
       "",
       onFinish) {
-      override def initScope(jsScope: ScriptableObject) = {
-        super.initScope(jsScope)
+      override def extraInitScope(jsScope: ScriptableObject) = {
+        super.extraInitScope(jsScope)
 
         ScriptableObject.putProperty(jsScope, "event",
-            Context.javaToJS(entity.getScriptInterface(), jsScope))
+          Context.javaToJS(entity.getScriptInterface(), jsScope))
       }
     }
     s.run()

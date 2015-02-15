@@ -23,6 +23,8 @@ class MapScreen(val game: RpgGame)
   extends RpgScreenWithGame
   with HasScriptConstants {
 
+  val scriptHooks = new ScriptHookManager(scriptInterface)
+
   var screenWTiles: Float = screenW / Tileset.tilesize
   var screenHTiles: Float = screenH / Tileset.tilesize
 
@@ -232,6 +234,8 @@ class MapScreen(val game: RpgGame)
     // We want the camera and window manager to update, but not anything else.
     if (windowManager.inTransition)
       return
+
+    scriptHooks.update(delta)
 
     // Update events, including player event
     eventEntities.values.foreach(_.update(delta))

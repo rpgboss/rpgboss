@@ -726,19 +726,19 @@ class ScriptInterface(
   def gameOver = syncRun {
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.systemStartScript,
-      "gameOver()")    
+      "gameOver()")
   }
 
   def callSaveMenu = syncRun {
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.globalsScript,
-      "SaveMenu()")    
+      "SaveMenu()")
   }
 
   def callMenu = syncRun {
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.menuScript,
-      "menu()")    
+      "menu()")
   }
 
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
@@ -784,6 +784,10 @@ class ScriptInterface(
 
   def getScriptAsString(scriptPath: String): String = {
     Script.readFromDisk(project, scriptPath).readAsString
+  }
+
+  def addScriptHook(jsFunction: org.mozilla.javascript.Function) = syncRun {
+    mapScreen.scriptHooks.addScriptHook(jsFunction)
   }
 
   /**

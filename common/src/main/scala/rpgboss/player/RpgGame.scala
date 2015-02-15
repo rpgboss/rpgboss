@@ -127,8 +127,7 @@ class RpgGame(gamepath: File)
     val weatherScript = Script.readFromDisk(project, ResourceConstants.weatherScript)
     if(weatherScript.newDataStream != null) {
       mapScreen.scriptFactory.runFromFile(
-        ResourceConstants.weatherScript,
-        "weather()")
+        ResourceConstants.weatherScript)
     }
 
 
