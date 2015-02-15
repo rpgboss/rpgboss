@@ -9,6 +9,7 @@ import rpgboss.editor.StateMaster
 import rpgboss.model.SpriteSpec
 import rpgboss.editor.uibase.DesignGridPanel
 import rpgboss.model.event.EventTrigger
+import rpgboss.model.event.AnimationType
 import javax.swing.BorderFactory
 import rpgboss.model.MapLoc
 import rpgboss.editor.Internationalized._
@@ -50,6 +51,9 @@ class EventStatePane(
   val triggerBox =
     enumIdCombo(EventTrigger)(model.trigger, model.trigger = _)
 
+  val animationTypeBox =
+    enumIdCombo(AnimationType)(model.animationType, model.animationType = _)
+
   val fRunOnce =
     boolField(getMessage("Run_Once_Then_Increment_State"),
         model.runOnceThenIncrementState,
@@ -75,6 +79,8 @@ class EventStatePane(
       border = BorderFactory.createTitledBorder(getMessage("Behavior"))
       row().grid().add(leftLabel(getMessageColon("Trigger")))
       row().grid().add(triggerBox)
+      row().grid().add(leftLabel(getMessageColon("AnimationType")))
+      row().grid().add(animationTypeBox)
       row().grid().add(fRunOnce)
     }
 
