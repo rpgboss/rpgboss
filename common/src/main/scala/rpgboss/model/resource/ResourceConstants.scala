@@ -169,6 +169,10 @@ object ResourceConstants {
     titleMusic =
       Some(SoundSpec("sys/sean_m_stephens/TitleMoon.mid")),
 
+    gameOverPic = "sys/GameOver.jpg",
+    gameOverMusic =
+      Some(SoundSpec("sys/aaron_mcdonald/Macbeth - Cue 2.mid")),
+
     screenW = 640,
     screenH = 480,
 
@@ -198,7 +202,13 @@ object ResourceConstants {
 
   def mainScript = "sys/main.js"
 
+  def menuScript = "sys/menu.js"
+
+  def eventEntityScript = "sys/eventEntity.js"
+
   def weatherScript = "sys/weather.js"
+
+  def timerScript = "sys/timer.js"
 
   def transitionsScript = "sys/transitions.js"
 }

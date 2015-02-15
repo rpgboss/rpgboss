@@ -15,6 +15,13 @@ object EventTrigger extends RpgEnum {
   def default = BUTTON
 }
 
+object AnimationType extends RpgEnum {
+  val NONE = Value(0, "None")
+  val FOLLOW_PLAYER = Value(1, "Follow_Player")
+
+  def default = NONE
+}
+
 object EventHeight extends RpgEnum {
   val UNDER = Value(0, "Under_Player")
   val SAME = Value(1, "Same_Level_As_Player")
@@ -63,6 +70,7 @@ case class RpgEventState(
   var affixDirection: Boolean = false,
 
   var trigger: Int = EventTrigger.BUTTON.id,
+  var animationType: Int = AnimationType.NONE.id,
   var runOnceThenIncrementState: Boolean = false,
 
   var cmds: Array[EventCmd] = RpgEventState.defaultCmds) {

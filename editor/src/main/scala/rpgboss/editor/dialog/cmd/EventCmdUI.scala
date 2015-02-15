@@ -68,6 +68,14 @@ object EventCmdUI {
       AddRemoveItemUI,
       AddRemoveGoldUI,
       BreakLoopUI,
+      CallMenuUI,
+      CallSaveMenuUI,
+      CommentUI,
+      ClearTimerUI,
+      ExitGameUI,
+      FadeInUI,
+      FadeOutUI,
+      GameOverUI,
       GetChoiceUI,
       GetEntityInfoUI,
       HealOrDamageUI,
@@ -85,6 +93,7 @@ object EventCmdUI {
       RunJsUI,
       SetEventStateUI,
       SetGlobalIntUI,
+      SetTimerUI,
       SetTransitionUI,
       SetWindowskinUI,
       StopSoundUI,
@@ -179,6 +188,11 @@ object BreakLoopUI extends EventCmdUI[BreakLoop] {
   override def title = getMessage("Break_Loop")
 }
 
+object ExitGameUI extends EventCmdUI[ExitGame] {
+  override def category = Programming
+  override def title = getMessage("Exit_Game")
+}
+
 object GetChoiceUI extends EventCmdUI[GetChoice] {
   override def category = Windows
   override def title = getMessage("Get_Choice")
@@ -205,6 +219,58 @@ object EnableDisableMenuUI extends EventCmdUI[EnableDisableMenu] {
       owner: Window, sm: StateMaster, mapName: Option[String], model: EnableDisableMenu) = Seq(
     EventField("", enumVerticalBox(
         EnabledDisabledEnum, model.enabled, model.enabled = _))
+    )
+}
+
+object SetTimerUI extends EventCmdUI[SetTimer] {
+  override def category = Windows
+  override def title = getMessage("Set_Timer")
+  override def getNormalFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: SetTimer) = Seq(
+    EventField(getMessage("Minutes"),
+        new FloatSpinner(0, 60, 1f, model.minutes, model.minutes = _)),
+    EventField(getMessage("Seconds"),
+        new FloatSpinner(0, 60, 1f, model.seconds, model.seconds = _))
+    )
+}
+
+object ClearTimerUI extends EventCmdUI[ClearTimer] {
+  override def category = Programming
+  override def title = getMessage("Clear_Timer")
+}
+
+object GameOverUI extends EventCmdUI[GameOver] {
+  override def category = Programming
+  override def title = getMessage("Game_Over")
+}
+
+object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
+  override def category = Programming
+  override def title = getMessage("Call_Save_Menu")
+}
+
+object CallMenuUI extends EventCmdUI[CallMenu] {
+  override def category = Programming
+  override def title = getMessage("Call_Menu")
+}
+
+object FadeInUI extends EventCmdUI[FadeIn] {
+  override def category = Programming
+  override def title = getMessage("Fade_In")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: FadeIn) = Seq(
+    EventField(getMessage("Duration"),
+        new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _))
+    )
+}
+
+object FadeOutUI extends EventCmdUI[FadeOut] {
+  override def category = Programming
+  override def title = getMessage("Fade_Out")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: FadeOut) = Seq(
+    EventField(getMessage("Duration"),
+        new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _))
     )
 }
 
@@ -395,6 +461,30 @@ object PlaySoundUI extends EventCmdUI[PlaySound] {
         getMessage("Sound"),
         new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
             allowNone = false)))
+}
+
+object CommentUI extends EventCmdUI[Comment] {
+  override def category = Programming
+  override def title = getMessage("Comment")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+      mapName: Option[String], model: Comment) = Seq(
+    EventField("", {
+      val textArea = new RSyntaxTextArea(20, 60)
+      textArea.setText(model.commentString)
+      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE)
+      textArea.setCodeFoldingEnabled(true)
+
+      textArea.getDocument().addDocumentListener(new DocumentListener {
+        override def changedUpdate(e: DocumentEvent) = Unit
+        override def insertUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+        override def removeUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+      })
+
+      val scrollPane = new RTextScrollPane(textArea)
+      Component.wrap(scrollPane)
+    }))
 }
 
 object RunJsUI extends EventCmdUI[RunJs] {

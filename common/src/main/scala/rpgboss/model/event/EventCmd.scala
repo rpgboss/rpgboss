@@ -54,6 +54,14 @@ object EventCmd {
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[BreakLoop],
+    classOf[CallMenu],
+    classOf[CallSaveMenu],
+    classOf[Comment],
+    classOf[ClearTimer],
+    classOf[ExitGame],
+    classOf[FadeIn],
+    classOf[FadeOut],
+    classOf[GameOver],
     classOf[GetChoice],
     classOf[GetEntityInfo],
     classOf[HealOrDamage],
@@ -73,6 +81,7 @@ object EventCmd {
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetTransition],
+    classOf[SetTimer],
     classOf[SetLocalInt],
     classOf[SetWindowskin],
     classOf[StopSound],
@@ -414,8 +423,27 @@ case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
     singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
 }
 
+case class ExitGame() extends EventCmd {
+  def sections =
+    singleCall("game.quit")
+}
+
 case class RunJs(var scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
+}
+
+case class Comment(var commentString: String = "") extends EventCmd {
+
+  def sections = {
+
+    var arr: Array[String] = commentString.split("\n")
+    var newArray:Array[String] = Array[String]()
+    for ( i <- 0 to (arr.length - 1)) {
+      newArray +:= "// " + arr(i)
+    }
+
+    Array(PlainLines(newArray))
+  }
 }
 
 case class SetEventState(
@@ -546,6 +574,57 @@ case class SetTransition(var transitionId: Int = 0)
     extends EventCmd {
     def sections =
       singleCall("game.setInt", "useTransition", transitionId)
+}
+
+case class SetTimer(var minutes: Float = 1, var seconds : Float = 0)
+    extends EventCmd {
+    def sections = {
+
+      var timeInSeconds = minutes*60 + seconds
+
+      singleCall("game.setInt", "timer", timeInSeconds)
+    }
+}
+
+case class ClearTimer()
+    extends EventCmd {
+    def sections =
+      singleCall("game.setInt", "timer", 0)
+}
+
+case class GameOver()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.gameOver")
+    }
+}
+
+case class FadeIn(var duration:Float = 1f)
+    extends EventCmd {
+    def sections = {
+      singleCall("game.setTransition",0, duration)
+    }
+}
+
+case class FadeOut(var duration:Float = 0.4f)
+    extends EventCmd {
+    def sections = {
+      singleCall("game.setTransition",1, duration)
+    }
+}
+
+case class CallSaveMenu()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.callSaveMenu")
+    }
+}
+
+case class CallMenu()
+    extends EventCmd {
+    def sections = {
+      singleCall("game.callMenu")
+    }
 }
 
 case class MoveCamera(var dx: Float = 0,var dy: Float = 0,var async: Boolean = true, var duration:Float = 2f)
