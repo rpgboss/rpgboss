@@ -68,6 +68,8 @@ object EventCmdUI {
       AddRemoveItemUI,
       AddRemoveGoldUI,
       BreakLoopUI,
+      CallMenuUI,
+      CallSaveMenuUI,
       ClearTimerUI,
       GameOverUI,
       GetChoiceUI,
@@ -230,7 +232,17 @@ object ClearTimerUI extends EventCmdUI[ClearTimer] {
 
 object GameOverUI extends EventCmdUI[GameOver] {
   override def category = Programming
-  override def title = getMessage("GameOver")
+  override def title = getMessage("Game_Over")
+}
+
+object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
+  override def category = Programming
+  override def title = getMessage("Call_Save_Menu")
+}
+
+object CallMenuUI extends EventCmdUI[CallMenu] {
+  override def category = Programming
+  override def title = getMessage("Call_Menu")
 }
 
 object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {

@@ -202,6 +202,8 @@ object ResourceConstants {
 
   def mainScript = "sys/main.js"
 
+  def menuScript = "sys/menu.js"
+
   def weatherScript = "sys/weather.js"
 
   def timerScript = "sys/timer.js"

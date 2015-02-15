@@ -175,7 +175,7 @@ function menu() {
   var rootMenuWin = new Menu({
     getState : function() {
       return {
-        lines : [ "Item", "Skills", "Equip", "Status", "Save" ],
+        lines : [ "Item", "Skills", "Equip", "Status", "Save", "Quit Game" ],
       };
     },
     layout : game.layout(game.NORTHEAST(), game.SCREEN(), 0.2, 0.8),
@@ -187,20 +187,23 @@ function menu() {
 
   rootMenuWin.loopChoice(function(choiceId) {
     switch (choiceId) {
-    case 0:
-      itemsMenu();
-      break;
-    case 2:
-      equipMenu(statusMenu);
-      break;
-    case 4:
-      var saveMenu = new SaveAndLoadMenu();
-      saveMenu.loopChoice(function(choiceId) {
-        game.saveToSaveSlot(choiceId);
-        return true;
-      });
-      saveMenu.close();
-      break;
+      case 0:
+        itemsMenu();
+        break;
+      case 2:
+        equipMenu(statusMenu);
+        break;
+      case 4:
+        var saveMenu = new SaveAndLoadMenu();
+        saveMenu.loopChoice(function(choiceId) {
+          game.saveToSaveSlot(choiceId);
+          return true;
+        });
+        saveMenu.close();
+        break;
+      case 5:
+        game.quit();
+        break;
     }
 
     statusMenu.update();
