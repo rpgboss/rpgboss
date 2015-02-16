@@ -275,6 +275,26 @@ class ScriptInterface(
     setInt("timer",0)
   }
 
+  def moveTowardsPlayer(eventId: Int) = {
+    var playerX = getPlayerX()
+    var playerY = getPlayerY()
+    var eventX = getEventX(eventId)
+    var eventY = getEventY(eventId)
+
+    // TODO: Realize a wall is infront of the event
+    // TODO: If event state changes kill this loop and restart it again if back to the state
+
+    if(eventX < playerX) {
+      moveEvent(eventId, 1, 0, false, false);
+    } else if(eventY < playerY) {
+      moveEvent(eventId, 0, 1, false, false);
+    } else if(eventX > playerX) {
+      moveEvent(eventId, -1, 0, false, false);
+    } else if(eventY > playerY) {
+      moveEvent(eventId, 0, -1, false, false);
+    }
+  }
+
   def endBattleBackToMap() = {
     setTransition(1, 0.5f)
     sleep(0.5f)
