@@ -1,8 +1,12 @@
+var currentMap = game.getMapName();
+
 function FollowPlayer (eventid) {
 
 	game.moveTowardsPlayer(eventid);
 
 	game.sleep(0.3);
 
-	FollowPlayer(eventid);
+	if(game.getMapName() == currentMap) {
+		FollowPlayer(eventid);
+	}
 }
