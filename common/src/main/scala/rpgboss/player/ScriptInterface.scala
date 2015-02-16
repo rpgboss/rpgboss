@@ -802,6 +802,10 @@ class ScriptInterface(
 
   }
 
+  def getMapName():String = {
+    return mapScreen.mapName.get
+  }
+
   def getScriptAsString(scriptPath: String): String = {
     Script.readFromDisk(project, scriptPath).readAsString
   }
