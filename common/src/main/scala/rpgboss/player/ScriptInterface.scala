@@ -692,9 +692,42 @@ class ScriptInterface(
   def getInt(key: String): Int = syncRun {
     persistent.getInt(key)
   }
+
+
   def setInt(key: String, value: Int) = syncRun {
     persistent.setInt(key, value)
   }
+
+  def addInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue += value
+    setInt(key, currentValue)
+  }
+
+  def substractInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue -= value
+    setInt(key, currentValue)
+  }
+
+  def multiplyInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue *= value
+    setInt(key, currentValue)
+  }
+
+  def divideInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue /= value
+    setInt(key, currentValue)
+  }
+
+  def modInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue = currentValue % value
+    setInt(key, currentValue)
+  }
+
   def getIntArray(key: String): Array[Int] = syncRun {
     persistent.getIntArray(key)
   }
