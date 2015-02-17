@@ -12,10 +12,14 @@ object OperatorType extends RpgEnum {
 
   implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
 
-  val IgnoreSecondValue = Val(0, "Ignore Second Value", "")
-  val Add = Val(1, "Add", "+")
+  val Set = Val(0, "Set_to", "")
+  val Add = Val(1, "Add_by", "+")
+  val Substract = Val(2, "Substract_by", "-")
+  val Multiply = Val(3, "Multiply_with", "*")
+  val Divide = Val(4, "Divide_with", "/")
+  val Mod = Val(5, "Mod_with", "%")
 
-  override def default = IgnoreSecondValue
+  override def default = Set
 }
 
 object EventParameterValueType extends RpgEnum {

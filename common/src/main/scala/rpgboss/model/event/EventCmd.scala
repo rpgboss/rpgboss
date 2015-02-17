@@ -466,20 +466,28 @@ case class SetEventState(
 case class SetGlobalInt(
     var key: String = "globalVariableName",
     var operatorId: Int = OperatorType.default.id,
-    value1: IntParameter = IntParameter(),
-    value2: IntParameter = IntParameter()) extends EventCmd {
-  def sections = {
+    var value: Int = 0) extends EventCmd {
+  def sections:Array[CodeSection] = {
     val operator = OperatorType(operatorId)
     val operatorString = operator.jsString
-
-    if (operatorString.isEmpty)
-      singleCall("game.setInt", key, value1)
-    else
-      singleCall("game.setInt", key,
-          applyOperator(value1.rawJs, operatorString, value2.rawJs))
+    var result:Array[CodeSection] = null
+    if (operatorString.isEmpty) {
+      result = singleCall("game.setInt", key, value)
+    }
+    if(operatorString=="+") {
+      result = singleCall("game.addInt", key, value)
+    }
+    if(operatorString=="-") {
+      result = singleCall("game.substractInt", key, value)
+    }
+    if(operatorString=="/") {
+      result = singleCall("game.divideInt", key, value)
+    }
+    if(operatorString=="%") {
+      result = singleCall("game.modInt", key, value)
+    }
+    return result
   }
-
-  override def getParameters() = List(value1, value2)
 }
 
 case class SetLocalInt(variableName: String,
