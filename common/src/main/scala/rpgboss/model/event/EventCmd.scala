@@ -466,25 +466,25 @@ case class SetEventState(
 case class SetGlobalInt(
     var key: String = "globalVariableName",
     var operatorId: Int = OperatorType.default.id,
-    var value: Int = 0) extends EventCmd {
+    var value1: Int = 0) extends EventCmd {
   def sections:Array[CodeSection] = {
     val operator = OperatorType(operatorId)
     val operatorString = operator.jsString
     var result:Array[CodeSection] = null
     if (operatorString.isEmpty) {
-      result = singleCall("game.setInt", key, value)
+      result = singleCall("game.setInt", key, value1)
     }
     if(operatorString=="+") {
-      result = singleCall("game.addInt", key, value)
+      result = singleCall("game.addInt", key, value1)
     }
     if(operatorString=="-") {
-      result = singleCall("game.substractInt", key, value)
+      result = singleCall("game.substractInt", key, value1)
     }
     if(operatorString=="/") {
-      result = singleCall("game.divideInt", key, value)
+      result = singleCall("game.divideInt", key, value1)
     }
     if(operatorString=="%") {
-      result = singleCall("game.modInt", key, value)
+      result = singleCall("game.modInt", key, value1)
     }
     return result
   }

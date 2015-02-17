@@ -536,7 +536,7 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
             OperatorType, model.operatorId, model.operatorId = _)),
     EventField(
         getMessage("Value"),
-        new NumberSpinner(-9999999, 9999999, model.value, model.value = _))
+        new NumberSpinner(-9999999, 9999999, model.value1, model.value1 = _))
     )
 }
 
