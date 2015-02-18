@@ -13,7 +13,7 @@ class EventSpec extends UnitSpec {
       override def setupMapData(mapData: RpgMapData) = {
         super.setupMapData(mapData)
         mapData.events = singleTestEvent(
-            SetGlobalInt("testKey", value1 = IntParameter(testIntValue)))
+            SetGlobalInt("testKey", value1 = testIntValue))
       }
 
       override def testScript() = {
