@@ -107,14 +107,15 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
         case SpriteSpec.Directions.WEST => (-1f, 0f)
       }
 
-      val checkDist = 0.3f // Distance to check for a collision
+      val checkDist = 0.8f // Distance to check for a collision
       val activatedEvts =
         getAllEventTouches(ux * checkDist, uy * checkDist)
           .filter(_.evtState.trigger == EventTrigger.BUTTON.id)
 
       if (!activatedEvts.isEmpty) {
         val closestEvt =
-          activatedEvts.minBy(e => math.abs(e.x - x) + math.abs(e.y - y))
+          activatedEvts.minBy(e => math.abs(e.x - (x + ux)) +
+                                   math.abs(e.y - (y + uy)))
 
         closestEvt.activate(dir)
       }
