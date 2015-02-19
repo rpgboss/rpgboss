@@ -59,7 +59,7 @@ object TestPlayer {
   private var lwjglApp: LwjglApplication = null
   private var headlessApp: HeadlessApplication = null
 
-  def launch(game: RpgGame, interactive: Boolean = true) = {
+  def launch(game: RpgGame, interactive: Boolean = false) = {
     if (interactive) {
       if (lwjglApp == null) {
         val conf = new LwjglApplicationConfiguration();
