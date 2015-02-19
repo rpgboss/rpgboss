@@ -17,7 +17,8 @@ function ShowSnow () {
 			game.hidePicture(54);
 
 		} else {
-			game.showPicture(54, "sys/weather/snow/0"+snowCounter+".png", game.layoutWithOffset(0,0,snowImageWidth,snowImageHeight,0,0),1);
+
+			game.showPictureLoop(54, 'sys/weather/snow', game.layoutWithOffset(0,0,snowImageWidth,snowImageHeight,0,0), 1,30);
 
 			if(snowCounter>=snowCounterMax) {
 				snowCounter = snowStart;
