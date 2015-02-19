@@ -107,7 +107,7 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
         case SpriteSpec.Directions.WEST => (-1f, 0f)
       }
 
-      val checkDist = 0.8f // Distance to check for a collision
+      val checkDist = 0.4f // Distance to check for key activation
       val activatedEvts =
         getAllEventTouches(ux * checkDist, uy * checkDist)
           .filter(_.evtState.trigger == EventTrigger.BUTTON.id)

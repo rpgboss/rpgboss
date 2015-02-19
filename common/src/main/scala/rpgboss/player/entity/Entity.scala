@@ -58,6 +58,12 @@ class Entity(
   var stillStep = SpriteSpec.Steps.STILL
   var boundingBoxHalfsize = 0.5f
 
+  /**
+   * Automatically subtracted from boundingBoxHalfsizes to allow for easier
+   * movement of events and the player past each other.
+   */
+  def boundingBoxHalfsizeTolerance = 0.1f
+
   def isMoving() = isMovingVar
 
   val tintColor = Color.WHITE.cpy()
@@ -69,7 +75,7 @@ class Entity(
     // Normalize to prevent bounding boxes too large to be used on tile map
     val halfsize = math.min((2.0f - collisionDeltas) / 2.0f, halfsizeArg)
 
-    boundingBoxHalfsize = halfsize
+    boundingBoxHalfsize = halfsize - boundingBoxHalfsizeTolerance
   }
 
   def getBoundingBox() = {
@@ -113,15 +119,6 @@ class Entity(
   } getOrElse {
     spriteset = null
     setBoundingBoxHalfsize((1.0f - collisionDeltas) * 0.5f)
-  }
-
-  /**
-   * This calculates the touches based only on the center
-   */
-  def getAllEventCenterTouches(dxArg: Float, dyArg: Float) = {
-    eventEntities.values.filter(npc => {
-      npc.getBoundingBox().contains(x + dxArg, y + dyArg)
-    })
   }
 
   /**
@@ -218,9 +215,9 @@ case class EntityMove(totalDx: Float, totalDy: Float)
       var movedThisLoop = false
 
       val evtsTouchedX =
-        entity.getAllEventCenterTouches(dx, 0).filter(_ != entity)
+        entity.getAllEventTouches(dx, 0).filter(_ != entity)
       val evtsTouchedY =
-        entity.getAllEventCenterTouches(0, dy).filter(_ != entity)
+        entity.getAllEventTouches(0, dy).filter(_ != entity)
 
       val evtsTouchedSet = evtsTouchedX.toSet ++ evtsTouchedY.toSet
       entity.eventTouchCallback(evtsTouchedSet)
