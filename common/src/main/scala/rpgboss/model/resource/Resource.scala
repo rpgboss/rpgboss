@@ -121,6 +121,13 @@ trait MetaResource[T, MT] {
     (listSystemResources() ++ listCustomResources(proj)).toArray
   }
 
+  /**
+   * Lists custom and system resources in in a given folder.
+   */
+  def listResourcesUnderPath(project: Project, folderPath: String) = {
+    list(project).filter(_.startsWith(folderPath)).sorted
+  }
+
   def importCustom(proj: Project, source: File) = {
     assert(extensionFilter(source))
     assert(source.isFile() && source.canRead())

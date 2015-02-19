@@ -317,6 +317,11 @@ class ScriptInterface(
     activeScreen.windowManager.showPictureByName(slot, name, layout, alpha)
   }
 
+  def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
+      alpha: Float) = syncRun {
+    activeScreen.windowManager.showPictureLoop(slot, folderPath, layout, alpha)
+  }
+
   def hidePicture(slot: Int) = syncRun {
     activeScreen.windowManager.hidePicture(slot)
   }
