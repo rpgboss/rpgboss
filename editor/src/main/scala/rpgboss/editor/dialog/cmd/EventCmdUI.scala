@@ -533,11 +533,10 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
     EventField(
         getMessage("Operation"),
         enumVerticalBox(
-            OperatorType, model.operatorId, model.operatorId = _)),
-    EventField(
-        getMessage("Value"),
-        new NumberSpinner(-9999999, 9999999, model.value1, model.value1 = _))
-    )
+            OperatorType, model.operatorId, model.operatorId = _)))
+  override def getParameterFields(
+      owner: Window, sm: StateMaster, mapName: Option[String], model: SetGlobalInt) = List(
+    IntNumberField(getMessage("Value"), -9999, 9999, model.value1))
 }
 
 object SetWindowskinUI extends EventCmdUI[SetWindowskin] {
