@@ -83,17 +83,24 @@ class ScriptThread(
     }
   }
 
-  var thread = new Thread(runnable)
+  var thread: Thread = null
 
   def stop() = {
     // TODO: This is unsafe, but in practice, won't do anything bad... I think.
-    thread.stop()
+    if (thread != null)
+      thread.stop()
   }
 
-  def run() = {
-    assert(!thread.isAlive())
+  def runOnNewThread() = {
+    assert(thread == null)
+    thread = new Thread(runnable)
     thread.start()
     this
+  }
+
+  def runOnSameThread() = {
+    assert(thread == null)
+    runnable.run()
   }
 }
 
@@ -135,7 +142,8 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
   def runFromFile(
     scriptName: String,
     fnToRun: String = "",
-    onFinish: Option[() => Unit] = None) = {
+    onFinish: Option[() => Unit] = None,
+    runOnNewThread: Boolean = true) = {
     val script = Script.readFromDisk(scriptInterface.project, scriptName)
     val s = new ScriptThread(
       scriptInterface,
@@ -144,7 +152,14 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
       fnToRun,
       onFinish)
 
-    s.run()
+    if (runOnNewThread) {
+      assert(scriptInterface.onBoundThread(),
+          "Scripts should not spawn new threads when calling other scripts.")
+      s.runOnNewThread()
+    } else {
+      s.runOnSameThread()
+    }
+
     s
   }
 
@@ -177,7 +192,7 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
           Context.javaToJS(entity.getScriptInterface(), jsScope))
       }
     }
-    s.run()
+    s.runOnNewThread()
     s
   }
 }

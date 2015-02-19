@@ -20,7 +20,7 @@ class MapCamera(game: RpgGame) {
   var speed: Float = 2f // tiles per second
   val moveQueue = new MutateQueue(MapCamera.this)
 
-  def info = CameraInfo(x, y, speed, moveQueue.queue.length)
+  def info = CameraInfo(x, y, speed, moveQueue.length)
 
   def update(delta: Float, x: Float, y: Float) = {
     if (moveQueue.isEmpty) {

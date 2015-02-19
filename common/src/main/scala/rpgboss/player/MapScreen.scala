@@ -44,6 +44,7 @@ class MapScreen(val game: RpgGame)
   private def moveEntity(
       entity: Entity, dx: Float, dy: Float,
       affixDirection: Boolean): EntityMove = {
+    assertOnBoundThread()
     if (dx != 0 || dy != 0) {
       if (!affixDirection) {
         val direction =
@@ -70,10 +71,12 @@ class MapScreen(val game: RpgGame)
   }
 
   def movePlayer(dx: Float, dy: Float, affixDirection: Boolean) = {
+    assertOnBoundThread()
     moveEntity(_playerEntity, dx, dy, affixDirection)
   }
 
   def moveEvent(id: Int, dx: Float, dy: Float, affixDirection: Boolean) = {
+    assertOnBoundThread()
     val entityOpt = eventEntities.get(id)
     entityOpt.map { entity =>
       moveEntity(entity, dx, dy, affixDirection)

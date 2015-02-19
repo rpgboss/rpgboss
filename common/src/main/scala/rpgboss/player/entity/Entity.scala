@@ -41,8 +41,8 @@ class Entity(
 
   def zPriority = y
 
-  val moveQueue = new MutateQueue(this)
-  var movesEnqueued: Long = 0
+  private val moveQueue = new MutateQueue(this)
+  protected var movesEnqueued: Long = 0
 
   var speed: Float = 3.0f
   private var isMovingVar = false
@@ -137,9 +137,6 @@ class Entity(
   def enqueueMove(move: MutateQueueItem[Entity]) = {
     moveQueue.enqueue(move)
     movesEnqueued += 1
-  }
-  def dequeueMove() = {
-    moveQueue.dequeue()
   }
 
   /**

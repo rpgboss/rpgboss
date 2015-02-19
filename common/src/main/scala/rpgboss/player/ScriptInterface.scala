@@ -159,10 +159,10 @@ class ScriptInterface(
 
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
-      "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")")
+      "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")",
+      runOnNewThread = false)
 
     stopSound()
-
   }
 
   /**
@@ -550,7 +550,9 @@ class ScriptInterface(
   def moveEvent(id: Int, dx: Float, dy: Float,
                 affixDirection: Boolean = false,
                 async: Boolean = false) = {
-    val move = mapScreen.moveEvent(id, dx, dy, affixDirection)
+    val move = syncRun {
+      mapScreen.moveEvent(id, dx, dy, affixDirection)
+    }
     if (move != null && !async)
       move.awaitFinish()
   }
@@ -558,7 +560,9 @@ class ScriptInterface(
   def movePlayer(dx: Float, dy: Float,
                  affixDirection: Boolean = false,
                  async: Boolean = false) = {
-    val move = mapScreen.movePlayer(dx, dy, affixDirection)
+    val move = syncRun {
+      mapScreen.movePlayer(dx, dy, affixDirection)
+    }
     if (move != null && !async)
       move.awaitFinish()
   }
@@ -591,7 +595,6 @@ class ScriptInterface(
     val finishable = syncRun {
       val statement = EventJavascript.jsStatement(
           "openStore", itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
-      println(statement)
       game.mapScreen.scriptFactory.runFromFile(
         "sys/store.js",
         statement,
