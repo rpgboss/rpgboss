@@ -318,8 +318,8 @@ class ScriptInterface(
   }
 
   def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
-      alpha: Float) = syncRun {
-    activeScreen.windowManager.showPictureLoop(slot, folderPath, layout, alpha)
+      alpha: Float, fps:Int) = syncRun {
+    activeScreen.windowManager.showPictureLoop(slot, folderPath, layout, alpha, fps)
   }
 
   def hidePicture(slot: Int) = syncRun {

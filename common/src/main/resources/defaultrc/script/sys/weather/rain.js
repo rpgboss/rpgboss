@@ -23,7 +23,7 @@ function ShowRain () {
 			soundCounter++;
 
 		} else {
-			game.showPicture(53, "sys/weather/rain/0"+rainCounter+".png", game.layoutWithOffset(0,0,rainImageWidth,rainImageHeight,0,0),1);
+			game.showPictureLoop(53, 'sys/weather/rain', game.layoutWithOffset(0,0,rainImageWidth,rainImageHeight,0,0), 1,14);
 
 			if(rainCounter>=rainCounterMax) {
 				rainCounter = rainStart;
