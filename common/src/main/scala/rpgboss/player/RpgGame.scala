@@ -134,8 +134,7 @@ class RpgGame(gamepath: File)
     val timerScript = Script.readFromDisk(project, ResourceConstants.timerScript)
     if(timerScript.newDataStream != null) {
       mapScreen.scriptFactory.runFromFile(
-        ResourceConstants.timerScript,
-        "timer()")
+        ResourceConstants.timerScript)
     }
   }
 
