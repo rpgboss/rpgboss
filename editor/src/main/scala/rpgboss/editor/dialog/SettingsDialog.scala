@@ -14,6 +14,7 @@ import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.Internationalized._
 import javax.swing.BorderFactory
 
+import rpgboss.editor.VisibleConnection
 
 class SettingsDialog(owner: Window, onSuccess: Project => Any)
   extends StdDialog(owner, getMessage("Settings")) {
@@ -21,6 +22,7 @@ class SettingsDialog(owner: Window, onSuccess: Project => Any)
   centerDialog(new Dimension(400, 400))
 
   def okFunc() = {
+    VisibleConnection.connection.restart()
     close()
   }
 
