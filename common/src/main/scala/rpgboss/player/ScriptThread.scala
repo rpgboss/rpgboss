@@ -115,7 +115,7 @@ object ScriptHelper {
         Context.javaToJS(obj, jsScope))
     }
 
-    putProperty("game", scriptInterface)
+    putProperty("scalaScriptInterface", scriptInterface)
 
     putProperty("project", scriptInterface.project)
     putProperty("out", System.out)

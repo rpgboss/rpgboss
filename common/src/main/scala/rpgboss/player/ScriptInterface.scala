@@ -784,22 +784,22 @@ class ScriptInterface(
     game.gameOver()
   }
 
-  def gameOver = syncRun {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.systemStartScript,
-      "gameOver()")
-  }
-
-  def callSaveMenu = syncRun {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.globalsScript,
-      "SaveMenu()")
-  }
-
-  def callMenu = syncRun {
+  def gameOver = {
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.menuScript,
-      "menu()")
+      "gameOver()", runOnNewThread = false)
+  }
+
+  def callSaveMenu = {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.menuScript,
+      "SaveMenu()", runOnNewThread = false)
+  }
+
+  def callMenu = {
+    game.mapScreen.scriptFactory.runFromFile(
+      ResourceConstants.menuScript,
+      "menu()", runOnNewThread = false)
   }
 
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {

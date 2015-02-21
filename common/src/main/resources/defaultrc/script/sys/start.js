@@ -1,3 +1,5 @@
+includeFile("sys/menu.js");
+
 function newGame() {
   game.setTransition(1, 0.4);
   game.sleep(0.4);
