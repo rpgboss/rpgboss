@@ -52,11 +52,11 @@ trait RpgScreen extends Screen
   val windowManager = new WindowManager(assets, project, screenW, screenH)
 
   def playAnimation(animationId: Int, target: AnimationTarget,
-      speedScale: Float = 1.0f) = {
+      speedScale: Float, sizeScale: Float) = {
     val animation = project.data.enums.animations(animationId)
     val player =
       new AnimationPlayer(project, animation, assets,
-          target, speedScale)
+          target, speedScale, sizeScale)
     player.play()
     windowManager.animationManager.addAnimation(player)
     player

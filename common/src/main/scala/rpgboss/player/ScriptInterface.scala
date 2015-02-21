@@ -343,25 +343,25 @@ class ScriptInterface(
   }
 
   def playAnimation(animationId: Int, screenX: Float, screenY: Float,
-      speedScale: Float) = syncRun {
+      speedScale: Float, sizeScale: Float) = syncRun {
     activeScreen.playAnimation(animationId,
-        new FixedAnimationTarget(screenX, screenY), speedScale)
+        new FixedAnimationTarget(screenX, screenY), speedScale, sizeScale)
   }
 
-  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Int) = {
+  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Float,
+      sizeScale: Float) = {
     mapScreen.eventEntities.get(eventId) map { entity =>
       activeScreen.playAnimation(animationId,
           new MapEntityAnimationTarget(mapScreen, entity),
-          speedScale)
+          speedScale, sizeScale)
     }
   }
 
-  def playAnimationOnPlayer(animationId: Int, speedScale: Int) = {
+  def playAnimationOnPlayer(animationId: Int, speedScale: Float,
+      sizeScale: Float) = {
     activeScreen.playAnimation(animationId,
         new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
-        speedScale)
-    val info = getPlayerEntityInfo()
-    playAnimation(animationId, info.screenX, info.screenY, speedScale)
+        speedScale, sizeScale)
   }
 
   def playSound(sound: String) = syncRun {

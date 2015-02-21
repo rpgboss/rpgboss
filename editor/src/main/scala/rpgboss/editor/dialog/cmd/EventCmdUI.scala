@@ -426,7 +426,9 @@ object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
       EventField(getMessage("X_Offset"), fXOffset),
       EventField(getMessage("Y_Offset"), fYOffset),
       EventField(getMessage("Animation_Speed"),
-          percentField(0.25f, 4.0f, model.speedScale, model.speedScale = _)))
+          percentField(0.25f, 4.0f, model.speedScale, model.speedScale = _)),
+      EventField(needsTranslation("Size Scale"),
+          percentField(0.25f, 4.0f, model.sizeScale, model.sizeScale = _)))
   }
 }
 

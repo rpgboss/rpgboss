@@ -377,31 +377,33 @@ case class PlayAnimation(
   var entitySpec: EntitySpec = EntitySpec(),
   var xOffset: Int = 0,
   var yOffset: Int = 0,
-  var speedScale: Float = 1.0f) extends EventCmd {
+  var speedScale: Float = 1.0f,
+  var sizeScale: Float = 1.0f) extends EventCmd {
   def sections = Origins(originId) match {
     case Origins.SCREEN_TOP_LEFT =>
       singleCall("game.playAnimation", animationId, xOffset, yOffset,
-          speedScale)
+          speedScale, sizeScale)
     case Origins.SCREEN_CENTER =>
       singleCall("game.playAnimation", animationId,
           applyOperator(RawJs("game.getScreenW() / 2"), " + ",
                         RawJs(EventJavascript.toJs(xOffset))),
           applyOperator(RawJs("game.getScreenH() / 2"), " + ",
                         RawJs(EventJavascript.toJs(yOffset))),
-          speedScale)
+          speedScale, sizeScale)
     case Origins.ON_ENTITY => {
       entitySpec match {
         case EntitySpec(which, _, _) if which == WhichEntity.PLAYER.id =>
-          singleCall("game.playAnimationOnPlayer", animationId, speedScale)
+          singleCall("game.playAnimationOnPlayer", animationId, speedScale,
+              sizeScale)
         case EntitySpec(which, _, _) if which == WhichEntity.THIS_EVENT.id =>
           singleCall(
             "game.playAnimationOnEvent", animationId, RawJs("event.id()"),
-            speedScale)
+            speedScale, sizeScale)
         case EntitySpec(which, _, eventIdx)
         if which == WhichEntity.EVENT_ON_MAP.id =>
           singleCall(
             "game.playAnimationOnEvent", animationId, entitySpec.eventId,
-            speedScale)
+            speedScale, sizeScale)
       }
     }
   }
