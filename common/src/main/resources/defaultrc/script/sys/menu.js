@@ -401,7 +401,6 @@ function menu() {
 function gameOver() {
   game.setTransition(0, 1.0);
   game.playMusic(0, project.data().startup().gameOverMusic(), true, 0.4);
-  // TODO: GameOver picture will not be shown
   game.showPicture(30, project.data().startup().gameOverPic(), 
       game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
   game.sleep(0.1);
