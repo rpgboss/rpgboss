@@ -146,7 +146,8 @@ class WindowManager(
         new TexturePicture(assets, picture, layout, alpha)
       })
       println(pictureArray.deep)
-      showPicture(slot, new PictureSequence(pictureArray, loop = true))
+      showPicture(slot, new PictureSequence(
+          pictureArray, loop = true, framesPerSecond))
     }
   }
 
