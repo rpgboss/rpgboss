@@ -14,12 +14,6 @@ import rpgboss.editor.uibase.StdDialog
 import rpgboss.editor.Internationalized._
 import javax.swing.BorderFactory
 
-object SettingsOptions {
-  var assetserver_host = "assets.rpgboss.com"
-  var assetserver_username = ""
-  var assetserver_password = ""
-}
-
 
 class SettingsDialog(owner: Window, onSuccess: Project => Any)
   extends StdDialog(owner, getMessage("Settings")) {
@@ -27,23 +21,16 @@ class SettingsDialog(owner: Window, onSuccess: Project => Any)
   centerDialog(new Dimension(400, 400))
 
   def okFunc() = {
-    Settings.set("assetserver.host", SettingsOptions.assetserver_host)
-    Settings.set("assetserver.username", SettingsOptions.assetserver_username)
-    Settings.set("assetserver.password", SettingsOptions.assetserver_password)
     close()
   }
 
-  var ahostValue = Settings.get("assetserver.host")
-  var ausernameValue = Settings.get("assetserver.username")
-  var apasswordValue = Settings.get("assetserver.password")
-
-  if(ahostValue=="") {
-    SettingsOptions.assetserver_host = ahostValue.get
+  if(Settings.get("assetserver.host")=="") {
+    Settings.set("assetserver.host", "http://assets.rpgboss.com")
   }
 
-  var assetserver_host = textField(SettingsOptions.assetserver_host, SettingsOptions.assetserver_host = _)
-  var assetserver_username = textField(SettingsOptions.assetserver_username, SettingsOptions.assetserver_username = _)
-  var assetserver_password = textField(SettingsOptions.assetserver_password, SettingsOptions.assetserver_password = _)
+  var assetserver_host = textField(Settings.get("assetserver.host").get, Settings.set("assetserver.host", _))
+  var assetserver_username = textField(Settings.get("assetserver.username").get, Settings.set("assetserver.username", _))
+  var assetserver_password = textField(Settings.get("assetserver.password").get, Settings.set("assetserver.password", _))
 
   contents = new DesignGridPanel {
     border = BorderFactory.createTitledBorder(getMessage("Asset_Server"))

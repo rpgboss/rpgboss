@@ -16,6 +16,7 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.model.event.RpgEvent
+import scalaj.http.Http
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -132,12 +133,31 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         "crystal_project/16x16/actions/fileexport.png"))
     }
 
+    def checkAssetServerSettings():Boolean = {
+      var host = Settings.get("assetserver.host").get
+      var username = Settings.get("assetserver.username").get
+      var password = Settings.get("assetserver.password").get
+      var result = true
+      if(host=="") result = false
+      if(username=="") result = false
+      if(password=="") result = false
+      return result
+    }
+
     contents += new Button(Action(getMessage("Asset_Server") + "...") {
       if(Desktop.isDesktopSupported()) {
         var desktop =  Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
-              desktop.browse(new URL("http://assets.rpgboss.com").toURI());
+              if(checkAssetServerSettings()) {
+                var host = Settings.get("assetserver.host").get
+                var username = Settings.get("assetserver.username").get
+                var password = Settings.get("assetserver.password").get
+                desktop.browse(new URL(host + "/api/v1/login/with/redirect/"+username+"/"+password+"?redirect=/").toURI());
+              } else {
+
+              }
+
             } catch {
               case e: Exception => e.printStackTrace();
             }
@@ -154,7 +174,10 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         var desktop =  Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
-              desktop.browse(new URL("http://assets.rpgboss.com/login?type=showchat").toURI());
+                var host = Settings.get("assetserver.host").get
+                var username = Settings.get("assetserver.username").get
+                var password = Settings.get("assetserver.password").get
+                desktop.browse(new URL(host + "/api/v1/login/with/redirect/"+username+"/"+password+"?redirect=/#showchat").toURI());
             } catch {
               case e: Exception => e.printStackTrace();
             }
