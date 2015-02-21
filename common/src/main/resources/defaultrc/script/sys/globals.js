@@ -54,3 +54,15 @@ function getItemName(itemId) {
 }
 
 var game = Object.create(scalaScriptInterface);
+
+game.gameOver = function() {
+  game.runScript("sys/menu.js", "gameOver()");
+};
+
+game.callSaveMenu = function() {
+  game.runScript("sys/menu.js", "callSaveMenu()");
+};
+
+game.callMenu = function() {
+  game.runScript("sys/menu.js", "callMenu()");
+};

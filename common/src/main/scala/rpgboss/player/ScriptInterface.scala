@@ -780,26 +780,13 @@ class ScriptInterface(
     game.quit()
   }
 
-  def toTitleScreen() = {
+  def toTitleScreen() = syncRun {
     game.gameOver()
   }
 
-  def gameOver = {
+  def runScript(scriptPath: String, functionToCall: String) = {
     game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.menuScript,
-      "gameOver()", runOnNewThread = false)
-  }
-
-  def callSaveMenu = {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.menuScript,
-      "SaveMenu()", runOnNewThread = false)
-  }
-
-  def callMenu = {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.menuScript,
-      "menu()", runOnNewThread = false)
+      scriptPath, functionToCall, runOnNewThread = false)
   }
 
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
