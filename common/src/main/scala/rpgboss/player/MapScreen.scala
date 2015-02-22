@@ -104,58 +104,58 @@ class MapScreen(val game: RpgGame)
   // All the events on the current map, including the player event
   val eventEntities = collection.mutable.Map[Int, EventEntity]()
 
-  def setPlayerLoc(loc: MapLoc) = {
+  def setPlayerLoc(loc: MapLoc): Unit = {
     mapAndAssetsOption.map(_.dispose())
     mapAndAssetsOption = None
     eventEntities.map(_._2.dispose())
     eventEntities.clear()
 
-    if (!loc.map.isEmpty()) {
-      val mapName = loc.map
-
-      val mapAndAssets = new MapAndAssets(project, loc.map)
-      mapAndAssets.setLastBattlePosition(loc.x, loc.y)
-
-      mapAndAssetsOption = Some(mapAndAssets)
-      eventEntities ++= mapAndAssets.mapData.events.map {
-        case (k, v) => ((k, new EventEntity(
-            game.project,
-            game.persistent,
-            scriptInterface,
-            scriptFactory,
-            game.spritesets,
-            mapAndAssetsOption,
-            eventEntities,
-            mapName,
-            v)))
-      }
-
-      val distinctChars =
-        project.data.enums.distinctChars ++ mapAndAssets.mapData.distinctChars
-      windowManager.updateBitmapFont(distinctChars.mkString)
-
-      playMusic(0, mapAndAssets.map.metadata.music, true,
-          Transitions.fadeLength)
-
-      var interiorValue = 0
-      if(mapAndAssets.map.metadata.interior) {
-        interiorValue = 1
-      }
-
-      scriptInterface.setInt("interior",interiorValue)
-    }
-
     if (loc.map.isEmpty()) {
       _playerEntity = null
-    } else {
-      _playerEntity = new PlayerEntity(game, this)
-      _playerEntity.x = loc.x
-      _playerEntity.y = loc.y
-      _playerEntity.mapName = Some(loc.map)
-
-      _playerEntity.updateSprite()
-      windowManager.reset()
+      return
     }
+
+    val mapName = loc.map
+
+    val mapAndAssets = new MapAndAssets(project, loc.map)
+    mapAndAssets.setLastBattlePosition(loc.x, loc.y)
+
+    mapAndAssetsOption = Some(mapAndAssets)
+    eventEntities ++= mapAndAssets.mapData.events.map {
+      case (k, v) => ((k, new EventEntity(
+          game.project,
+          game.persistent,
+          scriptInterface,
+          scriptFactory,
+          game.spritesets,
+          mapAndAssetsOption,
+          eventEntities,
+          mapName,
+          v)))
+    }
+
+    windowManager.reset()
+
+    val distinctChars =
+      project.data.enums.distinctChars ++ mapAndAssets.mapData.distinctChars
+    windowManager.updateBitmapFont(distinctChars.mkString)
+
+    _playerEntity = new PlayerEntity(game, this)
+    _playerEntity.x = loc.x
+    _playerEntity.y = loc.y
+    _playerEntity.mapName = Some(loc.map)
+
+    _playerEntity.updateSprite()
+
+    playMusic(0, mapAndAssets.map.metadata.music, true,
+        Transitions.fadeLength)
+
+    var interiorValue = 0
+    if(mapAndAssets.map.metadata.interior) {
+      interiorValue = 1
+    }
+
+    scriptInterface.setInt("interior",interiorValue)
   }
 
   def persistPlayerLocation() = {

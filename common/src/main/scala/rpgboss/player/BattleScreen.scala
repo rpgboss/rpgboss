@@ -602,7 +602,9 @@ class BattleScreen(
                   val battler =
                     getBattler(hit.hitActor.entityType, hit.hitActor.index)
                   playAnimation(hit.animationId,
-                      new PictureLikeAnimationTarget(battler))
+                      new PictureLikeAnimationTarget(battler),
+                      speedScale = 1.0f,
+                      sizeScale = 1.0f)
                 }
 
               notification.action match {
