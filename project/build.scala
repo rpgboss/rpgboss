@@ -25,7 +25,7 @@ object Settings {
       "org.mozilla" % "rhino" % "1.7R4",
       "org.scalaj" %% "scalaj-http" % "1.1.4",
       "javax.websocket" % "javax.websocket-api" % "1.1",
-      "org.glassfish.tyrus.bundles" % "tyrus-standalone-client" % "1.9"
+      "org.glassfish.tyrus.bundles" % "tyrus-standalone-client" % "1.10"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")

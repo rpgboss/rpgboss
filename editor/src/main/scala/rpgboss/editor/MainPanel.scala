@@ -48,9 +48,10 @@ class MainPanel(val topWin: Frame)
     logger.info("Project saved.")
   }
 
+  VisibleConnection.settingsDialog = new SettingsDialog(topWin, p => setProject(p))
+
   val actionSettings = Action(getMessage("Settings")) {
-    val d = new SettingsDialog(topWin, p => setProject(p))
-      d.open()
+      VisibleConnection.settingsDialog.open()
   }
 
   peer

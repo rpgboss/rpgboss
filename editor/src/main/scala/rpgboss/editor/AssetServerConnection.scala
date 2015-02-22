@@ -2,6 +2,8 @@ package rpgboss.editor
 
 import java.awt.Color
 import scala.swing._
+import scala.swing.event._
+
 import scala.collection.mutable._
 
 import javax.websocket._
@@ -22,6 +24,11 @@ import org.json4s.Formats
 
 import scalaj.http.Http
 
+import rpgboss.lib.Utils
+import java.awt.Cursor
+
+import rpgboss.editor.dialog.SettingsDialog
+
 class ConnectionData(
 	var action:String = "",
 	var value:String = "",
@@ -31,14 +38,33 @@ class ConnectionData(
 }
 
 object VisibleConnection {
-	var status = "Checking..."
 
-	var label = new Label(status)
+	var label = new Button("")
+	label.borderPainted = false
+	label.cursor = new Cursor(Cursor.HAND_CURSOR)
+
+	var panel = new BoxPanel(Orientation.Horizontal) {
+
+		update("Checking...")
+
+		listenTo(label)
+
+		reactions += {
+			case ButtonClicked(label) =>
+	    	settingsDialog.open()
+		}
+
+		contents += label
+
+	}
+
+	var authenticated:Boolean = false
 
 	var connection:AssetServerConnection = null
+	var settingsDialog:SettingsDialog = null
 
 	def update(newValue:String) {
-		label.text = newValue
+		label.text = "<html><font color=\"#0000CF\"><u>"+newValue+"</u></font></html>";
 	}
 }
 
@@ -66,8 +92,7 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 		var password = Settings.get("assetserver.password").get
 
 		var currentSessionString = ""
-		println(username)
-		println(password)
+
 		if(username!="" && password!="") {
 			try {
 				var response = Http(Settings.get("assetserver.host").get+"/api/v1/login/"+username+"/"+password).asString
@@ -92,8 +117,10 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 
 		if(currentSessionString=="") {
 				VisibleConnection.update("Authentication error")
+				VisibleConnection.authenticated = false
 			} else {
 				VisibleConnection.update("Authenticated")
+				VisibleConnection.authenticated = true
 
 				connectionThread = new Thread(new Runnable() {
 				  override def run() {

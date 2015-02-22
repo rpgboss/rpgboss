@@ -149,7 +149,7 @@ class MapEditor(
 
   toolbar.contents += Swing.HGlue
 
-  toolbar.contents += VisibleConnection.label
+  toolbar.contents += VisibleConnection.panel
 
   override lazy val canvasPanel = new MapViewPanel {
     override def paintComponent(g: Graphics2D) =
