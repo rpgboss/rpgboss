@@ -60,6 +60,8 @@ import rpgboss.model.event._
 import rpgboss.player.RpgScreen
 import rpgboss.model.Origins
 import rpgboss.model.ColorSpec
+import rpgboss.model.WeatherTypes
+import rpgboss.model.MusicSlots
 
 case class EventField(title: String, component: Component)
 
@@ -279,14 +281,8 @@ object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
   override def title = getMessage("Weather_Effects")
   override def getNormalFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: WeatherEffects) = Seq(
-    EventField("", boolField(
-        getMessage("Rain"), model.rain, model.rain = _)),
-    EventField("", boolField(
-        getMessage("Fog"),
-        model.fog, model.fog = _)),
-    EventField("", boolField(
-        getMessage("Snow"),
-        model.snow, model.snow = _))
+    EventField("", enumVerticalBox(WeatherTypes, model.weatherTypeId,
+        model.weatherTypeId = _))
     )
 }
 
@@ -450,7 +446,7 @@ object PlayMusicUI extends EventCmdUI[PlayMusic] {
             model.fadeDuration = _)))
   override def getParameterFields(
       owner: Window, sm: StateMaster, mapName: Option[String], model: PlayMusic) = List(
-    IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
+    IntNumberField(getMessage("Slot"), 0, MusicSlots.NUM_SLOTS,
         model.slot))
 }
 
@@ -612,7 +608,7 @@ object StopMusicUI extends EventCmdUI[StopMusic] {
             model.fadeDuration = _)))
   override def getParameterFields(owner: Window, sm: StateMaster,
       mapName: Option[String], model: StopMusic) = List(
-    IntNumberField(getMessage("Slot"), 0, RpgScreen.MAX_MUSIC_SLOTS,
+    IntNumberField(getMessage("Slot"), 0, MusicSlots.NUM_SLOTS,
         model.slot))
 }
 

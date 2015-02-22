@@ -401,7 +401,9 @@ function menu() {
 function gameOver() {
   game.setTransition(0, 1.0);
   game.playMusic(0, project.data().startup().gameOverMusic(), true, 0.4);
-  game.showPicture(30, project.data().startup().gameOverPic(), 
+  game.showPicture(
+      PictureSlots.GAME_OVER(), 
+      project.data().startup().gameOverPic(), 
       game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
   game.sleep(0.1);
   
@@ -417,7 +419,6 @@ function gameOver() {
     if (choiceIdx == 0) {
       game.setTransition(1, 0.4);
       game.sleep(0.4);
-      // TODO: It doenst go to the titlescreen
       game.toTitleScreen();
       break;
     } else if (choiceIdx == 1) {

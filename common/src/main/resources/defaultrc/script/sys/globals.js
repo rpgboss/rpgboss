@@ -66,3 +66,31 @@ game.callSaveMenu = function() {
 game.callMenu = function() {
   game.runScript("sys/menu.js", "callMenu()");
 };
+
+game.setWeather = function(weatherTypeId) {
+  switch(weatherTypeId) {
+  case 0:
+    game.hidePicture(PictureSlots.WEATHER());
+    game.stopMusic(MusicSlots.WEATHER(), 0.5 /* fadeDuration */);
+    break;
+  case 1:  // Rain
+    game.showPictureLoop(
+        PictureSlots.WEATHER(), 
+        'sys/weather/rain', 
+        game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0),
+        1.0 /* alpha */, 14 /* framesPerSecond */);
+    game.playMusic(
+        MusicSlots.WEATHER(),
+        'sys/weather/rain.mp3',
+        0.5 /* volume */, true /* loop */, 0.5 /* fadeDuration */);
+    break;
+  case 2:
+    game.showPictureLoop(
+        PictureSlots.WEATHER(), 
+        'sys/weather/snow', 
+        game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0),
+        1.0 /* alpha */, 30 /* framesPerSecond */);
+    game.stopMusic(MusicSlots.WEATHER(), 0.5 /* fadeDuration */);
+    break;
+  }
+}

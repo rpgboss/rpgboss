@@ -206,8 +206,6 @@ object ResourceConstants {
 
   def eventEntityScript = "sys/eventEntity.js"
 
-  def weatherScript = "sys/weather.js"
-
   def timerScript = "sys/timer.js"
 
   def transitionsScript = "sys/transitions.js"

@@ -191,28 +191,9 @@ case class HealOrDamage(
   }
 }
 
-case class WeatherEffects(
-    var rain: Boolean = false,
-    var fog: Boolean = false,
-    var snow: Boolean = false) extends EventCmd {
-  def sections = {
-    val buf = new ArrayBuffer[CodeSection]()
-
-    var rainResult = 0
-    if(rain) rainResult = 1
-
-    var fogResult = 0
-    if(fog) fogResult = 1
-
-    var snowResult = 0
-    if(snow) snowResult = 1
-
-    buf += PlainLines(Array(jsCall("game.setInt","fogVisible", fogResult).exp))
-    buf += PlainLines(Array(jsCall("game.setInt","rainVisible", rainResult).exp))
-    buf += PlainLines(Array(jsCall("game.setInt","snowVisible", snowResult).exp))
-
-    buf.toArray
-  }
+case class WeatherEffects(var weatherTypeId: Int = WeatherTypes.default.id)
+  extends EventCmd {
+  def sections = singleCall("game.setWeather", weatherTypeId)
 }
 
 case class IfCondition(
@@ -497,10 +478,10 @@ case class Sleep(var duration: Float = 0) extends EventCmd {
 }
 
 case class ShowPicture(
-    slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
-    var picture: String = "",
-    layout: Layout = Layout.defaultForPictures,
-    var alpha:Float = 1) extends EventCmd {
+  slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
+  var picture: String = "",
+  layout: Layout = Layout.defaultForPictures,
+  var alpha:Float = 1) extends EventCmd {
   def sections =
     singleCall("game.showPicture", slot, picture, layout.toJs(), alpha)
   override def getParameters() = List(slot)
