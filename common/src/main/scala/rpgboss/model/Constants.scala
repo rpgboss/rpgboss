@@ -31,33 +31,21 @@ object DirectionMasks {
   def flagged(b: Byte, dir: Int) = (b & dir) == dir
 }
 
-object MusicSlots {
-  val BEGIN = 0
-  val WEATHER = 7
-  val NUM_SLOTS = 8
-}
-
 object PictureSlots {
   val BEGIN = 0
-
   val BELOW_MAP = 0
   val ABOVE_MAP = 8
-  val MAP_END = 24
-
   val BATTLE_BEGIN = 24
   val BATTLE_BACKGROUND = 24
   val BATTLE_SPRITES_ENEMIES = 28
   val BATTLE_SPRITES_PARTY = 40
-  val GAME_OVER = 49
   val BATTLE_END = 50
-
   val ABOVE_WINDOW = 50
-  val WEATHER = 58
-
   val END = 64
 }
 
 object WeatherEffects extends RpgEnum {
+
   val RAIN = Value(1, "Rain")
   val FOG = Value(2, "Fog")
 
@@ -84,14 +72,6 @@ object Origins extends RpgEnum {
   val ON_ENTITY = Value(2, "On_Event_Player")
 
   def default = SCREEN_TOP_LEFT
-}
-
-object WeatherTypes extends RpgEnum {
-  val NONE = Value(0, "None")
-  val RAIN = Value(1, "Rain")
-  val SNOW = Value(2, "Snow")
-
-  def default = NONE
 }
 
 object Constants {

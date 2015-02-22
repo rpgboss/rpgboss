@@ -141,11 +141,12 @@ class WindowManager(
 
     if (!filesUnderPath.isEmpty) {
       val pictureArray = filesUnderPath.map(picturePath => {
+        println(picturePath)
         val picture = Picture.readFromDisk(project, picturePath)
         new TexturePicture(assets, picture, layout, alpha)
       })
-      showPicture(slot, new PictureSequence(
-          pictureArray, loop = true, framesPerSecond))
+      println(pictureArray.deep)
+      showPicture(slot, new PictureSequence(pictureArray, loop = true))
     }
   }
 

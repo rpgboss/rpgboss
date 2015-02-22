@@ -19,8 +19,6 @@ import scala.collection.mutable.MutableList
 import org.mozilla.javascript.debug.Debugger
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.ContextFactory
-import rpgboss.model.PictureSlots
-import rpgboss.model.MusicSlots
 
 /**
  * Thread used to run a javascript script...
@@ -117,7 +115,7 @@ object ScriptHelper {
         Context.javaToJS(obj, jsScope))
     }
 
-    putProperty("scalaScriptInterface", scriptInterface)
+    putProperty("game", scriptInterface)
 
     putProperty("project", scriptInterface.project)
     putProperty("out", System.out)
@@ -126,8 +124,6 @@ object ScriptHelper {
     putProperty("MapLoc", MapLoc)
     putProperty("Transitions", Transitions)
     putProperty("Keys", MyKeys)
-    putProperty("MusicSlots", MusicSlots)
-    putProperty("PictureSlots", PictureSlots)
     putProperty("None", None)
 
     val script = Script.readFromDisk(scriptInterface.project,

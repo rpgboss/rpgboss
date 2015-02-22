@@ -19,7 +19,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import rpgboss.player.entity.FixedAnimationTarget
 import rpgboss.player.entity.AnimationTarget
 import rpgboss.player.entity.FixedAnimationTarget
-import rpgboss.model.MusicSlots
+
+object RpgScreen {
+  val MAX_MUSIC_SLOTS = 8
+}
 
 trait RpgScreen extends Screen
   with ThreadChecked {
@@ -32,7 +35,7 @@ trait RpgScreen extends Screen
 
   val inputs = new InputMultiplexer()
 
-  val musics = Array.fill[Option[MusicPlayer]](MusicSlots.NUM_SLOTS)(None)
+  val musics = Array.fill[Option[MusicPlayer]](RpgScreen.MAX_MUSIC_SLOTS)(None)
 
   val batch = new SpriteBatch()
   val shapeRenderer = new ShapeRenderer()
@@ -49,11 +52,11 @@ trait RpgScreen extends Screen
   val windowManager = new WindowManager(assets, project, screenW, screenH)
 
   def playAnimation(animationId: Int, target: AnimationTarget,
-      speedScale: Float, sizeScale: Float) = {
+      speedScale: Float = 1.0f) = {
     val animation = project.data.enums.animations(animationId)
     val player =
       new AnimationPlayer(project, animation, assets,
-          target, speedScale, sizeScale)
+          target, speedScale)
     player.play()
     windowManager.animationManager.addAnimation(player)
     player
@@ -63,7 +66,7 @@ trait RpgScreen extends Screen
     loop: Boolean, fadeDuration: Float): Unit = {
     assertOnBoundThread()
 
-    if (slot < 0 || slot >= MusicSlots.NUM_SLOTS)
+    if (slot < 0 || slot >= RpgScreen.MAX_MUSIC_SLOTS)
       return
 
     musics(slot).map({ oldMusic =>
