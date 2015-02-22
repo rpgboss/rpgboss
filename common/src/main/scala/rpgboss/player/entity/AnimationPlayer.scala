@@ -27,7 +27,7 @@ class MapEntityAnimationTarget(mapScreen: MapScreen, entity: Entity)
   extends AnimationTarget {
   def getScreenCoords() = {
     val info = EntityInfo.apply(entity, mapScreen)
-    Some((info.screenX , info.screenY))
+    Some((info.screenX, info.screenY))
   }
   override def setTint(color: Color) = entity.setTintColor(color)
 }
@@ -49,7 +49,7 @@ class PictureLikeAnimationTarget(picture: PictureLike) extends AnimationTarget {
  */
 class AnimationPlayer(
   proj: Project, animation: Animation, assets: RpgAssetManager,
-  target: AnimationTarget, speedScale: Float = 1.0f)
+  target: AnimationTarget, speedScale: Float = 1.0f, sizeScale: Float = 1.0f)
   extends Disposable {
 
   object States {
@@ -132,7 +132,6 @@ class AnimationPlayer(
       return
     }
 
-
     if (!allResourcesLoaded) {
       return
     }
@@ -152,7 +151,7 @@ class AnimationPlayer(
 
     for (soundState <- animationSounds) {
       if (!soundState.played && time >= soundState.animationSound.time &&
-          soundState.resource.isLoaded(assets)) {
+        soundState.resource.isLoaded(assets)) {
         val soundSpec = soundState.animationSound.sound
         soundState.resource.getAsset(assets).play(
           soundSpec.volume, soundSpec.pitch, 0f)
@@ -161,8 +160,8 @@ class AnimationPlayer(
     }
 
     val currentTargetFlashes = animation.flashes
-        .filter(_.flashTypeId == AnimationFlashType.Target.id)
-        .filter(_.within(time))
+      .filter(_.flashTypeId == AnimationFlashType.Target.id)
+      .filter(_.within(time))
 
     if (!currentTargetFlashes.isEmpty) {
       val tintColor = currentTargetFlashes.map(_.currentColor(time)).maxBy(_.a)
@@ -176,7 +175,7 @@ class AnimationPlayer(
    * Assumes |batch| is already centered on the animation origin.
    */
   def render(batch: SpriteBatch, shapeRenderer: ShapeRenderer,
-      screenW: Int, screenH: Int): Unit = {
+             screenW: Int, screenH: Int): Unit = {
     if (_state != Playing)
       return
 
@@ -190,23 +189,28 @@ class AnimationPlayer(
         val screenCoordsOpt = target.getScreenCoords()
         if (screenCoordsOpt.isDefined) {
           val (targetX, targetY) = screenCoordsOpt.get
-          val dstX = targetX + tweenFloat(alpha, visual.start.x, visual.end.x)
-          val dstY = targetY + tweenFloat(alpha, visual.start.y, visual.end.y)
+          val dstX =
+            targetX +
+              tweenFloat(alpha, visual.start.x, visual.end.x) * sizeScale
+          val dstY =
+            targetY +
+              tweenFloat(alpha, visual.start.y, visual.end.y) * sizeScale
 
           val xTile = frameIndex % image.xTiles
           val yTile = frameIndex / image.xTiles
 
-          image.drawTileCentered(batch, assets, dstX, dstY, xTile, yTile)
+          image.drawTileCentered(
+            batch, assets, dstX, dstY, xTile, yTile, sizeScale)
         }
       }
     }
 
     val currentScreenFlashes = animation.flashes
-        .filter(_.flashTypeId == AnimationFlashType.Screen.id)
-        .filter(_.within(time))
+      .filter(_.flashTypeId == AnimationFlashType.Screen.id)
+      .filter(_.within(time))
 
     if (!currentScreenFlashes.isEmpty) {
-       // Spritebatch seems to turn off blending after it's done. Turn it on.
+      // Spritebatch seems to turn off blending after it's done. Turn it on.
       Gdx.gl.glEnable(GL20.GL_BLEND)
       shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
 

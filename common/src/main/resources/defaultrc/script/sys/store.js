@@ -1,3 +1,5 @@
+includeFile("sys/menu.js");
+
 function StoreBuyMenu(itemIds, priceMultiplier) {
   var menu = new Menu({
     getState : function() {

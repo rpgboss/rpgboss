@@ -345,25 +345,25 @@ class ScriptInterface(
   }
 
   def playAnimation(animationId: Int, screenX: Float, screenY: Float,
-      speedScale: Float) = syncRun {
+      speedScale: Float, sizeScale: Float) = syncRun {
     activeScreen.playAnimation(animationId,
-        new FixedAnimationTarget(screenX, screenY), speedScale)
+        new FixedAnimationTarget(screenX, screenY), speedScale, sizeScale)
   }
 
-  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Int) = {
+  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Float,
+      sizeScale: Float) = {
     mapScreen.eventEntities.get(eventId) map { entity =>
       activeScreen.playAnimation(animationId,
           new MapEntityAnimationTarget(mapScreen, entity),
-          speedScale)
+          speedScale, sizeScale)
     }
   }
 
-  def playAnimationOnPlayer(animationId: Int, speedScale: Int) = {
+  def playAnimationOnPlayer(animationId: Int, speedScale: Float,
+      sizeScale: Float) = {
     activeScreen.playAnimation(animationId,
         new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
-        speedScale)
-    val info = getPlayerEntityInfo()
-    playAnimation(animationId, info.screenX, info.screenY, speedScale)
+        speedScale, sizeScale)
   }
 
   def playSound(sound: String) = syncRun {
@@ -787,26 +787,13 @@ class ScriptInterface(
     game.quit()
   }
 
-  def toTitleScreen() = {
+  def toTitleScreen() = syncRun {
     game.gameOver()
   }
 
-  def gameOver = syncRun {
+  def runScript(scriptPath: String, functionToCall: String) = {
     game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.systemStartScript,
-      "gameOver()")
-  }
-
-  def callSaveMenu = syncRun {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.globalsScript,
-      "SaveMenu()")
-  }
-
-  def callMenu = syncRun {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.menuScript,
-      "menu()")
+      scriptPath, functionToCall, runOnNewThread = false)
   }
 
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {

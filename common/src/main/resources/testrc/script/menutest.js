@@ -1,3 +1,5 @@
+includeFile("sys/menu.js");
+
 function testStatusMenu() {
   var i = -1;
   var statusMenu = new StatusMenu();

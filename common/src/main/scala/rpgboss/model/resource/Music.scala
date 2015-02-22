@@ -166,6 +166,15 @@ class GdxMusicPlayer(assets: RpgAssetManager, music: Music)
 
   music.loadAsset(assets)
 
+  private var _pendingPlay = false
+
+  override def update(delta: Float) = {
+    super.update(delta)
+
+    if (_pendingPlay && music.isLoaded(assets))
+      music.getAsset(assets).play()
+  }
+
   def getVolume() = {
     if (music.isLoaded(assets))
       music.getAsset(assets).getVolume()
@@ -196,6 +205,8 @@ class GdxMusicPlayer(assets: RpgAssetManager, music: Music)
   def play() = {
     if (music.isLoaded(assets))
       music.getAsset(assets).play()
+    else
+      _pendingPlay = true
   }
 
   def dispose() = {
