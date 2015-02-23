@@ -19,7 +19,7 @@ object Settings {
       "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
       "commons-io" % "commons-io" % "2.4",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
-      "org.json4s" %% "json4s-native" % "3.2.10" withSources(),
+      "org.json4s" %% "json4s-native" % "3.2.11" withSources(),
       "org.scalatest" %% "scalatest" % "2.1.5" % "test",
       "org.mockito" % "mockito-core" % "1.9.5" % "test",
       "org.mozilla" % "rhino" % "1.7R4"
