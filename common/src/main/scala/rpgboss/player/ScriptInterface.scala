@@ -348,7 +348,7 @@ class ScriptInterface(
 
   def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Float,
       sizeScale: Float) = {
-    mapScreen.eventEntities.get(eventId) map { entity =>
+    mapScreen.allEntities.get(eventId) map { entity =>
       activeScreen.playAnimation(animationId,
           new MapEntityAnimationTarget(mapScreen, entity),
           speedScale, sizeScale)
@@ -528,11 +528,11 @@ class ScriptInterface(
   }
 
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
-    mapScreen.eventEntities.get(id).map(EntityInfo.apply(_, mapScreen))
+    mapScreen.allEntities.get(id).map(EntityInfo.apply(_, mapScreen))
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
-    val eventOpt = mapScreen.eventEntities.get(id)
+    val eventOpt = mapScreen.allEntities.get(id)
 
     if (eventOpt.isEmpty)
       logger.error("Could not activate event id: %d".format(id))

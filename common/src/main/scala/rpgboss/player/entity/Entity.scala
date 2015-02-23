@@ -30,16 +30,23 @@ import com.badlogic.gdx.graphics.Color
  *
  * Bottom edge length is boundBoxTiles.
  */
-class Entity(
+abstract class Entity(
   spritesets: Map[String, Spriteset],
   mapAndAssetsOption: Option[MapAndAssets],
-  eventEntities: collection.Map[Int, EventEntity],
+  allEntities: collection.Map[Int, Entity],
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) {
 
+  def height: Int
   def zPriority = y
+  def trigger: Int
+
+  /**
+   * Called when a player activates the event with a button.
+   */
+  def activate(activatorsDirection: Int): Option[Finishable] = None
 
   private val moveQueue = new MutateQueue(this)
   protected var movesEnqueued: Long = 0
@@ -122,13 +129,13 @@ class Entity(
   }
 
   /**
-   * Finds all events with which this dxArg and dyArg touches
+   * Finds all events with which this dxArg and dyArg touches. Excludes self.
    */
   def getAllEventTouches(dxArg: Float, dyArg: Float) = {
     val boundingBox = getBoundingBox().offsetted(dxArg, dyArg)
-    eventEntities.values.filter(npc => {
+    allEntities.values.filter(npc => {
       npc.getBoundingBox().contains(boundingBox)
-    })
+    }).filter(_ != this)
   }
 
   def enqueueMove(move: MutateQueueItem[Entity]) = {
@@ -140,7 +147,9 @@ class Entity(
    * This method is called when this event collides against others while
    * it is moving.
    */
-  def touchEntities(touchedNpcs: Iterable[EventEntity]) = {}
+  def touchEntities(touchedEntities: Iterable[Entity]) = {}
+
+  def onButton() = {}
 
   /**
    * Find closest entity to this one given an offset dx and dy.
@@ -187,6 +196,8 @@ class Entity(
       batch.setColor(Color.WHITE)
     }
   }
+
+  def dispose(): Unit
 }
 
 case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
