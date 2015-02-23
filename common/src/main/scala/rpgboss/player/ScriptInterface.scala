@@ -66,8 +66,6 @@ trait HasScriptConstants {
   def CHARACTER_STATUS_EFFECTS(characterId: Int) =
     "characterStatusEffects-%d".format(characterId)
 
-  val PICTURE_SLOTS = PictureSlots.END
-
   // Synchronized with LayoutType RpgEnum.
   val CENTERED = 0
   val NORTH = 1

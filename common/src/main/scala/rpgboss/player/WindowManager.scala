@@ -78,7 +78,7 @@ class WindowManager(
     _fontbmp = font.getBitmapFont(distinctChars)
   }
 
-  val pictures = Array.fill[Option[PictureLike]](164)(None)
+  val pictures = Array.fill[Option[PictureLike]](PictureSlots.NUM_SLOTS)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
   def setTransition(endAlpha: Float, duration: Float) = {
@@ -151,11 +151,22 @@ class WindowManager(
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
     assertOnBoundThread()
+    if (slot < 0 || slot >= PictureSlots.NUM_SLOTS) {
+      logger.error("Picture slots must be in range [0, 64).")
+      return
+    }
+
     pictures(slot).map(_.dispose())
     pictures(slot) = Some(newPicture)
   }
 
-  def hidePicture(slot: Int) = {
+  def hidePicture(slot: Int): Unit = {
+    assertOnBoundThread()
+    if (slot < 0 || slot >= PictureSlots.NUM_SLOTS) {
+      logger.error("Picture slots must be in range [0, 64).")
+      return
+    }
+
     pictures(slot).map(_.dispose())
     pictures(slot) = None
   }
@@ -278,7 +289,7 @@ class WindowManager(
     // Render all windows
     windows.reverseIterator.foreach(_.render(batch))
 
-    for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.END;
+    for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.NUM_SLOTS;
          pic <- pictures(i)) {
       pic.render(this, batch)
     }
