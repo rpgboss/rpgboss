@@ -54,7 +54,7 @@ object PictureSlots {
   val ABOVE_WINDOW = 50
   val WEATHER = 58
 
-  val END = 64
+  val NUM_SLOTS = 64
 }
 
 object WeatherEffects extends RpgEnum {

@@ -15,11 +15,16 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
   extends Entity(
       game.spritesets,
       game.mapScreen.mapAndAssetsOption,
-      game.mapScreen.eventEntities)
+      game.mapScreen.allEntities)
   with PlayerInputHandler
   with HasScriptConstants {
   assume(game != null)
   assume(mapScreen != null)
+
+  override def height = EventHeight.SAME.id
+  override def trigger = EventTrigger.NONE.id
+
+  override def isPlayer = true
 
   // Add input handling
   mapScreen.inputs.prepend(this)
@@ -108,16 +113,13 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
       }
 
       val checkDist = 0.4f // Distance to check for key activation
+
       val activatedEvts =
         getAllEventTouches(ux * checkDist, uy * checkDist)
-          .filter(_.evtState.trigger == EventTrigger.BUTTON.id)
+          .filter(_.trigger == EventTrigger.BUTTON.id)
 
       if (!activatedEvts.isEmpty) {
-        val closestEvt =
-          activatedEvts.minBy(e => math.abs(e.x - (x + ux)) +
-                                   math.abs(e.y - (y + uy)))
-
-        closestEvt.activate(dir)
+        closest(activatedEvts, ux, uy).activate(dir)
       }
     } else if (key == Cancel) {
       if (!menuActive) {
@@ -151,13 +153,14 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
       0.05f /* delaySeconds */)
   }
 
-  override def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
+  override def touchEntities(entities: Iterable[Entity]) = {
     val activatedEvts =
-      touchedNpcs.filter(e =>
-        e.evtState.trigger == EventTrigger.PLAYERTOUCH.id ||
-          e.evtState.trigger == EventTrigger.ANYTOUCH.id)
+      entities.filter(e =>
+        e.trigger == EventTrigger.PLAYERTOUCH.id ||
+          e.trigger == EventTrigger.ANYTOUCH.id)
 
-    activatedEvts.foreach(_.activate(dir))
+    if (!activatedEvts.isEmpty)
+      closest(activatedEvts).activate(dir)
   }
 
   // NOTE: this is never called... which may or may not be okay haha

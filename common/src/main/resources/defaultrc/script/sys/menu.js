@@ -107,11 +107,11 @@ function StatusMenu() {
         lines.push(
             " LVL " + leftPad(characterLevels[characterId].toString(), 3));
         lines.push(
-            "  HP " + leftPad(characterHps[characterId].toString(), 4) + " / "
-            + leftPad(stats.current().mhp(), 4));
+            "  HP " + leftPad(characterHps[characterId].toString(), 5) + " / "
+            + leftPad(stats.current().mhp(), 5));
         lines.push(
-            "  MP " + leftPad(characterMps[characterId].toString(), 4) + " / "
-            + leftPad(stats.current().mmp(), 4));
+            "  MP " + leftPad(characterMps[characterId].toString(), 5) + " / "
+            + leftPad(stats.current().mmp(), 5));
       }
 
       return {
@@ -249,13 +249,13 @@ function equipMenu(statusMenu) {
         var stats = game.getBattleStats(characterId, -1, -1);
         var lines = [];
         
-        lines.push(rightPad("Max HP:", 10) + leftPad(stats.current().mhp(), 4));
-        lines.push(rightPad("Max MP:", 10) + leftPad(stats.current().mmp(), 4));
-        lines.push(rightPad("ATK:", 10) + leftPad(stats.current().atk(), 4));
-        lines.push(rightPad("SPD:", 10) + leftPad(stats.current().spd(), 4));
-        lines.push(rightPad("MAG:", 10) + leftPad(stats.current().mag(), 4));
-        lines.push(rightPad("ARM:", 10) + leftPad(stats.current().arm(), 4));
-        lines.push(rightPad("MRE:", 10) + leftPad(stats.current().mre(), 4));
+        lines.push(rightPad("Max HP:", 10) + leftPad(stats.current().mhp(), 5));
+        lines.push(rightPad("Max MP:", 10) + leftPad(stats.current().mmp(), 5));
+        lines.push(rightPad("ATK:", 10) + leftPad(stats.current().atk(), 5));
+        lines.push(rightPad("SPD:", 10) + leftPad(stats.current().spd(), 5));
+        lines.push(rightPad("MAG:", 10) + leftPad(stats.current().mag(), 5));
+        lines.push(rightPad("ARM:", 10) + leftPad(stats.current().arm(), 5));
+        lines.push(rightPad("MRE:", 10) + leftPad(stats.current().mre(), 5));
 
         return {
           lines : lines

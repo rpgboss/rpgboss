@@ -35,11 +35,8 @@ class MapScreen(val game: RpgGame)
   var mapAndAssetsOption: Option[MapAndAssets] = None
   def mapName = mapAndAssetsOption.map(_.map.name)
 
-  // protagonist. Modify all these things on the Gdx thread
-  private var _playerEntity: PlayerEntity = null
-
-  def playerEntity = _playerEntity
-  def getPlayerEntityInfo() = EntityInfo(_playerEntity, this)
+  def playerEntity = allEntities(-1).asInstanceOf[PlayerEntity]
+  def getPlayerEntityInfo() = EntityInfo(playerEntity, this)
 
   private def moveEntity(
       entity: Entity, dx: Float, dy: Float,
@@ -72,48 +69,48 @@ class MapScreen(val game: RpgGame)
 
   def movePlayer(dx: Float, dy: Float, affixDirection: Boolean) = {
     assertOnBoundThread()
-    moveEntity(_playerEntity, dx, dy, affixDirection)
+    moveEntity(playerEntity, dx, dy, affixDirection)
   }
 
   def moveEvent(id: Int, dx: Float, dy: Float, affixDirection: Boolean) = {
     assertOnBoundThread()
-    val entityOpt = eventEntities.get(id)
+    val entityOpt = allEntities.get(id)
     entityOpt.map { entity =>
       moveEntity(entity, dx, dy, affixDirection)
     }.orNull
   }
 
   def getEventX(id: Int):Float = {
-    val entityOpt = eventEntities.get(id)
+    val entityOpt = allEntities.get(id)
     entityOpt.map { entity =>
-      return entity.getX
+      return entity.x
     }.orNull
     return 0
   }
 
   def getEventY(id: Int):Float = {
-    val entityOpt = eventEntities.get(id)
+    val entityOpt = allEntities.get(id)
     entityOpt.map { entity =>
-      return entity.getY
+      return entity.y
     }.orNull
     return 0
   }
 
   val camera = new MapCamera(game)
 
-  // All the events on the current map, including the player event
-  val eventEntities = collection.mutable.Map[Int, EventEntity]()
+  // All the events on the current map, including the player event.
+  // The player event is stored with the '-1' key.
+  val allEntities = collection.mutable.Map[Int, Entity]()
 
   def setPlayerLoc(loc: MapLoc): Unit = {
     mapAndAssetsOption.map(_.dispose())
     mapAndAssetsOption = None
-    eventEntities.map(_._2.dispose())
-    eventEntities.clear()
 
-    if (loc.map.isEmpty()) {
-      _playerEntity = null
+    allEntities.map(_._2.dispose())
+    allEntities.clear()
+
+    if (loc.map.isEmpty())
       return
-    }
 
     val mapName = loc.map
 
@@ -121,18 +118,6 @@ class MapScreen(val game: RpgGame)
     mapAndAssets.setLastBattlePosition(loc.x, loc.y)
 
     mapAndAssetsOption = Some(mapAndAssets)
-    eventEntities ++= mapAndAssets.mapData.events.map {
-      case (k, v) => ((k, new EventEntity(
-          game.project,
-          game.persistent,
-          scriptInterface,
-          scriptFactory,
-          game.spritesets,
-          mapAndAssetsOption,
-          eventEntities,
-          mapName,
-          v)))
-    }
 
     windowManager.reset()
 
@@ -140,12 +125,25 @@ class MapScreen(val game: RpgGame)
       project.data.enums.distinctChars ++ mapAndAssets.mapData.distinctChars
     windowManager.updateBitmapFont(distinctChars.mkString)
 
-    _playerEntity = new PlayerEntity(game, this)
-    _playerEntity.x = loc.x
-    _playerEntity.y = loc.y
-    _playerEntity.mapName = Some(loc.map)
+    allEntities.update(-1, new PlayerEntity(game, this))
+    playerEntity.x = loc.x
+    playerEntity.y = loc.y
+    playerEntity.mapName = Some(loc.map)
 
-    _playerEntity.updateSprite()
+    playerEntity.updateSprite()
+
+    allEntities ++= mapAndAssets.mapData.events.map {
+      case (k, v) => ((k, new EventEntity(
+          game.project,
+          game.persistent,
+          scriptInterface,
+          scriptFactory,
+          game.spritesets,
+          mapAndAssetsOption,
+          allEntities,
+          mapName,
+          v)))
+    }
 
     playMusic(0, mapAndAssets.map.metadata.music, true,
         Transitions.fadeLength)
@@ -159,7 +157,7 @@ class MapScreen(val game: RpgGame)
   }
 
   def persistPlayerLocation() = {
-    val p = _playerEntity
+    val p = playerEntity
     assert(p.mapName.isDefined)
     game.persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
   }
@@ -232,7 +230,7 @@ class MapScreen(val game: RpgGame)
   // Update. Called on Gdx thread before render.
   def update(delta: Float): Unit = {
     // TODO: This makes the camera lag the player's position.
-    camera.update(delta, _playerEntity.x, _playerEntity.y)
+    camera.update(delta, playerEntity.x, playerEntity.y)
 
     // We want the camera and window manager to update, but not anything else.
     if (windowManager.inTransition)
@@ -240,17 +238,15 @@ class MapScreen(val game: RpgGame)
 
     scriptHooks.update(delta)
 
+    val playerOldX = playerEntity.x
+    val playerOldY = playerEntity.y
+
     // Update events, including player event
-    eventEntities.values.foreach(_.update(delta))
-
-    val playerOldX = _playerEntity.x
-    val playerOldY = _playerEntity.y
-
-    _playerEntity.update(delta)
+    allEntities.values.foreach(_.update(delta))
 
     val playerMoveDistance =
-      math.abs(_playerEntity.x - playerOldX) +
-      math.abs(_playerEntity.y - playerOldY)
+      math.abs(playerEntity.x - playerOldX) +
+      math.abs(playerEntity.y - playerOldY)
 
     mapAndAssetsOption map { mapAndAssets =>
       val minimumDistanceFromLastBattle = 3
@@ -260,13 +256,13 @@ class MapScreen(val game: RpgGame)
 
       val distFromLastBattle =
         mapAndAssets.manhattanDistanceFromLastBattle(
-            _playerEntity.x, _playerEntity.y)
+            playerEntity.x, playerEntity.y)
       if (!encounterSettings.encounters.isEmpty &&
           distFromLastBattle > minimumDistanceFromLastBattle) {
         val chanceBattle = playerMoveDistance / encounterSettings.stepsAverage
 
         if (math.random < chanceBattle) {
-          mapAndAssets.setLastBattlePosition(_playerEntity.x, _playerEntity.y)
+          mapAndAssets.setLastBattlePosition(playerEntity.x, playerEntity.y)
 
           // TODO: Add battle background
           val encounterId = Utils.randomChoose(
@@ -327,7 +323,7 @@ class MapScreen(val game: RpgGame)
     // Get a list of all the entities within the camera's view, sorted by
     // their y position.
     val zSortedEntities =
-      (_playerEntity :: eventEntities.values.toList)
+      allEntities.values.toList
         .filter(e => (e.x >= cameraL - 2) && (e.x <= cameraR + 2) &&
                      (e.y >= cameraT - 2) && (e.y <= cameraB + 2))
         .sortBy(_.zPriority).toArray
