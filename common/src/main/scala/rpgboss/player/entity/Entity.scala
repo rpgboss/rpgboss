@@ -137,10 +137,20 @@ class Entity(
   }
 
   /**
-   * This method is called when event collides against another event during
-   * movement.
+   * This method is called when this event collides against others while
+   * it is moving.
    */
-  def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {}
+  def touchEntities(touchedNpcs: Iterable[EventEntity]) = {}
+
+  /**
+   * Find closest entity to this one given an offset dx and dy.
+   */
+  def closest[T <: Entity](entities: Iterable[T], dx: Float = 0,
+      dy: Float = 0) = {
+    assert(!entities.isEmpty)
+    entities.minBy(e => math.abs(e.x - (x + dx)) +
+                        math.abs(e.y - (y + dy)))
+  }
 
   def update(delta: Float) = {
     if (!moveQueue.isEmpty) {
@@ -220,7 +230,7 @@ case class EntityMove(totalDx: Float, totalDy: Float)
         entity.getAllEventTouches(0, dy).filter(_ != entity)
 
       val evtsTouchedSet = evtsTouchedX.toSet ++ evtsTouchedY.toSet
-      entity.eventTouchCallback(evtsTouchedSet)
+      entity.touchEntities(evtsTouchedSet)
 
       val evtBlockingX = evtsTouchedX.exists(_.height == EventHeight.SAME.id)
       val evtBlockingY = evtsTouchedY.exists(_.height == EventHeight.SAME.id)

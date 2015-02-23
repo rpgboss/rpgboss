@@ -113,11 +113,7 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
           .filter(_.evtState.trigger == EventTrigger.BUTTON.id)
 
       if (!activatedEvts.isEmpty) {
-        val closestEvt =
-          activatedEvts.minBy(e => math.abs(e.x - (x + ux)) +
-                                   math.abs(e.y - (y + uy)))
-
-        closestEvt.activate(dir)
+        closest(activatedEvts, ux, uy).activate(dir)
       }
     } else if (key == Cancel) {
       if (!menuActive) {
@@ -151,13 +147,14 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
       0.05f /* delaySeconds */)
   }
 
-  override def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
+  override def touchEntities(touchedNpcs: Iterable[EventEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.PLAYERTOUCH.id ||
           e.evtState.trigger == EventTrigger.ANYTOUCH.id)
 
-    activatedEvts.foreach(_.activate(dir))
+    if (!activatedEvts.isEmpty)
+      closest(activatedEvts).activate(dir)
   }
 
   // NOTE: this is never called... which may or may not be okay haha

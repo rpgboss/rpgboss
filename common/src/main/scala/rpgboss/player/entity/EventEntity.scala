@@ -162,13 +162,14 @@ class EventEntity(
     return curThread
   }
 
-  override def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
+  override def touchEntities(touchedNpcs: Iterable[EventEntity]) = {
     val activatedEvts =
       touchedNpcs.filter(e =>
         e.evtState.trigger == EventTrigger.EVENTTOUCH.id ||
           e.evtState.trigger == EventTrigger.ANYTOUCH.id)
 
-    activatedEvts.foreach(_.activate(dir))
+    if (!activatedEvts.isEmpty)
+      closest(activatedEvts).activate(dir)
   }
 
   override def update(delta: Float) = {
