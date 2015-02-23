@@ -24,6 +24,8 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
   override def height = EventHeight.SAME.id
   override def trigger = EventTrigger.NONE.id
 
+  override def isPlayer = true
+
   // Add input handling
   mapScreen.inputs.prepend(this)
 

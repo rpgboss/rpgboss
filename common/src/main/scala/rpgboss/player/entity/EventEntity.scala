@@ -163,6 +163,14 @@ class EventEntity(
 
     if (!activatedEvts.isEmpty)
       closest(activatedEvts).activate(dir)
+
+    if (trigger == EventTrigger.ANYTOUCH.id ||
+        (trigger == EventTrigger.PLAYERTOUCH.id &&
+            entities.find(_.isPlayer).isDefined) ||
+        (trigger == EventTrigger.EVENTTOUCH.id &&
+            entities.find(!_.isPlayer).isDefined)) {
+      activate(SpriteSpec.Directions.NONE)
+    }
   }
 
   override def update(delta: Float) = {

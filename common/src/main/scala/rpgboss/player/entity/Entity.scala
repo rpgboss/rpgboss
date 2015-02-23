@@ -43,6 +43,9 @@ abstract class Entity(
   def zPriority = y
   def trigger: Int
 
+  // TODO: Remove this ghetto RTTI if possible.
+  def isPlayer: Boolean = false
+
   /**
    * Called when a player activates the event with a button.
    */
