@@ -12,9 +12,10 @@ function includeFile(scriptPath) {
 function leftPad(string, totalLen) {
   assert(typeof string != 'undefined');
   var castedString = String(string);
-  assert(totalLen >= castedString.length,
-      "padding failed: totalLen = " + totalLen +
-      " string.length = " + castedString.length);
+  if (totalLen < castedString.length) {
+    castedString = 
+      'X' + castedString.substr(castedString.length - totalLen + 1);
+  }
   var padLength = Math.max(totalLen - castedString.length, 0);
   return Array(padLength).join(" ") + castedString;
 }
@@ -22,9 +23,9 @@ function leftPad(string, totalLen) {
 function rightPad(string, totalLen) {
   assert(typeof string != 'undefined');
   var castedString = String(string);
-  assert(totalLen >= castedString.length,
-      "padding failed: totalLen = " + totalLen +
-      " string.length = " + castedString.length);
+  if (totalLen < castedString.length) {
+    castedString = castedString.substr(0, totalLen - 1) + 'X';
+  }
   var padLength = Math.max(totalLen - castedString.length, 0);
   return castedString + Array(padLength).join(" ");
 }
