@@ -102,8 +102,8 @@ function StatusMenu() {
         var characterId = party[i];
         var stats = game.getBattleStats(characterId, -1, -1);
         
-        lines.push(rightPad(characterNames[characterId], 10)
-            + leftPad(characters[characterId].subtitle(), 20));
+        lines.push(rightPad(characterNames[characterId], 16)
+            + leftPad(characters[characterId].subtitle(), 16));
         lines.push(
             " LVL " + leftPad(characterLevels[characterId].toString(), 3));
         lines.push(
