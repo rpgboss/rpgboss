@@ -472,12 +472,29 @@ object MapViewTools {
       x1: Int, y1: Int) = {
       import MapLayers._
 
-      TileRect.empty
+      mapOfArrays(vs.nextMapData).get(layer).map { layerAry =>
+        val emptySeed = layer match {
+          case MapLayers.Bot => RpgMap.autotileSeed
+          case _ => RpgMap.emptyTileSeed
+        }
+
+        emptySeed.copyToArray(layerAry(y1), x1 * bytesPerTile)
+
+        val directlyEditedRect = TileRect(x1, y1, 1, 1)
+        val autotileRect =
+          setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry,
+            x1 - 1, y1 - 1, x1 + 1, y1 + 1)
+
+        directlyEditedRect | autotileRect
+      } getOrElse {
+        TileRect.empty
+      }
     }
+
     def onMouseDragged(vs: MapViewState, tCodes: Array[Array[Array[Byte]]],
                        layer: MapLayers.Value,
                        x1: Int, y1: Int, x2: Int, y2: Int) = {
-      TileRect.empty
+      onMouseDown(vs, tCodes, layer, x2, y2)
     }
   }
 }
