@@ -30,6 +30,9 @@ object RpgDesktop
       if (mainPanel.askSaveUnchanged()) {
         super.closeOperation()
       }
+      if(VisibleConnection.currentSession!=null) {
+        VisibleConnection.currentSession.close()
+      }
     }
   }
 

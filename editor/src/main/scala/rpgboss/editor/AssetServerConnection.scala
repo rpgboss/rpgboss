@@ -62,6 +62,7 @@ object VisibleConnection {
 
 	var connection:AssetServerConnection = null
 	var settingsDialog:SettingsDialog = null
+	var currentSession:Session = null
 
 	def update(newValue:String) {
 		label.text = "<html><font color=\"#0000CF\"><u>"+newValue+"</u></font></html>";
@@ -133,14 +134,16 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 					      client.connectToServer(new Endpoint() {
 					      	override def onClose(session:Session, reason:CloseReason) {
 					      		VisibleConnection.update("Disconnected.")
-					      		if(!unreachable)	start()
+					      		//if(!unreachable)	restart()
 					      	}
 					      	override def onError(session:Session, t:Throwable) {
 					      		VisibleConnection.update("Disconnected.")
-					      		if(!unreachable)	start()
+					      		//if(!unreachable)	restart()
 					      	}
 					        override def onOpen(session: Session, config: EndpointConfig) {
 					        	VisibleConnection.update("Connected to the asset server")
+
+					        	VisibleConnection.currentSession = session
 
 					        	unreachable = false
 
@@ -181,12 +184,12 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 					            case e: IOException => e.printStackTrace()
 					          }
 					        }
-					      }, cec, new URI("ws://"+host+":8081/"))
+					      }, cec, new URI("ws://"+host+":8080/"))
+								messageLatch.await(100, TimeUnit.SECONDS)
 							}
 							catch {
 					      case e: Exception => e.printStackTrace()
 							}
-							messageLatch.await(100, TimeUnit.SECONDS)
 				    } catch {
 				      case e: Exception => e.printStackTrace()
 				    }
