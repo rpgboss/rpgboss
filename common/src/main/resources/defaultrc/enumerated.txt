@@ -528,8 +528,7 @@ encounters.json
 enemies.json
 equipTypes.json
 eventClasses.json
-face/sys/01fsm_actorA.png
-face/sys/f_actor01.png
+face/sys/closet/ActorA.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png.metadata.json
 items.json
@@ -567,9 +566,9 @@ music/sys/sean_m_stephens/TitleMoon.mid
 music/sys/sean_m_stephens/World1.mid
 music/sys/sean_m_stephens/World2.mid
 music/sys/sean_m_stephens/World3.mid
+music/sys/weather/rain.mp3
 picture/sys/GameOver.png
 picture/sys/LordSpirit.jpg
-picture/sys/weather/fog/fog.png
 picture/sys/weather/rain/0180.png
 picture/sys/weather/rain/0181.png
 picture/sys/weather/rain/0182.png
@@ -603,10 +602,6 @@ script/sys/start.js
 script/sys/store.js
 script/sys/timer.js
 script/sys/transitions.js
-script/sys/weather.js
-script/sys/weather/fog.js
-script/sys/weather/rain.js
-script/sys/weather/snow.js
 skills.json
 sound/sys/opengameart-37hitspunches/hit02.mp3
 sound/sys/opengameart-37hitspunches/hit12.mp3
@@ -643,7 +638,6 @@ sound/sys/rpgboss-menu/MenuCancel.mp3
 sound/sys/rpgboss-menu/MenuCannot.mp3
 sound/sys/rpgboss-menu/MenuCursor.mp3
 sound/sys/rpgboss-menu/MenuSelect.mp3
-sound/sys/weather/rain.mp3
 spriteset/sys/!$chest-opengameart-Blarumyrran.png
 spriteset/sys/!object.png
 spriteset/sys/$vx_chara09_a.png
