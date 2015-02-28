@@ -528,7 +528,7 @@ encounters.json
 enemies.json
 equipTypes.json
 eventClasses.json
-face/sys/main1.png
+face/sys/fsmfaceset.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png.metadata.json
 items.json
