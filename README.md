@@ -259,8 +259,8 @@ http://ails.deviantart.com/art/420-Pixel-Art-Icons-for-RPG-129892453
 
 ### Faces
 
-sys/closet/ActorA.png:
-CLOSET - http://eurs.blog65.fc2.com/
+sys/main1.png:
+http://tkool.rgr.jp/
 
 ### Window Skin
 
