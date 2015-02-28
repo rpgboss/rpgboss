@@ -15,4 +15,5 @@ before_script:
 
 script:
   - sbt package 
+  - sbt test
   - ./package/package.sh

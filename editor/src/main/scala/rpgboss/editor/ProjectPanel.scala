@@ -16,6 +16,7 @@ import rpgboss.lib._
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.model.event.RpgEvent
+import scalaj.http.Http
 
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
@@ -42,6 +43,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     contents += new MenuItem(mainP.actionNew)
     contents += new MenuItem(mainP.actionOpen)
     contents += new MenuItem(mainP.actionSave)
+    contents += new MenuItem(mainP.actionSettings)
     contents += new MenuItem(mainP.actionClose)
   }
 
@@ -136,7 +138,15 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         var desktop =  Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
-              desktop.browse(new URL("http://assets.rpgboss.com").toURI());
+              var host = Settings.get("assetserver.host").get
+              if(VisibleConnection.authenticated) {
+                var username = Settings.get("assetserver.username").get
+                var password = Settings.get("assetserver.password").get
+                desktop.browse(new URL(host + "/api/v1/login/with/redirect/"+username+"/"+password+"?redirect=/").toURI());
+              } else {
+                desktop.browse(new URL(host).toURI());
+              }
+
             } catch {
               case e: Exception => e.printStackTrace();
             }
@@ -153,7 +163,14 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
         var desktop =  Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
-              desktop.browse(new URL("http://assets.rpgboss.com/login?type=showchat").toURI());
+                var host = Settings.get("assetserver.host").get
+                if(VisibleConnection.authenticated) {
+                  var username = Settings.get("assetserver.username").get
+                  var password = Settings.get("assetserver.password").get
+                  desktop.browse(new URL(host + "/api/v1/login/with/redirect/"+username+"/"+password+"?redirect=/#showchat").toURI());
+                } else {
+                  desktop.browse(new URL(host).toURI());
+                }
             } catch {
               case e: Exception => e.printStackTrace();
             }

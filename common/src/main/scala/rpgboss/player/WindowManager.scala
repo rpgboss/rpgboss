@@ -78,7 +78,7 @@ class WindowManager(
     _fontbmp = font.getBitmapFont(distinctChars)
   }
 
-  val pictures = Array.fill[Option[PictureLike]](164)(None)
+  val pictures = Array.fill[Option[PictureLike]](PictureSlots.NUM_SLOTS)(None)
   private val windows = new collection.mutable.ArrayBuffer[Window]
 
   def setTransition(endAlpha: Float, duration: Float) = {
@@ -127,21 +127,46 @@ class WindowManager(
     addWindow(window)
   }
 
-  def showPictureByName(slot: Int, name: String, layout: Layout, alpha:Float=1.0f) = {
+  def showPictureByName(slot: Int, name: String, layout: Layout,
+      alpha: Float = 1.0f) = {
     assertOnBoundThread()
-    logger.debug("showPictureByName(%d, %s, %s)".format(slot, name, layout))
-
     val picture = Picture.readFromDisk(project, name)
-    showPicture(slot, TexturePicture(assets, picture, layout, alpha))
+    showPicture(slot, new TexturePicture(assets, picture, layout, alpha))
+  }
+
+  def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
+      alpha: Float = 1.0f, framesPerSecond: Int = 30) = {
+    assertOnBoundThread()
+    val filesUnderPath = Picture.listResourcesUnderPath(project, folderPath)
+
+    if (!filesUnderPath.isEmpty) {
+      val pictureArray = filesUnderPath.map(picturePath => {
+        val picture = Picture.readFromDisk(project, picturePath)
+        new TexturePicture(assets, picture, layout, alpha)
+      })
+      showPicture(slot, new PictureSequence(
+          pictureArray, loop = true, framesPerSecond))
+    }
   }
 
   def showPicture(slot: Int, newPicture: PictureLike): Unit = {
     assertOnBoundThread()
+    if (slot < 0 || slot >= PictureSlots.NUM_SLOTS) {
+      logger.error("Picture slots must be in range [0, 64).")
+      return
+    }
+
     pictures(slot).map(_.dispose())
     pictures(slot) = Some(newPicture)
   }
 
-  def hidePicture(slot: Int) = {
+  def hidePicture(slot: Int): Unit = {
+    assertOnBoundThread()
+    if (slot < 0 || slot >= PictureSlots.NUM_SLOTS) {
+      logger.error("Picture slots must be in range [0, 64).")
+      return
+    }
+
     pictures(slot).map(_.dispose())
     pictures(slot) = None
   }
@@ -163,6 +188,7 @@ class WindowManager(
     transitionTweener.update(delta)
     tintTweener.update(delta)
     windows.foreach(_.update(delta))
+    pictures.foreach(_.map(_.update(delta)))
 
     // TODO: Avoid a memory alloc here
     val toRemove = windows.filter(_.state == Window.Closed)
@@ -263,7 +289,7 @@ class WindowManager(
     // Render all windows
     windows.reverseIterator.foreach(_.render(batch))
 
-    for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.END;
+    for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.NUM_SLOTS;
          pic <- pictures(i)) {
       pic.render(this, batch)
     }
@@ -295,6 +321,7 @@ class WindowManager(
 
 trait PictureLike {
   def dispose()
+  def update(delta: Float)
   def render(manager: WindowManager, batch: SpriteBatch)
   def setAnimationTint(color: Color)
   def getRect(): Rect
@@ -303,7 +330,7 @@ trait PictureLike {
 /**
  * Need call on dispose first
  */
-case class TexturePicture[MT <: AnyRef](
+class TexturePicture[MT <: AnyRef](
   assets: RpgAssetManager, resource: ImageResource[_, MT],
   layout: Layout, alpha: Float = 1.0f) extends PictureLike {
 
@@ -315,6 +342,8 @@ case class TexturePicture[MT <: AnyRef](
   val animationTint = Color.WHITE.cpy()
   def setAnimationTint(color: Color) = animationTint.set(color)
   override def getRect() = _rect.getOrElse(Rect(0, 0, 100, 100))
+
+  override def update(delta: Float) = {}
 
   override def render(manager: WindowManager, batch: SpriteBatch) = {
     if (resource.isLoaded(assets)) {
@@ -340,10 +369,42 @@ case class TexturePicture[MT <: AnyRef](
   }
 }
 
+class PictureSequence[T <: PictureLike](
+  pictures: Array[T], loop: Boolean = false, framesPerSecond: Int = 30)
+  extends PictureLike {
+  assert(!pictures.isEmpty)
+
+  var _time = 0.0f
+
+  def timePerFrame = 1.0f / framesPerSecond.toFloat
+  val loopTime = timePerFrame * pictures.length
+
+  def getCurFrame() = (_time / timePerFrame).toInt % pictures.length
+
+  def dispose() = pictures.foreach(_.dispose())
+  def update(delta: Float) = {
+    _time += delta
+
+    pictures.foreach(_.update(delta))
+  }
+  def render(manager: WindowManager, batch: SpriteBatch): Unit = {
+    if (!loop && _time > loopTime)
+      return
+
+    pictures(getCurFrame()).render(manager, batch)
+  }
+  def setAnimationTint(color: Color) = {
+    pictures.foreach(_.setAnimationTint(color))
+  }
+  def getRect(): Rect = {
+    pictures.head.getRect()
+  }
+}
+
 /**
  * @param   x     Specifies the left the destination X in screen coordinates.
  */
-case class TextureAtlasRegionPicture(
+class TextureAtlasRegionPicture(
   atlasSprites: TextureAtlas,
   regionName: String,
   x: Float, y: Float, w: Float, h: Float,
@@ -361,6 +422,8 @@ case class TextureAtlasRegionPicture(
   def dispose() = {
     // No need to dispose since the texture is part of the TextureAtlas
   }
+
+  override def update(delta: Float) = {}
 
   override def render(manager: WindowManager, batch: SpriteBatch) = {
     batch.draw(

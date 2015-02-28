@@ -3,29 +3,42 @@ import scala.concurrent._
 import scala.concurrent.duration.Duration
 import rpgboss.lib.TweenUtils
 import scala.collection.mutable.ArrayBuffer
+import rpgboss.lib.ThreadChecked
 
 /** Keeps track of a queue of mutation operations on a 'T'.
  */
-class MutateQueue[T](mutatedObject: T) {
-  val queue = new collection.mutable.Queue[MutateQueueItem[T]]
+class MutateQueue[T](mutatedObject: T) extends ThreadChecked {
+  private val queue =
+    new collection.mutable.Queue[MutateQueueItem[T]]
 
-  def isEmpty = queue.isEmpty
-  def enqueue(item: MutateQueueItem[T]) = queue.enqueue(item)
-  def dequeue() = queue.dequeue()
+  def length = {
+    assertOnBoundThread()
+    queue.length
+  }
+
+  override def toString() = {
+    assertOnBoundThread()
+    queue.toString()
+  }
+
+  def isEmpty = {
+    assertOnBoundThread()
+    queue.isEmpty
+  }
+  def enqueue(item: MutateQueueItem[T]) = {
+    assertOnBoundThread()
+    queue.enqueue(item)
+  }
 
   // Runs an item out of the queue if it exists.
   def runQueueItem(delta: Float): Unit = {
-    if(queue.isEmpty)
-      return
-
-    val action = queue.head
+    assertOnBoundThread()
+    assert(!isEmpty)
 
     queue.head.update(delta, mutatedObject)
-
     if (queue.head.isFinished)
       queue.dequeue()
   }
-
 }
 
 trait MutateQueueItem[T] extends FinishableByPromise {

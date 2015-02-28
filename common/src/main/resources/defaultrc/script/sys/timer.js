@@ -1,4 +1,4 @@
-while(true) {
+game.addScriptHook(function() {
 
 	var timerValue = game.getInt('timer');
 	if(timerValue!=0) {
@@ -13,10 +13,10 @@ while(true) {
 
 		game.drawText(100, timeString , 20, 20, game.color(255,255,255,1),1);
 
-		game.setInt('timer', timerValue-1);
+		game.substractInt('timer', 1);
 	} else {
 		game.removeDrawedText(100);
 	}
-
-	game.sleep(1);
-}
+	
+	return true;
+});

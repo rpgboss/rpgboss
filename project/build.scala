@@ -2,8 +2,7 @@ import sbt._
 
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import Keys._
-import sbtassembly.Plugin._
-import AssemblyKeys._
+import sbtassembly.AssemblyKeys._
 import scala.sys.process.{Process => SysProcess}
 import java.io.PrintWriter
 
@@ -11,7 +10,7 @@ object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     fork := true, // For natives loading.
     version := "0.1",
-    scalaVersion := "2.11.2",
+    scalaVersion := "2.11.5",
     scalacOptions ++= List("-deprecation", "-unchecked"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(
@@ -20,10 +19,13 @@ object Settings {
       "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
       "commons-io" % "commons-io" % "2.4",
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
-      "org.json4s" %% "json4s-native" % "3.2.10" withSources(),
+      "org.json4s" %% "json4s-native" % "3.2.11" withSources(),
       "org.scalatest" %% "scalatest" % "2.1.5" % "test",
       "org.mockito" % "mockito-core" % "1.9.5" % "test",
-      "org.mozilla" % "rhino" % "1.7R4"
+      "org.mozilla" % "rhino" % "1.7R4",
+      "org.scalaj" %% "scalaj-http" % "1.1.4",
+      "javax.websocket" % "javax.websocket-api" % "1.1",
+      "org.glassfish.tyrus.bundles" % "tyrus-standalone-client" % "1.10"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base =>
       var baseDirectories = (base / "lib") +++ (base / "lib" / "extensions")
@@ -70,12 +72,11 @@ object Settings {
   lazy val editor = Settings.common ++ editorLibs ++ editorAssembly
   
   lazy val editorLibs = Seq(
-    scalaVersion := "2.11.1",
+    scalaVersion := "2.11.5",
     libraryDependencies ++= Seq(
       "org.apache.commons" % "commons-compress" % "1.9",
       "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
       "com.github.benhutchison" %% "scalaswingcontrib" % "1.5", 
-      "org.apache.httpcomponents" % "httpclient" % "4.1.1",
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8",
       "com.fifesoft" % "rsyntaxtextarea" % "2.5.3"
     ),
@@ -90,8 +91,8 @@ object Settings {
     EclipseKeys.eclipseOutput := Some("eclipsetarget")
   )
 
-  lazy val editorAssembly = assemblySettings ++ Seq(
-    mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
+  lazy val editorAssembly = Seq(
+    assemblyMergeStrategy in assembly <<= (assemblyMergeStrategy in assembly) { (old) =>
       {
         case x => old(x)
       }
@@ -127,7 +128,7 @@ object Settings {
     
     // Declare names
     val gdxBaseUrl = "http://libgdx.badlogicgames.com/releases"
-    val gdxName = "libgdx-1.5.3"
+    val gdxName = "libgdx-1.5.4"
 
     // Fetch the file.
     val gdxZipName = "%s.zip" format(gdxName)

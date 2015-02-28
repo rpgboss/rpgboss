@@ -19,6 +19,8 @@ import scala.collection.mutable.MutableList
 import org.mozilla.javascript.debug.Debugger
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.ContextFactory
+import rpgboss.model.PictureSlots
+import rpgboss.model.MusicSlots
 
 /**
  * Thread used to run a javascript script...
@@ -83,17 +85,24 @@ class ScriptThread(
     }
   }
 
-  var thread = new Thread(runnable)
+  var thread: Thread = null
 
   def stop() = {
     // TODO: This is unsafe, but in practice, won't do anything bad... I think.
-    thread.stop()
+    if (thread != null)
+      thread.stop()
   }
 
-  def run() = {
-    assert(!thread.isAlive())
+  def runOnNewThread() = {
+    assert(thread == null)
+    thread = new Thread(runnable)
     thread.start()
     this
+  }
+
+  def runOnSameThread() = {
+    assert(thread == null)
+    runnable.run()
   }
 }
 
@@ -108,7 +117,7 @@ object ScriptHelper {
         Context.javaToJS(obj, jsScope))
     }
 
-    putProperty("game", scriptInterface)
+    putProperty("scalaScriptInterface", scriptInterface)
 
     putProperty("project", scriptInterface.project)
     putProperty("out", System.out)
@@ -117,6 +126,8 @@ object ScriptHelper {
     putProperty("MapLoc", MapLoc)
     putProperty("Transitions", Transitions)
     putProperty("Keys", MyKeys)
+    putProperty("MusicSlots", MusicSlots)
+    putProperty("PictureSlots", PictureSlots)
     putProperty("None", None)
 
     val script = Script.readFromDisk(scriptInterface.project,
@@ -135,7 +146,8 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
   def runFromFile(
     scriptName: String,
     fnToRun: String = "",
-    onFinish: Option[() => Unit] = None) = {
+    onFinish: Option[() => Unit] = None,
+    runOnNewThread: Boolean = true) = {
     val script = Script.readFromDisk(scriptInterface.project, scriptName)
     val s = new ScriptThread(
       scriptInterface,
@@ -144,7 +156,14 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
       fnToRun,
       onFinish)
 
-    s.run()
+    if (runOnNewThread) {
+      assert(scriptInterface.onBoundThread(),
+          "Scripts should not spawn new threads when calling other scripts.")
+      s.runOnNewThread()
+    } else {
+      s.runOnSameThread()
+    }
+
     s
   }
 
@@ -177,7 +196,7 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
           Context.javaToJS(entity.getScriptInterface(), jsScope))
       }
     }
-    s.run()
+    s.runOnNewThread()
     s
   }
 }

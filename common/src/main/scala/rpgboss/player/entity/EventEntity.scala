@@ -21,13 +21,13 @@ class EventEntity(
     scriptFactory: ScriptThreadFactory,
     spritesets: Map[String, Spriteset],
     mapAndAssetsOption: Option[MapAndAssets],
-    eventEntities: collection.Map[Int, EventEntity],
+    allEntities: collection.Map[Int, Entity],
     mapName: String,
     val mapEvent: RpgEvent)
   extends Entity(
       spritesets,
       mapAndAssetsOption,
-      eventEntities,
+      allEntities,
       mapEvent.x,
       mapEvent.y)
   with LazyLogging
@@ -43,6 +43,7 @@ class EventEntity(
     }
     return super.zPriority + zAdjustment
   }
+  override def trigger = evtState.trigger
 
   val states = if (mapEvent.isInstance) {
     val eventClass = project.data.enums.eventClasses(mapEvent.eventClassId)
@@ -67,14 +68,6 @@ class EventEntity(
   private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
-
-  def getX:Float = {
-    return x
-  }
-
-  def getY:Float = {
-    return y
-  }
 
   /**
    * Maintain a cooldown to prevent events from firing too quickly.
@@ -125,7 +118,7 @@ class EventEntity(
   updateState()
 
   // Returns None if it's already running.
-  def activate(activatorsDirection: Int): Option[Finishable] = {
+  override def activate(activatorsDirection: Int): Option[Finishable] = {
     import SpriteSpec._
 
     if (curThread.isDefined)
@@ -162,13 +155,22 @@ class EventEntity(
     return curThread
   }
 
-  override def eventTouchCallback(touchedNpcs: Iterable[EventEntity]) = {
+  override def touchEntities(entities: Iterable[Entity]) = {
     val activatedEvts =
-      touchedNpcs.filter(e =>
-        e.evtState.trigger == EventTrigger.EVENTTOUCH.id ||
-          e.evtState.trigger == EventTrigger.ANYTOUCH.id)
+      entities.filter(e =>
+        e.trigger == EventTrigger.EVENTTOUCH.id ||
+          e.trigger == EventTrigger.ANYTOUCH.id)
 
-    activatedEvts.foreach(_.activate(dir))
+    if (!activatedEvts.isEmpty)
+      closest(activatedEvts).activate(dir)
+
+    if (trigger == EventTrigger.ANYTOUCH.id ||
+        (trigger == EventTrigger.PLAYERTOUCH.id &&
+            entities.find(_.isPlayer).isDefined) ||
+        (trigger == EventTrigger.EVENTTOUCH.id &&
+            entities.find(!_.isPlayer).isDefined)) {
+      activate(SpriteSpec.Directions.NONE)
+    }
   }
 
   override def update(delta: Float) = {

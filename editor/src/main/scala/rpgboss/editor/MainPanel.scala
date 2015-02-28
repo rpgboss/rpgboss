@@ -48,6 +48,12 @@ class MainPanel(val topWin: Frame)
     logger.info("Project saved.")
   }
 
+  VisibleConnection.settingsDialog = new SettingsDialog(topWin, p => setProject(p))
+
+  val actionSettings = Action(getMessage("Settings")) {
+      VisibleConnection.settingsDialog.open()
+  }
+
   peer
     .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
     .put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK), getMessage("Save_Project"))

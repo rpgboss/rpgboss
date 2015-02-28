@@ -195,8 +195,19 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
           }
         })
         contents += new MenuItem(Action(getMessage("Duplicate_Map") + "...") {
-          val answer = Dialog.showConfirmation(this, "This function is not implemented yet.", "Notice")
-          
+          val oldMap = sm.getMap(node.mapName).get
+          val newName =
+            RpgMap.generateName(sm.getProj.data.lastCreatedMapId + 1)
+          val mapMetadataCopy = Utils.deepCopy(oldMap.metadata)
+
+          mapMetadataCopy.title = "%s (%s)".format(
+              mapMetadataCopy.title,
+              needsTranslation("Copy"))
+
+          val mapCopy = RpgMap(sm.getProj, newName, mapMetadataCopy)
+          val mapDataCopy = sm.getMapData(node.mapName).deepcopy()
+
+          onNewMap(mapCopy, mapDataCopy)
         })
         contents += new Separator
       }
@@ -214,30 +225,32 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
           "New Map",
           newMap,
           RpgMap.defaultMapData,
-          (newMap, newMapData) => {
-            val p = sm.getProj
-            sm.setProjData(p.data.copy(
-              lastCreatedMapId = p.data.lastCreatedMapId + 1))
-
-            val parentNode = allNodes.get(newMap.metadata.parent).get
-            val newNode = Node(newMap)
-            val parentPath = parentNode.getPath()
-            val parentsChildren = tree.model.getChildrenOf(parentPath)
-
-            tree.model.insertUnder(parentPath, newNode,
-              getDropIdx(newMap.name, parentsChildren))
-
-            // Add to the state master. Don't actually write it ourselves
-            sm.addMap(newMap, Some(newMapData), Dirtiness.Dirty)
-
-            highlightWithoutEvent(newNode)
-
-            // select the new map
-            projPanel.selectMap(Some(newMap))
-          })
+          onNewMap)
         d.open()
       })
     }
+  }
+
+  def onNewMap(newMap: RpgMap, newMapData: RpgMapData) = {
+    val p = sm.getProj
+    sm.setProjData(p.data.copy(
+      lastCreatedMapId = p.data.lastCreatedMapId + 1))
+
+    val parentNode = allNodes.get(newMap.metadata.parent).get
+    val newNode = Node(newMap)
+    val parentPath = parentNode.getPath()
+    val parentsChildren = tree.model.getChildrenOf(parentPath)
+
+    tree.model.insertUnder(parentPath, newNode,
+      getDropIdx(newMap.name, parentsChildren))
+
+    // Add to the state master. Don't actually write it ourselves
+    sm.addMap(newMap, Some(newMapData), Dirtiness.Dirty)
+
+    highlightWithoutEvent(newNode)
+
+    // select the new map
+    projPanel.selectMap(Some(newMap))
   }
 
   override def onSelectMap(map: Option[RpgMap]) = {

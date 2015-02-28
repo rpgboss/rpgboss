@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.Color
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 
+import scalaj.http.Http
+
 case class EntityInfo(x: Float, y: Float, dir: Int,
     screenX: Float, screenY: Float)
 
@@ -65,8 +67,6 @@ trait HasScriptConstants {
 
   def CHARACTER_STATUS_EFFECTS(characterId: Int) =
     "characterStatusEffects-%d".format(characterId)
-
-  val PICTURE_SLOTS = PictureSlots.END
 
   // Synchronized with LayoutType RpgEnum.
   val CENTERED = 0
@@ -159,10 +159,10 @@ class ScriptInterface(
 
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
-      "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")")
+      "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")",
+      runOnNewThread = false)
 
     stopSound()
-
   }
 
   /**
@@ -275,6 +275,26 @@ class ScriptInterface(
     setInt("timer",0)
   }
 
+  def moveTowardsPlayer(eventId: Int) = {
+    var playerX = getPlayerX()
+    var playerY = getPlayerY()
+    var eventX = getEventX(eventId)
+    var eventY = getEventY(eventId)
+
+    // TODO: Realize a wall is infront of the event
+    // TODO: If event state changes kill this loop and restart it again if back to the state
+
+    if(eventX < playerX) {
+      moveEvent(eventId, 1, 0, false, false);
+    } else if(eventY < playerY) {
+      moveEvent(eventId, 0, 1, false, false);
+    } else if(eventX > playerX) {
+      moveEvent(eventId, -1, 0, false, false);
+    } else if(eventY > playerY) {
+      moveEvent(eventId, 0, -1, false, false);
+    }
+  }
+
   def endBattleBackToMap() = {
     setTransition(1, 0.5f)
     sleep(0.5f)
@@ -295,6 +315,11 @@ class ScriptInterface(
 
   def showPicture(slot: Int, name: String, layout: Layout, alpha:Float) = syncRun {
     activeScreen.windowManager.showPictureByName(slot, name, layout, alpha)
+  }
+
+  def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
+      alpha: Float, fps:Int) = syncRun {
+    activeScreen.windowManager.showPictureLoop(slot, folderPath, layout, alpha, fps)
   }
 
   def hidePicture(slot: Int) = syncRun {
@@ -318,25 +343,25 @@ class ScriptInterface(
   }
 
   def playAnimation(animationId: Int, screenX: Float, screenY: Float,
-      speedScale: Float) = syncRun {
+      speedScale: Float, sizeScale: Float) = syncRun {
     activeScreen.playAnimation(animationId,
-        new FixedAnimationTarget(screenX, screenY), speedScale)
+        new FixedAnimationTarget(screenX, screenY), speedScale, sizeScale)
   }
 
-  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Int) = {
-    mapScreen.eventEntities.get(eventId) map { entity =>
+  def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Float,
+      sizeScale: Float) = {
+    mapScreen.allEntities.get(eventId) map { entity =>
       activeScreen.playAnimation(animationId,
           new MapEntityAnimationTarget(mapScreen, entity),
-          speedScale)
+          speedScale, sizeScale)
     }
   }
 
-  def playAnimationOnPlayer(animationId: Int, speedScale: Int) = {
+  def playAnimationOnPlayer(animationId: Int, speedScale: Float,
+      sizeScale: Float) = {
     activeScreen.playAnimation(animationId,
         new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
-        speedScale)
-    val info = getPlayerEntityInfo()
-    playAnimation(animationId, info.screenX, info.screenY, speedScale)
+        speedScale, sizeScale)
   }
 
   def playSound(sound: String) = syncRun {
@@ -349,6 +374,11 @@ class ScriptInterface(
 
   def stopSound() = syncRun {
     activeScreen.stopSound()
+  }
+
+  def httpRequest(url:String):String = {
+    val result = Http(url).asString
+    return result.toString()
   }
 
   /*
@@ -505,11 +535,11 @@ class ScriptInterface(
   }
 
   def getEventEntityInfo(id: Int): Option[EntityInfo] = {
-    mapScreen.eventEntities.get(id).map(EntityInfo.apply(_, mapScreen))
+    mapScreen.allEntities.get(id).map(EntityInfo.apply(_, mapScreen))
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
-    val eventOpt = mapScreen.eventEntities.get(id)
+    val eventOpt = mapScreen.allEntities.get(id)
 
     if (eventOpt.isEmpty)
       logger.error("Could not activate event id: %d".format(id))
@@ -525,7 +555,9 @@ class ScriptInterface(
   def moveEvent(id: Int, dx: Float, dy: Float,
                 affixDirection: Boolean = false,
                 async: Boolean = false) = {
-    val move = mapScreen.moveEvent(id, dx, dy, affixDirection)
+    val move = syncRun {
+      mapScreen.moveEvent(id, dx, dy, affixDirection)
+    }
     if (move != null && !async)
       move.awaitFinish()
   }
@@ -533,7 +565,9 @@ class ScriptInterface(
   def movePlayer(dx: Float, dy: Float,
                  affixDirection: Boolean = false,
                  async: Boolean = false) = {
-    val move = mapScreen.movePlayer(dx, dy, affixDirection)
+    val move = syncRun {
+      mapScreen.movePlayer(dx, dy, affixDirection)
+    }
     if (move != null && !async)
       move.awaitFinish()
   }
@@ -566,7 +600,6 @@ class ScriptInterface(
     val finishable = syncRun {
       val statement = EventJavascript.jsStatement(
           "openStore", itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
-      println(statement)
       game.mapScreen.scriptFactory.runFromFile(
         "sys/store.js",
         statement,
@@ -672,9 +705,42 @@ class ScriptInterface(
   def getInt(key: String): Int = syncRun {
     persistent.getInt(key)
   }
+
+
   def setInt(key: String, value: Int) = syncRun {
     persistent.setInt(key, value)
   }
+
+  def addInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue += value
+    setInt(key, currentValue)
+  }
+
+  def substractInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue -= value
+    setInt(key, currentValue)
+  }
+
+  def multiplyInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue *= value
+    setInt(key, currentValue)
+  }
+
+  def divideInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue /= value
+    setInt(key, currentValue)
+  }
+
+  def modInt(key:String, value: Int) = syncRun {
+    var currentValue = getInt(key)
+    currentValue = currentValue % value
+    setInt(key, currentValue)
+  }
+
   def getIntArray(key: String): Array[Int] = syncRun {
     persistent.getIntArray(key)
   }
@@ -719,26 +785,13 @@ class ScriptInterface(
     game.quit()
   }
 
-  def toTitleScreen() = {
+  def toTitleScreen() = syncRun {
     game.gameOver()
   }
 
-  def gameOver = syncRun {
+  def runScript(scriptPath: String, functionToCall: String) = {
     game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.systemStartScript,
-      "gameOver()")
-  }
-
-  def callSaveMenu = syncRun {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.globalsScript,
-      "SaveMenu()")
-  }
-
-  def callMenu = syncRun {
-    game.mapScreen.scriptFactory.runFromFile(
-      ResourceConstants.menuScript,
-      "menu()")
+      scriptPath, functionToCall, runOnNewThread = false)
   }
 
   def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
@@ -780,6 +833,10 @@ class ScriptInterface(
   // TODO: built it in
   def keyPress(key: String) = {
 
+  }
+
+  def getMapName():String = {
+    return mapScreen.mapName.get
   }
 
   def getScriptAsString(scriptPath: String): String = {

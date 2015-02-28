@@ -42,7 +42,7 @@ class MenuSpec extends UnitSpec {
             game.mapScreen.scriptInterface,
             "menutest.js",
             "testStatusMenu()",
-            waiter).run()
+            waiter).runOnNewThread()
         }
 
         // TODO: Fix hack maybe. Wait one second for menu to open.

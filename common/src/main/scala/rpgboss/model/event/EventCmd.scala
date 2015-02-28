@@ -191,28 +191,9 @@ case class HealOrDamage(
   }
 }
 
-case class WeatherEffects(
-    var rain: Boolean = false,
-    var fog: Boolean = false,
-    var snow: Boolean = false) extends EventCmd {
-  def sections = {
-    val buf = new ArrayBuffer[CodeSection]()
-
-    var rainResult = 0
-    if(rain) rainResult = 1
-
-    var fogResult = 0
-    if(fog) fogResult = 1
-
-    var snowResult = 0
-    if(snow) snowResult = 1
-
-    buf += PlainLines(Array(jsCall("game.setInt","fogVisible", fogResult).exp))
-    buf += PlainLines(Array(jsCall("game.setInt","rainVisible", rainResult).exp))
-    buf += PlainLines(Array(jsCall("game.setInt","snowVisible", snowResult).exp))
-
-    buf.toArray
-  }
+case class WeatherEffects(var weatherTypeId: Int = WeatherTypes.default.id)
+  extends EventCmd {
+  def sections = singleCall("game.setWeather", weatherTypeId)
 }
 
 case class IfCondition(
@@ -377,31 +358,33 @@ case class PlayAnimation(
   var entitySpec: EntitySpec = EntitySpec(),
   var xOffset: Int = 0,
   var yOffset: Int = 0,
-  var speedScale: Float = 1.0f) extends EventCmd {
+  var speedScale: Float = 1.0f,
+  var sizeScale: Float = 1.0f) extends EventCmd {
   def sections = Origins(originId) match {
     case Origins.SCREEN_TOP_LEFT =>
       singleCall("game.playAnimation", animationId, xOffset, yOffset,
-          speedScale)
+          speedScale, sizeScale)
     case Origins.SCREEN_CENTER =>
       singleCall("game.playAnimation", animationId,
           applyOperator(RawJs("game.getScreenW() / 2"), " + ",
                         RawJs(EventJavascript.toJs(xOffset))),
           applyOperator(RawJs("game.getScreenH() / 2"), " + ",
                         RawJs(EventJavascript.toJs(yOffset))),
-          speedScale)
+          speedScale, sizeScale)
     case Origins.ON_ENTITY => {
       entitySpec match {
         case EntitySpec(which, _, _) if which == WhichEntity.PLAYER.id =>
-          singleCall("game.playAnimationOnPlayer", animationId, speedScale)
+          singleCall("game.playAnimationOnPlayer", animationId, speedScale,
+              sizeScale)
         case EntitySpec(which, _, _) if which == WhichEntity.THIS_EVENT.id =>
           singleCall(
             "game.playAnimationOnEvent", animationId, RawJs("event.id()"),
-            speedScale)
+            speedScale, sizeScale)
         case EntitySpec(which, _, eventIdx)
         if which == WhichEntity.EVENT_ON_MAP.id =>
           singleCall(
             "game.playAnimationOnEvent", animationId, entitySpec.eventId,
-            speedScale)
+            speedScale, sizeScale)
       }
     }
   }
@@ -466,20 +449,18 @@ case class SetEventState(
 case class SetGlobalInt(
     var key: String = "globalVariableName",
     var operatorId: Int = OperatorType.default.id,
-    value1: IntParameter = IntParameter(),
-    value2: IntParameter = IntParameter()) extends EventCmd {
-  def sections = {
+    value1: IntParameter = IntParameter()) extends EventCmd {
+  def sections:Array[CodeSection] = {
     val operator = OperatorType(operatorId)
-    val operatorString = operator.jsString
-
-    if (operatorString.isEmpty)
-      singleCall("game.setInt", key, value1)
-    else
-      singleCall("game.setInt", key,
-          applyOperator(value1.rawJs, operatorString, value2.rawJs))
+    operator match {
+      case OperatorType.Set =>
+        singleCall("game.setInt", key, value1)
+      case _ =>
+        singleCall("game.setInt", key,
+          applyOperator(jsCall("game.getInt", key), operator.jsString,
+              value1.rawJs))
+    }
   }
-
-  override def getParameters() = List(value1, value2)
 }
 
 case class SetLocalInt(variableName: String,
@@ -497,10 +478,10 @@ case class Sleep(var duration: Float = 0) extends EventCmd {
 }
 
 case class ShowPicture(
-    slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
-    var picture: String = "",
-    layout: Layout = Layout.defaultForPictures,
-    var alpha:Float = 1) extends EventCmd {
+  slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
+  var picture: String = "",
+  layout: Layout = Layout.defaultForPictures,
+  var alpha:Float = 1) extends EventCmd {
   def sections =
     singleCall("game.showPicture", slot, picture, layout.toJs(), alpha)
   override def getParameters() = List(slot)

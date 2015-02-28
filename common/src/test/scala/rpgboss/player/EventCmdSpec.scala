@@ -141,21 +141,19 @@ class EventCmdSpec extends UnitSpec {
   }
 
   "EventCmd" should "produce correct script for SetGlobalInt" in {
-    val e1 = SetGlobalInt("foo", OperatorType.IgnoreSecondValue.id,
-        IntParameter(42), IntParameter(20))
+    val e1 = SetGlobalInt("foo", OperatorType.Set.id,
+        IntParameter(42))
     e1.toJs should deepEqual(
       Array("game.setInt(\"foo\", 42);"))
-    val e2 = SetGlobalInt("bar", OperatorType.Add.id,
-        IntParameter(10), IntParameter(12))
+    val e2 = SetGlobalInt("bar", OperatorType.Add.id, IntParameter(12))
     e2.toJs should deepEqual(
-      Array("game.setInt(\"bar\", 10 + 12);"))
+      Array("game.setInt(\"bar\", game.getInt(\"bar\") + 12);"))
     val e3 = SetGlobalInt("foo", OperatorType.Add.id,
-        IntParameter(10),
         IntParameter(
             valueTypeId = EventParameterValueType.LocalVariable.id,
             localVariable = "bar"))
     e3.toJs should deepEqual(
-      Array("game.setInt(\"foo\", 10 + bar);"))
+      Array("game.setInt(\"foo\", game.getInt(\"foo\") + bar);"))
   }
 
   "EventCmd" should "produce correct script for ShowText" in {

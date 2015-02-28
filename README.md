@@ -259,6 +259,9 @@ http://ails.deviantart.com/art/420-Pixel-Art-Icons-for-RPG-129892453
 
 ### Faces
 
+sys/main1.png:
+http://tkool.rgr.jp/
+
 ### Window Skin
 
 http://rpgmakertimes.agilityhoster.com/2011/02/final-fantasy-i-xpvx-windowskin/

@@ -410,7 +410,7 @@ class BattleScreen(
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       windowManager.showPicture(
         PictureSlots.BATTLE_BACKGROUND,
-        TexturePicture(assets, bg, Layout(NORTH, COVER, 0, 0)))
+        new TexturePicture(assets, bg, Layout(NORTH, COVER, 0, 0)))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -427,7 +427,7 @@ class BattleScreen(
 
         val layout =
           Layout(NORTHWEST, FIXED, battlerWidth, battlerHeight, unitL, unitT)
-        val picture = TexturePicture(assets, battler, layout)
+        val picture = new TexturePicture(assets, battler, layout)
 
         windowManager.showPicture(
             PictureSlots.BATTLE_SPRITES_ENEMIES + i, picture)
@@ -453,7 +453,7 @@ class BattleScreen(
           SpriteSpec.Directions.WEST,
           SpriteSpec.Steps.STEP0)
 
-        val newPicture = TextureAtlasRegionPicture(
+        val newPicture = new TextureAtlasRegionPicture(
             atlasSprites,
             spriteset.name,
             x,
@@ -602,7 +602,9 @@ class BattleScreen(
                   val battler =
                     getBattler(hit.hitActor.entityType, hit.hitActor.index)
                   playAnimation(hit.animationId,
-                      new PictureLikeAnimationTarget(battler))
+                      new PictureLikeAnimationTarget(battler),
+                      speedScale = 1.0f,
+                      sizeScale = 1.0f)
                 }
 
               notification.action match {

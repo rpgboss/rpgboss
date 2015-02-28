@@ -60,41 +60,45 @@ object TestPlayer {
   private var headlessApp: HeadlessApplication = null
 
   def launch(game: RpgGame, interactive: Boolean = false) = {
-    if (interactive && lwjglApp == null) {
-      val conf = new LwjglApplicationConfiguration();
-      conf.title = game.project.data.title;
-      conf.width = 32 * 20;
-      conf.height = 32 * 15;
-      conf.forceExit = false;
-      lwjglApp = new LwjglApplication(container, conf)
-    } else if (headlessApp == null) {
-      headlessApp = new HeadlessApplication(container)
-      {
-        import org.mockito.stubbing.Answer
+    if (interactive) {
+      if (lwjglApp == null) {
+        val conf = new LwjglApplicationConfiguration();
+        conf.title = game.project.data.title;
+        conf.width = 32 * 20;
+        conf.height = 32 * 15;
+        conf.forceExit = false;
+        lwjglApp = new LwjglApplication(container, conf)
+      }
+    } else {
+      if (headlessApp == null) {
+        headlessApp = new HeadlessApplication(container)
+        {
+          import org.mockito.stubbing.Answer
 
-        val mockGL20 = mock(classOf[GL20])
-        Gdx.gl = mockGL20
-        Gdx.gl20 = mockGL20
-        Gdx.gl30 = mock(classOf[GL30])
+          val mockGL20 = mock(classOf[GL20])
+          Gdx.gl = mockGL20
+          Gdx.gl20 = mockGL20
+          Gdx.gl30 = mock(classOf[GL30])
 
-        def getFakeGLAnswer(intAnswer: Int) = new Answer[Unit]() {
-          override def answer(invocation: InvocationOnMock) = {
-            val list = invocation.getArguments
-            list(2).asInstanceOf[IntBuffer].put(0, intAnswer)
+          def getFakeGLAnswer(intAnswer: Int) = new Answer[Unit]() {
+            override def answer(invocation: InvocationOnMock) = {
+              val list = invocation.getArguments
+              list(2).asInstanceOf[IntBuffer].put(0, intAnswer)
+            }
           }
+
+          when(mockGL20.glCreateShader(anyInt())).thenReturn(5)
+          when(mockGL20.glCreateProgram()).thenReturn(5)
+
+          doAnswer(getFakeGLAnswer(5))
+            .when(mockGL20).glGetShaderiv(anyInt(), anyInt(), anyObject())
+          doAnswer(getFakeGLAnswer(5))
+            .when(mockGL20).glGetProgramiv(
+                anyInt(), Matchers.eq(GL20.GL_LINK_STATUS), anyObject())
+          doAnswer(getFakeGLAnswer(0))
+            .when(mockGL20).glGetProgramiv(
+                anyInt(), Matchers.eq(GL20.GL_ACTIVE_ATTRIBUTES), anyObject())
         }
-
-        when(mockGL20.glCreateShader(anyInt())).thenReturn(5)
-        when(mockGL20.glCreateProgram()).thenReturn(5)
-
-        doAnswer(getFakeGLAnswer(5))
-          .when(mockGL20).glGetShaderiv(anyInt(), anyInt(), anyObject())
-        doAnswer(getFakeGLAnswer(5))
-          .when(mockGL20).glGetProgramiv(
-              anyInt(), Matchers.eq(GL20.GL_LINK_STATUS), anyObject())
-        doAnswer(getFakeGLAnswer(0))
-          .when(mockGL20).glGetProgramiv(
-              anyInt(), Matchers.eq(GL20.GL_ACTIVE_ATTRIBUTES), anyObject())
       }
     }
 
