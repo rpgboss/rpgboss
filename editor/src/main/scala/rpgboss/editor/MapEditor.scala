@@ -41,6 +41,10 @@ class MapEditor(
   private var selectedEvtId: Option[Int] = None
   private var popupMenuOpen = false
 
+  var connection = new AssetServerConnection(projectPanel.mainP,sm)
+  connection.start()
+  VisibleConnection.connection = connection
+
   def selectLayer(layer: MapLayers.Value) = {
     selectedLayer = layer
 
@@ -144,6 +148,8 @@ class MapEditor(
   addBtnsAsGrp(toolbar.contents, scaleButtons)
 
   toolbar.contents += Swing.HGlue
+
+  toolbar.contents += VisibleConnection.panel
 
   override lazy val canvasPanel = new MapViewPanel {
     override def paintComponent(g: Graphics2D) =
@@ -333,6 +339,11 @@ class MapEditor(
     }
   }
 
+  val actionDeleteEvent = Action(getMessage("Delete_Event")) {
+    println("delete event")
+    deleteEvent()
+  }
+
   peer
     .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
     .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK), getMessage("Copy_Event"))
@@ -344,6 +355,18 @@ class MapEditor(
     .put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK), getMessage("Paste_Event"))
   peer
     .getActionMap.put(getMessage("Paste_Event"), actionPasteEvent.peer)
+
+  peer
+    .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke("BACK_SPACE"), getMessage("Delete_Event"))
+  peer
+    .getActionMap.put(getMessage("Delete_Event"), actionDeleteEvent.peer)
+
+  peer
+    .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke("DELETE"), getMessage("Delete_Event"))
+  peer
+    .getActionMap.put(getMessage("Delete_Event"), actionDeleteEvent.peer)
 
   def showEventPopupMenu(px: Int, py: Int, xTile: Float, yTile: Float) = {
     viewStateOpt map { vs =>

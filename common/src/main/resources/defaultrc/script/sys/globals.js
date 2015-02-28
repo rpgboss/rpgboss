@@ -90,7 +90,7 @@ game.setWeather = function(weatherTypeId) {
         PictureSlots.WEATHER(), 
         'sys/weather/snow', 
         game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0),
-        1.0 /* alpha */, 30 /* framesPerSecond */);
+        1.0 /* alpha */, 8 /* framesPerSecond */);
     game.stopMusic(MusicSlots.WEATHER(), 0.5 /* fadeDuration */);
     break;
   }

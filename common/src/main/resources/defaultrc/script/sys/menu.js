@@ -399,6 +399,7 @@ function menu() {
 /// GAME OVER
 
 function gameOver() {
+  game.setWeather(0);
   game.setTransition(0, 1.0);
   game.playMusic(0, project.data().startup().gameOverMusic(), true, 0.4);
   game.showPicture(

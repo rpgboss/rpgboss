@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.Color
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 
+import scalaj.http.Http
+
 case class EntityInfo(x: Float, y: Float, dir: Int,
     screenX: Float, screenY: Float)
 
@@ -372,6 +374,11 @@ class ScriptInterface(
 
   def stopSound() = syncRun {
     activeScreen.stopSound()
+  }
+
+  def httpRequest(url:String):String = {
+    val result = Http(url).asString
+    return result.toString()
   }
 
   /*
