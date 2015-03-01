@@ -259,8 +259,7 @@ http://ails.deviantart.com/art/420-Pixel-Art-Icons-for-RPG-129892453
 
 ### Faces
 
-sys/main1.png:
-http://tkool.rgr.jp/
+Faces by Mackie also of FSM.
 
 ### Window Skin
 
