@@ -13,6 +13,7 @@ import rpgboss.model.Constants._
 import rpgboss.model.resource._
 import net.java.dev.designgridlayout._
 import rpgboss.editor.resourceselector.SpriteField
+import rpgboss.editor.resourceselector.FaceField
 
 class CharactersPanel(
   owner: Window,
@@ -32,18 +33,11 @@ class CharactersPanel(
           model.name = v
           refreshModel()
         })
-      val fSubtitle = textField(
-        model.subtitle,
-        model.subtitle = _)
-      val fDescription = textField(
-        model.description,
-        model.description = _)
+      val fSubtitle = textField(model.subtitle, model.subtitle = _)
+      val fDescription = textField(model.description, model.description = _)
 
-      val fSprite = new SpriteField(
-        owner,
-        sm,
-        model.sprite,
-        model.sprite = _)
+      val fSprite = new SpriteField(owner, sm, model.sprite, model.sprite = _)
+      val fFace = new FaceField(owner, sm, model.face, model.face = _)
 
       val fClass = indexedCombo(
         dbDiag.model.enums.classes,
@@ -71,9 +65,10 @@ class CharactersPanel(
         .add(fDescription)
 
       row().grid(leftLabel(getMessageColon("Sprite"))).add(fSprite)
+      row().grid(leftLabel(needsTranslationColon("Face"))).add(fFace)
 
-      row()
-        .grid(leftLabel(getMessageColon("Class"))).add(fClass)
+
+      row().grid(leftLabel(getMessageColon("Class"))).add(fClass)
 
       row()
         .grid(leftLabel(getMessageColon("Initial_level")))

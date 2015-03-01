@@ -1,18 +1,59 @@
 package rpgboss.editor.resourceselector
 
-import scala.swing._
-import scala.swing.event._
-import java.awt.Color
-import rpgboss.editor.uibase._
-import rpgboss.model._
-import rpgboss.model.resource._
-import java.awt.image.BufferedImage
-import rpgboss.editor.StateMaster
-import rpgboss.editor.resourceselector._
 import java.awt.Dimension
 import java.awt.Graphics2D
-import rpgboss.model.resource.Tileset.tilesize
+import java.awt.image.BufferedImage
+import scala.swing.Panel
+import scala.swing.Window
+import rpgboss.editor.StateMaster
 import rpgboss.editor.imageset.selector.SpriteSelector
+import rpgboss.editor.uibase.DesignGridPanel
+import rpgboss.editor.uibase.DisposableComponent
+import rpgboss.editor.uibase.FloatSpinner
+import rpgboss.editor.uibase.SwingUtils.leftLabel
+import rpgboss.model.BattlerSpec
+import rpgboss.model.FaceSpec
+import rpgboss.model.Project
+import rpgboss.model.SpriteSpec
+import rpgboss.model.resource.Battler
+import rpgboss.model.resource.Faceset
+import rpgboss.model.resource.Spriteset
+import rpgboss.editor.imageset.selector.ImageTileSelector
+
+abstract class FaceSelectDialog(
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[FaceSpec])
+  extends ResourceSelectDialog(owner, sm, initial, allowNone = true, Faceset) {
+
+  def specToResourceName(spec: FaceSpec): String = spec.faceset
+  def newRcNameToSpec(name: String, prevSpec: Option[FaceSpec]) = {
+    prevSpec
+      .map(_.copy(faceset = name))
+      .getOrElse(FaceSpec(name, 0, 0))
+  }
+
+  def rightPaneDim = new Dimension(384, 384)
+
+  override def rightPaneFor(faceSelection: FaceSpec,
+                            updateSelectionF: FaceSpec => Unit) = {
+    assume(!faceSelection.faceset.isEmpty)
+
+    val faceset = Faceset.readFromDisk(sm.getProj, faceSelection.faceset)
+
+    new ImageTileSelector(faceset.img, faceset.tileW, faceset.tileH,
+      xTilesVisible = 4, allowMultiselect = false,
+      drawSelectionSq = true,
+      initialSelection = Some(((faceSelection.faceX, faceSelection.faceY),
+                               (faceSelection.faceX, faceSelection.faceY)))) {
+      def selectTileF(button: Int, selectedTiles: Array[Array[(Int, Int)]]) = {
+        updateSelectionF(faceSelection.copy(
+            faceX = selectedTiles.head.head._1,
+            faceY = selectedTiles.head.head._2))
+      }
+    }
+  }
+}
 
 abstract class SpriteSelectDialog(
   owner: Window,
@@ -102,7 +143,6 @@ class BattlerSelector(
 
   updateModel(initial)
 
-  import SwingUtils._
   row().grid(leftLabel("Preview:")).add(fPreview)
   row().grid(leftLabel("Scale:")).add(fScale)
 }

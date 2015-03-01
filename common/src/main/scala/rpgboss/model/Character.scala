@@ -11,6 +11,7 @@ case class Character(
   var subtitle: String = "",
   var description: String = "",
   var sprite: Option[SpriteSpec] = None,
+  var face: Option[FaceSpec] = None,
   var initLevel: Int = 1, var maxLevel: Int = 50,
   var charClass: Int = 0,
   var progressions: StatProgressions = StatProgressions(),
