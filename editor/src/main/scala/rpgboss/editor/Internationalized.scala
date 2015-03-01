@@ -35,6 +35,10 @@ object Internationalized extends LazyLogging {
     key
   }
 
+  def needsTranslationColon(key: String) = {
+    needsTranslation(key) + ":"
+  }
+
   def obsoleteMessage(key: String) = {
     if (messages.containsKey(key)) {
       logger.error("""Key "%s" may be no longer needed. Remove from translation

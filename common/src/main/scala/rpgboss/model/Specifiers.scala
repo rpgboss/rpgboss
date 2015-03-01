@@ -106,6 +106,11 @@ case class ColorSpec(
   var b: Float = 0.0f,
   var a: Float = 0.5f)
 
+case class FaceSpec(
+  var faceset: String,
+  var faceX: Int,
+  var faceY: Int)
+
 case class SoundSpec(
   sound: String = "",
   var volume: Float = 1.0f,

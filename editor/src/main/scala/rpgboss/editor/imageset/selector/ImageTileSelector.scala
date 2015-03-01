@@ -60,7 +60,8 @@ abstract class ImageTileSelector(
   allowMultiselect: Boolean = true,
   drawSelectionSq: Boolean = true,
   initialSelection: Option[((Int, Int), (Int, Int))] = None)
-  extends ScrollPane {
+  extends ScrollPane
+  with DisposableComponent {
   horizontalScrollBarPolicy = ScrollPane.BarPolicy.Never
   verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
 

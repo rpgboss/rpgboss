@@ -42,8 +42,10 @@ class MapEditor(
   private var popupMenuOpen = false
 
   var connection = new AssetServerConnection(projectPanel.mainP,sm)
-  connection.start()
-  VisibleConnection.connection = connection
+  if (connection.ready()) {
+    connection.start()
+    VisibleConnection.connection = connection
+  }
 
   def selectLayer(layer: MapLayers.Value) = {
     selectedLayer = layer

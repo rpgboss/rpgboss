@@ -93,6 +93,28 @@ class AnimationImageField(
   }
 }
 
+class FaceField(
+  owner: Window,
+  sm: StateMaster,
+  initial: Option[FaceSpec],
+  onUpdate: (Option[FaceSpec]) => Any)
+  extends ImageResourceField(owner, sm, initial, onUpdate) {
+
+  def getImage(f: FaceSpec): BufferedImage = {
+    val faceset = Faceset.readFromDisk(sm.getProj, f.faceset)
+    faceset.getTileImage(f.faceX, f.faceY)
+  }
+
+  def componentW = Faceset.canonicalTileSize
+  def componentH = Faceset.canonicalTileSize
+
+  def getSelectDialog() =
+    new FaceSelectDialog(owner, sm, getValue) {
+      def onSuccess(result: Option[FaceSpec]) =
+        updateModel(result)
+    }
+}
+
 class SpriteField(
   owner: Window,
   sm: StateMaster,
@@ -114,7 +136,6 @@ class SpriteField(
         updateModel(result)
     }
 }
-
 
 object BattlerField {
   def getImage(m: BattlerSpec, proj: Project): BufferedImage = {
