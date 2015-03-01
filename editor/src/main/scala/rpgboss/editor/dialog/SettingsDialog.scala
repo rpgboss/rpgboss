@@ -26,13 +26,19 @@ class SettingsDialog(owner: Window, onSuccess: Project => Any)
     close()
   }
 
-  if(Settings.get("assetserver.host")=="") {
+  if (Settings.get("assetserver.host") == "") {
     Settings.set("assetserver.host", "http://assets.rpgboss.com")
   }
 
-  var assetserver_host = textField(Settings.get("assetserver.host").get, Settings.set("assetserver.host", _))
-  var assetserver_username = textField(Settings.get("assetserver.username").get, Settings.set("assetserver.username", _))
-  var assetserver_password = textField(Settings.get("assetserver.password").get, Settings.set("assetserver.password", _))
+  var assetserver_host = textField(
+    Settings.get("assetserver.host").getOrElse(""),
+    Settings.set("assetserver.host", _))
+  var assetserver_username = textField(
+    Settings.get("assetserver.username").getOrElse(""),
+    Settings.set("assetserver.username", _))
+  var assetserver_password = textField(
+    Settings.get("assetserver.password").getOrElse(""),
+    Settings.set("assetserver.password", _))
 
   contents = new DesignGridPanel {
     border = BorderFactory.createTitledBorder(getMessage("Asset_Server"))

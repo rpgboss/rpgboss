@@ -79,6 +79,13 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 
 	var connectionThread:Thread = null
 
+  def ready() = {
+    val host = Settings.get("assetserver.host")
+    val username = Settings.get("assetserver.username")
+    val password = Settings.get("assetserver.password")
+    host.isDefined && username.isDefined && password.isDefined
+  }
+
 	def restart():Unit = {
 		if(connectionThread!=null) {
 			connectionThread.interrupt()
@@ -87,10 +94,9 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 	}
 
 	def start():Unit = {
-
-		var host = Settings.get("assetserver.host").get
-		var username = Settings.get("assetserver.username").get
-		var password = Settings.get("assetserver.password").get
+    var host = Settings.get("assetserver.host").get
+    var username = Settings.get("assetserver.username").get
+    var password = Settings.get("assetserver.password").get
 
 		var currentSessionString = ""
 
@@ -100,7 +106,7 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 				currentSessionString = response.body
 			}
 			catch {
-				case e:Exception => 
+				case e:Exception =>
 					unreachable = true
 					println("no asset server?")
 			}
@@ -152,7 +158,7 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 					            //SocketSession = session
 					            session.addMessageHandler(new MessageHandler.Whole[String]() {
 					              override def onMessage(message: String) {
-					                
+
 					              	var split = message.split(";")
 					              	var mode = split(1)
 					              	var command = split(0)
