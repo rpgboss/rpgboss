@@ -1,19 +1,29 @@
 package rpgboss.editor.resourceselector
 
-import scala.swing._
-import scala.swing.event._
+import java.awt.AlphaComposite
 import java.awt.Color
-import rpgboss.editor.uibase._
-import rpgboss.model._
-import rpgboss.model.resource._
-import java.awt.image.BufferedImage
-import rpgboss.editor.StateMaster
-import rpgboss.editor.resourceselector._
 import java.awt.Dimension
 import java.awt.Graphics2D
-import rpgboss.model.resource.Tileset.tilesize
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
+import java.awt.image.BufferedImage
+
+import scala.swing.Component
+import scala.swing.Dialog
+import scala.swing.Window
+import scala.swing.event.MouseClicked
+
+import rpgboss.editor.StateMaster
+import rpgboss.model.AnimationVisual
+import rpgboss.model.BattlerSpec
+import rpgboss.model.FaceSpec
+import rpgboss.model.Project
+import rpgboss.model.SpriteSpec
+import rpgboss.model.resource.AnimationImage
+import rpgboss.model.resource.Battler
+import rpgboss.model.resource.Faceset
+import rpgboss.model.resource.Spriteset
+import rpgboss.model.resource.Tileset.tilesize
 
 abstract class ImageResourceField[SpecT](
   owner: Window,
@@ -60,7 +70,14 @@ abstract class ImageResourceField[SpecT](
     image map { img =>
       val dstX = (componentW - img.getWidth()) / 2
       val dstY = (componentH - img.getHeight()) / 2
+      if (!enabled) {
+        val ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f)
+        g.setComposite(ac)
+      } else {
+        g.setComposite(AlphaComposite.SrcOver)
+      }
       g.drawImage(img, dstX, dstY, null)
+      g.setComposite(AlphaComposite.SrcOver)
     }
   }
 
