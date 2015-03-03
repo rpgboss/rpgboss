@@ -79,7 +79,7 @@ case class RpgEventState(
     val set = new DistinctCharacterSet
     for (cmd <- cmds) {
       cmd match {
-        case ShowText(lines) => set.addAll(lines)
+        case ShowText(lines, _, _, _) => set.addAll(lines)
         case _ => Unit
       }
     }
