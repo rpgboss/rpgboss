@@ -13,16 +13,20 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import rpgboss.lib.Layout
 import rpgboss.lib.ThreadChecked
+import rpgboss.model.FaceSpec
 import rpgboss.model.PictureSlots
 import rpgboss.model.Project
+import rpgboss.model.resource.Faceset
 import rpgboss.model.resource.ImageResource
 import rpgboss.model.resource.Msgfont
 import rpgboss.model.resource.Picture
 import rpgboss.model.resource.RpgAssetManager
+import rpgboss.model.resource.TiledImageResource
 import rpgboss.model.resource.Windowskin
 import rpgboss.player.entity.Window
 import rpgboss.lib.BoxLike
 import rpgboss.lib.Rect
+import rpgboss.model.resource.Faceset
 
 /**
  * This class renders stuff on the screen.
@@ -128,14 +132,14 @@ class WindowManager(
   }
 
   def showPictureByName(slot: Int, name: String, layout: Layout,
-      alpha: Float = 1.0f) = {
+                        alpha: Float = 1.0f) = {
     assertOnBoundThread()
     val picture = Picture.readFromDisk(project, name)
     showPicture(slot, new TexturePicture(assets, picture, layout, alpha))
   }
 
   def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
-      alpha: Float = 1.0f, framesPerSecond: Int = 30) = {
+                      alpha: Float = 1.0f, framesPerSecond: Int = 30) = {
     assertOnBoundThread()
     val filesUnderPath = Picture.listResourcesUnderPath(project, folderPath)
 
@@ -145,7 +149,7 @@ class WindowManager(
         new TexturePicture(assets, picture, layout, alpha)
       })
       showPicture(slot, new PictureSequence(
-          pictureArray, loop = true, framesPerSecond))
+        pictureArray, loop = true, framesPerSecond))
     }
   }
 
@@ -205,8 +209,10 @@ class WindowManager(
     batch.enableBlending()
     batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
-    for (i <- PictureSlots.BELOW_MAP until PictureSlots.ABOVE_MAP;
-         pic <- pictures(i)) {
+    for (
+      i <- PictureSlots.BELOW_MAP until PictureSlots.ABOVE_MAP;
+      pic <- pictures(i)
+    ) {
       pic.render(this, batch)
     }
 
@@ -215,9 +221,9 @@ class WindowManager(
 
   var screenTextArray = MutableList[ScreenText]()
 
-  def addDrawText(text: ScreenText):Boolean = {
-    screenTextArray.foreach { text2:ScreenText =>
-      if(text2.id == text.id) {
+  def addDrawText(text: ScreenText): Boolean = {
+    screenTextArray.foreach { text2: ScreenText =>
+      if (text2.id == text.id) {
         removeDrawText(text.id)
       }
     }
@@ -226,11 +232,11 @@ class WindowManager(
     return true
   }
 
-  def removeDrawText(id: Int):Boolean = {
-    var removedSomething:Boolean = false
+  def removeDrawText(id: Int): Boolean = {
+    var removedSomething: Boolean = false
     var newTextArray = MutableList[ScreenText]()
-    screenTextArray.foreach { text:ScreenText =>
-      if(text.id!=id){
+    screenTextArray.foreach { text: ScreenText =>
+      if (text.id != id) {
         newTextArray += text
       } else {
         removedSomething = true
@@ -242,7 +248,7 @@ class WindowManager(
   }
 
   def render(batch: SpriteBatch, shapeRenderer: ShapeRenderer,
-      screenCamera: OrthographicCamera) = {
+             screenCamera: OrthographicCamera) = {
     batch.setProjectionMatrix(screenCamera.combined)
     batch.enableBlending()
     batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
@@ -271,13 +277,15 @@ class WindowManager(
 
     batch.begin()
 
-    for (i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
-         pic <- pictures(i)) {
+    for (
+      i <- PictureSlots.ABOVE_MAP until PictureSlots.ABOVE_WINDOW;
+      pic <- pictures(i)
+    ) {
       pic.render(this, batch)
     }
 
-    screenTextArray.foreach { text:ScreenText =>
-      text.render(this,batch)
+    screenTextArray.foreach { text: ScreenText =>
+      text.render(this, batch)
     }
 
     batch.end()
@@ -289,8 +297,10 @@ class WindowManager(
     // Render all windows
     windows.reverseIterator.foreach(_.render(batch))
 
-    for (i <- PictureSlots.ABOVE_WINDOW until PictureSlots.NUM_SLOTS;
-         pic <- pictures(i)) {
+    for (
+      i <- PictureSlots.ABOVE_WINDOW until PictureSlots.NUM_SLOTS;
+      pic <- pictures(i)
+    ) {
       pic.render(this, batch)
     }
 
@@ -340,32 +350,45 @@ class TexturePicture[MT <: AnyRef](
   private var _rect: Option[Rect] = None
 
   val animationTint = Color.WHITE.cpy()
-  def setAnimationTint(color: Color) = animationTint.set(color)
+  override def setAnimationTint(color: Color) = animationTint.set(color)
   override def getRect() = _rect.getOrElse(Rect(0, 0, 100, 100))
 
   override def update(delta: Float) = {}
+
+  def drawCall(batch: SpriteBatch, texture: Texture, rect: Rect) = {
+    batch.draw(texture,
+      rect.left, rect.top, rect.w, rect.h,
+      0, 0, texture.getWidth(), texture.getHeight(),
+      false, true)
+  }
 
   override def render(manager: WindowManager, batch: SpriteBatch) = {
     if (resource.isLoaded(assets)) {
       val texture = resource.getAsset(assets)
       val rect = layout.getRect(texture.getWidth(), texture.getHeight(),
-                                manager.screenW, manager.screenH)
+        manager.screenW, manager.screenH)
       _rect = Some(rect)
-      batch.draw(texture,
-        rect.left, rect.top, rect.w, rect.h,
-        0, 0, texture.getWidth(), texture.getHeight(),
-        false, true)
 
+      drawCall(batch, texture, rect)
       val modifiedAnimationTint = animationTint.cpy()
       modifiedAnimationTint.a *= alpha
       batch.setColor(modifiedAnimationTint);
-      batch.draw(texture,
-        rect.left, rect.top, rect.w, rect.h,
-        0, 0, texture.getWidth(), texture.getHeight(),
-        false, true)
+      drawCall(batch, texture, rect)
 
       batch.setColor(Color.WHITE)
     }
+  }
+}
+
+class TiledTexturePicture[MT <: AnyRef](
+  assets: RpgAssetManager, resource: TiledImageResource[_, MT],
+  xTile: Int, yTile: Int,
+  layout: Layout, alpha: Float = 1.0f)
+  extends TexturePicture(assets, resource, layout, alpha) {
+
+  override def drawCall(batch: SpriteBatch, texture: Texture, rect: Rect) = {
+    resource.drawTileAt(
+      batch, texture, rect.left, rect.top, rect.w, rect.h, xTile, yTile)
   }
 }
 

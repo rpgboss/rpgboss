@@ -53,12 +53,14 @@ class Window(
   // Determines when states expire. In seconds.
   protected var stateAge = 0.0
 
+  val attachedPictures = collection.mutable.Set[PictureLike]()
+
   private lazy val rect = {
     layout.getRect(100, 100, manager.screenW, manager.screenH)
   }
 
   protected def getRectFromLines(
-      lines: Array[String], linesShown: Int, xPadding: Int) = {
+    lines: Array[String], linesShown: Int, xPadding: Int) = {
     val autoW = Window.maxWidth(lines, manager.fontbmp, xPadding)
     val displayedLines = if (linesShown > 0) linesShown else lines.length
     val autoH = WindowText.DefaultLineHeight * displayedLines
@@ -94,7 +96,7 @@ class Window(
     if (stateAge >= openCloseTime) {
       state match {
         case Window.Opening => changeState(Window.Open)
-        case Window.Open =>
+        case Window.Open    =>
         case Window.Closing => {
           changeState(Window.Closed)
         }
@@ -110,7 +112,7 @@ class Window(
       return
 
     state match {
-        case Window.Open => {
+      case Window.Open => {
         skin.draw(b, skinTexture, rect.left, rect.top, rect.w, rect.h)
       }
       case Window.Opening => {
@@ -150,6 +152,10 @@ class Window(
   }
 
   class WindowScriptInterface {
+    def attachFaceset(facespec: FaceSpec) = GdxUtils.syncRun {
+
+    }
+
     def getState() = {
       assertOnDifferentThread()
       state
@@ -220,9 +226,11 @@ class DamageTextWindow(
     if (age < 0)
       return
 
-    textImage.updatePosition(
-        initialX,
-        ((age / expiryTime * yDisplacement) + initialY).toFloat)
+    textImage.updateRect(Rect(
+      initialX,
+      ((age / expiryTime * yDisplacement) + initialY).toFloat,
+      20,
+      20))
 
     textImage.update(delta)
 
@@ -276,7 +284,7 @@ class PrintingTextWindow(
     if (key == OK) {
       if (textImage.allTextPrinted)
         startClosing()
-      else if(textImage.wholeBlockPrinted)
+      else if (textImage.wholeBlockPrinted)
         textImage.advanceBlock()
       else
         textImage.speedThrough()
@@ -288,7 +296,7 @@ class PrintingTextWindow(
     textImage.update(delta)
 
     if (options.stayOpenTime > 0.0 && state == Window.Open &&
-        stateAge >= options.stayOpenTime) {
+      stateAge >= options.stayOpenTime) {
       startClosing()
     }
   }
