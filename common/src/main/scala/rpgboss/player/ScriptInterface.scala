@@ -25,7 +25,7 @@ import org.mozilla.javascript.ScriptableObject
 import scalaj.http.Http
 
 case class EntityInfo(x: Float, y: Float, dir: Int,
-    screenX: Float, screenY: Float)
+                      screenX: Float, screenY: Float)
 
 object EntityInfo {
   def apply(e: Entity, mapScreen: MapScreen): EntityInfo = {
@@ -148,18 +148,18 @@ class ScriptInterface(
   }
 
   def teleport(mapName: String, x: Float, y: Float,
-      transitionId: Int = Transitions.FADE.id) = syncRun {
+               transitionId: Int = Transitions.FADE.id) = syncRun {
     val loc = MapLoc(mapName, x, y)
     val map = getMap(loc)
     val settedTransition = getInt("useTransition")
     var transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
 
-    if(settedTransition != -1) transition = Transitions.get(settedTransition)
+    if (settedTransition != -1) transition = Transitions.get(settedTransition)
 
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
-      "transition"+transition+"('"+mapName+"',"+x.toString()+","+y.toString()+","+fadeDuration.toString()+")",
+      "transition" + transition + "('" + mapName + "'," + x.toString() + "," + y.toString() + "," + fadeDuration.toString() + ")",
       runOnNewThread = false)
 
     stopSound()
@@ -168,7 +168,7 @@ class ScriptInterface(
   /**
    * Moves the map camera.
    */
-  def moveCamera(dx: Float, dy: Float, async: Boolean, duration:Float) = {
+  def moveCamera(dx: Float, dy: Float, async: Boolean, duration: Float) = {
     val move = syncRun { mapScreen.camera.enqueueMove(dx, dy, duration) }
     if (!async)
       move.awaitFinish()
@@ -199,7 +199,7 @@ class ScriptInterface(
    * @param   fadeDuration    In seconds. 0f means instantaneous
    */
   def tintScreen(r: Float, g: Float, b: Float, a: Float,
-      fadeDuration: Float) = syncRun {
+                 fadeDuration: Float) = syncRun {
     def activeScreenTint = activeScreen.windowManager.tintColor
     // If no existing tint, set color immediately and tween alpha only.
     if (activeScreenTint.a == 0) {
@@ -207,11 +207,11 @@ class ScriptInterface(
     }
 
     activeScreen.windowManager.tintTweener.tweenTo(new Color(r, g, b, a),
-        fadeDuration)
+      fadeDuration)
   }
 
   def startBattle(encounterId: Int, overrideBattleBackground: String,
-      overrideBattleMusic: String, overrideBattleMusicVolume: Float) = {
+                  overrideBattleMusic: String, overrideBattleMusicVolume: Float) = {
     val mapMetadata = mapScreen.mapAndAssetsOption.get.map.metadata
     val battleBackground =
       if (overrideBattleBackground.isEmpty)
@@ -227,52 +227,52 @@ class ScriptInterface(
 
     syncRun {
       game.startBattle(encounterId, battleBackground, battleMusic,
-          battleMusicVolume)
+        battleMusicVolume)
     }
 
     // Blocks until the battle screen finishes on way or the other
     game.battleScreen.finishChannel.read
   }
 
-  def getEventX(id: Int):Int = {
+  def getEventX(id: Int): Int = {
     getEventEntityInfo(id).map { info =>
       return info.x.toInt
     }
     return 0
   }
 
-  def getEventY(id: Int):Int = {
+  def getEventY(id: Int): Int = {
     getEventEntityInfo(id).map { info =>
       return info.y.toInt
     }
     return 0
   }
 
-  def getEventDirection(id: Int):Int = {
+  def getEventDirection(id: Int): Int = {
     getEventEntityInfo(id).map { info =>
       return info.dir
     }
     return 0
   }
 
-  def getPlayerX():Int = {
+  def getPlayerX(): Int = {
     return getPlayerEntityInfo.x.toInt
   }
 
-  def getPlayerY():Int = {
+  def getPlayerY(): Int = {
     return getPlayerEntityInfo.y.toInt
   }
 
-  def getPlayerDirection():Int = {
+  def getPlayerDirection(): Int = {
     return getPlayerEntityInfo.dir
   }
 
   def setTimer(time: Int) = {
-    setInt("timer",time)
+    setInt("timer", time)
   }
 
   def clearTimer() = {
-    setInt("timer",0)
+    setInt("timer", 0)
   }
 
   def moveTowardsPlayer(eventId: Int) = {
@@ -284,13 +284,13 @@ class ScriptInterface(
     // TODO: Realize a wall is infront of the event
     // TODO: If event state changes kill this loop and restart it again if back to the state
 
-    if(eventX < playerX) {
+    if (eventX < playerX) {
       moveEvent(eventId, 1, 0, false, false);
-    } else if(eventY < playerY) {
+    } else if (eventY < playerY) {
       moveEvent(eventId, 0, 1, false, false);
-    } else if(eventX > playerX) {
+    } else if (eventX > playerX) {
       moveEvent(eventId, -1, 0, false, false);
-    } else if(eventY > playerY) {
+    } else if (eventY > playerY) {
       moveEvent(eventId, 0, -1, false, false);
     }
   }
@@ -313,12 +313,12 @@ class ScriptInterface(
     activeScreen.windowManager.showPictureByName(slot, name, layout, 1.0f)
   }
 
-  def showPicture(slot: Int, name: String, layout: Layout, alpha:Float) = syncRun {
+  def showPicture(slot: Int, name: String, layout: Layout, alpha: Float) = syncRun {
     activeScreen.windowManager.showPictureByName(slot, name, layout, alpha)
   }
 
   def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
-      alpha: Float, fps:Int) = syncRun {
+                      alpha: Float, fps: Int) = syncRun {
     activeScreen.windowManager.showPictureLoop(slot, folderPath, layout, alpha, fps)
   }
 
@@ -334,34 +334,34 @@ class ScriptInterface(
   def playMusic(slot: Int, music: String, volume: Float, loop: Boolean,
                 fadeDuration: Float) = syncRun {
     activeScreen.playMusic(
-        slot, Some(SoundSpec(music, volume)), loop, fadeDuration)
+      slot, Some(SoundSpec(music, volume)), loop, fadeDuration)
   }
 
   def stopMusic(slot: Int, fadeDuration: Float) = syncRun {
     activeScreen.playMusic(
-        slot, None, false, fadeDuration)
+      slot, None, false, fadeDuration)
   }
 
   def playAnimation(animationId: Int, screenX: Float, screenY: Float,
-      speedScale: Float, sizeScale: Float) = syncRun {
+                    speedScale: Float, sizeScale: Float) = syncRun {
     activeScreen.playAnimation(animationId,
-        new FixedAnimationTarget(screenX, screenY), speedScale, sizeScale)
+      new FixedAnimationTarget(screenX, screenY), speedScale, sizeScale)
   }
 
   def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Float,
-      sizeScale: Float) = {
+                           sizeScale: Float) = {
     mapScreen.allEntities.get(eventId) map { entity =>
       activeScreen.playAnimation(animationId,
-          new MapEntityAnimationTarget(mapScreen, entity),
-          speedScale, sizeScale)
+        new MapEntityAnimationTarget(mapScreen, entity),
+        speedScale, sizeScale)
     }
   }
 
   def playAnimationOnPlayer(animationId: Int, speedScale: Float,
-      sizeScale: Float) = {
+                            sizeScale: Float) = {
     activeScreen.playAnimation(animationId,
-        new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
-        speedScale, sizeScale)
+      new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
+      speedScale, sizeScale)
   }
 
   def playSound(sound: String) = syncRun {
@@ -376,7 +376,7 @@ class ScriptInterface(
     activeScreen.stopSound()
   }
 
-  def httpRequest(url:String):String = {
+  def httpRequest(url: String): String = {
     val result = Http(url).asString
     return result.toString()
   }
@@ -397,8 +397,8 @@ class ScriptInterface(
     layout: Layout,
     options: NativeObject): ChoiceWindow#ChoiceWindowScriptInterface = {
     newChoiceWindow(
-        lines, layout,
-        JsonUtils.nativeObjectToCaseClass[TextChoiceWindowOptions](options))
+      lines, layout,
+      JsonUtils.nativeObjectToCaseClass[TextChoiceWindowOptions](options))
   }
 
   def newChoiceWindow(
@@ -460,15 +460,15 @@ class ScriptInterface(
   }
 
   def newTextWindow(text: Array[String], layout: Layout,
-      options: NativeObject):
-      PrintingTextWindow#PrintingTextWindowScriptInterface = {
+                    options: NativeObject): PrintingTextWindow#PrintingTextWindowScriptInterface = {
     newTextWindow(text, layout,
-        JsonUtils.nativeObjectToCaseClass[PrintingTextWindowOptions](options))
+      JsonUtils.nativeObjectToCaseClass[PrintingTextWindowOptions](options))
   }
 
-  def newTextWindow(text: Array[String], layout: Layout,
-      options: PrintingTextWindowOptions):
-      PrintingTextWindow#PrintingTextWindowScriptInterface = {
+  def newTextWindow(
+    text: Array[String],
+    layout: Layout = Layout(SOUTH, FIXED, 640, 180),
+    options: PrintingTextWindowOptions = PrintingTextWindowOptions(showArrow = true)): PrintingTextWindow#PrintingTextWindowScriptInterface = {
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
@@ -482,15 +482,54 @@ class ScriptInterface(
   }
 
   def showText(text: Array[String]): Int = {
-    val window = newTextWindow(
-      text,
-      layout(SOUTH, FIXED, 640, 180),
-      PrintingTextWindowOptions(showArrow = true))
+    val window = newTextWindow(text)
     window.awaitClose()
   }
 
+  def showTextWithFace(text: Array[String], faceset: String, faceX: Int,
+                       faceY: Int) = {
+    val window = newTextWindow(text)
+
+    val facesetResource = syncRun { Faceset.readFromDisk(project, faceset) }
+
+    window.setLeftMargin(Faceset.renderSize + PrintingTextWindow.xpad)
+
+    val windowRect = window.getRect()
+    window.attachPicture(new TiledTexturePicture(
+        activeScreen.assets,
+        facesetResource,
+        faceX, faceY,
+        Layout(
+            LayoutType.NorthWest.id,
+            SizeType.Fixed.id,
+            Faceset.renderSize,
+            Faceset.renderSize,
+            windowRect.left + PrintingTextWindow.xpad,
+            windowRect.top + PrintingTextWindow.ypad)))
+
+    window.awaitClose()
+  }
+
+  def showTextWithCharacterFace(text: Array[String], characterId: Int): Int = {
+    if (characterId < 0)
+      return showText(text)
+
+    val characters = project.data.enums.characters
+
+    if (characterId >= characters.length)
+      return showText(text)
+
+    val character = characters(characterId)
+
+    character.face.map { facespec =>
+      showTextWithFace(text, facespec.faceset, facespec.faceX, facespec.faceY)
+    } getOrElse {
+      showText(text)
+    }
+  }
+
   def getChoice(question: Array[String], choices: Array[String],
-      allowCancel: Boolean) = {
+                allowCancel: Boolean) = {
     val questionLayout =
       layout(SOUTH, FIXED, 640, 180)
     val questionWindow = syncRun {
@@ -507,16 +546,16 @@ class ScriptInterface(
     // Removing 0.5*xpad at the end makes it look better.
     val choicesHeight =
       choices.length * WindowText.DefaultLineHeight +
-      1.5f * TextChoiceWindow.ypad
+        1.5f * TextChoiceWindow.ypad
 
     val choiceLayout = layoutWithOffset(
-        SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0, -questionLayout.h)
+      SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0, -questionLayout.h)
 
     val choiceWindow = newChoiceWindow(
-        choices,
-        choiceLayout,
-        TextChoiceWindowOptions(
-            allowCancel = allowCancel, justification = RIGHT))
+      choices,
+      choiceLayout,
+      TextChoiceWindowOptions(
+        allowCancel = allowCancel, justification = RIGHT))
 
     val choice = choiceWindow.getChoice()
     choiceWindow.close()
@@ -599,7 +638,7 @@ class ScriptInterface(
     assert(activeScreen == game.mapScreen)
     val finishable = syncRun {
       val statement = EventJavascript.jsStatement(
-          "openStore", itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
+        "openStore", itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
       game.mapScreen.scriptFactory.runFromFile(
         "sys/store.js",
         statement,
@@ -624,21 +663,21 @@ class ScriptInterface(
     if (persistent.addRemoveItem(itemId, -1)) {
       val item = project.data.enums.items(itemId)
       val characterStatus = BattleStatus.fromCharacter(
-          project.data,
-          persistent.getPartyParameters(project.data.enums.characters),
-          characterId, index = -1)
+        project.data,
+        persistent.getPartyParameters(project.data.enums.characters),
+        characterId, index = -1)
 
       val damages = item.effects.flatMap(_.applyAsSkillOrItem(characterStatus))
 
       for (damage <- damages) {
         logger.debug("Character %d took %d damage from item.".format(
-            characterId, damage.value))
+          characterId, damage.value))
       }
 
       characterStatus.clampVitals()
 
       persistent.saveCharacterVitals(characterId, characterStatus.hp,
-          characterStatus.mp, characterStatus.tempStatusEffectIds)
+        characterStatus.mp, characterStatus.tempStatusEffectIds)
     }
   }
 
@@ -647,11 +686,11 @@ class ScriptInterface(
    * @param   mpPercentage    Between 0.0f and 1.0f.
    */
   def healCharacter(characterId: Int, hpPercentage: Float,
-      mpPercentage: Float, removeStatusEffects: Boolean = false) = syncRun {
+                    mpPercentage: Float, removeStatusEffects: Boolean = false) = syncRun {
     val characterStatus = BattleStatus.fromCharacter(
-        project.data,
-        persistent.getPartyParameters(project.data.enums.characters),
-        characterId, index = -1)
+      project.data,
+      persistent.getPartyParameters(project.data.enums.characters),
+      characterId, index = -1)
 
     if (removeStatusEffects) {
       characterStatus.updateTempStatusEffectIds(Array.empty)
@@ -665,35 +704,35 @@ class ScriptInterface(
     characterStatus.clampVitals()
 
     persistent.saveCharacterVitals(characterId, characterStatus.hp,
-        characterStatus.mp, characterStatus.tempStatusEffectIds)
+      characterStatus.mp, characterStatus.tempStatusEffectIds)
   }
 
   def healParty(hpPercentage: Float, mpPercentage: Float,
-      removeStatusEffects: Boolean = false) = syncRun {
+                removeStatusEffects: Boolean = false) = syncRun {
     for (characterId <- persistent.getIntArray(PARTY)) {
       healCharacter(characterId, hpPercentage, mpPercentage,
-          removeStatusEffects)
+        removeStatusEffects)
     }
   }
 
   def damageCharacter(characterId: Int, hpPercentage: Float,
-      mpPercentage: Float) =
+                      mpPercentage: Float) =
     healCharacter(characterId, -hpPercentage, -mpPercentage)
 
   def damageParty(hpPercentage: Float, mpPercentage: Float) =
     healParty(-hpPercentage, -mpPercentage)
 
   def getBattleStats(characterId: Int, proposedSlotId: Int,
-      proposedItemId: Int) = {
+                     proposedItemId: Int) = {
     val partyParams = syncRun {
       persistent.getPartyParameters(project.data.enums.characters)
     }
     val currentBattleStats = BattleStatus.fromCharacter(
-        project.data, partyParams, characterId)
+      project.data, partyParams, characterId)
 
     if (proposedSlotId > 0 && proposedItemId > 0) {
       partyParams.characterEquip(characterId).update(
-          proposedSlotId, proposedItemId)
+        proposedSlotId, proposedItemId)
     }
 
     val proposedBattleStats =
@@ -706,36 +745,35 @@ class ScriptInterface(
     persistent.getInt(key)
   }
 
-
   def setInt(key: String, value: Int) = syncRun {
     persistent.setInt(key, value)
   }
 
-  def addInt(key:String, value: Int) = syncRun {
+  def addInt(key: String, value: Int) = syncRun {
     var currentValue = getInt(key)
     currentValue += value
     setInt(key, currentValue)
   }
 
-  def substractInt(key:String, value: Int) = syncRun {
+  def substractInt(key: String, value: Int) = syncRun {
     var currentValue = getInt(key)
     currentValue -= value
     setInt(key, currentValue)
   }
 
-  def multiplyInt(key:String, value: Int) = syncRun {
+  def multiplyInt(key: String, value: Int) = syncRun {
     var currentValue = getInt(key)
     currentValue *= value
     setInt(key, currentValue)
   }
 
-  def divideInt(key:String, value: Int) = syncRun {
+  def divideInt(key: String, value: Int) = syncRun {
     var currentValue = getInt(key)
     currentValue /= value
     setInt(key, currentValue)
   }
 
-  def modInt(key:String, value: Int) = syncRun {
+  def modInt(key: String, value: Int) = syncRun {
     var currentValue = getInt(key)
     currentValue = currentValue % value
     setInt(key, currentValue)
@@ -794,32 +832,32 @@ class ScriptInterface(
       scriptPath, functionToCall, runOnNewThread = false)
   }
 
-  def drawText(id:Int,text:String , x:Int, y:Int, color:Color=new Color(255,255,255,1), scale:Float=1.0f) = syncRun {
-      logger.debug("drawText: "+text+" on ");
-      mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
+  def drawText(id: Int, text: String, x: Int, y: Int, color: Color = new Color(255, 255, 255, 1), scale: Float = 1.0f) = syncRun {
+    logger.debug("drawText: " + text + " on ");
+    mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
   }
 
-  def removeDrawedText(id:Int) = syncRun {
+  def removeDrawedText(id: Int) = syncRun {
     mapScreen.windowManager.removeDrawText(id)
   }
 
-  def color(r:Float, g:Float, b:Float, alpha:Float):Color = {
-    var R = r/255
-    var G = g/255
-    var B = b/255
+  def color(r: Float, g: Float, b: Float, alpha: Float): Color = {
+    var R = r / 255
+    var G = g / 255
+    var B = b / 255
 
-    return new Color(R,G,B,alpha)
+    return new Color(R, G, B, alpha)
   }
 
   def log(text: String) = syncRun {
     logger.debug(text)
   }
 
-  def takeDamage(characterId: Int, hp:Int, mp:Int) = syncRun {
+  def takeDamage(characterId: Int, hp: Int, mp: Int) = syncRun {
     val characterStatus = BattleStatus.fromCharacter(
-        project.data,
-        persistent.getPartyParameters(project.data.enums.characters),
-        characterId, index = -1)
+      project.data,
+      persistent.getPartyParameters(project.data.enums.characters),
+      characterId, index = -1)
 
     characterStatus.hp -= hp
     characterStatus.mp -= mp
@@ -827,7 +865,7 @@ class ScriptInterface(
     characterStatus.clampVitals()
 
     persistent.saveCharacterVitals(characterId, characterStatus.hp,
-        characterStatus.mp, characterStatus.tempStatusEffectIds)
+      characterStatus.mp, characterStatus.tempStatusEffectIds)
   }
 
   // TODO: built it in
@@ -835,7 +873,7 @@ class ScriptInterface(
 
   }
 
-  def getMapName():String = {
+  def getMapName(): String = {
     return mapScreen.mapName.get
   }
 
