@@ -53,16 +53,19 @@ class Window(
   // Determines when states expire. In seconds.
   protected var stateAge = 0.0
 
+  val attachedPictures = collection.mutable.Set[PictureLike]()
+
   private lazy val rect = {
     layout.getRect(100, 100, manager.screenW, manager.screenH)
   }
 
   protected def getRectFromLines(
-      lines: Array[String], linesShown: Int, xPadding: Int) = {
-    val autoW = Window.maxWidth(lines, manager.fontbmp, xPadding)
+    lines: Array[String], linesShown: Int, xPadding: Int, columns: Int = 1) = {
+    val maxW = Window.maxWidth(lines, manager.fontbmp, xPadding)
     val displayedLines = if (linesShown > 0) linesShown else lines.length
-    val autoH = WindowText.DefaultLineHeight * displayedLines
-    layout.getRect(autoW, autoH, manager.screenW, manager.screenH)
+    val autoH = Utils.ceilIntDiv(
+        WindowText.DefaultLineHeight * displayedLines, columns)
+    layout.getRect(maxW * columns, autoH, manager.screenW, manager.screenH)
   }
 
   if (inputs != null)
@@ -90,14 +93,16 @@ class Window(
   def update(delta: Float) = {
     assertOnBoundThread()
     stateAge += delta
+
+    if (state == Window.Open)
+      attachedPictures.foreach(_.update(delta))
+
     // change state of "expired" opening or closing animations
     if (stateAge >= openCloseTime) {
       state match {
         case Window.Opening => changeState(Window.Open)
-        case Window.Open =>
-        case Window.Closing => {
-          changeState(Window.Closed)
-        }
+        case Window.Open    =>
+        case Window.Closing => changeState(Window.Closed)
         case _ => Unit
       }
     }
@@ -110,7 +115,7 @@ class Window(
       return
 
     state match {
-        case Window.Open => {
+      case Window.Open => {
         skin.draw(b, skinTexture, rect.left, rect.top, rect.w, rect.h)
       }
       case Window.Opening => {
@@ -127,10 +132,13 @@ class Window(
       }
       case _ => Unit
     }
+
+    if (state == Window.Open)
+      attachedPictures.foreach(_.render(manager, b))
   }
 
   def dispose() = {
-
+    attachedPictures.foreach(_.dispose())
   }
 
   def startClosing(): Unit = {
@@ -150,9 +158,24 @@ class Window(
   }
 
   class WindowScriptInterface {
+    def attachPicture(picture: PictureLike) = GdxUtils.syncRun {
+      attachedPictures.add(picture)
+    }
+
+    /**
+     * Sets a margin on the left where no text should be printed
+     */
+    def setLeftMargin(leftMargin: Float) = {}
+
     def getState() = {
       assertOnDifferentThread()
       state
+    }
+
+    def getRect() = {
+      GdxUtils.syncRun {
+        rect
+      }
     }
 
     def close() = {
@@ -220,9 +243,11 @@ class DamageTextWindow(
     if (age < 0)
       return
 
-    textImage.updatePosition(
-        initialX,
-        ((age / expiryTime * yDisplacement) + initialY).toFloat)
+    textImage.updateRect(Rect(
+      initialX,
+      ((age / expiryTime * yDisplacement) + initialY).toFloat,
+      20,
+      20))
 
     textImage.update(delta)
 
@@ -247,6 +272,11 @@ case class PrintingTextWindowOptions(
   stayOpenTime: Float = 0,
   showArrow: Boolean = false)
 
+object PrintingTextWindow {
+  val xpad = 24
+  val ypad = 24
+}
+
 class PrintingTextWindow(
   persistent: PersistentState,
   manager: WindowManager,
@@ -255,14 +285,15 @@ class PrintingTextWindow(
   layout: Layout,
   options: PrintingTextWindowOptions = PrintingTextWindowOptions())
   extends Window(manager, inputs, layout) {
-  val xpad = 24
-  val ypad = 24
+
+  import PrintingTextWindow._
 
   val rect = getRectFromLines(initialLines, options.linesPerBlock, xpad)
+  val textRect = rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad)
   val textImage = new PrintingWindowText(
     persistent,
     initialLines,
-    rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad),
+    textRect,
     skin,
     skinTexture,
     manager.fontbmp,
@@ -276,7 +307,7 @@ class PrintingTextWindow(
     if (key == OK) {
       if (textImage.allTextPrinted)
         startClosing()
-      else if(textImage.wholeBlockPrinted)
+      else if (textImage.wholeBlockPrinted)
         textImage.advanceBlock()
       else
         textImage.speedThrough()
@@ -288,7 +319,7 @@ class PrintingTextWindow(
     textImage.update(delta)
 
     if (options.stayOpenTime > 0.0 && state == Window.Open &&
-        stateAge >= options.stayOpenTime) {
+      stateAge >= options.stayOpenTime) {
       startClosing()
     }
   }
@@ -313,6 +344,13 @@ class PrintingTextWindow(
   }
 
   class PrintingTextWindowScriptInterface extends WindowScriptInterface {
+    override def setLeftMargin(leftMargin: Float) = syncRun {
+      val newTextRect = textRect.copy(
+          x = textRect.x + leftMargin / 2,
+          w = textRect.w - leftMargin)
+      textImage.updateRect(newTextRect)
+    }
+
     def updateLines(lines: Array[String]) = syncRun {
       PrintingTextWindow.this.updateLines(lines)
     }

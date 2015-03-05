@@ -44,10 +44,10 @@ class TextChoiceWindow(
   def displayedLines = options.displayedLines
   def linesPerChoice = options.linesPerChoice
 
-  val rect = getRectFromLines(lines, options.displayedLines, xpad)
-  val textWTotal = rect.w - 2*xpad
-  val textHTotal = rect.h - 2*ypad
-  val textColW = textWTotal / columns
+  val rect = getRectFromLines(lines, options.displayedLines, xpad, columns)
+  private var textWTotal = 0f
+  private var textHTotal = 0f
+  private var textColW = 0f
 
   def nChoices = lines.length / linesPerChoice
 
@@ -56,7 +56,13 @@ class TextChoiceWindow(
   var scrollTopLine = 0
   var textImages: Array[WindowText] = null
 
+  private var _leftMargin = 0f
+
   private def updateTextImages() = {
+    textWTotal = rect.w - 2*xpad - _leftMargin
+    textHTotal = rect.h - 2*ypad
+    textColW = textWTotal / columns
+
     val columnChoicesAry =
       Array.fill(columns)(new collection.mutable.ArrayBuffer[String]())
     for (i <- 0 until lines.length) {
@@ -213,6 +219,11 @@ class TextChoiceWindow(
   }
 
   class TextChoiceWindowScriptInterface extends ChoiceWindowScriptInterface {
+    override def setLeftMargin(leftMargin: Float) = syncRun {
+      _leftMargin = leftMargin
+      updateTextImages()
+    }
+
     def updateLines(lines: Array[String]) = syncRun {
       TextChoiceWindow.this.updateLines(lines)
     }

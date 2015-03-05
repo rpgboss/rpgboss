@@ -21,6 +21,6 @@ object Faceset extends MetaResource[Faceset, FacesetMetadata] {
   def defaultInstance(proj: Project, name: String) =
     Faceset(proj, name, FacesetMetadata())
 
-  def canonicalTileSize = 96
+  def renderSize = 128
 }
 

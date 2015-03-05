@@ -77,8 +77,8 @@ class WindowText(
   protected var _text: Array[String] =
     WindowText.processText(initialText, persistent)
 
-  def updatePosition(x: Float, y: Float) = {
-    rect = rect.copy(x = x, y = y)
+  def updateRect(rect: Rect) = {
+    this.rect = rect
   }
 
   def updateText(newText: Array[String]) =

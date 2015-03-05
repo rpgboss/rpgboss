@@ -634,5 +634,13 @@ case class ShowText(
     RawJs(l2)
   }
 
-  def sections = singleCall("game.showText", processedLines)
+  def sections = {
+    if (useCharacterFace)
+      singleCall("game.showTextWithCharacterFace", processedLines, characterId)
+    else if (customFace.isDefined)
+      singleCall("game.showTextWithFace", processedLines,
+          customFace.get.faceset, customFace.get.faceX, customFace.get.faceY)
+    else
+      singleCall("game.showText", processedLines)
+  }
 }

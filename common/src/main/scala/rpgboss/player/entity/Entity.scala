@@ -246,8 +246,8 @@ case class EntityMove(totalDx: Float, totalDy: Float)
       val evtsTouchedSet = evtsTouchedX.toSet ++ evtsTouchedY.toSet
       entity.touchEntities(evtsTouchedSet)
 
-      val evtBlockingX = evtsTouchedX.exists(_.height == EventHeight.SAME.id)
-      val evtBlockingY = evtsTouchedY.exists(_.height == EventHeight.SAME.id)
+      val evtBlockingX = evtsTouchedX.exists(_.height == entity.height)
+      val evtBlockingY = evtsTouchedY.exists(_.height == entity.height)
 
       // Move along x
       if (!evtBlockingX && desiredThisFrame.x != 0) {
