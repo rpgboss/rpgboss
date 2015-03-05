@@ -138,13 +138,13 @@ abstract class MusicSelectDialog(
 
       val currentMusic: Option[MusicPlayer] = Some(resource.newPlayer(assets))
 
-      row().grid().add(new Button(Action(needsTranslation("Play")) {
+      row().grid().add(new Button(Action(getMessage("Play")) {
         currentMusic.map(_.stop())
         currentMusic.map(_.setVolume(volumeSlider.value))
         currentMusic.map(_.play())
       }))
 
-      row().grid(new Label(needsTranslation("Volume:"))).add(volumeSlider)
+      row().grid(new Label(getMessageColon("Volume"))).add(volumeSlider)
       row().grid().add(gdxPanel)
     }
   }

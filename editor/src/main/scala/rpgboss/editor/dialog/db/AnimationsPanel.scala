@@ -71,11 +71,11 @@ class AnimationsPanel(
 
     val fFlashes = new TableEditor[AnimationFlash]() {
       val buffer = ArrayBuffer(model.flashes: _*)
-      def title = needsTranslation("Flashes")
+      def title = getMessage("Flashes")
       def modelArray = buffer
       def newInstance() = AnimationFlash()
       def colHeaders =
-        Array(getMessage("Start"), getMessage("End"), needsTranslation("Color"))
+        Array(getMessage("Start"), getMessage("End"), getMessage("Color"))
       def getRowStrings(item: AnimationFlash) = {
         Array(item.startTime.toString, item.endTime.toString,
             item.color.toString)

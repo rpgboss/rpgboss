@@ -46,7 +46,7 @@ class MapPropertiesDialog(
   val fTitle = textField(model.title, model.title = _)
 
   val interior = boolField(
-    needsTranslation("Interior"),
+    getMessage("Interior"),
     model.interior,
     model.interior = _)
 
