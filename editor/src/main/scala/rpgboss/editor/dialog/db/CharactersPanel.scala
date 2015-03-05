@@ -65,7 +65,7 @@ class CharactersPanel(
         .add(fDescription)
 
       row().grid(leftLabel(getMessageColon("Sprite"))).add(fSprite)
-      row().grid(leftLabel(needsTranslationColon("Face"))).add(fFace)
+      row().grid(leftLabel(getMessage("Face"))).add(fFace)
 
 
       row().grid(leftLabel(getMessageColon("Class"))).add(fClass)
