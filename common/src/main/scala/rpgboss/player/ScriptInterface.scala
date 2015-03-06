@@ -488,16 +488,22 @@ class ScriptInterface(
 
   def showTextWithFace(text: Array[String], faceset: String, faceX: Int,
     faceY: Int) = {
-    val window = newTextWindow(text)
-    window.attachFace(faceset, faceX, faceY, PrintingTextWindow.xpad,
-      PrintingTextWindow.ypad, 128)
+    val window = newTextWindow(
+      text,
+      options = PrintingTextWindowOptions(
+        showArrow = true,
+        leftMargin = 128 + PrintingTextWindow.xpad))
+    window.attachFace(faceset, faceX, faceY, 0, 0, 128)
     window.awaitClose()
   }
 
   def showTextWithCharacterFace(text: Array[String], characterId: Int): Int = {
-    val window = newTextWindow(text)
-    window.attachCharacterFace(
-      characterId, PrintingTextWindow.xpad, PrintingTextWindow.ypad, 128)
+    val window = newTextWindow(
+      text,
+      options = PrintingTextWindowOptions(
+        showArrow = true,
+        leftMargin = 128 + PrintingTextWindow.xpad))
+    window.attachCharacterFace(characterId, 0, 0, 128)
     window.awaitClose()
   }
 
@@ -517,21 +523,16 @@ class ScriptInterface(
         activeScreen.windowManager,
         activeScreen.inputs,
         question,
-        questionLayout)
+        questionLayout,
+        PrintingTextWindowOptions(leftMargin = 128 + PrintingTextWindow.xpad))
     }
 
     if (useCharacterFace) {
       questionWindow.scriptInterface.attachCharacterFace(
-        characterId,
-        PrintingTextWindow.xpad,
-        PrintingTextWindow.ypad,
-        128)
+        characterId, 0, 0, 128)
     } else if (useCustomFace) {
       questionWindow.scriptInterface.attachFace(
-        faceset, faceX, faceY,
-        PrintingTextWindow.xpad,
-        PrintingTextWindow.ypad,
-        128)
+        faceset, faceX, faceY, 0, 0, 128)
     }
 
     val fontbmp = activeScreen.windowManager.fontbmp

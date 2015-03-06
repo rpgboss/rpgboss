@@ -307,7 +307,8 @@ case class PrintingTextWindowOptions(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left,
   stayOpenTime: Float = 0,
-  showArrow: Boolean = false)
+  showArrow: Boolean = false,
+  leftMargin: Float = 0)
 
 object PrintingTextWindow {
   val xpad = 24
@@ -326,7 +327,10 @@ class PrintingTextWindow(
   import PrintingTextWindow._
 
   val rect = getRectFromLines(initialLines, options.linesPerBlock, xpad)
-  val textRect = rect.copy(w = rect.w - 2 * xpad, h = rect.h - 2 * ypad)
+  val textRect = rect.copy(
+      x = rect.x + options.leftMargin / 2,
+      w = rect.w - 2 * xpad - options.leftMargin,
+      h = rect.h - 2 * ypad)
   val textImage = new PrintingWindowText(
     persistent,
     initialLines,
@@ -382,9 +386,10 @@ class PrintingTextWindow(
 
   class PrintingTextWindowScriptInterface extends WindowScriptInterface {
     override def setLeftMargin(leftMargin: Float) = syncRun {
-      val newTextRect = textRect.copy(
-          x = textRect.x + leftMargin / 2,
-          w = textRect.w - leftMargin)
+      val newTextRect = rect.copy(
+        x = rect.x + options.leftMargin / 2,
+        w = rect.w - 2 * xpad - options.leftMargin,
+        h = rect.h - 2 * ypad)
       textImage.updateRect(newTextRect)
     }
 

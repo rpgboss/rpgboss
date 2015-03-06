@@ -56,7 +56,7 @@ class TextChoiceWindow(
   var scrollTopLine = 0
   var textImages: Array[WindowText] = null
 
-  private var _leftMargin = 0f
+  private var _leftMargin = options.leftMargin
 
   private def updateTextImages() = {
     textWTotal = rect.w - 2*xpad - _leftMargin
@@ -242,4 +242,5 @@ case class TextChoiceWindowOptions(
   // 1 means each choice occupies one line.
   linesPerChoice: Int = 1,
   allowCancel: Boolean = true,
-  lineHeight: Int = 32)
+  lineHeight: Int = 32,
+  leftMargin: Float = 0)

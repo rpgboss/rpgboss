@@ -122,7 +122,8 @@ function StatusMenu() {
     windowDetails : {
       allowCancel : true,
       linesPerChoice : 4,
-      lineHeight : 27
+      lineHeight : 27,
+      leftMargin: 96 + 24
     }
   }
 
