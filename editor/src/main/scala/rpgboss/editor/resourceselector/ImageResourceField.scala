@@ -122,8 +122,8 @@ class FaceField(
     faceset.getTileImage(f.faceX, f.faceY)
   }
 
-  def componentW = Faceset.renderSize
-  def componentH = Faceset.renderSize
+  def componentW = 128
+  def componentH = 128
 
   def getSelectDialog() =
     new FaceSelectDialog(owner, sm, getValue) {
