@@ -164,12 +164,12 @@ class Window(
      */
     def attachFace(
       faceset: String, faceX: Int, faceY: Int,
-      x: Int, y: Int) = {
+      x: Int, y: Int, faceSize: Int) = {
       val facesetResource = GdxUtils.syncRun {
         Faceset.readFromDisk(manager.project, faceset)
       }
 
-      setLeftMargin(Faceset.renderSize + PrintingTextWindow.xpad)
+      setLeftMargin(faceSize + PrintingTextWindow.xpad)
 
       GdxUtils.syncRun {
         val windowRect = rect
@@ -180,15 +180,15 @@ class Window(
           Layout(
               LayoutType.NorthWest.id,
               SizeType.Fixed.id,
-              Faceset.renderSize,
-              Faceset.renderSize,
-              windowRect.left + PrintingTextWindow.xpad,
-              windowRect.top + PrintingTextWindow.ypad)))
+              faceSize,
+              faceSize,
+              windowRect.left + PrintingTextWindow.xpad + x,
+              windowRect.top + PrintingTextWindow.ypad + y)))
       }
     }
 
     def attachCharacterFace(
-      characterId: Int, x: Int, y: Int): Unit = {
+      characterId: Int, x: Int, y: Int, faceSize: Int): Unit = {
       if (characterId < 0)
         return
 
@@ -200,7 +200,8 @@ class Window(
       val character = characters(characterId)
 
       character.face.map { facespec =>
-        attachFace(facespec.faceset, facespec.faceX, facespec.faceY, x, y)
+        attachFace(facespec.faceset, facespec.faceX, facespec.faceY, x, y,
+            faceSize)
       }
     }
 

@@ -70,7 +70,7 @@ class TextChoiceWindow(
     }
 
     val windowTexts = for (i <- 0 until columns) yield {
-      val newRectX = rect.left + xpad + textColW*i + textColW / 2
+      val newRectX = rect.left + xpad + textColW*i + textColW / 2 + _leftMargin
       val windowTextRect = Rect(newRectX, rect.y, textColW, textHTotal)
       new WindowText(
         persistent,

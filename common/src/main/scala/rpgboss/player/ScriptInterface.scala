@@ -490,14 +490,14 @@ class ScriptInterface(
     faceY: Int) = {
     val window = newTextWindow(text)
     window.attachFace(faceset, faceX, faceY, PrintingTextWindow.xpad,
-      PrintingTextWindow.ypad)
+      PrintingTextWindow.ypad, 128)
     window.awaitClose()
   }
 
   def showTextWithCharacterFace(text: Array[String], characterId: Int): Int = {
     val window = newTextWindow(text)
     window.attachCharacterFace(
-      characterId, PrintingTextWindow.xpad, PrintingTextWindow.ypad)
+      characterId, PrintingTextWindow.xpad, PrintingTextWindow.ypad, 128)
     window.awaitClose()
   }
 
@@ -524,12 +524,14 @@ class ScriptInterface(
       questionWindow.scriptInterface.attachCharacterFace(
         characterId,
         PrintingTextWindow.xpad,
-        PrintingTextWindow.ypad)
+        PrintingTextWindow.ypad,
+        128)
     } else if (useCustomFace) {
       questionWindow.scriptInterface.attachFace(
         faceset, faceX, faceY,
         PrintingTextWindow.xpad,
-        PrintingTextWindow.ypad)
+        PrintingTextWindow.ypad,
+        128)
     }
 
     val fontbmp = activeScreen.windowManager.fontbmp
