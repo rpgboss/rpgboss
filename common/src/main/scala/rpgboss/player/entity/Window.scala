@@ -158,8 +158,50 @@ class Window(
   }
 
   class WindowScriptInterface {
-    def attachPicture(picture: PictureLike) = GdxUtils.syncRun {
-      attachedPictures.add(picture)
+    /**
+     * @param   x   The left of the image
+     * @param   y   The top of the image
+     */
+    def attachFace(
+      faceset: String, faceX: Int, faceY: Int,
+      x: Int, y: Int) = {
+      val facesetResource = GdxUtils.syncRun {
+        Faceset.readFromDisk(manager.project, faceset)
+      }
+
+      setLeftMargin(Faceset.renderSize + PrintingTextWindow.xpad)
+
+      GdxUtils.syncRun {
+        val windowRect = rect
+        attachedPictures.add(new TiledTexturePicture(
+          manager.assets,
+          facesetResource,
+          faceX, faceY,
+          Layout(
+              LayoutType.NorthWest.id,
+              SizeType.Fixed.id,
+              Faceset.renderSize,
+              Faceset.renderSize,
+              windowRect.left + PrintingTextWindow.xpad,
+              windowRect.top + PrintingTextWindow.ypad)))
+      }
+    }
+
+    def attachCharacterFace(
+      characterId: Int, x: Int, y: Int): Unit = {
+      if (characterId < 0)
+        return
+
+      val characters = manager.project.data.enums.characters
+
+      if (characterId >= characters.length)
+        return
+
+      val character = characters(characterId)
+
+      character.face.map { facespec =>
+        attachFace(facespec.faceset, facespec.faceX, facespec.faceY, x, y)
+      }
     }
 
     /**
@@ -170,12 +212,6 @@ class Window(
     def getState() = {
       assertOnDifferentThread()
       state
-    }
-
-    def getRect() = {
-      GdxUtils.syncRun {
-        rect
-      }
     }
 
     def close() = {

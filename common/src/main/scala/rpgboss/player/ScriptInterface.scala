@@ -25,7 +25,7 @@ import org.mozilla.javascript.ScriptableObject
 import scalaj.http.Http
 
 case class EntityInfo(x: Float, y: Float, dir: Int,
-                      screenX: Float, screenY: Float)
+  screenX: Float, screenY: Float)
 
 object EntityInfo {
   def apply(e: Entity, mapScreen: MapScreen): EntityInfo = {
@@ -135,8 +135,8 @@ class ScriptInterface(
     Layout(layoutTypeId, sizeTypeId, wArg, hArg)
 
   def layoutWithOffset(layoutTypeId: Int, sizeTypeId: Int,
-                       wArg: Float, hArg: Float,
-                       xOffset: Float, yOffset: Float) =
+    wArg: Float, hArg: Float,
+    xOffset: Float, yOffset: Float) =
     Layout(layoutTypeId, sizeTypeId, wArg, hArg, xOffset, yOffset)
 
   /*
@@ -148,7 +148,7 @@ class ScriptInterface(
   }
 
   def teleport(mapName: String, x: Float, y: Float,
-               transitionId: Int = Transitions.FADE.id) = syncRun {
+    transitionId: Int = Transitions.FADE.id) = syncRun {
     val loc = MapLoc(mapName, x, y)
     val map = getMap(loc)
     val settedTransition = getInt("useTransition")
@@ -199,7 +199,7 @@ class ScriptInterface(
    * @param   fadeDuration    In seconds. 0f means instantaneous
    */
   def tintScreen(r: Float, g: Float, b: Float, a: Float,
-                 fadeDuration: Float) = syncRun {
+    fadeDuration: Float) = syncRun {
     def activeScreenTint = activeScreen.windowManager.tintColor
     // If no existing tint, set color immediately and tween alpha only.
     if (activeScreenTint.a == 0) {
@@ -211,7 +211,7 @@ class ScriptInterface(
   }
 
   def startBattle(encounterId: Int, overrideBattleBackground: String,
-                  overrideBattleMusic: String, overrideBattleMusicVolume: Float) = {
+    overrideBattleMusic: String, overrideBattleMusicVolume: Float) = {
     val mapMetadata = mapScreen.mapAndAssetsOption.get.map.metadata
     val battleBackground =
       if (overrideBattleBackground.isEmpty)
@@ -318,7 +318,7 @@ class ScriptInterface(
   }
 
   def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
-                      alpha: Float, fps: Int) = syncRun {
+    alpha: Float, fps: Int) = syncRun {
     activeScreen.windowManager.showPictureLoop(slot, folderPath, layout, alpha, fps)
   }
 
@@ -327,12 +327,12 @@ class ScriptInterface(
   }
 
   def playMusic(slot: Int, specOpt: Option[SoundSpec],
-                loop: Boolean, fadeDuration: Float) = syncRun {
+    loop: Boolean, fadeDuration: Float) = syncRun {
     activeScreen.playMusic(slot, specOpt, loop, fadeDuration)
   }
 
   def playMusic(slot: Int, music: String, volume: Float, loop: Boolean,
-                fadeDuration: Float) = syncRun {
+    fadeDuration: Float) = syncRun {
     activeScreen.playMusic(
       slot, Some(SoundSpec(music, volume)), loop, fadeDuration)
   }
@@ -343,13 +343,13 @@ class ScriptInterface(
   }
 
   def playAnimation(animationId: Int, screenX: Float, screenY: Float,
-                    speedScale: Float, sizeScale: Float) = syncRun {
+    speedScale: Float, sizeScale: Float) = syncRun {
     activeScreen.playAnimation(animationId,
       new FixedAnimationTarget(screenX, screenY), speedScale, sizeScale)
   }
 
   def playAnimationOnEvent(animationId: Int, eventId: Int, speedScale: Float,
-                           sizeScale: Float) = {
+    sizeScale: Float) = {
     mapScreen.allEntities.get(eventId) map { entity =>
       activeScreen.playAnimation(animationId,
         new MapEntityAnimationTarget(mapScreen, entity),
@@ -358,7 +358,7 @@ class ScriptInterface(
   }
 
   def playAnimationOnPlayer(animationId: Int, speedScale: Float,
-                            sizeScale: Float) = {
+    sizeScale: Float) = {
     activeScreen.playAnimation(animationId,
       new MapEntityAnimationTarget(mapScreen, mapScreen.playerEntity),
       speedScale, sizeScale)
@@ -442,7 +442,7 @@ class ScriptInterface(
    * from Scala.
    */
   def getSpatialChoice(choices: Array[Set[Rect]],
-                       defaultChoice: Int): Int = {
+    defaultChoice: Int): Int = {
     assert(!choices.isEmpty)
 
     val window = syncRun {
@@ -460,7 +460,7 @@ class ScriptInterface(
   }
 
   def newTextWindow(text: Array[String], layout: Layout,
-                    options: NativeObject): PrintingTextWindow#PrintingTextWindowScriptInterface = {
+    options: NativeObject): PrintingTextWindow#PrintingTextWindowScriptInterface = {
     newTextWindow(text, layout,
       JsonUtils.nativeObjectToCaseClass[PrintingTextWindowOptions](options))
   }
@@ -487,49 +487,28 @@ class ScriptInterface(
   }
 
   def showTextWithFace(text: Array[String], faceset: String, faceX: Int,
-                       faceY: Int) = {
+    faceY: Int) = {
     val window = newTextWindow(text)
-
-    val facesetResource = syncRun { Faceset.readFromDisk(project, faceset) }
-
-    window.setLeftMargin(Faceset.renderSize + PrintingTextWindow.xpad)
-
-    val windowRect = window.getRect()
-    window.attachPicture(new TiledTexturePicture(
-        activeScreen.assets,
-        facesetResource,
-        faceX, faceY,
-        Layout(
-            LayoutType.NorthWest.id,
-            SizeType.Fixed.id,
-            Faceset.renderSize,
-            Faceset.renderSize,
-            windowRect.left + PrintingTextWindow.xpad,
-            windowRect.top + PrintingTextWindow.ypad)))
-
+    window.attachFace(faceset, faceX, faceY, PrintingTextWindow.xpad,
+      PrintingTextWindow.ypad)
     window.awaitClose()
   }
 
   def showTextWithCharacterFace(text: Array[String], characterId: Int): Int = {
-    if (characterId < 0)
-      return showText(text)
-
-    val characters = project.data.enums.characters
-
-    if (characterId >= characters.length)
-      return showText(text)
-
-    val character = characters(characterId)
-
-    character.face.map { facespec =>
-      showTextWithFace(text, facespec.faceset, facespec.faceX, facespec.faceY)
-    } getOrElse {
-      showText(text)
-    }
+    val window = newTextWindow(text)
+    window.attachCharacterFace(
+      characterId, PrintingTextWindow.xpad, PrintingTextWindow.ypad)
+    window.awaitClose()
   }
 
-  def getChoice(question: Array[String], choices: Array[String],
-                allowCancel: Boolean) = {
+  def getChoiceWithFace(question: Array[String], choices: Array[String],
+    allowCancel: Boolean,
+    useCustomFace: Boolean = false,
+    faceset: String = "",
+    faceX: Int = 0,
+    faceY: Int = 0,
+    useCharacterFace: Boolean = false,
+    characterId: Int = 0) = {
     val questionLayout =
       layout(SOUTH, FIXED, 640, 180)
     val questionWindow = syncRun {
@@ -539,6 +518,18 @@ class ScriptInterface(
         activeScreen.inputs,
         question,
         questionLayout)
+    }
+
+    if (useCharacterFace) {
+      questionWindow.scriptInterface.attachCharacterFace(
+        characterId,
+        PrintingTextWindow.xpad,
+        PrintingTextWindow.ypad)
+    } else if (useCustomFace) {
+      questionWindow.scriptInterface.attachFace(
+        faceset, faceX, faceY,
+        PrintingTextWindow.xpad,
+        PrintingTextWindow.ypad)
     }
 
     val fontbmp = activeScreen.windowManager.fontbmp
@@ -564,6 +555,10 @@ class ScriptInterface(
 
     choice
   }
+
+  def getChoice(
+    question: Array[String], choices: Array[String], allowCancel: Boolean) =
+    getChoiceWithFace(question, choices, allowCancel)
 
   def setWindowskin(windowskinPath: String) = syncRun {
     game.setWindowskin(windowskinPath)
@@ -592,8 +587,8 @@ class ScriptInterface(
   }
 
   def moveEvent(id: Int, dx: Float, dy: Float,
-                affixDirection: Boolean = false,
-                async: Boolean = false) = {
+    affixDirection: Boolean = false,
+    async: Boolean = false) = {
     val move = syncRun {
       mapScreen.moveEvent(id, dx, dy, affixDirection)
     }
@@ -602,8 +597,8 @@ class ScriptInterface(
   }
 
   def movePlayer(dx: Float, dy: Float,
-                 affixDirection: Boolean = false,
-                 async: Boolean = false) = {
+    affixDirection: Boolean = false,
+    async: Boolean = false) = {
     val move = syncRun {
       mapScreen.movePlayer(dx, dy, affixDirection)
     }
@@ -634,7 +629,7 @@ class ScriptInterface(
   }
 
   def openStore(itemIdsSold: Array[Int], buyPriceMultiplier: Float,
-                sellPriceMultiplier: Float) = {
+    sellPriceMultiplier: Float) = {
     assert(activeScreen == game.mapScreen)
     val finishable = syncRun {
       val statement = EventJavascript.jsStatement(
@@ -686,7 +681,7 @@ class ScriptInterface(
    * @param   mpPercentage    Between 0.0f and 1.0f.
    */
   def healCharacter(characterId: Int, hpPercentage: Float,
-                    mpPercentage: Float, removeStatusEffects: Boolean = false) = syncRun {
+    mpPercentage: Float, removeStatusEffects: Boolean = false) = syncRun {
     val characterStatus = BattleStatus.fromCharacter(
       project.data,
       persistent.getPartyParameters(project.data.enums.characters),
@@ -708,7 +703,7 @@ class ScriptInterface(
   }
 
   def healParty(hpPercentage: Float, mpPercentage: Float,
-                removeStatusEffects: Boolean = false) = syncRun {
+    removeStatusEffects: Boolean = false) = syncRun {
     for (characterId <- persistent.getIntArray(PARTY)) {
       healCharacter(characterId, hpPercentage, mpPercentage,
         removeStatusEffects)
@@ -716,14 +711,14 @@ class ScriptInterface(
   }
 
   def damageCharacter(characterId: Int, hpPercentage: Float,
-                      mpPercentage: Float) =
+    mpPercentage: Float) =
     healCharacter(characterId, -hpPercentage, -mpPercentage)
 
   def damageParty(hpPercentage: Float, mpPercentage: Float) =
     healParty(-hpPercentage, -mpPercentage)
 
   def getBattleStats(characterId: Int, proposedSlotId: Int,
-                     proposedItemId: Int) = {
+    proposedItemId: Int) = {
     val partyParams = syncRun {
       persistent.getPartyParameters(project.data.enums.characters)
     }
