@@ -29,6 +29,8 @@ import java.awt.Cursor
 
 import rpgboss.editor.dialog.SettingsDialog
 
+import rpgboss.editor.util.PackageManager
+
 class ConnectionData(
 	var action:String = "",
 	var value:String = "",
@@ -110,9 +112,10 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 					println("no asset server?")
 			}
 		}
-
+		var fullHost = host
 		if(host=="") {
 			host = "assets.rpgboss.com"
+			fullHost = "http://assets.rpgboss.com"
 		} else {
 			host = host.replace("http://","")
 			host = host.replace("https://","")
@@ -176,7 +179,9 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 						              	}
 
 						              	if(data.action=="startDownload") {
-						              		println("start download" + data.value)
+						              		println(data.value3)
+						              		PackageManager.install(data.value3, data.value, data.value2, projPath, fullHost)
+						              		session.getBasicRemote.sendText("command;editor;{\"action\":\"finishedDownload\"}")
 						              		mainP.visible = true
 						              	}
 
