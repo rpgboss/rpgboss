@@ -73,7 +73,6 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 
 	implicit lazy val formats = DefaultFormats
 
-	var testConnection = Http("http://google.de").timeout(connTimeoutMs = 1000, readTimeoutMs = 1500).asString
 	var noConnection = false
 	var unreachable = false
 

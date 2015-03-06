@@ -102,8 +102,7 @@ function StatusMenu() {
         var characterId = party[i];
         var stats = game.getBattleStats(characterId, -1, -1);
         
-        lines.push(rightPad(characterNames[characterId], 16)
-            + leftPad(characters[characterId].subtitle(), 16));
+        lines.push(characterNames[characterId]);
         lines.push(
             " LVL " + leftPad(characterLevels[characterId].toString(), 3));
         lines.push(
@@ -123,11 +122,19 @@ function StatusMenu() {
     windowDetails : {
       allowCancel : true,
       linesPerChoice : 4,
-      lineHeight : 27
+      lineHeight : 27,
+      leftMargin: 96 + 24
     }
   }
 
   var menu = new Menu(details);
+  
+  // Attach party faces.
+  var party = game.getIntArray(game.PARTY());
+  for (var i = 0; i < party.length; ++i) {
+    menu.window.attachCharacterFace(party[i], 0, (96 + 12) * i, 96);
+  }
+  
   menu.loopCharacterChoice = function(onCharacterChoice) {
     menu.loopChoice(function(choiceIdx) {
       return onCharacterChoice(menu.state.party[choiceIdx]);

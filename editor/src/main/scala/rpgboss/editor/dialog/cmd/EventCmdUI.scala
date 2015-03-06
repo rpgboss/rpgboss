@@ -226,11 +226,11 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
         minElems = 2, maxElems = 4)),
       EventField("", boolField(getMessage("Allow_Cancel"), model.allowCancel,
         model.allowCancel = _)),
-      EventField(needsTranslation("Face"), fFace),
-      EventField("", boolField(needsTranslation("Use Character Face"),
+      EventField(getMessage("Face"), fFace),
+      EventField("", boolField(getMessage("Use_Character_Face"),
         model.useCharacterFace, model.useCharacterFace = _,
         Some(setEnabledFields))),
-      EventField(needsTranslation("Character"), fCharacter))
+      EventField(getMessage("Character"), fCharacter))
   }
 }
 

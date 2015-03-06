@@ -142,10 +142,25 @@ case class GetChoice(
       CommandList(code, 2),
       PlainLines(Array("    break;")))
 
-    buf += PlainLines(Array(
-      "switch (game.getChoice(%s, %s, %b)) {".format(
-        EventJavascript.toJs(question),
-        EventJavascript.toJs(choices), allowCancel)))
+    if (customFace.isDefined || useCharacterFace) {
+      buf += PlainLines(Array(
+        "switch (game.getChoiceWithFace(%s, %s, %s, %s, %s, %s, %s, %s, %s)) {".format(
+          EventJavascript.toJs(question),
+          EventJavascript.toJs(choices),
+          EventJavascript.toJs(allowCancel),
+          EventJavascript.toJs(customFace.isDefined),
+          EventJavascript.toJs(customFace.map(_.faceset).getOrElse("")),
+          EventJavascript.toJs(customFace.map(_.faceX).getOrElse(0)),
+          EventJavascript.toJs(customFace.map(_.faceY).getOrElse(0)),
+          EventJavascript.toJs(useCharacterFace),
+          EventJavascript.toJs(characterId))))
+    } else {
+      buf += PlainLines(Array(
+        "switch (game.getChoice(%s, %s, %s)) {".format(
+          EventJavascript.toJs(question),
+          EventJavascript.toJs(choices),
+          EventJavascript.toJs(allowCancel))))
+    }
 
     for (i <- 0 until choices.size) {
       caseSections("case %d".format(i), innerCmds(i)).foreach(buf += _)
