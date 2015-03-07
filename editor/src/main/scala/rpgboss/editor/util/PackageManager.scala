@@ -19,6 +19,12 @@ import java.net.URL
 import net.lingala.zip4j.exception.ZipException
 import net.lingala.zip4j.core.ZipFile
 
+import rpgboss.editor._
+
+import scala.collection.JavaConversions._
+
+import org.apache.commons.io.FileUtils
+
 object PackageType {
   val ANIMATION = "1"
   val BATTLE_BACKGROUND = "2"
@@ -48,24 +54,100 @@ object PackageManager {
 	  }
 	}
 
-	def unZipPackage(folder:String, source: String,projectPath:String) = {
+	def packageInfo(folder:String, projectVersion: String,projectPath:String,packageId:String):List[String] = {
+		var alreadyExisting = "false"
+		var canBeUpdated = "false"
+		if(new File(projectPath+"/"+folder+"/as/"+packageId).exists) {
+			alreadyExisting = "true"
+			var version = scala.io.Source.fromFile(projectPath+"/"+folder+"/as/"+packageId+"/version").mkString
+			if(version.toDouble < projectVersion.toDouble) {
+				canBeUpdated = "true"
+			}
+		}
+		return List(alreadyExisting,canBeUpdated)
+	}
+
+	def unZipPackage(folder:String, source: String,projectPath:String,packageId:String) = {
 		var file = new File(projectPath+"/"+folder+"/as")
 		file.mkdirs()
+
+		if(new File(projectPath+"/"+folder+"/as/"+packageId).exists) {
+			try
+			{
+				FileUtils.deleteDirectory(new File(projectPath+"/"+folder+"/as/"+packageId));
+			}
+			catch {
+				case ioe: IOException =>
+				case e: Exception =>
+			}
+		}
+
+		VisibleConnection.currentSession.getBasicRemote.sendText("command;editor;{\"action\":\"importStatus\",\"value\":\"Import\"}")
+
 		var zipFile = new ZipFile(source);
 		zipFile.extractAll(projectPath+"/"+folder+"/as")
+
+		for(file <- (new File(projectPath+"/"+folder+"/as/"+packageId)).listFiles if file.getName endsWith ".zip"){
+			var zipFile = new ZipFile(file);
+		  zipFile.extractAll(projectPath+"/"+folder+"/as/"+packageId)
+		  if(file.exists) {
+				file.delete()
+			}
+		}
 
 		if(new File(source).exists) {
 			new File(source).delete()
 		}
 	}
-  
-  def update(packagetype:String, packageId:String, packageName:String, projectPath:String, host:String) = {
 
-  }
+	def getPackageInfo(packagetype:String, packageId:String, packageVersion:String, projectPath:String, host:String):List[String] = {
+
+		var result:List[String] = List("false","false")
+
+  	packagetype match {
+  		case PackageType.ANIMATION =>
+  			result = packageInfo("animation", packageVersion, projectPath, packageId)
+
+  		case PackageType.BATTLE_BACKGROUND =>
+  			result =packageInfo("battlerbg", packageVersion, projectPath, packageId)
+
+  		case PackageType.BATTLER =>
+  			result =packageInfo("battler", packageVersion, projectPath, packageId)
+
+  		case PackageType.MUSIC =>
+  			result =packageInfo("music", packageVersion, projectPath, packageId)
+
+  		case PackageType.PICTURE =>
+  			result =packageInfo("picture", packageVersion, projectPath, packageId)
+
+  		case PackageType.SCRIPT =>
+  			result =packageInfo("script", packageVersion, projectPath, packageId)
+
+  		case PackageType.SOUND =>
+  			result =packageInfo("sound", packageVersion, projectPath, packageId)
+
+  		case PackageType.SPRITESET =>
+  			result =packageInfo("spriteset", packageVersion, projectPath, packageId)
+
+  		case PackageType.TILESET =>
+  			result =packageInfo("tileset", packageVersion, projectPath, packageId)
+
+  		case PackageType.WINDOWSKIN =>
+  			result =packageInfo("picture", packageVersion, projectPath, packageId)
+
+  		case PackageType.PROJECT =>
+
+  		case PackageType.TITLESCREEN =>
+  			result =packageInfo("picture", packageVersion, projectPath, packageId)
+  	}
+
+  	return result
+
+	}
 
   def install(packagetype:String, packageId:String, packageName:String, projectPath:String, host:String) = {
 
-  	println("Install package " + packageName)
+  	VisibleConnection.currentSession.getBasicRemote.sendText("command;editor;{\"action\":\"importStatus\",\"value\":\"Downloading\"}")
 
   	this.downloadPackage(packageId, projectPath, host)
 
@@ -75,57 +157,59 @@ object PackageManager {
   		case PackageType.ANIMATION =>
   		  var file = new File(projectPath+"/animation/as")
   			file.mkdirs()
-  			unZipPackage("animation", source, projectPath)
+  			unZipPackage("animation", source, projectPath, packageId)
 
   		case PackageType.BATTLE_BACKGROUND =>
   		  var file = new File(projectPath+"/battlerbg/as")
   			file.mkdirs()
-  			unZipPackage("battlerbg", source, projectPath)
+  			unZipPackage("battlerbg", source, projectPath, packageId)
 
   		case PackageType.BATTLER =>
   		  var file = new File(projectPath+"/battler/as")
   			file.mkdirs()
-  			unZipPackage("battler", source, projectPath)
+  			unZipPackage("battler", source, projectPath, packageId)
 
   		case PackageType.MUSIC =>
   		  var file = new File(projectPath+"/music/as")
   			file.mkdirs()
-  			unZipPackage("music", source, projectPath)
+  			unZipPackage("music", source, projectPath, packageId)
 
   		case PackageType.PICTURE =>
   	  	var file = new File(projectPath+"/picture/as")
   			file.mkdirs()
-  			unZipPackage("picture", source, projectPath)
+  			unZipPackage("picture", source, projectPath, packageId)
 
   		case PackageType.SCRIPT =>
   			var file = new File(projectPath+"/script/as")
   			file.mkdirs()
-  			unZipPackage("script", source, projectPath)
+  			unZipPackage("script", source, projectPath, packageId)
 
   		case PackageType.SOUND =>
   			var file = new File(projectPath+"/sound/as")
   			file.mkdirs()
-  			unZipPackage("sound", source, projectPath)
+  			unZipPackage("sound", source, projectPath, packageId)
 
   		case PackageType.SPRITESET =>
   			var file = new File(projectPath+"/spriteset/as")
   			file.mkdirs()
-  			unZipPackage("spriteset", source, projectPath)
+  			unZipPackage("spriteset", source, projectPath, packageId)
 
   		case PackageType.TILESET =>
   		  var file = new File(projectPath+"/tileset/as")
   			file.mkdirs()
-  			unZipPackage("tileset", source, projectPath)
+  			unZipPackage("tileset", source, projectPath, packageId)
 
   		case PackageType.WINDOWSKIN =>
   			var file = new File(projectPath+"/windowskin/as")
   			file.mkdirs()
-  			unZipPackage("picture", source, projectPath)
+  			unZipPackage("picture", source, projectPath, packageId)
 
   		case PackageType.PROJECT =>
 
   		case PackageType.TITLESCREEN =>
-  			unZipPackage("picture", source, projectPath)
+  			var file = new File(projectPath+"/picture/as")
+  			file.mkdirs()
+  			unZipPackage("picture", source, projectPath, packageId)
 
   			
 

@@ -172,10 +172,14 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 
 
 						              	if(data.action=="getProjectData") {
-						              		session.getBasicRemote.sendText("command;editor;{\"action\":\"getProjectData\",\"value\":\""+projPath+"\"}")
+						              		
 						              		var id = data.value
-						              		var name = data.value2
-						              		// TODO: check if package is already in the project
+						              		var ptype = data.value2
+						              		var version = data.value3
+
+						              		var info = PackageManager.getPackageInfo(ptype, id, version, projPath, fullHost)
+						              		
+						              		session.getBasicRemote.sendText("command;editor;{\"action\":\"getProjectData\",\"value\":\""+projPath+"\",\"value2\":\""+info(0)+"\",\"value3\":\""+info(1)+"\"}")
 						              	}
 
 						              	if(data.action=="startDownload") {
