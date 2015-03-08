@@ -31,7 +31,13 @@ object Internationalized extends LazyLogging {
   def getMessageColon(key: String) = getMessage(key) + ":"
 
   def needsTranslation(key: String) = {
-    logger.warn("Accessed key \"%s\" needs translation.".format(key))
+    if (messages.containsKey(key)) {
+      logger.error("Key \"%s\" marked as 'needsTranslation' ".format(key) +
+                   "in Scala source, but actually already exists.")
+    } else {
+      logger.warn("Accessed key \"%s\" needs translation.".format(key))
+    }
+
     key
   }
 

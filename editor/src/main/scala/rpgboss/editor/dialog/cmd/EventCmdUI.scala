@@ -602,11 +602,11 @@ object ShowTextUI extends EventCmdUI[ShowText] {
     Seq(
       EventField(getMessage("Text"),
         textAreaField(model.lines, model.lines = _)),
-      EventField(needsTranslation("Face"), fFace),
-      EventField("", boolField(needsTranslation("Use Character Face"),
+      EventField(getMessage("Face"), fFace),
+      EventField("", boolField(getMessage("Use_Character_Face"),
         model.useCharacterFace, model.useCharacterFace = _,
         Some(setEnabledFields))),
-      EventField(needsTranslation("Character"), fCharacter))
+      EventField(getMessage("Character"), fCharacter))
   }
 }
 

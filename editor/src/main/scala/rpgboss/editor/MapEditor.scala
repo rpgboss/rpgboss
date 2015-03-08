@@ -341,8 +341,7 @@ class MapEditor(
     }
   }
 
-  val actionDeleteEvent = Action(getMessage("Delete_Event")) {
-    println("delete event")
+  val actionDeleteEvent = Action(getMessage("Delete")) {
     deleteEvent()
   }
 
@@ -360,15 +359,15 @@ class MapEditor(
 
   peer
     .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke("BACK_SPACE"), getMessage("Delete_Event"))
+    .put(KeyStroke.getKeyStroke("BACK_SPACE"), getMessage("Delete"))
   peer
-    .getActionMap.put(getMessage("Delete_Event"), actionDeleteEvent.peer)
+    .getActionMap.put(getMessage("Delete"), actionDeleteEvent.peer)
 
   peer
     .getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke("DELETE"), getMessage("Delete_Event"))
+    .put(KeyStroke.getKeyStroke("DELETE"), getMessage("Delete"))
   peer
-    .getActionMap.put(getMessage("Delete_Event"), actionDeleteEvent.peer)
+    .getActionMap.put(getMessage("Delete"), actionDeleteEvent.peer)
 
   def showEventPopupMenu(px: Int, py: Int, xTile: Float, yTile: Float) = {
     viewStateOpt map { vs =>
