@@ -50,11 +50,11 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
     
   function updateStoreRightPane(itemId) {
     lines = [];
-    lines.push("Gold: ");
+    lines.push(getTranslation(30)+" ");
     lines.push("  "  + game.getInt(game.GOLD()));
     
     if (itemId >= 0) {
-      lines.push("Owned: ");
+      lines.push(getTranslation(31)+" ");
       lines.push("  " + game.countItems(itemId));
     }
     storeRightPane.updateLines(lines)
@@ -64,7 +64,7 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
   var storeTopWin = new Menu({
     getState : function() {
       return {
-        lines : ["Buy", "Sell"]
+        lines : [getTranslation(32), getTranslation(33)]
       };
     },
     layout : game.layout(game.NORTHEAST(), game.SCREEN(), 0.5, 0.13),

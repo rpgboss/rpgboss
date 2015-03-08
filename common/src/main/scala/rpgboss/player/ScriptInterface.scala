@@ -883,6 +883,10 @@ class ScriptInterface(
     mapScreen.scriptHooks.addScriptHook(jsFunction)
   }
 
+  def getTranslation(key:Int):String = {
+    return Some(project.data.enums.translationTypes(key)).getOrElse("Not found")
+  }
+
   /**
    * Should be used for testing only
    */
