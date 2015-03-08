@@ -78,6 +78,7 @@ object Settings {
       "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
       "com.github.benhutchison" %% "scalaswingcontrib" % "1.5", 
       "net.java.dev.designgridlayout" % "designgridlayout" % "1.8",
+      "net.lingala.zip4j" % "zip4j" % "1.3.2",
       "com.fifesoft" % "rsyntaxtextarea" % "2.5.3"
     ),
     unmanagedJars in Compile <<= baseDirectory map { base => 
