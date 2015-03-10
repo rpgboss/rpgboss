@@ -94,6 +94,7 @@ object EventCmdUI {
     PlayMusicUI,
     PlaySoundUI,
     RunJsUI,
+    SetEventSpeedUI,
     SetEventStateUI,
     SetGlobalIntUI,
     SetTimerUI,
@@ -522,6 +523,17 @@ object RunJsUI extends EventCmdUI[RunJs] {
       val scrollPane = new RTextScrollPane(textArea)
       Component.wrap(scrollPane)
     }))
+}
+
+object SetEventSpeedUI extends EventCmdUI[SetEventSpeed] {
+  override def category = Movement
+  override def title = needsTranslation("Set_Event_Speed")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+    mapName: Option[String], model: SetEventSpeed) = Seq(
+    EventField("", new EntitySelectPanel(owner, sm, mapName,
+      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
+    EventField(needsTranslation("Speed"),
+      new FloatSpinner(0.1f, 100f, 1f, model.speed, model.speed = _)))
 }
 
 object SetEventStateUI extends EventCmdUI[SetEventState] {

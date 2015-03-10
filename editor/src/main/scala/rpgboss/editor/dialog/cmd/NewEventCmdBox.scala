@@ -64,14 +64,15 @@ class NewEventCmdBox(
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
-      val categoriesPerColumn = 4
+      val categoriesPerColumn = 2
       val nCategories = EventCmdCategory.values.size
       val columns = (nCategories / categoriesPerColumn) + 1
 
       for (columnId <- 0 until columns) {
         contents += new DesignGridPanel {
           val startI = columnId * categoriesPerColumn
-          for (i <- startI until startI + 4; if i < nCategories) {
+          for (i <- startI until startI + categoriesPerColumn;
+               if i < nCategories) {
             val category = EventCmdCategory(i)
             val cmdUisInCategory =
               EventCmdUI.eventCmdUis.filter(_.category == category)

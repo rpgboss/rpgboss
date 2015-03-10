@@ -15,13 +15,10 @@ import rpgboss.save.SaveFile
 import rpgboss.save.SaveInfo
 import rpgboss.model.event.EventJavascript
 import com.badlogic.gdx.graphics.Color
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.Color
-
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
-
 import scalaj.http.Http
 
 case class EntityInfo(x: Float, y: Float, dir: Int,
@@ -607,6 +604,14 @@ class ScriptInterface(
     }
     if (move != null && !async)
       move.awaitFinish()
+  }
+
+  def setEventSpeed(id: Int, speed: Float) = syncRun {
+    mapScreen.allEntities.get(id).map(_.speed = speed)
+  }
+
+  def setPlayerSpeed(speed: Float) = syncRun {
+    mapScreen.allEntities.get(EntitySpec.playerEntityId).map(_.speed = speed)
   }
 
   def getEventState(mapName: String, eventId: Int) = syncRun {

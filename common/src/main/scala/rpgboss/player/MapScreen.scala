@@ -35,7 +35,8 @@ class MapScreen(val game: RpgGame)
   var mapAndAssetsOption: Option[MapAndAssets] = None
   def mapName = mapAndAssetsOption.map(_.map.name)
 
-  def playerEntity = allEntities(-1).asInstanceOf[PlayerEntity]
+  def playerEntity =
+    allEntities(EntitySpec.playerEntityId).asInstanceOf[PlayerEntity]
   def getPlayerEntityInfo() = EntityInfo(playerEntity, this)
 
   private def moveEntity(
@@ -125,7 +126,7 @@ class MapScreen(val game: RpgGame)
       project.data.enums.distinctChars ++ mapAndAssets.mapData.distinctChars
     windowManager.updateBitmapFont(distinctChars.mkString)
 
-    allEntities.update(-1, new PlayerEntity(game, this))
+    allEntities.update(EntitySpec.playerEntityId, new PlayerEntity(game, this))
     playerEntity.x = loc.x
     playerEntity.y = loc.y
     playerEntity.mapName = Some(loc.map)
