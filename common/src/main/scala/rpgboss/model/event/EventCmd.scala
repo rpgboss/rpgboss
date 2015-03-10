@@ -11,6 +11,7 @@ import scala.collection.mutable.ArrayBuffer
 import rpgboss.lib.Utils
 import rpgboss.lib.ArrayUtils
 import rpgboss.lib.Layout
+import rpgboss.player.entity.Entity
 
 trait EventCmd extends HasScriptConstants {
   def sections: Array[CodeSection]
@@ -78,6 +79,7 @@ object EventCmd {
     classOf[PlayMusic],
     classOf[PlaySound],
     classOf[RunJs],
+    classOf[SetEventSpeed],
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetTransition],
@@ -456,6 +458,21 @@ case class SetEventState(
     }
 
     singleCall("game.setEventState", mapName, eventId, state)
+  }
+}
+
+case class SetEventSpeed(
+  var entitySpec: EntitySpec = EntitySpec(),
+  var speed: Float = Entity.defaultEntitySpeed) extends EventCmd {
+  def sections = entitySpec match {
+    case EntitySpec(which, _, _) if which == WhichEntity.PLAYER.id =>
+      singleCall("game.setPlayerSpeed", speed)
+    case EntitySpec(which, _, _) if which == WhichEntity.THIS_EVENT.id =>
+      singleCall(
+        "game.setEventSpeed", RawJs("event.id()"), speed)
+    case EntitySpec(which, _, eventIdx) if which == WhichEntity.EVENT_ON_MAP.id =>
+      singleCall(
+        "game.setEventSpeed", entitySpec.eventId, speed)
   }
 }
 

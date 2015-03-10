@@ -90,6 +90,10 @@ case class EntitySpec(
   var mapName: String = "",
   var eventId: Int = -1)
 
+object EntitySpec {
+  def playerEntityId = -1
+}
+
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)
 
 case class RandomEncounter(var encounterId: Int = 0, var weight: Int = 10)

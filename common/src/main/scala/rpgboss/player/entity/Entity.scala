@@ -17,6 +17,10 @@ import scala.concurrent.duration.Duration
 import rpgboss.player._
 import com.badlogic.gdx.graphics.Color
 
+object Entity {
+  def defaultEntitySpeed = 3.0f
+}
+
 /**
  * Position is marked as such:
  * __TOP__
@@ -54,7 +58,7 @@ abstract class Entity(
   private val moveQueue = new MutateQueue(this)
   protected var movesEnqueued: Long = 0
 
-  var speed: Float = 3.0f
+  var speed: Float = Entity.defaultEntitySpeed
   private var isMovingVar = false
   private var movingSince: Long = 0
   private var msPerStep = 128
