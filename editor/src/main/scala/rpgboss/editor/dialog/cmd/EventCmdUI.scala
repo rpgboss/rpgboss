@@ -372,7 +372,7 @@ object MoveEventUI extends EventCmdUI[MoveEvent] {
       new FloatSpinner(-100, 100, 1f, model.dx, model.dx = _)),
     EventField(getMessage("Y_Movement"),
       new FloatSpinner(-100, 100, 1f, model.dy, model.dy = _)),
-    EventField("", boolField(getMessage("Affix_direction"),
+    EventField("", boolField(getMessage("Affix_Direction"),
       model.affixDirection, model.affixDirection = _)),
     EventField("", boolField(getMessage("Async"), model.async,
       model.async = _)))
@@ -439,7 +439,7 @@ object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
       EventField(getMessage("Y_Offset"), fYOffset),
       EventField(getMessage("Animation_Speed"),
         percentField(0.25f, 4.0f, model.speedScale, model.speedScale = _)),
-      EventField(needsTranslation("Size Scale"),
+      EventField(getMessage("Size_Scale"),
         percentField(0.25f, 4.0f, model.sizeScale, model.sizeScale = _)))
   }
 }
@@ -527,12 +527,12 @@ object RunJsUI extends EventCmdUI[RunJs] {
 
 object SetEventSpeedUI extends EventCmdUI[SetEventSpeed] {
   override def category = Movement
-  override def title = needsTranslation("Set_Event_Speed")
+  override def title = getMessage("Set_Event_Speed")
   override def getNormalFields(owner: Window, sm: StateMaster,
     mapName: Option[String], model: SetEventSpeed) = Seq(
     EventField("", new EntitySelectPanel(owner, sm, mapName,
       model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
-    EventField(needsTranslation("Speed"),
+    EventField(getMessage("Speed"),
       new FloatSpinner(0.1f, 100f, 1f, model.speed, model.speed = _)))
 }
 
@@ -624,7 +624,7 @@ object ShowTextUI extends EventCmdUI[ShowText] {
 
 object StartBattleUI extends EventCmdUI[StartBattle] {
   override def category = Battles
-  override def title = getMessage("StartBattle")
+  override def title = getMessage("Start_Battle")
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: StartBattle) = Seq(
     EventField(
@@ -723,10 +723,10 @@ object MoveCameraUI extends EventCmdUI[MoveCamera] {
 object SetTransitionUI extends EventCmdUI[SetTransition] {
 
   override def category = Programming
-  override def title = getMessage("SetTransition")
+  override def title = getMessage("Set_Transition")
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: SetTransition) = Seq(
-    EventField(getMessage("Transitiontype"), enumVerticalBox(
+    EventField(getMessage("Transition_Type"), enumVerticalBox(
       Transitions, model.transitionId,
       model.transitionId = _)))
 }
