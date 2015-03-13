@@ -1,6 +1,0 @@
-# use glob syntax.
-syntax: glob
-
-target/
-project/boot/
-lib/

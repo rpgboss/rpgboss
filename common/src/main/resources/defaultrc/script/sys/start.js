@@ -8,7 +8,10 @@ function newGame() {
 
 function showStartDialog() {
   while (true) {
-    var choiceWin = game.newChoiceWindow([ game.getTranslation(0), game.getTranslation(1), game.getTranslation(2) ],
+    var choiceWin = game.newChoiceWindow(
+        [ game.getMessage("New Game"), 
+          game.getMessage("Load Game"), 
+          game.getMessage("Quit") ],
         game.layout(game.CENTERED(), game.FIXED(), 200, 130), {
           justification : game.CENTER()
         });
