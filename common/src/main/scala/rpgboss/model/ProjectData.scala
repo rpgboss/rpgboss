@@ -42,7 +42,6 @@ case class ProjectDataEnums(
   var encounters: Array[Encounter] = Array(Encounter()),
   var eventClasses: Array[EventClass] = Array(EventClass()),
   var equipTypes: Array[String] = ProjectData.defaultEquipTypes,
-  var translationTypes: Array[String] = ProjectData.defaultTranslation,
   var items: Array[Item] = Array(Item()),
   var skills: Array[Skill] = Array(Skill()),
   var statusEffects: Array[StatusEffect] = Array(StatusEffect())) {
@@ -59,7 +58,6 @@ case class ProjectDataEnums(
     set.addAll(items.map(_.desc))
     set.addAll(skills)
     set.addAll(statusEffects)
-    set.addAll(translationTypes)
 
     for (eventClass <- eventClasses; state <- eventClass.states) {
       set ++= state.distinctChars
@@ -93,7 +91,6 @@ case class ProjectData(
     writeModel("items", enums.items)
     writeModel("skills", enums.skills)
     writeModel("statusEffects", enums.statusEffects)
-    writeModel("translationTypes", enums.translationTypes)
   }
 
   def writeRootWithoutEnums(dir: File) = {
@@ -138,7 +135,6 @@ object ProjectData {
       readModel[Array[Item]]("items", enums.items = _)
       readModel[Array[Skill]]("skills", enums.skills = _)
       readModel[Array[StatusEffect]]("statusEffects", enums.statusEffects = _)
-      readModel[Array[String]]("translationTypes", enums.translationTypes = _)
     }
 
     modelOpt
@@ -160,51 +156,6 @@ object ProjectData {
     "Death",
     "Order",
     "Chaos")
-
-  def defaultTranslation = Array(
-    // start menu
-    "Start Game",
-    "Load Game",
-    "Quit",
-    // ingame menu
-    "Item", 
-    "Skills", 
-    "Equip", 
-    "Status", 
-    "Save", 
-    "Quit Game",
-    // game over menu
-    "Back to titlescreen",
-    "Quit game",
-    // save menu
-    "Save",
-    "Empty",
-    // item menu
-    "Use",
-    "Organize",
-    // equip menu
-    "Max HP:",
-    "Max MP:",
-    "ATK:",
-    "SPD:",
-    "MAG:",
-    "ARM:",
-    "MRE:",
-    "Weapon", 
-    "Offhand", 
-    "Armor", 
-    "Accessory", 
-    "Accessory",
-    // status menu
-    "LVL",
-    "HP",
-    "MP",
-    // store menu
-    "Gold:",
-    "Owned:",
-    "Buy",
-    "Sell"
-  )
 
   def defaultEquipTypes = Array(
     "Weapon",
@@ -255,5 +206,7 @@ object ProjectData {
     "Gold:" -> "Gold:",
     "Owned:" -> "Owned:",
     "Buy" -> "Buy",
-    "Sell" -> "Sell")
+    "Sell" -> "Sell",
+    "Store" -> "Store"
+    )
 }

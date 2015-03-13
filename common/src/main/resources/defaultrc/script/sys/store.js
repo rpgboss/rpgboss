@@ -39,7 +39,7 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
   var items = project.data().enums().items();
 
   var storeHeaderWin = game.newTextWindow(
-    ["Store"],
+    [game.getMessage("Store")],
     game.layout(game.NORTHWEST(), game.SCREEN(), 0.5, 0.13),
     { justification : game.CENTER() });
   
@@ -50,11 +50,11 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
     
   function updateStoreRightPane(itemId) {
     lines = [];
-    lines.push(game.getTranslation(30)+" ");
+    lines.push(game.getMessage("Gold:")+" ");
     lines.push("  "  + game.getInt(game.GOLD()));
     
     if (itemId >= 0) {
-      lines.push(game.getTranslation(31)+" ");
+      lines.push(game.getMessage("Owned:")+" ");
       lines.push("  " + game.countItems(itemId));
     }
     storeRightPane.updateLines(lines)
@@ -64,7 +64,7 @@ function openStore(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier) {
   var storeTopWin = new Menu({
     getState : function() {
       return {
-        lines : [game.getTranslation(32), game.getTranslation(33)]
+        lines : [game.getMessage("Buy"), game.getMessage("Sell")]
       };
     },
     layout : game.layout(game.NORTHEAST(), game.SCREEN(), 0.5, 0.13),
