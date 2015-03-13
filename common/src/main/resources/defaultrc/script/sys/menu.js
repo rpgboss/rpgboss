@@ -104,12 +104,12 @@ function StatusMenu() {
         
         lines.push(characterNames[characterId]);
         lines.push(
-            " LVL " + leftPad(characterLevels[characterId].toString(), 3));
+            " "+game.getMessage("LVL")+" " + leftPad(characterLevels[characterId].toString(), 3));
         lines.push(
-            "  HP " + leftPad(characterHps[characterId].toString(), 5) + " / "
+            "  "+game.getMessage("HP")+" " + leftPad(characterHps[characterId].toString(), 5) + " / "
             + leftPad(stats.current().mhp(), 5));
         lines.push(
-            "  MP " + leftPad(characterMps[characterId].toString(), 5) + " / "
+            "  "+game.getMessage("MP")+" " + leftPad(characterMps[characterId].toString(), 5) + " / "
             + leftPad(stats.current().mmp(), 5));
       }
 
@@ -151,12 +151,12 @@ function SaveAndLoadMenu() {
       var lines = [];
 
       for (var i = 0; i < saveInfos.length; ++i) {
-        lines.push("Save " + leftPad(i + 1, 2));
+        lines.push(game.getMessage("Save") + " " + leftPad(i + 1, 2));
         var saveInfo = saveInfos[i];
         if (saveInfo.isDefined()) {
           lines.push(saveInfo.mapTitle());
         } else {
-          lines.push("<Empty>");
+          lines.push("<"+game.getMessage("Empty")+">");
         }
         lines.push("");
       }
@@ -226,7 +226,7 @@ function itemsMenu() {
   var itemsTopWin = new Menu({
     getState : function() {
       return {
-        lines : [ "Use", "Organize" ]
+        lines : [ game.getMessage("Use"), game.getMessage("Organize") ]
       };
     },
     layout : game.layout(game.NORTHWEST(), game.SCREEN(), 1.0, 0.13),
@@ -256,13 +256,13 @@ function equipMenu(statusMenu) {
         var stats = game.getBattleStats(characterId, -1, -1);
         var lines = [];
         
-        lines.push(rightPad("Max HP:", 10) + leftPad(stats.current().mhp(), 5));
-        lines.push(rightPad("Max MP:", 10) + leftPad(stats.current().mmp(), 5));
-        lines.push(rightPad("ATK:", 10) + leftPad(stats.current().atk(), 5));
-        lines.push(rightPad("SPD:", 10) + leftPad(stats.current().spd(), 5));
-        lines.push(rightPad("MAG:", 10) + leftPad(stats.current().mag(), 5));
-        lines.push(rightPad("ARM:", 10) + leftPad(stats.current().arm(), 5));
-        lines.push(rightPad("MRE:", 10) + leftPad(stats.current().mre(), 5));
+        lines.push(rightPad(game.getMessage("Max HP:"), 10) + leftPad(stats.current().mhp(), 5));
+        lines.push(rightPad(game.getMessage("Max MP:"), 10) + leftPad(stats.current().mmp(), 5));
+        lines.push(rightPad(game.getMessage("ATK:"), 10) + leftPad(stats.current().atk(), 5));
+        lines.push(rightPad(game.getMessage("SPD:"), 10) + leftPad(stats.current().spd(), 5));
+        lines.push(rightPad(game.getMessage("MAG:"), 10) + leftPad(stats.current().mag(), 5));
+        lines.push(rightPad(game.getMessage("ARM:"), 10) + leftPad(stats.current().arm(), 5));
+        lines.push(rightPad(game.getMessage("MRE:"), 10) + leftPad(stats.current().mre(), 5));
 
         return {
           lines : lines
@@ -277,7 +277,7 @@ function equipMenu(statusMenu) {
     return new Menu({
       getState : function() {
         var equipment = game.getIntArray(game.CHARACTER_EQUIP(characterId));
-        var slots = [ "Weapon", "Offhand", "Armor", "Accessory", "Accessory" ];
+        var slots = [ game.getMessage("Weapon"),game.getMessage("Offhand"),game.getMessage("Armor"),game.getMessage("Accessory"),game.getMessage("Accessory") ];
         var lines = [];
 
         var items = project.data().enums().items();
@@ -363,7 +363,7 @@ function menu() {
   var rootMenuWin = new Menu({
     getState : function() {
       return {
-        lines : [ "Item", "Skills", "Equip", "Status", "Save", "Quit Game" ],
+        lines : [ game.getMessage("Item"), game.getMessage("Skills"), game.getMessage("Equip"), game.getMessage("Status"), game.getMessage("Save"), game.getMessage("Quit Game") ],
       };
     },
     layout : game.layout(game.NORTHEAST(), game.SCREEN(), 0.2, 0.8),
@@ -416,7 +416,7 @@ function gameOver() {
   game.sleep(0.1);
   
   while (true) {
-    var choiceWin = game.newChoiceWindow([ "Back to titlescreen", "Quit game" ],
+    var choiceWin = game.newChoiceWindow([ game.getMessage("Back to titlescreen"), game.getMessage("Quit game") ],
         game.layout(game.CENTERED(), game.FIXED(), 300, 100), {
           justification : game.CENTER()
         });

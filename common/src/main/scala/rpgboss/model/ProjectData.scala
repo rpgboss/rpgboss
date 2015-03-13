@@ -206,5 +206,7 @@ object ProjectData {
     "Gold:" -> "Gold:",
     "Owned:" -> "Owned:",
     "Buy" -> "Buy",
-    "Sell" -> "Sell")
+    "Sell" -> "Sell",
+    "Store" -> "Store"
+    )
 }
