@@ -84,3 +84,37 @@ class SingleIntegerDialog(
     addButtons(okBtn, cancelBtn)
   }
 }
+
+class KeyValueEditingDialog(
+  owner: Window,
+  existingMap: Map[String, String],
+  initial: (String, String),
+  okCallback: ((String, String)) => Unit)
+  extends StdDialog(owner, needsTranslation("Edit Key->Value")) {
+
+  var key = initial._1
+  var value = initial._2
+
+  val fKey = textField(key, key = _)
+  val fValue = textField(value, value = _)
+
+  def okFunc(): Unit = {
+    if (key != initial._1 && existingMap.contains(key)) {
+      Dialog.showMessage(
+        fKey,
+        needsTranslation("Key already exists."),
+        getMessage("Error"),
+        Dialog.Message.Error)
+      return
+    }
+
+    okCallback((key, value))
+    close()
+  }
+
+  contents = new DesignGridPanel {
+    row().grid(lbl(needsTranslationColon("Key"))).add(fKey)
+    row().grid(lbl(needsTranslationColon("Value"))).add(fValue)
+    addButtons(okBtn, cancelBtn)
+  }
+}

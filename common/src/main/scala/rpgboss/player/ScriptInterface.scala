@@ -876,6 +876,13 @@ class ScriptInterface(
 
   }
 
+  /**
+   * Returns the value associated with the message key, or "$key$" otherwise.
+   */
+  def getMessage(key: String) = {
+    project.data.messages.get(key).getOrElse("$%s$".format(key))
+  }
+
   def getMapName(): String = {
     return mapScreen.mapName.get
   }

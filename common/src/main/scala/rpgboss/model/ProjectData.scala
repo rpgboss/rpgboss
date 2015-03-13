@@ -73,7 +73,8 @@ case class ProjectData(
   var recentMapName: String = "",
   var lastCreatedMapId: Int = 1, // Start at 1)
   var startup: ProjectDataStartup = ProjectDataStartup(),
-  var enums: ProjectDataEnums = ProjectDataEnums()) {
+  var enums: ProjectDataEnums = ProjectDataEnums(),
+  var messages: Map[String, String] = ProjectData.defaultMessages) {
 
   def writeEnums(dir: File) = {
     def writeModel[T <: AnyRef](name: String, model: T) =
@@ -154,8 +155,7 @@ object ProjectData {
     "Life",
     "Death",
     "Order",
-    "Chaos"
-  )
+    "Chaos")
 
   def defaultEquipTypes = Array(
     "Weapon",
@@ -163,4 +163,48 @@ object ProjectData {
     "Armor",
     "Head",
     "Accessory")
+
+  def defaultMessages = Map(
+    // start menu
+    "New Game" -> "New Game",
+    "Load Game" -> "Load Game",
+    "Quit" -> "Quit",
+    // ingame menu
+    "Item" -> "Item",
+    "Skills" -> "Skills",
+    "Equip" -> "Equip",
+    "Status" -> "Status",
+    "Save" -> "Save",
+    "Quit Game" -> "Quit Game",
+    // game over menu
+    "Back to titlescreen" -> "Back to titlescreen",
+    "Quit game" -> "Quit game",
+    // save menu
+    "Save" -> "Save",
+    "Empty" -> "Empty",
+    // item menu
+    "Use" -> "Use",
+    "Organize" -> "Organize",
+    // equip menu
+    "Max HP:" -> "Max HP:",
+    "Max MP:" -> "Max MP:",
+    "ATK:" -> "ATK:",
+    "SPD:" -> "SPD:",
+    "MAG:" -> "MAG:",
+    "ARM:" -> "ARM:",
+    "MRE:" -> "MRE:",
+    "Weapon" -> "Weapon",
+    "Offhand" -> "Offhand",
+    "Armor" -> "Armor",
+    "Accessory" -> "Accessory",
+    "Accessory" -> "Accessory",
+    // status menu
+    "LVL" -> "LVL",
+    "HP" -> "HP",
+    "MP" -> "MP",
+    // store menu
+    "Gold:" -> "Gold:",
+    "Owned:" -> "Owned:",
+    "Buy" -> "Buy",
+    "Sell" -> "Sell")
 }
