@@ -213,7 +213,7 @@ class AnimationFlashDialog(
   owner: Window,
   initial: AnimationFlash,
   onOk: (AnimationFlash) => Unit)
-  extends StdDialog(owner, needsTranslation("Animation_Flash")) {
+  extends StdDialog(owner, getMessage("Animation_Flash")) {
   import SwingUtils._
 
   val model = Utils.deepCopy(initial)
@@ -228,10 +228,10 @@ class AnimationFlashDialog(
     enumIdCombo(AnimationFlashType)(model.flashTypeId, model.flashTypeId = _)
 
   contents = new DesignGridPanel {
-    row().grid(leftLabel(needsTranslation("Color:"))).add(fColor)
-    row().grid(leftLabel(needsTranslation("Flash Type:"))).add(fFlashType)
+    row().grid(leftLabel(getMessageColon("Color"))).add(fColor)
+    row().grid(leftLabel(getMessageColon("Flash_Type"))).add(fFlashType)
     row().grid(leftLabel(getMessageColon("Start_Time"))).add(fStartTime)
-    row().grid(leftLabel(needsTranslation("End Time:"))).add(fEndTime)
+    row().grid(leftLabel(getMessageColon("End_Time"))).add(fEndTime)
 
     addButtons(okBtn, cancelBtn)
   }

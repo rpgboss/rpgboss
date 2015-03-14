@@ -17,11 +17,11 @@ class MessagesPanel(
   val dbDiag: DatabaseDialog)
   extends DesignGridPanel
   with DatabasePanel {
-  def panelName = needsTranslation("Messages")
+  def panelName = getMessage("Messages")
 
   val fMessages = new StringMapEditingPanel(
     owner,
-    needsTranslation("Messages"),
+    getMessage("Messages"),
     dbDiag.model.messages,
     dbDiag.model.messages = _)
 
