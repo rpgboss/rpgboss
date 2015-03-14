@@ -59,12 +59,6 @@ class EventEntity(
     mapEvent.states
   }
 
-  if(evtState.animationType == AnimationType.FOLLOW_PLAYER.id) {
-    scriptFactory.runFromFile(
-      ResourceConstants.eventEntityScript,
-      "FollowPlayer("+mapEvent.id+")")
-  }
-
   private var curThread: Option[ScriptThread] = None
 
   var evtStateIdx = 0
@@ -178,6 +172,10 @@ class EventEntity(
 
     if (curThread.map(_.isFinished).getOrElse(false))
       curThread = None
+
+    if(evtState.animationType == AnimationType.FOLLOW_PLAYER.id) {
+      scriptInterface.moveTowardsPlayer(id)
+    }
 
     if (_activateCooldown > 0)
       _activateCooldown -= delta

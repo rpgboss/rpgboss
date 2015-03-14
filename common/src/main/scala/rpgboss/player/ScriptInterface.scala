@@ -272,7 +272,7 @@ class ScriptInterface(
     setInt("timer", 0)
   }
 
-  def moveTowardsPlayer(eventId: Int) = {
+  def moveTowardsPlayer(eventId: Int) = syncRun {
     var playerX = getPlayerX()
     var playerY = getPlayerY()
     var eventX = getEventX(eventId)
@@ -290,6 +290,8 @@ class ScriptInterface(
     } else if (eventY > playerY) {
       moveEvent(eventId, 0, -1, false, false);
     }
+
+    sleep(0.5f)
   }
 
   def endBattleBackToMap() = {
