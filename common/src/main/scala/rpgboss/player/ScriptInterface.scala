@@ -157,7 +157,7 @@ class ScriptInterface(
     game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
       "transition" + transition + "('" + mapName + "'," + x.toString() + "," + y.toString() + "," + fadeDuration.toString() + ")",
-      runOnNewThread = false)
+      runOnNewThread = true)
 
     stopSound()
   }

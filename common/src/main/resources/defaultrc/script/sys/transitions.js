@@ -1,11 +1,11 @@
 function transitionFade_Out(mapName, x, y, fadeDuration) {
 
-  game.setTransition(1,fadeDuration);
+  game.setTransition(0,fadeDuration);
   game.sleep(fadeDuration);
 
   game.setPlayerLoc(mapName,x,y);
 
-  game.setTransition(0,fadeDuration);
+  game.setTransition(1,fadeDuration);
 
 }
 
