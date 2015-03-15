@@ -202,7 +202,7 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
 
           mapMetadataCopy.title = "%s (%s)".format(
               mapMetadataCopy.title,
-              needsTranslation("Copy"))
+              getMessage("Copy"))
 
           val mapCopy = RpgMap(sm.getProj, newName, mapMetadataCopy)
           val mapDataCopy = sm.getMapData(node.mapName).deepcopy()
