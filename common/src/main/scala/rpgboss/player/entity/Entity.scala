@@ -259,11 +259,16 @@ case class EntityMove(vec: Vector2)
 
     val travelledThisFrame = new Vector2()
 
+    val maxIterations =
+      (desiredThisFrame.len() / entity.collisionDeltas).toInt + 1
+
     var travelDoneThisFrame = false
-    while (!travelDoneThisFrame && !isFinished) {
+    var i = 0
+    while (i < maxIterations && !travelDoneThisFrame && !isFinished) {
       val lengthThisIteration = min(
           entity.collisionDeltas,
           desiredThisFrame.len() - travelledThisFrame.len())
+
       val movementThisIteration =
         desiredThisFrame.cpy().nor().scl(lengthThisIteration)
       val dx = movementThisIteration.x
@@ -287,7 +292,7 @@ case class EntityMove(vec: Vector2)
         evtsTouchedY.exists(_.height == EventHeight.SAME.id)
 
       // Move along x
-      if (!evtBlockingX && desiredThisFrame.x != 0) {
+      if (!evtBlockingX && dx != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(dx, 0)
@@ -309,7 +314,7 @@ case class EntityMove(vec: Vector2)
       }
 
       // Move along y
-      if (!evtBlockingY && desiredThisFrame.y != 0) {
+      if (!evtBlockingY && dy != 0) {
         // Determine collisions in x direction on the y-positive corner
         // and the y negative corner of the bounding box
         val (mapBlocked, mapReroute) = entity.getMapCollisions(0, dy)
@@ -340,9 +345,11 @@ case class EntityMove(vec: Vector2)
         travelDoneThisFrame = true
         finish()
       }
+
+      i += 1
     }
 
-    remainingTravel.sub(travelledThisFrame)
+    remainingTravel.sub(desiredThisFrame)
 
     if (remainingTravel.len() < entity.collisionDeltas && !isFinished)
       finish()
