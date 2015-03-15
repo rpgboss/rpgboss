@@ -58,8 +58,6 @@ class MapCamera(game: RpgGame) {
       val travel = new Vector2(desiredX - x, desiredY - y)
       travel.clamp(0, delta * trackedEntity.speed)
 
-      println(travel)
-
       this.x += travel.x
       this.y += travel.y
     }

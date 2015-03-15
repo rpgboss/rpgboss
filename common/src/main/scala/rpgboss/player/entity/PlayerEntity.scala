@@ -1,5 +1,6 @@
 package rpgboss.player.entity
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.{Timer => GdxTimer}
 import rpgboss.model._
 import rpgboss.model.event._
@@ -93,7 +94,7 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
         totalDy += moveSize
 
       if (totalDx != 0f || totalDy != 0f) {
-        val move = EntityMove(totalDx, totalDy)
+        val move = EntityMove(new Vector2(totalDx, totalDy))
         enqueueMove(move)
         currentMoveQueueItem = move
       }

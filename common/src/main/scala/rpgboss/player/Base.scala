@@ -30,7 +30,6 @@ class MutateQueue[T](mutatedObject: T) extends ThreadChecked {
     queue.enqueue(item)
   }
 
-  // Runs an item out of the queue if it exists.
   def runQueueItem(delta: Float): Unit = {
     assertOnBoundThread()
     assert(!isEmpty)

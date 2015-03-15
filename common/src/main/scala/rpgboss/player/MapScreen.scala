@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.math.Vector2
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
@@ -39,45 +40,16 @@ class MapScreen(val game: RpgGame)
     allEntities(EntitySpec.playerEntityId).asInstanceOf[PlayerEntity]
   def getPlayerEntityInfo() = EntityInfo(playerEntity, this)
 
-  private def moveEntity(
-      entity: Entity, dx: Float, dy: Float,
-      affixDirection: Boolean): EntityMove = {
-    assertOnBoundThread()
-    if (dx != 0 || dy != 0) {
-      if (!affixDirection) {
-        val direction =
-          if (math.abs(dx) > math.abs(dy))
-            if (dx > 0)
-              SpriteSpec.Directions.EAST
-            else
-              SpriteSpec.Directions.WEST
-          else {
-            if (dy > 0)
-              SpriteSpec.Directions.SOUTH
-            else
-              SpriteSpec.Directions.NORTH
-          }
-
-        entity.enqueueMove(EntityFaceDirection(direction))
-      }
-
-      val move = EntityMove(dx, dy)
-      entity.enqueueMove(move)
-      return move
-    }
-    null
-  }
-
   def movePlayer(dx: Float, dy: Float, affixDirection: Boolean) = {
     assertOnBoundThread()
-    moveEntity(playerEntity, dx, dy, affixDirection)
+    playerEntity.moveEntity(new Vector2(dx, dy), affixDirection)
   }
 
   def moveEvent(id: Int, dx: Float, dy: Float, affixDirection: Boolean) = {
     assertOnBoundThread()
     val entityOpt = allEntities.get(id)
     entityOpt.map { entity =>
-      moveEntity(entity, dx, dy, affixDirection)
+      entity.moveEntity(new Vector2(dx, dy), affixDirection)
     }.orNull
   }
 

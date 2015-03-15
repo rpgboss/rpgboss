@@ -18,7 +18,21 @@ import rpgboss.player._
 import com.badlogic.gdx.graphics.Color
 
 object Entity {
-  def defaultEntitySpeed = 3.0f
+  def defaultEntitySpeed = 4.0f
+
+  def getDirection(vec: Vector2): Int = {
+    if (math.abs(vec.x) > math.abs(vec.y))
+      if (vec.x > 0)
+        SpriteSpec.Directions.EAST
+      else
+        SpriteSpec.Directions.WEST
+    else {
+      if (vec.y > 0)
+        SpriteSpec.Directions.SOUTH
+      else
+        SpriteSpec.Directions.NORTH
+    }
+  }
 }
 
 /**
@@ -43,6 +57,8 @@ abstract class Entity(
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) {
 
+  def playerEntity = allEntities(EntitySpec.playerEntityId)
+
   def height: Int
   def zPriority = y
   def trigger: Int
@@ -56,6 +72,7 @@ abstract class Entity(
   def activate(activatorsDirection: Int): Option[Finishable] = None
 
   private val moveQueue = new MutateQueue(this)
+  def moveQueueEmpty = moveQueue.isEmpty
   protected var movesEnqueued: Long = 0
 
   var speed: Float = Entity.defaultEntitySpeed
@@ -150,6 +167,18 @@ abstract class Entity(
     movesEnqueued += 1
   }
 
+  def moveEntity(vec: Vector2, affixDirection: Boolean): EntityMove = {
+    if (vec.x != 0 || vec.y != 0) {
+      if (!affixDirection)
+        dir = Entity.getDirection(vec)
+
+      val move = EntityMove(vec)
+      enqueueMove(move)
+      return move
+    }
+    null
+  }
+
   /**
    * This method is called when this event collides against others while
    * it is moving.
@@ -218,9 +247,9 @@ case class BoundingBox(minX: Float, minY: Float, maxX: Float, maxY: Float) {
     copy(minX + dx, minY + dy, maxX + dx, maxY + dy)
 }
 
-case class EntityMove(totalDx: Float, totalDy: Float)
+case class EntityMove(vec: Vector2)
   extends MutateQueueItem[Entity] {
-  val remainingTravel = new Vector2(totalDx, totalDy)
+  val remainingTravel = vec
 
   def update(delta: Float, entity: Entity) = {
     import math._
@@ -313,7 +342,7 @@ case class EntityMove(totalDx: Float, totalDy: Float)
       }
     }
 
-    remainingTravel.sub(desiredThisFrame)
+    remainingTravel.sub(travelledThisFrame)
 
     if (remainingTravel.len() < entity.collisionDeltas && !isFinished)
       finish()
