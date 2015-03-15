@@ -101,15 +101,15 @@ function StatusMenu() {
       for (var i = 0; i < party.length; ++i) {
         var characterId = party[i];
         var stats = game.getBattleStats(characterId, -1, -1);
-        
+
         lines.push(characterNames[characterId]);
-        lines.push(
-            " "+game.getMessage("LVL")+" " + leftPad(characterLevels[characterId].toString(), 3));
-        lines.push(
-            "  "+game.getMessage("HP")+" " + leftPad(characterHps[characterId].toString(), 5) + " / "
+        lines.push(" " + game.getMessage("LVL") + " "
+            + leftPad(characterLevels[characterId].toString(), 3));
+        lines.push("  " + game.getMessage("HP") + " "
+            + leftPad(characterHps[characterId].toString(), 5) + " / "
             + leftPad(stats.current().mhp(), 5));
-        lines.push(
-            "  "+game.getMessage("MP")+" " + leftPad(characterMps[characterId].toString(), 5) + " / "
+        lines.push("  " + game.getMessage("MP") + " "
+            + leftPad(characterMps[characterId].toString(), 5) + " / "
             + leftPad(stats.current().mmp(), 5));
       }
 
@@ -123,18 +123,18 @@ function StatusMenu() {
       allowCancel : true,
       linesPerChoice : 4,
       lineHeight : 27,
-      leftMargin: 96 + 24
+      leftMargin : 96 + 24
     }
   }
 
   var menu = new Menu(details);
-  
+
   // Attach party faces.
   var party = game.getIntArray(game.PARTY());
   for (var i = 0; i < party.length; ++i) {
     menu.window.attachCharacterFace(party[i], 0, (96 + 12) * i, 96);
   }
-  
+
   menu.loopCharacterChoice = function(onCharacterChoice) {
     menu.loopChoice(function(choiceIdx) {
       return onCharacterChoice(menu.state.party[choiceIdx]);
@@ -156,7 +156,7 @@ function SaveAndLoadMenu() {
         if (saveInfo.isDefined()) {
           lines.push(saveInfo.mapTitle());
         } else {
-          lines.push("<"+game.getMessage("Empty")+">");
+          lines.push("<" + game.getMessage("Empty") + ">");
         }
         lines.push("");
       }
@@ -177,13 +177,13 @@ function SaveAndLoadMenu() {
 
 function SaveMenu() {
 
- var saveMenu = new SaveAndLoadMenu();
- saveMenu.loopChoice(function(choiceId) {
-   game.saveToSaveSlot(choiceId);
-   saveMenu.close();
-   return true;
- });
- saveMenu.close();
+  var saveMenu = new SaveAndLoadMenu();
+  saveMenu.loopChoice(function(choiceId) {
+    game.saveToSaveSlot(choiceId);
+    saveMenu.close();
+    return true;
+  });
+  saveMenu.close();
 }
 
 function itemsMenu() {
@@ -221,8 +221,8 @@ function itemsMenu() {
     itemsTopWin.window.takeFocus();
   }
 
-  var itemsMenu = new ItemMenu(
-      true, game.layout(game.SOUTHWEST(), game.SCREEN(), 1.0, 0.87), 32);
+  var itemsMenu = new ItemMenu(true, game.layout(game.SOUTHWEST(), game
+      .SCREEN(), 1.0, 0.87), 32);
   var itemsTopWin = new Menu({
     getState : function() {
       return {
@@ -255,14 +255,21 @@ function equipMenu(statusMenu) {
       getState : function(state) {
         var stats = game.getBattleStats(characterId, -1, -1);
         var lines = [];
-        
-        lines.push(rightPad(game.getMessage("Max HP:"), 10) + leftPad(stats.current().mhp(), 5));
-        lines.push(rightPad(game.getMessage("Max MP:"), 10) + leftPad(stats.current().mmp(), 5));
-        lines.push(rightPad(game.getMessage("ATK:"), 10) + leftPad(stats.current().atk(), 5));
-        lines.push(rightPad(game.getMessage("SPD:"), 10) + leftPad(stats.current().spd(), 5));
-        lines.push(rightPad(game.getMessage("MAG:"), 10) + leftPad(stats.current().mag(), 5));
-        lines.push(rightPad(game.getMessage("ARM:"), 10) + leftPad(stats.current().arm(), 5));
-        lines.push(rightPad(game.getMessage("MRE:"), 10) + leftPad(stats.current().mre(), 5));
+
+        lines.push(rightPad(game.getMessage("Max HP:"), 10)
+            + leftPad(stats.current().mhp(), 5));
+        lines.push(rightPad(game.getMessage("Max MP:"), 10)
+            + leftPad(stats.current().mmp(), 5));
+        lines.push(rightPad(game.getMessage("ATK:"), 10)
+            + leftPad(stats.current().atk(), 5));
+        lines.push(rightPad(game.getMessage("SPD:"), 10)
+            + leftPad(stats.current().spd(), 5));
+        lines.push(rightPad(game.getMessage("MAG:"), 10)
+            + leftPad(stats.current().mag(), 5));
+        lines.push(rightPad(game.getMessage("ARM:"), 10)
+            + leftPad(stats.current().arm(), 5));
+        lines.push(rightPad(game.getMessage("MRE:"), 10)
+            + leftPad(stats.current().mre(), 5));
 
         return {
           lines : lines
@@ -277,27 +284,29 @@ function equipMenu(statusMenu) {
     return new Menu({
       getState : function() {
         var equipment = game.getIntArray(game.CHARACTER_EQUIP(characterId));
-        var slots = [ game.getMessage("Weapon"),game.getMessage("Offhand"),game.getMessage("Armor"),game.getMessage("Accessory"),game.getMessage("Accessory") ];
+        var slots = [ game.getMessage("Weapon"), game.getMessage("Offhand"),
+            game.getMessage("Armor"), game.getMessage("Accessory"),
+            game.getMessage("Accessory") ];
         var lines = [];
 
         var items = project.data().enums().items();
-        
+
         for (var i = 0; i < slots.length; ++i) {
           var itemsString = "";
           if (i < equipment.length && equipment[i] >= 0) {
             itemsString = items[equipment[i]].name();
           }
-          
+
           lines.push(rightPad(slots[i], 12) + itemsString);
         }
-        
+
         return {
-          lines: lines
+          lines : lines
         }
       },
       layout : game.layout(game.NORTH(), game.SCREEN(), 1.0, 0.4),
       windowDetails : {
-        allowCancel: true
+        allowCancel : true
       }
     });
   }
@@ -305,25 +314,26 @@ function equipMenu(statusMenu) {
   statusMenu.loopCharacterChoice(function(characterId) {
     var statsMenu = new StatsMenu(characterId);
     var equipMenu = new EquipMenu(characterId);
-    
-    var slotEquipTypes = [0, 1, 2, 4, 4];
-    
+
+    var slotEquipTypes = [ 0, 1, 2, 4, 4 ];
+
     equipMenu.loopChoice(function(choiceId) {
       if (choiceId == -1)
         return false;
-      
+
       var slotId = choiceId;
       var equipTypeId = slotEquipTypes[slotId];
       var itemsMenu = new Menu({
         getState : function() {
           var items = project.data().enums().items();
           var itemIds = game.getEquippableItems(characterId, equipTypeId);
-          var itemNames = 
-            itemIds.map(function(itemId) { return items[itemId].name(); });
-          
+          var itemNames = itemIds.map(function(itemId) {
+            return items[itemId].name();
+          });
+
           return {
-            itemIds: itemIds,
-            lines: itemNames
+            itemIds : itemIds,
+            lines : itemNames
           }
         },
         layout : game.layout(game.SOUTHEAST(), game.SCREEN(), 0.5, 0.6),
@@ -331,23 +341,23 @@ function equipMenu(statusMenu) {
           allowCancel : true
         }
       });
-      
+
       itemsMenu.loopChoice(function(choiceId) {
         if (itemsMenu.state.itemIds.length == 0)
           return false;
-        
+
         var itemId = itemsMenu.state.itemIds[choiceId];
         game.equipItem(characterId, slotId, itemId);
-        
+
         statsMenu.update();
-        
+
         return false;
       })
       itemsMenu.close();
-      
+
       return true;
     });
-    
+
     statsMenu.close();
     equipMenu.close();
     return false;
@@ -357,13 +367,16 @@ function equipMenu(statusMenu) {
 function menu() {
 
   game.log(game.getInt('menuEnabled'))
-  if(game.getInt('menuEnabled')==0) return;
+  if (game.getInt('menuEnabled') == 0)
+    return;
 
   var statusMenu = new StatusMenu();
   var rootMenuWin = new Menu({
     getState : function() {
       return {
-        lines : [ game.getMessage("Item"), game.getMessage("Skills"), game.getMessage("Equip"), game.getMessage("Status"), game.getMessage("Save"), game.getMessage("Quit Game") ],
+        lines : [ game.getMessage("Item"), game.getMessage("Skills"),
+            game.getMessage("Equip"), game.getMessage("Status"),
+            game.getMessage("Save"), game.getMessage("Quit") ],
       };
     },
     layout : game.layout(game.NORTHEAST(), game.SCREEN(), 0.2, 0.8),
@@ -375,23 +388,23 @@ function menu() {
 
   rootMenuWin.loopChoice(function(choiceId) {
     switch (choiceId) {
-      case 0:
-        itemsMenu();
-        break;
-      case 2:
-        equipMenu(statusMenu);
-        break;
-      case 4:
-        var saveMenu = new SaveAndLoadMenu();
-        saveMenu.loopChoice(function(choiceId) {
-          game.saveToSaveSlot(choiceId);
-          return true;
-        });
-        saveMenu.close();
-        break;
-      case 5:
-        game.quit();
-        break;
+    case 0:
+      itemsMenu();
+      break;
+    case 2:
+      equipMenu(statusMenu);
+      break;
+    case 4:
+      var saveMenu = new SaveAndLoadMenu();
+      saveMenu.loopChoice(function(choiceId) {
+        game.saveToSaveSlot(choiceId);
+        return true;
+      });
+      saveMenu.close();
+      break;
+    case 5:
+      game.quit();
+      break;
     }
 
     statusMenu.update();
@@ -403,20 +416,19 @@ function menu() {
   statusMenu.close();
 }
 
-/// GAME OVER
+// / GAME OVER
 
 function gameOver() {
   game.setWeather(0);
   game.setTransition(0, 1.0);
   game.playMusic(0, project.data().startup().gameOverMusic(), true, 0.4);
-  game.showPicture(
-      PictureSlots.GAME_OVER(), 
-      project.data().startup().gameOverPic(), 
-      game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
+  game.showPicture(PictureSlots.GAME_OVER(), project.data().startup()
+      .gameOverPic(), game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
   game.sleep(0.1);
-  
+
   while (true) {
-    var choiceWin = game.newChoiceWindow([ game.getMessage("Back to titlescreen"), game.getMessage("Quit game") ],
+    var choiceWin = game.newChoiceWindow([
+        game.getMessage("Back to titlescreen"), game.getMessage("Quit game") ],
         game.layout(game.CENTERED(), game.FIXED(), 300, 100), {
           justification : game.CENTER()
         });
