@@ -73,6 +73,7 @@ object EventCmdUI {
     BreakLoopUI,
     CallMenuUI,
     CallSaveMenuUI,
+    ChangeCameraFollowUI,
     CommentUI,
     ClearTimerUI,
     ExitGameUI,
@@ -656,6 +657,14 @@ object StopMusicUI extends EventCmdUI[StopMusic] {
     mapName: Option[String], model: StopMusic) = List(
     IntNumberField(getMessage("Slot"), 0, MusicSlots.NUM_SLOTS,
       model.slot))
+}
+
+object ChangeCameraFollowUI extends EventCmdUI[ChangeCameraFollow] {
+  override def category = Movement
+  override def title = needsTranslation("Change_Camera_Follow")
+  override def getNormalFields(owner: Window, sm: StateMaster, mapName: Option[String] ,model: ChangeCameraFollow) = Seq(
+          EventField("", new EntitySelectPanel(owner, sm, mapName,
+      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)))
 }
 
 object TeleportUI extends EventCmdUI[Teleport] {
