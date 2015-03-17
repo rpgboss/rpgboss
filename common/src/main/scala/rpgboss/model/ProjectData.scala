@@ -175,7 +175,6 @@ object ProjectData {
     "Equip" -> "Equip",
     "Status" -> "Status",
     "Save" -> "Save",
-    "Quit Game" -> "Quit Game",
     // game over menu
     "Back to titlescreen" -> "Back to titlescreen",
     "Quit game" -> "Quit game",

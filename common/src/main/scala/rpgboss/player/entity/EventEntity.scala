@@ -10,6 +10,7 @@ import scala.collection.mutable.Subscriber
 import scala.collection.script.Message
 import rpgboss.lib.Utils
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 
 case class EventScriptInterface(mapName: String, id: Int)
@@ -183,6 +184,16 @@ class EventEntity(
     if (evtState.trigger == EventTrigger.AUTORUN.id &&
         _activateCooldown <= 0) {
       activate(SpriteSpec.Directions.NONE)
+    }
+
+    if(evtState.animationType == AnimationType.FOLLOW_PLAYER.id &&
+       moveQueueEmpty) {
+      val toPlayer = new Vector2(playerEntity.x - x, playerEntity.y - y)
+
+      // Only follow if within a certain range, but not too close.
+      if (toPlayer.len() > 1.5f && toPlayer.len() < 5.0f) {
+        moveEntity(toPlayer, affixDirection = false)
+      }
     }
   }
 

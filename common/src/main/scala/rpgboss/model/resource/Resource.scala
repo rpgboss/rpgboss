@@ -59,8 +59,8 @@ trait MetaResource[T, MT] {
   def rcDir(proj: Project) = new File(proj.rcDir, rcType)
 
   def extensionFilter(file: File): Boolean = {
-    for(ext <- keyExts) {
-      if(file.getName.endsWith(ext))
+    for (ext <- keyExts) {
+      if (file.getName.endsWith(ext))
         return true
     }
     return false
@@ -75,7 +75,7 @@ trait MetaResource[T, MT] {
     for (path <- ResourceConstants.defaultRcList) {
       val components = path.split("/")
       if (!components.isEmpty &&
-          components.head == rcType) {
+        components.head == rcType) {
         val file = new File(path)
         if (extensionFilter(file)) {
           val pathWithoutRcType: String = components.tail.mkString("/")
@@ -98,12 +98,12 @@ trait MetaResource[T, MT] {
       return Array()
 
     val projectItems = collection.mutable.Buffer[String]()
-    for(rootFile <- resourceDir.listFiles()) {
-      if(rootFile.isFile() && extensionFilter(rootFile)) {
+    for (rootFile <- resourceDir.listFiles()) {
+      if (rootFile.isFile() && extensionFilter(rootFile)) {
         projectItems.append(rootFile.getName())
-      } else if(rootFile.isDirectory()) {
-        for(subFile <- rootFile.listFiles()) {
-          if(subFile.isFile() && extensionFilter(subFile)) {
+      } else if (rootFile.isDirectory()) {
+        for (subFile <- rootFile.listFiles()) {
+          if (subFile.isFile() && extensionFilter(subFile)) {
             projectItems.append(rootFile.getName() + "/" + subFile.getName())
           }
         }
@@ -160,8 +160,8 @@ trait MetaResource[T, MT] {
       metadataFromFileOpt
     } else {
       JsonUtils.readModelFromJsonInClasspath[MT](
-          "%s/%s/%s".format(ResourceConstants.defaultRcDir, rcType,
-              metadataPathRelative(name)))(m)
+        "%s/%s/%s".format(ResourceConstants.defaultRcDir, rcType,
+          metadataPathRelative(name)))(m)
     }
 
     metadataOpt.map(apply(proj, name, _)).getOrElse(defaultInstance(proj, name))
@@ -175,6 +175,19 @@ object Resource {
   def jsonSuffix = "json"
 
   val resourceTypes = List(
-      AnimationImage, Autotile, Battler, BattleBackground, Iconset, Msgfont,
-      Music, Picture, RpgMap, Script, Sound, Spriteset, Tileset, Windowskin)
+    AnimationImage,
+    Autotile,
+    Battler,
+    BattleBackground,
+    Faceset,
+    Iconset,
+    Msgfont,
+    Music,
+    Picture,
+    RpgMap,
+    Script,
+    Sound,
+    Spriteset,
+    Tileset,
+    Windowskin)
 }

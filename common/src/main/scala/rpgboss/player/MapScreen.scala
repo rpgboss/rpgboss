@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d._
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.math.Vector2
 import rpgboss.model._
 import rpgboss.model.resource._
 import rpgboss.player.entity._
@@ -39,45 +40,16 @@ class MapScreen(val game: RpgGame)
     allEntities(EntitySpec.playerEntityId).asInstanceOf[PlayerEntity]
   def getPlayerEntityInfo() = EntityInfo(playerEntity, this)
 
-  private def moveEntity(
-      entity: Entity, dx: Float, dy: Float,
-      affixDirection: Boolean): EntityMove = {
-    assertOnBoundThread()
-    if (dx != 0 || dy != 0) {
-      if (!affixDirection) {
-        val direction =
-          if (math.abs(dx) > math.abs(dy))
-            if (dx > 0)
-              SpriteSpec.Directions.EAST
-            else
-              SpriteSpec.Directions.WEST
-          else {
-            if (dy > 0)
-              SpriteSpec.Directions.SOUTH
-            else
-              SpriteSpec.Directions.NORTH
-          }
-
-        entity.enqueueMove(EntityFaceDirection(direction))
-      }
-
-      val move = EntityMove(dx, dy)
-      entity.enqueueMove(move)
-      return move
-    }
-    null
-  }
-
   def movePlayer(dx: Float, dy: Float, affixDirection: Boolean) = {
     assertOnBoundThread()
-    moveEntity(playerEntity, dx, dy, affixDirection)
+    playerEntity.moveEntity(new Vector2(dx, dy), affixDirection)
   }
 
   def moveEvent(id: Int, dx: Float, dy: Float, affixDirection: Boolean) = {
     assertOnBoundThread()
     val entityOpt = allEntities.get(id)
     entityOpt.map { entity =>
-      moveEntity(entity, dx, dy, affixDirection)
+      entity.moveEntity(new Vector2(dx, dy), affixDirection)
     }.orNull
   }
 
@@ -149,6 +121,8 @@ class MapScreen(val game: RpgGame)
     playMusic(0, mapAndAssets.map.metadata.music, true,
         Transitions.fadeLength)
 
+    updateCameraLoc(0.0f, mapAndAssets, forceSnapToEntity = true)
+
     var interiorValue = 0
     if(mapAndAssets.map.metadata.interior) {
       interiorValue = 1
@@ -163,22 +137,12 @@ class MapScreen(val game: RpgGame)
     game.persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
   }
 
-  def updateCameraLoc(mapAndAssets: MapAndAssets) = {
+  def updateCameraLoc(delta: Float, mapAndAssets: MapAndAssets,
+                      forceSnapToEntity: Boolean) = {
     val map = mapAndAssets.map
 
-    if (screenWTiles >= map.metadata.xSize) {
-      camera.x = map.metadata.xSize.toFloat / 2
-    } else {
-      camera.x = Utils.clamped(
-          camera.x, screenWTiles / 2, map.metadata.xSize - screenWTiles / 2)
-    }
-
-    if (screenHTiles >= map.metadata.ySize) {
-      camera.y = map.metadata.ySize.toFloat / 2
-    } else {
-      camera.y = Utils.clamped(
-          camera.y, screenHTiles / 2, map.metadata.ySize - screenHTiles / 2)
-    }
+    camera.update(delta, playerEntity, forceSnapToEntity, map,
+                  screenWTiles, screenHTiles)
 
     tileCamera.position.x = camera.x
     tileCamera.position.y = camera.y
@@ -230,9 +194,6 @@ class MapScreen(val game: RpgGame)
 
   // Update. Called on Gdx thread before render.
   def update(delta: Float): Unit = {
-    // TODO: This makes the camera lag the player's position.
-    camera.update(delta, playerEntity.x, playerEntity.y)
-
     // We want the camera and window manager to update, but not anything else.
     if (windowManager.inTransition)
       return
@@ -250,6 +211,8 @@ class MapScreen(val game: RpgGame)
       math.abs(playerEntity.y - playerOldY)
 
     mapAndAssetsOption map { mapAndAssets =>
+      updateCameraLoc(delta, mapAndAssets, forceSnapToEntity = false)
+
       val minimumDistanceFromLastBattle = 3
 
       val encounterSettings = mapAndAssets.encounterSettings
@@ -281,8 +244,6 @@ class MapScreen(val game: RpgGame)
     import mapAndAssets._
 
     import Tileset._
-
-    updateCameraLoc(mapAndAssets)
 
     // Set the projection matrix to the combined camera matrices
     // This seems to be the only thing that works...
