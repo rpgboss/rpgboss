@@ -69,7 +69,7 @@ class MapScreen(val game: RpgGame)
     return 0
   }
 
-  val camera = new MapCamera(game)
+  val camera = new MapCamera
 
   // All the events on the current map, including the player event.
   // The player event is stored with the '-1' key.
@@ -141,7 +141,7 @@ class MapScreen(val game: RpgGame)
                       forceSnapToEntity: Boolean) = {
     val map = mapAndAssets.map
 
-    camera.update(delta, playerEntity, forceSnapToEntity, map,
+    camera.update(delta, playerEntity, forceSnapToEntity, map.metadata,
                   screenWTiles, screenHTiles)
 
     tileCamera.position.x = camera.x

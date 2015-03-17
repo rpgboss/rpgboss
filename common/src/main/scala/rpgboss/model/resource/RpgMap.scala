@@ -14,8 +14,10 @@ case class RpgMapMetadata(var parent: String,
                           var title: String,
                           var xSize: Int,
                           var ySize: Int,
-                          var tilesets: Array[String],
-                          var autotiles: Array[String],
+                          var tilesets: Array[String] =
+                            ResourceConstants.defaultTilesets,
+                          var autotiles: Array[String] =
+                            ResourceConstants.defaultAutotiles,
                           var interior:Boolean = false,
                           var music: Option[SoundSpec] = None,
                           var battleBackground: String =
@@ -121,9 +123,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     val title = if (idxOfDot > 0) name.substring(0, idxOfDot) else name
     val m = RpgMapMetadata(
       "", title,
-      initXSize, initYSize,
-      ResourceConstants.defaultTilesets,
-      ResourceConstants.defaultAutotiles)
+      initXSize, initYSize)
     apply(proj, name, m)
   }
 

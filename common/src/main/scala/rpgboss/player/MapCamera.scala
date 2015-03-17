@@ -4,8 +4,8 @@ import scala.concurrent._
 import scala.concurrent.duration.Duration
 import com.badlogic.gdx.math.Vector2
 import rpgboss.lib.Utils
-import rpgboss.model.resource.RpgMap
-import rpgboss.player.entity.Entity
+import rpgboss.model.resource.RpgMapMetadata
+import rpgboss.player.entity.EntityLike
 
 case class CameraInfo(x: Float, y: Float, speed: Float, moveQueueLength: Int)
 
@@ -18,7 +18,7 @@ case class CameraInfo(x: Float, y: Float, speed: Float, moveQueueLength: Int)
  *  Callers must move the camera back to the player if they don't want the
  *  camera to jerk afterwards.
  */
-class MapCamera(game: RpgGame) {
+class MapCamera {
   var x: Float = 0f
   var y: Float = 0f
   var speed: Float = 5f // tiles per second
@@ -26,8 +26,9 @@ class MapCamera(game: RpgGame) {
 
   def info = CameraInfo(x, y, speed, moveQueue.length)
 
-  def update(delta: Float, trackedEntity: Entity, forceSnapToEntity: Boolean,
-             map: RpgMap, screenWTiles: Float, screenHTiles: Float): Unit = {
+  def update(delta: Float, trackedEntity: EntityLike,
+             forceSnapToEntity: Boolean, mapMetadata: RpgMapMetadata,
+             screenWTiles: Float, screenHTiles: Float): Unit = {
     if (!moveQueue.isEmpty) {
       moveQueue.runQueueItem(delta)
       return
@@ -36,18 +37,18 @@ class MapCamera(game: RpgGame) {
     var desiredX = trackedEntity.x
     var desiredY = trackedEntity.y
 
-    if (screenWTiles >= map.metadata.xSize) {
-      desiredX = map.metadata.xSize.toFloat / 2
+    if (screenWTiles >= mapMetadata.xSize) {
+      desiredX = mapMetadata.xSize.toFloat / 2
     } else {
       desiredX = Utils.clamped(
-          desiredX, screenWTiles / 2, map.metadata.xSize - screenWTiles / 2)
+          desiredX, screenWTiles / 2, mapMetadata.xSize - screenWTiles / 2)
     }
 
-    if (screenHTiles >= map.metadata.ySize) {
-      desiredX = map.metadata.ySize.toFloat / 2
+    if (screenHTiles >= mapMetadata.ySize) {
+      desiredY = mapMetadata.ySize.toFloat / 2
     } else {
-      desiredX = Utils.clamped(
-          desiredX, screenHTiles / 2, map.metadata.ySize - screenHTiles / 2)
+      desiredY = Utils.clamped(
+          desiredY, screenHTiles / 2, mapMetadata.ySize - screenHTiles / 2)
     }
 
     if (forceSnapToEntity) {
