@@ -17,6 +17,12 @@ import scala.concurrent.duration.Duration
 import rpgboss.player._
 import com.badlogic.gdx.graphics.Color
 
+trait EntityLike {
+  def x: Float
+  def y: Float
+  def speed: Float
+}
+
 object Entity {
   def defaultEntitySpeed = 4.0f
 
@@ -55,7 +61,7 @@ abstract class Entity(
   var x: Float = 0f,
   var y: Float = 0f,
   var dir: Int = SpriteSpec.Directions.SOUTH,
-  var initialSprite: Option[SpriteSpec] = None) {
+  var initialSprite: Option[SpriteSpec] = None) extends EntityLike {
 
   def playerEntity = allEntities(EntitySpec.playerEntityId)
 
