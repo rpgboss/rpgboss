@@ -661,7 +661,7 @@ object StopMusicUI extends EventCmdUI[StopMusic] {
 
 object ChangeCameraFollowUI extends EventCmdUI[ChangeCameraFollow] {
   override def category = Movement
-  override def title = needsTranslation("Change_Camera_Follow")
+  override def title = getMessage("Change_Camera_Follow")
   override def getNormalFields(owner: Window, sm: StateMaster, mapName: Option[String] ,model: ChangeCameraFollow) = Seq(
           EventField("", new EntitySelectPanel(owner, sm, mapName,
       model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)))
