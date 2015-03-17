@@ -57,6 +57,7 @@ object EventCmd {
     classOf[BreakLoop],
     classOf[CallMenu],
     classOf[CallSaveMenu],
+    classOf[ChangeCameraFollow],
     classOf[Comment],
     classOf[ClearTimer],
     classOf[ExitGame],
@@ -541,6 +542,11 @@ case class Teleport(loc: MapLoc = MapLoc(),
   var transitionId: Int = Transitions.FADE.id) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
+}
+
+case class ChangeCameraFollow(var entitySpec: EntitySpec = EntitySpec()) extends EventCmd {
+  def sections =
+    singleCall("game.changeCameraFollow", entitySpec)
 }
 
 case class EnableDisableMenu(var enabled: Int = 1) extends EventCmd {

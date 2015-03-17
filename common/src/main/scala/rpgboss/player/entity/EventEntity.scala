@@ -174,10 +174,6 @@ class EventEntity(
     if (curThread.map(_.isFinished).getOrElse(false))
       curThread = None
 
-    if(evtState.animationType == AnimationType.FOLLOW_PLAYER.id) {
-      scriptInterface.moveTowardsPlayer(id)
-    }
-
     if (_activateCooldown > 0)
       _activateCooldown -= delta
 
