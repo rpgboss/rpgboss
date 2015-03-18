@@ -73,7 +73,6 @@ object EventCmdUI {
     BreakLoopUI,
     CallMenuUI,
     CallSaveMenuUI,
-    ChangeCameraFollowUI,
     CommentUI,
     ClearTimerUI,
     ExitGameUI,
@@ -95,6 +94,7 @@ object EventCmdUI {
     PlayMusicUI,
     PlaySoundUI,
     RunJsUI,
+    SetCameraFollowUI,
     SetEventSpeedUI,
     SetEventStateUI,
     SetGlobalIntUI,
@@ -202,7 +202,7 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
   override def category = Windows
   override def title = getMessage("Get_Choice")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: GetChoice) = {
+                               mapName: Option[String], model: GetChoice) = {
     val fCharacter = indexedCombo(
       sm.getProjData.enums.characters,
       model.characterId,
@@ -280,7 +280,7 @@ object FadeInUI extends EventCmdUI[FadeIn] {
   override def category = Programming
   override def title = getMessage("Fade_In")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: FadeIn) = Seq(
+                               mapName: Option[String], model: FadeIn) = Seq(
     EventField(getMessage("Duration"),
       new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _)))
 }
@@ -289,7 +289,7 @@ object FadeOutUI extends EventCmdUI[FadeOut] {
   override def category = Programming
   override def title = getMessage("Fade_Out")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: FadeOut) = Seq(
+                               mapName: Option[String], model: FadeOut) = Seq(
     EventField(getMessage("Duration"),
       new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _)))
 }
@@ -366,9 +366,10 @@ object MoveEventUI extends EventCmdUI[MoveEvent] {
   override def category = Movement
   override def title = getMessage("Move_Event")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: MoveEvent) = Seq(
+                               mapName: Option[String], model: MoveEvent) = Seq(
     EventField("", new EntitySelectPanel(owner, sm, mapName,
-      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
+      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false,
+      allowNone = false)),
     EventField(getMessage("X_Movement"),
       new FloatSpinner(-100, 100, 1f, model.dx, model.dx = _)),
     EventField(getMessage("Y_Movement"),
@@ -383,9 +384,10 @@ object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {
   override def category = Movement
   override def title = getMessage("Get_Entity_Info")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: GetEntityInfo) = Seq(
+                               mapName: Option[String], model: GetEntityInfo) = Seq(
     EventField("", new EntitySelectPanel(owner, sm, mapName,
-      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
+      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false,
+      allowNone = false)),
     EventField(
       getMessage("Global_Variable_Name"),
       textField(model.globalVariableName, model.globalVariableName = _)),
@@ -410,7 +412,7 @@ object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
   override def category = Effects
   override def title = getMessage("Play_Animation")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: PlayAnimation) = {
+                               mapName: Option[String], model: PlayAnimation) = {
 
     val fXOffset =
       new NumberSpinner(-2000, 2000, model.xOffset, model.xOffset = _)
@@ -419,7 +421,8 @@ object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
 
     lazy val fOrigin = enumVerticalBox(Origins, model.originId, updateOriginId)
     lazy val fEntity = new EntitySelectPanel(owner, sm, mapName,
-      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)
+      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false,
+      allowNone = false)
 
     def updateOriginId(newOriginId: Int): Unit = {
       model.originId = newOriginId
@@ -471,7 +474,7 @@ object PlaySoundUI extends EventCmdUI[PlaySound] {
   override def category = Effects
   override def title = getMessage("Play_Sound")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: PlaySound) = Seq(
+                               mapName: Option[String], model: PlaySound) = Seq(
     EventField(
       getMessage("Sound"),
       new SoundField(owner, sm, Some(model.spec), v => model.spec = v.get,
@@ -482,7 +485,7 @@ object CommentUI extends EventCmdUI[Comment] {
   override def category = Programming
   override def title = getMessage("Comment")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: Comment) = Seq(
+                               mapName: Option[String], model: Comment) = Seq(
     EventField("", {
       val textArea = new RSyntaxTextArea(20, 60)
       textArea.setText(model.commentString)
@@ -506,7 +509,7 @@ object RunJsUI extends EventCmdUI[RunJs] {
   override def category = Programming
   override def title = getMessage("Run_Javascript")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: RunJs) = Seq(
+                               mapName: Option[String], model: RunJs) = Seq(
     EventField("", {
       val textArea = new RSyntaxTextArea(20, 60)
       textArea.setText(model.scriptBody)
@@ -526,13 +529,25 @@ object RunJsUI extends EventCmdUI[RunJs] {
     }))
 }
 
+object SetCameraFollowUI extends EventCmdUI[SetCameraFollow] {
+  override def category = Movement
+  override def title = needsTranslation("Set_Camera_Follow")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String],
+                               model: SetCameraFollow) = Seq(
+    EventField("", new EntitySelectPanel(owner, sm, mapName,
+      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false,
+      allowNone = true)))
+}
+
 object SetEventSpeedUI extends EventCmdUI[SetEventSpeed] {
   override def category = Movement
   override def title = getMessage("Set_Event_Speed")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: SetEventSpeed) = Seq(
+                               mapName: Option[String], model: SetEventSpeed) = Seq(
     EventField("", new EntitySelectPanel(owner, sm, mapName,
-      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)),
+      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false,
+      allowNone = false)),
     EventField(getMessage("Speed"),
       new FloatSpinner(0.1f, 100f, 1f, model.speed, model.speed = _)))
 }
@@ -541,9 +556,10 @@ object SetEventStateUI extends EventCmdUI[SetEventState] {
   override def category = Programming
   override def title = getMessage("Set_Event_State")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: SetEventState) = Seq(
+                               mapName: Option[String], model: SetEventState) = Seq(
     EventField("", new EntitySelectPanel(owner, sm, mapName,
-      model.entitySpec, allowPlayer = false, allowEventOnOtherMap = true)),
+      model.entitySpec, allowPlayer = false, allowEventOnOtherMap = true,
+      allowNone = false)),
     EventField(getMessage("New_State"),
       new NumberSpinner(0, 127, model.state, model.state = _)))
 }
@@ -569,7 +585,7 @@ object SetWindowskinUI extends EventCmdUI[SetWindowskin] {
   override def category = Windows
   override def title = getMessage("Set_Windowskin")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: SetWindowskin) = Seq(
+                               mapName: Option[String], model: SetWindowskin) = Seq(
     EventField(getMessage("Windowskin"), new WindowskinField(
       owner, sm, model.windowskinPath, model.windowskinPath = _)))
 }
@@ -578,7 +594,7 @@ object ShowPictureUI extends EventCmdUI[ShowPicture] {
   override def category = Windows
   override def title = getMessage("Show_Picture")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: ShowPicture) = Seq(
+                               mapName: Option[String], model: ShowPicture) = Seq(
     EventField(
       getMessage("Picture"),
       new PictureField(owner, sm, model.picture, model.picture = _)),
@@ -599,7 +615,7 @@ object ShowTextUI extends EventCmdUI[ShowText] {
   override def category = Windows
   override def title = getMessage("Show_Text")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: ShowText) = {
+                               mapName: Option[String], model: ShowText) = {
     val fCharacter = indexedCombo(
       sm.getProjData.enums.characters,
       model.characterId,
@@ -648,30 +664,22 @@ object StopMusicUI extends EventCmdUI[StopMusic] {
   override def category = Effects
   override def title = getMessage("Stop_Music")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: StopMusic) = Seq(
+                               mapName: Option[String], model: StopMusic) = Seq(
     EventField(
       getMessage("Fade_Duration"),
       new FloatSpinner(0, 10f, 0.1f, model.fadeDuration,
         model.fadeDuration = _)))
   override def getParameterFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: StopMusic) = List(
+                                  mapName: Option[String], model: StopMusic) = List(
     IntNumberField(getMessage("Slot"), 0, MusicSlots.NUM_SLOTS,
       model.slot))
-}
-
-object ChangeCameraFollowUI extends EventCmdUI[ChangeCameraFollow] {
-  override def category = Movement
-  override def title = needsTranslation("Change_Camera_Follow")
-  override def getNormalFields(owner: Window, sm: StateMaster, mapName: Option[String] ,model: ChangeCameraFollow) = Seq(
-          EventField("", new EntitySelectPanel(owner, sm, mapName,
-      model.entitySpec, allowPlayer = true, allowEventOnOtherMap = false)))
 }
 
 object TeleportUI extends EventCmdUI[Teleport] {
   override def category = Movement
   override def title = getMessage("Teleport_Player")
   override def getNormalFields(owner: Window, sm: StateMaster,
-    mapName: Option[String], model: Teleport) = Seq(
+                               mapName: Option[String], model: Teleport) = Seq(
     EventField(getMessage("Transition"), enumVerticalBox(Transitions,
       model.transitionId, model.transitionId = _)),
     EventField(getMessage("Destination"),

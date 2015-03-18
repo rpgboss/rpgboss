@@ -145,19 +145,19 @@ class ScriptInterface(
   }
 
   def teleport(mapName: String, x: Float, y: Float,
-    transitionId: Int = Transitions.FADE.id) = syncRun {
+    transitionId: Int = Transitions.FADE.id) = {
     val loc = MapLoc(mapName, x, y)
-    val map = getMap(loc)
     val settedTransition = getInt("useTransition")
     var transition = Transitions.get(transitionId)
     val fadeDuration = Transitions.fadeLength
 
     if (settedTransition != -1) transition = Transitions.get(settedTransition)
 
-    game.mapScreen.scriptFactory.runFromFile(
+    val script = game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
       "transition" + transition + "('" + mapName + "'," + x.toString() + "," + y.toString() + "," + fadeDuration.toString() + ")",
-      runOnNewThread = true)
+      runOnNewThread = false)
+    script.awaitFinish()
 
     stopSound()
   }
@@ -176,6 +176,18 @@ class ScriptInterface(
    */
   def getCameraPos() = syncRun {
     mapScreen.camera.info
+  }
+
+  def setCameraFollowEvent(eventId: Int) = syncRun {
+    mapScreen.setCameraFollow(Some(eventId))
+  }
+
+  def setCameraFollowPlayer() = syncRun {
+    mapScreen.setCameraFollow(Some(EntitySpec.playerEntityId))
+  }
+
+  def setCameraFollowNone() = syncRun {
+    mapScreen.setCameraFollow(None)
   }
 
   /*
