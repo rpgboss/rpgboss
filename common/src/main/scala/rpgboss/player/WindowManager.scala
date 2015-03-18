@@ -132,14 +132,14 @@ class WindowManager(
   }
 
   def showPictureByName(slot: Int, name: String, layout: Layout,
-                        alpha: Float = 1.0f) = {
+    alpha: Float = 1.0f) = {
     assertOnBoundThread()
     val picture = Picture.readFromDisk(project, name)
     showPicture(slot, new TexturePicture(assets, picture, layout, alpha))
   }
 
   def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
-                      alpha: Float = 1.0f, framesPerSecond: Int = 30) = {
+    alpha: Float = 1.0f, framesPerSecond: Int = 30) = {
     assertOnBoundThread()
     val filesUnderPath = Picture.listResourcesUnderPath(project, folderPath)
 
@@ -248,7 +248,7 @@ class WindowManager(
   }
 
   def render(batch: SpriteBatch, shapeRenderer: ShapeRenderer,
-             screenCamera: OrthographicCamera) = {
+    screenCamera: OrthographicCamera) = {
     batch.setProjectionMatrix(screenCamera.combined)
     batch.enableBlending()
     batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)

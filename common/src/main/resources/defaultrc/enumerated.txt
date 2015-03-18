@@ -596,7 +596,6 @@ picture/sys/weather/snow/0189.png
 picture/sys/weather/snow/0190.png
 picture/sys/weather/snow/0191.png
 picture/sys/weather/snow/0192.png
-script/sys/eventEntity.js
 script/sys/globals.js
 script/sys/menu.js
 script/sys/start.js
