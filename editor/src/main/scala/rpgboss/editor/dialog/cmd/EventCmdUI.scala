@@ -531,7 +531,7 @@ object RunJsUI extends EventCmdUI[RunJs] {
 
 object SetCameraFollowUI extends EventCmdUI[SetCameraFollow] {
   override def category = Movement
-  override def title = needsTranslation("Set_Camera_Follow")
+  override def title = getMessage("Set_Camera_Follow")
   override def getNormalFields(owner: Window, sm: StateMaster,
                                mapName: Option[String],
                                model: SetCameraFollow) = Seq(
