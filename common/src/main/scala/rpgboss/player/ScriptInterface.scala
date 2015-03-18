@@ -178,6 +178,18 @@ class ScriptInterface(
     mapScreen.camera.info
   }
 
+  def setCameraFollowEvent(eventId: Int) = syncRun {
+    mapScreen.setCameraFollow(Some(eventId))
+  }
+
+  def setCameraFollowPlayer() = syncRun {
+    mapScreen.setCameraFollow(Some(EntitySpec.playerEntityId))
+  }
+
+  def setCameraFollowNone() = syncRun {
+    mapScreen.setCameraFollow(None)
+  }
+
   /*
    * Things to do with the screen
    */

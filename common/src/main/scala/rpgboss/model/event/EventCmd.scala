@@ -57,7 +57,6 @@ object EventCmd {
     classOf[BreakLoop],
     classOf[CallMenu],
     classOf[CallSaveMenu],
-    classOf[ChangeCameraFollow],
     classOf[Comment],
     classOf[ClearTimer],
     classOf[ExitGame],
@@ -80,6 +79,7 @@ object EventCmd {
     classOf[PlayMusic],
     classOf[PlaySound],
     classOf[RunJs],
+    classOf[SetCameraFollow],
     classOf[SetEventSpeed],
     classOf[SetEventState],
     classOf[SetGlobalInt],
@@ -445,6 +445,21 @@ case class Comment(var commentString: String = "") extends EventCmd {
   }
 }
 
+case class SetCameraFollow(
+  var entitySpec: EntitySpec = EntitySpec(WhichEntity.PLAYER.id))
+  extends EventCmd {
+  def sections = WhichEntity(entitySpec.whichEntityId) match {
+    case WhichEntity.PLAYER =>
+      singleCall("game.setCameraFollowPlayer")
+    case WhichEntity.EVENT_ON_MAP =>
+      singleCall("game.setCameraFollowEvent", entitySpec.eventId)
+    case WhichEntity.THIS_EVENT =>
+      singleCall("game.setCameraFollowEvent", RawJs("event.id()"))
+    case WhichEntity.NONE =>
+      singleCall("game.setCameraFollowNone")
+  }
+}
+
 case class SetEventState(
   var entitySpec: EntitySpec = EntitySpec(),
   var state: Int = 0) extends EventCmd {
@@ -542,11 +557,6 @@ case class Teleport(loc: MapLoc = MapLoc(),
   var transitionId: Int = Transitions.FADE.id) extends EventCmd {
   def sections =
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
-}
-
-case class ChangeCameraFollow(var entitySpec: EntitySpec = EntitySpec()) extends EventCmd {
-  def sections =
-    singleCall("game.changeCameraFollow", entitySpec)
 }
 
 case class EnableDisableMenu(var enabled: Int = 1) extends EventCmd {

@@ -29,6 +29,7 @@ object WhichEntity extends RpgEnum {
   val THIS_EVENT = Value(1, "This_Event")
   val EVENT_ON_MAP = Value(2, "Event_On_Map")
   val EVENT_ON_OTHER_MAP = Value(3, "Event_On_Other_Map")
+  val NONE = Value(4, "None")
 
   def default = THIS_EVENT
 }

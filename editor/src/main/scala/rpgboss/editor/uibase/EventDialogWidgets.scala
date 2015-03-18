@@ -62,7 +62,8 @@ class EntitySelectPanel(
   currentMapName: Option[String],
   model: EntitySpec,
   allowPlayer: Boolean,
-  allowEventOnOtherMap: Boolean)
+  allowEventOnOtherMap: Boolean,
+  allowNone: Boolean)
   extends DesignGridPanel {
 
   border = BorderFactory.createTitledBorder(getMessage("Which_Entity"))
@@ -151,6 +152,7 @@ class EntitySelectPanel(
   val disabledSet = collection.mutable.Set[WhichEntity.Value]()
   if (!allowPlayer) disabledSet += WhichEntity.PLAYER
   if (!allowEventOnOtherMap) disabledSet += WhichEntity.EVENT_ON_OTHER_MAP
+  if (!allowNone) disabledSet += WhichEntity.NONE
   if (currentMapData.isEmpty || currentMapData.get.events.isEmpty)
     disabledSet += WhichEntity.EVENT_ON_MAP
 

@@ -11,7 +11,7 @@ class MapCameraSpec extends UnitSpec {
 
      def updateCamera(delta: Float, trackedEntity: EntityLike,
                       forceSnapToEntity: Boolean) = {
-       camera.update(delta, trackedEntity, forceSnapToEntity, mapMetadata,
+       camera.update(delta, Some(trackedEntity), forceSnapToEntity, mapMetadata,
                      20, 15)
      }
 

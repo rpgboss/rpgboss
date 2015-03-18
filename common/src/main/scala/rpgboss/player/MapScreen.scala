@@ -69,11 +69,15 @@ class MapScreen(val game: RpgGame)
     return 0
   }
 
+  def setCameraFollow(entityId: Option[Int]) =
+    cameraFollowedEntity = entityId.flatMap(allEntities.get)
+
   val camera = new MapCamera
 
   // All the events on the current map, including the player event.
   // The player event is stored with the '-1' key.
   val allEntities = collection.mutable.Map[Int, Entity]()
+  var cameraFollowedEntity: Option[Entity] = None
 
   def setPlayerLoc(loc: MapLoc): Unit = {
     mapAndAssetsOption.map(_.dispose())
@@ -118,6 +122,8 @@ class MapScreen(val game: RpgGame)
           v)))
     }
 
+    cameraFollowedEntity = Some(playerEntity)
+
     playMusic(0, mapAndAssets.map.metadata.music, true,
         Transitions.fadeLength)
 
@@ -141,7 +147,7 @@ class MapScreen(val game: RpgGame)
                       forceSnapToEntity: Boolean) = {
     val map = mapAndAssets.map
 
-    camera.update(delta, playerEntity, forceSnapToEntity, map.metadata,
+    camera.update(delta, cameraFollowedEntity, forceSnapToEntity, map.metadata,
                   screenWTiles, screenHTiles)
 
     tileCamera.position.x = camera.x

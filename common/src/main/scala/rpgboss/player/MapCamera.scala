@@ -26,7 +26,7 @@ class MapCamera {
 
   def info = CameraInfo(x, y, speed, moveQueue.length)
 
-  def update(delta: Float, trackedEntity: EntityLike,
+  def update(delta: Float, trackedEntity: Option[EntityLike],
              forceSnapToEntity: Boolean, mapMetadata: RpgMapMetadata,
              screenWTiles: Float, screenHTiles: Float): Unit = {
     if (!moveQueue.isEmpty) {
@@ -34,8 +34,11 @@ class MapCamera {
       return
     }
 
-    var desiredX = trackedEntity.x
-    var desiredY = trackedEntity.y
+    if (trackedEntity.isEmpty)
+      return
+
+    var desiredX = trackedEntity.get.x
+    var desiredY = trackedEntity.get.y
 
     if (screenWTiles >= mapMetadata.xSize) {
       desiredX = mapMetadata.xSize.toFloat / 2
@@ -57,7 +60,7 @@ class MapCamera {
     } else {
       // Move towards the tracked entity.
       val travel = new Vector2(desiredX - x, desiredY - y)
-      travel.clamp(0, delta * trackedEntity.speed)
+      travel.clamp(0, delta * trackedEntity.get.speed)
 
       this.x += travel.x
       this.y += travel.y
