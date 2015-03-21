@@ -10,11 +10,10 @@ import scala.swing.event._
 
 class MapLocPanel(window: Window, sm: StateMaster, model: MapLoc,
                   selectMapOnly: Boolean)
-  extends BoxPanel(Orientation.Vertical) {
+  extends BorderPanel {
 
   val mapView = new MapView(window, sm, MapScales.default) {
-    preferredSize = new Dimension(600, 600)
-    maximumSize = new Dimension(600, 600)
+    preferredSize = new Dimension(300, 300)
     override def mousePressed(
       e: MousePressed,
       x0: Float,
@@ -83,10 +82,7 @@ class MapLocPanel(window: Window, sm: StateMaster, model: MapLoc,
     update()
   }
 
-  contents += curLocField
-
-  contents += new BoxPanel(Orientation.Horizontal) {
-    contents += selector
-    contents += mapView
-  }
+  add(curLocField, BorderPanel.Position.North)
+  add(selector, BorderPanel.Position.East)
+  add(mapView, BorderPanel.Position.Center)
 }
