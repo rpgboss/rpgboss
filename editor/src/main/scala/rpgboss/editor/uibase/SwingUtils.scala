@@ -100,6 +100,10 @@ object SwingUtils {
   def textAreaField(initial: Array[String], onUpdate: Array[String] => Unit) = {
     val textEdit = new TextArea(initial.mkString("\n")) {
       listenTo(this)
+
+      lineWrap = true
+      wordWrap = true
+
       reactions += {
         case e: ValueChanged => onUpdate(text.split("\n"))
       }
