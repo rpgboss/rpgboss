@@ -40,4 +40,27 @@ class WindowSpec extends UnitSpec {
     w.update(0.30f)
     w.state should equal (Window.Closed)
   }
+
+  "Window" should "be able to wrap lines" in {
+    val s1 = "Hello Dog"
+
+    PrintingWindowText.wrapLine(s1, 10, _.length) should equal(
+        Array("Hello Dog"))
+    PrintingWindowText.wrapLine(s1, 5, _.length) should equal(
+        Array("Hello", "Dog"))
+    PrintingWindowText.wrapLine(s1, 3, _.length) should equal(
+        Array("Hello", "Dog"))
+    PrintingWindowText.wrapLine(s1, 0, _.length) should equal(
+        Array("Hello", "Dog"))
+
+    val s2 = "This is a test string. Hello World."
+    PrintingWindowText.wrapLine(s2, 35, _.length) should equal(
+        Array(s2))
+    PrintingWindowText.wrapLine(s2, 34, _.length) should equal(
+        Array("This is a test string. Hello", "World."))
+    PrintingWindowText.wrapLine(s2, 12, _.length) should equal(
+        Array("This is a", "test string.", "Hello World."))
+    PrintingWindowText.wrapLine(s2, 11, _.length) should equal(
+        Array("This is a", "test", "string.", "Hello", "World."))
+  }
 }

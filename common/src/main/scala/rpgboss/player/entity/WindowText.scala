@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.typesafe.scalalogging.slf4j.LazyLogging
-
 import rpgboss.lib.Rect
 import rpgboss.lib.ThreadChecked
 import rpgboss.model.resource.Windowskin
 import rpgboss.player.PersistentState
 import rpgboss.player.ScriptInterfaceConstants
+import scala.collection.mutable.ArrayBuffer
 
 object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
@@ -32,8 +32,7 @@ object WindowText {
     Color.BLUE,
     Color.PURPLE,
     Color.MAGENTA,
-    Color.PINK
-  )
+    Color.PINK)
 
   val NAME_OUT_OF_BOUNDS = "NAME_OUT_OF_BOUNDS"
 
@@ -51,7 +50,7 @@ object WindowText {
   }
 
   def processText(text: Array[String], persistent: PersistentState) = {
-    val newText = for(line <- text) yield {
+    val newText = for (line <- text) yield {
       val namesProcessedLine = WindowText.nameReplace(
         line,
         persistent.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES))
@@ -74,15 +73,16 @@ class WindowText(
   val lineHeight: Int = WindowText.DefaultLineHeight)
   extends ThreadChecked with LazyLogging {
 
-  protected var _text: Array[String] =
-    WindowText.processText(initialText, persistent)
+  def processText(text: Array[String]) =
+    WindowText.processText(text, persistent)
+
+  protected var _text: Array[String] = processText(initialText)
 
   def updateRect(rect: Rect) = {
     this.rect = rect
   }
 
-  def updateText(newText: Array[String]) =
-    _text = WindowText.processText(newText, persistent)
+  def updateText(newText: Array[String]) = _text = processText(newText)
 
   def drawLine(b: SpriteBatch, line: String, xOffset: Float, yOffset: Float) = {
     val colorCodesExist = WindowText.colorCtrl.findFirstIn(line).isDefined
@@ -92,9 +92,9 @@ class WindowText(
       HAlignment.LEFT
     } else {
       justification match {
-        case Window.Left => HAlignment.LEFT
+        case Window.Left   => HAlignment.LEFT
         case Window.Center => HAlignment.CENTER
-        case Window.Right => HAlignment.RIGHT
+        case Window.Right  => HAlignment.RIGHT
       }
     }
 
@@ -141,7 +141,7 @@ class WindowText(
       }
 
       printUntilColorTokenOrEnd(rMatchOption.map(_.after).getOrElse(""),
-                                xStart + textBounds.width)
+        xStart + textBounds.width)
     }
 
     printUntilColorTokenOrEnd(line, rect.left + xOffset)
@@ -164,6 +164,37 @@ class WindowText(
   }
 }
 
+object PrintingWindowText {
+  def wrapLine(line: String, maxWidth: Float,
+               widthFunction: String => Float) = {
+    val wrappedLines = new ArrayBuffer[String]
+
+    val words = line.split(" ")
+    var lineStart = 0
+    // Minimum one word per line.
+    var wordsInLine = 1
+    while (lineStart < words.length) {
+      // Candidate line is the line with one more word.
+      val lineWithOneMoreWord =
+        words.view(lineStart, lineStart + wordsInLine + 1).mkString(" ")
+
+      if (lineStart + wordsInLine < words.length &&
+          widthFunction(lineWithOneMoreWord) <= maxWidth) {
+        // We can fit one more word in, so try fitting another one.
+        wordsInLine += 1;
+      } else {
+        // Break off a line.
+        wrappedLines +=
+          words.view(lineStart, lineStart + wordsInLine).mkString(" ")
+        lineStart += wordsInLine
+        wordsInLine = 1
+      }
+    }
+
+    wrappedLines.toArray
+  }
+}
+
 class PrintingWindowText(
   persistent: PersistentState,
   initialText: Array[String],
@@ -175,6 +206,20 @@ class PrintingWindowText(
   extends WindowText(
     persistent, initialText, rect, fontbmp, options.justification) {
   assume(options.timePerChar >= 0)
+
+  override def processText(text: Array[String]) = {
+    val lineHeight = fontbmp.getLineHeight()
+    val processedText = super.processText(text)
+
+    val wrappedLines = new ArrayBuffer[String]
+
+    for (line <- processedText) {
+      wrappedLines ++= PrintingWindowText.wrapLine(
+          line, rect.w, fontbmp.getBounds(_).width)
+    }
+
+    wrappedLines.toArray
+  }
 
   def drawAwaitingArrow = true
 
@@ -242,7 +287,7 @@ class PrintingWindowText(
 
     // This loop advances at most one line per iteration.
     while (!wholeBlockPrinted && !allTextPrinted &&
-           _timeSinceLastCharacter > options.timePerChar) {
+      _timeSinceLastCharacter > options.timePerChar) {
       assert(_lineI <= _text.length)
       val line = _text(_lineI)
 
