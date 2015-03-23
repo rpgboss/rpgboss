@@ -71,6 +71,7 @@ object EventCmd {
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
     classOf[EnableDisableMenu],
+    classOf[EnableDisableEvents],
     classOf[ModifyParty],
     classOf[MoveCamera],
     classOf[MoveEvent],
@@ -562,6 +563,12 @@ case class Teleport(loc: MapLoc = MapLoc(),
 case class EnableDisableMenu(var enabled: Int = 1) extends EventCmd {
   def sections = {
     singleCall("game.setInt", "menuEnabled", enabled)
+  }
+}
+
+case class EnableDisableEvents(var enabled: Int = 1) extends EventCmd {
+  def sections = {
+    singleCall("game.enableDisableEvents", enabled)
   }
 }
 

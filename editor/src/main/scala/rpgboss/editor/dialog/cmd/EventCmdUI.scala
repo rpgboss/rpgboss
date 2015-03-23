@@ -86,6 +86,7 @@ object EventCmdUI {
     IfConditionUI,
     LockPlayerMovementUI,
     EnableDisableMenuUI,
+    EnableDisableEventsUI,
     ModifyPartyUI,
     MoveCameraUI,
     MoveEventUI,
@@ -241,6 +242,15 @@ object EnableDisableMenuUI extends EventCmdUI[EnableDisableMenu] {
   override def title = getMessage("Enable_Disable_Menu")
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: EnableDisableMenu) = Seq(
+    EventField("", enumVerticalBox(
+      EnabledDisabledEnum, model.enabled, model.enabled = _)))
+}
+
+object EnableDisableEventsUI extends EventCmdUI[EnableDisableEvents] {
+  override def category = Windows
+  override def title = getMessage("Enable_Disable_Events")
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: EnableDisableEvents) = Seq(
     EventField("", enumVerticalBox(
       EnabledDisabledEnum, model.enabled, model.enabled = _)))
 }
