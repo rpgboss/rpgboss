@@ -16,7 +16,7 @@ Pre-requisites:
 
 +  git
 +  sbt - http://www.scala-sbt.org/
-+  Java 6, 7, or 8.
++  Java 6, 7, or 8. OR Openjdk-7, Openjdk-8 (8u40-b27-1 or more)
 
 Build instructions:
 
