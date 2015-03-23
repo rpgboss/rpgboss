@@ -29,7 +29,7 @@ object EncounterFieldGdxPanel {
 
 class EncounterFieldGdxPanel(project: Project, initial: Encounter)
   extends GdxPanel(project, EncounterFieldGdxPanel.width,
-                   EncounterFieldGdxPanel.height) {
+    EncounterFieldGdxPanel.height) {
   var battleScreen: BattleScreen = null
   var atlasSprites: TextureAtlas = null
 
@@ -143,6 +143,18 @@ class EncountersPanel(
 
     val fName = textField(model.name, model.name = _, Some(refreshModel))
 
+    val fEscapeChance =
+      percentField(0.01f, 1, model.escapeChance, model.escapeChance = _)
+
+    def updateFields() = {
+      fEscapeChance.enabled = model.canEscape
+    }
+    updateFields()
+
+    val fCanEscape = boolField(
+      needsTranslation("Can Escape"), model.canEscape, model.canEscape = _,
+      Some(updateFields))
+
     def regenerateName(): Unit = {
       if (!model.name.isEmpty && !model.name.startsWith("#"))
         return
@@ -186,6 +198,10 @@ class EncountersPanel(
       contents += new BoxPanel(Orientation.Vertical) {
         contents += new DesignGridPanel {
           row().grid(lbl(getMessageColon("Encounter_Name"))).add(fName)
+          row().grid().add(fCanEscape)
+          row()
+            .grid(lbl(needsTranslationColon("Escape Chance")))
+            .add(fEscapeChance)
         }
         contents += fDisplay
       }
