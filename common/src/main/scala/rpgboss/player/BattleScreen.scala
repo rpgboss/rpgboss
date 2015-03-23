@@ -647,8 +647,14 @@ class BattleScreen(
                     getEntityName(source), getEntityName(target)))
                 case action: SkillAction =>
                   val skill = battle.pData.enums.skills(action.skillId)
-                  postTextNotice("%s uses %s.".format(
-                    getEntityName(source), skill.name))
+                  if (notification.success) {
+                    postTextNotice("%s uses %s.".format(
+                      getEntityName(source), skill.name))
+                  } else {
+                    postTextNotice(
+                      "%s: ".format(getEntityName(source)) +
+                      scriptInterface.getMessage("Not enough MP..."))
+                  }
                 case action: ItemAction =>
                   val item = battle.pData.enums.items(action.itemId)
                   postTextNotice("%s uses %s.".format(

@@ -64,11 +64,11 @@ case class AttackAction(actor: BattleStatus, targets: Array[BattleStatus])
 case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
                        skillId: Int)
   extends BattleAction {
-  def process(battle: Battle) = {
+  def process(battle: Battle): (Array[Hit], Boolean) = {
     assume(skillId < battle.pData.enums.skills.length)
     val skill = battle.pData.enums.skills(skillId)
     if (actor.mp < skill.cost)
-      Array()
+      return (Array(), false)
 
     actor.mp -= skill.cost
 

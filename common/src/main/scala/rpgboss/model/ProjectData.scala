@@ -191,6 +191,7 @@ object ProjectData {
     "MP" -> "MP",
     "MRE:" -> "MRE:",
     "New Game" -> "New Game",
+    "Not enough MP..." -> "Not enough MP...",
     "Offhand" -> "Offhand",
     "Organize" -> "Organize",
     "Owned:" -> "Owned:",
