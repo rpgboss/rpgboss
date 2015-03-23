@@ -55,7 +55,7 @@ class RandomEnemyAI extends BattleAI {
 }
 
 case class BattleActionNotification(
-  action: BattleAction, hits: Array[Hit]) {
+  action: BattleAction, hits: Array[Hit], success: Boolean) {
   override def toString(): String = {
     "BattleActionNotification(%s, %s)".format(action, hits.deep)
   }
@@ -68,6 +68,13 @@ case class PartyParameters(
   characterEquip: Array[Array[Int]],
   initialCharacterTempStatusEffectIds: Array[Array[Int]],
   characterRows: Array[Int])
+
+object Battle {
+  val ACTIVE = 0
+  val VICTORY = 1
+  val DEFEAT = 2
+  val ESCAPED = 3
+}
 
 /**
  * @param   characterLevels         The levels of all the characters, not just
@@ -86,11 +93,8 @@ class Battle(
 
   private var time = 0.0
 
-  private var _defeat = false
-  def defeat = _defeat
-
-  private var _victory = false
-  def victory = _victory
+  private var _state = Battle.ACTIVE
+  def state = _state
 
   private def _enemyDatas =
     enemyStatus.map(status => pData.enums.enemies.apply(status.entityId))
@@ -203,6 +207,17 @@ class Battle(
     advanceTime(0)
   }
 
+  /**
+   * Returns true if party was able to escape.
+   */
+  def attemptEscape(): Boolean = {
+    if (encounter.canEscape && math.random < encounter.escapeChance) {
+      _state = Battle.ESCAPED
+      return true
+    }
+    return false
+  }
+
   def randomAliveOf(entityType: BattleEntityType.Value) = {
     val aliveList = entityType match {
       case BattleEntityType.Enemy => enemyStatus.filter(_.alive)
@@ -217,7 +232,7 @@ class Battle(
   }
 
   def advanceTime(deltaSeconds: Double): Unit = {
-    if (_defeat || _victory)
+    if (_state != Battle.ACTIVE)
       return
 
     time += deltaSeconds
@@ -233,7 +248,7 @@ class Battle(
     val flattenedStatusEffectHits = statusEffectHits.flatten
     if (!flattenedStatusEffectHits.isEmpty) {
       _notifications.enqueue(BattleActionNotification(
-          StatusEffectAction, flattenedStatusEffectHits))
+          StatusEffectAction, flattenedStatusEffectHits, true))
     }
 
     // Enqueue any newly ready entities.
@@ -248,18 +263,18 @@ class Battle(
     // Only do an action if there's no outstanding notification.
     if (!actionQueue.isEmpty) {
       val action = actionQueue.dequeue()
-      val hits = action.process(this)
-      _notifications.enqueue(BattleActionNotification(action, hits))
+      val (hits, success) = action.process(this)
+      _notifications.enqueue(BattleActionNotification(action, hits, success))
     }
 
     // Remove dead items from the ready queue.
     readyQueue.dequeueAll(!_.alive)
 
     if (partyStatus.forall(!_.alive)) {
-      _defeat = true
+      _state = Battle.DEFEAT
       readyQueue.clear()
     } else if (enemyStatus.forall(!_.alive)) {
-      _victory = true
+      _state = Battle.ESCAPED
       readyQueue.clear()
     }
   }

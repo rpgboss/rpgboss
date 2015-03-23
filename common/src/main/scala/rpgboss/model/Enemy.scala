@@ -46,7 +46,7 @@ case class Encounter(
   var name: String = "",
   var units: Array[EncounterUnit] = Array(),
   var canEscape: Boolean = true,
-  var escapeChance: Float = 0.9f) extends HasName
+  var escapeChance: Float = 0.7f) extends HasName
 
 object Encounter {
   def getEnemyLabels(

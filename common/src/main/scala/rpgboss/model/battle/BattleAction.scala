@@ -17,13 +17,16 @@ trait BattleAction {
   def actor: BattleStatus
   def targets: Array[BattleStatus]
 
-  def process(battle: Battle): Array[Hit]
+  /**
+   * Returns the hits, as well as the success of the action.
+   */
+  def process(battle: Battle): (Array[Hit], Boolean)
 }
 
 case class NullAction(actor: BattleStatus) extends BattleAction {
   override def targets = Array()
   def process(battle: Battle) = {
-    Array()
+    (Array(), true)
   }
 }
 
@@ -31,7 +34,7 @@ object StatusEffectAction extends BattleAction {
   override def actor = null
   override def targets = Array()
   def process(battle: Battle) = {
-    Array()
+    (Array(), true)
   }
 }
 
@@ -54,7 +57,7 @@ case class AttackAction(actor: BattleStatus, targets: Array[BattleStatus])
       hits ++= skill.applySkill(actor, target)
     }
 
-    hits.toArray
+    (hits.toArray, true)
   }
 }
 
@@ -76,7 +79,7 @@ case class SkillAction(actor: BattleStatus, targets: Array[BattleStatus],
       hits ++= skill.applySkill(actor, target)
     }
 
-    hits.toArray
+    (hits.toArray, true)
   }
 }
 
@@ -106,9 +109,17 @@ case class ItemAction(actor: BattleStatus, targets: Array[BattleStatus],
         hits ++= damages.map(damage => Hit(target, damage, -1))
       }
 
-      hits.toArray
+      (hits.toArray, true)
     } else {
-      Array.empty
+      (Array.empty, false)
     }
+  }
+}
+
+case class EscapeAction(actor: BattleStatus) extends BattleAction {
+  override def targets = Array()
+  def process(battle: Battle) = {
+    val success = battle.attemptEscape()
+    (Array.empty, success)
   }
 }
