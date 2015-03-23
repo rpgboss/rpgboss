@@ -172,7 +172,8 @@ class BattleScreen(
           currentOpt = Some(this)
 
           _window = scriptInterface.newChoiceWindow(
-            Array("Attack", "Skill", "Item"), Layout(SOUTH, FIXED, 140, 180),
+            Array("Attack", "Skill", "Item", "Escape"),
+            Layout(SOUTH, FIXED, 140, 180),
             TextChoiceWindowOptions(allowCancel = true))
         }
 
