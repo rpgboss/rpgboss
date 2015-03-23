@@ -716,7 +716,7 @@ class ScriptInterface(
     characterStatus.hp +=
       (characterStatus.stats.mhp * hpPercentage).round
     characterStatus.mp +=
-      (characterStatus.stats.mhp * mpPercentage).round
+      (characterStatus.stats.mmp * mpPercentage).round
 
     characterStatus.clampVitals()
 

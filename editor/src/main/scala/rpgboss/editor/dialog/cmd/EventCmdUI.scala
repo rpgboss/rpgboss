@@ -318,10 +318,10 @@ object HealOrDamageUI extends EventCmdUI[HealOrDamage] {
     EventField(getMessage("Character"), indexedCombo(
       sm.getProjData.enums.characters, model.characterId,
       model.characterId = _)),
-    EventField(getMessage("HP_Percentage"), percentField(0.01f, 1, model.hpPercentage,
-      model.hpPercentage = _)),
-    EventField(getMessage("MP_Percentage"), percentField(0.01f, 1, model.mpPercentage,
-      model.mpPercentage = _)))
+    EventField(getMessage("HP_Percentage"),
+      percentField(0, 1, model.hpPercentage, model.hpPercentage = _)),
+    EventField(getMessage("MP_Percentage"),
+      percentField(0, 1, model.mpPercentage, model.mpPercentage = _)))
 }
 
 object HidePictureUI extends EventCmdUI[HidePicture] {
