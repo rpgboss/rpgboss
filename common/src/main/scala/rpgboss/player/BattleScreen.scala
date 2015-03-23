@@ -89,7 +89,7 @@ class BattleScreen(
             while (true) {
               val idxInChoiceBox = skillWindow.getChoice()
               if (idxInChoiceBox == -1 ||
-                  idxInChoiceBox >= actor.knownSkillIds.length) {
+                idxInChoiceBox >= actor.knownSkillIds.length) {
                 skillWindow.close()
                 return false
               }
@@ -130,7 +130,7 @@ class BattleScreen(
             while (true) {
               val idxInChoiceBox = window.getChoice()
               if (idxInChoiceBox == -1 ||
-                  idxInChoiceBox >= battleItems.length) {
+                idxInChoiceBox >= battleItems.length) {
                 window.close()
                 return false
               }
@@ -155,6 +155,12 @@ class BattleScreen(
             window.close()
             return true
           }
+          case 3 => {
+            GdxUtils.syncRun {
+              _battle.map(_.takeAction(EscapeAction(actor)))
+            }
+            return true
+          }
           case _ => {
             GdxUtils.syncRun {
               // This is optional because this condition may be reached
@@ -172,7 +178,9 @@ class BattleScreen(
           currentOpt = Some(this)
 
           _window = scriptInterface.newChoiceWindow(
-            Array("Attack", "Skill", "Item"), Layout(SOUTH, FIXED, 140, 180),
+            Array("Attack", "Skill", "Item", "Escape").map(
+              scriptInterface.getMessage),
+            Layout(SOUTH, FIXED, 140, 180),
             TextChoiceWindowOptions(allowCancel = true))
         }
 
@@ -266,7 +274,7 @@ class BattleScreen(
       assertOnBoundThread()
 
       if (readyEntity.isDefined && currentOpt.isEmpty &&
-          readyEntity.get.entityType == BattleEntityType.Party) {
+        readyEntity.get.entityType == BattleEntityType.Party) {
         val window = new RunningWindow(_battle.get, readyEntity.get)
         window.run()
       }
@@ -278,10 +286,9 @@ class BattleScreen(
   private val _enemyBattlers = new collection.mutable.ArrayBuffer[PictureLike]
   private val _partyBattlers = new collection.mutable.ArrayBuffer[PictureLike]
 
-  // How long to wait after being defeated.
-  private var _defeatedTimer = 0.0f
-  private def defeatedMessageTime = 4.0f
-  private var _victorySequenceStarted = false
+  private var _endBattleMessageTimer = 0.0f
+  private def endBattleMessageTime = 2.0f
+  private var _endBattleThreadStarted = false
 
   private var enemyListWindow: PrintingTextWindow = null
   private var partyListWindow: PrintingTextWindow = null
@@ -296,13 +303,13 @@ class BattleScreen(
     animations: Seq[AnimationPlayer]) {
     def done =
       windows.forall(_.state == Window.Closed) &&
-      animations.forall(_.visualsDone)
+        animations.forall(_.visualsDone)
   }
   var currentNotificationDisplay: Option[NotificationDisplay] = None
 
   def getBattler(entityType: BattleEntityType.Value, id: Int): PictureLike = {
     assume(entityType == BattleEntityType.Party ||
-        entityType == BattleEntityType.Enemy)
+      entityType == BattleEntityType.Enemy)
 
     if (entityType == BattleEntityType.Party) {
       return _partyBattlers(id)
@@ -430,7 +437,7 @@ class BattleScreen(
         val picture = new TexturePicture(assets, battler, layout)
 
         windowManager.showPicture(
-            PictureSlots.BATTLE_SPRITES_ENEMIES + i, picture)
+          PictureSlots.BATTLE_SPRITES_ENEMIES + i, picture)
 
         _enemyBattlers.append(picture)
       }
@@ -454,16 +461,16 @@ class BattleScreen(
           SpriteSpec.Steps.STEP0)
 
         val newPicture = new TextureAtlasRegionPicture(
-            atlasSprites,
-            spriteset.name,
-            x,
-            y,
-            w,
-            h,
-            srcX,
-            srcY,
-            spriteset.tileW,
-            spriteset.tileH)
+          atlasSprites,
+          spriteset.name,
+          x,
+          y,
+          w,
+          h,
+          srcX,
+          srcY,
+          spriteset.tileW,
+          spriteset.tileH)
 
         windowManager.showPicture(
           PictureSlots.BATTLE_SPRITES_PARTY + i,
@@ -478,8 +485,8 @@ class BattleScreen(
     assertOnBoundThread()
     assert(_battle.isDefined)
     _battle = None
-    _defeatedTimer = 0
-    _victorySequenceStarted = false
+    _endBattleMessageTimer = 0
+    _endBattleThreadStarted = false
 
     currentNotificationDisplay = None
 
@@ -494,73 +501,98 @@ class BattleScreen(
     finishChannel.write(0)
   }
 
-  def postTextNotice(msg: String) = {
+  def postTextNotice(msg: String, stayOpenTime: Float = 1.0f) = {
     new PrintingTextWindow(gameOpt.get.persistent, windowManager, null,
-        Array(msg), Layout(NORTH, FIXED, 640, 60),
-        PrintingTextWindowOptions(timePerChar = 0.01f, stayOpenTime = 1.0f))
+      Array(msg), Layout(NORTH, FIXED, 640, 60),
+      PrintingTextWindowOptions(timePerChar = 0.01f,
+        stayOpenTime = stayOpenTime))
   }
 
   def update(delta: Float): Unit = {
+    import concurrent.ExecutionContext.Implicits.global
+
     // All these actions should not take place if this is an in-editor session.
     gameOpt map { game =>
       _battle.map { battle =>
         // Handle defeat
-        if (battle.defeat) {
-          if (_defeatedTimer == 0) {
-            postTextNotice("Defeat...")
+        if (battle.state == Battle.DEFEAT) {
+          if (_endBattleMessageTimer == 0) {
+            postTextNotice(scriptInterface.getMessage("Defeated..."),
+              endBattleMessageTime)
           }
-          _defeatedTimer += delta
-          if (_defeatedTimer >= defeatedMessageTime) {
+
+          _endBattleMessageTimer += delta
+          if (_endBattleMessageTimer >= endBattleMessageTime) {
             endBattle()
             game.gameOver()
           }
-        } else if (battle.victory) {
-          if (!_victorySequenceStarted) {
-            _victorySequenceStarted = true
+        } else if (battle.state == Battle.ESCAPED) {
+          if (_endBattleMessageTimer == 0) {
+            postTextNotice(scriptInterface.getMessage("Escaped..."),
+              endBattleMessageTime)
+          }
+
+          _endBattleMessageTimer += delta
+          if (_endBattleMessageTimer >= endBattleMessageTime &&
+              !_endBattleThreadStarted) {
+            _endBattleThreadStarted = true
 
             // Save party vitals
             battle.partyStatus.map { status =>
               game.persistent.saveCharacterVitals(
-                  status.entityId,
-                  status.hp,
-                  status.mp,
-                  status.tempStatusEffectIds)
+                status.entityId,
+                status.hp,
+                status.mp,
+                status.tempStatusEffectIds)
             }
-
-            val exp = battle.victoryExperience
-            val leveled = game.persistent.givePartyExperience(
-              project.data,
-              battle.partyIds,
-              exp)
-            val leveledCharacterNames = leveled.map(getCharacterName)
-
-            val gold = battle.goldDrops
-            game.persistent.addRemoveGold(gold)
-
-            val items = battle.generateItemDrops()
-            items.foreach(itemId => game.persistent.addRemoveItem(itemId, 1))
-
-            val itemNames = items.map(battle.pData.enums.items(_).name)
-
-            import concurrent.ExecutionContext.Implicits.global
 
             concurrent.Future {
-              scriptInterface.showText(Array("Received %d XP.".format(exp)))
-              for (name <- leveledCharacterNames) {
-                scriptInterface.showText(Array("%s leveled!".format(name)))
-              }
-
-              if (gold > 0)
-                scriptInterface.showText(Array("Got %d Gold".format(gold)))
-
-              if (!itemNames.isEmpty) {
-                scriptInterface.showText(Array("Got %s.".format(
-                    itemNames.mkString(", "))))
-              }
-
-              // TODO: endBattle() is called this script. Seems janky.
               scriptInterface.endBattleBackToMap()
             }
+          }
+        } else if (battle.state == Battle.VICTORY && !_endBattleThreadStarted) {
+          _endBattleThreadStarted = true
+
+          // Save party vitals
+          battle.partyStatus.map { status =>
+            game.persistent.saveCharacterVitals(
+              status.entityId,
+              status.hp,
+              status.mp,
+              status.tempStatusEffectIds)
+          }
+
+          val exp = battle.victoryExperience
+          val leveled = game.persistent.givePartyExperience(
+            project.data,
+            battle.partyIds,
+            exp)
+          val leveledCharacterNames = leveled.map(getCharacterName)
+
+          val gold = battle.goldDrops
+          game.persistent.addRemoveGold(gold)
+
+          val items = battle.generateItemDrops()
+          items.foreach(itemId => game.persistent.addRemoveItem(itemId, 1))
+
+          val itemNames = items.map(battle.pData.enums.items(_).name)
+
+          concurrent.Future {
+            scriptInterface.showText(Array("Received %d XP.".format(exp)))
+            for (name <- leveledCharacterNames) {
+              scriptInterface.showText(Array("%s leveled!".format(name)))
+            }
+
+            if (gold > 0)
+              scriptInterface.showText(Array("Got %d Gold".format(gold)))
+
+            if (!itemNames.isEmpty) {
+              scriptInterface.showText(Array("Got %s.".format(
+                itemNames.mkString(", "))))
+            }
+
+            // TODO: endBattle() is called this script. Seems janky.
+            scriptInterface.endBattleBackToMap()
           }
         } else {
           battle.advanceTime(delta)
@@ -569,8 +601,8 @@ class BattleScreen(
           currentNotificationDisplay map { display =>
             if (display.done) {
               currentNotificationDisplay = None
-              assert (battle.getNotification.isDefined)
-              assert (display.notification == battle.getNotification.get)
+              assert(battle.getNotification.isDefined)
+              assert(display.notification == battle.getNotification.get)
               battle.dismissNotification()
             }
           }
@@ -590,9 +622,9 @@ class BattleScreen(
                   windowCounts.update(hit.hitActor, curWindowCount + 1)
 
                   new DamageTextWindow(
-                      game.persistent, windowManager,
-                      hit.damage.damageString(project.data), rect.x, rect.y,
-                      delayTime = curWindowCount * 0.8f)
+                    game.persistent, windowManager,
+                    hit.damage.damageString(project.data), rect.x, rect.y,
+                    delayTime = curWindowCount * 0.8f)
                 }
 
               val animations =
@@ -602,9 +634,9 @@ class BattleScreen(
                   val battler =
                     getBattler(hit.hitActor.entityType, hit.hitActor.index)
                   playAnimation(hit.animationId,
-                      new PictureLikeAnimationTarget(battler),
-                      speedScale = 1.0f,
-                      sizeScale = 1.0f)
+                    new PictureLikeAnimationTarget(battler),
+                    speedScale = 1.0f,
+                    sizeScale = 1.0f)
                 }
 
               notification.action match {
@@ -612,15 +644,32 @@ class BattleScreen(
                   val target = notification.action.targets.head
 
                   postTextNotice("%s attacks %s.".format(
-                      getEntityName(source), getEntityName(target)))
+                    getEntityName(source), getEntityName(target)))
                 case action: SkillAction =>
                   val skill = battle.pData.enums.skills(action.skillId)
-                  postTextNotice("%s uses %s.".format(
+                  if (notification.success) {
+                    postTextNotice("%s uses %s.".format(
                       getEntityName(source), skill.name))
+                  } else {
+                    postTextNotice(
+                      "%s: ".format(getEntityName(source)) +
+                      scriptInterface.getMessage("Not enough MP..."))
+                  }
                 case action: ItemAction =>
                   val item = battle.pData.enums.items(action.itemId)
                   postTextNotice("%s uses %s.".format(
-                      getEntityName(source), item.name))
+                    getEntityName(source), item.name))
+                case action: EscapeAction =>
+                  // Success messages handled in beginning of update method.
+                  if (!notification.success) {
+                    if (battle.encounter.canEscape) {
+                      postTextNotice(
+                        scriptInterface.getMessage("Escape failed..."))
+                    } else {
+                      postTextNotice(
+                        scriptInterface.getMessage("Escape impossible..."))
+                    }
+                  }
                 case StatusEffectAction =>
                 case _ =>
                   postTextNotice("Not implemented yet.")

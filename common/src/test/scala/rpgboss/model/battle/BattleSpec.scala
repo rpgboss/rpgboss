@@ -99,7 +99,7 @@ class BattleSpec extends UnitSpec {
 
     val action =
       AttackAction(f.battle.enemyStatus.head, Array(f.battle.partyStatus.head))
-    val hits = action.process(f.battle)
+    val (hits, success) = action.process(f.battle)
 
     hits.length should equal (1)
     hits.head.hitActor should equal (f.battle.partyStatus(1))
@@ -116,7 +116,7 @@ class BattleSpec extends UnitSpec {
 
     val action =
       AttackAction(f.battle.partyStatus.head, Array(f.battle.enemyStatus.head))
-    val hits = action.process(f.battle)
+    val (hits, success) = action.process(f.battle)
 
     hits.length should equal (1)
     hits.head.hitActor should equal (f.battle.enemyStatus(1))
@@ -135,7 +135,7 @@ class BattleSpec extends UnitSpec {
     val partyHead = f.battle.partyStatus.head
 
     val action = SkillAction(partyHead, Array(partyHead), skillId = 0)
-    val hits = action.process(f.battle)
+    val (hits, success) = action.process(f.battle)
 
     hits.length should equal (1)
     hits.head.hitActor should equal (partyHead)

@@ -165,47 +165,46 @@ object ProjectData {
     "Accessory")
 
   def defaultMessages = Map(
-    // start menu
-    "New Game" -> "New Game",
-    "Load Game" -> "Load Game",
-    "Quit" -> "Quit",
-    // ingame menu
-    "Item" -> "Item",
-    "Skills" -> "Skills",
-    "Equip" -> "Equip",
-    "Status" -> "Status",
-    "Save" -> "Save",
-    // game over menu
+    "Accessory" -> "Accessory",
+    "ARM:" -> "ARM:",
+    "Armor" -> "Armor",
+    "ATK:" -> "ATK:",
+    "Attack" -> "Attack",
     "Back to titlescreen" -> "Back to titlescreen",
-    "Quit game" -> "Quit game",
-    // save menu
-    "Save" -> "Save",
+    "Buy" -> "Buy",
+    "Defeat" -> "Defeat",
+    "Defeated..." -> "Defeated...",
     "Empty" -> "Empty",
-    // item menu
-    "Use" -> "Use",
-    "Organize" -> "Organize",
-    // equip menu
+    "Equip" -> "Equip",
+    "Escape" -> "Escape",
+    "Escape failed..." -> "Escape failed...",
+    "Escape impossible..." -> "Escape impossible...",
+    "Escaped..." -> "Escaped...",
+    "Gold:" -> "Gold:",
+    "HP" -> "HP",
+    "Item" -> "Item",
+    "Load Game" -> "Load Game",
+    "LVL" -> "LVL",
+    "MAG:" -> "MAG:",
     "Max HP:" -> "Max HP:",
     "Max MP:" -> "Max MP:",
-    "ATK:" -> "ATK:",
-    "SPD:" -> "SPD:",
-    "MAG:" -> "MAG:",
-    "ARM:" -> "ARM:",
-    "MRE:" -> "MRE:",
-    "Weapon" -> "Weapon",
-    "Offhand" -> "Offhand",
-    "Armor" -> "Armor",
-    "Accessory" -> "Accessory",
-    "Accessory" -> "Accessory",
-    // status menu
-    "LVL" -> "LVL",
-    "HP" -> "HP",
     "MP" -> "MP",
-    // store menu
-    "Gold:" -> "Gold:",
+    "MRE:" -> "MRE:",
+    "New Game" -> "New Game",
+    "Not enough MP..." -> "Not enough MP...",
+    "Offhand" -> "Offhand",
+    "Organize" -> "Organize",
     "Owned:" -> "Owned:",
-    "Buy" -> "Buy",
+    "Quit game" -> "Quit game",
+    "Quit" -> "Quit",
+    "Save" -> "Save",
     "Sell" -> "Sell",
-    "Store" -> "Store"
-    )
+    "Skill" -> "Skill",
+    "Skills" -> "Skills",
+    "SPD:" -> "SPD:",
+    "Status" -> "Status",
+    "Store" -> "Store",
+    "Use" -> "Use",
+    "Weapon" -> "Weapon"
+  )
 }
