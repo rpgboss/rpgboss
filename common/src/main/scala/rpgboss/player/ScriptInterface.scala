@@ -147,19 +147,8 @@ class ScriptInterface(
     game.setPlayerLoc(MapLoc(mapName, x, y))
   }
 
-  /**
-   * FIXME: This method is probematic. During the teleport, the map switches.
-   * When the map switches, all running event threads are killed. This is why
-   * this whole command is 'syncRun' and posted to the main Gdx thread.
-   *
-   * It runs a custom transition script. However, the code in transitions.js
-   * assumes it is on a separate script thread, so it must be spawned to a
-   * new thread.
-   *
-   * This is overly complicated and error-prone, and should be simplified.
-   */
   def teleport(mapName: String, x: Float, y: Float,
-    transitionId: Int = Transitions.FADE.id) = syncRun {
+    transitionId: Int = Transitions.FADE.id) = {
     val loc = MapLoc(mapName, x, y)
     val settedTransition = getInt("useTransition")
     var transition = Transitions.get(transitionId)
@@ -167,12 +156,13 @@ class ScriptInterface(
 
     if (settedTransition != -1) transition = Transitions.get(settedTransition)
 
-    stopSound()
-
     val script = game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
       "transition" + transition + "('" + mapName + "'," + x.toString() + "," + y.toString() + "," + fadeDuration.toString() + ")",
-      runOnNewThread = true)
+      runOnNewThread = false)
+    script.awaitFinish()
+
+    stopSound()
   }
 
   /**
