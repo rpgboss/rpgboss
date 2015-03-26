@@ -68,6 +68,18 @@ game.callMenu = function() {
   game.runScript("sys/menu.js", "callMenu()");
 };
 
+game.getMenuEnabled = function() {
+  return game.getInt(game.MENU_ENABLED()) != 0;
+}
+
+game.setEventsEnabled = function(enabled) {
+  game.setInt(game.EVENTS_ENABLED(), enabled ? 1 : 0);
+}
+
+game.setMenuEnabled = function(enabled) {
+  game.setInt(game.MENU_ENABLED(), enabled ? 1 : 0);
+}
+
 game.setWeather = function(weatherTypeId) {
   switch(weatherTypeId) {
   case 0:

@@ -207,7 +207,7 @@ abstract class Entity(
                         math.abs(e.y - (y + dy)))
   }
 
-  def update(delta: Float) = {
+  def update(delta: Float, eventsEnabled: Boolean): Unit = {
     if (!moveQueue.isEmpty) {
       if (!isMovingVar) {
         isMovingVar = true

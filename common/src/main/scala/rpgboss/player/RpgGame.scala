@@ -145,6 +145,9 @@ class RpgGame(gamepath: File)
   def startNewGame() = {
     assertOnBoundThread()
 
+    persistent.setInt(EVENTS_ENABLED, 1)
+    persistent.setInt(MENU_ENABLED, 1)
+
     setParty(project.data.startup.startingParty.toArray)
     // Initialize data structures
 
@@ -182,6 +185,12 @@ class RpgGame(gamepath: File)
     val save = SaveFile.read(project, slot)
     assert(save.isDefined)
     persistent = new PersistentState(save.get)
+
+    // Fix up menu and event enabled / disabled for legacy save games.
+    if (persistent.hasInt(EVENTS_ENABLED))
+      persistent.setInt(EVENTS_ENABLED, 1)
+    if (persistent.hasInt(MENU_ENABLED))
+      persistent.setInt(MENU_ENABLED, 1)
 
     setParty(persistent.getIntArray(PARTY))
 

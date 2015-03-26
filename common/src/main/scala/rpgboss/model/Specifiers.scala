@@ -42,11 +42,13 @@ object EntityInfoEnum extends RpgEnum {
   def default = X
 }
 
-object EnabledDisabledEnum extends RpgEnum {
+object EnabledDisabledEnum extends BooleanRpgEnum {
   val Disabled = Value(0, "Disabled")
   val Enabled = Value(1, "Enabled")
+  def default = Disabled
 
-  def default = Enabled
+  def fromBoolean(x: Boolean) = if (x) Enabled else Disabled
+  def toBoolean(id: Int) = id == Enabled.id
 }
 
 object Scope extends RpgEnum {

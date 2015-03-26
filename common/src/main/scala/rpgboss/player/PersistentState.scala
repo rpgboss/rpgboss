@@ -76,6 +76,10 @@ class PersistentState(
     assertOnBoundThread()
     intMap.get(key).getOrElse(0)
   }
+  def hasInt(key: String) = {
+    assertOnBoundThread()
+    intMap.contains(key)
+  }
 
   /**
    * Returns a defensive copy of the stored array.

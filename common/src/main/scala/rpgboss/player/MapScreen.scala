@@ -210,7 +210,8 @@ class MapScreen(val game: RpgGame)
     val playerOldY = playerEntity.y
 
     // Update events, including player event
-    allEntities.values.foreach(_.update(delta))
+    val eventsEnabled = game.persistent.getInt(EVENTS_ENABLED) != 0
+    allEntities.values.foreach(_.update(delta, eventsEnabled))
 
     val playerMoveDistance =
       math.abs(playerEntity.x - playerOldX) +

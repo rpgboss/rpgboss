@@ -314,7 +314,7 @@ object SwingUtils {
     initial: Boolean,
     onUpdate: Boolean => Any) = {
     val radios = enumIdRadios(enum)(
-      AddOrRemove.fromBoolean(initial).id,
+      enum.fromBoolean(initial).id,
       id => onUpdate(enum.toBoolean(id)))
 
     new BoxPanel(Orientation.Horizontal) {

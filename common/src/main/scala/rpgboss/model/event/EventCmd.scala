@@ -51,7 +51,6 @@ object EventCmd {
   }
 
   val hints = ShortTypeHints(List(
-    classOf[Sleep],
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
     classOf[BreakLoop],
@@ -70,8 +69,7 @@ object EventCmd {
     classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
-    classOf[EnableDisableMenu],
-    classOf[EnableDisableEvents],
+    classOf[Sleep],
     classOf[ModifyParty],
     classOf[MoveCamera],
     classOf[MoveEvent],
@@ -81,12 +79,14 @@ object EventCmd {
     classOf[PlaySound],
     classOf[RunJs],
     classOf[SetCameraFollow],
+    classOf[SetEventsEnabled],
     classOf[SetEventSpeed],
     classOf[SetEventState],
     classOf[SetGlobalInt],
     classOf[SetTransition],
     classOf[SetTimer],
     classOf[SetLocalInt],
+    classOf[SetMenuEnabled],
     classOf[SetWindowskin],
     classOf[StopSound],
     classOf[ShowText],
@@ -560,15 +560,15 @@ case class Teleport(loc: MapLoc = MapLoc(),
     singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
 }
 
-case class EnableDisableMenu(var enabled: Int = 1) extends EventCmd {
+case class SetMenuEnabled(var enabled: Boolean = false) extends EventCmd {
   def sections = {
-    singleCall("game.setInt", "menuEnabled", enabled)
+    singleCall("game.setMenuEnabled", enabled)
   }
 }
 
-case class EnableDisableEvents(var enabled: Int = 1) extends EventCmd {
+case class SetEventsEnabled(var enabled: Boolean = false) extends EventCmd {
   def sections = {
-    singleCall("game.enableDisableEvents", enabled)
+    singleCall("game.setEventsEnabled", enabled)
   }
 }
 

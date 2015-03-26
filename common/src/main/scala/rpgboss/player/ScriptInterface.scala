@@ -49,6 +49,9 @@ trait HasScriptConstants {
   val GOLD = "gold"
   val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
 
+  val EVENTS_ENABLED = "eventsEnabled"
+  val MENU_ENABLED = "menuEnabled"
+
   val PARTY = "party"
   val INVENTORY_ITEM_IDS = "inventoryIdxs"
   val INVENTORY_QTYS = "inventoryQtys"
