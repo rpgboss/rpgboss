@@ -147,6 +147,25 @@ class ScriptInterface(
     game.setPlayerLoc(MapLoc(mapName, x, y))
   }
 
+  /**
+   * FIXME: This method has a lot of problems.
+   *
+   *  1. This method cannot be posted to the main Gdx thread, as it has some
+   *     game.sleep(...) calls, which would hang the whole game.
+   *
+   *  2. Unfortunately, game.setPlayerLoc will kill any event script threads,
+   *     which is generally the thread that this is running on.
+   *
+   * Thus the only way to use this safely is to call the setPlayerLoc method
+   * LAST in this whole function. That means that in transitions.js,
+   * setPlayerLoc must be the last call.
+   *
+   * Unfortunately this still causes a whole barf of exceptions to appear every
+   * time the player switches maps.
+   *
+   * This is very fragile and should be simplified / removed. Probably by
+   * removing the custom transitions scripts.
+   */
   def teleport(mapName: String, x: Float, y: Float,
     transitionId: Int = Transitions.FADE.id) = {
     val loc = MapLoc(mapName, x, y)
@@ -156,13 +175,14 @@ class ScriptInterface(
 
     if (settedTransition != -1) transition = Transitions.get(settedTransition)
 
-    val script = game.mapScreen.scriptFactory.runFromFile(
+    stopSound()
+
+    // This must be last, as the actual setPlayerLoc method is called in these
+    // methods, and the thread is killed once that method is called.
+    game.mapScreen.scriptFactory.runFromFile(
       ResourceConstants.transitionsScript,
       "transition" + transition + "('" + mapName + "'," + x.toString() + "," + y.toString() + "," + fadeDuration.toString() + ")",
       runOnNewThread = false)
-    script.awaitFinish()
-
-    stopSound()
   }
 
   /**
@@ -399,6 +419,8 @@ class ScriptInterface(
    * Things to do with user interaction
    */
   def sleep(duration: Float) = {
+    assert(!onBoundThread(),
+           "Do not use game.sleep on the main GDX thread. That hangs the game.")
     Thread.sleep((duration * 1000).toInt)
   }
 
