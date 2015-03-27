@@ -308,6 +308,12 @@ case class GetEntityInfo(
       if (kind == 2) {
         expr = RawJs(jsCall("game.getPlayerDirection").exp)
       }
+      if (kind == 3) {
+        expr = RawJs(jsCall("game.getPlayerScreenX").exp)
+      }
+      if (kind == 4) {
+        expr = RawJs(jsCall("game.getPlayerScreenY").exp)
+      }
 
     } else {
 
@@ -319,6 +325,12 @@ case class GetEntityInfo(
       }
       if (kind == 2) {
         expr = RawJs(jsCall("game.getEventDirection", eventId).exp)
+      }
+      if (kind == 3) {
+        expr = RawJs(jsCall("game.getEventScreenX", eventId).exp)
+      }
+      if (kind == 4) {
+        expr = RawJs(jsCall("game.getEventScreenY", eventId).exp)
       }
 
     }

@@ -38,6 +38,8 @@ object EntityInfoEnum extends RpgEnum {
   val X = Value(0, "X")
   val Y = Value(1, "Y")
   val FACE_DIRECTION = Value(2, "FACE_DIRECTION")
+  val ScreenX = Value(3, "ScreenX")
+  val ScreenY = Value(4, "ScreenY")
 
   def default = X
 }

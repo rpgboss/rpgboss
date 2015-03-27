@@ -273,6 +273,20 @@ class ScriptInterface(
     return 0
   }
 
+  def getEventScreenY(id: Int): Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.screenY.toInt
+    }
+    return 0
+  }
+
+  def getEventScreenX(id: Int): Int = {
+    getEventEntityInfo(id).map { info =>
+      return info.screenX.toInt
+    }
+    return 0
+  }
+
   def getEventY(id: Int): Int = {
     getEventEntityInfo(id).map { info =>
       return info.y.toInt
@@ -293,6 +307,14 @@ class ScriptInterface(
 
   def getPlayerY(): Int = {
     return getPlayerEntityInfo.y.toInt
+  }
+
+  def getPlayerScreenX(): Int = {
+    return getPlayerEntityInfo.screenX.toInt
+  }
+
+  def getPlayerScreenY(): Int = {
+    return getPlayerEntityInfo.screenY.toInt
   }
 
   def getPlayerDirection(): Int = {
@@ -875,7 +897,7 @@ class ScriptInterface(
   }
 
   def drawText(id: Int, text: String, x: Int, y: Int, color: Color = new Color(255, 255, 255, 1), scale: Float = 1.0f) = syncRun {
-    logger.debug("drawText: " + text + " on ");
+    logger.debug("drawText: " + id + ", text: " + text + " on " + x + ", " + y + ", scale:"+scale);
     mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
   }
 
