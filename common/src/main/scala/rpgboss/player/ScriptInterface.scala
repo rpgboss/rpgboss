@@ -22,7 +22,7 @@ import org.mozilla.javascript.ScriptableObject
 import scalaj.http.Http
 
 case class EntityInfo(x: Float, y: Float, dir: Int,
-  screenX: Float, screenY: Float)
+  screenX: Float, screenY: Float, screenTopLeftX:Float, screenTopLeftY:Float, width:Float, height:Float)
 
 object EntityInfo {
   def apply(e: Entity, mapScreen: MapScreen): EntityInfo = {
@@ -32,7 +32,12 @@ object EntityInfo {
       (e.x - mapScreen.camera.x) * pxPerTileX + (mapScreen.screenW / 2)
     val screenY =
       (e.y - mapScreen.camera.y) * pxPerTileY + (mapScreen.screenH / 2)
-    apply(e.x, e.y, e.dir, screenX, screenY)
+    val width = pxPerTileX*e.graphicW
+    val height = pxPerTileY*e.graphicH
+    val screenTopLeftX = screenX - width/2
+    val screenTopLeftY = screenY - height/2
+
+    apply(e.x, e.y, e.dir, screenX, screenY, screenTopLeftX, screenTopLeftY, width, height)
   }
 }
 
@@ -266,59 +271,58 @@ class ScriptInterface(
     game.battleScreen.finishChannel.read
   }
 
-  def getEventX(id: Int): Int = {
+  def getEventInfoScala(id:Int):Map[String,Int] = {
+    var x = 0
+    var y = 0
+    var dir = 0
+    var screenX = 0
+    var screenY = 0
+    var screenTopLeftX = 0
+    var screenTopLeftY = 0
+    var width = 0
+    var height = 0
     getEventEntityInfo(id).map { info =>
-      return info.x.toInt
+      dir = info.dir
+      x = info.x.toInt
+      y = info.y.toInt
+      screenX = info.screenX.toInt
+      screenY = info.screenY.toInt
+      screenTopLeftX = info.screenTopLeftX.toInt
+      screenTopLeftY = info.screenTopLeftY.toInt
+      width = info.width.toInt
+      height = info.height.toInt
     }
-    return 0
+
+    return Map("x" -> x,
+               "y" -> y,
+               "dir" -> dir,
+               "screenX" -> screenX,
+               "screenY" -> screenY,
+               "screenTopLeftX" -> screenTopLeftX,
+               "screenTopLeftY" -> screenTopLeftY,
+               "width" -> width,
+               "height" -> height)
   }
 
-  def getEventScreenY(id: Int): Int = {
-    getEventEntityInfo(id).map { info =>
-      return info.screenY.toInt
-    }
-    return 0
-  }
-
-  def getEventScreenX(id: Int): Int = {
-    getEventEntityInfo(id).map { info =>
-      return info.screenX.toInt
-    }
-    return 0
-  }
-
-  def getEventY(id: Int): Int = {
-    getEventEntityInfo(id).map { info =>
-      return info.y.toInt
-    }
-    return 0
-  }
-
-  def getEventDirection(id: Int): Int = {
-    getEventEntityInfo(id).map { info =>
-      return info.dir
-    }
-    return 0
-  }
-
-  def getPlayerX(): Int = {
-    return getPlayerEntityInfo.x.toInt
-  }
-
-  def getPlayerY(): Int = {
-    return getPlayerEntityInfo.y.toInt
-  }
-
-  def getPlayerScreenX(): Int = {
-    return getPlayerEntityInfo.screenX.toInt
-  }
-
-  def getPlayerScreenY(): Int = {
-    return getPlayerEntityInfo.screenY.toInt
-  }
-
-  def getPlayerDirection(): Int = {
-    return getPlayerEntityInfo.dir
+  def getPlayerInfoScala():Map[String,Int] = {
+    var x = getPlayerEntityInfo.x.toInt
+    var y = getPlayerEntityInfo.y.toInt
+    var dir = getPlayerEntityInfo.dir.toInt
+    var screenX = getPlayerEntityInfo.screenX.toInt
+    var screenY = getPlayerEntityInfo.screenY.toInt
+    var screenTopLeftX = getPlayerEntityInfo.screenTopLeftX.toInt
+    var screenTopLeftY = getPlayerEntityInfo.screenTopLeftY.toInt
+    var width = getPlayerEntityInfo.width.toInt
+    var height = getPlayerEntityInfo.height.toInt
+    return Map("x" -> x,
+               "y" -> y,
+               "dir" -> dir,
+               "screenX" -> screenX,
+               "screenY" -> screenY,
+               "screenTopLeftX" -> screenTopLeftX,
+               "screenTopLeftY" -> screenTopLeftY,
+               "width" -> width,
+               "height" -> height)
   }
 
   def setTimer(time: Int) = {
@@ -326,17 +330,17 @@ class ScriptInterface(
   }
 
   def clearTimer() = {
-    setInt("timer", 0)
+    // set it way below 0 to does not make problems with conditions
+    setInt("timer", -5000)
   }
 
   def moveTowardsPlayer(eventId: Int) = syncRun {
-    var playerX = getPlayerX()
-    var playerY = getPlayerY()
-    var eventX = getEventX(eventId)
-    var eventY = getEventY(eventId)
+    var playerX = getPlayerInfoScala().get("x").get
+    var playerY = getPlayerInfoScala().get("y").get
+    var eventX = getEventInfoScala(eventId).get("x").get
+    var eventY = getEventInfoScala(eventId).get("y").get
 
     // TODO: Realize a wall is infront of the event
-    // TODO: If event state changes kill this loop and restart it again if back to the state
 
     if (eventX < playerX) {
       moveEvent(eventId, 1, 0, false, false);

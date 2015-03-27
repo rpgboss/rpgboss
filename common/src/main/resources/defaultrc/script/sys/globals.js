@@ -107,3 +107,33 @@ game.setWeather = function(weatherTypeId) {
     break;
   }
 }
+
+game.getPlayerInfo = function() {
+  var evt = game.getPlayerInfoScala();
+  return {
+    x : evt.get('x').get(),
+    y : evt.get('y').get(),
+    dir : evt.get('dir').get(),
+    screenX : evt.get('screenX').get(),
+    screenY : evt.get('screenY').get(),
+    screenTopLeftX : evt.get('screenTopLeftX').get(),
+    screenTopLeftY : evt.get('screenTopLeftY').get(),
+    width : evt.get('width').get(),
+    height : evt.get('height').get()
+  }
+}
+
+game.getEventInfo = function(id) {
+  var evt = game.getEventInfoScala(id);
+  return {
+    x : evt.get('x').get(),
+    y : evt.get('y').get(),
+    dir : evt.get('dir').get(),
+    screenX : evt.get('screenX').get(),
+    screenY : evt.get('screenY').get(),
+    screenTopLeftX : evt.get('screenTopLeftX').get(),
+    screenTopLeftY : evt.get('screenTopLeftY').get(),
+    width : evt.get('width').get(),
+    height : evt.get('height').get()
+  }
+}
