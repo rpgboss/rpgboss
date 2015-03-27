@@ -64,6 +64,8 @@ class EventEntity(
 
   var evtStateIdx = 0
 
+  private var _enabled = true
+
   /**
    * Maintain a cooldown to prevent events from firing too quickly.
    */
@@ -114,6 +116,9 @@ class EventEntity(
 
   // Returns None if it's already running.
   override def activate(activatorsDirection: Int): Option[Finishable] = {
+    if (!_enabled)
+      return None
+
     import SpriteSpec._
 
     if (curThread.isDefined)
@@ -168,8 +173,12 @@ class EventEntity(
     }
   }
 
-  override def update(delta: Float) = {
-    super.update(delta)
+  override def update(delta: Float, eventsEnabled: Boolean): Unit = {
+    _enabled = eventsEnabled
+    if (!_enabled)
+      return
+
+    super.update(delta, eventsEnabled)
 
     if (curThread.map(_.isFinished).getOrElse(false))
       curThread = None

@@ -151,7 +151,11 @@ abstract class Entity(
     graphicH = (spriteset.tileH.toDouble / Tileset.tilesize).toFloat
     // Minus the delta to allow events to fit into tiles easily
     setBoundingBoxHalfsize((graphicW - collisionDeltas) * 0.5f)
-    dir = s.dir
+
+    // Don't modify the player's direction on sprite update.
+    if (!isPlayer)
+      dir = s.dir
+
     stillStep = s.step
   } getOrElse {
     spriteset = null
@@ -203,7 +207,7 @@ abstract class Entity(
                         math.abs(e.y - (y + dy)))
   }
 
-  def update(delta: Float) = {
+  def update(delta: Float, eventsEnabled: Boolean): Unit = {
     if (!moveQueue.isEmpty) {
       if (!isMovingVar) {
         isMovingVar = true

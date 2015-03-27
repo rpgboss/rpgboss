@@ -85,8 +85,6 @@ object EventCmdUI {
     HidePictureUI,
     IfConditionUI,
     LockPlayerMovementUI,
-    EnableDisableMenuUI,
-    EnableDisableEventsUI,
     ModifyPartyUI,
     MoveCameraUI,
     MoveEventUI,
@@ -96,9 +94,11 @@ object EventCmdUI {
     PlaySoundUI,
     RunJsUI,
     SetCameraFollowUI,
+    SetEventsEnabledUI,
     SetEventSpeedUI,
     SetEventStateUI,
     SetGlobalIntUI,
+    SetMenuEnabledUI,
     SetTimerUI,
     SetTransitionUI,
     SetWindowskinUI,
@@ -237,35 +237,6 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
   }
 }
 
-object EnableDisableMenuUI extends EventCmdUI[EnableDisableMenu] {
-  override def category = Windows
-  override def title = getMessage("Enable_Disable_Menu")
-  override def getNormalFields(
-    owner: Window, sm: StateMaster, mapName: Option[String], model: EnableDisableMenu) = Seq(
-    EventField("", enumVerticalBox(
-      EnabledDisabledEnum, model.enabled, model.enabled = _)))
-}
-
-object EnableDisableEventsUI extends EventCmdUI[EnableDisableEvents] {
-  override def category = Windows
-  override def title = getMessage("Enable_Disable_Events")
-  override def getNormalFields(
-    owner: Window, sm: StateMaster, mapName: Option[String], model: EnableDisableEvents) = Seq(
-    EventField("", enumVerticalBox(
-      EnabledDisabledEnum, model.enabled, model.enabled = _)))
-}
-
-object SetTimerUI extends EventCmdUI[SetTimer] {
-  override def category = Windows
-  override def title = getMessage("Set_Timer")
-  override def getNormalFields(
-    owner: Window, sm: StateMaster, mapName: Option[String], model: SetTimer) = Seq(
-    EventField(getMessage("Minutes"),
-      new FloatSpinner(0, 60, 1f, model.minutes, model.minutes = _)),
-    EventField(getMessage("Seconds"),
-      new FloatSpinner(0, 60, 1f, model.seconds, model.seconds = _)))
-}
-
 object ClearTimerUI extends EventCmdUI[ClearTimer] {
   override def category = Programming
   override def title = getMessage("Clear_Timer")
@@ -328,10 +299,10 @@ object HealOrDamageUI extends EventCmdUI[HealOrDamage] {
     EventField(getMessage("Character"), indexedCombo(
       sm.getProjData.enums.characters, model.characterId,
       model.characterId = _)),
-    EventField(getMessage("HP_Percentage"), percentField(0.01f, 1, model.hpPercentage,
-      model.hpPercentage = _)),
-    EventField(getMessage("MP_Percentage"), percentField(0.01f, 1, model.mpPercentage,
-      model.mpPercentage = _)))
+    EventField(getMessage("HP_Percentage"),
+      percentField(0, 1, model.hpPercentage, model.hpPercentage = _)),
+    EventField(getMessage("MP_Percentage"),
+      percentField(0, 1, model.mpPercentage, model.mpPercentage = _)))
 }
 
 object HidePictureUI extends EventCmdUI[HidePicture] {
@@ -550,6 +521,15 @@ object SetCameraFollowUI extends EventCmdUI[SetCameraFollow] {
       allowNone = true)))
 }
 
+object SetEventsEnabledUI extends EventCmdUI[SetEventsEnabled] {
+  override def category = Windows
+  override def title = getMessage("Enable_Disable_Events")
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: SetEventsEnabled) = Seq(
+    EventField(title, boolEnumHorizBox(
+      EnabledDisabledEnum, model.enabled, model.enabled = _)))
+}
+
 object SetEventSpeedUI extends EventCmdUI[SetEventSpeed] {
   override def category = Movement
   override def title = getMessage("Set_Event_Speed")
@@ -589,6 +569,26 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
   override def getParameterFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: SetGlobalInt) = List(
     IntNumberField(getMessage("Value"), -9999, 9999, model.value1))
+}
+
+object SetMenuEnabledUI extends EventCmdUI[SetMenuEnabled] {
+  override def category = Windows
+  override def title = getMessage("Enable_Disable_Menu")
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: SetMenuEnabled) = Seq(
+    EventField(title, boolEnumHorizBox(
+      EnabledDisabledEnum, model.enabled, model.enabled = _)))
+}
+
+object SetTimerUI extends EventCmdUI[SetTimer] {
+  override def category = Windows
+  override def title = getMessage("Set_Timer")
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: SetTimer) = Seq(
+    EventField(getMessage("Minutes"),
+      new FloatSpinner(0, 60, 1f, model.minutes, model.minutes = _)),
+    EventField(getMessage("Seconds"),
+      new FloatSpinner(0, 60, 1f, model.seconds, model.seconds = _)))
 }
 
 object SetWindowskinUI extends EventCmdUI[SetWindowskin] {

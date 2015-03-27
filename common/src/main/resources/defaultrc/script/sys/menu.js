@@ -365,9 +365,7 @@ function equipMenu(statusMenu) {
 }
 
 function menu() {
-
-  game.log(game.getInt('menuEnabled'))
-  if (game.getInt('menuEnabled') == 0)
+  if (!game.getMenuEnabled())
     return;
 
   var statusMenu = new StatusMenu();
