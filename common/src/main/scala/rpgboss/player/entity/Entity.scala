@@ -189,7 +189,7 @@ abstract class Entity(
     null
   }
 
-  def randomStep(eventId: Int) = {
+  def randomStep() = {
     var r = scala.util.Random
     var randomStep = Math.round(r.nextFloat*4)
 
@@ -205,6 +205,35 @@ abstract class Entity(
       vec = new Vector2(0,-1)
     }
     dir = Entity.getDirection(vec)
+    val move = EntityMove(vec)
+    enqueueMove(move)
+  }
+
+  def moveAwayFromEntity(playerEntity:Entity, affixDirection: Boolean) = {
+
+    var xDiff = x - playerEntity.x
+    var yDiff = y - playerEntity.y
+    var xMove = 0
+    var yMove = 0
+
+    if(xDiff > 0) {
+      xMove = 1
+    } 
+    if(xDiff < 0) {
+      xMove = -1
+    } 
+    if(yDiff > 0) {
+      yMove = 1
+    } 
+    if(yDiff < 0) {
+      yMove = -1
+    }
+
+    var vec = new Vector2(xMove,yMove)
+
+    if (!affixDirection)
+      dir = Entity.getDirection(vec)
+
     val move = EntityMove(vec)
     enqueueMove(move)
   }

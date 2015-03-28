@@ -201,9 +201,19 @@ class EventEntity(
       }
     }
 
+    if(evtState.animationType == AnimationType.RUN_FROM_PLAYER.id &&
+       moveQueueEmpty) {
+      val toPlayer = new Vector2(playerEntity.x - x, playerEntity.y - y)
+
+      // Only run away if within a certain range, but not too close.
+      if (toPlayer.len() > 1.5f && toPlayer.len() < 5.0f) {
+        moveAwayFromEntity(playerEntity, affixDirection = false)
+      }
+    }
+
     if(evtState.animationType == AnimationType.RANDOM_MOVEMENT.id &&
        moveQueueEmpty) {
-      randomStep(id)
+      randomStep()
     }
   }
 
