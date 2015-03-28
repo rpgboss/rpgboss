@@ -890,7 +890,7 @@ class ScriptInterface(
     mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
   }
 
-  def drawRectangle(id:Int,x:Int,y:Int, width:Int,height:Int,color:Color=new Color(255, 255, 255, 1),recttype:String="filled") = syncRun {
+  def drawRectangle(id:Int,x:Int,y:Int, width:Int,height:Int,color:Color=new Color(255, 255, 255, 1),recttype:String="filled", radius:Int=0) = syncRun {
     logger.debug("drawRectangle: " + id + ", size: " + width + "x"+height+" on " + x + ", " + y);
 
     var typeof = ShapeType.Filled
@@ -900,11 +900,11 @@ class ScriptInterface(
     if(recttype=="line") {
       typeof = ShapeType.Line
     }
-    if(recttype=="point") {
-      typeof = ShapeType.Point
+    if(radius==0) {
+      mapScreen.windowManager.addDrawRectangle(new Rectangle(id,x,y,width,height,color,typeof))
+    } else {
+      mapScreen.windowManager.addDrawRectangle(new RoundedRectangle(id,radius,x,y,width,height,color,typeof))
     }
-
-    mapScreen.windowManager.addDrawRectangle(new Rectangle(id,x,y,width,height,color,typeof))
   }
 
   def removeDrawedText(id: Int) = syncRun {

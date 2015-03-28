@@ -189,6 +189,26 @@ abstract class Entity(
     null
   }
 
+  def randomStep(eventId: Int) = {
+    var r = scala.util.Random
+    var randomStep = Math.round(r.nextFloat*4)
+
+    var vec = new Vector2(0,0)
+
+    if (randomStep==1) {
+      vec = new Vector2(1,0)
+    } else if (randomStep==2) {
+      vec = new Vector2(0,1)
+    } else if (randomStep==3) {
+      vec = new Vector2(-1,0)
+    } else if (randomStep==4) {
+      vec = new Vector2(0,-1)
+    }
+    dir = Entity.getDirection(vec)
+    val move = EntityMove(vec)
+    enqueueMove(move)
+  }
+
   /**
    * This method is called when this event collides against others while
    * it is moving.

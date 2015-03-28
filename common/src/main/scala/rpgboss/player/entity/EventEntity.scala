@@ -200,6 +200,11 @@ class EventEntity(
         moveEntity(toPlayer, affixDirection = false)
       }
     }
+
+    if(evtState.animationType == AnimationType.RANDOM_MOVEMENT.id &&
+       moveQueueEmpty) {
+      randomStep(id)
+    }
   }
 
   override def dispose() = {
