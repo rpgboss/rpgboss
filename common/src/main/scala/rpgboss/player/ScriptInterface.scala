@@ -20,9 +20,10 @@ import com.badlogic.gdx.graphics.Color
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 import scalaj.http.Http
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
 
-case class EntityInfo(x: Float, y: Float, dir: Int,
-  screenX: Float, screenY: Float, screenTopLeftX:Float, screenTopLeftY:Float, width:Float, height:Float)
+case class EntityInfo(x: Float=0, y: Float=0, dir: Int=0,
+  screenX: Float=0, screenY: Float=0, screenTopLeftX:Float=0, screenTopLeftY:Float=0, width:Float=0, height:Float=0)
 
 object EntityInfo {
   def apply(e: Entity, mapScreen: MapScreen): EntityInfo = {
@@ -271,7 +272,7 @@ class ScriptInterface(
     game.battleScreen.finishChannel.read
   }
 
-  def getEventInfoScala(id:Int):Map[String,Int] = {
+  def getEventInfoScala(id:Int):EntityInfo = {
     var x = 0
     var y = 0
     var dir = 0
@@ -293,18 +294,10 @@ class ScriptInterface(
       height = info.height.toInt
     }
 
-    return Map("x" -> x,
-               "y" -> y,
-               "dir" -> dir,
-               "screenX" -> screenX,
-               "screenY" -> screenY,
-               "screenTopLeftX" -> screenTopLeftX,
-               "screenTopLeftY" -> screenTopLeftY,
-               "width" -> width,
-               "height" -> height)
+    return EntityInfo(x,y,dir,screenX,screenY,screenTopLeftX, screenTopLeftY, width, height)
   }
 
-  def getPlayerInfoScala():Map[String,Int] = {
+  def getPlayerInfoScala():EntityInfo = {
     var x = getPlayerEntityInfo.x.toInt
     var y = getPlayerEntityInfo.y.toInt
     var dir = getPlayerEntityInfo.dir.toInt
@@ -314,15 +307,7 @@ class ScriptInterface(
     var screenTopLeftY = getPlayerEntityInfo.screenTopLeftY.toInt
     var width = getPlayerEntityInfo.width.toInt
     var height = getPlayerEntityInfo.height.toInt
-    return Map("x" -> x,
-               "y" -> y,
-               "dir" -> dir,
-               "screenX" -> screenX,
-               "screenY" -> screenY,
-               "screenTopLeftX" -> screenTopLeftX,
-               "screenTopLeftY" -> screenTopLeftY,
-               "width" -> width,
-               "height" -> height)
+    return EntityInfo(x,y,dir,screenX,screenY,screenTopLeftX, screenTopLeftY, width, height)
   }
 
   def setTimer(time: Int) = {
@@ -335,10 +320,10 @@ class ScriptInterface(
   }
 
   def moveTowardsPlayer(eventId: Int) = syncRun {
-    var playerX = getPlayerInfoScala().get("x").get
-    var playerY = getPlayerInfoScala().get("y").get
-    var eventX = getEventInfoScala(eventId).get("x").get
-    var eventY = getEventInfoScala(eventId).get("y").get
+    var playerX = getPlayerInfoScala().x
+    var playerY = getPlayerInfoScala().y
+    var eventX = getEventInfoScala(eventId).x
+    var eventY = getEventInfoScala(eventId).y
 
     // TODO: Realize a wall is infront of the event
 
@@ -905,8 +890,29 @@ class ScriptInterface(
     mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
   }
 
+  def drawRectangle(id:Int,x:Int,y:Int, width:Int,height:Int,color:Color=new Color(255, 255, 255, 1),recttype:String="filled") = syncRun {
+    logger.debug("drawRectangle: " + id + ", size: " + width + "x"+height+" on " + x + ", " + y);
+
+    var typeof = ShapeType.Filled
+    if(recttype=="filled") {
+      typeof = ShapeType.Filled
+    }
+    if(recttype=="line") {
+      typeof = ShapeType.Line
+    }
+    if(recttype=="point") {
+      typeof = ShapeType.Point
+    }
+
+    mapScreen.windowManager.addDrawRectangle(new Rectangle(id,x,y,width,height,color,typeof))
+  }
+
   def removeDrawedText(id: Int) = syncRun {
     mapScreen.windowManager.removeDrawText(id)
+  }
+
+  def removeDrawedRectangle(id: Int) = syncRun {
+    mapScreen.windowManager.removeDrawRectangle(id)
   }
 
   def color(r: Float, g: Float, b: Float, alpha: Float): Color = {

@@ -111,29 +111,29 @@ game.setWeather = function(weatherTypeId) {
 game.getPlayerInfo = function() {
   var evt = game.getPlayerInfoScala();
   return {
-    x : evt.get('x').get(),
-    y : evt.get('y').get(),
-    dir : evt.get('dir').get(),
-    screenX : evt.get('screenX').get(),
-    screenY : evt.get('screenY').get(),
-    screenTopLeftX : evt.get('screenTopLeftX').get(),
-    screenTopLeftY : evt.get('screenTopLeftY').get(),
-    width : evt.get('width').get(),
-    height : evt.get('height').get()
+    x : evt.x(),
+    y : evt.y(),
+    dir : evt.dir(),
+    screenX : evt.screenX(),
+    screenY : evt.screenY(),
+    screenTopLeftX : evt.screenTopLeftX(),
+    screenTopLeftY : evt.screenTopLeftY(),
+    width : evt.width(),
+    height : evt.height()
   }
 }
 
 game.getEventInfo = function(id) {
   var evt = game.getEventInfoScala(id);
   return {
-    x : evt.get('x').get(),
-    y : evt.get('y').get(),
-    dir : evt.get('dir').get(),
-    screenX : evt.get('screenX').get(),
-    screenY : evt.get('screenY').get(),
-    screenTopLeftX : evt.get('screenTopLeftX').get(),
-    screenTopLeftY : evt.get('screenTopLeftY').get(),
-    width : evt.get('width').get(),
-    height : evt.get('height').get()
+    x : evt.x(),
+    y : evt.y(),
+    dir : evt.dir(),
+    screenX : evt.screenX(),
+    screenY : evt.screenY(),
+    screenTopLeftX : evt.screenTopLeftX(),
+    screenTopLeftY : evt.screenTopLeftY(),
+    width : evt.width(),
+    height : evt.height()
   }
 }
