@@ -24,8 +24,8 @@ object OperatorType extends RpgEnum {
 
 object EventParameterValueType extends RpgEnum {
   val Constant = Value(0, "Constant")
-  val LocalVariable = Value(1, "Local Variable")
-  val GlobalVariable = Value(2, "Global Variable")
+  val LocalVariable = Value(1, "Local_Variable")
+  val GlobalVariable = Value(2, "Global_Variable")
 
   def default = Constant
 }
