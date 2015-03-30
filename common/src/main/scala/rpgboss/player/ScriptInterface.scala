@@ -20,9 +20,10 @@ import com.badlogic.gdx.graphics.Color
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 import scalaj.http.Http
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
 
-case class EntityInfo(x: Float, y: Float, dir: Int,
-  screenX: Float, screenY: Float)
+case class EntityInfo(x: Float=0, y: Float=0, dir: Int=0,
+  screenX: Float=0, screenY: Float=0, screenTopLeftX:Float=0, screenTopLeftY:Float=0, width:Float=0, height:Float=0)
 
 object EntityInfo {
   def apply(e: Entity, mapScreen: MapScreen): EntityInfo = {
@@ -32,7 +33,12 @@ object EntityInfo {
       (e.x - mapScreen.camera.x) * pxPerTileX + (mapScreen.screenW / 2)
     val screenY =
       (e.y - mapScreen.camera.y) * pxPerTileY + (mapScreen.screenH / 2)
-    apply(e.x, e.y, e.dir, screenX, screenY)
+    val width = pxPerTileX*e.graphicW
+    val height = pxPerTileY*e.graphicH
+    val screenTopLeftX = screenX - width/2
+    val screenTopLeftY = screenY - height/2
+
+    apply(e.x, e.y, e.dir, screenX, screenY, screenTopLeftX, screenTopLeftY, width, height)
   }
 }
 
@@ -266,37 +272,42 @@ class ScriptInterface(
     game.battleScreen.finishChannel.read
   }
 
-  def getEventX(id: Int): Int = {
+  def getEventInfoScala(id:Int):EntityInfo = {
+    var x = 0
+    var y = 0
+    var dir = 0
+    var screenX = 0
+    var screenY = 0
+    var screenTopLeftX = 0
+    var screenTopLeftY = 0
+    var width = 0
+    var height = 0
     getEventEntityInfo(id).map { info =>
-      return info.x.toInt
+      dir = info.dir
+      x = info.x.toInt
+      y = info.y.toInt
+      screenX = info.screenX.toInt
+      screenY = info.screenY.toInt
+      screenTopLeftX = info.screenTopLeftX.toInt
+      screenTopLeftY = info.screenTopLeftY.toInt
+      width = info.width.toInt
+      height = info.height.toInt
     }
-    return 0
+
+    return EntityInfo(x,y,dir,screenX,screenY,screenTopLeftX, screenTopLeftY, width, height)
   }
 
-  def getEventY(id: Int): Int = {
-    getEventEntityInfo(id).map { info =>
-      return info.y.toInt
-    }
-    return 0
-  }
-
-  def getEventDirection(id: Int): Int = {
-    getEventEntityInfo(id).map { info =>
-      return info.dir
-    }
-    return 0
-  }
-
-  def getPlayerX(): Int = {
-    return getPlayerEntityInfo.x.toInt
-  }
-
-  def getPlayerY(): Int = {
-    return getPlayerEntityInfo.y.toInt
-  }
-
-  def getPlayerDirection(): Int = {
-    return getPlayerEntityInfo.dir
+  def getPlayerInfoScala():EntityInfo = {
+    var x = getPlayerEntityInfo.x.toInt
+    var y = getPlayerEntityInfo.y.toInt
+    var dir = getPlayerEntityInfo.dir.toInt
+    var screenX = getPlayerEntityInfo.screenX.toInt
+    var screenY = getPlayerEntityInfo.screenY.toInt
+    var screenTopLeftX = getPlayerEntityInfo.screenTopLeftX.toInt
+    var screenTopLeftY = getPlayerEntityInfo.screenTopLeftY.toInt
+    var width = getPlayerEntityInfo.width.toInt
+    var height = getPlayerEntityInfo.height.toInt
+    return EntityInfo(x,y,dir,screenX,screenY,screenTopLeftX, screenTopLeftY, width, height)
   }
 
   def setTimer(time: Int) = {
@@ -304,17 +315,17 @@ class ScriptInterface(
   }
 
   def clearTimer() = {
-    setInt("timer", 0)
+    // set it way below 0 to does not make problems with conditions
+    setInt("timer", -5000)
   }
 
   def moveTowardsPlayer(eventId: Int) = syncRun {
-    var playerX = getPlayerX()
-    var playerY = getPlayerY()
-    var eventX = getEventX(eventId)
-    var eventY = getEventY(eventId)
+    var playerX = getPlayerInfoScala().x
+    var playerY = getPlayerInfoScala().y
+    var eventX = getEventInfoScala(eventId).x
+    var eventY = getEventInfoScala(eventId).y
 
     // TODO: Realize a wall is infront of the event
-    // TODO: If event state changes kill this loop and restart it again if back to the state
 
     if (eventX < playerX) {
       moveEvent(eventId, 1, 0, false, false);
@@ -875,12 +886,33 @@ class ScriptInterface(
   }
 
   def drawText(id: Int, text: String, x: Int, y: Int, color: Color = new Color(255, 255, 255, 1), scale: Float = 1.0f) = syncRun {
-    logger.debug("drawText: " + text + " on ");
+    logger.debug("drawText: " + id + ", text: " + text + " on " + x + ", " + y + ", scale:"+scale);
     mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
+  }
+
+  def drawRectangle(id:Int,x:Int,y:Int, width:Int,height:Int,color:Color=new Color(255, 255, 255, 1),recttype:String="filled", radius:Int=0) = syncRun {
+    logger.debug("drawRectangle: " + id + ", size: " + width + "x"+height+" on " + x + ", " + y);
+
+    var typeof = ShapeType.Filled
+    if(recttype=="filled") {
+      typeof = ShapeType.Filled
+    }
+    if(recttype=="line") {
+      typeof = ShapeType.Line
+    }
+    if(radius==0) {
+      mapScreen.windowManager.addDrawRectangle(new Rectangle(id,x,y,width,height,color,typeof))
+    } else {
+      mapScreen.windowManager.addDrawRectangle(new RoundedRectangle(id,radius,x,y,width,height,color,typeof))
+    }
   }
 
   def removeDrawedText(id: Int) = syncRun {
     mapScreen.windowManager.removeDrawText(id)
+  }
+
+  def removeDrawedRectangle(id: Int) = syncRun {
+    mapScreen.windowManager.removeDrawRectangle(id)
   }
 
   def color(r: Float, g: Float, b: Float, alpha: Float): Color = {

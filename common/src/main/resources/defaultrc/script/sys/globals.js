@@ -107,3 +107,33 @@ game.setWeather = function(weatherTypeId) {
     break;
   }
 }
+
+game.getPlayerInfo = function() {
+  var evt = game.getPlayerInfoScala();
+  return {
+    x : evt.x(),
+    y : evt.y(),
+    dir : evt.dir(),
+    screenX : evt.screenX(),
+    screenY : evt.screenY(),
+    screenTopLeftX : evt.screenTopLeftX(),
+    screenTopLeftY : evt.screenTopLeftY(),
+    width : evt.width(),
+    height : evt.height()
+  }
+}
+
+game.getEventInfo = function(id) {
+  var evt = game.getEventInfoScala(id);
+  return {
+    x : evt.x(),
+    y : evt.y(),
+    dir : evt.dir(),
+    screenX : evt.screenX(),
+    screenY : evt.screenY(),
+    screenTopLeftX : evt.screenTopLeftX(),
+    screenTopLeftY : evt.screenTopLeftY(),
+    width : evt.width(),
+    height : evt.height()
+  }
+}

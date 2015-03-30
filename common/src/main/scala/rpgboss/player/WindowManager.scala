@@ -247,6 +247,34 @@ class WindowManager(
     return removedSomething
   }
 
+  var rectangleArray = MutableList[Rectangle]()
+
+  def addDrawRectangle(rect: Rectangle): Boolean = {
+    rectangleArray.foreach { text2: Rectangle =>
+      if (text2.id == rect.id) {
+        removeDrawText(rect.id)
+      }
+    }
+    rectangleArray += rect
+
+    return true
+  }
+
+  def removeDrawRectangle(id: Int): Boolean = {
+    var removedSomething: Boolean = false
+    var newTextArray = MutableList[Rectangle]()
+    rectangleArray.foreach { rect: Rectangle =>
+      if (rect.id != id) {
+        newTextArray += rect
+      } else {
+        removedSomething = true
+      }
+    }
+    rectangleArray = newTextArray
+
+    return removedSomething
+  }
+
   def render(batch: SpriteBatch, shapeRenderer: ShapeRenderer,
     screenCamera: OrthographicCamera) = {
     batch.setProjectionMatrix(screenCamera.combined)
@@ -286,6 +314,10 @@ class WindowManager(
 
     screenTextArray.foreach { text: ScreenText =>
       text.render(this, batch)
+    }
+
+    rectangleArray.foreach { rect: Rectangle =>
+      rect.render(this, batch, shapeRenderer)
     }
 
     batch.end()

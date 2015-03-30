@@ -300,27 +300,62 @@ case class GetEntityInfo(
     if (playerOrNot) {
 
       if (kind == 0) {
-        expr = RawJs(jsCall("game.getPlayerX").exp)
+        expr = RawJs(jsCall("game.getPlayerInfo").exp + ".x")
       }
       if (kind == 1) {
-        expr = RawJs(jsCall("game.getPlayerY").exp)
+        expr = RawJs(jsCall("game.getPlayerInfo").exp + ".y")
       }
       if (kind == 2) {
-        expr = RawJs(jsCall("game.getPlayerDirection").exp)
+        expr = RawJs(jsCall("game.getPlayerInfo").exp + ".dir")
+      }
+      if (kind == 3) {
+        expr = RawJs(jsCall("game.getPlayerInfo").exp + ".screenX")
+      }
+      if (kind == 4) {
+       expr = RawJs(jsCall("game.getPlayerInfo").exp + ".screenY")
+      }
+      if (kind == 5) {
+       expr = RawJs(jsCall("game.getPlayerInfo").exp + ".screenTopLeftX")
+      }
+      if (kind == 6) {
+       expr = RawJs(jsCall("game.getPlayerInfo").exp + ".screenTopLeftY")
+      }
+      if (kind == 7) {
+       expr = RawJs(jsCall("game.getPlayerInfo").exp + ".width")
+      }
+      if (kind == 8) {
+       expr = RawJs(jsCall("game.getPlayerInfo").exp + ".height")
       }
 
     } else {
 
       if (kind == 0) {
-        expr = RawJs(jsCall("game.getEventX", eventId).exp)
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".x")
       }
       if (kind == 1) {
-        expr = RawJs(jsCall("game.getEventY", eventId).exp)
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".y")
       }
       if (kind == 2) {
-        expr = RawJs(jsCall("game.getEventDirection", eventId).exp)
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".dir")
       }
-
+      if (kind == 3) {
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".screenX")
+      }
+      if (kind == 4) {
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".screenY")
+      }
+      if (kind == 5) {
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".screenTopLeftX")
+      }
+      if (kind == 6) {
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".screenTopLeftY")
+      }
+      if (kind == 7) {
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".width")
+      }
+      if (kind == 8) {
+        expr = RawJs(jsCall("game.getEventInfo", eventId).exp + ".height")
+      }
     }
 
     return singleCall("game.setInt", globalVariableName, expr)

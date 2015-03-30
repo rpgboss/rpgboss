@@ -18,6 +18,8 @@ object EventTrigger extends RpgEnum {
 object AnimationType extends RpgEnum {
   val NONE = Value(0, "None")
   val FOLLOW_PLAYER = Value(1, "Follow_Player")
+  val RANDOM_MOVEMENT = Value(2, "Random_Movement")
+  val RUN_FROM_PLAYER = Value(3, "Run_From_Player")
 
   def default = NONE
 }
