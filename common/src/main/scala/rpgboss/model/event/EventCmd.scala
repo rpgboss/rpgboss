@@ -64,6 +64,7 @@ object EventCmd {
     classOf[GameOver],
     classOf[GetChoice],
     classOf[GetEntityInfo],
+    classOf[GetKeyInput],
     classOf[HealOrDamage],
     classOf[HidePicture],
     classOf[IfCondition],
@@ -184,6 +185,13 @@ case class GetChoice(
     newArray.update(commandListI, newInnerCmds)
     copy(innerCmds = newArray)
   }
+}
+
+case class GetKeyInput(
+  var storeInVariable: String = "globalVariableName",
+  var capturedKeys: Array[Int] = Array(MyKeys.OK, MyKeys.Cancel))
+extends EventCmd {
+  def sections = singleCall("game.getKeyInput", storeInVariable, capturedKeys)
 }
 
 case class HealOrDamage(

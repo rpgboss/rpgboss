@@ -46,7 +46,7 @@ trait MutateQueueItem[T] extends FinishableByPromise {
 
 trait Finishable {
   def isFinished: Boolean
-  def awaitFinish(): Unit
+  def awaitFinish(): Int
 }
 
 trait FinishableStoppable extends Finishable {
@@ -135,11 +135,12 @@ trait FinishableByPromise extends Finishable {
   private val finishPromise = Promise[Int]()
 
   override def isFinished = finishPromise.isCompleted
-  def finish() = finishPromise.success(0)
+  def finish() = finishWith(0)
+  def finishWith(result: Int) = finishPromise.success(result)
   override def awaitFinish() = Await.result(finishPromise.future, Duration.Inf)
 }
 
 object DummyFinished extends Finishable {
   override def isFinished = true
-  override def awaitFinish() = Unit
+  override def awaitFinish() = 0
 }

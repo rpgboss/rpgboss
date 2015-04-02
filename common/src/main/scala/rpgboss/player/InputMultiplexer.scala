@@ -13,6 +13,14 @@ trait InputHandler {
   def capturedKeys = Set(Up, Down, Left, Right, OK, Cancel)
 }
 
+class OneTimeInputHandler(override val capturedKeys: Set[Int])
+  extends InputHandler
+  with FinishableByPromise {
+  override def keyDown(key: Int) = {
+    finishWith(key)
+  }
+}
+
 trait PlayerInputHandler extends InputHandler {
   private val keyIsActiveMap = new Array[Boolean](MyKeys.totalNumber)
 
