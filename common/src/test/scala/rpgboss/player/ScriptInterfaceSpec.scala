@@ -2,8 +2,39 @@ package rpgboss.player
 
 import rpgboss._
 import rpgboss.model.SoundSpec
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ScriptInterfaceSpec extends UnitSpec {
+  "game.getKeyInput call" should "work" in {
+    val test = new MapScreenTest {
+      override def testScript() = {
+        // Schedule two fake key presses 0.5 seconds in the future.
+        // This is a hacky test but I'm not sure how to do it better yet.
+        Future {
+          scriptInterface.sleep(0.5f)
+          scriptInterface.mapScreenKeyPress(MyKeys.Down)
+          scriptInterface.mapScreenKeyPress(MyKeys.Up)
+        }
+        val result1 = scriptInterface.getKeyInput(Array(MyKeys.Up, MyKeys.OK))
+
+        Future {
+          scriptInterface.sleep(0.5f)
+          scriptInterface.mapScreenKeyPress(MyKeys.Left)
+          scriptInterface.mapScreenKeyPress(MyKeys.OK)
+        }
+        val result2 = scriptInterface.getKeyInput(Array(MyKeys.Up, MyKeys.OK))
+
+        waiter {
+          result1 should equal (MyKeys.Up)
+          result2 should equal (MyKeys.OK)
+        }
+      }
+    }
+
+    test.runTest()
+  }
+
   "game.playSound call" should "work" in {
     val test = new MapScreenTest {
       override def testScript() = {

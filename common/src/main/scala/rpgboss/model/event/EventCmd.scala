@@ -191,7 +191,8 @@ case class GetKeyInput(
   var storeInVariable: String = "globalVariableName",
   var capturedKeys: Array[Int] = Array(MyKeys.OK, MyKeys.Cancel))
 extends EventCmd {
-  def sections = singleCall("game.getKeyInput", storeInVariable, capturedKeys)
+  def sections = singleCall("game.setInt", storeInVariable,
+      RawJs(jsCall("game.getKeyInput", capturedKeys).exp))
 }
 
 case class HealOrDamage(

@@ -942,9 +942,19 @@ class ScriptInterface(
       characterStatus.mp, characterStatus.tempStatusEffectIds)
   }
 
-  // TODO: built it in
-  def keyPress(key: String) = {
+  def getKeyInput(capturedKeys: Array[Int]): Int = {
+    val inputHandler = syncRun {
+      val inputHandler = new OneTimeInputHandler(capturedKeys.toSet)
+      activeScreen.inputs.prepend(inputHandler)
+      inputHandler
+    }
 
+    val result = inputHandler.awaitFinish()
+    syncRun {
+      activeScreen.inputs.remove(inputHandler)
+    }
+
+    return result
   }
 
   /**

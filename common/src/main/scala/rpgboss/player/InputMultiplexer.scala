@@ -13,11 +13,19 @@ trait InputHandler {
   def capturedKeys = Set(Up, Down, Left, Right, OK, Cancel)
 }
 
-class OneTimeInputHandler(override val capturedKeys: Set[Int])
+class OneTimeInputHandler(capturedKeysArgument: Set[Int])
   extends InputHandler
   with FinishableByPromise {
   override def keyDown(key: Int) = {
     finishWith(key)
+  }
+
+  override def capturedKeys = {
+    if (isFinished) {
+      Set.empty
+    } else {
+      capturedKeysArgument
+    }
   }
 }
 
