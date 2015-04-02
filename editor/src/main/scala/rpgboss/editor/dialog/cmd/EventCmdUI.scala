@@ -8,19 +8,13 @@ import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods.parse
 import org.json4s.string2JsonInput
 import javax.swing.event.DocumentEvent
+import rpgboss.editor.dialog.cmd.EventCmdCategory._
 import javax.swing.event.DocumentListener
 import rpgboss.editor.Internationalized.getMessage
 import rpgboss.editor.Internationalized.getMessageColon
 import rpgboss.editor.Internationalized.needsTranslation
 import rpgboss.editor.StateMaster
 import rpgboss.editor.dialog.ConditionsPanel
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Effects
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Battles
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Inventory
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Movement
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Party
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Programming
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Windows
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.editor.resourceselector.MusicField
@@ -196,7 +190,7 @@ object BreakLoopUI extends EventCmdUI[BreakLoop] {
 }
 
 object ExitGameUI extends EventCmdUI[ExitGame] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Exit_Game")
 }
 
@@ -244,7 +238,7 @@ object ClearTimerUI extends EventCmdUI[ClearTimer] {
 }
 
 object GameOverUI extends EventCmdUI[GameOver] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Game_Over")
 }
 
@@ -254,7 +248,7 @@ object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
 }
 
 object CallMenuUI extends EventCmdUI[CallMenu] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Call_Menu")
 }
 
@@ -540,7 +534,7 @@ object SetCameraFollowUI extends EventCmdUI[SetCameraFollow] {
 }
 
 object SetEventsEnabledUI extends EventCmdUI[SetEventsEnabled] {
-  override def category = Windows
+  override def category = GameState
   override def title = getMessage("Enable_Disable_Events")
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: SetEventsEnabled) = Seq(
@@ -590,7 +584,7 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
 }
 
 object SetMenuEnabledUI extends EventCmdUI[SetMenuEnabled] {
-  override def category = Windows
+  override def category = GameState
   override def title = getMessage("Enable_Disable_Menu")
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: SetMenuEnabled) = Seq(

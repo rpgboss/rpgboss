@@ -24,6 +24,7 @@ object EventCmdCategory extends Enumeration {
   val Battles = Value
   val Effects = Value
   val Programming = Value
+  val GameState = Value
 }
 
 class NewEventCmdBox(
@@ -62,18 +63,22 @@ class NewEventCmdBox(
     }
   }
 
+  val columns = {
+    import EventCmdCategory._
+    Array(
+      Array(Windows),
+      Array(Movement, Party, Inventory),
+      Array(Battles, Effects, GameState),
+      Array(Programming)
+    )
+  }
+
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
-      val categoriesPerColumn = 2
-      val nCategories = EventCmdCategory.values.size
-      val columns = (nCategories / categoriesPerColumn) + 1
 
-      for (columnId <- 0 until columns) {
+      for (categories <- columns) {
         contents += new DesignGridPanel {
-          val startI = columnId * categoriesPerColumn
-          for (i <- startI until startI + categoriesPerColumn;
-               if i < nCategories) {
-            val category = EventCmdCategory(i)
+          for (category <- categories) {
             val cmdUisInCategory =
               EventCmdUI.eventCmdUis.filter(_.category == category)
 
