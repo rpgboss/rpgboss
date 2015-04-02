@@ -13,11 +13,19 @@ trait InputHandler {
   def capturedKeys = Set(Up, Down, Left, Right, OK, Cancel)
 }
 
-class OneTimeInputHandler(override val capturedKeys: Set[Int])
+class OneTimeInputHandler(capturedKeysArgument: Set[Int])
   extends InputHandler
   with FinishableByPromise {
   override def keyDown(key: Int) = {
     finishWith(key)
+  }
+
+  override def capturedKeys = {
+    if (isFinished) {
+      Set.empty
+    } else {
+      capturedKeysArgument
+    }
   }
 }
 
@@ -48,6 +56,19 @@ object MyKeys {
   val Cancel = 5
 
   val totalNumber = 6
+}
+
+object MyKeysEnum extends Enumeration {
+  val Up = Value(0, "Up")
+  val Down = Value(1, "Down")
+  val Left = Value(2, "Left")
+  val Right = Value(3, "Right")
+  val OK = Value(4, "OK")
+  val Cancel = Value(5, "Cancel")
+
+  def keysNames = values.toArray.map { value =>
+    rpgboss.model.HasName.StringToHasName(value.toString())
+  }
 }
 
 /**

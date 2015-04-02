@@ -1,8 +1,6 @@
 package rpgboss.editor.dialog.cmd
 
-import scala.swing.Component
-import scala.swing.Dialog
-import scala.swing.Window
+import scala.swing._
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 import org.fife.ui.rtextarea.RTextScrollPane
@@ -10,19 +8,13 @@ import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods.parse
 import org.json4s.string2JsonInput
 import javax.swing.event.DocumentEvent
+import rpgboss.editor.dialog.cmd.EventCmdCategory._
 import javax.swing.event.DocumentListener
 import rpgboss.editor.Internationalized.getMessage
 import rpgboss.editor.Internationalized.getMessageColon
 import rpgboss.editor.Internationalized.needsTranslation
 import rpgboss.editor.StateMaster
 import rpgboss.editor.dialog.ConditionsPanel
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Effects
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Battles
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Inventory
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Movement
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Party
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Programming
-import rpgboss.editor.dialog.cmd.EventCmdCategory.Windows
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.editor.resourceselector.MusicField
@@ -63,6 +55,8 @@ import rpgboss.model.ColorSpec
 import rpgboss.model.WeatherTypes
 import rpgboss.model.MusicSlots
 import rpgboss.editor.resourceselector.FaceField
+import rpgboss.player.MyKeysEnum
+import rpgboss.editor.uibase.ArrayMultiselectPanel
 
 case class EventField(title: String, component: Component)
 
@@ -81,6 +75,7 @@ object EventCmdUI {
     GameOverUI,
     GetChoiceUI,
     GetEntityInfoUI,
+    GetKeyInputUI,
     HealOrDamageUI,
     HidePictureUI,
     IfConditionUI,
@@ -195,7 +190,7 @@ object BreakLoopUI extends EventCmdUI[BreakLoop] {
 }
 
 object ExitGameUI extends EventCmdUI[ExitGame] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Exit_Game")
 }
 
@@ -243,7 +238,7 @@ object ClearTimerUI extends EventCmdUI[ClearTimer] {
 }
 
 object GameOverUI extends EventCmdUI[GameOver] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Game_Over")
 }
 
@@ -253,7 +248,7 @@ object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
 }
 
 object CallMenuUI extends EventCmdUI[CallMenu] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Call_Menu")
 }
 
@@ -374,6 +369,23 @@ object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {
       textField(model.globalVariableName, model.globalVariableName = _)),
     EventField("", enumVerticalBox(
       EntityInfoEnum, model.kind, model.kind = _)))
+}
+
+object GetKeyInputUI extends EventCmdUI[GetKeyInput] {
+  import rpgboss.model.HasName._
+
+  override def category = Windows
+  override def title = needsTranslation("Get_Key_Input")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String], model: GetKeyInput) = Seq(
+    EventField(
+      getMessage("Global_Variable_Name"),
+      textField(model.storeInVariable, model.storeInVariable = _)),
+    EventField("",
+      new ArrayMultiselectPanel(owner, needsTranslation("Keys"),
+          MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
+      preferredSize = new Dimension(200, 200)
+    }))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {
@@ -522,7 +534,7 @@ object SetCameraFollowUI extends EventCmdUI[SetCameraFollow] {
 }
 
 object SetEventsEnabledUI extends EventCmdUI[SetEventsEnabled] {
-  override def category = Windows
+  override def category = GameState
   override def title = getMessage("Enable_Disable_Events")
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: SetEventsEnabled) = Seq(
@@ -572,7 +584,7 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
 }
 
 object SetMenuEnabledUI extends EventCmdUI[SetMenuEnabled] {
-  override def category = Windows
+  override def category = GameState
   override def title = getMessage("Enable_Disable_Menu")
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: SetMenuEnabled) = Seq(
