@@ -1,8 +1,6 @@
 package rpgboss.editor.dialog.cmd
 
-import scala.swing.Component
-import scala.swing.Dialog
-import scala.swing.Window
+import scala.swing._
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 import org.fife.ui.rtextarea.RTextScrollPane
@@ -63,6 +61,8 @@ import rpgboss.model.ColorSpec
 import rpgboss.model.WeatherTypes
 import rpgboss.model.MusicSlots
 import rpgboss.editor.resourceselector.FaceField
+import rpgboss.player.MyKeysEnum
+import rpgboss.editor.uibase.ArrayMultiselectPanel
 
 case class EventField(title: String, component: Component)
 
@@ -81,6 +81,7 @@ object EventCmdUI {
     GameOverUI,
     GetChoiceUI,
     GetEntityInfoUI,
+    GetKeyInputUI,
     HealOrDamageUI,
     HidePictureUI,
     IfConditionUI,
@@ -374,6 +375,23 @@ object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {
       textField(model.globalVariableName, model.globalVariableName = _)),
     EventField("", enumVerticalBox(
       EntityInfoEnum, model.kind, model.kind = _)))
+}
+
+object GetKeyInputUI extends EventCmdUI[GetKeyInput] {
+  import rpgboss.model.HasName._
+
+  override def category = Windows
+  override def title = needsTranslation("Get_Key_Input")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String], model: GetKeyInput) = Seq(
+    EventField(
+      getMessage("Global_Variable_Name"),
+      textField(model.storeInVariable, model.storeInVariable = _)),
+    EventField("",
+      new ArrayMultiselectPanel(owner, needsTranslation("Keys"),
+          MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
+      preferredSize = new Dimension(200, 200)
+    }))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {

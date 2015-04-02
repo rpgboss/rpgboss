@@ -58,6 +58,19 @@ object MyKeys {
   val totalNumber = 6
 }
 
+object MyKeysEnum extends Enumeration {
+  val Up = Value(0, "Up")
+  val Down = Value(1, "Down")
+  val Left = Value(2, "Left")
+  val Right = Value(3, "Right")
+  val OK = Value(4, "OK")
+  val Cancel = Value(5, "Cancel")
+
+  def keysNames = values.toArray.map { value =>
+    rpgboss.model.HasName.StringToHasName(value.toString())
+  }
+}
+
 /**
  * The whole purpose of this input handler is to send one "activation"
  * of the key on initial key press, and then if it's still held down,
