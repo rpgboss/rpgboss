@@ -312,10 +312,6 @@ class WindowManager(
       pic.render(this, batch)
     }
 
-    screenTextArray.foreach { text: ScreenText =>
-      text.render(this, batch)
-    }
-
     rectangleArray.foreach { rect: Rectangle =>
       rect.render(this, batch, shapeRenderer)
     }
@@ -325,6 +321,10 @@ class WindowManager(
     animationManager.render(batch, shapeRenderer, screenCamera)
 
     batch.begin()
+
+    screenTextArray.foreach { text: ScreenText =>
+      text.render(this, batch)
+    }
 
     // Render all windows
     windows.reverseIterator.foreach(_.render(batch))
