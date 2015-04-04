@@ -66,11 +66,13 @@ object EventCmd {
     classOf[GetChoice],
     classOf[GetEntityInfo],
     classOf[GetKeyInput],
+    classOf[GiveExperience],
     classOf[HealOrDamage],
     classOf[HidePicture],
     classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
+    classOf[SetCharacterLevel],
     classOf[Sleep],
     classOf[ModifyParty],
     classOf[MoveCamera],
@@ -215,6 +217,20 @@ case class GetKeyInput(
 extends EventCmd {
   def sections = singleCall("game.setInt", storeInVariable,
       RawJs(jsCall("game.getKeyInput", capturedKeys).exp))
+}
+
+case class GiveExperience(
+  var wholeParty: Boolean = true,
+  characterId: IntParameter = IntParameter(),
+  experience: IntParameter = IntParameter(1000),
+  var showNotifications: Boolean = true) extends EventCmd {
+  def sections = {
+    if (wholeParty)
+      singleCall("game.givePartyExperience", experience, showNotifications)
+    else
+      singleCall("game.giveCharacterExperience", characterId, experience,
+          showNotifications)
+  }
 }
 
 case class HealOrDamage(
@@ -509,6 +525,18 @@ case class SetCameraFollow(
       singleCall("game.setCameraFollowEvent", RawJs("event.id()"))
     case WhichEntity.NONE =>
       singleCall("game.setCameraFollowNone")
+  }
+}
+
+case class SetCharacterLevel(
+  var wholeParty: Boolean = true,
+  characterId: IntParameter = IntParameter(),
+  level: IntParameter = IntParameter(20)) extends EventCmd {
+  def sections = {
+    if (wholeParty)
+      singleCall("game.setPartyLevel", level)
+    else
+      singleCall("game.setCharacterLevel", characterId, level)
   }
 }
 
