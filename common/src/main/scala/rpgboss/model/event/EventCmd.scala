@@ -78,6 +78,7 @@ object EventCmd {
     classOf[PlayAnimation],
     classOf[PlayMusic],
     classOf[PlaySound],
+    classOf[Return],
     classOf[RunJs],
     classOf[SetCameraFollow],
     classOf[SetEventsEnabled],
@@ -125,6 +126,14 @@ case class AddRemoveGold(
 
 case class BreakLoop() extends EventCmd {
   def sections = Array(PlainLines(Array("break;")))
+}
+
+case class Comment(var commentString: String = "") extends EventCmd {
+  def sections = Array(PlainLines(commentString.split("\n").map("// " + _)))
+}
+
+case class ExitGame() extends EventCmd {
+  def sections = singleCall("game.quit")
 }
 
 /**
@@ -467,27 +476,12 @@ case class PlaySound(var spec: SoundSpec = SoundSpec()) extends EventCmd {
     singleCall("game.playSound", spec.sound, spec.volume, spec.pitch)
 }
 
-case class ExitGame() extends EventCmd {
-  def sections =
-    singleCall("game.quit")
+case class Return() extends EventCmd {
+  def sections = Array(PlainLines(Array("return;")))
 }
 
 case class RunJs(var scriptBody: String = "") extends EventCmd {
   def sections = Array(PlainLines(Array(scriptBody.split("\n"): _*)))
-}
-
-case class Comment(var commentString: String = "") extends EventCmd {
-
-  def sections = {
-
-    var arr: Array[String] = commentString.split("\n")
-    var newArray: Array[String] = Array[String]()
-    for (i <- 0 to (arr.length - 1)) {
-      newArray +:= "// " + arr(i)
-    }
-
-    Array(PlainLines(newArray))
-  }
 }
 
 case class SetCameraFollow(

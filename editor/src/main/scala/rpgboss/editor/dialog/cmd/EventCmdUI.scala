@@ -87,6 +87,7 @@ object EventCmdUI {
     PlayAnimationUI,
     PlayMusicUI,
     PlaySoundUI,
+    ReturnUI,
     RunJsUI,
     SetCameraFollowUI,
     SetEventsEnabledUI,
@@ -233,7 +234,7 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
 }
 
 object ClearTimerUI extends EventCmdUI[ClearTimer] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Clear_Timer")
 }
 
@@ -243,13 +244,37 @@ object GameOverUI extends EventCmdUI[GameOver] {
 }
 
 object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
-  override def category = Programming
+  override def category = GameState
   override def title = getMessage("Call_Save_Menu")
 }
 
 object CallMenuUI extends EventCmdUI[CallMenu] {
   override def category = GameState
   override def title = getMessage("Call_Menu")
+}
+
+object CommentUI extends EventCmdUI[Comment] {
+  override def category = Programming
+  override def title = getMessage("Comment")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String], model: Comment) = Seq(
+    EventField("", {
+      val textArea = new RSyntaxTextArea(20, 60)
+      textArea.setText(model.commentString)
+      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE)
+      textArea.setCodeFoldingEnabled(true)
+
+      textArea.getDocument().addDocumentListener(new DocumentListener {
+        override def changedUpdate(e: DocumentEvent) = Unit
+        override def insertUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+        override def removeUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+      })
+
+      val scrollPane = new RTextScrollPane(textArea)
+      Component.wrap(scrollPane)
+    }))
 }
 
 object FadeInUI extends EventCmdUI[FadeIn] {
@@ -474,28 +499,9 @@ object PlaySoundUI extends EventCmdUI[PlaySound] {
         allowNone = false)))
 }
 
-object CommentUI extends EventCmdUI[Comment] {
+object ReturnUI extends EventCmdUI[Return] {
   override def category = Programming
-  override def title = getMessage("Comment")
-  override def getNormalFields(owner: Window, sm: StateMaster,
-                               mapName: Option[String], model: Comment) = Seq(
-    EventField("", {
-      val textArea = new RSyntaxTextArea(20, 60)
-      textArea.setText(model.commentString)
-      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE)
-      textArea.setCodeFoldingEnabled(true)
-
-      textArea.getDocument().addDocumentListener(new DocumentListener {
-        override def changedUpdate(e: DocumentEvent) = Unit
-        override def insertUpdate(e: DocumentEvent) =
-          model.commentString = textArea.getText()
-        override def removeUpdate(e: DocumentEvent) =
-          model.commentString = textArea.getText()
-      })
-
-      val scrollPane = new RTextScrollPane(textArea)
-      Component.wrap(scrollPane)
-    }))
+  override def title = needsTranslation("Return/Exit Script")
 }
 
 object RunJsUI extends EventCmdUI[RunJs] {

@@ -182,7 +182,14 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
 
     val scriptName = "%s/%d".format(entity.mapEvent.name, entity.evtStateIdx)
 
-    val scriptBody = cmds.flatMap(_.toJs).mkString("\n")
+    val eventScriptBody = cmds.flatMap(_.toJs).mkString("\n")
+    val scriptBody =
+      """
+      function eventScript() {
+        %s
+      }
+      eventScript();
+      """.format(eventScriptBody)
     val s = new ScriptThread(
       scriptInterface,
       scriptName,
