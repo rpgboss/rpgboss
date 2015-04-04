@@ -274,7 +274,7 @@ class Battle(
       _state = Battle.DEFEAT
       readyQueue.clear()
     } else if (enemyStatus.forall(!_.alive)) {
-      _state = Battle.ESCAPED
+      _state = Battle.VICTORY
       readyQueue.clear()
     }
   }
