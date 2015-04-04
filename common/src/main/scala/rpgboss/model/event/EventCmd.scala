@@ -58,6 +58,7 @@ object EventCmd {
     classOf[CallSaveMenu],
     classOf[Comment],
     classOf[ClearTimer],
+    classOf[EquipItem],
     classOf[ExitGame],
     classOf[FadeIn],
     classOf[FadeOut],
@@ -130,6 +131,18 @@ case class BreakLoop() extends EventCmd {
 
 case class Comment(var commentString: String = "") extends EventCmd {
   def sections = Array(PlainLines(commentString.split("\n").map("// " + _)))
+}
+
+case class EquipItem(
+  characterId: IntParameter = IntParameter(),
+  slotId: IntParameter = IntParameter(),
+  itemId: IntParameter = IntParameter(),
+  var equip: Boolean = true) extends EventCmd {
+  def sections =
+    if (equip)
+      singleCall("game.equipItem", characterId, slotId, itemId)
+    else
+      singleCall("game.equipItem", characterId, slotId, -1)
 }
 
 case class ExitGame() extends EventCmd {

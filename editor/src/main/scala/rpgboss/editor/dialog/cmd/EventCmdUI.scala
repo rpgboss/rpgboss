@@ -1,26 +1,40 @@
 package rpgboss.editor.dialog.cmd
 
-import scala.swing._
+import scala.swing.Component
+import scala.swing.Dialog
+import scala.swing.Dimension
+import scala.swing.Window
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 import org.fife.ui.rtextarea.RTextScrollPane
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods.parse
 import org.json4s.string2JsonInput
+
 import javax.swing.event.DocumentEvent
-import rpgboss.editor.dialog.cmd.EventCmdCategory._
 import javax.swing.event.DocumentListener
 import rpgboss.editor.Internationalized.getMessage
 import rpgboss.editor.Internationalized.getMessageColon
 import rpgboss.editor.Internationalized.needsTranslation
 import rpgboss.editor.StateMaster
 import rpgboss.editor.dialog.ConditionsPanel
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Battles
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Effects
+import rpgboss.editor.dialog.cmd.EventCmdCategory.GameState
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Inventory
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Movement
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Party
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Programming
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Windows
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.resourceselector.BattleBackgroundField
+import rpgboss.editor.resourceselector.FaceField
 import rpgboss.editor.resourceselector.MusicField
 import rpgboss.editor.resourceselector.PictureField
 import rpgboss.editor.resourceselector.SoundField
 import rpgboss.editor.resourceselector.WindowskinField
+import rpgboss.editor.uibase.ArrayMultiselectPanel
 import rpgboss.editor.uibase.EntitySelectPanel
 import rpgboss.editor.uibase.EventParameterField
 import rpgboss.editor.uibase.EventParameterField.FloatPercentField
@@ -41,22 +55,68 @@ import rpgboss.editor.uibase.SwingUtils.textAreaField
 import rpgboss.editor.uibase.SwingUtils.textField
 import rpgboss.lib.ArrayUtils
 import rpgboss.model.AddOrRemove
-import rpgboss.model.HealOrDamageEnum
-import rpgboss.model.EntityInfoEnum
+import rpgboss.model.ColorSpec
 import rpgboss.model.EnabledDisabledEnum
+import rpgboss.model.EntityInfoEnum
+import rpgboss.model.EquipOrUnequip
+import rpgboss.model.HealOrDamageEnum
 import rpgboss.model.MapLoc
+import rpgboss.model.MusicSlots
+import rpgboss.model.Origins
 import rpgboss.model.PictureSlots
 import rpgboss.model.RpgMapData
 import rpgboss.model.Transitions
-import rpgboss.model.event._
-import rpgboss.player.RpgScreen
-import rpgboss.model.Origins
-import rpgboss.model.ColorSpec
 import rpgboss.model.WeatherTypes
-import rpgboss.model.MusicSlots
-import rpgboss.editor.resourceselector.FaceField
+import rpgboss.model.event.AddRemoveGold
+import rpgboss.model.event.AddRemoveItem
+import rpgboss.model.event.BreakLoop
+import rpgboss.model.event.CallMenu
+import rpgboss.model.event.CallSaveMenu
+import rpgboss.model.event.ClearTimer
+import rpgboss.model.event.Comment
+import rpgboss.model.event.EquipItem
+import rpgboss.model.event.EventCmd
+import rpgboss.model.event.ExitGame
+import rpgboss.model.event.FadeIn
+import rpgboss.model.event.FadeOut
+import rpgboss.model.event.GameOver
+import rpgboss.model.event.GetChoice
+import rpgboss.model.event.GetEntityInfo
+import rpgboss.model.event.GetKeyInput
+import rpgboss.model.event.HealOrDamage
+import rpgboss.model.event.HidePicture
+import rpgboss.model.event.IfCondition
+import rpgboss.model.event.LockPlayerMovement
+import rpgboss.model.event.ModifyParty
+import rpgboss.model.event.MoveCamera
+import rpgboss.model.event.MoveEvent
+import rpgboss.model.event.OpenStore
+import rpgboss.model.event.OperatorType
+import rpgboss.model.event.PlayAnimation
+import rpgboss.model.event.PlayMusic
+import rpgboss.model.event.PlaySound
+import rpgboss.model.event.Return
+import rpgboss.model.event.RunJs
+import rpgboss.model.event.SetCameraFollow
+import rpgboss.model.event.SetEventSpeed
+import rpgboss.model.event.SetEventState
+import rpgboss.model.event.SetEventsEnabled
+import rpgboss.model.event.SetGlobalInt
+import rpgboss.model.event.SetMenuEnabled
+import rpgboss.model.event.SetTimer
+import rpgboss.model.event.SetTransition
+import rpgboss.model.event.SetWindowskin
+import rpgboss.model.event.ShowPicture
+import rpgboss.model.event.ShowText
+import rpgboss.model.event.Sleep
+import rpgboss.model.event.StartBattle
+import rpgboss.model.event.StopMusic
+import rpgboss.model.event.StopSound
+import rpgboss.model.event.Teleport
+import rpgboss.model.event.TintScreen
+import rpgboss.model.event.WeatherEffects
+import rpgboss.model.event.WhileLoop
 import rpgboss.player.MyKeysEnum
-import rpgboss.editor.uibase.ArrayMultiselectPanel
 
 case class EventField(title: String, component: Component)
 
@@ -69,6 +129,7 @@ object EventCmdUI {
     CallSaveMenuUI,
     CommentUI,
     ClearTimerUI,
+    EquipItemUI,
     ExitGameUI,
     FadeInUI,
     FadeOutUI,
@@ -188,6 +249,23 @@ object AddRemoveGoldUI extends EventCmdUI[AddRemoveGold] {
 object BreakLoopUI extends EventCmdUI[BreakLoop] {
   override def category = Programming
   override def title = getMessage("Break_Loop")
+}
+
+object EquipItemUI extends EventCmdUI[EquipItem] {
+  override def category = Inventory
+  override def title = needsTranslation("Equip_Item")
+
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: EquipItem) = Seq(
+    EventField("", boolEnumHorizBox(EquipOrUnequip, model.equip,
+      model.equip = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: EquipItem) = List(
+    IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
+      model.characterId),
+    IntNumberField(getMessage("Slot"), 1, 99, model.slotId),
+    IntEnumIdField(getMessage("Item"), sm.getProjData.enums.items,
+      model.itemId))
 }
 
 object ExitGameUI extends EventCmdUI[ExitGame] {
@@ -408,9 +486,9 @@ object GetKeyInputUI extends EventCmdUI[GetKeyInput] {
       textField(model.storeInVariable, model.storeInVariable = _)),
     EventField("",
       new ArrayMultiselectPanel(owner, needsTranslation("Keys"),
-          MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
-      preferredSize = new Dimension(200, 200)
-    }))
+        MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
+        preferredSize = new Dimension(200, 200)
+      }))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {

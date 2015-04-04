@@ -83,6 +83,14 @@ object AddOrRemove extends BooleanRpgEnum {
   def toBoolean(id: Int) = id == Add.id
 }
 
+object EquipOrUnequip extends BooleanRpgEnum {
+  val Equip, Unequip = Value
+  def default = Equip
+
+  def fromBoolean(x: Boolean) = if (x) Equip else Unequip
+  def toBoolean(id: Int) = id == Equip.id
+}
+
 object HealOrDamageEnum extends BooleanRpgEnum {
   val Heal, Damage = Value
   def default = Heal

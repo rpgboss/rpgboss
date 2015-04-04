@@ -349,8 +349,10 @@ class PersistentState(
     // Remove newly item from inventory
     if (itemId >= 0) {
       val removed = addRemoveItem(itemId, -1)
-      if (!removed)
+      if (!removed) {
+        logger.warn("Item %d not in inventory. Cannot equip.".format(itemId))
         return false
+      }
     }
 
     val currentEquipment = getIntArray(CHARACTER_EQUIP(characterId))
