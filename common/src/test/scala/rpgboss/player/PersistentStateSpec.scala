@@ -16,8 +16,8 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
     val persistent = new PersistentState
     persistent.setIntArray(CHARACTER_ROWS, Array(0, 0))
 
-    persistent.setIntArray(CHARACTER_HPS, Array(50, 50))
-    persistent.setIntArray(CHARACTER_MPS, Array(20, 20))
+    persistent.setIntArray(CHARACTER_HPS, Array(50, 40))
+    persistent.setIntArray(CHARACTER_MPS, Array(15, 20))
     persistent.setIntArray(CHARACTER_LEVELS , Array(level1, level2))
     persistent.setIntArray(CHARACTER_EXPS, Array(exp1, exp2))
 
@@ -35,8 +35,8 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
     val state = f.getState()
 
     leveled should deepEqual (Array(1))
-    state.hps should deepEqual(Array(50, 60))
-    state.mps should deepEqual(Array(20, 24))
+    state.hps should deepEqual(Array(50, 48))
+    state.mps should deepEqual(Array(15, 24))
     state.levels should deepEqual (Array(1, 2))
     state.exps should deepEqual (Array(0, 100))
   }
@@ -48,8 +48,8 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
     val state = f.getState()
 
     leveled should deepEqual (Array(0, 1))
-    state.hps should deepEqual(Array(60, 60))
-    state.mps should deepEqual(Array(24, 24))
+    state.hps should deepEqual(Array(60, 48))
+    state.mps should deepEqual(Array(18, 24))
     state.levels should deepEqual (Array(2, 2))
     state.exps should deepEqual (Array(300, 0))
   }
@@ -61,8 +61,8 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
     val state = f.getState()
 
     leveled should deepEqual (Array(0, 1))
-    state.hps should deepEqual(Array(70, 60))
-    state.mps should deepEqual(Array(28, 24))
+    state.hps should deepEqual(Array(70, 48))
+    state.mps should deepEqual(Array(21, 24))
     state.levels should deepEqual (Array(3, 2))
     state.exps should deepEqual (Array(0, 100))
   }
