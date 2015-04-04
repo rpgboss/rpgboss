@@ -687,14 +687,18 @@ class ScriptInterface(
   }
 
   def giveExperience(characterIds: Array[Int], experience: Int,
-      showNotifications: Boolean) = syncRun {
-    val leveled = game.persistent.giveExperience(
-      project.data,
-      characterIds,
-      experience)
+      showNotifications: Boolean) = {
+    val leveled = syncRun {
+      game.persistent.giveExperience(
+        project.data,
+        characterIds,
+        experience)
+    }
+
     if (showNotifications) {
-      val leveledCharacterNames =
+      val leveledCharacterNames = syncRun {
         leveled.map(game.persistent.getCharacterName(game.project.data, _))
+      }
       showText(Array("Received %d XP.".format(experience)))
       for (name <- leveledCharacterNames) {
         showText(Array("%s leveled!".format(name)))
