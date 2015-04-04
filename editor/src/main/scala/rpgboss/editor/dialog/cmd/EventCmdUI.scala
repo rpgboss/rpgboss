@@ -1,26 +1,40 @@
 package rpgboss.editor.dialog.cmd
 
-import scala.swing._
+import scala.swing.Component
+import scala.swing.Dialog
+import scala.swing.Dimension
+import scala.swing.Window
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 import org.fife.ui.rtextarea.RTextScrollPane
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods.parse
 import org.json4s.string2JsonInput
+
 import javax.swing.event.DocumentEvent
-import rpgboss.editor.dialog.cmd.EventCmdCategory._
 import javax.swing.event.DocumentListener
 import rpgboss.editor.Internationalized.getMessage
 import rpgboss.editor.Internationalized.getMessageColon
 import rpgboss.editor.Internationalized.needsTranslation
 import rpgboss.editor.StateMaster
 import rpgboss.editor.dialog.ConditionsPanel
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Battles
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Effects
+import rpgboss.editor.dialog.cmd.EventCmdCategory.GameState
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Inventory
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Movement
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Party
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Programming
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Windows
 import rpgboss.editor.misc.MapLocPanel
 import rpgboss.editor.resourceselector.BattleBackgroundField
+import rpgboss.editor.resourceselector.FaceField
 import rpgboss.editor.resourceselector.MusicField
 import rpgboss.editor.resourceselector.PictureField
 import rpgboss.editor.resourceselector.SoundField
 import rpgboss.editor.resourceselector.WindowskinField
+import rpgboss.editor.uibase.ArrayMultiselectPanel
 import rpgboss.editor.uibase.EntitySelectPanel
 import rpgboss.editor.uibase.EventParameterField
 import rpgboss.editor.uibase.EventParameterField.FloatPercentField
@@ -41,22 +55,70 @@ import rpgboss.editor.uibase.SwingUtils.textAreaField
 import rpgboss.editor.uibase.SwingUtils.textField
 import rpgboss.lib.ArrayUtils
 import rpgboss.model.AddOrRemove
-import rpgboss.model.HealOrDamageEnum
-import rpgboss.model.EntityInfoEnum
+import rpgboss.model.ColorSpec
 import rpgboss.model.EnabledDisabledEnum
+import rpgboss.model.EntityInfoEnum
+import rpgboss.model.EquipOrUnequip
+import rpgboss.model.HealOrDamageEnum
 import rpgboss.model.MapLoc
+import rpgboss.model.MusicSlots
+import rpgboss.model.Origins
 import rpgboss.model.PictureSlots
 import rpgboss.model.RpgMapData
 import rpgboss.model.Transitions
-import rpgboss.model.event._
-import rpgboss.player.RpgScreen
-import rpgboss.model.Origins
-import rpgboss.model.ColorSpec
 import rpgboss.model.WeatherTypes
-import rpgboss.model.MusicSlots
-import rpgboss.editor.resourceselector.FaceField
+import rpgboss.model.event.AddRemoveGold
+import rpgboss.model.event.AddRemoveItem
+import rpgboss.model.event.BreakLoop
+import rpgboss.model.event.CallMenu
+import rpgboss.model.event.CallSaveMenu
+import rpgboss.model.event.ClearTimer
+import rpgboss.model.event.Comment
+import rpgboss.model.event.EquipItem
+import rpgboss.model.event.EventCmd
+import rpgboss.model.event.ExitGame
+import rpgboss.model.event.FadeIn
+import rpgboss.model.event.FadeOut
+import rpgboss.model.event.GameOver
+import rpgboss.model.event.GetChoice
+import rpgboss.model.event.GetEntityInfo
+import rpgboss.model.event.GetKeyInput
+import rpgboss.model.event.GiveExperience
+import rpgboss.model.event.HealOrDamage
+import rpgboss.model.event.HidePicture
+import rpgboss.model.event.IfCondition
+import rpgboss.model.event.LockPlayerMovement
+import rpgboss.model.event.ModifyParty
+import rpgboss.model.event.MoveCamera
+import rpgboss.model.event.MoveEvent
+import rpgboss.model.event.OpenStore
+import rpgboss.model.event.OperatorType
+import rpgboss.model.event.PlayAnimation
+import rpgboss.model.event.PlayMusic
+import rpgboss.model.event.PlaySound
+import rpgboss.model.event.Return
+import rpgboss.model.event.RunJs
+import rpgboss.model.event.SetCameraFollow
+import rpgboss.model.event.SetCharacterLevel
+import rpgboss.model.event.SetEventSpeed
+import rpgboss.model.event.SetEventState
+import rpgboss.model.event.SetEventsEnabled
+import rpgboss.model.event.SetGlobalInt
+import rpgboss.model.event.SetMenuEnabled
+import rpgboss.model.event.SetTimer
+import rpgboss.model.event.SetTransition
+import rpgboss.model.event.SetWindowskin
+import rpgboss.model.event.ShowPicture
+import rpgboss.model.event.ShowText
+import rpgboss.model.event.Sleep
+import rpgboss.model.event.StartBattle
+import rpgboss.model.event.StopMusic
+import rpgboss.model.event.StopSound
+import rpgboss.model.event.Teleport
+import rpgboss.model.event.TintScreen
+import rpgboss.model.event.WeatherEffects
+import rpgboss.model.event.WhileLoop
 import rpgboss.player.MyKeysEnum
-import rpgboss.editor.uibase.ArrayMultiselectPanel
 
 case class EventField(title: String, component: Component)
 
@@ -69,6 +131,7 @@ object EventCmdUI {
     CallSaveMenuUI,
     CommentUI,
     ClearTimerUI,
+    EquipItemUI,
     ExitGameUI,
     FadeInUI,
     FadeOutUI,
@@ -76,6 +139,7 @@ object EventCmdUI {
     GetChoiceUI,
     GetEntityInfoUI,
     GetKeyInputUI,
+    GiveExperienceUI,
     HealOrDamageUI,
     HidePictureUI,
     IfConditionUI,
@@ -87,8 +151,10 @@ object EventCmdUI {
     PlayAnimationUI,
     PlayMusicUI,
     PlaySoundUI,
+    ReturnUI,
     RunJsUI,
     SetCameraFollowUI,
+    SetCharacterLevelUI,
     SetEventsEnabledUI,
     SetEventSpeedUI,
     SetEventStateUI,
@@ -189,9 +255,88 @@ object BreakLoopUI extends EventCmdUI[BreakLoop] {
   override def title = getMessage("Break_Loop")
 }
 
+object ClearTimerUI extends EventCmdUI[ClearTimer] {
+  override def category = GameState
+  override def title = getMessage("Clear_Timer")
+}
+
+object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
+  override def category = GameState
+  override def title = getMessage("Call_Save_Menu")
+}
+
+object CallMenuUI extends EventCmdUI[CallMenu] {
+  override def category = GameState
+  override def title = getMessage("Call_Menu")
+}
+
+object CommentUI extends EventCmdUI[Comment] {
+  override def category = Programming
+  override def title = getMessage("Comment")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String], model: Comment) = Seq(
+    EventField("", {
+      val textArea = new RSyntaxTextArea(20, 60)
+      textArea.setText(model.commentString)
+      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE)
+      textArea.setCodeFoldingEnabled(true)
+
+      textArea.getDocument().addDocumentListener(new DocumentListener {
+        override def changedUpdate(e: DocumentEvent) = Unit
+        override def insertUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+        override def removeUpdate(e: DocumentEvent) =
+          model.commentString = textArea.getText()
+      })
+
+      val scrollPane = new RTextScrollPane(textArea)
+      Component.wrap(scrollPane)
+    }))
+}
+
+object EquipItemUI extends EventCmdUI[EquipItem] {
+  override def category = Inventory
+  override def title = needsTranslation("Equip_Item")
+
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: EquipItem) = Seq(
+    EventField("", boolEnumHorizBox(EquipOrUnequip, model.equip,
+      model.equip = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: EquipItem) = List(
+    IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
+      model.characterId),
+    IntNumberField(getMessage("Slot"), 1, 99, model.slotId),
+    IntEnumIdField(getMessage("Item"), sm.getProjData.enums.items,
+      model.itemId))
+}
+
 object ExitGameUI extends EventCmdUI[ExitGame] {
   override def category = GameState
   override def title = getMessage("Exit_Game")
+}
+
+object FadeInUI extends EventCmdUI[FadeIn] {
+  override def category = Programming
+  override def title = getMessage("Fade_In")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String], model: FadeIn) = Seq(
+    EventField(getMessage("Duration"),
+      new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _)))
+}
+
+object FadeOutUI extends EventCmdUI[FadeOut] {
+  override def category = Programming
+  override def title = getMessage("Fade_Out")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String], model: FadeOut) = Seq(
+    EventField(getMessage("Duration"),
+      new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _)))
+}
+
+object GameOverUI extends EventCmdUI[GameOver] {
+  override def category = GameState
+  override def title = getMessage("Game_Over")
 }
 
 object GetChoiceUI extends EventCmdUI[GetChoice] {
@@ -232,51 +377,21 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
   }
 }
 
-object ClearTimerUI extends EventCmdUI[ClearTimer] {
-  override def category = Programming
-  override def title = getMessage("Clear_Timer")
-}
-
-object GameOverUI extends EventCmdUI[GameOver] {
-  override def category = GameState
-  override def title = getMessage("Game_Over")
-}
-
-object CallSaveMenuUI extends EventCmdUI[CallSaveMenu] {
-  override def category = Programming
-  override def title = getMessage("Call_Save_Menu")
-}
-
-object CallMenuUI extends EventCmdUI[CallMenu] {
-  override def category = GameState
-  override def title = getMessage("Call_Menu")
-}
-
-object FadeInUI extends EventCmdUI[FadeIn] {
-  override def category = Programming
-  override def title = getMessage("Fade_In")
-  override def getNormalFields(owner: Window, sm: StateMaster,
-                               mapName: Option[String], model: FadeIn) = Seq(
-    EventField(getMessage("Duration"),
-      new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _)))
-}
-
-object FadeOutUI extends EventCmdUI[FadeOut] {
-  override def category = Programming
-  override def title = getMessage("Fade_Out")
-  override def getNormalFields(owner: Window, sm: StateMaster,
-                               mapName: Option[String], model: FadeOut) = Seq(
-    EventField(getMessage("Duration"),
-      new FloatSpinner(0, 100, 0.1f, model.duration, model.duration = _)))
-}
-
-object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
+object GiveExperienceUI extends EventCmdUI[GiveExperience] {
   override def category = Party
-  override def title = getMessage("Weather_Effects")
+  override def title = needsTranslation("Give_Experience")
+
   override def getNormalFields(
-    owner: Window, sm: StateMaster, mapName: Option[String], model: WeatherEffects) = Seq(
-    EventField("", enumVerticalBox(WeatherTypes, model.weatherTypeId,
-      model.weatherTypeId = _)))
+    owner: Window, sm: StateMaster, mapName: Option[String], model: GiveExperience) = Seq(
+    EventField("", boolField(getMessage("Whole_Party"), model.wholeParty,
+        model.wholeParty = _)),
+    EventField("", boolField(needsTranslation("Show_Notifications"),
+        model.showNotifications, model.showNotifications = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: GiveExperience) = List(
+    IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
+      model.characterId),
+    IntNumberField(getMessage("Experience"), 1, 99999, model.experience))
 }
 
 object HealOrDamageUI extends EventCmdUI[HealOrDamage] {
@@ -383,9 +498,9 @@ object GetKeyInputUI extends EventCmdUI[GetKeyInput] {
       textField(model.storeInVariable, model.storeInVariable = _)),
     EventField("",
       new ArrayMultiselectPanel(owner, needsTranslation("Keys"),
-          MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
-      preferredSize = new Dimension(200, 200)
-    }))
+        MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
+        preferredSize = new Dimension(200, 200)
+      }))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {
@@ -474,28 +589,9 @@ object PlaySoundUI extends EventCmdUI[PlaySound] {
         allowNone = false)))
 }
 
-object CommentUI extends EventCmdUI[Comment] {
+object ReturnUI extends EventCmdUI[Return] {
   override def category = Programming
-  override def title = getMessage("Comment")
-  override def getNormalFields(owner: Window, sm: StateMaster,
-                               mapName: Option[String], model: Comment) = Seq(
-    EventField("", {
-      val textArea = new RSyntaxTextArea(20, 60)
-      textArea.setText(model.commentString)
-      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE)
-      textArea.setCodeFoldingEnabled(true)
-
-      textArea.getDocument().addDocumentListener(new DocumentListener {
-        override def changedUpdate(e: DocumentEvent) = Unit
-        override def insertUpdate(e: DocumentEvent) =
-          model.commentString = textArea.getText()
-        override def removeUpdate(e: DocumentEvent) =
-          model.commentString = textArea.getText()
-      })
-
-      val scrollPane = new RTextScrollPane(textArea)
-      Component.wrap(scrollPane)
-    }))
+  override def title = needsTranslation("Return/Exit Script")
 }
 
 object RunJsUI extends EventCmdUI[RunJs] {
@@ -581,6 +677,23 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
   override def getParameterFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: SetGlobalInt) = List(
     IntNumberField(getMessage("Value"), -9999, 9999, model.value1))
+}
+
+object SetCharacterLevelUI extends EventCmdUI[SetCharacterLevel] {
+  override def category = Party
+  override def title = needsTranslation("Set_Character_Level")
+
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: SetCharacterLevel) = Seq(
+    EventField("", boolField(getMessage("Whole_Party"), model.wholeParty,
+        model.wholeParty = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: SetCharacterLevel) = List(
+    IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
+      model.characterId),
+    IntNumberField(getMessage("Level"), 1, 999, model.level))
 }
 
 object SetMenuEnabledUI extends EventCmdUI[SetMenuEnabled] {
@@ -773,6 +886,15 @@ object SetTransitionUI extends EventCmdUI[SetTransition] {
 object StopSoundUI extends EventCmdUI[StopSound] {
   override def category = Effects
   override def title = getMessage("Stop_Sound")
+}
+
+object WeatherEffectsUI extends EventCmdUI[WeatherEffects] {
+  override def category = Party
+  override def title = getMessage("Weather_Effects")
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String], model: WeatherEffects) = Seq(
+    EventField("", enumVerticalBox(WeatherTypes, model.weatherTypeId,
+      model.weatherTypeId = _)))
 }
 
 object WhileLoopUI extends EventCmdUI[WhileLoop] {

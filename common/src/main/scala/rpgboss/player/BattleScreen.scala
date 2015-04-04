@@ -322,23 +322,10 @@ class BattleScreen(
 
   val persistentState = gameOpt.map(_.persistent).getOrElse(new PersistentState)
 
-  def getCharacterName(characterId: Int) = {
-    assertOnBoundThread()
-    assume(battleActive)
-    val names =
-      persistentState.getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES)
-    if (characterId < names.length) {
-      names(characterId)
-    } else {
-      assert(characterId < _battle.get.pData.enums.characters.length)
-      _battle.get.pData.enums.characters(characterId).name
-    }
-  }
-
   def getEntityName(status: BattleStatus) = {
     assume(battleActive)
     if (status.entityType == BattleEntityType.Party) {
-      getCharacterName(status.entityId)
+      persistentState.getCharacterName(_battle.get.pData, status.entityId)
     } else {
       _battle.get.pData.enums.enemies(status.entityId).name
     }
@@ -368,7 +355,8 @@ class BattleScreen(
 
     val partyLines = for (status <- _battle.get.partyStatus) yield {
       assert(status.entityId < _battle.get.pData.enums.characters.length)
-      val name = getCharacterName(status.entityId)
+      val name =
+        persistentState.getCharacterName(_battle.get.pData, status.entityId)
       val readiness = (math.min(status.readiness, 1.0) * 100).toInt
       "%-10s %3dHP | %2dMP %3d%% ".format(name, status.hp, status.mp, readiness)
     }
@@ -562,13 +550,6 @@ class BattleScreen(
               status.tempStatusEffectIds)
           }
 
-          val exp = battle.victoryExperience
-          val leveled = game.persistent.givePartyExperience(
-            project.data,
-            battle.partyIds,
-            exp)
-          val leveledCharacterNames = leveled.map(getCharacterName)
-
           val gold = battle.goldDrops
           game.persistent.addRemoveGold(gold)
 
@@ -578,10 +559,9 @@ class BattleScreen(
           val itemNames = items.map(battle.pData.enums.items(_).name)
 
           concurrent.Future {
-            scriptInterface.showText(Array("Received %d XP.".format(exp)))
-            for (name <- leveledCharacterNames) {
-              scriptInterface.showText(Array("%s leveled!".format(name)))
-            }
+            scriptInterface.giveExperience(
+              battle.partyIds, battle.victoryExperience,
+              showNotifications = true)
 
             if (gold > 0)
               scriptInterface.showText(Array("Got %d Gold".format(gold)))

@@ -679,11 +679,58 @@ class ScriptInterface(
     }
   }
 
+  def getParty() = syncRun {
+    persistent.getIntArray(PARTY)
+  }
+
   def modifyParty(add: Boolean, characterId: Int): Boolean = syncRun {
     if (characterId >= project.data.enums.characters.size)
       return false
 
     persistent.modifyParty(add, characterId)
+  }
+
+  def giveExperience(
+    characterIds: Array[Int],
+    experience: Int,
+    showNotifications: Boolean) = {
+    val leveled = syncRun {
+      game.persistent.giveExperience(
+        project.data,
+        characterIds,
+        experience)
+    }
+
+    if (showNotifications) {
+      val leveledCharacterNames = syncRun {
+        leveled.map(game.persistent.getCharacterName(game.project.data, _))
+      }
+      showText(Array("Received %d XP.".format(experience)))
+      for (name <- leveledCharacterNames) {
+        showText(Array("%s leveled!".format(name)))
+      }
+    }
+  }
+
+  def giveCharacterExperience(characterId: Int, experience: Int,
+      showNotifications: Boolean) = {
+    giveExperience(Array(characterId), experience, showNotifications)
+  }
+
+  def givePartyExperience(experience: Int, showNotifications: Boolean) = {
+    giveExperience(getParty(), experience, showNotifications)
+  }
+
+  def setLevels(characterIds: Array[Int], level: Int) = syncRun {
+    game.persistent.setCharacterLevels(project.data, characterIds, level)
+  }
+
+  def setCharacterLevel(characterId: Int, level: Int) = {
+    setLevels(Array(characterId), level)
+  }
+
+  def setPartyLevel(level: Int) = {
+    setLevels(getParty(), level)
   }
 
   def openStore(itemIdsSold: Array[Int], buyPriceMultiplier: Float,

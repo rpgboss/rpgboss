@@ -22,8 +22,8 @@ object Internationalized extends LazyLogging {
       return new String(rawValue.getBytes("ISO-8859-1"), "UTF-8")
     } catch {
       case e: MissingResourceException => {
-        logger.error(e.getMessage())
-        return "$MISSINGTRANSLATIONKEY: %s".format(key)
+        logger.error("Missing translation for key: %s".format(key))
+        return "$%s".format(key)
       }
     }
   }

@@ -146,4 +146,18 @@ class BattleSpec extends UnitSpec {
     // But the final HP should equal the max HP
     partyHead.hp should equal(partyHead.stats.mhp)
   }
+
+  "Battle" should "handle victory correctly" in {
+    val f = new BattleTest.BattleFixture
+    f.battle.enemyStatus.map(_.hp = 0)
+    f.battle.advanceTime(0f)
+    f.battle.state should equal(Battle.VICTORY)
+  }
+
+  "Battle" should "handle defeat correctly" in {
+    val f = new BattleTest.BattleFixture
+    f.battle.partyStatus.map(_.hp = 0)
+    f.battle.advanceTime(0f)
+    f.battle.state should equal(Battle.DEFEAT)
+  }
 }

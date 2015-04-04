@@ -121,6 +121,16 @@ class PersistentState(
     publish(EventStateChange((mapName, eventId), newState))
   }
 
+  def getCharacterName(pData: ProjectData, characterId: Int) = {
+    val names = getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES)
+    if (characterId < names.length) {
+      names(characterId)
+    } else {
+      assert(characterId < pData.enums.characters.length)
+      pData.enums.characters(characterId).name
+    }
+  }
+
   def getPartyParameters(characters: Array[Character]) = {
     val charactersIdxs =
       (0 until characters.length).toArray
@@ -137,26 +147,22 @@ class PersistentState(
   /**
    * @return  the list of characters that leveled up by their character index.
    */
-  def givePartyExperience(
+  def giveExperience(
     pData: ProjectData,
-    partyIds: Array[Int],
+    characterIds: Array[Int],
     experience: Int) = {
     def characters = pData.enums.characters
-    val hps = getIntArray(CHARACTER_HPS)
-    val mps = getIntArray(CHARACTER_MPS)
     val levels = getIntArray(CHARACTER_LEVELS)
     val exps = getIntArray(CHARACTER_EXPS)
 
-    assert(hps.length == characters.length)
-    assert(mps.length == characters.length)
+    val oldPartyParams = getPartyParameters(characters)
+
     assert(levels.length == characters.length)
     assert(exps.length == characters.length)
 
-    val oldPartyParams = getPartyParameters(characters)
-
     val leveledBuffer = collection.mutable.ArrayBuffer[Int]()
-    val oldStatsOfLeveledBuffer = collection.mutable.ArrayBuffer[BattleStatus]()
-    for (i <- partyIds) {
+
+    for (i <- characterIds) {
       val character = characters(i)
       exps(i) += experience
 
@@ -171,29 +177,58 @@ class PersistentState(
       if (leveled) {
         character.expToLevel(levels(i))
         leveledBuffer += i
-
-        oldStatsOfLeveledBuffer +=
-          BattleStatus.fromCharacter(pData, oldPartyParams, i)
       }
     }
 
-    setIntArray(CHARACTER_LEVELS, levels)
     setIntArray(CHARACTER_EXPS, exps)
+    setIntArray(CHARACTER_LEVELS, levels)
 
+    adjustCharacterVitalsForLeveling(
+        pData, oldPartyParams, leveledBuffer.toArray)
+
+    leveledBuffer.toArray
+  }
+
+  def setCharacterLevels(
+    pData: ProjectData,
+    characterIds: Array[Int],
+    newLevel: Int) = {
+    def characters = pData.enums.characters
+
+    val oldPartyParams = getPartyParameters(characters)
+
+    val levels = getIntArray(CHARACTER_LEVELS)
+    for (id <- characterIds) {
+      levels(id) = newLevel
+    }
+    setIntArray(CHARACTER_LEVELS, levels)
+
+    adjustCharacterVitalsForLeveling(pData, oldPartyParams, characterIds)
+  }
+
+  /**
+   * Adjust characters HPs and MPs to be proportional to their old percentage.
+   */
+  private def adjustCharacterVitalsForLeveling(
+    pData: ProjectData,
+    oldPartyParams: PartyParameters,
+    characterIds: Array[Int]) = {
+    def characters = pData.enums.characters
+
+    val hps = getIntArray(CHARACTER_HPS)
+    val mps = getIntArray(CHARACTER_MPS)
     val newPartyParams = getPartyParameters(characters)
-    for ((characterId, oldStats) <- leveledBuffer zip oldStatsOfLeveledBuffer) {
-      val newStats =
-        BattleStatus.fromCharacter(pData, newPartyParams, characterId)
+    for (id <- characterIds) {
+      val oldStats = BattleStatus.fromCharacter(pData, oldPartyParams, id)
+      val newStats = BattleStatus.fromCharacter(pData, newPartyParams, id)
       val hpRatio = oldStats.hp.toDouble / oldStats.stats.mhp
       val mpRatio = oldStats.mp.toDouble / oldStats.stats.mmp
-      hps.update(characterId, (hpRatio * newStats.stats.mhp).round.toInt)
-      mps.update(characterId, (mpRatio * newStats.stats.mmp).round.toInt)
+      hps.update(id, (hpRatio * newStats.stats.mhp).round.toInt)
+      mps.update(id, (mpRatio * newStats.stats.mmp).round.toInt)
     }
 
     setIntArray(CHARACTER_HPS, hps)
     setIntArray(CHARACTER_MPS, mps)
-
-    leveledBuffer.toArray
   }
 
   def saveCharacterVitals(
@@ -349,8 +384,10 @@ class PersistentState(
     // Remove newly item from inventory
     if (itemId >= 0) {
       val removed = addRemoveItem(itemId, -1)
-      if (!removed)
+      if (!removed) {
+        logger.warn("Item %d not in inventory. Cannot equip.".format(itemId))
         return false
+      }
     }
 
     val currentEquipment = getIntArray(CHARACTER_EQUIP(characterId))
