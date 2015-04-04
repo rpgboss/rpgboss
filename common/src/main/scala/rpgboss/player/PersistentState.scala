@@ -121,6 +121,16 @@ class PersistentState(
     publish(EventStateChange((mapName, eventId), newState))
   }
 
+  def getCharacterName(pData: ProjectData, characterId: Int) = {
+    val names = getStringArray(ScriptInterfaceConstants.CHARACTER_NAMES)
+    if (characterId < names.length) {
+      names(characterId)
+    } else {
+      assert(characterId < pData.enums.characters.length)
+      pData.enums.characters(characterId).name
+    }
+  }
+
   def getPartyParameters(characters: Array[Character]) = {
     val charactersIdxs =
       (0 until characters.length).toArray
@@ -137,9 +147,9 @@ class PersistentState(
   /**
    * @return  the list of characters that leveled up by their character index.
    */
-  def givePartyExperience(
+  def giveExperience(
     pData: ProjectData,
-    partyIds: Array[Int],
+    characterIds: Array[Int],
     experience: Int) = {
     def characters = pData.enums.characters
     val levels = getIntArray(CHARACTER_LEVELS)
@@ -152,7 +162,7 @@ class PersistentState(
 
     val leveledBuffer = collection.mutable.ArrayBuffer[Int]()
 
-    for (i <- partyIds) {
+    for (i <- characterIds) {
       val character = characters(i)
       exps(i) += experience
 

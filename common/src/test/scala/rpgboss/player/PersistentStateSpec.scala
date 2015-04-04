@@ -31,7 +31,7 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
 
   "PersistentState" should "level up specified character only" in {
     val f = levelingFixture(1, 1, 0, 0)
-    val leveled = f.persistent.givePartyExperience(f.pData, Array(1), 700)
+    val leveled = f.persistent.giveExperience(f.pData, Array(1), 700)
     val state = f.getState()
 
     leveled should deepEqual (Array(1))
@@ -44,7 +44,7 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
   "PersistentState" should "level up both characters" in {
     val f = levelingFixture(1, 1, 0, 0)
     val leveled =
-      f.persistent.givePartyExperience(f.pData, Array(0, 1), 600)
+      f.persistent.giveExperience(f.pData, Array(0, 1), 600)
     val state = f.getState()
 
     leveled should deepEqual (Array(0, 1))
@@ -57,7 +57,7 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
   "PersistentState" should "level up through multiple levels" in {
     val f = levelingFixture(1, 1, 0, 0)
     val leveled =
-      f.persistent.givePartyExperience(f.pData, Array(0, 1), 700)
+      f.persistent.giveExperience(f.pData, Array(0, 1), 700)
     val state = f.getState()
 
     leveled should deepEqual (Array(0, 1))

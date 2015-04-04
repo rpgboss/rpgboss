@@ -686,6 +686,26 @@ class ScriptInterface(
     persistent.modifyParty(add, characterId)
   }
 
+  def giveExperience(characterIds: Array[Int], experience: Int,
+      showNotifications: Boolean) = syncRun {
+    val leveled = game.persistent.giveExperience(
+      project.data,
+      characterIds,
+      experience)
+    if (showNotifications) {
+      val leveledCharacterNames =
+        leveled.map(game.persistent.getCharacterName(game.project.data, _))
+      showText(Array("Received %d XP.".format(experience)))
+      for (name <- leveledCharacterNames) {
+        showText(Array("%s leveled!".format(name)))
+      }
+    }
+  }
+
+  def setCharacterLevels(characterIds: Array[Int], newLevel: Int) = syncRun {
+    game.persistent.setCharacterLevels(project.data, characterIds, newLevel)
+  }
+
   def openStore(itemIdsSold: Array[Int], buyPriceMultiplier: Float,
     sellPriceMultiplier: Float) = {
     assert(activeScreen == game.mapScreen)
