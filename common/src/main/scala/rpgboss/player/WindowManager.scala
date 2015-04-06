@@ -323,7 +323,7 @@ class WindowManager(
     batch.begin()
 
     screenTextArray.foreach { text: ScreenText =>
-      text.render(this, batch)
+      text.render(this, batch, font)
     }
 
     // Render all windows
