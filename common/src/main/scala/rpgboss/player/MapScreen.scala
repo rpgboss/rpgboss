@@ -91,7 +91,8 @@ class MapScreen(val game: RpgGame)
 
     val mapName = loc.map
 
-    val mapAndAssets = new MapAndAssets(project, loc.map)
+    val mapAndAssets =
+      new MapAndAssets(project, loc.map, renderingOffForTesting)
     mapAndAssets.setLastBattlePosition(loc.x, loc.y)
 
     mapAndAssetsOption = Some(mapAndAssets)

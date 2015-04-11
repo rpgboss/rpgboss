@@ -61,7 +61,12 @@ class Window(
 
   protected def getRectFromLines(
     lines: Array[String], linesShown: Int, xPadding: Int, columns: Int = 1) = {
-    val maxW = Window.maxWidth(lines, manager.fontbmp, xPadding)
+    val maxW =
+      if (manager.renderingOffForTesting)
+        100
+      else
+        Window.maxWidth(lines, manager.fontbmp, xPadding)
+
     val displayedLines = if (linesShown > 0) linesShown else lines.length
     val autoH = Utils.ceilIntDiv(
       WindowText.DefaultLineHeight * displayedLines, columns)

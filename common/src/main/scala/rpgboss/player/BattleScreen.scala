@@ -25,11 +25,12 @@ class BattleScreen(
   atlasSprites: TextureAtlas,
   val project: Project,
   val screenW: Int,
-  val screenH: Int)
+  val screenH: Int,
+  override val renderingOffForTesting: Boolean = false)
   extends ThreadChecked
   with RpgScreen
   with HasScriptConstants {
-  assume(atlasSprites != null)
+  assume(renderingOffForTesting || atlasSprites != null)
 
   val scriptInterface = gameOpt.map(new ScriptInterface(_, this)).orNull
 
