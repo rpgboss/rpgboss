@@ -21,6 +21,7 @@ object Settings {
       "net.sf.opencsv" % "opencsv" % "2.0" withSources(),
       "org.json4s" %% "json4s-native" % "3.2.11" withSources(),
       "org.scalatest" %% "scalatest" % "2.1.5" % "test",
+      "org.mockito" % "mockito-core" % "1.9.5" % "test",
       "org.mozilla" % "rhino" % "1.7R4",
       "org.scalaj" %% "scalaj-http" % "1.1.4",
       "javax.websocket" % "javax.websocket-api" % "1.1",
