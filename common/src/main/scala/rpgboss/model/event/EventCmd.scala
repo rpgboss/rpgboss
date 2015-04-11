@@ -6,6 +6,7 @@ import org.json4s.TypeHints
 import org.json4s.ShortTypeHints
 import EventCmd._
 import EventJavascript._
+import rpgboss.player.entity.PrintingTextWindowOptions
 import rpgboss.player.entity.WindowText
 import scala.collection.mutable.ArrayBuffer
 import rpgboss.lib.Utils
@@ -171,25 +172,22 @@ case class GetChoice(
       CommandList(code, 2),
       PlainLines(Array("    break;")))
 
-    if (customFace.isDefined || useCharacterFace) {
-      buf += PlainLines(Array(
-        "switch (game.getChoiceWithFace(%s, %s, %s, %s, %s, %s, %s, %s, %s)) {".format(
-          EventJavascript.toJs(question),
-          EventJavascript.toJs(choices),
-          EventJavascript.toJs(allowCancel),
-          EventJavascript.toJs(customFace.isDefined),
-          EventJavascript.toJs(customFace.map(_.faceset).getOrElse("")),
-          EventJavascript.toJs(customFace.map(_.faceX).getOrElse(0)),
-          EventJavascript.toJs(customFace.map(_.faceY).getOrElse(0)),
-          EventJavascript.toJs(useCharacterFace),
-          EventJavascript.toJs(characterId))))
-    } else {
-      buf += PlainLines(Array(
-        "switch (game.getChoice(%s, %s, %s)) {".format(
-          EventJavascript.toJs(question),
-          EventJavascript.toJs(choices),
-          EventJavascript.toJs(allowCancel))))
+    val questionOptions = if (customFace.isDefined || useCharacterFace) {
+      PrintingTextWindowOptions(
+          useCustomFace = customFace.isDefined,
+          faceset = customFace.map(_.faceset).getOrElse(""),
+          faceX = customFace.map(_.faceX).getOrElse(0),
+          faceY = customFace.map(_.faceY).getOrElse(0),
+          useCharacterFace = useCharacterFace,
+          characterId = characterId)
     }
+
+    buf += PlainLines(Array(
+      "switch (game.getChoice(%s, %s, %s, %s)) {".format(
+        EventJavascript.toJs(question),
+        EventJavascript.toJs(choices),
+        EventJavascript.toJs(allowCancel),
+        EventJavascript.toJs(questionOptions))))
 
     for (i <- 0 until choices.size) {
       caseSections("case %d".format(i), innerCmds(i)).foreach(buf += _)
@@ -770,10 +768,12 @@ case class ShowText(
 
   def sections = {
     if (useCharacterFace)
-      singleCall("game.showTextWithCharacterFace", processedLines, characterId)
+      singleCall("game.showText", processedLines, PrintingTextWindowOptions(
+          useCharacterFace = true, characterId = characterId))
     else if (customFace.isDefined)
-      singleCall("game.showTextWithFace", processedLines,
-          customFace.get.faceset, customFace.get.faceX, customFace.get.faceY)
+      singleCall("game.showText", processedLines, PrintingTextWindowOptions(
+          useCustomFace = true, faceset = customFace.get.faceset,
+          faceX = customFace.get.faceX, faceY = customFace.get.faceY))
     else
       singleCall("game.showText", processedLines)
   }

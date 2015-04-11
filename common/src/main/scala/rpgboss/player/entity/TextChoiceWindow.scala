@@ -219,11 +219,6 @@ class TextChoiceWindow(
   }
 
   class TextChoiceWindowScriptInterface extends ChoiceWindowScriptInterface {
-    override def setLeftMargin(leftMargin: Float) = syncRun {
-      _leftMargin = leftMargin
-      updateTextImages()
-    }
-
     def updateLines(lines: Array[String]) = syncRun {
       TextChoiceWindow.this.updateLines(lines)
     }

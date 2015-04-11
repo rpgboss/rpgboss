@@ -158,68 +158,16 @@ class Window(
   }
 
   class WindowScriptInterface {
-    /**
-     * @param   x   The left of the image
-     * @param   y   The top of the image
-     */
-    def attachFace(
-      faceset: String, faceX: Int, faceY: Int,
-      x: Int, y: Int, faceSize: Int) = {
-      val facesetResource = GdxUtils.syncRun {
-        Faceset.readFromDisk(manager.project, faceset)
-      }
-
-      setLeftMargin(faceSize + PrintingTextWindow.xpad)
-
-      GdxUtils.syncRun {
-        val windowRect = rect
-        attachedPictures.add(new TiledTexturePicture(
-          manager.assets,
-          facesetResource,
-          faceX, faceY,
-          Layout(
-              LayoutType.NorthWest.id,
-              SizeType.Fixed.id,
-              faceSize,
-              faceSize,
-              windowRect.left + PrintingTextWindow.xpad + x,
-              windowRect.top + PrintingTextWindow.ypad + y)))
-      }
-    }
-
-    def attachCharacterFace(
-      characterId: Int, x: Int, y: Int, faceSize: Int): Unit = {
-      if (characterId < 0)
-        return
-
-      val characters = manager.project.data.enums.characters
-
-      if (characterId >= characters.length)
-        return
-
-      val character = characters(characterId)
-
-      character.face.map { facespec =>
-        attachFace(facespec.faceset, facespec.faceX, facespec.faceY, x, y,
-            faceSize)
-      }
-    }
-
-    /**
-     * Sets a margin on the left where no text should be printed
-     */
-    def setLeftMargin(leftMargin: Float) = {}
-
-    def getState() = {
-      assertOnDifferentThread()
-      state
-    }
-
     def getRect() = {
       assertOnDifferentThread()
       syncRun {
         rect
       }
+    }
+
+    def getState() = {
+      assertOnDifferentThread()
+      state
     }
 
     def close() = {
@@ -315,7 +263,14 @@ case class PrintingTextWindowOptions(
   justification: Int = Window.Left,
   stayOpenTime: Float = 0,
   showArrow: Boolean = true,
-  leftMargin: Float = 0)
+  leftMargin: Float = 0,
+
+  useCustomFace: Boolean = false,
+  faceset: String = "",
+  faceX: Int = 0,
+  faceY: Int = 0,
+  useCharacterFace: Boolean = false,
+  characterId: Int = 0)
 
 object PrintingTextWindow {
   val xpad = 24
@@ -334,9 +289,17 @@ class PrintingTextWindow(
   import PrintingTextWindow._
 
   val rect = getRectFromLines(initialLines, options.linesPerBlock, xpad)
+
+  val actualLeftMargin =
+    if (options.useCharacterFace || options.useCustomFace) {
+      options.leftMargin + 128 + xpad
+    } else {
+      options.leftMargin
+    }
+
   val textRect = rect.copy(
-      x = rect.x + options.leftMargin / 2,
-      w = rect.w - 2 * xpad - options.leftMargin,
+      x = rect.x + actualLeftMargin / 2,
+      w = rect.w - 2 * xpad - actualLeftMargin,
       h = rect.h - 2 * ypad)
   val textImage = new PrintingWindowText(
     persistent,
@@ -346,6 +309,36 @@ class PrintingTextWindow(
     skinTexture,
     manager.fontbmp,
     options)
+
+  // Initialize character faces.
+  if (options.useCharacterFace && options.characterId < 0) {
+    val characters = manager.project.data.enums.characters
+
+    if (options.characterId < characters.length) {
+      val character = characters(options.characterId)
+
+      character.face.map { facespec =>
+        attachFace(facespec.faceset, facespec.faceX, facespec.faceY)
+      }
+    }
+  } else if (options.useCustomFace) {
+    attachFace(options.faceset, options.faceX, options.faceY)
+  }
+
+  def attachFace(faceset: String, faceX: Int, faceY: Int) = {
+    val facesetResource = Faceset.readFromDisk(manager.project, faceset)
+
+    attachedPictures.add(new TiledTexturePicture(
+      manager.assets,
+      facesetResource,
+      faceX, faceY,
+      Layout(
+          LayoutType.NorthWest.id,
+          SizeType.Fixed.id,
+          128, 128,
+          rect.left + PrintingTextWindow.xpad,
+          rect.top + PrintingTextWindow.ypad)))
+  }
 
   override def keyDown(key: Int): Unit = {
     import MyKeys._
@@ -392,14 +385,6 @@ class PrintingTextWindow(
   }
 
   class PrintingTextWindowScriptInterface extends WindowScriptInterface {
-    override def setLeftMargin(leftMargin: Float) = syncRun {
-      val newTextRect = rect.copy(
-        x = rect.x + leftMargin / 2,
-        w = rect.w - 2 * xpad - leftMargin,
-        h = rect.h - 2 * ypad)
-      textImage.updateRect(newTextRect)
-    }
-
     def updateLines(lines: Array[String]) = syncRun {
       PrintingTextWindow.this.updateLines(lines)
     }
