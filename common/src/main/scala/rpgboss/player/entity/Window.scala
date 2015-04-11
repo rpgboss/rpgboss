@@ -64,7 +64,7 @@ class Window(
     val maxW = Window.maxWidth(lines, manager.fontbmp, xPadding)
     val displayedLines = if (linesShown > 0) linesShown else lines.length
     val autoH = Utils.ceilIntDiv(
-        WindowText.DefaultLineHeight * displayedLines, columns)
+      WindowText.DefaultLineHeight * displayedLines, columns)
     layout.getRect(maxW * columns, autoH, manager.screenW, manager.screenH)
   }
 
@@ -73,6 +73,38 @@ class Window(
 
   if (manager != null)
     manager.addWindow(this)
+
+
+  def attachCharacterFace(
+    characterId: Int, x: Int = 0, y: Int = 0, faceSize: Int = 128) = {
+    val characters = manager.project.data.enums.characters
+
+    if (characterId < characters.length) {
+      val character = characters(characterId)
+
+      character.face.map { facespec =>
+        attachFace(
+          facespec.faceset, facespec.faceX, facespec.faceY, x, y, faceSize)
+      }
+    }
+  }
+
+  def attachFace(
+    faceset: String, faceX: Int, faceY: Int, x: Int = 0, y: Int = 0,
+    faceSize: Int = 128) = {
+    val facesetResource = Faceset.readFromDisk(manager.project, faceset)
+
+    attachedPictures.add(new TiledTexturePicture(
+      manager.assets,
+      facesetResource,
+      faceX, faceY,
+      Layout(
+        LayoutType.NorthWest.id,
+        SizeType.Fixed.id,
+        faceSize, faceSize,
+        rect.left + PrintingTextWindow.xpad,
+        rect.top + PrintingTextWindow.ypad)))
+  }
 
   /**
    * Accessed on multiple threads.
@@ -103,7 +135,7 @@ class Window(
         case Window.Opening => changeState(Window.Open)
         case Window.Open    =>
         case Window.Closing => changeState(Window.Closed)
-        case _ => Unit
+        case _              => Unit
       }
     }
   }
@@ -158,6 +190,23 @@ class Window(
   }
 
   class WindowScriptInterface {
+    def attachCharacterFace(
+      characterId: Int, x: Int = 0, y: Int = 0, faceSize: Int = 128) = {
+      assertOnDifferentThread()
+      syncRun {
+        Window.this.attachCharacterFace(characterId, x, y, faceSize)
+      }
+    }
+
+    def attachFace(
+      faceset: String, faceX: Int, faceY: Int, x: Int = 0, y: Int = 0,
+      faceSize: Int = 128) = {
+      assertOnDifferentThread()
+      syncRun {
+        Window.this.attachFace(faceset, faceX, faceY, x, y, faceSize)
+      }
+    }
+
     def getRect() = {
       assertOnDifferentThread()
       syncRun {
@@ -298,9 +347,9 @@ class PrintingTextWindow(
     }
 
   val textRect = rect.copy(
-      x = rect.x + actualLeftMargin / 2,
-      w = rect.w - 2 * xpad - actualLeftMargin,
-      h = rect.h - 2 * ypad)
+    x = rect.x + actualLeftMargin / 2,
+    w = rect.w - 2 * xpad - actualLeftMargin,
+    h = rect.h - 2 * ypad)
   val textImage = new PrintingWindowText(
     persistent,
     initialLines,
@@ -312,32 +361,9 @@ class PrintingTextWindow(
 
   // Initialize character faces.
   if (options.useCharacterFace && options.characterId < 0) {
-    val characters = manager.project.data.enums.characters
-
-    if (options.characterId < characters.length) {
-      val character = characters(options.characterId)
-
-      character.face.map { facespec =>
-        attachFace(facespec.faceset, facespec.faceX, facespec.faceY)
-      }
-    }
+    attachCharacterFace(options.characterId)
   } else if (options.useCustomFace) {
     attachFace(options.faceset, options.faceX, options.faceY)
-  }
-
-  def attachFace(faceset: String, faceX: Int, faceY: Int) = {
-    val facesetResource = Faceset.readFromDisk(manager.project, faceset)
-
-    attachedPictures.add(new TiledTexturePicture(
-      manager.assets,
-      facesetResource,
-      faceX, faceY,
-      Layout(
-          LayoutType.NorthWest.id,
-          SizeType.Fixed.id,
-          128, 128,
-          rect.left + PrintingTextWindow.xpad,
-          rect.top + PrintingTextWindow.ypad)))
   }
 
   override def keyDown(key: Int): Unit = {
