@@ -515,7 +515,7 @@ class ScriptInterface(
   def newTextWindow(
     text: Array[String],
     layout: Layout = Layout(SOUTH, FIXED, 640, 180),
-    options: PrintingTextWindowOptions = PrintingTextWindowOptions(showArrow = true)): PrintingTextWindow#PrintingTextWindowScriptInterface = {
+    options: PrintingTextWindowOptions = PrintingTextWindowOptions()): PrintingTextWindow#PrintingTextWindowScriptInterface = {
     val window = syncRun {
       new PrintingTextWindow(
         game.persistent,
@@ -535,21 +535,13 @@ class ScriptInterface(
 
   def showTextWithFace(text: Array[String], faceset: String, faceX: Int,
     faceY: Int) = {
-    val window = newTextWindow(
-      text,
-      options = PrintingTextWindowOptions(
-        showArrow = true,
-        leftMargin = 128 + PrintingTextWindow.xpad))
+    val window = newTextWindow(text)
     window.attachFace(faceset, faceX, faceY, 0, 0, 128)
     window.awaitClose()
   }
 
   def showTextWithCharacterFace(text: Array[String], characterId: Int): Int = {
-    val window = newTextWindow(
-      text,
-      options = PrintingTextWindowOptions(
-        showArrow = true,
-        leftMargin = 128 + PrintingTextWindow.xpad))
+    val window = newTextWindow(text)
     window.attachCharacterFace(characterId, 0, 0, 128)
     window.awaitClose()
   }
@@ -562,24 +554,12 @@ class ScriptInterface(
     faceY: Int = 0,
     useCharacterFace: Boolean = false,
     characterId: Int = 0) = {
-    val questionLayout =
-      layout(SOUTH, FIXED, 640, 180)
-    val questionWindow = syncRun {
-      new PrintingTextWindow(
-        game.persistent,
-        activeScreen.windowManager,
-        activeScreen.inputs,
-        question,
-        questionLayout,
-        PrintingTextWindowOptions(leftMargin = 128 + PrintingTextWindow.xpad))
-    }
+    val questionWindow = newTextWindow(question)
 
     if (useCharacterFace) {
-      questionWindow.scriptInterface.attachCharacterFace(
-        characterId, 0, 0, 128)
+      questionWindow.attachCharacterFace(characterId, 0, 0, 128)
     } else if (useCustomFace) {
-      questionWindow.scriptInterface.attachFace(
-        faceset, faceX, faceY, 0, 0, 128)
+      questionWindow.attachFace(faceset, faceX, faceY, 0, 0, 128)
     }
 
     val fontbmp = activeScreen.windowManager.fontbmp
@@ -590,7 +570,8 @@ class ScriptInterface(
         1.5f * TextChoiceWindow.ypad
 
     val choiceLayout = layoutWithOffset(
-      SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0, -questionLayout.h)
+      SOUTHEAST, FIXED, choicesWidth, choicesHeight, 0,
+      -questionWindow.getRect().h)
 
     val choiceWindow = newChoiceWindow(
       choices,
@@ -601,7 +582,7 @@ class ScriptInterface(
     val choice = choiceWindow.getChoice()
     choiceWindow.close()
 
-    questionWindow.scriptInterface.close()
+    questionWindow.close()
 
     choice
   }

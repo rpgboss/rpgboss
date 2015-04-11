@@ -215,6 +215,13 @@ class Window(
       state
     }
 
+    def getRect() = {
+      assertOnDifferentThread()
+      syncRun {
+        rect
+      }
+    }
+
     def close() = {
       assertOnDifferentThread()
       GdxUtils.syncRun {
@@ -307,7 +314,7 @@ case class PrintingTextWindowOptions(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left,
   stayOpenTime: Float = 0,
-  showArrow: Boolean = false,
+  showArrow: Boolean = true,
   leftMargin: Float = 0)
 
 object PrintingTextWindow {
@@ -387,8 +394,8 @@ class PrintingTextWindow(
   class PrintingTextWindowScriptInterface extends WindowScriptInterface {
     override def setLeftMargin(leftMargin: Float) = syncRun {
       val newTextRect = rect.copy(
-        x = rect.x + options.leftMargin / 2,
-        w = rect.w - 2 * xpad - options.leftMargin,
+        x = rect.x + leftMargin / 2,
+        w = rect.w - 2 * xpad - leftMargin,
         h = rect.h - 2 * ypad)
       textImage.updateRect(newTextRect)
     }
