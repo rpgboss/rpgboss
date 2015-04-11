@@ -31,7 +31,7 @@ class EventCmdSpec extends UnitSpec {
             Array(ShowText(Array("Default")))))
 
     e.toJs should deepEqual(Array(
-      """switch (game.getChoice(["Question text"], ["Yes", "No"], true)) {""",
+      """switch (game.getChoice(["Question text"], ["Yes", "No"], true, {})) {""",
       """  case 0:""",
       """    game.showText(["Hello"]);""",
       """    break;""",
