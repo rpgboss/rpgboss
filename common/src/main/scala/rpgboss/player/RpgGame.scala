@@ -58,6 +58,8 @@ class RpgGame(gamepath: File)
   var mapScreen: MapScreen = null
   var battleScreen: BattleScreen = null
 
+  var renderingOffForTesting = false
+
   // Generate and pack sprites
   val spritesets = Map() ++ Spriteset.list(project).map(
     name => (name, Spriteset.readFromDisk(project, name)))
@@ -86,7 +88,8 @@ class RpgGame(gamepath: File)
 
     com.badlogic.gdx.utils.Timer.instance().start()
 
-    atlasSprites = GdxUtils.generateSpritesTextureAtlas(spritesets.values)
+    if (!renderingOffForTesting)
+      atlasSprites = GdxUtils.generateSpritesTextureAtlas(spritesets.values)
 
     persistent = new PersistentState()
 
@@ -94,7 +97,8 @@ class RpgGame(gamepath: File)
     startScreen = new StartScreen(this)
     battleScreen =
       new BattleScreen(Some(this), assets, atlasSprites, project,
-        project.data.startup.screenW, project.data.startup.screenH)
+        project.data.startup.screenW, project.data.startup.screenH,
+        renderingOffForTesting)
     mapScreen = new MapScreen(this)
 
     beginGame()
@@ -271,7 +275,9 @@ class RpgGame(gamepath: File)
 
     battleScreen.dispose()
     mapScreen.dispose()
-    atlasSprites.dispose()
+
+    if (atlasSprites != null)
+      atlasSprites.dispose()
 
     assets.dispose()
 

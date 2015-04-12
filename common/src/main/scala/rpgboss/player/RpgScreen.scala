@@ -30,12 +30,14 @@ trait RpgScreen extends Screen
 
   def scriptInterface: ScriptInterface
 
+  def renderingOffForTesting: Boolean
+
   val inputs = new InputMultiplexer()
 
   val musics = Array.fill[Option[MusicPlayer]](MusicSlots.NUM_SLOTS)(None)
 
-  val batch = new SpriteBatch()
-  val shapeRenderer = new ShapeRenderer()
+  val batch = if (renderingOffForTesting) null else new SpriteBatch()
+  val shapeRenderer = if (renderingOffForTesting) null else new ShapeRenderer()
 
   /*
    * Music instances 'on their way out'.
@@ -46,7 +48,8 @@ trait RpgScreen extends Screen
   screenCamera.setToOrtho(true, screenW, screenH) // y points down
   screenCamera.update()
 
-  val windowManager = new WindowManager(assets, project, screenW, screenH)
+  val windowManager =
+    new WindowManager(assets, project, screenW, screenH, renderingOffForTesting)
 
   def playAnimation(animationId: Int, target: AnimationTarget,
       speedScale: Float, sizeScale: Float) = {
@@ -129,8 +132,12 @@ trait RpgScreen extends Screen
     reset()
 
     windowManager.dispose()
-    shapeRenderer.dispose()
-    batch.dispose()
+
+    if (shapeRenderer != null)
+      shapeRenderer.dispose()
+
+    if (batch != null)
+      batch.dispose()
   }
 
   override def hide() = {
@@ -165,7 +172,8 @@ trait RpgScreen extends Screen
       update(delta)
     }
 
-    render()
+    if (!renderingOffForTesting)
+      render()
   }
 
   override def resize(width: Int, height: Int) = {
@@ -195,5 +203,7 @@ trait RpgScreenWithGame extends RpgScreen {
   def assets = game.assets
   val scriptInterface = new ScriptInterface(game, this)
   val scriptFactory = new ScriptThreadFactory(scriptInterface)
+
+  override def renderingOffForTesting = game.renderingOffForTesting
 
 }

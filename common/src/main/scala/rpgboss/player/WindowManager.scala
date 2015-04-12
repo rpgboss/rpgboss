@@ -40,7 +40,8 @@ class WindowManager(
   val assets: RpgAssetManager,
   val project: Project,
   val screenW: Int,
-  val screenH: Int) extends ThreadChecked with LazyLogging {
+  val screenH: Int,
+  val renderingOffForTesting: Boolean) extends ThreadChecked with LazyLogging {
 
   // Should only be modified on the Gdx thread
   val animationManager = new AnimationManager(screenW, screenH)
@@ -79,7 +80,11 @@ class WindowManager(
 
   var _fontbmp: BitmapFont = null
   def updateBitmapFont(distinctChars: String) = {
-    _fontbmp = font.getBitmapFont(distinctChars)
+    _fontbmp =
+      if (renderingOffForTesting)
+        null
+      else
+        font.getBitmapFont(distinctChars)
   }
 
   val pictures = Array.fill[Option[PictureLike]](PictureSlots.NUM_SLOTS)(None)
@@ -111,7 +116,8 @@ class WindowManager(
       windowskinTexture.dispose()
 
     windowskin = Windowskin.readFromDisk(project, windowskinPath)
-    windowskinTexture = new Texture(windowskin.getGdxFileHandle)
+    if (!renderingOffForTesting)
+      windowskinTexture = new Texture(windowskin.getGdxFileHandle)
   }
   setWindowskin(project.data.startup.windowskin)
 
@@ -356,7 +362,8 @@ class WindowManager(
     for (pictureOpt <- pictures; picture <- pictureOpt) {
       picture.dispose()
     }
-    windowskinTexture.dispose()
+    if (windowskinTexture != null)
+      windowskinTexture.dispose()
     animationManager.dispose()
   }
 }

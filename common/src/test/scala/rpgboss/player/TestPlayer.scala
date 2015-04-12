@@ -100,6 +100,8 @@ object TestPlayer {
                 anyInt(), Matchers.eq(GL20.GL_ACTIVE_ATTRIBUTES), anyObject())
         }
       }
+
+      game.renderingOffForTesting = true
     }
 
     container.replace(game)

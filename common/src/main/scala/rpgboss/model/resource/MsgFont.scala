@@ -1,13 +1,10 @@
 package rpgboss.model.resource
 
-import rpgboss.lib._
-import rpgboss.model._
-import rpgboss.lib.Utils._
-import rpgboss.lib.FileHelper._
-import java.io._
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
-import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+
+import rpgboss.model.Project
 
 case class MsgfontMetadata()
 
@@ -22,6 +19,9 @@ case class Msgfont(proj: Project, name: String,
     val params = new FreeTypeFontGenerator.FreeTypeFontParameter
     params.size = proj.data.startup.fontsize
     params.flip = true
+    params.shadowColor = Color.BLACK
+    params.shadowOffsetX = 2
+    params.shadowOffsetY = 2
 
     if (!distinctChars.isEmpty()) {
       params.characters =

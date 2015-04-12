@@ -68,17 +68,47 @@ game.callMenu = function() {
   game.runScript("sys/menu.js", "callMenu()");
 };
 
+game.getPlayerInfo = function() {
+  var evt = game.getPlayerInfoScala();
+  return {
+    x : evt.x(),
+    y : evt.y(),
+    dir : evt.dir(),
+    screenX : evt.screenX(),
+    screenY : evt.screenY(),
+    screenTopLeftX : evt.screenTopLeftX(),
+    screenTopLeftY : evt.screenTopLeftY(),
+    width : evt.width(),
+    height : evt.height()
+  }
+};
+
+game.getEventInfo = function(id) {
+  var evt = game.getEventInfoScala(id);
+  return {
+    x : evt.x(),
+    y : evt.y(),
+    dir : evt.dir(),
+    screenX : evt.screenX(),
+    screenY : evt.screenY(),
+    screenTopLeftX : evt.screenTopLeftX(),
+    screenTopLeftY : evt.screenTopLeftY(),
+    width : evt.width(),
+    height : evt.height()
+  }
+};
+
 game.getMenuEnabled = function() {
   return game.getInt(game.MENU_ENABLED()) != 0;
-}
+};
 
 game.setEventsEnabled = function(enabled) {
   game.setInt(game.EVENTS_ENABLED(), enabled ? 1 : 0);
-}
+};
 
 game.setMenuEnabled = function(enabled) {
   game.setInt(game.MENU_ENABLED(), enabled ? 1 : 0);
-}
+};
 
 game.setWeather = function(weatherTypeId) {
   switch(weatherTypeId) {
@@ -106,34 +136,4 @@ game.setWeather = function(weatherTypeId) {
     game.stopMusic(MusicSlots.WEATHER(), 0.5 /* fadeDuration */);
     break;
   }
-}
-
-game.getPlayerInfo = function() {
-  var evt = game.getPlayerInfoScala();
-  return {
-    x : evt.x(),
-    y : evt.y(),
-    dir : evt.dir(),
-    screenX : evt.screenX(),
-    screenY : evt.screenY(),
-    screenTopLeftX : evt.screenTopLeftX(),
-    screenTopLeftY : evt.screenTopLeftY(),
-    width : evt.width(),
-    height : evt.height()
-  }
-}
-
-game.getEventInfo = function(id) {
-  var evt = game.getEventInfoScala(id);
-  return {
-    x : evt.x(),
-    y : evt.y(),
-    dir : evt.dir(),
-    screenX : evt.screenX(),
-    screenY : evt.screenY(),
-    screenTopLeftX : evt.screenTopLeftX(),
-    screenTopLeftY : evt.screenTopLeftY(),
-    width : evt.width(),
-    height : evt.height()
-  }
-}
+};

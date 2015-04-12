@@ -1,5 +1,7 @@
 package rpgboss.model.event
 
+import rpgboss.lib.JsonUtils
+
 trait CodeSection {
   def toJs: Array[String]
 }
@@ -32,6 +34,8 @@ object EventJavascript {
         "%d".formatLocal(Locale.US, x)
       case x: Boolean =>
         "%b".formatLocal(Locale.US, x)
+      case x: AnyRef =>
+        JsonUtils.toJsonString(x)
       case _ =>
         "undefined"
     }

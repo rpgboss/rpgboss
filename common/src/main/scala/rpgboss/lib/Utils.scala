@@ -257,6 +257,10 @@ object JsonUtils {
     } getOrElse false
   }
 
+  def toJsonString[T <: AnyRef](model: T) = {
+    Serialization.write(model)(defaultFormats)
+  }
+
   def nativeObjectToCaseClass[T](
     jsObj: NativeObject)(implicit m: Manifest[T]) = {
     import scala.collection.JavaConverters._

@@ -13,7 +13,10 @@ import scala.collection.mutable.ArrayBuffer
  * This class wraps a map and its assets. It should only be instantiated
  * on the Gdx thread, as it makes calls to OpenGL
  */
-class MapAndAssets(project: Project, val mapName: String) {
+class MapAndAssets(
+  project: Project,
+  val mapName: String,
+  renderingOffForTesting: Boolean) {
   val map: RpgMap = RpgMap.readFromDisk(project, mapName)
   val mapData: RpgMapData = map.readMapData().get
   mapData.sanitizeForMetadata(map.metadata)
@@ -73,8 +76,9 @@ class MapAndAssets(project: Project, val mapName: String) {
   val elevatedTiles: Array[ElevatedTile] = {
     val buffer = new ArrayBuffer[ElevatedTile]
 
-    for (layerAry <-
-         List(mapData.botLayer, mapData.midLayer, mapData.topLayer)) {
+    for (
+      layerAry <- List(mapData.botLayer, mapData.midLayer, mapData.topLayer)
+    ) {
       for (tileY <- 0 until map.metadata.ySize) {
         val row = layerAry(tileY)
         import RpgMap.bytesPerTile
@@ -97,8 +101,8 @@ class MapAndAssets(project: Project, val mapName: String) {
             val tileset = tilesets(byte1)
             val height = tileset.metadata.heightAry(byte3)(byte2)
             if (height > 0) {
-//              println(ElevatedTile(
-//                tileX, tileY, byte1, byte2, byte3, height + tileY))
+              //              println(ElevatedTile(
+              //                tileX, tileY, byte1, byte2, byte3, height + tileY))
               buffer.append(ElevatedTile(
                 tileX, tileY, byte1, byte2, byte3, height + tileY))
             }
@@ -247,14 +251,16 @@ class MapAndAssets(project: Project, val mapName: String) {
     return (blocked, math.signum(reroute).toInt)
   }
 
-  //info("Packed tilesets and autotiles into %d pages".format(
-  //    packerTiles.getPages().size))
-
   // Generate texture atlas, nearest neighbor with no mipmaps
-  val atlasTiles = packerTiles.generateTextureAtlas(
-    TextureFilter.Nearest, TextureFilter.Nearest, false)
+  val atlasTiles =
+    if (renderingOffForTesting)
+      null
+    else
+      packerTiles.generateTextureAtlas(
+        TextureFilter.Nearest, TextureFilter.Nearest, false)
 
   def dispose() = {
-    atlasTiles.dispose()
+    if (atlasTiles != null)
+      atlasTiles.dispose()
   }
 }
