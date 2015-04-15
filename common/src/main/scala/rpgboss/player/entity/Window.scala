@@ -56,7 +56,10 @@ class Window(
   val attachedPictures = collection.mutable.Set[PictureLike]()
 
   val rect =
-    layout.getRect(100, 100, manager.screenW, manager.screenH)
+    if (manager != null)
+      layout.getRect(100, 100, manager.screenW, manager.screenH)
+    else
+      layout.getRect(100, 100, 640, 480) // for tests
 
   protected def getRectFromLines(
     lines: Array[String], linesShown: Int, xPadding: Int, yPadding: Int,
