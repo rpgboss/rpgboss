@@ -44,7 +44,8 @@ class TextChoiceWindow(
   def displayedLines = options.displayedLines
   def linesPerChoice = options.linesPerChoice
 
-  val rect = getRectFromLines(lines, options.displayedLines, xpad, columns)
+  override val rect =
+    getRectFromLines(lines, options.displayedLines, xpad, ypad, columns)
   private var textWTotal = 0f
   private var textHTotal = 0f
   private var textColW = 0f

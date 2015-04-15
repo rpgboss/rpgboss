@@ -30,6 +30,12 @@ function rightPad(string, totalLen) {
   return castedString + Array(padLength).join(" ");
 }
 
+function zeroPad(number, totalLen) {
+  var s = number + "";
+  while (s.length < totalLen) s = "0" + s;
+  return s.substr(s.length - totalLen);
+}
+
 function assert(condition, message) {
   if (!condition) {
     message = message || "Assertion failed";
@@ -101,6 +107,68 @@ game.getEventInfo = function(id) {
 game.getMenuEnabled = function() {
   return game.getInt(game.MENU_ENABLED()) != 0;
 };
+
+game.getNumberInput = function(digits, initial) {
+  digits = digits || 4;
+  initial = initial || 0;
+
+  var value = Math.pow(10, digits) % initial;
+  var curDigit = 0;
+
+  var window = game.newTextWindow(
+      [zeroPad(value, digits)],
+      game.layout(game.CENTERED(), game.SCALE_SOURCE(), 1.0, 1.0),
+      {timePerChar: 0, linesPerBlock: 1, showArrow: false});
+
+  var colorStart = "\\c[6]";
+  var colorEnd = "\\c[0]";
+
+  var done = false;
+  while (!done) {
+    var paddedValue = zeroPad(value, digits);
+    var s = paddedValue;
+    s =
+      s.substring(0, s.length - curDigit - 1) +
+      colorStart +
+      s.charAt(s.length - curDigit - 1) +
+      colorEnd +
+      s.substring(s.length - curDigit);
+
+    window.updateLines([s]);
+
+    var key = game.getKeyInput([Keys.Up(), Keys.Down(), Keys.Left(),
+                                Keys.Right(), Keys.OK(), Keys.Cancel()]);
+    switch (key) {
+    case 0:
+      if (paddedValue.charAt(digits - curDigit - 1) == "9")
+        value += -9 * Math.pow(10, curDigit);
+      else
+        value += Math.pow(10, curDigit);
+      break;
+    case 1:
+      if (paddedValue.charAt(digits - curDigit - 1) == "0")
+        value -= -9 * Math.pow(10, curDigit);
+      else
+        value -= Math.pow(10, curDigit);
+      break;
+    case 2:
+      curDigit += 1;
+      curDigit %= digits;
+      break;
+    case 3:
+      curDigit -= 1;
+      curDigit %= digits;
+      break;
+    default:
+      done = true;
+    }
+  }
+
+  window.close();
+  game.log("game.getNumberInput result = " + value.toString());
+
+  return value;
+}
 
 game.setEventsEnabled = function(enabled) {
   game.setInt(game.EVENTS_ENABLED(), enabled ? 1 : 0);

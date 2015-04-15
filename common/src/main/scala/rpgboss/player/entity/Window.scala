@@ -55,12 +55,12 @@ class Window(
 
   val attachedPictures = collection.mutable.Set[PictureLike]()
 
-  private lazy val rect = {
+  val rect =
     layout.getRect(100, 100, manager.screenW, manager.screenH)
-  }
 
   protected def getRectFromLines(
-    lines: Array[String], linesShown: Int, xPadding: Int, columns: Int = 1) = {
+    lines: Array[String], linesShown: Int, xPadding: Int, yPadding: Int,
+    columns: Int = 1) = {
     val maxW =
       if (manager.renderingOffForTesting)
         100
@@ -68,8 +68,9 @@ class Window(
         Window.maxWidth(lines, manager.fontbmp, xPadding)
 
     val displayedLines = if (linesShown > 0) linesShown else lines.length
-    val autoH = Utils.ceilIntDiv(
-      WindowText.DefaultLineHeight * displayedLines, columns)
+    val autoH =
+      WindowText.DefaultLineHeight * Utils.ceilIntDiv(displayedLines, columns) +
+      2 * yPadding
     layout.getRect(maxW * columns, autoH, manager.screenW, manager.screenH)
   }
 
@@ -342,7 +343,8 @@ class PrintingTextWindow(
 
   import PrintingTextWindow._
 
-  val rect = getRectFromLines(initialLines, options.linesPerBlock, xpad)
+  override val rect =
+    getRectFromLines(initialLines, options.linesPerBlock, xpad, ypad)
 
   val actualLeftMargin =
     if (options.useCharacterFace || options.useCustomFace) {

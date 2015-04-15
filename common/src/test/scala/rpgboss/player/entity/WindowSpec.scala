@@ -29,7 +29,8 @@ class WindowSpec extends UnitSpec {
   }
 
   "Window" should "change state on time" in {
-    val w = new Window(null, null, Layout.dummy) {
+    val manager = new WindowManager(null, null, 640, 480, false)
+    val w = new Window(manager, null, Layout.dummy) {
       override def openCloseTime = 0.25
     }
     w.state should equal (Window.Opening)
