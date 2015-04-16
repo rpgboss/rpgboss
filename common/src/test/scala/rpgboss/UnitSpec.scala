@@ -28,8 +28,11 @@ class UnitSpec extends FlatSpec with Matchers {
       } else if (a.isInstanceOf[Array[_]] && b.isInstanceOf[Array[_]]) {
         val aArray = a.asInstanceOf[Array[_]]
         val bArray = b.asInstanceOf[Array[_]]
-        if (aArray.length != bArray.length)
+        if (aArray.length != bArray.length) {
+          println("Array length not equal: %d vs %d".format(
+              aArray.length, bArray.length))
           return false
+        }
 
         val pairIt = aArray zip bArray
         pairIt forall {
