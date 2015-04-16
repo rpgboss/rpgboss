@@ -67,6 +67,7 @@ object EventCmd {
     classOf[GetChoice],
     classOf[GetEntityInfo],
     classOf[GetKeyInput],
+    classOf[GetNumberInput],
     classOf[GiveExperience],
     classOf[HealOrDamage],
     classOf[HidePicture],
@@ -149,7 +150,8 @@ case class EquipItem(
 }
 
 case class ExitGame() extends EventCmd {
-  def sections = singleCall("game.quit")
+  def sections =
+    Array(PlainLines(Array(jsStatement("game.gameOver"), "return;")))
 }
 
 /**
@@ -215,6 +217,16 @@ case class GetKeyInput(
 extends EventCmd {
   def sections = singleCall("game.setInt", storeInVariable,
       RawJs(jsCall("game.getKeyInput", capturedKeys).exp))
+}
+
+case class GetNumberInput(
+  var message: String = "Enter number:",
+  var storeInVariable: String = "globalVariableName",
+  digits: IntParameter = IntParameter(5),
+  initial: IntParameter = IntParameter(0))
+extends EventCmd {
+  def sections = singleCall("game.setInt", storeInVariable,
+      RawJs(jsCall("game.getNumberInput", message, digits, initial).exp))
 }
 
 case class GiveExperience(
@@ -634,7 +646,9 @@ case class StopMusic(
 case class Teleport(loc: MapLoc = MapLoc(),
   var transitionId: Int = Transitions.FADE.id) extends EventCmd {
   def sections =
-    singleCall("game.teleport", loc.map, loc.x, loc.y, transitionId)
+    Array(PlainLines(Array(
+        jsStatement("game.teleport", loc.map, loc.x, loc.y, transitionId),
+        "return;")))
 }
 
 case class SetMenuEnabled(var enabled: Boolean = false) extends EventCmd {
@@ -705,9 +719,8 @@ case class ClearTimer()
 
 case class GameOver()
   extends EventCmd {
-  def sections = {
-    singleCall("game.gameOver")
-  }
+  def sections =
+    Array(PlainLines(Array(jsStatement("game.gameOver"), "return;")))
 }
 
 case class FadeIn(var duration: Float = 1f)

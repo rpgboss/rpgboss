@@ -63,7 +63,33 @@ function getItemName(itemId) {
 var game = Object.create(scalaScriptInterface);
 
 game.gameOver = function() {
-  game.runScript("sys/menu.js", "gameOver()");
+  game.setWeather(0);
+  game.setTransition(0, 1.0);
+  game.playMusic(0, project.data().startup().gameOverMusic(), true, 0.4);
+  game.showPicture(PictureSlots.GAME_OVER(), project.data().startup()
+      .gameOverPic(), game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
+  game.sleep(0.1);
+  
+  while (true) {
+    var choiceWin = game.newChoiceWindow([
+        game.getMessage("Back to titlescreen"), game.getMessage("Quit game") ],
+        game.layout(game.CENTERED(), game.FIXED(), 300, 100), {
+          justification : game.CENTER()
+        });
+  
+    var choiceIdx = choiceWin.getChoice();
+    choiceWin.close();
+  
+    if (choiceIdx == 0) {
+      game.setTransition(1, 0.4);
+      game.sleep(0.4);
+      game.toTitleScreen();
+      break;
+    } else if (choiceIdx == 1) {
+      game.quit();
+      break;
+    }
+  }
 };
 
 game.callSaveMenu = function() {
@@ -108,17 +134,22 @@ game.getMenuEnabled = function() {
   return game.getInt(game.MENU_ENABLED()) != 0;
 };
 
-game.getNumberInput = function(digits, initial) {
+/**
+ * Returns -1 if user hits cancel.
+ */
+game.getNumberInput = function(message, digits, initial) {
+  message = message || "Enter number:";
   digits = digits || 4;
   initial = initial || 0;
-
-  var value = Math.pow(10, digits) % initial;
+  
+  var value = initial % Math.pow(10, digits);
   var curDigit = 0;
 
   var window = game.newTextWindow(
-      [zeroPad(value, digits)],
+      [message, zeroPad(value, digits)],
       game.layout(game.CENTERED(), game.SCALE_SOURCE(), 1.0, 1.0),
-      {timePerChar: 0, linesPerBlock: 1, showArrow: false});
+      {timePerChar: 0, showArrow: false, linesPerBlock: 2, 
+       justification: 1});
 
   var colorStart = "\\c[6]";
   var colorEnd = "\\c[0]";
@@ -134,7 +165,7 @@ game.getNumberInput = function(digits, initial) {
       colorEnd +
       s.substring(s.length - curDigit);
 
-    window.updateLines([s]);
+    window.updateLines([message, s]);
 
     var key = game.getKeyInput([Keys.Up(), Keys.Down(), Keys.Left(),
                                 Keys.Right(), Keys.OK(), Keys.Cancel()]);
@@ -159,8 +190,12 @@ game.getNumberInput = function(digits, initial) {
       curDigit -= 1;
       curDigit %= digits;
       break;
+    case 4:
+      done = true;
+      break;
     default:
       done = true;
+      value = -1;
     }
   }
 

@@ -18,6 +18,7 @@ import rpgboss.model.MapLoc
 
 object EventCmdCategory extends Enumeration {
   val Windows = Value
+  val Input = Value
   val Movement = Value
   val Party = Value
   val Inventory = Value
@@ -66,7 +67,7 @@ class NewEventCmdBox(
   val columns = {
     import EventCmdCategory._
     Array(
-      Array(Windows),
+      Array(Windows, Input),
       Array(Movement, Party, Inventory),
       Array(Battles, Effects, GameState),
       Array(Programming)
