@@ -346,12 +346,8 @@ class PrintingTextWindow(
 
   import PrintingTextWindow._
 
-<<<<<<< HEAD
-  val rect = getRectFromLines(initialLines, options.linesPerBlock, xpad)
-=======
   override val rect =
     getRectFromLines(initialLines, options.linesPerBlock, xpad, ypad)
->>>>>>> rpgboss/master
 
   val actualLeftMargin =
     if (options.useCharacterFace || options.useCustomFace) {
