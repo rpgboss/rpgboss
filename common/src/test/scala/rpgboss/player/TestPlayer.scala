@@ -65,6 +65,7 @@ object TestPlayer {
       if (headlessApp == null) {
         headlessApp = new HeadlessApplication(container)
       }
+
       game.renderingOffForTesting = true
     }
 

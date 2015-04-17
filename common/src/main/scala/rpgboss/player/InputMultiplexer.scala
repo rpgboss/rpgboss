@@ -54,8 +54,12 @@ object MyKeys {
   val Right = 3
   val OK = 4
   val Cancel = 5
+  val Special1 = 6
+  val Special2 = 7
+  val Start = 8
+  val Select = 9
 
-  val totalNumber = 6
+  val totalNumber = 10
 }
 
 object MyKeysEnum extends Enumeration {
@@ -65,6 +69,10 @@ object MyKeysEnum extends Enumeration {
   val Right = Value(3, "Right")
   val OK = Value(4, "OK")
   val Cancel = Value(5, "Cancel")
+  val Special1 = Value(6, "Special1")
+  val Special2 = Value(7, "Special2")
+  val Start = Value(8, "Start")
+  val Select = Value(8, "Select")
 
   def keysNames = values.toArray.map { value =>
     rpgboss.model.HasName.StringToHasName(value.toString())
@@ -131,6 +139,10 @@ class InputMultiplexer extends InputAdapter {
     case Keys.M => Some(MyKeys.Cancel)
     case Keys.X => Some(MyKeys.Cancel)
     case Keys.ESCAPE => Some(MyKeys.Cancel)
+    case Keys.CONTROL_LEFT => Some(MyKeys.Special1)
+    case Keys.SHIFT_LEFT => Some(MyKeys.Special2)
+    case Keys.ALT_LEFT => Some(MyKeys.Start)
+    case Keys.A => Some(MyKeys.Select)
     case _ => None
   }
 

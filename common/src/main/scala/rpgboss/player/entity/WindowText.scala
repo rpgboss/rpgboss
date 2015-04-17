@@ -109,6 +109,8 @@ class WindowText(
       val rMatchOption = WindowText.colorCtrl.findFirstMatchIn(remainingText)
       val textToPrintNow = rMatchOption.map(_.before).getOrElse(remainingText)
 
+
+      // Draw Shadow
       val textBounds = fontbmp.drawMultiLine(b, textToPrintNow, xStart,
         rect.top + yOffset,
         rect.w, fontAlign)

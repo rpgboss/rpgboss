@@ -905,9 +905,9 @@ class ScriptInterface(
       scriptPath, functionToCall, runOnNewThread = false)
   }
 
-  def drawText(id: Int, text: String, x: Int, y: Int, color: Color = new Color(255, 255, 255, 1), scale: Float = 1.0f) = syncRun {
-    logger.debug("drawText: " + id + ", text: " + text + " on " + x + ", " + y + ", scale:" + scale);
-    mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, scale))
+  def drawText(id: Int, text: String, x: Int, y: Int, color: Color = new Color(255, 255, 255, 1), size: Int = 12) = syncRun {
+    logger.debug("drawText: " + id + ", text: " + text + " on " + x + ", " + y + ", size:"+size);
+    mapScreen.windowManager.addDrawText(new ScreenText(id, text, x, y, color, size))
   }
 
   def drawRectangle(id: Int, x: Int, y: Int, width: Int, height: Int, color: Color = new Color(255, 255, 255, 1), recttype: String = "filled", radius: Int = 0) = syncRun {
