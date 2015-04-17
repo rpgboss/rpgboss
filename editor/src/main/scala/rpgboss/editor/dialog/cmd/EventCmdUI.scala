@@ -22,6 +22,7 @@ import rpgboss.editor.dialog.ConditionsPanel
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Battles
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Effects
 import rpgboss.editor.dialog.cmd.EventCmdCategory.GameState
+import rpgboss.editor.dialog.cmd.EventCmdCategory.Input
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Inventory
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Movement
 import rpgboss.editor.dialog.cmd.EventCmdCategory.Party
@@ -83,6 +84,7 @@ import rpgboss.model.event.GameOver
 import rpgboss.model.event.GetChoice
 import rpgboss.model.event.GetEntityInfo
 import rpgboss.model.event.GetKeyInput
+import rpgboss.model.event.GetNumberInput
 import rpgboss.model.event.GiveExperience
 import rpgboss.model.event.HealOrDamage
 import rpgboss.model.event.HidePicture
@@ -139,6 +141,7 @@ object EventCmdUI {
     GetChoiceUI,
     GetEntityInfoUI,
     GetKeyInputUI,
+    GetNumberInputUI,
     GiveExperienceUI,
     HealOrDamageUI,
     HidePictureUI,
@@ -489,7 +492,7 @@ object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {
 object GetKeyInputUI extends EventCmdUI[GetKeyInput] {
   import rpgboss.model.HasName._
 
-  override def category = Windows
+  override def category = Input
   override def title = needsTranslation("Get_Key_Input")
   override def getNormalFields(owner: Window, sm: StateMaster,
                                mapName: Option[String], model: GetKeyInput) = Seq(
@@ -501,6 +504,27 @@ object GetKeyInputUI extends EventCmdUI[GetKeyInput] {
         MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
         preferredSize = new Dimension(200, 200)
       }))
+}
+
+object GetNumberInputUI extends EventCmdUI[GetNumberInput] {
+  import rpgboss.model.HasName._
+
+  override def category = Input
+  override def title = needsTranslation("Get_Number_Input")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String],
+                               model: GetNumberInput) = Seq(
+    EventField(
+      getMessage("Message"),
+      textField(model.message, model.message = _)),
+    EventField(
+      getMessage("Global_Variable_Name"),
+      textField(model.storeInVariable, model.storeInVariable = _)))
+  override def getParameterFields(owner: Window, sm: StateMaster,
+                                  mapName: Option[String],
+                                  model: GetNumberInput) = Seq(
+    IntNumberField(getMessage("Digits"), 1, 20, model.digits),
+    IntNumberField(getMessage("Initial Value"), 0, 999999999, model.initial))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {

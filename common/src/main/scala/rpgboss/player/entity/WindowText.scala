@@ -87,7 +87,7 @@ class WindowText(
   def drawLine(b: SpriteBatch, line: String, xOffset: Float, yOffset: Float) = {
     val colorCodesExist = WindowText.colorCtrl.findFirstIn(line).isDefined
 
-    // Force left-aligned if color codes exist.
+    // Force left-aligned if color codes exist, as we can't draw the
     val fontAlign = if (colorCodesExist) {
       HAlignment.LEFT
     } else {
@@ -108,6 +108,7 @@ class WindowText(
 
       val rMatchOption = WindowText.colorCtrl.findFirstMatchIn(remainingText)
       val textToPrintNow = rMatchOption.map(_.before).getOrElse(remainingText)
+
 
       // Draw Shadow
       val textBounds = fontbmp.drawMultiLine(b, textToPrintNow, xStart,

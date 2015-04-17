@@ -1,18 +1,10 @@
 package rpgboss.player
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.headless.HeadlessApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.GL30
-import java.nio.IntBuffer
-import org.mockito.Matchers
 
 /** Can hold a delegate MyGame that can be replaced for running multiple tests.
  */
@@ -72,33 +64,6 @@ object TestPlayer {
     } else {
       if (headlessApp == null) {
         headlessApp = new HeadlessApplication(container)
-        {
-          import org.mockito.stubbing.Answer
-
-          val mockGL20 = mock(classOf[GL20])
-          Gdx.gl = mockGL20
-          Gdx.gl20 = mockGL20
-          Gdx.gl30 = mock(classOf[GL30])
-
-          def getFakeGLAnswer(intAnswer: Int) = new Answer[Unit]() {
-            override def answer(invocation: InvocationOnMock) = {
-              val list = invocation.getArguments
-              list(2).asInstanceOf[IntBuffer].put(0, intAnswer)
-            }
-          }
-
-          when(mockGL20.glCreateShader(anyInt())).thenReturn(5)
-          when(mockGL20.glCreateProgram()).thenReturn(5)
-
-          doAnswer(getFakeGLAnswer(5))
-            .when(mockGL20).glGetShaderiv(anyInt(), anyInt(), anyObject())
-          doAnswer(getFakeGLAnswer(5))
-            .when(mockGL20).glGetProgramiv(
-                anyInt(), Matchers.eq(GL20.GL_LINK_STATUS), anyObject())
-          doAnswer(getFakeGLAnswer(0))
-            .when(mockGL20).glGetProgramiv(
-                anyInt(), Matchers.eq(GL20.GL_ACTIVE_ATTRIBUTES), anyObject())
-        }
       }
 
       game.renderingOffForTesting = true

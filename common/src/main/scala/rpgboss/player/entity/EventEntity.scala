@@ -12,6 +12,7 @@ import rpgboss.lib.Utils
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.Timer
 
 case class EventScriptInterface(mapName: String, id: Int)
 
@@ -218,7 +219,14 @@ class EventEntity(
   }
 
   override def dispose() = {
-    // Kill any outstanding threads
-    curThread.map(_.stop())
+    if (curThread.isDefined) {
+      // Kill any outstanding threads after 2 seconds
+      val task = new Timer.Task() {
+        def run() = {
+          curThread.map(_.stop())
+        }
+      }
+      Timer.schedule(task, 2.0f)
+    }
   }
 }

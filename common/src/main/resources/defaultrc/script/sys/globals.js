@@ -30,6 +30,12 @@ function rightPad(string, totalLen) {
   return castedString + Array(padLength).join(" ");
 }
 
+function zeroPad(number, totalLen) {
+  var s = number + "";
+  while (s.length < totalLen) s = "0" + s;
+  return s.substr(s.length - totalLen);
+}
+
 function assert(condition, message) {
   if (!condition) {
     message = message || "Assertion failed";
@@ -57,7 +63,33 @@ function getItemName(itemId) {
 var game = Object.create(scalaScriptInterface);
 
 game.gameOver = function() {
-  game.runScript("sys/menu.js", "gameOver()");
+  game.setWeather(0);
+  game.setTransition(0, 1.0);
+  game.playMusic(0, project.data().startup().gameOverMusic(), true, 0.4);
+  game.showPicture(PictureSlots.GAME_OVER(), project.data().startup()
+      .gameOverPic(), game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
+  game.sleep(0.1);
+  
+  while (true) {
+    var choiceWin = game.newChoiceWindow([
+        game.getMessage("Back to titlescreen"), game.getMessage("Quit game") ],
+        game.layout(game.CENTERED(), game.FIXED(), 300, 100), {
+          justification : game.CENTER()
+        });
+  
+    var choiceIdx = choiceWin.getChoice();
+    choiceWin.close();
+  
+    if (choiceIdx == 0) {
+      game.setTransition(1, 0.4);
+      game.sleep(0.4);
+      game.toTitleScreen();
+      break;
+    } else if (choiceIdx == 1) {
+      game.quit();
+      break;
+    }
+  }
 };
 
 game.callSaveMenu = function() {
@@ -101,6 +133,77 @@ game.getEventInfo = function(id) {
 game.getMenuEnabled = function() {
   return game.getInt(game.MENU_ENABLED()) != 0;
 };
+
+/**
+ * Returns -1 if user hits cancel.
+ */
+game.getNumberInput = function(message, digits, initial) {
+  message = message || "Enter number:";
+  digits = digits || 4;
+  initial = initial || 0;
+  
+  var value = initial % Math.pow(10, digits);
+  var curDigit = 0;
+
+  var window = game.newTextWindow(
+      [message, zeroPad(value, digits)],
+      game.layout(game.CENTERED(), game.SCALE_SOURCE(), 1.0, 1.0),
+      {timePerChar: 0, showArrow: false, linesPerBlock: 2, 
+       justification: 1});
+
+  var colorStart = "\\c[6]";
+  var colorEnd = "\\c[0]";
+
+  var done = false;
+  while (!done) {
+    var paddedValue = zeroPad(value, digits);
+    var s = paddedValue;
+    s =
+      s.substring(0, s.length - curDigit - 1) +
+      colorStart +
+      s.charAt(s.length - curDigit - 1) +
+      colorEnd +
+      s.substring(s.length - curDigit);
+
+    window.updateLines([message, s]);
+
+    var key = game.getKeyInput([Keys.Up(), Keys.Down(), Keys.Left(),
+                                Keys.Right(), Keys.OK(), Keys.Cancel()]);
+    switch (key) {
+    case 0:
+      if (paddedValue.charAt(digits - curDigit - 1) == "9")
+        value += -9 * Math.pow(10, curDigit);
+      else
+        value += Math.pow(10, curDigit);
+      break;
+    case 1:
+      if (paddedValue.charAt(digits - curDigit - 1) == "0")
+        value -= -9 * Math.pow(10, curDigit);
+      else
+        value -= Math.pow(10, curDigit);
+      break;
+    case 2:
+      curDigit += 1;
+      curDigit %= digits;
+      break;
+    case 3:
+      curDigit -= 1;
+      curDigit %= digits;
+      break;
+    case 4:
+      done = true;
+      break;
+    default:
+      done = true;
+      value = -1;
+    }
+  }
+
+  window.close();
+  game.log("game.getNumberInput result = " + value.toString());
+
+  return value;
+}
 
 game.setEventsEnabled = function(enabled) {
   game.setInt(game.EVENTS_ENABLED(), enabled ? 1 : 0);
