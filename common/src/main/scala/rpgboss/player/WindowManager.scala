@@ -339,7 +339,7 @@ class WindowManager(
     }
 
     batch.end()
-    Gdx.gl.glEnable(GL20.GL_BLEND)
+    
     batch.begin()
 
     rectangleArray.foreach { rect: Rectangle =>
@@ -348,7 +348,6 @@ class WindowManager(
 
     batch.end()
 
-    Gdx.gl.glDisable(GL20.GL_BLEND)
     batch.begin()
 
     screenTextArray.foreach { text: ScreenText =>
@@ -368,6 +367,7 @@ class WindowManager(
 
       shapeRenderer.end()
     }
+
   }
 
   def dispose() = {
