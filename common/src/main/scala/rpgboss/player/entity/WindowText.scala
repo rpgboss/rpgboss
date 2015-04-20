@@ -201,7 +201,10 @@ class PrintingWindowText(
     persistent, initialText, rect, fontbmp, options.justification) {
   assume(options.timePerChar >= 0)
 
-  override def processText(text: Array[String]) = {
+  override def processText(text: Array[String]): Array[String] = {
+    if (fontbmp == null)
+      return text
+
     val lineHeight = fontbmp.getLineHeight()
     val processedText = super.processText(text)
 

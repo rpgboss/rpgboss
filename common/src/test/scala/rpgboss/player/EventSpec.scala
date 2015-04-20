@@ -97,7 +97,39 @@ class EventSpec extends UnitSpec {
     test.runTest()
   }
 
-  "Events" should "should work with RunJs" in {
+  "Events" should "show text correctly" in {
+    val test = new MapScreenTest {
+      override def setupMapData(mapData: RpgMapData) = {
+        super.setupMapData(mapData)
+        val states = Array(
+          RpgEventState(cmds = Array(
+            ShowText(Array("Hello")),
+            RunJs("""game.setInt("one", game.getInt("one") + 1);"""))))
+        mapData.events = Map(
+          1->RpgEvent(1, "Testevent", 0, 0, states)
+        )
+      }
+
+      override def testScript() = {
+        scriptInterface.teleport(mapName, 0.5f, 0.5f)
+
+        val a1 = scriptInterface.getInt("one")
+        scriptInterface.activateEvent(1, false)
+        scriptInterface.sleep(1.0f)  // Wait for text box to show up
+        scriptInterface.mapScreenKeyPress(MyKeys.OK)
+        val a2 = scriptInterface.getInt("one")
+
+        waiter {
+          a1 should equal (0)
+          a2 should equal (1)
+        }
+      }
+    }
+
+    test.runTest()
+  }
+
+  "Events" should "work with RunJs" in {
     val test = new MapScreenTest {
       override def setupMapData(mapData: RpgMapData) = {
         super.setupMapData(mapData)

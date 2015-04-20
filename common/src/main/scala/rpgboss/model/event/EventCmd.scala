@@ -788,6 +788,6 @@ case class ShowText(
           useCustomFace = true, faceset = customFace.get.faceset,
           faceX = customFace.get.faceX, faceY = customFace.get.faceY))
     else
-      singleCall("game.showText", processedLines)
+      singleCall("game.showText", processedLines, PrintingTextWindowOptions())
   }
 }
