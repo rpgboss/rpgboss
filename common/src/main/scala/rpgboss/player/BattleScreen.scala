@@ -565,10 +565,10 @@ class BattleScreen(
               showNotifications = true)
 
             if (gold > 0)
-              scriptInterface.showText(Array("Got %d Gold".format(gold)))
+              scriptInterface.showTextScala(Array("Got %d Gold".format(gold)))
 
             if (!itemNames.isEmpty) {
-              scriptInterface.showText(Array("Got %s.".format(
+              scriptInterface.showTextScala(Array("Got %s.".format(
                 itemNames.mkString(", "))))
             }
 

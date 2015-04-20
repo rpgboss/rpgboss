@@ -222,7 +222,7 @@ game.setWeather = function(weatherTypeId) {
   case 1:  // Rain
     game.showPictureLoop(
         PictureSlots.WEATHER(), 
-        'sys/weather/rain', 
+        'sys/weather/rain',
         game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0),
         1.0 /* alpha */, 14 /* framesPerSecond */);
     game.playMusic(
@@ -239,4 +239,9 @@ game.setWeather = function(weatherTypeId) {
     game.stopMusic(MusicSlots.WEATHER(), 0.5 /* fadeDuration */);
     break;
   }
+};
+
+game.showText = function(text, options) {
+  options = options || {};
+  return game.showTextScala(text, options);
 };

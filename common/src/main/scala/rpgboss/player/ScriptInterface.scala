@@ -528,15 +528,15 @@ class ScriptInterface(
     window.scriptInterface
   }
 
-  def showText(
+  def showTextScala(
     text: Array[String],
     options: PrintingTextWindowOptions = PrintingTextWindowOptions()): Int = {
     val window = newTextWindow(text, options = options)
     window.awaitClose()
   }
 
-  def showText(text: Array[String], options: NativeObject): Int = {
-    showText(
+  def showTextScala(text: Array[String], options: NativeObject): Int = {
+    showTextScala(
       text,
       JsonUtils.nativeObjectToCaseClass[PrintingTextWindowOptions](options))
   }
@@ -678,9 +678,9 @@ class ScriptInterface(
       val leveledCharacterNames = syncRun {
         leveled.map(game.persistent.getCharacterName(game.project.data, _))
       }
-      showText(Array("Received %d XP.".format(experience)))
+      showTextScala(Array("Received %d XP.".format(experience)))
       for (name <- leveledCharacterNames) {
-        showText(Array("%s leveled!".format(name)))
+        showTextScala(Array("%s leveled!".format(name)))
       }
     }
   }
