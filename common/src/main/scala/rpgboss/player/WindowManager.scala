@@ -318,9 +318,7 @@ class WindowManager(
       pic.render(this, batch)
     }
 
-    rectangleArray.foreach { rect: Rectangle =>
-      rect.render(this, batch, shapeRenderer)
-    }
+
 
     batch.end()
 
@@ -328,9 +326,7 @@ class WindowManager(
 
     batch.begin()
 
-    screenTextArray.foreach { text: ScreenText =>
-      text.render(this, batch, font)
-    }
+
 
     // Render all windows
     windows.reverseIterator.foreach(_.render(batch))
@@ -340,6 +336,22 @@ class WindowManager(
       pic <- pictures(i)
     ) {
       pic.render(this, batch)
+    }
+
+    batch.end()
+    
+    batch.begin()
+
+    rectangleArray.foreach { rect: Rectangle =>
+      rect.render(this, batch, shapeRenderer)
+    }
+
+    batch.end()
+
+    batch.begin()
+
+    screenTextArray.foreach { text: ScreenText =>
+      text.render(this, batch, font)
     }
 
     batch.end()
@@ -355,6 +367,7 @@ class WindowManager(
 
       shapeRenderer.end()
     }
+
   }
 
   def dispose() = {
