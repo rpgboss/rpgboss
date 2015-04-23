@@ -70,7 +70,8 @@ object EventParameter {
     classOf[BooleanParameter],
     classOf[FloatParameter],
     classOf[IntArrayParameter],
-    classOf[IntParameter]))
+    classOf[IntParameter],
+    classOf[StringParameter]))
 }
 
 case class BooleanParameter(
@@ -107,6 +108,20 @@ object IntParameter {
     IntParameter(
         valueTypeId = EventParameterValueType.GlobalVariable.id,
         globalVariable = key)
+}
+
+case class StringParameter(
+  var constant: String = "",
+  var valueTypeId: Int = EventParameterValueType.Constant.id,
+  var localVariable: String = "",
+  override var globalVariable: String = "") extends EventParameter[String] {
+  override def supportsGlobalVariable = true
+
+  override def rawJs =  EventParameterValueType(valueTypeId) match {
+    case EventParameterValueType.GlobalVariable =>
+      EventJavascript.jsCall("game.getString", globalVariable)
+    case _ => super.rawJs
+  }
 }
 
 case class EventClass(

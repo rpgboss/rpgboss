@@ -84,10 +84,13 @@ object SwingUtils {
 
   def textField(initial: String, onUpdate: String => Unit,
                 additionalAction: Option[() => Unit] = None,
-                preferredWidth: Int = 100) =
+                preferredWidth: Int = 150,
+                skipSizing: Boolean = false) =
     new TextField {
-      minimumSize = new Dimension(100, 1)
-      preferredSize = new Dimension(preferredWidth, preferredSize.height)
+      if (!skipSizing) {
+        minimumSize = new Dimension(100, 1)
+        preferredSize = new Dimension(preferredWidth, preferredSize.height)
+      }
       text = initial
       listenTo(this)
       reactions += {

@@ -675,9 +675,7 @@ class ScriptInterface(
     }
 
     if (showNotifications) {
-      val leveledCharacterNames = syncRun {
-        leveled.map(game.persistent.getCharacterName(game.project.data, _))
-      }
+      val leveledCharacterNames = leveled.map(getCharacterName(_))
       showTextScala(Array("Received %d XP.".format(experience)))
       for (name <- leveledCharacterNames) {
         showTextScala(Array("%s leveled!".format(name)))
@@ -852,6 +850,13 @@ class ScriptInterface(
     setInt(key, currentValue)
   }
 
+  def getString(key: String) = syncRun {
+    persistent.getString(key)
+  }
+  def setString(key: String, value: String) = syncRun {
+    persistent.setString(key, value)
+  }
+
   def getIntArray(key: String): Array[Int] = syncRun {
     persistent.getIntArray(key)
   }
@@ -863,6 +868,16 @@ class ScriptInterface(
   }
   def setStringArray(key: String, value: Array[String]) = syncRun {
     persistent.setStringArray(key, value)
+  }
+
+  def setStringArrayElement(key: String, index: Int, value: String) = syncRun {
+    val array = persistent.getStringArray(key)
+    array.update(index, value)
+    persistent.setStringArray(key, array)
+  }
+
+  def getCharacterName(characterId: Int) = syncRun {
+    persistent.getCharacterName(project.data, characterId)
   }
 
   def getEquippableItems(characterId: Int, equipTypeId: Int) = syncRun {

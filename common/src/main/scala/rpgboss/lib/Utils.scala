@@ -121,14 +121,19 @@ object Utils {
   def ceilIntDiv(n: Int, m: Int) = (n - 1) / m + 1
   def ceilFloatDiv(n: Float, m: Int) = ceilIntDiv(n.ceil.toInt, m)
 
-  def clamped(orig: Int, min: Int, max: Int) =
+  def clamped(orig: Int, min: Int, max: Int) = {
+    assume(max >= min)
     math.min(max, math.max(min, orig))
+  }
 
-  def clamped(orig: Float, min: Float, max: Float) =
+  def clamped(orig: Float, min: Float, max: Float) = {
+    assume(max >= min)
     math.min(max, math.max(min, orig))
+  }
 
   // Modulus that always returns a positive number
-  def pmod(x: Int, m: Int) = (x % m + m) % m
+  def pmod(x: Int, m: Int) =
+    (x % m + m) % m
 
   def randomChoose[T](items: Array[T], weights: Array[Float]): T = {
     assume(!items.isEmpty)

@@ -68,6 +68,7 @@ object EventCmd {
     classOf[GetEntityInfo],
     classOf[GetKeyInput],
     classOf[GetNumberInput],
+    classOf[GetStringInput],
     classOf[GiveExperience],
     classOf[HealOrDamage],
     classOf[HidePicture],
@@ -86,6 +87,7 @@ object EventCmd {
     classOf[Return],
     classOf[RunJs],
     classOf[SetCameraFollow],
+    classOf[SetCharacterName],
     classOf[SetEventsEnabled],
     classOf[SetEventSpeed],
     classOf[SetEventState],
@@ -227,6 +229,15 @@ case class GetNumberInput(
 extends EventCmd {
   def sections = singleCall("game.setInt", storeInVariable,
       RawJs(jsCall("game.getNumberInput", message, digits, initial).exp))
+}
+
+case class GetStringInput(
+  var message: String = "Enter string:",
+  var storeInVariable: String = "globalVariableName",
+  maxLength: IntParameter = IntParameter(5),
+  initial: StringParameter = StringParameter("")) extends EventCmd {
+  def sections = singleCall("game.setString", storeInVariable,
+      RawJs(jsCall("game.getStringInput", message, maxLength, initial).exp))
 }
 
 case class GiveExperience(
@@ -547,6 +558,20 @@ case class SetCharacterLevel(
       singleCall("game.setPartyLevel", level)
     else
       singleCall("game.setCharacterLevel", characterId, level)
+  }
+}
+
+case class SetCharacterName(
+  characterId: IntParameter = IntParameter(),
+  var getPlayerInput: Boolean = true,
+  fixedValue: StringParameter = StringParameter()) extends EventCmd {
+  def sections = {
+    if (getPlayerInput) {
+      singleCall("game.setCharacterName", characterId, RawJs(
+          jsCall("game.getCharacterNameFromPlayerInput", characterId).exp))
+    } else {
+      singleCall("game.setCharacterName", characterId, fixedValue)
+    }
   }
 }
 

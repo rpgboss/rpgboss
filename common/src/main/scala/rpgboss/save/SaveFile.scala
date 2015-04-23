@@ -12,6 +12,7 @@ case class SavedEventState(mapName: String, eventId: Int, eventState: Int)
 
 case class SaveFile(
     intMap: Map[String, Int] = Map(),
+    stringMap: Map[String, String] = Map(),
     intArrayMap: Map[String, Array[Int]] = Map(),
     stringArrayMap: Map[String, Array[String]] = Map(),
     mapLocMap: Map[String, MapLoc] = Map(),

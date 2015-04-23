@@ -71,9 +71,11 @@ class Window(
         Window.maxWidth(lines, manager.fontbmp, xPadding)
 
     val displayedLines = if (linesShown > 0) linesShown else lines.length
+
+    val arbitraryValueToMakeLookGood = -16
     val autoH =
       WindowText.DefaultLineHeight * Utils.ceilIntDiv(displayedLines, columns) +
-      2 * yPadding
+      2 * yPadding + arbitraryValueToMakeLookGood
     layout.getRect(maxW * columns, autoH, manager.screenW, manager.screenH)
   }
 
@@ -85,8 +87,11 @@ class Window(
 
 
   def attachCharacterFace(
-    characterId: Int, x: Int = 0, y: Int = 0, faceSize: Int = 128) = {
+    characterId: Int, x: Int = 0, y: Int = 0, faceSize: Int = 128): Unit = {
     val characters = manager.project.data.enums.characters
+
+    if (characterId < 0)
+      return
 
     if (characterId < characters.length) {
       val character = characters(characterId)
@@ -111,8 +116,8 @@ class Window(
         LayoutType.NorthWest.id,
         SizeType.Fixed.id,
         faceSize, faceSize,
-        rect.left + PrintingTextWindow.xpad,
-        rect.top + PrintingTextWindow.ypad)))
+        rect.left + PrintingTextWindow.xpad + x,
+        rect.top + PrintingTextWindow.ypad + y)))
   }
 
   /**
@@ -320,7 +325,7 @@ case class PrintingTextWindowOptions(
   linesPerBlock: Int = 4,
   justification: Int = Window.Left,
   stayOpenTime: Float = 0,
-  showArrow: Boolean = true,
+  showArrow: Boolean = false,
   leftMargin: Float = 0,
 
   useCustomFace: Boolean = false,
@@ -370,7 +375,7 @@ class PrintingTextWindow(
     options)
 
   // Initialize character faces.
-  if (options.useCharacterFace && options.characterId < 0) {
+  if (options.useCharacterFace) {
     attachCharacterFace(options.characterId)
   } else if (options.useCustomFace) {
     attachFace(options.faceset, options.faceX, options.faceY)

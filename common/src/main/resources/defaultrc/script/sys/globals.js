@@ -205,6 +205,75 @@ game.getNumberInput = function(message, digits, initial) {
   return value;
 }
 
+game.getStringInput = function(message, maxLength, initial) {
+  var messageWindow = game.newTextWindow(
+    [message], 
+    game.layout(game.NORTHWEST(), game.SCALE_SOURCE(), 1, 1),
+    {timePerChar: 0, showArrow: false, linesPerBlock: 1, justification: 1});
+  
+  var value = initial;
+  if (value.length > maxLength)
+    value = value.substring(0, maxLength);
+  
+  var valueWindow = game.newTextWindow(
+    [value],
+    game.layoutWithOffset(game.SOUTHWEST(), game.SCREEN(), 0.5, 0.15, 0.0, -0.6),
+    {timePerChar: 0, showArrow: false, linesPerBlock: 1});
+
+  // Convert to JS String, as that has different split semantics.
+  var characters = String(project.data().startup().stringInputCharacters());
+  var charArray = characters.split('');
+  
+  var choiceWindow = game.newChoiceWindow(
+    charArray.concat(["ENTER"]),
+    game.layout(game.SOUTH(), game.SCREEN(), 1.0, 0.6),
+    {columns: 10});
+  
+  while (true) {
+    var choiceIdx = choiceWindow.getChoice();
+
+    if (choiceIdx == -1) {
+      value = value.substring(0, value.length - 1);
+    } else if (choiceIdx == charArray.length) {
+      break;
+    } else if (value.length < maxLength) {
+      value = value + charArray[choiceIdx];
+    }
+    
+    valueWindow.updateLines([value]);
+  }
+  
+  choiceWindow.close();
+  valueWindow.close();
+  messageWindow.close();
+  
+  game.log("game.getStringInput result = " + value)
+  return value;
+};
+
+game.setCharacterName = function(characterId, newName) {
+  game.setStringArrayElement(game.CHARACTER_NAMES(), characterId, newName);
+};
+
+game.getCharacterNameFromPlayerInput = function(characterId) {
+  var oldName = String(game.getCharacterName(characterId));
+  var message = game.getMessage("Enter new name for: ") + oldName;
+  
+  var characterWindow = game.newTextWindow(
+      [],
+      game.layoutWithOffset(
+          game.NORTHEAST(), game.FIXED(), 128 + 24*2, 128 + 24 * 2, 0, 0),
+      {showArrow: false, useCharacterFace: true, characterId: characterId});
+  
+  var maxCharacterNameInputLength = 10;
+  var newName = 
+    game.getStringInput(message, maxCharacterNameInputLength, oldName);
+  
+  characterWindow.close();
+    
+  return newName;
+};
+
 game.setEventsEnabled = function(enabled) {
   game.setInt(game.EVENTS_ENABLED(), enabled ? 1 : 0);
 };

@@ -35,6 +35,9 @@ class PersistentState(
   private val intMap = new MutableHashMap[String, Int]
   intMap ++= initial.intMap
 
+  private val stringMap = new MutableHashMap[String, String]
+  stringMap ++= initial.stringMap
+
   private val intArrayMap = new MutableHashMap[String, Array[Int]]
   intArrayMap ++= initial.intArrayMap
 
@@ -54,8 +57,8 @@ class PersistentState(
       case ((mapName, eventId), eventState) =>
         SavedEventState(mapName, eventId, eventState)
     }
-    new SaveFile(intMap.toMap, intArrayMap.toMap, stringArrayMap.toMap,
-      mapLocMap.toMap, serializedEventStates.toArray)
+    new SaveFile(intMap.toMap, stringMap.toMap, intArrayMap.toMap,
+        stringArrayMap.toMap, mapLocMap.toMap, serializedEventStates.toArray)
   }
 
   def getLoc(key: String) = {
@@ -66,7 +69,6 @@ class PersistentState(
     mapLocMap.update(key, loc)
   }
 
-  // TODO: save player location
   def setInt(key: String, value: Int) = {
     assertOnBoundThread()
     intMap.update(key, value)
@@ -79,6 +81,15 @@ class PersistentState(
   def hasInt(key: String) = {
     assertOnBoundThread()
     intMap.contains(key)
+  }
+
+  def setString(key: String, value: String) = {
+    assertOnBoundThread()
+    stringMap.update(key, value)
+  }
+  def getString(key: String) = {
+    assertOnBoundThread()
+    stringMap.get(key).getOrElse("")
   }
 
   /**

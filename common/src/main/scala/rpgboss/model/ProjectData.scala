@@ -24,6 +24,8 @@ case class ProjectDataStartup(
   var msgfont: String,
   var fontsize: Int,
 
+  var stringInputCharacters: String,
+
   var soundCursor: Option[SoundSpec],
   var soundSelect: Option[SoundSpec],
   var soundCancel: Option[SoundSpec],
@@ -176,6 +178,7 @@ object ProjectData {
     "Defeated..." -> "Defeated...",
     "Empty" -> "Empty",
     "Equip" -> "Equip",
+    "Enter new name for: " -> "Enter new name for: ",
     "Escape" -> "Escape",
     "Escape failed..." -> "Escape failed...",
     "Escape impossible..." -> "Escape impossible...",

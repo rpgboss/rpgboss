@@ -41,6 +41,7 @@ class TextChoiceWindow(
   assert(options.linesPerChoice != 0)
 
   def columns = options.columns
+  assert(columns >= 1)
   def displayedLines = options.displayedLines
   def linesPerChoice = options.linesPerChoice
 
@@ -50,7 +51,9 @@ class TextChoiceWindow(
   private var textHTotal = 0f
   private var textColW = 0f
 
-  def nChoices = lines.length / linesPerChoice
+  val nChoices = lines.length / linesPerChoice
+
+  val choiceRows = Utils.ceilIntDiv(nChoices, columns)
 
   def wrapChoices = options.displayedLines == 0
 
@@ -121,55 +124,48 @@ class TextChoiceWindow(
     // Need to finish loading all assets before accepting key input
     assets.finishLoading()
 
-    if (key == Up) {
-      setCurChoice(curChoice - columns)
-      if (curChoice < 0) {
-        if (wrapChoices && nChoices > 0) {
-          setCurChoice(curChoice + nChoices)
-          soundCursor.map(_.getAsset(assets).play())
-        } else {
-          // Undo the subtraction we just did.
-          setCurChoice(curChoice + columns)
-          soundCannot.map(_.getAsset(assets).play())
-        }
-      } else {
-        soundCursor.map(_.getAsset(assets).play())
-      }
-    } else if (key == Down) {
-      setCurChoice(curChoice + columns)
-      if (curChoice >= nChoices) {
-        if (wrapChoices && nChoices > 0) {
-          setCurChoice(curChoice - nChoices)
-          soundCursor.map(_.getAsset(assets).play())
-        } else {
-          // Undo the addition we just did
-          setCurChoice(curChoice - columns)
-          soundCannot.map(_.getAsset(assets).play())
-        }
-      } else {
-        soundCursor.map(_.getAsset(assets).play())
-      }
-    } else if (columns > 1) {
-      if (key == Right) {
-        // Go back to left if all the way on right
-        if (curChoice % columns == columns - 1)
-          setCurChoice(curChoice - columns + 1)
-        else
-          setCurChoice(curChoice + 1)
+    val origChoiceX = curChoice % columns
+    val origChoiceY = curChoice / columns
 
-        soundCursor.map(_.getAsset(assets).play())
-      } else if (key == Left) {
-        // Go back to right if all the way on left
-        if (curChoice % columns == 0)
-          setCurChoice(curChoice + columns - 1)
-        else
-          setCurChoice(curChoice - 1)
+    var choiceX = origChoiceX
+    var choiceY = origChoiceY
 
-        soundCursor.map(_.getAsset(assets).play())
-      }
+    def columnsInThatRow(row: Int): Int = {
+      if (columns == 1)
+        1
+      else if (row < choiceRows - 1)
+        columns
+      else
+        nChoices % columns
     }
 
-    updateScrollPosition()
+    if (key == Up || key == Down || key == Right || key == Left) {
+      if (key == Up && (choiceY > 0 || wrapChoices)) {
+        choiceY -= 1
+        choiceY = Utils.pmod(choiceY, choiceRows)
+        choiceX = Utils.clamped(choiceX, 0, columnsInThatRow(choiceY) - 1)
+      } else if (key == Down && (choiceY < choiceRows - 1 || wrapChoices)) {
+        choiceY += 1
+        choiceY = Utils.pmod(choiceY, choiceRows)
+        choiceX = Utils.clamped(choiceX, 0, columnsInThatRow(choiceY) - 1)
+      } else if (columns > 1) {
+        if (key == Right && (choiceX < columns - 1 || wrapChoices)) {
+          choiceX += 1
+          choiceX = Utils.pmod(choiceX, columnsInThatRow(choiceY))
+        } else if (key == Left && (choiceX > 0 || wrapChoices)) {
+          choiceX -= 1
+          choiceX = Utils.pmod(choiceX, columnsInThatRow(choiceY))
+        }
+      }
+
+      if (choiceX != origChoiceX || choiceY != origChoiceY) {
+        setCurChoice(choiceY * columns + choiceX)
+        soundCursor.map(_.getAsset(assets).play())
+        updateScrollPosition()
+      } else {
+        soundCannot.map(_.getAsset(assets).play())
+      }
+    }
 
     if (key == OK) {
       soundSelect.map(_.getAsset(assets).play())
@@ -180,6 +176,8 @@ class TextChoiceWindow(
       soundCancel.map(_.getAsset(assets).play())
       choiceChannel.write(-1)
     }
+
+    updateScrollPosition()
   }
 
   override def render(b: SpriteBatch) = {

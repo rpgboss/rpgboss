@@ -180,6 +180,9 @@ object ResourceConstants {
     msgfont = "sys/VeraMono.ttf",
     fontsize = 24,
 
+    stringInputCharacters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -._",
+
     soundCursor =
       Some(SoundSpec("sys/rpgboss-menu/MenuCursor.mp3")),
     soundSelect =

@@ -20,7 +20,7 @@ class SystemPanel(
   extends DesignGridPanel
   with DatabasePanel
   with LazyLogging {
-  def panelName = getMessage("Startup")
+  def panelName = getMessage("System")
   layout.labelAlignment(LabelAlignment.RIGHT)
 
   def model = dbDiag.model
@@ -54,6 +54,10 @@ class SystemPanel(
   val fFontsize = new NumberSpinner(12, 48, model.startup.fontsize,
       model.startup.fontsize = _)
 
+  val fStringInputCharacters = textField(
+      model.startup.stringInputCharacters,
+      model.startup.stringInputCharacters = _)
+
   val fSoundCursor = new SoundField(owner, sm, model.startup.soundCursor,
       model.startup.soundCursor = _)
   val fSoundSelect = new SoundField(owner, sm, model.startup.soundSelect,
@@ -75,6 +79,10 @@ class SystemPanel(
   row().grid(lbl(getMessageColon("Windowskin"))).add(fWindowskin)
   row().grid(lbl(getMessageColon("Message_Font"))).add(fMsgfont)
   row().grid(lbl(getMessageColon("Font_Size"))).add(fFontsize)
+
+  row()
+    .grid(lbl(getMessageColon("String_Input_Characters")))
+    .add(fStringInputCharacters )
 
   row().grid(lbl(getMessageColon("Cursor_Sound"))).add(fSoundCursor)
   row().grid(lbl(getMessageColon("Select_Sound"))).add(fSoundSelect)

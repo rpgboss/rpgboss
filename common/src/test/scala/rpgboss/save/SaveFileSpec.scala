@@ -14,6 +14,7 @@ class SaveFileSpec extends UnitSpec {
     val test = new ProjectTest
     val fakeSaveFile = SaveFile(
       Map("five" -> 5, "six" -> 6),
+      Map("yo"-> "hello"),
       Map("foo" -> Array(5, 6, 8)),
       Map("five" -> Array("five")),
       Map("player" -> MapLoc("town", 5.5f, 2.5f)),

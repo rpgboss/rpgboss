@@ -4,6 +4,7 @@ import scala.swing.Component
 import scala.swing.Window
 import rpgboss.editor.uibase.SwingUtils.indexedCombo
 import rpgboss.editor.uibase.SwingUtils.percentField
+import rpgboss.editor.uibase.SwingUtils.textField
 import rpgboss.lib.Utils
 import rpgboss.model.HasName
 import rpgboss.model.PictureSlots
@@ -66,6 +67,15 @@ object EventParameterField {
       override def constantComponentFactory(p: EventParameter[Array[Int]]) =
         new ArrayMultiselectPanel(owner, name, choices, p.constant,
             p.constant = _)
+    }
+
+  def StringField(
+      name: String, model: StringParameter,
+      additionalAction: Option[() => Unit] = None) =
+    new EventParameterField[String](name, model) {
+      override def constantComponentFactory(p: EventParameter[String]) =
+        textField(p.constant, p.constant = _, additionalAction,
+            skipSizing = true)
     }
 
   def getParameterFields(

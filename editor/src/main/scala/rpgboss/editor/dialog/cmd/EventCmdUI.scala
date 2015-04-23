@@ -42,6 +42,7 @@ import rpgboss.editor.uibase.EventParameterField.FloatPercentField
 import rpgboss.editor.uibase.EventParameterField.IntEnumIdField
 import rpgboss.editor.uibase.EventParameterField.IntMultiselectField
 import rpgboss.editor.uibase.EventParameterField.IntNumberField
+import rpgboss.editor.uibase.EventParameterField.StringField
 import rpgboss.editor.uibase.FloatSpinner
 import rpgboss.editor.uibase.LayoutEditingPanel
 import rpgboss.editor.uibase.NumberSpinner
@@ -85,6 +86,7 @@ import rpgboss.model.event.GetChoice
 import rpgboss.model.event.GetEntityInfo
 import rpgboss.model.event.GetKeyInput
 import rpgboss.model.event.GetNumberInput
+import rpgboss.model.event.GetStringInput
 import rpgboss.model.event.GiveExperience
 import rpgboss.model.event.HealOrDamage
 import rpgboss.model.event.HidePicture
@@ -102,6 +104,7 @@ import rpgboss.model.event.Return
 import rpgboss.model.event.RunJs
 import rpgboss.model.event.SetCameraFollow
 import rpgboss.model.event.SetCharacterLevel
+import rpgboss.model.event.SetCharacterName
 import rpgboss.model.event.SetEventSpeed
 import rpgboss.model.event.SetEventState
 import rpgboss.model.event.SetEventsEnabled
@@ -142,6 +145,7 @@ object EventCmdUI {
     GetEntityInfoUI,
     GetKeyInputUI,
     GetNumberInputUI,
+    GetStringInputUI,
     GiveExperienceUI,
     HealOrDamageUI,
     HidePictureUI,
@@ -158,6 +162,7 @@ object EventCmdUI {
     RunJsUI,
     SetCameraFollowUI,
     SetCharacterLevelUI,
+    SetCharacterNameUI,
     SetEventsEnabledUI,
     SetEventSpeedUI,
     SetEventStateUI,
@@ -524,7 +529,28 @@ object GetNumberInputUI extends EventCmdUI[GetNumberInput] {
                                   mapName: Option[String],
                                   model: GetNumberInput) = Seq(
     IntNumberField(getMessage("Digits"), 1, 20, model.digits),
-    IntNumberField(getMessage("Initial Value"), 0, 999999999, model.initial))
+    IntNumberField(getMessage("Initial_Value"), 0, 999999999, model.initial))
+}
+
+object GetStringInputUI extends EventCmdUI[GetStringInput] {
+  import rpgboss.model.HasName._
+
+  override def category = Input
+  override def title = needsTranslation("Get_String_Input")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String],
+                               model: GetStringInput) = Seq(
+    EventField(
+      getMessage("Message"),
+      textField(model.message, model.message = _)),
+    EventField(
+      getMessage("Global_Variable_Name"),
+      textField(model.storeInVariable, model.storeInVariable = _)))
+  override def getParameterFields(owner: Window, sm: StateMaster,
+                                  mapName: Option[String],
+                                  model: GetStringInput) = Seq(
+    IntNumberField(getMessage("Max_Length"), 1, 20, model.maxLength),
+    StringField(getMessage("Initial_Value"), model.initial))
 }
 
 object OpenStoreUI extends EventCmdUI[OpenStore] {
@@ -718,6 +744,23 @@ object SetCharacterLevelUI extends EventCmdUI[SetCharacterLevel] {
     IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
       model.characterId),
     IntNumberField(getMessage("Level"), 1, 999, model.level))
+}
+
+object SetCharacterNameUI extends EventCmdUI[SetCharacterName] {
+  override def category = Party
+  override def title = needsTranslation("Set_Character_Name")
+
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: SetCharacterName) = Seq(
+    EventField("", boolField(getMessage("Get_Player_Input"),
+        model.getPlayerInput, model.getPlayerInput = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: SetCharacterName) = List(
+    IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
+      model.characterId),
+    StringField(getMessage("Fixed Value"), model.fixedValue))
 }
 
 object SetMenuEnabledUI extends EventCmdUI[SetMenuEnabled] {
