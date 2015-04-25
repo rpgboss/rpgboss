@@ -67,6 +67,7 @@ case class PartyParameters(
   initialCharacterMps: Array[Int],
   characterEquip: Array[Array[Int]],
   initialCharacterTempStatusEffectIds: Array[Array[Int]],
+  learnedSkills: Array[Array[Int]],
   characterRows: Array[Int])
 
 object Battle {

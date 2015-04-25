@@ -111,7 +111,8 @@ object BattleStatus {
 
     assert(character.charClass < pData.enums.classes.length)
     val knownSkillIds =
-      pData.enums.classes(character.charClass).knownSkillIds(level)
+      (pData.enums.classes(character.charClass).knownSkillIds(level) ++
+       partyParams.learnedSkills(characterId)).distinct
 
     new BattleStatus(
       index, pData, BattleEntityType.Party, characterId,

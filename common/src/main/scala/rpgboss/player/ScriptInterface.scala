@@ -74,6 +74,9 @@ trait HasScriptConstants {
   def CHARACTER_STATUS_EFFECTS(characterId: Int) =
     "characterStatusEffects-%d".format(characterId)
 
+  def CHARACTER_LEARNED_SKILLS(characterId: Int) =
+    "characterLearnedSkills-%d".format(characterId)
+
   // Synchronized with LayoutType RpgEnum.
   val CENTERED = 0
   val NORTH = 1

@@ -152,6 +152,7 @@ class PersistentState(
       charactersIdxs.map(
           id => getIntArray(CHARACTER_EQUIP(id)).filter(_ != -1)),
       charactersIdxs.map(id => getIntArray(CHARACTER_STATUS_EFFECTS(id))),
+      charactersIdxs.map(id => getIntArray(CHARACTER_LEARNED_SKILLS(id))),
       getIntArray(CHARACTER_ROWS))
   }
 
@@ -422,6 +423,16 @@ class PersistentState(
     setIntArray(CHARACTER_EQUIP(characterId), resizedAry)
 
     return true
+  }
+
+  def modifyLearnedSkills(characterId: Int, skillId: Int, add: Boolean) = {
+    val existingSkills = getIntArray(CHARACTER_LEARNED_SKILLS(characterId))
+    val newSkills =
+      if (add)
+        (existingSkills :+ skillId).distinct
+      else
+        existingSkills.filterNot(_ == skillId)
+    setIntArray(CHARACTER_LEARNED_SKILLS(characterId), newSkills)
   }
 
   /**
