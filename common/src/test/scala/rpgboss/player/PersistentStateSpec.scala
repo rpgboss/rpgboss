@@ -192,4 +192,25 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
     p.addRemoveGold(-20) should equal (true)
     p.addRemoveGold(-1) should equal (false)
   }
+
+  "PersistentState" should "add and remove learned skills correctly" in {
+    val p = new PersistentState
+    p.getIntArray(CHARACTER_LEARNED_SKILLS(0)) should deepEqual(Array[Int]())
+    p.getIntArray(CHARACTER_LEARNED_SKILLS(1)) should deepEqual(Array[Int]())
+
+    p.addRemoveLearnedSkills(true, 0, 13)
+    p.addRemoveLearnedSkills(true, 0, 12)
+    p.addRemoveLearnedSkills(true, 1, 0)
+
+    p.getIntArray(CHARACTER_LEARNED_SKILLS(0)) should deepEqual(
+        Array[Int](13, 12))
+    p.getIntArray(CHARACTER_LEARNED_SKILLS(1)) should deepEqual(Array[Int](0))
+
+    p.addRemoveLearnedSkills(false, 0, 0)
+    p.addRemoveLearnedSkills(false, 1, 0)
+
+    p.getIntArray(CHARACTER_LEARNED_SKILLS(0)) should deepEqual(
+        Array[Int](13, 12))
+    p.getIntArray(CHARACTER_LEARNED_SKILLS(1)) should deepEqual(Array[Int]())
+  }
 }

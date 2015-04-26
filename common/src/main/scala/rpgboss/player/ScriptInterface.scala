@@ -733,6 +733,10 @@ class ScriptInterface(
     persistent.addRemoveGold(delta)
   }
 
+  def addRemoveSkill(add: Boolean, characterId: Int, skillId: Int) = syncRun {
+    persistent.addRemoveLearnedSkills(add, characterId, skillId)
+  }
+
   def useItemInMenu(itemId: Int, characterId: Int) = syncRun {
     if (persistent.addRemoveItem(itemId, -1)) {
       val item = project.data.enums.items(itemId)

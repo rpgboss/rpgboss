@@ -425,7 +425,7 @@ class PersistentState(
     return true
   }
 
-  def modifyLearnedSkills(characterId: Int, skillId: Int, add: Boolean) = {
+  def addRemoveLearnedSkills(add: Boolean, characterId: Int, skillId: Int) = {
     val existingSkills = getIntArray(CHARACTER_LEARNED_SKILLS(characterId))
     val newSkills =
       if (add)

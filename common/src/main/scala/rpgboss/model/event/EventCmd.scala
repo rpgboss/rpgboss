@@ -54,6 +54,7 @@ object EventCmd {
   val hints = ShortTypeHints(List(
     classOf[AddRemoveItem],
     classOf[AddRemoveGold],
+    classOf[AddRemoveSkill],
     classOf[BreakLoop],
     classOf[CallMenu],
     classOf[CallSaveMenu],
@@ -131,8 +132,23 @@ case class AddRemoveGold(
   override def getParameters() = List(quantity)
 }
 
+case class AddRemoveSkill(
+  var add: Boolean = true,
+  characterId: IntParameter = IntParameter(),
+  skillId: IntParameter = IntParameter()) extends EventCmd {
+  def sections = singleCall("game.addRemoveSkill", add, characterId, skillId)
+
+  override def getParameters = List(characterId, skillId)
+}
+
 case class BreakLoop() extends EventCmd {
   def sections = Array(PlainLines(Array("break;")))
+}
+
+case class ClearTimer()
+  extends EventCmd {
+  def sections =
+    singleCall("game.setInt", "timer", 0)
 }
 
 case class Comment(var commentString: String = "") extends EventCmd {
@@ -149,6 +165,8 @@ case class EquipItem(
       singleCall("game.equipItem", characterId, slotId, itemId)
     else
       singleCall("game.equipItem", characterId, slotId, -1)
+
+  override def getParameters = List(characterId, slotId, itemId)
 }
 
 case class ExitGame() extends EventCmd {
@@ -229,6 +247,8 @@ case class GetNumberInput(
 extends EventCmd {
   def sections = singleCall("game.setInt", storeInVariable,
       RawJs(jsCall("game.getNumberInput", message, digits, initial).exp))
+
+  override def getParameters = List(digits, initial)
 }
 
 case class GetStringInput(
@@ -238,6 +258,8 @@ case class GetStringInput(
   initial: StringParameter = StringParameter("")) extends EventCmd {
   def sections = singleCall("game.setString", storeInVariable,
       RawJs(jsCall("game.getStringInput", message, maxLength, initial).exp))
+
+  override def getParameters = List(maxLength, initial)
 }
 
 case class GiveExperience(
@@ -252,6 +274,8 @@ case class GiveExperience(
       singleCall("game.giveCharacterExperience", characterId, experience,
           showNotifications)
   }
+
+  override def getParameters = List(characterId, experience)
 }
 
 case class HealOrDamage(
@@ -559,6 +583,8 @@ case class SetCharacterLevel(
     else
       singleCall("game.setCharacterLevel", characterId, level)
   }
+
+  override def getParameters = List(characterId, level)
 }
 
 case class SetCharacterName(
@@ -573,6 +599,8 @@ case class SetCharacterName(
       singleCall("game.setCharacterName", characterId, fixedValue)
     }
   }
+
+  override def getParameters = List(characterId, fixedValue)
 }
 
 case class SetEventState(
@@ -622,6 +650,8 @@ case class SetGlobalInt(
             value1.rawJs))
     }
   }
+
+  override def getParameters = List(value1)
 }
 
 case class SetLocalInt(variableName: String,
@@ -734,12 +764,6 @@ case class SetTimer(var minutes: Float = 1, var seconds: Float = 0)
 
     singleCall("game.setInt", "timer", timeInSeconds)
   }
-}
-
-case class ClearTimer()
-  extends EventCmd {
-  def sections =
-    singleCall("game.setInt", "timer", 0)
 }
 
 case class GameOver()

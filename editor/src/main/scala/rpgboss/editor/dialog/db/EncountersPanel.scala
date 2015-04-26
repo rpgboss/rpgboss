@@ -49,6 +49,7 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
           project.data.enums.characters.map(v => 1),
           project.data.enums.characters.map(v => Array[Int]()),
           project.data.enums.characters.map(v => Array[Int]()),
+          project.data.enums.characters.map(v => Array[Int]()),
           project.data.enums.characters.map(v => 0)),
         encounter,
         aiOpt = None)

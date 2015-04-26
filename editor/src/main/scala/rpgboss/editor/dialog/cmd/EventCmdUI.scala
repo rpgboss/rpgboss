@@ -71,6 +71,7 @@ import rpgboss.model.Transitions
 import rpgboss.model.WeatherTypes
 import rpgboss.model.event.AddRemoveGold
 import rpgboss.model.event.AddRemoveItem
+import rpgboss.model.event.AddRemoveSkill
 import rpgboss.model.event.BreakLoop
 import rpgboss.model.event.CallMenu
 import rpgboss.model.event.CallSaveMenu
@@ -131,6 +132,7 @@ object EventCmdUI {
   val eventCmdUis: Seq[EventCmdUI[_]] = List(
     AddRemoveItemUI,
     AddRemoveGoldUI,
+    AddRemoveSkillUI,
     BreakLoopUI,
     CallMenuUI,
     CallSaveMenuUI,
@@ -256,6 +258,23 @@ object AddRemoveGoldUI extends EventCmdUI[AddRemoveGold] {
   override def getParameterFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: AddRemoveGold) = List(
     IntNumberField(getMessage("Quantity"), 1, 9999, model.quantity))
+}
+
+object AddRemoveSkillUI extends EventCmdUI[AddRemoveSkill] {
+  override def category = Party
+  override def title = getMessage("Add_Remove_Skill")
+
+  override def getNormalFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: AddRemoveSkill) = Seq(
+    EventField("", boolEnumHorizBox(AddOrRemove, model.add, model.add = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: AddRemoveSkill) = List(
+    IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
+      model.characterId),
+    IntEnumIdField(getMessage("Skill"), sm.getProjData.enums.skills,
+      model.skillId))
 }
 
 object BreakLoopUI extends EventCmdUI[BreakLoop] {
