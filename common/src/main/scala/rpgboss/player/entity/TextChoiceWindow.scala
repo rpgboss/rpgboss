@@ -139,7 +139,8 @@ class TextChoiceWindow(
         nChoices % columns
     }
 
-    if (key == Up || key == Down || key == Right || key == Left) {
+    if (nChoices > 0 &&
+        (key == Up || key == Down || key == Right || key == Left)) {
       if (key == Up && (choiceY > 0 || wrapChoices)) {
         choiceY -= 1
         choiceY = Utils.pmod(choiceY, choiceRows)

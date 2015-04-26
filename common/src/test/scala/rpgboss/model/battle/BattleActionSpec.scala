@@ -18,7 +18,7 @@ class BattleActionSpec extends UnitSpec {
         Skill(effects = Array(Effect(RecoverHpAdd.id, 20))))
     f.pData.enums.items = Array(
         Item(effects = Array(Effect(RecoverHpAdd.id, 30))),
-        Item(useOnAttack = true, onUseSkillId = 0))
+        Item(useOnAttack = true, equippedAttackSkillId = 0))
     f
   }
 

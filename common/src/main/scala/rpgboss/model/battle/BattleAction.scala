@@ -94,11 +94,6 @@ case class ItemAction(actor: BattleStatus, targets: Array[BattleStatus],
 
     if (removed) {
       assert(item.usableInBattle)
-
-      val skillId = item.onUseSkillId
-      assume(skillId < battle.pData.enums.skills.length)
-      val skill = battle.pData.enums.skills(skillId)
-
       assert(targets.length >= 1)
 
       val hits = new collection.mutable.ArrayBuffer[Hit]

@@ -364,6 +364,93 @@ function equipMenu(statusMenu) {
   });
 }
 
+function skillsMenu(statusMenu) {
+  statusMenu.window.takeFocus();
+
+  function SkillsMenu(characterId) {
+    return new Menu({
+      getState : function() {
+        var mpLeft = 
+          game.getIntArray(game.CHARACTER_MPS())[characterId];
+        var knownSkillIds = game.getKnownSkills(characterId);
+        var usableBools = [];
+        var lines = [];
+        var skills = [];
+        
+        var allSkills = project.data().enums().skills();
+        
+        for (var i = 0; i < knownSkillIds.length; ++i) {
+          var skillId = knownSkillIds[i];
+          var skill = allSkills[skillId];
+          var usable = skill.cost() <= mpLeft;
+          
+          skills.push(skill);
+          usableBools.push(usable);
+
+          var lineParts = [];
+          if (!usable)
+            lineParts.push("\\c[1]");
+          lineParts.push(skill.name());
+          if (!usable)
+            lineParts.push("\\c[0]");
+
+          lines.push(lineParts.join(""));
+        }
+
+        return {
+          mpLeft: mpLeft,
+          skillIds: knownSkillIds,
+          skills: skills,
+          lines : lines,
+          usableBools: usableBools
+        }
+      },
+      layout : game.layout(game.NORTH(), game.SCREEN(), 1.0, 0.4),
+      windowDetails : {
+        allowCancel : true
+      }
+    });
+  }
+
+  statusMenu.loopCharacterChoice(function(characterId) {
+    var skillsMenu = new SkillsMenu(characterId);
+
+    skillsMenu.loopChoice(function(choiceId) {
+      if (choiceId == -1)
+        return false;
+
+      var usable = skillsMenu.state.usableBools[choiceId];
+      var skillId = skillsMenu.state.skillIds[choiceId];
+      var skill = skillsMenu.state.skills[choiceId];
+
+      if (!usable)
+        return true;
+
+      var usagesLeft = skill.cost() > 0 ? 
+          Math.floor(skillsMenu.state.mpLeft / skill.cost()) : 1000;
+
+      var statusMenu = new StatusMenu();
+      statusMenu.loopCharacterChoice(function onSelect(targetCharacterId) {
+        if (usagesLeft > 0) {
+          game.useSkillInMenu(characterId, skillId, targetCharacterId);
+        }
+
+        --usagesLeft;
+
+        // Don't return until after the user has had a chance to see the effect
+        // of using the last skill.
+        return usagesLeft >= -1;
+      });
+      statusMenu.close();
+      
+      return true;
+    });
+
+    skillsMenu.close();
+    return false;
+  });
+}
+
 function menu() {
   if (!game.getMenuEnabled())
     return;
@@ -373,7 +460,7 @@ function menu() {
     getState : function() {
       return {
         lines : [ game.getMessage("Item"), game.getMessage("Skills"),
-            game.getMessage("Equip"), game.getMessage("Status"),
+            game.getMessage("Equip"),
             game.getMessage("Save"), game.getMessage("Quit") ],
       };
     },
@@ -388,6 +475,9 @@ function menu() {
     switch (choiceId) {
     case 0:
       itemsMenu();
+      break;
+    case 1:
+      skillsMenu(statusMenu);
       break;
     case 2:
       equipMenu(statusMenu);

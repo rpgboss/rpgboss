@@ -18,3 +18,7 @@ v0.3.3
 v0.5.4
 ------
  - (Very) old Events with an EndOfScript marker will no longer deserialize correctly.
+
+v0.8.5
+------
+ - In "items.json", the on attack skill field has been renamed from "onUseSkillId" to "equippedAttackSkillId".

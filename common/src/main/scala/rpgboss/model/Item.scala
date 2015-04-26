@@ -20,7 +20,9 @@ object Item {
 }
 
 /**
- * @param scopeId       Affected targets for consumables
+ * @param scopeId                 Affected targets for consumables
+ * @param equippedAttackSkillId   When this item is equipped, and user selects
+ *                                "Attack" in battle, this skill is used.
  */
 case class Item(
   var name: String = "",
@@ -38,7 +40,7 @@ case class Item(
   var equipType: Int = 0,
 
   var useOnAttack: Boolean = false,
-  var onUseSkillId: Int = 0,
+  var equippedAttackSkillId: Int = 0,
 
   var icon: Option[IconSpec] = None) extends HasName {
 

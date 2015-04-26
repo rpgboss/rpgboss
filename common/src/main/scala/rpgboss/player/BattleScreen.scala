@@ -138,9 +138,7 @@ class BattleScreen(
 
               val itemId = battleItems(idxInChoiceBox)._1
               val item = battleItemInstances(idxInChoiceBox)
-              val skillId = item.onUseSkillId
-              val skill = battle.pData.enums.skills(idxInChoiceBox)
-              val scope = Scope(skill.scopeId)
+              val scope = Scope(item.scopeId)
               val targets = getTargets(scope)
               if (targets.isDefined) {
                 window.close()

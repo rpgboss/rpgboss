@@ -81,10 +81,10 @@ class ItemsPanel(
           model.useOnAttack = _,
           Some(setEnabledFields _))
 
-        val fOnUseSkillId = indexedCombo(
+        val fEquippedAttackSkillId = indexedCombo(
           dbDiag.model.enums.skills,
-          model.onUseSkillId,
-          model.onUseSkillId = _)
+          model.equippedAttackSkillId,
+          model.equippedAttackSkillId = _)
 
         def setEnabledFields(): Unit = {
           fPrice.enabled = fSellable.selected
@@ -95,7 +95,7 @@ class ItemsPanel(
           fEquipType.enabled = model.itemTypeId == ItemType.Equipment.id
 
           fUseOnAttack.enabled = model.itemTypeId == ItemType.Equipment.id
-          fOnUseSkillId.enabled =
+          fEquippedAttackSkillId.enabled =
             model.itemTypeId == ItemType.Equipment.id && model.useOnAttack
 
           effectPane.updateContext(effectContext)
@@ -122,7 +122,7 @@ class ItemsPanel(
           .grid(lbl(getMessageColon("Equip_Type"))).add(fEquipType)
         row().grid().add(fUseOnAttack)
         row()
-          .grid(lbl(getMessageColon("On_Use_Skill"))).add(fOnUseSkillId)
+          .grid(lbl(getMessageColon("Attack_Skill"))).add(fEquippedAttackSkillId)
       }
 
       contents += leftPane
