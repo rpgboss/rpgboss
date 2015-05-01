@@ -214,9 +214,8 @@ class RpgGame(gamepath: File)
       mapScreen.setPlayerLoc(loc)
   }
 
-  def startBattle(
-    encounterId: Int, battleBackground: String,
-    battleMusic: String, battleMusicVolume: Float): Unit = {
+  def startBattle(encounterId: Int): Unit = {
+    assertOnBoundThread()
     assert(encounterId >= 0)
     assert(encounterId < project.data.enums.encounters.length)
 
@@ -239,11 +238,17 @@ class RpgGame(gamepath: File)
         encounter,
         aiOpt = Some(new RandomEnemyAI))
 
+      val (battleBackground, battleMusic) =
+        mapScreen.mapAndAssetsOption.map { mapAndAssets =>
+          (mapAndAssets.battleBackground, mapAndAssets.battleMusic)
+        } getOrElse {
+          ("", None)
+        }
       battleScreen.startBattle(battle, battleBackground)
       if (!battleMusic.isEmpty) {
         battleScreen.playMusic(
           0,
-          Some(SoundSpec(battleMusic, battleMusicVolume)),
+          battleMusic,
           true,
           Transitions.fadeLength)
       }

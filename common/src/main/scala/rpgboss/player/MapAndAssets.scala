@@ -21,7 +21,32 @@ class MapAndAssets(
   val mapData: RpgMapData = map.readMapData().get
   mapData.sanitizeForMetadata(map.metadata)
 
-  var encounterSettings = map.metadata.randomEncounterSettings.deepcopy()
+  private var _battleBackground = map.metadata.battleBackground
+  private var _battleMusic = map.metadata.battleMusic
+  private var _randomEncounterSettings = map.metadata.randomEncounterSettings
+  def battleBackground = _battleBackground
+  def battleMusic = _battleMusic
+  def randomEncounterSettings = _randomEncounterSettings
+
+  def setOverrideBattleSettings(battleBackground: String, battleMusic: String,
+      battleMusicVolume: Float, randomEncountersOn: Boolean) = {
+    _battleBackground =
+      if (battleBackground.isEmpty())
+        map.metadata.battleBackground
+      else
+        battleBackground
+    _battleMusic =
+      if (battleMusic.isEmpty())
+        map.metadata.battleMusic
+      else
+        Some(SoundSpec(battleMusic, battleMusicVolume))
+    _randomEncounterSettings =
+      if (randomEncountersOn)
+        map.metadata.randomEncounterSettings
+      else
+        RandomEncounterSettings()
+  }
+
   private var _lastBattleX: Float = -1
   private var _lastBattleY: Float = -1
   def setLastBattlePosition(x: Float, y: Float) = {

@@ -51,6 +51,8 @@ trait RpgScreen extends Screen
   val windowManager =
     new WindowManager(assets, project, screenW, screenH, renderingOffForTesting)
 
+  val shakeManager = new ShakeManager
+
   def playAnimation(animationId: Int, target: AnimationTarget,
       speedScale: Float, sizeScale: Float) = {
     val animation = project.data.enums.animations(animationId)
@@ -169,6 +171,7 @@ trait RpgScreen extends Screen
     windowManager.update(delta)
 
     if (!windowManager.inTransition) {
+      shakeManager.update(delta)
       update(delta)
     }
 

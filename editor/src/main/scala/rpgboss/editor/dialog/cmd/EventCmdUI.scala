@@ -38,11 +38,7 @@ import rpgboss.editor.resourceselector.WindowskinField
 import rpgboss.editor.uibase.ArrayMultiselectPanel
 import rpgboss.editor.uibase.EntitySelectPanel
 import rpgboss.editor.uibase.EventParameterField
-import rpgboss.editor.uibase.EventParameterField.FloatPercentField
-import rpgboss.editor.uibase.EventParameterField.IntEnumIdField
-import rpgboss.editor.uibase.EventParameterField.IntMultiselectField
-import rpgboss.editor.uibase.EventParameterField.IntNumberField
-import rpgboss.editor.uibase.EventParameterField.StringField
+import rpgboss.editor.uibase.EventParameterField._
 import rpgboss.editor.uibase.FloatSpinner
 import rpgboss.editor.uibase.LayoutEditingPanel
 import rpgboss.editor.uibase.NumberSpinner
@@ -69,61 +65,7 @@ import rpgboss.model.PictureSlots
 import rpgboss.model.RpgMapData
 import rpgboss.model.Transitions
 import rpgboss.model.WeatherTypes
-import rpgboss.model.event.AddRemoveGold
-import rpgboss.model.event.AddRemoveItem
-import rpgboss.model.event.AddRemoveSkill
-import rpgboss.model.event.BreakLoop
-import rpgboss.model.event.CallMenu
-import rpgboss.model.event.CallSaveMenu
-import rpgboss.model.event.ClearTimer
-import rpgboss.model.event.Comment
-import rpgboss.model.event.EquipItem
-import rpgboss.model.event.EventCmd
-import rpgboss.model.event.ExitGame
-import rpgboss.model.event.FadeIn
-import rpgboss.model.event.FadeOut
-import rpgboss.model.event.GameOver
-import rpgboss.model.event.GetChoice
-import rpgboss.model.event.GetEntityInfo
-import rpgboss.model.event.GetKeyInput
-import rpgboss.model.event.GetNumberInput
-import rpgboss.model.event.GetStringInput
-import rpgboss.model.event.GiveExperience
-import rpgboss.model.event.HealOrDamage
-import rpgboss.model.event.HidePicture
-import rpgboss.model.event.IfCondition
-import rpgboss.model.event.LockPlayerMovement
-import rpgboss.model.event.ModifyParty
-import rpgboss.model.event.MoveCamera
-import rpgboss.model.event.MoveEvent
-import rpgboss.model.event.OpenStore
-import rpgboss.model.event.OperatorType
-import rpgboss.model.event.PlayAnimation
-import rpgboss.model.event.PlayMusic
-import rpgboss.model.event.PlaySound
-import rpgboss.model.event.Return
-import rpgboss.model.event.RunJs
-import rpgboss.model.event.SetCameraFollow
-import rpgboss.model.event.SetCharacterLevel
-import rpgboss.model.event.SetCharacterName
-import rpgboss.model.event.SetEventSpeed
-import rpgboss.model.event.SetEventState
-import rpgboss.model.event.SetEventsEnabled
-import rpgboss.model.event.SetGlobalInt
-import rpgboss.model.event.SetMenuEnabled
-import rpgboss.model.event.SetTimer
-import rpgboss.model.event.SetTransition
-import rpgboss.model.event.SetWindowskin
-import rpgboss.model.event.ShowPicture
-import rpgboss.model.event.ShowText
-import rpgboss.model.event.Sleep
-import rpgboss.model.event.StartBattle
-import rpgboss.model.event.StopMusic
-import rpgboss.model.event.StopSound
-import rpgboss.model.event.Teleport
-import rpgboss.model.event.TintScreen
-import rpgboss.model.event.WeatherEffects
-import rpgboss.model.event.WhileLoop
+import rpgboss.model.event._
 import rpgboss.player.MyKeysEnum
 
 case class EventField(title: String, component: Component)
@@ -157,6 +99,7 @@ object EventCmdUI {
     MoveCameraUI,
     MoveEventUI,
     OpenStoreUI,
+    OverrideMapBattleSettingsUI,
     PlayAnimationUI,
     PlayMusicUI,
     PlaySoundUI,
@@ -173,6 +116,7 @@ object EventCmdUI {
     SetTimerUI,
     SetTransitionUI,
     SetWindowskinUI,
+    ShakeScreenUI,
     StopSoundUI,
     ShowPictureUI,
     ShowTextUI,
@@ -585,6 +529,28 @@ object OpenStoreUI extends EventCmdUI[OpenStore] {
       model.sellPriceMultiplier))
 }
 
+object OverrideMapBattleSettingsUI extends EventCmdUI[OverrideMapBattleSettings] {
+  override def category = Battles
+  override def title = getMessage("Override_Battle_Settings")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String],
+                               model: OverrideMapBattleSettings) = Seq(
+      EventField(
+      getMessage("Override_Battle_Background"),
+      new BattleBackgroundField(
+        owner,
+        sm,
+        model.battleBackground,
+        model.battleBackground = _)),
+    EventField(
+      getMessage("Override_Battle_Music"),
+      new MusicField(owner, sm, model.battleMusic, model.battleMusic = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: OverrideMapBattleSettings) = List(
+    BooleanField(getMessage("Random_Encounters_On"), model.randomEncountersOn))
+}
+
 object PlayAnimationUI extends EventCmdUI[PlayAnimation] {
   override def category = Effects
   override def title = getMessage("Play_Animation")
@@ -811,6 +777,18 @@ object SetWindowskinUI extends EventCmdUI[SetWindowskin] {
       owner, sm, model.windowskinPath, model.windowskinPath = _)))
 }
 
+object ShakeScreenUI extends EventCmdUI[ShakeScreen] {
+  override def category = Windows
+  override def title = getMessage("Shake_Screen")
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: ShakeScreen) = List(
+    FloatField(getMessage("X_Amplitude"), 0f, 100f, model.xAmplitude),
+    FloatField(getMessage("Y_Amplitude"), 0f, 100f, model.yAmplitude),
+    FloatField(getMessage("Frequency_hz"), 0f, 100f, model.frequency),
+    FloatField(getMessage("Duration_s"), 0f, 100f, model.duration))
+}
+
 object ShowPictureUI extends EventCmdUI[ShowPicture] {
   override def category = Windows
   override def title = getMessage("Show_Picture")
@@ -863,22 +841,11 @@ object ShowTextUI extends EventCmdUI[ShowText] {
 object StartBattleUI extends EventCmdUI[StartBattle] {
   override def category = Battles
   override def title = getMessage("Start_Battle")
-  override def getNormalFields(
-    owner: Window, sm: StateMaster, mapName: Option[String], model: StartBattle) = Seq(
-    EventField(
-      getMessage("Encounter"),
-      indexedCombo(sm.getProjData.enums.encounters, model.encounterId,
-        model.encounterId = _)),
-    EventField(
-      getMessage("Override_Battle_Background"),
-      new BattleBackgroundField(
-        owner,
-        sm,
-        model.battleBackground,
-        model.battleBackground = _)),
-    EventField(
-      getMessage("Override_Battle_Music"),
-      new MusicField(owner, sm, model.battleMusic, model.battleMusic = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: StartBattle) = Seq(
+      IntEnumIdField(getMessage("Encounter"), sm.getProjData.enums.encounters,
+          model.encounterId))
 }
 
 object StopMusicUI extends EventCmdUI[StopMusic] {
