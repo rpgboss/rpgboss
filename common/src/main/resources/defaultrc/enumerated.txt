@@ -562,6 +562,7 @@ music/sys/sean_m_stephens/Battle1.mid
 music/sys/sean_m_stephens/Battle2.mid
 music/sys/sean_m_stephens/Battle3.mid
 music/sys/sean_m_stephens/Choral.mid
+music/sys/sean_m_stephens/Haven.mid
 music/sys/sean_m_stephens/TitleMoon.mid
 music/sys/sean_m_stephens/World1.mid
 music/sys/sean_m_stephens/World2.mid
