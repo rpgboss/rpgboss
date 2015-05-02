@@ -151,8 +151,10 @@ class MapScreen(val game: RpgGame)
     camera.update(delta, cameraFollowedEntity, forceSnapToEntity, map.metadata,
                   screenWTiles, screenHTiles)
 
-    tileCamera.position.x = camera.x
-    tileCamera.position.y = camera.y
+    tileCamera.position.x =
+      camera.x + shakeManager.xDisplacement / Tileset.tilesize
+    tileCamera.position.y =
+      camera.y + shakeManager.yDisplacement / Tileset.tilesize
     tileCamera.update()
   }
 
@@ -223,7 +225,7 @@ class MapScreen(val game: RpgGame)
 
       val minimumDistanceFromLastBattle = 3
 
-      val encounterSettings = mapAndAssets.encounterSettings
+      val encounterSettings = mapAndAssets.randomEncounterSettings
       val mapMetadata = mapAndAssets.map.metadata
 
       val distFromLastBattle =
@@ -236,13 +238,10 @@ class MapScreen(val game: RpgGame)
         if (math.random < chanceBattle) {
           mapAndAssets.setLastBattlePosition(playerEntity.x, playerEntity.y)
 
-          // TODO: Add battle background
           val encounterId = Utils.randomChoose(
               encounterSettings.encounters.map(_.encounterId),
               encounterSettings.encounters.map(_.weight.floatValue))
-          game.startBattle(encounterId, mapMetadata.battleBackground,
-              mapMetadata.battleMusic.map(_.sound).getOrElse(""),
-              mapMetadata.battleMusic.map(_.volume).getOrElse(1))
+          game.startBattle(encounterId)
         }
       }
     }

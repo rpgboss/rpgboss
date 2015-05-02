@@ -232,6 +232,12 @@ class ScriptInterface(
     activeScreen.windowManager.setTransition(endAlpha, duration)
   }
 
+  def shakeScreen(xAmplitude: Float, yAmplitude: Float, frequency: Float,
+      duration: Float) = syncRun {
+    activeScreen.shakeManager.startShake(
+        xAmplitude, yAmplitude, frequency, duration)
+  }
+
   /**
    * @param   r               Between 0.0f and 1.0f.
    * @param   g               Between 0.0f and 1.0f.
@@ -251,24 +257,19 @@ class ScriptInterface(
       fadeDuration)
   }
 
-  def startBattle(encounterId: Int, overrideBattleBackground: String,
-                  overrideBattleMusic: String, overrideBattleMusicVolume: Float) = {
-    val mapMetadata = mapScreen.mapAndAssetsOption.get.map.metadata
-    val battleBackground =
-      if (overrideBattleBackground.isEmpty)
-        mapMetadata.battleBackground
-      else
-        overrideBattleBackground
+  def overrideMapBattleSettings(battleBackground: String,
+                                battleMusic: String,
+                                battleMusicVolume: Float,
+                                randomEncountersOn: Boolean) = syncRun {
+    mapScreen.mapAndAssetsOption map {
+      _.setOverrideBattleSettings(battleBackground, battleMusic,
+          battleMusicVolume, randomEncountersOn)
+    }
+  }
 
-    val (battleMusic, battleMusicVolume) =
-      if (overrideBattleMusic.isEmpty)
-        (mapMetadata.battleMusic.get.sound, mapMetadata.battleMusic.get.volume)
-      else
-        (overrideBattleMusic, overrideBattleMusicVolume)
-
+  def startBattle(encounterId: Int) = {
     syncRun {
-      game.startBattle(encounterId, battleBackground, battleMusic,
-        battleMusicVolume)
+      game.startBattle(encounterId)
     }
 
     // Blocks until the battle screen finishes on way or the other

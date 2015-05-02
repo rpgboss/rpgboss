@@ -22,3 +22,7 @@ v0.5.4
 v0.8.5
 ------
  - In "items.json", the on attack skill field has been renamed from "onUseSkillId" to "equippedAttackSkillId".
+
+v0.8.6
+------
+ - StartBattle EventCmd has had many of its options removed and put into OverrideMapBattleSettings EventCmd. This may break old StartBatle EventCmds.

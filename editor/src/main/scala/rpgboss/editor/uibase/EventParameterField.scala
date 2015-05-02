@@ -2,9 +2,7 @@ package rpgboss.editor.uibase
 
 import scala.swing.Component
 import scala.swing.Window
-import rpgboss.editor.uibase.SwingUtils.indexedCombo
-import rpgboss.editor.uibase.SwingUtils.percentField
-import rpgboss.editor.uibase.SwingUtils.textField
+import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.lib.Utils
 import rpgboss.model.HasName
 import rpgboss.model.PictureSlots
@@ -33,6 +31,13 @@ abstract class EventParameterField[T](
 }
 
 object EventParameterField {
+  def BooleanField(name: String, model: BooleanParameter) =
+    new EventParameterField[Boolean](name, model) {
+      override def constantComponentFactory(p: EventParameter[Boolean]) =
+        // Do not pass name parameter, as label will be displayed on left.
+        boolField("", model.constant, model.constant = _)
+    }
+
   def IntNumberField(
       name: String, min: Int, max: Int, model: IntParameter,
       additionalAction: Option[() => Unit] = None) =
@@ -48,6 +53,13 @@ object EventParameterField {
     new EventParameterField[Int](name, model) {
       override def constantComponentFactory(p: EventParameter[Int]) =
         indexedCombo(choices, p.constant, p.constant = _, additionalAction)
+    }
+
+  def FloatField(
+      name: String, min: Float, max: Float, model: FloatParameter) =
+    new EventParameterField[Float](name, model) {
+      override def constantComponentFactory(p: EventParameter[Float]) =
+        new FloatSpinner(min, max, 0.1f, p.constant, p.constant = _)
     }
 
   def FloatPercentField(

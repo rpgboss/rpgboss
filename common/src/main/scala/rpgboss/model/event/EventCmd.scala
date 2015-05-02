@@ -76,7 +76,9 @@ object EventCmd {
     classOf[IfCondition],
     classOf[IncrementEventState],
     classOf[LockPlayerMovement],
+    classOf[OverrideMapBattleSettings],
     classOf[SetCharacterLevel],
+    classOf[ShakeScreen],
     classOf[Sleep],
     classOf[ModifyParty],
     classOf[MoveCamera],
@@ -497,6 +499,20 @@ case class OpenStore(
     List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
 }
 
+case class OverrideMapBattleSettings(
+  var battleBackground: String = "",
+  var battleMusic: Option[SoundSpec] = None,
+  var randomEncountersOn: BooleanParameter = BooleanParameter(true))
+  extends EventCmd {
+  def sections = battleMusic.map { music =>
+    singleCall("game.overrideMapBattleSettings", battleBackground, music.sound,
+        music.volume, randomEncountersOn)
+  }.getOrElse {
+    singleCall("game.overrideMapBattleSettings", battleBackground, "", 1.0,
+        randomEncountersOn)
+  }
+}
+
 case class PlayAnimation(
   var animationId: Int = 0,
   var originId: Int = Origins.default.id,
@@ -664,6 +680,17 @@ case class SetWindowskin(var windowskinPath: String = "") extends EventCmd {
   def sections = singleCall("game.setWindowskin", windowskinPath)
 }
 
+case class ShakeScreen(
+    xAmplitude: FloatParameter = FloatParameter(20f),
+    yAmplitude: FloatParameter = FloatParameter(0f),
+    frequency: FloatParameter = FloatParameter(4f),
+    duration: FloatParameter = FloatParameter(4f)) extends EventCmd {
+  def sections = singleCall("game.shakeScreen", xAmplitude, yAmplitude,
+                            frequency, duration)
+  override def getParameters() =
+    List(xAmplitude, yAmplitude, frequency, duration)
+}
+
 case class Sleep(var duration: Float = 0) extends EventCmd {
   def sections = singleCall("game.sleep", duration)
 }
@@ -679,16 +706,10 @@ case class ShowPicture(
 }
 
 case class StartBattle(
-  var encounterId: Int = 0,
-  var battleMusic: Option[SoundSpec] = None,
-  var battleBackground: String = "")
+  var encounterId: IntParameter = IntParameter())
   extends EventCmd {
-  def sections = battleMusic.map { music =>
-    singleCall("game.startBattle", encounterId, battleBackground,
-      music.sound, music.volume)
-  }.getOrElse {
-    singleCall("game.startBattle", encounterId, battleBackground, "", 1.0f)
-  }
+  def sections = singleCall("game.startBattle", encounterId)
+  override def getParameters() = List(encounterId)
 }
 
 case class StopMusic(
