@@ -482,15 +482,10 @@ function menu() {
     case 2:
       equipMenu(statusMenu);
       break;
-    case 4:
-      var saveMenu = new SaveAndLoadMenu();
-      saveMenu.loopChoice(function(choiceId) {
-        game.saveToSaveSlot(choiceId);
-        return true;
-      });
-      saveMenu.close();
+    case 3:
+      SaveMenu();
       break;
-    case 5:
+    case 4:
       game.quit();
       break;
     }
