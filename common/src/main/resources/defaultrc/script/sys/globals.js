@@ -93,11 +93,11 @@ game.gameOver = function() {
 };
 
 game.callSaveMenu = function() {
-  game.runScript("sys/menu.js", "callSaveMenu()");
+  game.runScript("sys/menu.js", "SaveMenu()");
 };
 
 game.callMenu = function() {
-  game.runScript("sys/menu.js", "callMenu()");
+  game.runScript("sys/menu.js", "menu()");
 };
 
 game.getPlayerInfo = function() {
