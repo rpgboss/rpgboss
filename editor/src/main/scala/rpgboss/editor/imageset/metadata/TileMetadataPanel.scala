@@ -1,29 +1,43 @@
 package rpgboss.editor.imageset.metadata
 
+import java.awt.AlphaComposite
+import java.awt.event.MouseEvent
+import java.awt.image.BufferedImage
+
 import scala.swing._
+
+import rpgboss.editor.StateMaster
 import rpgboss.editor.imageset._
 import rpgboss.editor.imageset.selector._
-import rpgboss.editor.uibase.SwingUtils._
+import rpgboss.editor.Internationalized._
 import rpgboss.editor.misc.TileUtils
-import scala.swing.event._
-import rpgboss.editor.uibase._
+import rpgboss.editor.uibase.SwingUtils._
+import rpgboss.lib.ArrayUtils
 import rpgboss.model._
-import rpgboss.model.resource._
-import java.awt.image.BufferedImage
-import rpgboss.editor.StateMaster
-import javax.imageio.ImageIO
-import java.awt.geom.Line2D
-import java.awt.{ AlphaComposite, Font, Color }
-import java.awt.event.MouseEvent
 
 object MetadataMode extends RpgEnum {
-  val PassabilityHeight = Value("Passability/Height")
-  val DirectionalPassability = Value("Directional Passability")
+  val PassabilityHeight = Value("Passability_Height")
+  val DirectionalPassability = Value("Directional_Passability")
+  val VehiclePassability0 = Value("Vehicle_1_Passability")
+  val VehiclePassability1 = Value("Vehicle_2_Passability")
+  val VehiclePassability2 = Value("Vehicle_3_Passability")
+  val VehiclePassability3 = Value("Vehicle_4_Passability")
+
+  def getVehicleIdForMode(value: Value) = {
+    value match {
+      case VehiclePassability0 => 0
+      case VehiclePassability1 => 1
+      case VehiclePassability2 => 2
+      case VehiclePassability3 => 3
+      case _ => -1
+    }
+  }
 
   def default = PassabilityHeight
 }
 
-case class TileMetadata(blockedDirs: Byte, height: Byte) {
+case class TileMetadata(blockedDirs: Byte, height: Byte,
+                        vehicleDirs: Array[Byte]) {
   import DirectionMasks._
 
   def passabilityHeightIncremented() = {
@@ -61,9 +75,25 @@ case class TileMetadata(blockedDirs: Byte, height: Byte) {
 
     copy(blockedDirs = (blockedDirs ^ direction).toByte) // Flip direction bit.
   }
+
+  def vehiclePassabilityToggled(vehicleId: Int) = {
+    val newVehicleDirs =
+      ArrayUtils.resized[Byte](vehicleDirs, Constants.NUM_VEHICLES,
+          () => DirectionMasks.NONE.toByte)
+
+    val oldValue = newVehicleDirs(vehicleId)
+    val newValue = if (oldValue == DirectionMasks.NONE)
+      DirectionMasks.ALLCARDINAL.toByte
+    else
+      DirectionMasks.NONE.toByte
+    newVehicleDirs.update(vehicleId, newValue)
+
+    copy(vehicleDirs = newVehicleDirs)
+  }
 }
 
-class TileMetadataPanel(srcImg: BufferedImage, owner: TilesetsMetadataPanel)
+class TileMetadataPanel(srcImg: BufferedImage, owner: TilesetsMetadataPanel,
+                        canUpdateVehicleDirs: Boolean)
   extends BoxPanel(Orientation.Horizontal) {
   import MetadataMode._
 
@@ -90,7 +120,19 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TilesetsMetadataPanel)
         metadata.directionalPassabilityToggled(
           xInTile, yInTile, tilesizeX, tilesizeY)
       } else {
-        metadata
+        val vehicleId = MetadataMode.getVehicleIdForMode(metadataMode)
+        if (vehicleId >= 0) {
+          if (canUpdateVehicleDirs) {
+            metadata.vehiclePassabilityToggled(vehicleId)
+          } else {
+            Dialog.showMessage(
+                this,
+                getMessage("Cannot_update_vehicle_passibility"))
+            metadata
+          }
+        } else {
+          metadata
+        }
       }
     }
 
@@ -199,6 +241,14 @@ class TileMetadataPanel(srcImg: BufferedImage, owner: TilesetsMetadataPanel)
             draw22Icon(iconStop, xTile, yTile)
         } else if (metadataMode == DirectionalPassability) {
           drawDirectionalPassability(metadata.blockedDirs, xTile, yTile)
+        } else {
+          val vehicleId = MetadataMode.getVehicleIdForMode(metadataMode)
+          if (vehicleId >= 0) {
+            if (allBlocked(metadata.vehicleDirs(vehicleId)))
+              draw22Icon(iconStop, xTile, yTile)
+            else
+              draw22Icon(iconPass, xTile, yTile)
+          }
         }
       }
     }

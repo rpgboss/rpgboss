@@ -105,6 +105,8 @@ object Constants {
   val MINEFFECTARG = -9999
   val MAXEFFECTARG = 9999
 
+  val NUM_VEHICLES = 4
+
   import DirectionMasks._
 
   val DirectionOffsets = Map(

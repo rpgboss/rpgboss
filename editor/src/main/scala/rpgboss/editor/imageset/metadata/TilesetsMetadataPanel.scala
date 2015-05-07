@@ -59,13 +59,14 @@ class TilesetsMetadataPanel(sm: StateMaster)
       val idx = x
       if (idx < autotiles.length) {
         val m = autotiles(idx).metadata
-        Some(TileMetadata(m.blockedDirs, m.height))
+        Some(TileMetadata(m.blockedDirs, m.height, m.normalizedVehicleDirs))
       } else None
     } else {
       val tileset = tilesets(tilesetIdx)
       val blockedDir = tileset.metadata.blockedDirsAry(y)(x)
       val height = tileset.metadata.heightAry(y)(x)
-      Some(TileMetadata(blockedDir, height))
+      Some(TileMetadata(blockedDir, height,
+          AutotileMetadata.defaultVehicleDirs))
     }
   }
 
@@ -89,7 +90,8 @@ class TilesetsMetadataPanel(sm: StateMaster)
       val autotile = autotiles(idx)
       val newAutotileMetadata = autotile.metadata.copy(
         blockedDirs = newMetadata.blockedDirs,
-        height = newMetadata.height)
+        height = newMetadata.height,
+        vehicleDirs = newMetadata.vehicleDirs)
       autotiles.update(idx, autotile.copy(metadata = newAutotileMetadata))
       dirtyAutotileIdxs.add(idx)
     } else {
@@ -118,11 +120,13 @@ class TilesetsMetadataPanel(sm: StateMaster)
 
     if (selectAutotiles) {
       def srcImg = TileUtils.getAutotileCollageImg(autotiles)
-      metadataPanelContainer.contents += new TileMetadataPanel(srcImg, this)
+      metadataPanelContainer.contents +=
+        new TileMetadataPanel(srcImg, this, true)
       autotilesSelected = true
     } else {
       val t = tilesets(idx)
-      metadataPanelContainer.contents += new TileMetadataPanel(t.img, this)
+      metadataPanelContainer.contents +=
+        new TileMetadataPanel(t.img, this, false)
       tilesetIdx = idx
       autotilesSelected = false
     }
@@ -131,15 +135,7 @@ class TilesetsMetadataPanel(sm: StateMaster)
   }
 
   def save() = {
-    /*
-    for(i <- dirtyTilesetIdxs) {
-      tilesets(i).writeMetadata()
-    }
-    for(i <- dirtyAutotileIdxs) {
-      autotiles(i).writeMetadata()
-    }*/
-
-    // For now save all of them
+    // TODO: Perhaps we should only save the actually modified ones...
     (tilesets ++ autotiles).map(_.writeMetadata())
   }
 

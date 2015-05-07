@@ -21,8 +21,20 @@ import javax.imageio.ImageIO
  *                      The the four "biggest" bits are undefined.
  * @param height        Used to indicate if it's an elevated tile. A zero value
  *                      is used for an ordinary tile.
+ * @param vehicleDirs   An array of the same format is |blockedDirs|.
+ *                      The only valid options are NONE and ALLCARDINAL.
  */
-case class AutotileMetadata(blockedDirs: Byte = 0, height: Byte = 0)
+case class AutotileMetadata(blockedDirs: Byte = 0, height: Byte = 0,
+                            vehicleDirs: Array[Byte] =
+                              AutotileMetadata.defaultVehicleDirs) {
+  def normalizedVehicleDirs = ArrayUtils.resized[Byte](
+      vehicleDirs, Constants.NUM_VEHICLES, () => DirectionMasks.NONE.toByte)
+}
+
+object AutotileMetadata {
+  def defaultVehicleDirs =
+    Array.fill(Constants.NUM_VEHICLES)(DirectionMasks.NONE.toByte)
+}
 
 case class Autotile(proj: Project,
                     name: String,
