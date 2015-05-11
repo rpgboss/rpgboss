@@ -139,13 +139,17 @@ class MapAndAssets(
     buffer.sortBy(_.zPriority).toArray
   }
 
-  def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
+  /**
+   * Vehicles can only move on specifically allowed autotiles. All other tiles
+   * are disallowed.
+   */
+  def getVehicleBlockedDirsOf(xTile: Int, yTile: Int, vehicleId: Int): Byte = {
     import RpgMap._
     import DirectionMasks._
     val xIdx = xTile * bytesPerTile
 
     // Test top layer first, as if the top layer provides an answer, there is
-    // no need to test subArrayuent layers
+    // no need to test subsequent layers
     for (layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer)) {
       val row = layerAry(yTile)
       val byte1 = row(xIdx)
@@ -153,7 +157,34 @@ class MapAndAssets(
       val byte3 = row(xIdx + 2)
 
       if (byte1 < 0) {
-        // Empty tile or autotile
+        if (byte1 == autotileByte) {
+          val tiledata = autotiles(byte2).metadata
+          return tiledata.vehicleDirs(vehicleId)
+        } else {
+          // Empty tile: Do nothing... just continue with next layer
+        }
+      } else { // tileset tile
+        return ALLCARDINAL.toByte
+      }
+    }
+
+    return ALLCARDINAL.toByte
+  }
+
+  def getBlockedDirsOf(xTile: Int, yTile: Int): Byte = {
+    import RpgMap._
+    import DirectionMasks._
+    val xIdx = xTile * bytesPerTile
+
+    // Test top layer first, as if the top layer provides an answer, there is
+    // no need to test subsequent layers
+    for (layerAry <- List(mapData.topLayer, mapData.midLayer, mapData.botLayer)) {
+      val row = layerAry(yTile)
+      val byte1 = row(xIdx)
+      val byte2 = row(xIdx + 1)
+      val byte3 = row(xIdx + 2)
+
+      if (byte1 < 0) {
         if (byte1 == autotileByte) {
           val tiledata = autotiles(byte2).metadata
 
@@ -191,6 +222,9 @@ class MapAndAssets(
    */
   def getCollisions(entity: Entity, x: Float, y: Float, dx: Float,
                     dy: Float): (Boolean, Int) = {
+    if (!entity.collisionOn)
+      return (false, 0)
+
     if (dx == 0 && dy == 0)
       return (false, 0)
 

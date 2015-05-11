@@ -71,6 +71,8 @@ abstract class Entity(
 
   // TODO: Remove this ghetto RTTI if possible.
   def isPlayer: Boolean = false
+  def collisionOn: Boolean = true
+  def vehicleCollisionId: Int = -1
 
   /**
    * Called when a player activates the event with a button.
@@ -218,13 +220,13 @@ abstract class Entity(
 
     if(xDiff > 0) {
       xMove = 1
-    } 
+    }
     if(xDiff < 0) {
       xMove = -1
-    } 
+    }
     if(yDiff > 0) {
       yMove = 1
-    } 
+    }
     if(yDiff < 0) {
       yMove = -1
     }
