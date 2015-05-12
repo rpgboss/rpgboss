@@ -36,11 +36,12 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
   val sysPane = new SystemPanel(owner, sm, this)
   val enumPane = new EnumerationsPanel(owner, sm, this)
   val messagesPane = new MessagesPanel(owner, sm, this)
+  val vehiclesPane = new VehiclesPane(owner, sm, this)
 
   val panels =
     List(charPane, classesPane, enemiesPane, encountersPane, itemsPane,
          skillsPane, statusPane, animationsPane, eventClassesPane, sysPane,
-         enumPane, messagesPane)
+         enumPane, messagesPane, vehiclesPane)
 
   def applyFunc() = {
     sm.setProjData(model)

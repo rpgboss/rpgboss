@@ -76,7 +76,9 @@ case class ProjectData(
   var lastCreatedMapId: Int = 1, // Start at 1)
   var startup: ProjectDataStartup = ProjectDataStartup(),
   var enums: ProjectDataEnums = ProjectDataEnums(),
-  var messages: Map[String, String] = ProjectData.defaultMessages) {
+  var messages: Map[String, String] = ProjectData.defaultMessages,
+  var vehicles: Array[Vehicle] =
+    Array.fill(Constants.NUM_VEHICLES)(Vehicle())) {
 
   def writeEnums(dir: File) = {
     def writeModel[T <: AnyRef](name: String, model: T) =

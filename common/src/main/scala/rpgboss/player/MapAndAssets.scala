@@ -163,7 +163,7 @@ class MapAndAssets(
         } else {
           // Empty tile: Do nothing... just continue with next layer
         }
-      } else { // tileset tile
+      } else {
         return ALLCARDINAL.toByte
       }
     }

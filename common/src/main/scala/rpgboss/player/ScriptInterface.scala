@@ -51,6 +51,10 @@ trait HasScriptConstants {
   val RIGHT = Window.Right
 
   val PLAYER_LOC = "playerLoc"
+  val VEHICLE_1_LOC = "vehicle1Loc"
+  val VEHICLE_2_LOC = "vehicle1Loc"
+  val VEHICLE_3_LOC = "vehicle1Loc"
+  val VEHICLE_4_LOC = "vehicle1Loc"
 
   val GOLD = "gold"
   val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
