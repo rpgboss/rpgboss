@@ -22,7 +22,9 @@ object HasName {
 case class MapLoc(
   var map: String = "",
   var x: Float = 0f,
-  var y: Float = 0f)
+  var y: Float = 0f) {
+  def isEmpty = map.isEmpty
+}
 
 object WhichEntity extends RpgEnum {
   val PLAYER = Value(0, "Player")
@@ -109,6 +111,10 @@ case class EntitySpec(
 
 object EntitySpec {
   def playerEntityId = -1
+  /**
+   * This is a total hack but it does seem to make things simple.
+   */
+  def vehicleEntityId(vehicleId: Int) = -2 - vehicleId
 }
 
 case class IconSpec(iconset: String, iconX: Int, iconY: Int)

@@ -51,10 +51,7 @@ trait HasScriptConstants {
   val RIGHT = Window.Right
 
   val PLAYER_LOC = "playerLoc"
-  val VEHICLE_1_LOC = "vehicle1Loc"
-  val VEHICLE_2_LOC = "vehicle1Loc"
-  val VEHICLE_3_LOC = "vehicle1Loc"
-  val VEHICLE_4_LOC = "vehicle1Loc"
+  def VEHICLE_LOC(vehicleId: Int) = "vehicleLoc-%d".format(vehicleId)
 
   val GOLD = "gold"
   val PLAYER_MOVEMENT_LOCKS = "playerMovementLocks"
@@ -196,6 +193,21 @@ class ScriptInterface(
       ResourceConstants.transitionsScript,
       "transition" + transition + "('" + mapName + "'," + x.toString() + "," + y.toString() + "," + fadeDuration.toString() + ")",
       runOnNewThread = false)
+  }
+
+  def placeVehicle(vehicleId: Int, mapName: String, x: Float,
+                   y: Float) = syncRun {
+    val loc = MapLoc(mapName, x, y)
+
+    if (!loc.isEmpty) {
+      mapScreen.mapAndAssetsOption.map { mapAndAssets =>
+        if (mapAndAssets.mapName == mapName) {
+          mapScreen.insertVehicleEntity(vehicleId, loc)
+        }
+      }
+    }
+
+    persistent.setLoc(VEHICLE_LOC(vehicleId), loc)
   }
 
   /**

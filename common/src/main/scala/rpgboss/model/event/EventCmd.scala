@@ -84,6 +84,7 @@ object EventCmd {
     classOf[MoveCamera],
     classOf[MoveEvent],
     classOf[OpenStore],
+    classOf[PlaceVehicle],
     classOf[PlayAnimation],
     classOf[PlayMusic],
     classOf[PlaySound],
@@ -497,6 +498,13 @@ case class OpenStore(
 
   override def getParameters() =
     List(itemIdsSold, buyPriceMultiplier, sellPriceMultiplier)
+}
+
+case class PlaceVehicle(
+    vehicleId: IntParameter = IntParameter(0),
+    loc: MapLoc = MapLoc()) extends EventCmd {
+  def sections =
+    singleCall("game.placeVehicle", vehicleId, loc.map, loc.x, loc.y)
 }
 
 case class OverrideMapBattleSettings(

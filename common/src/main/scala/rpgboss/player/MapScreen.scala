@@ -123,6 +123,13 @@ class MapScreen(val game: RpgGame)
           v)))
     }
 
+    for (i <- 0 to Constants.NUM_VEHICLES) {
+      val loc = game.persistent.getLoc(VEHICLE_LOC(i))
+      if (loc.map == mapName) {
+        insertVehicleEntity(i, loc)
+      }
+    }
+
     cameraFollowedEntity = Some(playerEntity)
 
     playMusic(0, mapAndAssets.map.metadata.music, true,
@@ -142,6 +149,14 @@ class MapScreen(val game: RpgGame)
     val p = playerEntity
     assert(p.mapName.isDefined)
     game.persistent.setLoc(PLAYER_LOC, MapLoc(p.mapName.get, p.x, p.y))
+  }
+
+  def insertVehicleEntity(vehicleId: Int, loc: MapLoc) = {
+    assert(loc.map == mapAndAssetsOption.get.mapName)
+    val vehicleEntity = new VehicleEntity(game, vehicleId)
+    allEntities.update(EntitySpec.vehicleEntityId(vehicleId), vehicleEntity)
+    vehicleEntity.x = loc.x
+    vehicleEntity.y = loc.y
   }
 
   def updateCameraLoc(delta: Float, mapAndAssets: MapAndAssets,
