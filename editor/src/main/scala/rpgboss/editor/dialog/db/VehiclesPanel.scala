@@ -1,29 +1,43 @@
 package rpgboss.editor.dialog.db
 
-import rpgboss.editor._
-import rpgboss.editor.uibase._
-import rpgboss.editor.uibase.SwingUtils._
-import scala.swing._
-import scala.swing.event._
-import rpgboss.model._
-import rpgboss.model.resource._
-import net.java.dev.designgridlayout._
-import rpgboss.editor.dialog.DatabaseDialog
-import rpgboss.editor.Internationalized._
+import scala.swing.GridPanel
+import scala.swing.Window
 
-class MessagesPanel(
+import javax.swing.BorderFactory
+import rpgboss.editor.Internationalized.getMessage
+import rpgboss.editor.Internationalized.getMessageColon
+import rpgboss.editor.StateMaster
+import rpgboss.editor.dialog.DatabaseDialog
+import rpgboss.editor.resourceselector.SpriteField
+import rpgboss.editor.uibase.DesignGridPanel
+import rpgboss.editor.uibase.SwingUtils.boolField
+import rpgboss.editor.uibase.SwingUtils.lbl
+import rpgboss.editor.uibase.SwingUtils.textField
+import rpgboss.model.Constants
+
+class VehiclesPane(
   owner: Window,
   sm: StateMaster,
   val dbDiag: DatabaseDialog)
-  extends DesignGridPanel
+  extends GridPanel(2, 2)
   with DatabasePanel {
-  def panelName = getMessage("Messages")
+  def panelName = getMessage("Vehicles")
 
-  val fMessages = new StringMapEditingPanel(
-    owner,
-    getMessage("Messages"),
-    dbDiag.model.messages,
-    dbDiag.model.messages = _)
+  for (i <- 0 until Constants.NUM_VEHICLES) {
+    val fPanel = new DesignGridPanel {
+      border =
+        BorderFactory.createTitledBorder(getMessage("Vehicle_%d".format(i)))
 
-  row.grid().add(fMessages)
+      val model = dbDiag.model.vehicles(i)
+      val fSprite = new SpriteField(owner, sm, model.sprite, model.sprite = _)
+      val fName = textField(model.name, model.name = _)
+      val fCanFly =
+        boolField(getMessage("Can_Fly"), model.canFly, model.canFly = _)
+      row().grid(lbl(getMessageColon("Sprite"))).add(fSprite)
+      row().grid(lbl(getMessageColon("Name"))).add(fName)
+      row().grid().add(fCanFly)
+    }
+
+    contents += fPanel
+  }
 }

@@ -73,6 +73,9 @@ abstract class Entity(
   def isPlayer: Boolean = false
   def collisionOn: Boolean = true
 
+  def inVehicle = false
+  def inVehicleId = -1
+
   /**
    * Called when a player activates the event with a button.
    */
@@ -345,10 +348,10 @@ case class EntityMove(vec: Vector2)
       entity.touchEntities(evtsTouchedSet)
 
       val evtBlockingX =
-        entity.height == EventHeight.SAME.id &&
+        entity.collisionOn && entity.height == EventHeight.SAME.id &&
         evtsTouchedX.exists(_.height == EventHeight.SAME.id)
       val evtBlockingY =
-        entity.height == EventHeight.SAME.id &&
+        entity.collisionOn && entity.height == EventHeight.SAME.id &&
         evtsTouchedY.exists(_.height == EventHeight.SAME.id)
 
       // Move along x

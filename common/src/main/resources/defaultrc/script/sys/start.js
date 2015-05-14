@@ -44,12 +44,12 @@ function showStartDialog() {
 }
 
 function splashScreen() {
-  game.setTransition(0, 1.0);
-  game.showPicture(0, 'sys/splash.jpg', 
-      game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
-  game.sleep(2);
-  game.setTransition(1, 0.4);
-  game.sleep(1);
+//  game.setTransition(0, 1.0);
+//  game.showPicture(0, 'sys/splash.jpg', 
+//      game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
+//  game.sleep(2);
+//  game.setTransition(1, 0.4);
+//  game.sleep(1);
 }
 
 function start() {

@@ -251,7 +251,11 @@ class MapAndAssets(
 
     def processTile(xTile: Int, yTile: Int, dir: Int,
                     rerouteSign: Int): Unit = {
-      val blockedDirs = getBlockedDirsOf(xTile, yTile)
+      val blockedDirs =
+        if (entity.inVehicle)
+          getVehicleBlockedDirsOf(xTile, yTile, entity.inVehicleId)
+        else
+          getBlockedDirsOf(xTile, yTile)
 
       if (blockedDirs == NONE)
         return

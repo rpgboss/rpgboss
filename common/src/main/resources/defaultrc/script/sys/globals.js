@@ -100,8 +100,32 @@ game.callMenu = function() {
   game.runScript("sys/menu.js", "menu()");
 };
 
+game.enterVehicle = function(vehicleId) {
+  assert(vehicleId >= 0);
+  assert(vehicleId < Constants.NUM_VEHICLES());
+  
+  var currentMapName = game.getMapName();
+  var vehicleLoc = game.getLoc(game.VEHICLE_LOC(vehicleId));
+  var playerInfo = game.getPlayerInfo();
+  
+  var dx = vehicleLoc.x() - playerInfo.x;
+  var dy = vehicleLoc.y() - playerInfo.y;
+  
+  // If the vehicle is close, move into it. Otherwise, just teleport the vehicle
+  // onto the player.
+  if (currentMapName == vehicleLoc.map() && Math.abs(dx) + Math.abs(dy) < 10) {
+    game.setPlayerCollision(false);
+    game.movePlayer(dx, dy, false, false);
+    game.setPlayerCollision(true);
+  } else {
+    game.placeVehicle(vehicleId, currentMapName, playerInfo.x, playerInfo.y);
+  }
+  
+  game.setPlayerInVehicle(true, vehicleId);
+};
+
 game.getPlayerInfo = function() {
-  var evt = game.getPlayerInfoScala();
+  var evt = game.getPlayerEntityInfo();
   return {
     x : evt.x(),
     y : evt.y(),
@@ -116,7 +140,7 @@ game.getPlayerInfo = function() {
 };
 
 game.getEventInfo = function(id) {
-  var evt = game.getEventInfoScala(id);
+  var evt = game.getEventEntityInfo(id);
   return {
     x : evt.x(),
     y : evt.y(),

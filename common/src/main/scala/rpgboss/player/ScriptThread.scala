@@ -21,6 +21,7 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.mozilla.javascript.ContextFactory
 import rpgboss.model.PictureSlots
 import rpgboss.model.MusicSlots
+import rpgboss.model.Constants
 
 /**
  * Thread used to run a javascript script...
@@ -123,6 +124,7 @@ object ScriptHelper {
     putProperty("out", System.out)
 
     // Some models to be imported
+    putProperty("Constants", Constants)
     putProperty("MapLoc", MapLoc)
     putProperty("Transitions", Transitions)
     putProperty("Keys", MyKeys)
@@ -143,6 +145,18 @@ object ScriptHelper {
 }
 
 class ScriptThreadFactory(scriptInterface: ScriptInterface) {
+  def runFunction(fnToRun: String = "") = {
+    val s = new ScriptThread(
+    scriptInterface,
+    scriptName = fnToRun,
+    scriptBody = "",
+    fnToRun)
+
+    assert(scriptInterface.onBoundThread(),
+        "Scripts should not spawn new threads when calling other scripts.")
+    s.runOnNewThread()
+  }
+
   def runFromFile(
     scriptName: String,
     fnToRun: String = "",

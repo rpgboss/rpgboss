@@ -27,6 +27,12 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
 
   override def isPlayer = true
 
+  var _collisionOn = true
+  override def collisionOn = _collisionOn
+  private var _inVehicleId: Int = -1
+  override def inVehicle = _inVehicleId >= 0
+  override def inVehicleId = _inVehicleId
+
   // Add input handling
   mapScreen.inputs.prepend(this)
 
@@ -45,6 +51,16 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
       setSprite(spritespec)
     } else {
       setSprite(None)
+    }
+  }
+
+  def setInVehicle(inVehicle: Boolean, vehicleId: Int): Unit = {
+    if (inVehicle) {
+      _inVehicleId = vehicleId
+      setSprite(None)
+    } else {
+      _inVehicleId = -1
+      updateSprite()
     }
   }
 
@@ -105,24 +121,28 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
     import MyKeys._
     // Handle BUTTON interaction
     if (key == OK) {
-      // Get the direction unit vector
-      val (ux, uy) = dir match {
-        case SpriteSpec.Directions.NORTH => (0f, -1f)
-        case SpriteSpec.Directions.SOUTH => (0f, 1f)
-        case SpriteSpec.Directions.EAST => (1f, 0f)
-        case SpriteSpec.Directions.WEST => (-1f, 0f)
+      if (inVehicle) {
+        println("Land!")
+      } else {
+        // Get the direction unit vector
+        val (ux, uy) = dir match {
+          case SpriteSpec.Directions.NORTH => (0f, -1f)
+          case SpriteSpec.Directions.SOUTH => (0f, 1f)
+          case SpriteSpec.Directions.EAST => (1f, 0f)
+          case SpriteSpec.Directions.WEST => (-1f, 0f)
+        }
+
+        val checkDist = 0.4f // Distance to check for key activation
+
+        val activatedEvts =
+          getAllEventTouches(ux * checkDist, uy * checkDist)
+            .filter(_.trigger == EventTrigger.BUTTON.id)
+
+        if (!activatedEvts.isEmpty) {
+          closest(activatedEvts, ux, uy).activate(dir)
+        }
       }
-
-      val checkDist = 0.4f // Distance to check for key activation
-
-      val activatedEvts =
-        getAllEventTouches(ux * checkDist, uy * checkDist)
-          .filter(_.trigger == EventTrigger.BUTTON.id)
-
-      if (!activatedEvts.isEmpty) {
-        closest(activatedEvts, ux, uy).activate(dir)
-      }
-    } else if (key == Cancel) {
+    } else if (key == Cancel && !inVehicle) {
       if (!menuActive) {
         menuActive = true
         mapScreen.scriptFactory.runFromFile("sys/menu.js",

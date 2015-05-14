@@ -100,6 +100,7 @@ object EventCmdUI {
     MoveEventUI,
     OpenStoreUI,
     OverrideMapBattleSettingsUI,
+    PlaceVehicleUI,
     PlayAnimationUI,
     PlayMusicUI,
     PlaySoundUI,
@@ -549,6 +550,23 @@ object OverrideMapBattleSettingsUI extends EventCmdUI[OverrideMapBattleSettings]
     owner: Window, sm: StateMaster, mapName: Option[String],
     model: OverrideMapBattleSettings) = List(
     BooleanField(getMessage("Random_Encounters_On"), model.randomEncountersOn))
+}
+
+object PlaceVehicleUI extends EventCmdUI[PlaceVehicle] {
+  override def category = Movement
+  override def title = getMessage("Place_Vehicle")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String],
+                               model: PlaceVehicle) = Seq(
+    EventField(getMessage("Destination"),
+      new MapLocPanel(owner, sm, model.loc, false)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: PlaceVehicle) = Seq(
+    IntEnumIdField(getMessage("Vehicle"), sm.getProjData.vehicles,
+      model.vehicleId))
+  override def newInstance(eventLoc: Option[MapLoc]) =
+    PlaceVehicle(IntParameter(0), eventLoc.getOrElse(MapLoc()))
 }
 
 object PlayAnimationUI extends EventCmdUI[PlayAnimation] {

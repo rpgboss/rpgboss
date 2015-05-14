@@ -69,17 +69,13 @@ class MoveSpec extends UnitSpec {
         scriptInterface.teleport(mapName, 0.5f, 0.5f)
         scriptInterface.activateEvent(1, true)
 
-        val entityInfoOpt = scriptInterface.getEventEntityInfo(1)
+        val entityInfo = scriptInterface.getEventEntityInfo(1)
 
         waiter {
           val epsilon = 0.05f
 
-          entityInfoOpt.isDefined should equal (true)
-
-          entityInfoOpt map { e =>
-            e.x should be (2f +- epsilon)
-            e.y should be (4f +- epsilon)
-          }
+          entityInfo.x should be (2f +- epsilon)
+          entityInfo.y should be (4f +- epsilon)
         }
       }
     }

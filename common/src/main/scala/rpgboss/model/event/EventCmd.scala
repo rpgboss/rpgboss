@@ -501,10 +501,13 @@ case class OpenStore(
 }
 
 case class PlaceVehicle(
-    vehicleId: IntParameter = IntParameter(0),
-    loc: MapLoc = MapLoc()) extends EventCmd {
+  vehicleId: IntParameter = IntParameter(0),
+  loc: MapLoc = MapLoc()) extends EventCmd {
   def sections =
     singleCall("game.placeVehicle", vehicleId, loc.map, loc.x, loc.y)
+
+  override def getParameters() =
+    List(vehicleId)
 }
 
 case class OverrideMapBattleSettings(

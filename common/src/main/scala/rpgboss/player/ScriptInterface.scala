@@ -210,6 +210,19 @@ class ScriptInterface(
     persistent.setLoc(VEHICLE_LOC(vehicleId), loc)
   }
 
+  def setPlayerInVehicle(inVehicle: Boolean, vehicleId: Int) = syncRun {
+    mapScreen.playerEntity.setInVehicle(inVehicle, vehicleId)
+  }
+
+  def vehicleExit() = syncRun {
+    val playerEntity = mapScreen.playerEntity
+    assert(playerEntity.inVehicle)
+    persistent.setLoc(
+      VEHICLE_LOC(playerEntity.inVehicleId),
+      MapLoc(playerEntity.mapName.get, playerEntity.x, playerEntity.y))
+    playerEntity.setInVehicle(false, -1)
+  }
+
   /**
    * Moves the map camera.
    */
@@ -292,44 +305,6 @@ class ScriptInterface(
     game.battleScreen.finishChannel.read
   }
 
-  def getEventInfoScala(id: Int): EntityInfo = {
-    var x = 0
-    var y = 0
-    var dir = 0
-    var screenX = 0
-    var screenY = 0
-    var screenTopLeftX = 0
-    var screenTopLeftY = 0
-    var width = 0
-    var height = 0
-    getEventEntityInfo(id).map { info =>
-      dir = info.dir
-      x = info.x.toInt
-      y = info.y.toInt
-      screenX = info.screenX.toInt
-      screenY = info.screenY.toInt
-      screenTopLeftX = info.screenTopLeftX.toInt
-      screenTopLeftY = info.screenTopLeftY.toInt
-      width = info.width.toInt
-      height = info.height.toInt
-    }
-
-    return EntityInfo(x, y, dir, screenX, screenY, screenTopLeftX, screenTopLeftY, width, height)
-  }
-
-  def getPlayerInfoScala(): EntityInfo = {
-    var x = getPlayerEntityInfo.x.toInt
-    var y = getPlayerEntityInfo.y.toInt
-    var dir = getPlayerEntityInfo.dir.toInt
-    var screenX = getPlayerEntityInfo.screenX.toInt
-    var screenY = getPlayerEntityInfo.screenY.toInt
-    var screenTopLeftX = getPlayerEntityInfo.screenTopLeftX.toInt
-    var screenTopLeftY = getPlayerEntityInfo.screenTopLeftY.toInt
-    var width = getPlayerEntityInfo.width.toInt
-    var height = getPlayerEntityInfo.height.toInt
-    return EntityInfo(x, y, dir, screenX, screenY, screenTopLeftX, screenTopLeftY, width, height)
-  }
-
   def setTimer(time: Int) = {
     setInt("timer", time)
   }
@@ -337,27 +312,6 @@ class ScriptInterface(
   def clearTimer() = {
     // set it way below 0 to does not make problems with conditions
     setInt("timer", -5000)
-  }
-
-  def moveTowardsPlayer(eventId: Int) = syncRun {
-    var playerX = getPlayerInfoScala().x
-    var playerY = getPlayerInfoScala().y
-    var eventX = getEventInfoScala(eventId).x
-    var eventY = getEventInfoScala(eventId).y
-
-    // TODO: Realize a wall is infront of the event
-
-    if (eventX < playerX) {
-      moveEvent(eventId, 1, 0, false, false);
-    } else if (eventY < playerY) {
-      moveEvent(eventId, 0, 1, false, false);
-    } else if (eventX > playerX) {
-      moveEvent(eventId, -1, 0, false, false);
-    } else if (eventY > playerY) {
-      moveEvent(eventId, 0, -1, false, false);
-    }
-
-    sleep(0.5f)
   }
 
   def endBattleBackToMap() = {
@@ -611,8 +565,8 @@ class ScriptInterface(
     mapScreen.getPlayerEntityInfo()
   }
 
-  def getEventEntityInfo(id: Int): Option[EntityInfo] = {
-    mapScreen.allEntities.get(id).map(EntityInfo.apply(_, mapScreen))
+  def getEventEntityInfo(id: Int): EntityInfo = {
+    mapScreen.allEntities.get(id).map(EntityInfo.apply(_, mapScreen)).orNull
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {
@@ -647,6 +601,10 @@ class ScriptInterface(
     }
     if (move != null && !async)
       move.awaitFinish()
+  }
+
+  def setPlayerCollision(collisionOn: Boolean) = syncRun {
+    mapScreen.playerEntity._collisionOn = collisionOn
   }
 
   def setEventSpeed(id: Int, speed: Float) = syncRun {
@@ -946,6 +904,14 @@ class ScriptInterface(
     val array = persistent.getStringArray(key)
     array.update(index, value)
     persistent.setStringArray(key, array)
+  }
+
+  def getLoc(key: String) = syncRun {
+    persistent.getLoc(key)
+  }
+
+  def setLoc(key: String, loc: MapLoc) = syncRun {
+    persistent.setLoc(key, loc)
   }
 
   def getCharacterName(characterId: Int) = syncRun {
