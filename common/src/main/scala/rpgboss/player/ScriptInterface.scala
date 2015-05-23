@@ -214,15 +214,6 @@ class ScriptInterface(
     mapScreen.playerEntity.setInVehicle(inVehicle, vehicleId)
   }
 
-  def vehicleExit() = syncRun {
-    val playerEntity = mapScreen.playerEntity
-    assert(playerEntity.inVehicle)
-    persistent.setLoc(
-      VEHICLE_LOC(playerEntity.inVehicleId),
-      MapLoc(playerEntity.mapName.get, playerEntity.x, playerEntity.y))
-    playerEntity.setInVehicle(false, -1)
-  }
-
   /**
    * Moves the map camera.
    */
@@ -601,6 +592,32 @@ class ScriptInterface(
     }
     if (move != null && !async)
       move.awaitFinish()
+  }
+
+  /**
+   * Returns true if succeeds.
+   */
+  def exitVehicle(): Boolean = {
+    def playerEntity = mapScreen.playerEntity
+    val (ux, uy) = playerEntity.getDirectionUnitVector()
+    for (i <- 0 to 10) {
+      val dx = ux * i * 0.1f
+      val dy = uy * i * 0.1f
+      if (playerEntity.canStandAt(dx, dy)) {
+        syncRun {
+          setLoc(
+              VEHICLE_LOC(playerEntity.inVehicleId),
+              MapLoc(playerEntity.mapName.get, playerEntity.x, playerEntity.y))
+          playerEntity.setInVehicle(false, -1)
+        }
+        setPlayerCollision(false)
+        movePlayer(dx, dy)
+        setPlayerCollision(true)
+        return true
+      }
+    }
+
+    return false
   }
 
   def setPlayerCollision(collisionOn: Boolean) = syncRun {

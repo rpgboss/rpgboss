@@ -221,11 +221,8 @@ class MapAndAssets(
    *                                there is no suggested rerouting.
    */
   def getCollisions(entity: Entity, x: Float, y: Float, dx: Float,
-                    dy: Float): (Boolean, Int) = {
+                    dy: Float, inVehicle: Boolean): (Boolean, Int) = {
     if (!entity.collisionOn)
-      return (false, 0)
-
-    if (dx == 0 && dy == 0)
       return (false, 0)
 
     val box = entity.getBoundingBox().offsetted(dx, dy)
@@ -252,7 +249,7 @@ class MapAndAssets(
     def processTile(xTile: Int, yTile: Int, dir: Int,
                     rerouteSign: Int): Unit = {
       val blockedDirs =
-        if (entity.inVehicle)
+        if (inVehicle)
           getVehicleBlockedDirsOf(xTile, yTile, entity.inVehicleId)
         else
           getBlockedDirsOf(xTile, yTile)

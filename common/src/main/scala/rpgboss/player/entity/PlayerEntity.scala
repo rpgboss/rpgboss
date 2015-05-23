@@ -122,16 +122,10 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
     // Handle BUTTON interaction
     if (key == OK) {
       if (inVehicle) {
-        println("Land!")
+        Some(game.mapScreen.scriptFactory.runFunction(
+            "game.exitVehicle();"))
       } else {
-        // Get the direction unit vector
-        val (ux, uy) = dir match {
-          case SpriteSpec.Directions.NORTH => (0f, -1f)
-          case SpriteSpec.Directions.SOUTH => (0f, 1f)
-          case SpriteSpec.Directions.EAST => (1f, 0f)
-          case SpriteSpec.Directions.WEST => (-1f, 0f)
-        }
-
+        val (ux, uy) = getDirectionUnitVector()
         val checkDist = 0.4f // Distance to check for key activation
 
         val activatedEvts =
