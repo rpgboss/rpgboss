@@ -268,7 +268,7 @@ object CommentUI extends EventCmdUI[Comment] {
 
 object EquipItemUI extends EventCmdUI[EquipItem] {
   override def category = Inventory
-  override def title = needsTranslation("Equip_Item")
+  override def title = getMessage("Equip_Item")
 
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: EquipItem) = Seq(
@@ -351,13 +351,13 @@ object GetChoiceUI extends EventCmdUI[GetChoice] {
 
 object GiveExperienceUI extends EventCmdUI[GiveExperience] {
   override def category = Party
-  override def title = needsTranslation("Give_Experience")
+  override def title = getMessage("Give_Experience")
 
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: GiveExperience) = Seq(
     EventField("", boolField(getMessage("Whole_Party"), model.wholeParty,
         model.wholeParty = _)),
-    EventField("", boolField(needsTranslation("Show_Notifications"),
+    EventField("", boolField(getMessage("Show_Notifications"),
         model.showNotifications, model.showNotifications = _)))
   override def getParameterFields(
     owner: Window, sm: StateMaster, mapName: Option[String], model: GiveExperience) = List(
@@ -462,14 +462,14 @@ object GetKeyInputUI extends EventCmdUI[GetKeyInput] {
   import rpgboss.model.HasName._
 
   override def category = Input
-  override def title = needsTranslation("Get_Key_Input")
+  override def title = getMessage("Get_Key_Input")
   override def getNormalFields(owner: Window, sm: StateMaster,
                                mapName: Option[String], model: GetKeyInput) = Seq(
     EventField(
       getMessage("Global_Variable_Name"),
       textField(model.storeInVariable, model.storeInVariable = _)),
     EventField("",
-      new ArrayMultiselectPanel(owner, needsTranslation("Keys"),
+      new ArrayMultiselectPanel(owner, getMessage("Keys"),
         MyKeysEnum.keysNames, model.capturedKeys, model.capturedKeys = _) {
         preferredSize = new Dimension(200, 200)
       }))
@@ -479,7 +479,7 @@ object GetNumberInputUI extends EventCmdUI[GetNumberInput] {
   import rpgboss.model.HasName._
 
   override def category = Input
-  override def title = needsTranslation("Get_Number_Input")
+  override def title = getMessage("Get_Number_Input")
   override def getNormalFields(owner: Window, sm: StateMaster,
                                mapName: Option[String],
                                model: GetNumberInput) = Seq(
@@ -500,7 +500,7 @@ object GetStringInputUI extends EventCmdUI[GetStringInput] {
   import rpgboss.model.HasName._
 
   override def category = Input
-  override def title = needsTranslation("Get_String_Input")
+  override def title = getMessage("Get_String_Input")
   override def getNormalFields(owner: Window, sm: StateMaster,
                                mapName: Option[String],
                                model: GetStringInput) = Seq(
@@ -644,7 +644,7 @@ object PlaySoundUI extends EventCmdUI[PlaySound] {
 
 object ReturnUI extends EventCmdUI[Return] {
   override def category = Programming
-  override def title = needsTranslation("Return/Exit Script")
+  override def title = getMessage("Return/Exit_Script")
 }
 
 object RunJsUI extends EventCmdUI[RunJs] {
@@ -734,7 +734,7 @@ object SetGlobalIntUI extends EventCmdUI[SetGlobalInt] {
 
 object SetCharacterLevelUI extends EventCmdUI[SetCharacterLevel] {
   override def category = Party
-  override def title = needsTranslation("Set_Character_Level")
+  override def title = getMessage("Set_Character_Level")
 
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String],
@@ -751,7 +751,7 @@ object SetCharacterLevelUI extends EventCmdUI[SetCharacterLevel] {
 
 object SetCharacterNameUI extends EventCmdUI[SetCharacterName] {
   override def category = Party
-  override def title = needsTranslation("Set_Character_Name")
+  override def title = getMessage("Set_Character_Name")
 
   override def getNormalFields(
     owner: Window, sm: StateMaster, mapName: Option[String],
