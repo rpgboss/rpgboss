@@ -72,7 +72,7 @@ object MyKeysEnum extends Enumeration {
   val Special1 = Value(6, "Special1")
   val Special2 = Value(7, "Special2")
   val Start = Value(8, "Start")
-  val Select = Value(8, "Select")
+  val Select = Value(9, "Select")
 
   def keysNames = values.toArray.map { value =>
     rpgboss.model.HasName.StringToHasName(value.toString())
