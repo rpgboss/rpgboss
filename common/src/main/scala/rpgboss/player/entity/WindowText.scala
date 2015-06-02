@@ -3,7 +3,7 @@ package rpgboss.player.entity
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import rpgboss.lib.Rect
@@ -12,6 +12,7 @@ import rpgboss.model.resource.Windowskin
 import rpgboss.player.PersistentState
 import rpgboss.player.ScriptInterfaceConstants
 import scala.collection.mutable.ArrayBuffer
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 
 object WindowText {
   val colorCtrl = """\\[Cc]\[(\d+)\]""".r
@@ -89,12 +90,12 @@ class WindowText(
 
     // Force left-aligned if color codes exist, as we can't draw the
     val fontAlign = if (colorCodesExist) {
-      HAlignment.LEFT
+      Align.left
     } else {
       justification match {
-        case Window.Left   => HAlignment.LEFT
-        case Window.Center => HAlignment.CENTER
-        case Window.Right  => HAlignment.RIGHT
+        case Window.Left   => Align.left
+        case Window.Center => Align.center
+        case Window.Right  => Align.right
       }
     }
 
@@ -111,9 +112,9 @@ class WindowText(
 
 
       // Draw Shadow
-      val textBounds = fontbmp.drawMultiLine(b, textToPrintNow, xStart,
+      val textBounds = fontbmp.draw(b, textToPrintNow, xStart,
         rect.top + yOffset,
-        rect.w, fontAlign)
+        rect.w, fontAlign, true)
 
       // Set color to the desired one...
       rMatchOption.map { rMatch =>
@@ -210,9 +211,15 @@ class PrintingWindowText(
 
     val wrappedLines = new ArrayBuffer[String]
 
+    val glyphLayout = new GlyphLayout
+
     for (line <- processedText) {
+      def widthF(s: String) = {
+        glyphLayout.setText(fontbmp, line)
+        glyphLayout.width
+      }
       wrappedLines ++= PrintingWindowText.wrapLine(
-          line, rect.w, fontbmp.getBounds(_).width)
+          line, rect.w, widthF)
     }
 
     wrappedLines.toArray

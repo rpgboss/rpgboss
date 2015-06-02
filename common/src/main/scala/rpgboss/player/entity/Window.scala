@@ -1,8 +1,8 @@
 package rpgboss.player.entity
 
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.Color
@@ -29,8 +29,14 @@ object Window {
   val Right = 2
 
   def maxWidth(lines: Array[String], fontbmp: BitmapFont, xPadding: Int) = {
-    val linesWidth =
-      if (lines.isEmpty) 0 else lines.map(fontbmp.getBounds(_).width).max
+    val glyphLayout = new GlyphLayout
+
+    val widths = lines.map { line =>
+      glyphLayout.setText(fontbmp, line)
+      glyphLayout.width
+    }
+
+    val linesWidth = if (widths.isEmpty) 0 else widths.max
     linesWidth + 2 * xPadding
   }
 }
