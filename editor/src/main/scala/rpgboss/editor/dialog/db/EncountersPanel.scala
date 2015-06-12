@@ -23,8 +23,8 @@ import rpgboss.model.battle.PartyParameters
 import rpgboss.editor.Internationalized._
 
 object EncounterFieldGdxPanel {
-  val width = 640
-  val height = 320
+  val width = 320
+  val height = 160
 }
 
 class EncounterFieldGdxPanel(project: Project, initial: Encounter)
@@ -70,7 +70,9 @@ class EncounterFieldGdxPanel(project: Project, initial: Encounter)
         atlasSprites,
         project,
         EncounterFieldGdxPanel.width,
-        EncounterFieldGdxPanel.height)
+        EncounterFieldGdxPanel.height) {
+        override def drawScale = 0.5f
+      }
 
       // Start visible
       battleScreen.windowManager.transitionAlpha = 0
@@ -204,14 +206,15 @@ class EncountersPanel(
             .grid(lbl(needsTranslationColon("Escape Chance")))
             .add(fEscapeChance)
         }
+      }
+      contents += new BoxPanel(Orientation.Vertical) {
         contents += fDisplay
-      }
-      contents += new BoxPanel(Orientation.Vertical) {
-        contents += btnAdd
-        contents += btnRemove
-      }
-      contents += new BoxPanel(Orientation.Vertical) {
-        contents += leftLabel(getMessageColon("Enemies"))
+
+        contents += new BoxPanel(Orientation.Horizontal) {
+          contents += btnAdd
+          contents += btnRemove
+        }
+
         contents += new ScrollPane(fEnemySelector) {
           preferredSize = new Dimension(200, 120)
         }

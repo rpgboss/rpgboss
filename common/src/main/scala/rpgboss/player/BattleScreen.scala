@@ -36,6 +36,8 @@ class BattleScreen(
 
   val logger = new Logger("BatleScreen", Logger.INFO)
 
+  def drawScale = 1.0f
+
   /**
    * Read this channel to await a battle being finished.
    */
@@ -413,11 +415,13 @@ class BattleScreen(
       enemy.battler.map { battlerSpec =>
         val battler = Battler.readFromDisk(project, battlerSpec.name)
 
-        val battlerWidth = (battler.img.getWidth() * battlerSpec.scale).toInt
-        val battlerHeight = (battler.img.getHeight() * battlerSpec.scale).toInt
+        val battlerWidth =
+          (battler.img.getWidth() * battlerSpec.scale * drawScale).toInt
+        val battlerHeight =
+          (battler.img.getHeight() * battlerSpec.scale * drawScale).toInt
 
-        val unitL = unit.x - battlerWidth / 2
-        val unitT = unit.y - battlerHeight / 2
+        val unitL = unit.x * drawScale - battlerWidth / 2
+        val unitT = unit.y * drawScale - battlerHeight / 2
 
         val layout =
           Layout(NORTHWEST, FIXED, battlerWidth, battlerHeight, unitL, unitT)
@@ -434,13 +438,13 @@ class BattleScreen(
     for ((partyId, i) <- battle.partyIds.zipWithIndex) {
       val character = project.data.enums.characters(partyId)
       character.sprite.map { spriteSpec =>
-        val x = 10 * i + 550
-        val y = 20 * i + 180
+        val x = (10 * i + 550) * drawScale
+        val y = (20 * i + 180) * drawScale
 
         val spriteset = Spriteset.readFromDisk(project, spriteSpec.name)
 
-        val w = spriteset.tileW.toFloat
-        val h = spriteset.tileH.toFloat
+        val w = spriteset.tileW.toFloat * drawScale
+        val h = spriteset.tileH.toFloat * drawScale
 
         val (srcX, srcY) = spriteset.srcTexels(
           spriteSpec.spriteIndex,
