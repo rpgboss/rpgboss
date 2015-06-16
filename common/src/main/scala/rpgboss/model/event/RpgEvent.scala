@@ -75,7 +75,7 @@ case class RpgEventState(
   var animationType: Int = AnimationType.NONE.id,
   var runOnceThenIncrementState: Boolean = false,
 
-  var cmds: Array[EventCmd] = RpgEventState.defaultCmds) {
+  var cmds: Array[EventCmd] = Array()) {
 
   def distinctChars = {
     val set = new DistinctCharacterSet
@@ -103,8 +103,4 @@ case class RpgEventState(
     newState
   }
   def copyAll() = Utils.deepCopy(this)
-}
-
-object RpgEventState {
-  def defaultCmds: Array[EventCmd] = Array()
 }

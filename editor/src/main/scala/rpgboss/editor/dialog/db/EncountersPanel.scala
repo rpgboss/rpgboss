@@ -21,6 +21,8 @@ import rpgboss.model.battle.Battle
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import rpgboss.model.battle.PartyParameters
 import rpgboss.editor.Internationalized._
+import rpgboss.model.EncounterEvent
+import rpgboss.model.EncounterEventMaxFrequency
 
 object EncounterFieldGdxPanel {
   val width = 320
@@ -206,6 +208,9 @@ class EncountersPanel(
             .grid(lbl(needsTranslationColon("Escape Chance")))
             .add(fEscapeChance)
         }
+
+        contents +=
+          new EncounterEventArrayPanel(dbDiag, model.events, model.events = _)
       }
       contents += new BoxPanel(Orientation.Vertical) {
         contents += fDisplay
@@ -230,4 +235,34 @@ class EncountersPanel(
   override def onListDataUpdate() = {
     dbDiag.model.enums.encounters = dataAsArray
   }
+}
+
+class EncounterEventArrayPanel(
+    dbDiag: DatabaseDialog,
+    initial: Array[EncounterEvent],
+    onUpdate: Array[EncounterEvent] => Unit)
+  extends InlineWidgetArrayEditor(dbDiag, initial, onUpdate) {
+  override def title = getMessage("Events")
+  override def addAction(index: Int) = insertElement(index, EncounterEvent())
+  override def newInlineWidget(model: EncounterEvent) =
+    new EncounterEventPanel(dbDiag, model, sendUpdate)
+}
+
+/**
+ * Updates model in-place.
+ */
+class EncounterEventPanel(
+  dbDiag: DatabaseDialog,
+  initial: EncounterEvent,
+  onUpdate: () => Unit)
+  extends DesignGridPanel {
+  val model = initial
+
+  val fMaxFrequency = enumIdCombo(EncounterEventMaxFrequency)(
+    model.maxFrequency, v => {
+      model.maxFrequency = v
+      onUpdate()
+    })
+
+  row().grid(lbl(getMessageColon("Max_Frequency"))).add(fMaxFrequency)
 }

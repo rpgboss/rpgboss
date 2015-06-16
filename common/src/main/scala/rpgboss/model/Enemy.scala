@@ -1,5 +1,8 @@
 package rpgboss.model
 
+import rpgboss.model.event.EventCmd
+import rpgboss.model.event.Condition
+
 case class ItemDrop(var itemId: Int = 0, var chance: Float = 0.1f)
 
 case class Enemy(
@@ -46,7 +49,21 @@ case class Encounter(
   var name: String = "",
   var units: Array[EncounterUnit] = Array(),
   var canEscape: Boolean = true,
-  var escapeChance: Float = 0.7f) extends HasName
+  var escapeChance: Float = 0.7f,
+  var events: Array[EncounterEvent] = Array()) extends HasName
+
+case class EncounterEvent(
+  var conditions: Array[Condition] = Array(),
+  var cmds: Array[EventCmd] = Array(),
+  var maxFrequency: Int = EncounterEventMaxFrequency.default.id)
+
+object EncounterEventMaxFrequency extends RpgEnum {
+  val NONE = Value(0, "None")
+  val ONCE_PER_BATTLE = Value(1, "Once_per_battle")
+  val ONCE_PER_TURN = Value(2, "Once_per_turn")
+
+  def default = NONE
+}
 
 object Encounter {
   def getEnemyLabels(
