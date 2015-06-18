@@ -255,14 +255,60 @@ class EncounterEventPanel(
   dbDiag: DatabaseDialog,
   initial: EncounterEvent,
   onUpdate: () => Unit)
-  extends DesignGridPanel {
+  extends BoxPanel(Orientation.Vertical) {
   val model = initial
 
-  val fMaxFrequency = enumIdCombo(EncounterEventMaxFrequency)(
-    model.maxFrequency, v => {
-      model.maxFrequency = v
-      onUpdate()
-    })
+  contents += lbl("Encounter Event")
+  contents += new Button(Action(getMessage("Edit ...")) {
+    val d = new EncounterEventDialog(dbDiag, dbDiag.stateMaster, model)
+    d.open()
+  })
+}
 
-  row().grid(lbl(getMessageColon("Max_Frequency"))).add(fMaxFrequency)
+class EncounterEventDialog(
+  owner: Window,
+  sm: StateMaster,
+  model: EncounterEvent)
+  extends StdDialog(owner, getMessageColon("Edit Encounter Event")) {
+
+  centerDialog(new Dimension(600, 600))
+
+  def okFunc() = {
+    close()
+  }
+
+  val fMaxFrequency = enumIdCombo(EncounterEventMaxFrequency)(
+    model.maxFrequency, model.maxFrequency = _)
+
+  val commandBox = new CommandBox(
+    owner,
+    sm,
+    None,
+    model.cmds,
+    model.cmds = _,
+    inner = false)
+
+  contents = new BoxPanel(Orientation.Vertical) {
+    contents += new BoxPanel(Orientation.Horizontal) {
+      contents += new BoxPanel(Orientation.Vertical) {
+        contents += lbl(getMessageColon("Max_Frequency"))
+        contents += fMaxFrequency
+
+        contents += new ConditionsPanel(
+          owner, sm.getProjData, model.conditions, model.conditions = _)
+      }
+
+      contents += new DesignGridPanel {
+        row.grid.add(leftLabel(getMessageColon("Commands")))
+        row.grid.add(new ScrollPane {
+          preferredSize = new Dimension(400, 400)
+          contents = commandBox
+        })
+      }
+    }
+
+    contents += new DesignGridPanel {
+      row().bar().add(okBtn, Tag.OK)
+    }
+  }
 }

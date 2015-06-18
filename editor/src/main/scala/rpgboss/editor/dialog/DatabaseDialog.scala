@@ -43,6 +43,8 @@ class DatabaseDialog(owner: Window, sm: StateMaster)
          skillsPane, statusPane, animationsPane, eventClassesPane, sysPane,
          enumPane, messagesPane, vehiclesPane)
 
+  def stateMaster = sm
+
   def applyFunc() = {
     sm.setProjData(model)
   }
