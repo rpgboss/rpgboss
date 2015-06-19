@@ -157,7 +157,7 @@ class EncountersPanel(
     updateFields()
 
     val fCanEscape = boolField(
-      needsTranslation("Can Escape"), model.canEscape, model.canEscape = _,
+      getMessage("Can_Escape"), model.canEscape, model.canEscape = _,
       Some(updateFields))
 
     def regenerateName(): Unit = {
@@ -205,7 +205,7 @@ class EncountersPanel(
           row().grid(lbl(getMessageColon("Encounter_Name"))).add(fName)
           row().grid().add(fCanEscape)
           row()
-            .grid(lbl(needsTranslationColon("Escape Chance")))
+            .grid(lbl(getMessageColon("Escape_Chance")))
             .add(fEscapeChance)
         }
 
@@ -259,7 +259,7 @@ class EncounterEventPanel(
   val model = initial
 
   contents += lbl("Encounter Event")
-  contents += new Button(Action(getMessage("Edit ...")) {
+  contents += new Button(Action(getMessage("Edit")) {
     val d = new EncounterEventDialog(dbDiag, dbDiag.stateMaster, model)
     d.open()
   })
@@ -269,7 +269,7 @@ class EncounterEventDialog(
   owner: Window,
   sm: StateMaster,
   model: EncounterEvent)
-  extends StdDialog(owner, getMessageColon("Edit Encounter Event")) {
+  extends StdDialog(owner, getMessageColon("Edit_Encounter_Event")) {
 
   centerDialog(new Dimension(600, 600))
 
