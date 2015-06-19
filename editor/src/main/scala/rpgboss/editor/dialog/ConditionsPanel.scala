@@ -81,6 +81,20 @@ class ConditionsPanel(
                       "", pData.enums.characters, element.intValue1,
                        Some(sendUpdate)))
               contents += lbl(getMessage("IS_In_The_Party"))
+            case EnemyLifePercentage =>
+              contents += lbl("Enemy_Index")
+              contents += new ParameterFullComponent(
+                  owner, EventParameterField.IntNumberField(
+                      getMessage("Enemy_Index"), 0, 15, element.intValue1,
+                      Some(sendUpdate)))
+              contents += lbl(getMessage("Life") + " " + getMessage("IS") + " ")
+              contents += enumIdCombo(ComparisonOperator)(
+                  element.operatorId, element.operatorId = _,
+                  additionalAction = Some(sendUpdate),
+                  customRenderer = Some(_.jsOperator))
+              contents += new ParameterFullComponent(
+                  owner, EventParameterField.IntPercentField(
+                      "", 0, 100, element.intValue2, Some(sendUpdate)))
           }
         }
       }

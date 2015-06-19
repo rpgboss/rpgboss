@@ -220,4 +220,31 @@ class ScriptThreadFactory(scriptInterface: ScriptInterface) {
     s.runOnNewThread()
     s
   }
+
+  def runFromCommandList(
+    scriptName: String,
+    cmds: Array[EventCmd],
+    onFinish: Option[() => Unit] = None) = {
+
+    val commandScriptBody = cmds.flatMap(_.toJs).mkString("\n")
+    val scriptBody =
+      """
+      function commandListScript() {
+        %s
+      }
+      commandListScript();
+      """.format(commandScriptBody)
+    val s = new ScriptThread(
+      scriptInterface,
+      scriptName,
+      scriptBody,
+      "",
+      onFinish) {
+      override def extraInitScope(jsScope: ScriptableObject) = {
+        super.extraInitScope(jsScope)
+      }
+    }
+    s.runOnNewThread()
+    s
+  }
 }

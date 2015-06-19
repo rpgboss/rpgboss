@@ -29,6 +29,7 @@ object ConditionType extends RpgEnum {
   val NumericComparison = Value(1)
   val HasItemsInInventory = Value(2)
   val HasCharacterInParty = Value(3)
+  val EnemyLifePercentage = Value(4)
 
   def default = IsTrue
 }
@@ -57,6 +58,11 @@ case class Condition(
       case HasCharacterInParty =>
         RawJs("""game.getIntArray(game.PARTY()).indexOf(%s) != -1""".format(
             intValue1.rawJs.exp))
+      case EnemyLifePercentage =>
+        applyOperator(
+            jsCall("game.getEnemyLifePercentage", intValue1),
+            ComparisonOperator(operatorId).jsOperator,
+            intValue2.rawJs)
     }
   }
 }
@@ -81,6 +87,12 @@ object Condition extends LazyLogging {
         Condition(
             HasCharacterInParty.id,
             IntParameter())
+      case EnemyLifePercentage =>
+        Condition(
+            EnemyLifePercentage.id,
+            IntParameter(0),
+            IntParameter(50),
+            operatorId = ComparisonOperator.LE.id)
     }
   }
 

@@ -13,6 +13,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Channel
+import rpgboss.model.event.Condition
 
 /**
  * This class must be created and accessed only on the Gdx thread.
@@ -33,6 +34,8 @@ class BattleScreen(
   assume(renderingOffForTesting || atlasSprites != null)
 
   val scriptInterface = gameOpt.map(new ScriptInterface(_, this)).orNull
+  val scriptFactory =
+    gameOpt.map(game => new ScriptThreadFactory(scriptInterface)).orNull
 
   val logger = new Logger("BatleScreen", Logger.INFO)
 
@@ -291,6 +294,8 @@ class BattleScreen(
   private def endBattleMessageTime = 2.0f
   private var _endBattleThreadStarted = false
 
+  private var _battleEventRunning = false
+
   private var enemyListWindow: PrintingTextWindow = null
   private var partyListWindow: PrintingTextWindow = null
 
@@ -319,6 +324,7 @@ class BattleScreen(
     }
   }
 
+  def battle = _battle
   def battleActive = _battle.isDefined
 
   val persistentState = gameOpt.map(_.persistent).getOrElse(new PersistentState)
@@ -476,6 +482,9 @@ class BattleScreen(
     assertOnBoundThread()
     assert(_battle.isDefined)
     _battle = None
+
+    _battleEventRunning = false
+
     _endBattleMessageTimer = 0
     _endBattleThreadStarted = false
 
@@ -499,12 +508,46 @@ class BattleScreen(
         stayOpenTime = stayOpenTime))
   }
 
+  def startBattleEvents(battle: Battle, delta: Float): Unit = {
+    if (_battleEventRunning || battle.encounter.events.isEmpty)
+      return
+
+    for ((event, i) <- battle.encounter.events.zipWithIndex) {
+      val couldStart =
+        EncounterEventMaxFrequency(event.maxFrequency) match {
+          case EncounterEventMaxFrequency.NONE => false
+          case EncounterEventMaxFrequency.ONCE_PER_BATTLE =>
+            battle.scriptLastExecuted(i) < 0
+          case EncounterEventMaxFrequency.ONCE_PER_TURN =>
+            battle.time - battle.scriptLastExecuted(i) >= battle.baseTurnTime
+          case EncounterEventMaxFrequency.ONCE_PER_FRAME =>
+            true
+        }
+
+      if (couldStart &&
+          Condition.allConditionsTrue(event.conditions, scriptInterface)) {
+        battle.scriptLastExecuted(i) = battle.time
+        _battleEventRunning = true
+        scriptFactory.runFromCommandList(
+          "battleEvent %d".format(i),
+          event.cmds,
+          Some(() => _battleEventRunning = false))
+        return
+      }
+    }
+  }
+
   def update(delta: Float): Unit = {
     import concurrent.ExecutionContext.Implicits.global
 
     // All these actions should not take place if this is an in-editor session.
     gameOpt map { game =>
       _battle.map { battle =>
+        startBattleEvents(battle, delta)
+
+        if (_battleEventRunning)
+          return
+
         // Handle defeat
         if (battle.state == Battle.DEFEAT) {
           if (_endBattleMessageTimer == 0) {

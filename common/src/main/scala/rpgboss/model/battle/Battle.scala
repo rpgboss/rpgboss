@@ -92,10 +92,13 @@ class Battle(
   require(encounter.units.forall(
     unit => unit.enemyIdx >= 0 && unit.enemyIdx < pData.enums.enemies.length))
 
-  private var time = 0.0
+  private var _time = 0.0f
+  def time = _time
 
   private var _state = Battle.ACTIVE
   def state = _state
+
+  var scriptLastExecuted = Array.fill(encounter.events.length)(Float.MinValue)
 
   private def _enemyDatas =
     enemyStatus.map(status => pData.enums.enemies.apply(status.entityId))
@@ -124,7 +127,7 @@ class Battle(
   /**
    * How many seconds it takes an actor with 0 speed to get a new turn.
    */
-  val baseTurnTime = 4.0
+  val baseTurnTime = 4.0f
 
   private var _notifications =
     collection.mutable.Queue[BattleActionNotification]()
@@ -232,14 +235,13 @@ class Battle(
       Some(aliveList.apply(util.Random.nextInt(aliveList.length)))
   }
 
-  def advanceTime(deltaSeconds: Double): Unit = {
+  def advanceTime(deltaSeconds: Float): Unit = {
     if (_state != Battle.ACTIVE)
       return
 
-    time += deltaSeconds
-
+    _time += deltaSeconds
     // TODO: This method is wrong, but right enough most of the time.
-    val ticked = (time % baseTurnTime) <= deltaSeconds
+    val ticked = (_time % baseTurnTime) <= deltaSeconds
 
     val statusEffectHits = for (status <- allStatus) yield {
       val pendingAction = actionQueue.exists(_.actor == status)

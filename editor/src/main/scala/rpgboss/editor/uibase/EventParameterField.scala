@@ -55,6 +55,15 @@ object EventParameterField {
         indexedCombo(choices, p.constant, p.constant = _, additionalAction)
     }
 
+  def IntPercentField(
+      name: String, min: Int, max: Int,
+      model: IntParameter,
+      additionalAction: Option[() => Unit] = None) =
+    new EventParameterField[Int](name, model) {
+      override def constantComponentFactory(p: EventParameter[Int]) =
+        percentIntField(min, max, p.constant, p.constant =_, additionalAction)
+    }
+
   def FloatField(
       name: String, min: Float, max: Float, model: FloatParameter) =
     new EventParameterField[Float](name, model) {

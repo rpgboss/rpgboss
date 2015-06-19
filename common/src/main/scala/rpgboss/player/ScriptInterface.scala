@@ -560,6 +560,26 @@ class ScriptInterface(
     mapScreen.allEntities.get(id).map(EntityInfo.apply(_, mapScreen)).orNull
   }
 
+  /**
+   * Returns -1 on error. Life percentage rounded to integer (0-100) otherwise.
+   */
+  def getEnemyLifePercentage(id: Int): Int = syncRun {
+    if (activeScreen != game.battleScreen)
+      return -1
+
+    game.battleScreen.battle.map { battle =>
+      if (id < battle.enemyStatus.length) {
+        val enemy = battle.enemyStatus(id)
+        val result = ((enemy.hp.toFloat / enemy.stats.mhp) * 100).round.toInt
+        assert(result >= 0)
+        assert(result <= 100)
+        result
+      } else {
+        -1
+      }
+    } getOrElse -1
+  }
+
   def activateEvent(id: Int, awaitFinish: Boolean) = {
     val eventOpt = mapScreen.allEntities.get(id)
 

@@ -61,6 +61,7 @@ object EncounterEventMaxFrequency extends RpgEnum {
   val NONE = Value(0, "None")
   val ONCE_PER_BATTLE = Value(1, "Once_per_battle")
   val ONCE_PER_TURN = Value(2, "Once_per_turn")
+  val ONCE_PER_FRAME = Value(3, "Once_per_frame")
 
   def default = NONE
 }

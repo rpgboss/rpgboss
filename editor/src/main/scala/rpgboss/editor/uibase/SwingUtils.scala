@@ -142,8 +142,10 @@ object SwingUtils {
   }
 
   def percentIntField(min: Int, max: Int, initial: Int,
-      onUpdate: Int => Unit) = {
-    val spinner = new NumberSpinner(min, max, initial, onUpdate)
+      onUpdate: Int => Unit,
+      additionalAction: Option[() => Unit] = None) = {
+    val spinner =
+      new NumberSpinner(min, max, initial, onUpdate, additionalAction)
 
     new BoxPanel(Orientation.Horizontal) {
       contents += spinner
