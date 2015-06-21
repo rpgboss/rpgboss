@@ -92,6 +92,7 @@ object EventCmd {
     classOf[RunJs],
     classOf[SetCameraFollow],
     classOf[SetCharacterName],
+    classOf[SetEnemyVitals],
     classOf[SetEventsEnabled],
     classOf[SetEventSpeed],
     classOf[SetEventState],
@@ -628,6 +629,16 @@ case class SetCharacterName(
   }
 
   override def getParameters = List(characterId, fixedValue)
+}
+
+case class SetEnemyVitals(
+  enemyId: IntParameter = IntParameter(),
+  hpPercentage: FloatParameter = FloatParameter(0.5f),
+  mpPercentage: FloatParameter = FloatParameter(0.5f)) extends EventCmd {
+  def sections =
+    singleCall("game.setEnemyVitals", enemyId, hpPercentage, mpPercentage)
+
+  override def getParameters = List(enemyId, hpPercentage, mpPercentage)
 }
 
 case class SetEventState(

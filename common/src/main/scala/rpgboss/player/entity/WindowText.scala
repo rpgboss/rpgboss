@@ -110,11 +110,10 @@ class WindowText(
       val rMatchOption = WindowText.colorCtrl.findFirstMatchIn(remainingText)
       val textToPrintNow = rMatchOption.map(_.before).getOrElse(remainingText)
 
-
       // Draw Shadow
       val textBounds = fontbmp.draw(b, textToPrintNow, xStart,
         rect.top + yOffset,
-        rect.w, fontAlign, true)
+        rect.w, fontAlign, false)
 
       // Set color to the desired one...
       rMatchOption.map { rMatch =>
@@ -209,20 +208,23 @@ class PrintingWindowText(
     val lineHeight = fontbmp.getLineHeight()
     val processedText = super.processText(text)
 
-    val wrappedLines = new ArrayBuffer[String]
+    if (options.wrapText) {
+      val wrappedLines = new ArrayBuffer[String]
 
-    val glyphLayout = new GlyphLayout
+      val glyphLayout = new GlyphLayout
 
-    for (line <- processedText) {
-      def widthF(s: String) = {
-        glyphLayout.setText(fontbmp, line)
-        glyphLayout.width
+      for (line <- processedText) {
+        def widthF(s: String) = {
+          glyphLayout.setText(fontbmp, s)
+          glyphLayout.width
+        }
+        wrappedLines ++= PrintingWindowText.wrapLine(
+            line, rect.w, widthF)
       }
-      wrappedLines ++= PrintingWindowText.wrapLine(
-          line, rect.w, widthF)
+      wrappedLines.toArray
+    } else {
+      processedText
     }
-
-    wrappedLines.toArray
   }
 
   def drawAwaitingArrow = true

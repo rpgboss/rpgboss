@@ -10,7 +10,7 @@ object Settings {
   lazy val common = Defaults.defaultSettings ++ Seq (
     fork := true, // For natives loading.
     version := "0.1",
-    scalaVersion := "2.11.5",
+    scalaVersion := "2.11.6",
     scalacOptions ++= List("-deprecation", "-unchecked"),
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     libraryDependencies ++= Seq(

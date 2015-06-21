@@ -333,6 +333,7 @@ case class PrintingTextWindowOptions(
   stayOpenTime: Float = 0,
   showArrow: Boolean = false,
   leftMargin: Float = 0,
+  wrapText: Boolean = true,
 
   useCustomFace: Boolean = false,
   faceset: String = "",

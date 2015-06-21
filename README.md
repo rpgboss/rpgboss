@@ -154,6 +154,9 @@ electric(3)
 http://www.tekepon.net/fsm/
 http://www.tekepon.net/fsm/modules/refmap/index.php?mode=rules
 
+Vehicles:
+Derived from: Art by DualR. Commissioned by OpenGameArt.org (http://opengameart.org)
+
 USE Internet Archieve for Dead website links!
 
 ### Battlers

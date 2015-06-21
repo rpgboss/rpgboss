@@ -109,6 +109,7 @@ object EventCmdUI {
     SetCameraFollowUI,
     SetCharacterLevelUI,
     SetCharacterNameUI,
+    SetEnemyVitalsUI,
     SetEventsEnabledUI,
     SetEventSpeedUI,
     SetEventStateUI,
@@ -764,6 +765,20 @@ object SetCharacterNameUI extends EventCmdUI[SetCharacterName] {
     IntEnumIdField(getMessage("Character"), sm.getProjData.enums.characters,
       model.characterId),
     StringField(getMessage("Fixed Value"), model.fixedValue))
+}
+
+object SetEnemyVitalsUI extends EventCmdUI[SetEnemyVitals] {
+  override def category = Battles
+  override def title = getMessage("Set_Enemy_Vitals")
+
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: SetEnemyVitals) = List(
+    IntNumberField(getMessage("Enemy_ID"), 0, 15, model.enemyId),
+    FloatPercentField(getMessageColon("HP_Percentage"), 0f, 1f,
+      model.hpPercentage),
+    FloatPercentField(getMessageColon("MP_Percentage"), 0f, 1f,
+      model.mpPercentage))
 }
 
 object SetMenuEnabledUI extends EventCmdUI[SetMenuEnabled] {

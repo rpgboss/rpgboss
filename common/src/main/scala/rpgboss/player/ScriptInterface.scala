@@ -122,10 +122,18 @@ class ScriptInterface(
   def project = game.project
 
   def syncRun[T](op: => T): T = {
+    def f() = {
+      try {
+        op
+      } catch {
+        case e: scala.runtime.NonLocalReturnControl[T] => e.value
+      }
+    }
+
     if (onBoundThread())
-      op
+      f()
     else
-      GdxUtils.syncRun(op)
+      GdxUtils.syncRun(f)
   }
 
   /*
@@ -563,21 +571,37 @@ class ScriptInterface(
   /**
    * Returns -1 on error. Life percentage rounded to integer (0-100) otherwise.
    */
-  def getEnemyLifePercentage(id: Int): Int = syncRun {
-    if (activeScreen != game.battleScreen)
+  def getEnemyLifePercentage(enemyId: Int): Int = syncRun {
+    if (activeScreen != game.battleScreen || game.battleScreen.battle.isEmpty)
       return -1
 
-    game.battleScreen.battle.map { battle =>
-      if (id < battle.enemyStatus.length) {
-        val enemy = battle.enemyStatus(id)
-        val result = ((enemy.hp.toFloat / enemy.stats.mhp) * 100).round.toInt
-        assert(result >= 0)
-        assert(result <= 100)
-        result
-      } else {
-        -1
-      }
-    } getOrElse -1
+    val battle = game.battleScreen.battle.get
+    if (enemyId < 0 || enemyId >= battle.enemyStatus.length)
+      return -1
+
+    val enemy = battle.enemyStatus(enemyId)
+    val result = ((enemy.hp.toFloat / enemy.stats.mhp) * 100).round.toInt
+    assert(result >= 0)
+    assert(result <= 100)
+    return result
+  }
+
+  /**
+   * Returns true if successful, false otherwise.
+   */
+  def setEnemyVitals(enemyId: Int, hpPercentage: Float,
+                     mpPercentage: Float): Boolean = syncRun {
+    if (activeScreen != game.battleScreen || game.battleScreen.battle.isEmpty)
+      return false
+
+    val battle = game.battleScreen.battle.get
+    if (enemyId < 0 || enemyId >= battle.enemyStatus.length)
+      return false
+
+    val enemy = battle.enemyStatus(enemyId)
+    enemy.hp = (enemy.stats.mhp * hpPercentage).round
+    enemy.mp = (enemy.stats.mmp * mpPercentage).round
+    return true
   }
 
   def activateEvent(id: Int, awaitFinish: Boolean) = {

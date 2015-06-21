@@ -28,12 +28,13 @@ case class AutotileMetadata(blockedDirs: Byte = 0, height: Byte = 0,
                             vehicleDirs: Array[Byte] =
                               AutotileMetadata.defaultVehicleDirs) {
   def normalizedVehicleDirs = ArrayUtils.resized[Byte](
-      vehicleDirs, Constants.NUM_VEHICLES, () => DirectionMasks.NONE.toByte)
+      vehicleDirs, Constants.NUM_VEHICLES,
+      () => DirectionMasks.ALLCARDINAL.toByte)
 }
 
 object AutotileMetadata {
   def defaultVehicleDirs =
-    Array.fill(Constants.NUM_VEHICLES)(DirectionMasks.NONE.toByte)
+    Array.fill(Constants.NUM_VEHICLES)(DirectionMasks.ALLCARDINAL.toByte)
 }
 
 case class Autotile(proj: Project,

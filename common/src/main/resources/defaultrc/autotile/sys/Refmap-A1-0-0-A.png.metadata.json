@@ -1,4 +1,10 @@
 {
   "blockedDirs":15,
-  "height":0
+  "height":0,
+  "vehicleDirs":[
+    0,
+    0,
+    15,
+    15
+  ]
 }

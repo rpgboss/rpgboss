@@ -390,7 +390,8 @@ class BattleScreen(
           null,
           Array(),
           Layout(SOUTHWEST, FIXED, 200, 180),
-          PrintingTextWindowOptions(timePerChar = 0, showArrow = false)) {
+          PrintingTextWindowOptions(timePerChar = 0, showArrow = false,
+              wrapText = false)) {
           override def openCloseTime = 0
         }
       }
@@ -402,7 +403,8 @@ class BattleScreen(
           null,
           Array(),
           Layout(SOUTHEAST, FIXED, 440, 180),
-          PrintingTextWindowOptions(timePerChar = 0, showArrow = false)) {
+          PrintingTextWindowOptions(timePerChar = 0, showArrow = false,
+              wrapText = false)) {
           override def openCloseTime = 0
         }
       }

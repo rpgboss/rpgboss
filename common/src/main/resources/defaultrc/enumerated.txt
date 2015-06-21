@@ -564,6 +564,8 @@ music/sys/sean_m_stephens/Battle3.mid
 music/sys/sean_m_stephens/Choral.mid
 music/sys/sean_m_stephens/Haven.mid
 music/sys/sean_m_stephens/TitleMoon.mid
+music/sys/sean_m_stephens/Town1.mid
+music/sys/sean_m_stephens/Town2.mid
 music/sys/sean_m_stephens/World1.mid
 music/sys/sean_m_stephens/World2.mid
 music/sys/sean_m_stephens/World3.mid
@@ -647,6 +649,7 @@ spriteset/sys/$vx_chara09_c.png
 spriteset/sys/$vx_chara09_d.png
 spriteset/sys/$vx_chara09_e.png
 spriteset/sys/$vx_chara09_f.png
+spriteset/sys/oga_vehicles.png
 spriteset/sys/vx_chara01_a.png
 spriteset/sys/vx_chara01_b.png
 spriteset/sys/vx_chara02_a.png
