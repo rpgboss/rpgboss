@@ -18,6 +18,8 @@ case class ProjectDataStartup(
 
   var screenW: Int,
   var screenH: Int,
+  var fullscreen: Boolean,
+  var windowIcon: String,
 
   var windowskin: String,
 

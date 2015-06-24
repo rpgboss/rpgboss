@@ -41,9 +41,12 @@ class SystemPanel(
 
   val fScreenW = new NumberSpinner(640, 1920, model.startup.screenW,
       model.startup.screenW = _)
-
   val fScreenH = new NumberSpinner(480, 1080, model.startup.screenH,
       model.startup.screenH = _)
+  val fFullscreen = boolField(
+      "", model.startup.fullscreen, model.startup.fullscreen = _)
+  val fWindowIcon = new PictureField(owner, sm, model.startup.windowIcon,
+      model.startup.windowIcon = _)
 
   val fWindowskin = new WindowskinField(owner, sm, model.startup.windowskin,
       model.startup.windowskin = _)
@@ -67,14 +70,21 @@ class SystemPanel(
   val fSoundCannot = new SoundField(owner, sm, model.startup.soundCannot,
       model.startup.soundCannot = _)
 
-  row().grid(lbl(getMessageColon("Game_Title"))).add(fGameTitle)
-  row().grid(lbl(getMessageColon("Title_Picture"))).add(fTitlepic)
-  row().grid(lbl(getMessageColon("Title_Music"))).add(fTitleMusic)
-  row().grid(lbl(getMessageColon("GameOver_Picture"))).add(fGameOverpic)
-  row().grid(lbl(getMessageColon("GameOver_Music"))).add(fGameOverMusic)
-
-  row().grid(lbl(getMessageColon("X_Resolution"))).add(fScreenW)
-  row().grid(lbl(getMessageColon("Y_Resolution"))).add(fScreenH)
+  row()
+    .grid(lbl(getMessageColon("Game_Title"))).add(fGameTitle)
+    .grid(lbl(getMessageColon("X_Resolution"))).add(fScreenW)
+  row()
+    .grid(lbl(getMessageColon("Title_Picture"))).add(fTitlepic)
+    .grid(lbl(getMessageColon("Y_Resolution"))).add(fScreenH)
+  row()
+    .grid(lbl(getMessageColon("Title_Music"))).add(fTitleMusic)
+    .grid(lbl(getMessageColon("Fullscreen"))).add(fFullscreen)
+  row()
+    .grid(lbl(getMessageColon("GameOver_Picture"))).add(fGameOverpic)
+    .grid(lbl(getMessageColon("Window_Icon"))).add(fWindowIcon)
+  row()
+    .grid(lbl(getMessageColon("GameOver_Music"))).add(fGameOverMusic)
+    .grid()
 
   row().grid(lbl(getMessageColon("Windowskin"))).add(fWindowskin)
   row().grid(lbl(getMessageColon("Message_Font"))).add(fMsgfont)
@@ -82,7 +92,7 @@ class SystemPanel(
 
   row()
     .grid(lbl(getMessageColon("String_Input_Characters")))
-    .add(fStringInputCharacters )
+    .add(fStringInputCharacters)
 
   row().grid(lbl(getMessageColon("Cursor_Sound"))).add(fSoundCursor)
   row().grid(lbl(getMessageColon("Select_Sound"))).add(fSoundSelect)

@@ -32,13 +32,29 @@ trait Resource[T, MT <: AnyRef] extends LazyLogging {
     }
   }
 
-  def getGdxFileHandle: FileHandle = {
+  /**
+   * Returns null if not actually in the project.
+   */
+  def fileFromProject() = {
     val fileInProject = new File(rcTypeDir, name)
-    if (fileInProject.isFile() && fileInProject.canRead()) {
-      Gdx.files.absolute(fileInProject.getAbsolutePath())
+    if (fileInProject.isFile() && fileInProject.canRead())
+      fileInProject
+    else
+      null
+  }
+
+  /**
+   * Returns the path as if this were a resource from the classpath.
+   */
+  def getClasspathPath =
+    "%s/%s/%s".format(ResourceConstants.defaultRcDir, meta.rcType, name)
+
+  def getGdxFileHandle: FileHandle = {
+    val file = fileFromProject()
+    if (file != null) {
+      Gdx.files.absolute(file.getAbsolutePath())
     } else {
-      Gdx.files.classpath(
-        "%s/%s/%s".format(ResourceConstants.defaultRcDir, meta.rcType, name))
+      Gdx.files.classpath(getClasspathPath)
     }
   }
 

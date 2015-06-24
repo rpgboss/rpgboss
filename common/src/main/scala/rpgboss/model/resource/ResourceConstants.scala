@@ -175,6 +175,8 @@ object ResourceConstants {
 
     screenW = 640,
     screenH = 480,
+    fullscreen = false,
+    windowIcon = "sys/icon.png",
 
     windowskin = "sys/LastPhantasmScanlines.png",
     msgfont = "sys/VeraMono.ttf",
