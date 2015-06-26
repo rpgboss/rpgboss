@@ -52,11 +52,11 @@ object Export {
   }
 
   def export(project: Project, executableJarFile: File): Unit = {
-    val exportDir = new File(project.dir, getMessage("Export"))
+    val exportDir = new File(project.dir, "export")
     exportDir.mkdir()
 
     if (!exportDir.isDirectory())
-      throw new RuntimeException(getMessage("Cannot_Write_To_Export_Directory"))
+      throw new RuntimeException("Cannot write to export directory")
 
     val gamedataDir = Files.createTempDir()
     FileUtils.copyDirectory(project.dir, gamedataDir)
@@ -83,7 +83,7 @@ object Export {
       Zip.zipFolder(dir, new File(exportDir, zipName), needUnixPerms)
     }
 
-    generatePackage("linux", "exportresources/linux/launch.sh", "rpgboss", true)
+    generatePackage("linux-mac", "exportresources/linux/launch.sh", "rpgboss", true)
     generatePackage("windows", "exportresources/win/rpgboss-player.exe",
         "rpgboss.exe", false)
   }

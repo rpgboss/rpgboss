@@ -1,5 +1,6 @@
 #!/bin/sh
-echo "Packaging for Linux..."
+set -v
+echo "Packaging for Linux/Mac..."
 echo "======================"
 
 export SRC_DIR=$(cd "$(dirname "$0")"; pwd)
@@ -16,10 +17,11 @@ cp -v $SRC_DIR/launch.sh $ARCHIVE_PATH/rpgboss
 
 chmod -v 755 $ARCHIVE_PATH/rpgboss
 
-export ARCHIVE="rpgboss-${VERSION}.tar.gz"
+export ARCHIVE="rpgboss-${VERSION}.zip"
 
-tar -cvzf $SRC_DIR/target/$ARCHIVE -C $SRC_DIR/target rpgboss-$VERSION
+cd $SRC_DIR/target
+zip -r $ARCHIVE rpgboss-$VERSION
 
-cp -v $SRC_DIR/target/$ARCHIVE $SRC_DIR/../target/
+cp -v $SRC_DIR/target/$ARCHIVE $SRC_DIR/../target/rpgboss-$VERSION-linux-mac.zip
 
 echo ""
