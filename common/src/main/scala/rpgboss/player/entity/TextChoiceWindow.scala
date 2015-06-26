@@ -136,7 +136,7 @@ class TextChoiceWindow(
       else if (row < choiceRows - 1)
         columns
       else
-        nChoices % columns
+        math.max(nChoices % columns, columns)
     }
 
     if (nChoices > 0 &&
