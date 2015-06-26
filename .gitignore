@@ -4,6 +4,7 @@ libs/
 target/
 eclipsetarget/
 src_managed/
+package/jre
 project/boot/
 project/plugins/project
 .cache*
