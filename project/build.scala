@@ -71,7 +71,7 @@ object Settings {
   lazy val editor = Settings.common ++ editorLibs ++ editorAssembly
   
   lazy val editorLibs = Seq(
-    scalaVersion := "2.11.5",
+    scalaVersion := "2.11.6",
     libraryDependencies ++= Seq(
       "org.apache.commons" % "commons-compress" % "1.9",
       "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
