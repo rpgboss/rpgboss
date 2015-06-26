@@ -9,7 +9,6 @@ rm -rf target
 mkdir -p target
 
 cd $SRC_DIR/..
-# sbt test
-#sbt assembly
+sbt assembly
 $SRC_DIR/win/package.sh
 $SRC_DIR/linux/package.sh
