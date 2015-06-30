@@ -338,3 +338,71 @@ game.showText = function(text, options) {
   options = options || {};
   return game.showTextScala(text, options);
 };
+
+/* This function can move and/or zoom a picture on the screen */
+game.transformPicture = function(slot,
+								name,
+								widthStart,
+								heightStart, 
+								widthEnd, 
+								heightEnd, 
+								xOffsetStart, 
+								yOffsetStart, 
+								xOffsetEnd, 
+								yOffsetEnd,  
+								frames, 
+								returnToStart, 
+								keepPicture) {
+	
+	sizeType = 2
+	startPosition = 8
+	alpha = 1.0
+	
+	widthChange = ((widthStart-widthEnd) / frames)*-1;
+	heightChange = ((heightStart-heightEnd) / frames)*-1;
+	xOffsetChange = ((xOffsetStart-xOffsetEnd) / frames)*-1;
+	yOffsetChange = ((yOffsetStart-yOffsetEnd) / frames)*-1;
+
+	
+	for(var i = 0; i < frames; i++) {
+		
+		game.showPicture(slot,
+						 name, 
+						 game.layoutWithOffset(startPosition, 
+											   sizeType, 
+											   (widthStart+(widthChange*i)), 
+											   (heightStart+(heightChange*i)), 
+											   (xOffsetStart+(xOffsetChange*i)), 
+											   (yOffsetStart+(yOffsetChange*i))), 
+						alpha);
+		game.sleep(0.03);
+	};
+	
+	if(returnToStart == Boolean(1)) {
+	
+		widthChange = ((widthStart-widthEnd) / frames);
+		heightChange = ((heightStart-heightEnd) / frames);
+		xOffsetChange = ((xOffsetStart-xOffsetEnd) / frames);
+		yOffsetChange = ((yOffsetStart-yOffsetEnd) / frames);
+
+	
+		for(var i = 0; i < frames; i++) {
+		
+			game.showPicture(slot,
+							name, 
+							game.layoutWithOffset(startPosition, 
+												sizeType, 
+												(widthEnd+(widthChange*i)), 
+												(heightEnd+(heightChange*i)), 
+												(xOffsetEnd+(xOffsetChange*i)), 
+												(yOffsetEnd+(yOffsetChange*i))), 
+							alpha);
+			game.sleep(0.03);
+		};
+	
+	};
+	if(keepPicture == Boolean(0)) {
+		
+		game.hidePicture(slot);
+	};
+};
