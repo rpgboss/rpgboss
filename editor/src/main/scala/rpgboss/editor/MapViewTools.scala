@@ -197,7 +197,6 @@ object MapViewTools {
           val y = y1 + yi
 
           if (vs.mapMeta.withinBounds(x, y)) {
-            println("Modified tile: (%d, %d)".format(x, y))
             for (j <- 0 until bytesPerTile)
               layerAry(y).update(x * bytesPerTile + j, tCode(j))
           }
@@ -208,7 +207,7 @@ object MapViewTools {
 
         val autotileRect =
           setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry,
-            x1 - 1, y1 - 1, x1 + tCodes(0).length, y1 + tCodes.length)
+            x1 - 1, y1 - 1, x1 + tCodes.head.length, y1 + tCodes.length)
 
         directlyEditedRect | autotileRect
       } getOrElse {
@@ -478,12 +477,24 @@ object MapViewTools {
           case _ => RpgMap.emptyTileSeed
         }
 
-        emptySeed.copyToArray(layerAry(y1), x1 * bytesPerTile)
+        for (
+          (tileRow, yi) <- tCodes.zipWithIndex;
+          (tCode, xi) <- tileRow.zipWithIndex
+        ) {
+          val x = x1 + xi
+          val y = y1 + yi
 
-        val directlyEditedRect = TileRect(x1, y1, 1, 1)
+          if (vs.mapMeta.withinBounds(x, y)) {
+            emptySeed.copyToArray(layerAry(y), x * bytesPerTile)
+          }
+        }
+
+        val directlyEditedRect =
+          TileRect(x1, y1, tCodes(0).length, tCodes.length)
+
         val autotileRect =
           setAutotileFlags(vs.mapMeta, vs.tileCache.autotiles, layerAry,
-            x1 - 1, y1 - 1, x1 + 1, y1 + 1)
+            x1 - 1, y1 - 1, x1 + tCodes.head.length, y1 + tCodes.length)
 
         directlyEditedRect | autotileRect
       } getOrElse {
