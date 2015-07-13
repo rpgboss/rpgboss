@@ -115,6 +115,7 @@ class Window(
     val facesetResource = Faceset.readFromDisk(manager.project, faceset)
 
     attachedPictures.add(new TiledTexturePicture(
+      manager,
       manager.assets,
       facesetResource,
       faceX, faceY,

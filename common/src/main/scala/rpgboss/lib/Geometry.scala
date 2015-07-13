@@ -26,7 +26,15 @@ trait BoxLike {
  * @param   x   Refers to center of the rectangle.
  * @param   y   Refers to center of the rectangle.
  */
-case class Rect(x: Float, y: Float, w: Float, h: Float) extends BoxLike
+case class Rect(x: Float, y: Float, w: Float, h: Float) extends BoxLike {
+  def tweenTo(other: Rect, alpha: Float) = {
+    Rect(
+        TweenUtils.tweenFloat(alpha, x, other.x),
+        TweenUtils.tweenFloat(alpha, y, other.y),
+        TweenUtils.tweenFloat(alpha, w, other.w),
+        TweenUtils.tweenFloat(alpha, h, other.h))
+  }
+}
 
 object SizeType extends RpgEnum {
   case class Val(i: Int, name: String, needParameters: Boolean)

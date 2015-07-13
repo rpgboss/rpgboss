@@ -414,7 +414,8 @@ class BattleScreen(
       val bg = BattleBackground.readFromDisk(project, battleBackground)
       windowManager.showPicture(
         PictureSlots.BATTLE_BACKGROUND,
-        new TexturePicture(assets, bg, Layout(NORTH, COVER, 0, 0)))
+        new TexturePicture(windowManager, assets, bg,
+            Layout(NORTH, COVER, 0, 0)))
     }
 
     assert(_enemyBattlers.isEmpty)
@@ -433,7 +434,7 @@ class BattleScreen(
 
         val layout =
           Layout(NORTHWEST, FIXED, battlerWidth, battlerHeight, unitL, unitT)
-        val picture = new TexturePicture(assets, battler, layout)
+        val picture = new TexturePicture(windowManager, assets, battler, layout)
 
         windowManager.showPicture(
           PictureSlots.BATTLE_SPRITES_ENEMIES + i, picture)

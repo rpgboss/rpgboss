@@ -98,6 +98,7 @@ object EventCmdUI {
     ModifyPartyUI,
     MoveCameraUI,
     MoveEventUI,
+    MovePictureUI,
     OpenStoreUI,
     OverrideMapBattleSettingsUI,
     PlaceVehicleUI,
@@ -442,6 +443,27 @@ object MoveEventUI extends EventCmdUI[MoveEvent] {
       model.affixDirection, model.affixDirection = _)),
     EventField("", boolField(getMessage("Async"), model.async,
       model.async = _)))
+}
+
+object MovePictureUI extends EventCmdUI[MovePicture] {
+  override def category = Windows
+  override def title = getMessage("Move_Picture")
+  override def getNormalFields(owner: Window, sm: StateMaster,
+                               mapName: Option[String],
+                               model: MovePicture) = Seq(
+    EventField(
+      getMessage("Layout"),
+      new LayoutEditingPanel(model.layout)),
+    EventField(
+      getMessage("Alpha"),
+      new FloatSpinner(0, 1f, 0.1f, model.alpha,
+        model.alpha = _)))
+  override def getParameterFields(
+    owner: Window, sm: StateMaster, mapName: Option[String],
+    model: MovePicture) = List(
+    IntNumberField(getMessage("Slot"), PictureSlots.ABOVE_MAP,
+      PictureSlots.BATTLE_BEGIN - 1, model.slot),
+    FloatField(getMessage("Duration"), 0f, 100f, model.duration))
 }
 
 object GetEntityInfoUI extends EventCmdUI[GetEntityInfo] {

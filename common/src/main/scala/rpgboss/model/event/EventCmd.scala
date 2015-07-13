@@ -83,6 +83,7 @@ object EventCmd {
     classOf[ModifyParty],
     classOf[MoveCamera],
     classOf[MoveEvent],
+    classOf[MovePicture],
     classOf[OpenStore],
     classOf[PlaceVehicle],
     classOf[PlayAnimation],
@@ -488,6 +489,16 @@ case class MoveEvent(
       singleCall(
         "game.moveEvent", entitySpec.eventId, dx, dy, affixDirection, async)
   }
+}
+
+case class MovePicture(
+  slot: IntParameter = IntParameter(PictureSlots.ABOVE_MAP),
+  duration: FloatParameter = FloatParameter(4),
+  layout: Layout = Layout.defaultForPictures,
+  var alpha: Float = 1) extends EventCmd {
+  def sections =
+    singleCall("game.movePicture", slot, duration, layout.toJs(), alpha)
+  override def getParameters() = List(slot)
 }
 
 case class OpenStore(

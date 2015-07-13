@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import rpgboss.lib.Layout
 import rpgboss.lib.ThreadChecked
+import rpgboss.lib.TweenUtils
 import rpgboss.model.FaceSpec
 import rpgboss.model.PictureSlots
 import rpgboss.model.Project
@@ -141,7 +142,7 @@ class WindowManager(
     alpha: Float = 1.0f) = {
     assertOnBoundThread()
     val picture = Picture.readFromDisk(project, name)
-    showPicture(slot, new TexturePicture(assets, picture, layout, alpha))
+    showPicture(slot, new TexturePicture(this, assets, picture, layout, alpha))
   }
 
   def showPictureLoop(slot: Int, folderPath: String, layout: Layout,
@@ -152,7 +153,7 @@ class WindowManager(
     if (!filesUnderPath.isEmpty) {
       val pictureArray = filesUnderPath.map(picturePath => {
         val picture = Picture.readFromDisk(project, picturePath)
-        new TexturePicture(assets, picture, layout, alpha)
+        new TexturePicture(this, assets, picture, layout, alpha)
       })
       showPicture(slot, new PictureSequence(
         pictureArray, loop = true, framesPerSecond))
@@ -168,6 +169,23 @@ class WindowManager(
 
     pictures(slot).map(_.dispose())
     pictures(slot) = Some(newPicture)
+  }
+
+  def movePicture(slot: Int, duration: Float, newLayout: Layout,
+      newAlpha: Float) = {
+    if (pictures(slot).isDefined) {
+      val originalPicture = pictures(slot).get match {
+        case p: TexturePicture[_] => p
+        case p: MovedPicture => p.inner
+        case _ => null
+      }
+
+      if (originalPicture != null) {
+        pictures(slot) = Some(
+          new MovedPicture(this, originalPicture, duration, newLayout,
+              newAlpha))
+      }
+    }
   }
 
   def hidePicture(slot: Int): Unit = {
@@ -339,7 +357,7 @@ class WindowManager(
     }
 
     batch.end()
-    
+
     batch.begin()
 
     rectangleArray.foreach { rect: Rectangle =>
@@ -393,19 +411,37 @@ trait PictureLike {
  * Need call on dispose first
  */
 class TexturePicture[MT <: AnyRef](
+  manager: WindowManager,
   assets: RpgAssetManager, resource: ImageResource[_, MT],
-  layout: Layout, alpha: Float = 1.0f) extends PictureLike {
+  layout: Layout, val alpha: Float = 1.0f) extends PictureLike {
+
+  def loaded() = resource.isLoaded(assets)
+  def rectDefined() = _rect.isDefined
+  def setRect(rect: Rect) = _rect = Some(rect)
+  def setAlpha(alpha: Float) = _alpha = alpha
+  def getTexture() = {
+    assume(loaded())
+    resource.getAsset(assets)
+  }
 
   resource.loadAsset(assets)
   def dispose() = resource.dispose(assets)
 
   private var _rect: Option[Rect] = None
+  private var _alpha = alpha
 
   val animationTint = Color.WHITE.cpy()
   override def setAnimationTint(color: Color) = animationTint.set(color)
   override def getRect() = _rect.getOrElse(Rect(0, 0, 100, 100))
 
-  override def update(delta: Float) = {}
+  override def update(delta: Float) = {
+    if (resource.isLoaded(assets) && _rect.isEmpty) {
+      val texture = resource.getAsset(assets)
+      val rect = layout.getRect(texture.getWidth(), texture.getHeight(),
+        manager.screenW, manager.screenH)
+      _rect = Some(rect)
+    }
+  }
 
   def drawCall(batch: SpriteBatch, texture: Texture, rect: Rect) = {
     batch.draw(texture,
@@ -417,26 +453,74 @@ class TexturePicture[MT <: AnyRef](
   override def render(manager: WindowManager, batch: SpriteBatch) = {
     if (resource.isLoaded(assets)) {
       val texture = resource.getAsset(assets)
-      val rect = layout.getRect(texture.getWidth(), texture.getHeight(),
-        manager.screenW, manager.screenH)
-      _rect = Some(rect)
 
-      drawCall(batch, texture, rect)
+      drawCall(batch, texture, _rect.get)
       val modifiedAnimationTint = animationTint.cpy()
-      modifiedAnimationTint.a *= alpha
+      modifiedAnimationTint.a *= _alpha
       batch.setColor(modifiedAnimationTint);
-      drawCall(batch, texture, rect)
+      drawCall(batch, texture, _rect.get)
 
       batch.setColor(Color.WHITE)
     }
   }
 }
 
+class MovedPicture(
+  manager: WindowManager,
+  val inner: TexturePicture[_],
+  duration: Float,
+  endLayout: Layout,
+  endAlpha: Float)
+  extends PictureLike {
+
+  private var _time = 0f
+  private var _done = false
+  private var _startRect: Option[Rect] = None
+  private val _startAlpha = inner.alpha
+  private var _endRect: Option[Rect] = None
+
+  def dispose() = inner.dispose()
+  def update(delta: Float) = {
+    if (!_done && inner.loaded() && inner.rectDefined()) {
+      if (!_startRect.isDefined) {
+        _startRect = Some(inner.getRect())
+      }
+      if (!_endRect.isDefined) {
+        _endRect = Some(endLayout.getRect(
+            inner.getTexture().getWidth(),
+            inner.getTexture().getHeight(),
+            manager.screenW, manager.screenH))
+      }
+
+      _time += delta
+
+      if (_time >= duration) {
+        inner.setRect(_endRect.get)
+        inner.setAlpha(endAlpha)
+        _done = true
+      } else {
+        val tweenAlpha = TweenUtils.tweenAlpha(0, duration, _time)
+        val newRect = _startRect.get.tweenTo(_endRect.get, tweenAlpha)
+        inner.setRect(newRect)
+        inner.setAlpha(TweenUtils.tweenFloat(tweenAlpha, _startAlpha, endAlpha))
+      }
+    }
+
+    inner.update(delta)
+  }
+  def render(manager: WindowManager, batch: SpriteBatch) = {
+    inner.render(manager, batch)
+  }
+  def setAnimationTint(color: Color) = inner.setAnimationTint(color)
+  def getRect(): Rect = inner.getRect()
+}
+
 class TiledTexturePicture[MT <: AnyRef](
+  manager: WindowManager,
   assets: RpgAssetManager, resource: TiledImageResource[_, MT],
   xTile: Int, yTile: Int,
   layout: Layout, alpha: Float = 1.0f)
-  extends TexturePicture(assets, resource, layout, alpha) {
+  extends TexturePicture(manager, assets, resource, layout, alpha) {
 
   override def drawCall(batch: SpriteBatch, texture: Texture, rect: Rect) = {
     resource.drawTileAt(
