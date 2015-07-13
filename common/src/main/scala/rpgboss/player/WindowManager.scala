@@ -454,7 +454,6 @@ class TexturePicture[MT <: AnyRef](
     if (resource.isLoaded(assets)) {
       val texture = resource.getAsset(assets)
 
-      drawCall(batch, texture, _rect.get)
       val modifiedAnimationTint = animationTint.cpy()
       modifiedAnimationTint.a *= _alpha
       batch.setColor(modifiedAnimationTint);
