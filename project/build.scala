@@ -127,7 +127,7 @@ object Settings {
     IO.createDirectory(file("common/lib"))    
     
     // Declare names
-    val gdxBaseUrl = "http://libgdx.badlogicgames.com/releases"
+    val gdxBaseUrl = "https://libgdx.badlogicgames.com/releases"
     val gdxName = "libgdx-1.6.1"
 
     // Fetch the file.
