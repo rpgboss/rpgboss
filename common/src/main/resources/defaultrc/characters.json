@@ -9,6 +9,11 @@
       "dir":0,
       "step":1
     },
+    "face":{
+      "faceset":"sys/mackie/face_m01a_1.png",
+      "faceX":0,
+      "faceY":1
+    },
     "initLevel":1,
     "maxLevel":50,
     "charClass":0,
@@ -23,7 +28,7 @@
       },
       "mmp":{
         "base":20.0,
-        "perLevel":3.9999999999999996
+        "perLevel":4.0
       },
       "atk":{
         "base":10.0,
@@ -63,6 +68,11 @@
       "dir":0,
       "step":1
     },
+    "face":{
+      "faceset":"sys/mackie/face_m01a_1.png",
+      "faceX":2,
+      "faceY":1
+    },
     "initLevel":1,
     "maxLevel":50,
     "charClass":1,
@@ -97,7 +107,7 @@
       },
       "mre":{
         "base":20.0,
-        "perLevel":3.9999999999999996
+        "perLevel":4.0
       }
     },
     "startingEquipment":[
@@ -116,6 +126,11 @@
       "spriteIndex":3,
       "dir":0,
       "step":1
+    },
+    "face":{
+      "faceset":"sys/mackie/face_m01a_1.png",
+      "faceX":3,
+      "faceY":0
     },
     "initLevel":1,
     "maxLevel":50,
@@ -139,7 +154,7 @@
       },
       "spd":{
         "base":10.0,
-        "perLevel":1.2999999999999998
+        "perLevel":1.3
       },
       "mag":{
         "base":10.0,
@@ -166,10 +181,15 @@
     "subtitle":"Rogue",
     "description":"Beneath her player exterior is a someone you wouldn't want to cross.",
     "sprite":{
-      "name":"sys/vx_chara02_c.png",
-      "spriteIndex":4,
+      "name":"sys/vx_chara01_a.png",
+      "spriteIndex":7,
       "dir":0,
       "step":1
+    },
+    "face":{
+      "faceset":"sys/mackie/face_m01a_1.png",
+      "faceX":3,
+      "faceY":1
     },
     "initLevel":1,
     "maxLevel":50,
@@ -220,10 +240,15 @@
     "subtitle":"Wizard",
     "description":"A gifted young woman intensely devoted to her craft.",
     "sprite":{
-      "name":"sys/vx_chara01_b.png",
-      "spriteIndex":7,
+      "name":"sys/vx_chara01_a.png",
+      "spriteIndex":1,
       "dir":0,
       "step":1
+    },
+    "face":{
+      "faceset":"sys/mackie/face_m01a_1.png",
+      "faceX":1,
+      "faceY":0
     },
     "initLevel":1,
     "maxLevel":50,
