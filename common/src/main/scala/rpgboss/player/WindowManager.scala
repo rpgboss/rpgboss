@@ -451,7 +451,7 @@ class TexturePicture[MT <: AnyRef](
   }
 
   override def render(manager: WindowManager, batch: SpriteBatch) = {
-    if (resource.isLoaded(assets)) {
+    if (resource.isLoaded(assets) && _rect.isDefined ) {
       val texture = resource.getAsset(assets)
 
       val modifiedAnimationTint = animationTint.cpy()
