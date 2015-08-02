@@ -106,6 +106,11 @@ class PersistentState(
     publish(IntArrayChange(key))
   }
 
+  def setIntArrayNoOverwrite(key: String, value: Array[Int]) = {
+    getIntArray(key).copyToArray(value)
+    setIntArray(key, value)
+  }
+
   /**
    * Returns a defensive copy of the stored array.
    */
@@ -117,6 +122,11 @@ class PersistentState(
   def setStringArray(key: String, value: Array[String]) = {
     assertOnBoundThread()
     stringArrayMap.update(key, value.toArray)
+  }
+
+  def setStringArrayNoOverwrite(key: String, value: Array[String]) = {
+    getStringArray(key).copyToArray(value)
+    setStringArray(key, value)
   }
 
   // Gets the event state for the current map.

@@ -29,6 +29,19 @@ class PersistentStateSpec extends UnitSpec with HasScriptConstants {
     }
   }
 
+  "PersistentState" should "set arrays without overwriting correctly" in {
+    val p = new PersistentState
+    p.getIntArray("test") should deepEqual(Array[Int]())
+    p.setIntArrayNoOverwrite("test", Array(1, 2, 3))
+    p.getIntArray("test") should deepEqual(Array(1, 2, 3))
+    p.setIntArrayNoOverwrite("test", Array(3, 2, 1))
+    p.getIntArray("test") should deepEqual(Array(1, 2, 3))
+    p.setIntArrayNoOverwrite("test", Array(3, 2, 1, 4))
+    p.getIntArray("test") should deepEqual(Array(1, 2, 3, 4))
+    p.setIntArrayNoOverwrite("test", Array(3, 2))
+    p.getIntArray("test") should deepEqual(Array(1, 2))
+  }
+
   "PersistentState" should "level up specified character only" in {
     val f = levelingFixture(1, 1, 0, 0)
     val leveled = f.persistent.giveExperience(f.pData, Array(1), 700)

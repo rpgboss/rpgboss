@@ -153,29 +153,34 @@ class RpgGame(gamepath: File)
     persistent.setInt(MENU_ENABLED, 1)
 
     setParty(project.data.startup.startingParty.toArray)
-    // Initialize data structures
 
-    var characters = project.data.enums.characters.toArray
-    persistent.setStringArray(CHARACTER_NAMES, characters.map(_.name))
-
-    persistent.setIntArray(CHARACTER_LEVELS, characters.map(_.initLevel))
-
-    val characterStats = for (c <- characters)
-      yield BattleStats(project.data, c.baseStats(project.data, c.initLevel),
-      c.startingEquipment)
-
-    persistent.setIntArray(CHARACTER_HPS, characterStats.map(_.mhp))
-    persistent.setIntArray(CHARACTER_MPS, characterStats.map(_.mmp))
-
-    persistent.setIntArray(CHARACTER_EXPS, characters.map(x => 0))
-
-    persistent.setIntArray(CHARACTER_ROWS, characters.map(x => 0))
+    initializeOrNormalizeArrays()
 
     setPlayerLoc(project.data.startup.startingLoc)
     mapScreen.windowManager.setTransition(0, 1.0f)
     setScreen(mapScreen)
 
     loadUserMainScript
+  }
+
+  def initializeOrNormalizeArrays() = {
+    var characters = project.data.enums.characters.toArray
+    persistent.setStringArrayNoOverwrite(
+        CHARACTER_NAMES, characters.map(_.name))
+
+    persistent.setIntArrayNoOverwrite(
+        CHARACTER_LEVELS, characters.map(_.initLevel))
+
+    val characterStats = for (c <- characters)
+      yield BattleStats(project.data, c.baseStats(project.data, c.initLevel),
+      c.startingEquipment)
+
+    persistent.setIntArrayNoOverwrite(CHARACTER_HPS, characterStats.map(_.mhp))
+    persistent.setIntArrayNoOverwrite(CHARACTER_MPS, characterStats.map(_.mmp))
+
+    persistent.setIntArrayNoOverwrite(CHARACTER_EXPS, characters.map(x => 0))
+
+    persistent.setIntArrayNoOverwrite(CHARACTER_ROWS, characters.map(x => 0))
   }
 
   def saveGame(slot: Int) = {
@@ -195,6 +200,8 @@ class RpgGame(gamepath: File)
       persistent.setInt(EVENTS_ENABLED, 1)
     if (persistent.hasInt(MENU_ENABLED))
       persistent.setInt(MENU_ENABLED, 1)
+
+    initializeOrNormalizeArrays()
 
     setParty(persistent.getIntArray(PARTY))
 
