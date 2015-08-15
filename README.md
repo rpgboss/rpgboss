@@ -296,6 +296,8 @@ http://opengameart.org/content/rpg-sound-pack
 
 http://opengameart.org/content/37-hitspunches
 
+http://opengameart.org/content/spell-sounds-starter-pack
+
 ### Music
 
 Default music by Aaron McDonald and Sean M. Stephens.
