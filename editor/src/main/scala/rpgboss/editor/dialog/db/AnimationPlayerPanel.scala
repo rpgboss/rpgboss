@@ -129,18 +129,26 @@ class AnimationPlayerGdxPanel(
     }
   }
 
-  def updateAnimation(animation: Animation) = GdxUtils.asyncRun {
+  def play(animation: Animation) = {
     // Make a defensive copy, as we are sending it to the Gdx thread,
     // while the user could continue to make modifications on the Swing thread.
-    gdxListener.updateAnimation(Utils.deepCopy(animation))
+    val animationCopy = Utils.deepCopy(animation)
+
+    GdxUtils.asyncRun {
+      gdxListener.updateAnimation(animationCopy)
+      gdxListener.play()
+    }
   }
 
-  def play(animation: Animation) = {
-    updateAnimation(animation)
-    GdxUtils.asyncRun { gdxListener.play() }
-  }
+  {
+    // Make a defensive copy, as we are sending it to the Gdx thread,
+    // while the user could continue to make modifications on the Swing thread.
+    val animationCopy = Utils.deepCopy(initialAnimation)
 
-  updateAnimation(initialAnimation)
+    GdxUtils.asyncRun {
+      gdxListener.updateAnimation(initialAnimation)
+    }
+  }
 }
 
 class AnimationPlayerPanel(project: Project, animation: Animation)
