@@ -1,19 +1,19 @@
 [
   {
-    "name":"Fire",
+    "name":"Unarmed",
     "scopeId":2,
     "cost":0,
     "damages":[
       {
-        "typeId":1,
-        "elementId":4,
-        "formula":"a.mag*1"
+        "typeId":0,
+        "elementId":0,
+        "formula":"a.atk"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":63
   },
   {
     "name":"Fireball",
@@ -124,7 +124,7 @@
     ],
     "effects":[
       {
-        "keyId":10,
+        "keyId":304,
         "v1":100,
         "v2":0
       }
@@ -875,7 +875,7 @@
       {
         "typeId":1,
         "elementId":6,
-        "formula":"Thunderstorm"
+        "formula":"a.mag*1.5"
       }
     ],
     "effects":[
@@ -917,10 +917,14 @@
   },
   {
     "name":"Cure",
-    "scopeId":0,
+    "scopeId":4,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":"-2*a.mag"
+      }
     ],
     "effects":[
       
@@ -929,10 +933,14 @@
   },
   {
     "name":"Cure All",
-    "scopeId":0,
-    "cost":0,
+    "scopeId":5,
+    "cost":4,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":8,
+        "formula":"-2*a.mag"
+      }
     ],
     "effects":[
       
@@ -957,13 +965,21 @@
   },
   {
     "name":"Revive",
-    "scopeId":0,
-    "cost":0,
+    "scopeId":6,
+    "cost":20,
     "damages":[
-      
+      {
+        "typeId":1,
+        "elementId":0,
+        "formula":""
+      }
     ],
     "effects":[
-      
+      {
+        "keyId":101,
+        "v1":20,
+        "v2":0
+      }
     ],
     "animationId":7
   },
@@ -1016,7 +1032,11 @@
     "scopeId":2,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":0,
+        "elementId":3,
+        "formula":"a.atk"
+      }
     ],
     "effects":[
       
@@ -1028,7 +1048,11 @@
     "scopeId":2,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":0,
+        "elementId":2,
+        "formula":"a.atk"
+      }
     ],
     "effects":[
       
@@ -1040,7 +1064,11 @@
     "scopeId":2,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":0,
+        "elementId":3,
+        "formula":"a.atk"
+      }
     ],
     "effects":[
       
@@ -1052,7 +1080,11 @@
     "scopeId":2,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":0,
+        "elementId":3,
+        "formula":"a.atk"
+      }
     ],
     "effects":[
       
@@ -1064,7 +1096,11 @@
     "scopeId":2,
     "cost":0,
     "damages":[
-      
+      {
+        "typeId":0,
+        "elementId":3,
+        "formula":"a.atk"
+      }
     ],
     "effects":[
       
@@ -1078,8 +1114,8 @@
     "damages":[
       {
         "typeId":0,
-        "elementId":0,
-        "formula":""
+        "elementId":3,
+        "formula":"a.atk"
       }
     ],
     "effects":[
@@ -1094,8 +1130,8 @@
     "damages":[
       {
         "typeId":0,
-        "elementId":0,
-        "formula":""
+        "elementId":3,
+        "formula":"a.atk"
       }
     ],
     "effects":[
@@ -1110,8 +1146,8 @@
     "damages":[
       {
         "typeId":0,
-        "elementId":0,
-        "formula":""
+        "elementId":3,
+        "formula":"a.atk"
       }
     ],
     "effects":[
@@ -1126,8 +1162,8 @@
     "damages":[
       {
         "typeId":0,
-        "elementId":0,
-        "formula":""
+        "elementId":3,
+        "formula":"a.atk"
       }
     ],
     "effects":[
@@ -1143,7 +1179,7 @@
       {
         "typeId":2,
         "elementId":4,
-        "formula":"a.100"
+        "formula":"100"
       }
     ],
     "effects":[
@@ -1159,7 +1195,7 @@
       {
         "typeId":2,
         "elementId":5,
-        "formula":"a.100"
+        "formula":"100"
       }
     ],
     "effects":[
@@ -1175,7 +1211,7 @@
       {
         "typeId":2,
         "elementId":13,
-        "formula":"a.100"
+        "formula":"100"
       }
     ],
     "effects":[
@@ -1191,7 +1227,7 @@
       {
         "typeId":2,
         "elementId":7,
-        "formula":"a.100"
+        "formula":"100"
       }
     ],
     "effects":[
@@ -1264,20 +1300,20 @@
     "animationId":72
   },
   {
-    "name":"",
+    "name":"Unarmed",
     "scopeId":2,
     "cost":0,
     "damages":[
       {
         "typeId":0,
         "elementId":0,
-        "formula":""
+        "formula":"a.atk"
       }
     ],
     "effects":[
       
     ],
-    "animationId":0
+    "animationId":63
   },
   {
     "name":"",

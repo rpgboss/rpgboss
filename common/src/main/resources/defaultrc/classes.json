@@ -1,6 +1,7 @@
 [
   {
     "name":"Knight",
+    "unarmedAttackSkillId":66,
     "canUseItems":[
       0,
       1,
@@ -18,6 +19,7 @@
   },
   {
     "name":"Healer",
+    "unarmedAttackSkillId":66,
     "canUseItems":[
       20,
       21,
@@ -35,6 +37,7 @@
   },
   {
     "name":"Engineer",
+    "unarmedAttackSkillId":66,
     "canUseItems":[
       0,
       1,
@@ -53,6 +56,7 @@
   },
   {
     "name":"Rogue",
+    "unarmedAttackSkillId":66,
     "canUseItems":[
       37,
       5,
@@ -69,6 +73,7 @@
   },
   {
     "name":"Wizard",
+    "unarmedAttackSkillId":66,
     "canUseItems":[
       20,
       24,
