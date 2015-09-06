@@ -22,7 +22,14 @@ class PlayerEntity(game: RpgGame, mapScreen: MapScreen)
   assume(game != null)
   assume(mapScreen != null)
 
-  override def height = EventHeight.SAME.id
+  override def height = {
+    if (inVehicle) {
+      val vehicle = game.project.data.enums.vehicles(inVehicleId)
+      if (vehicle.canFly) EventHeight.OVER.id else EventHeight.SAME.id
+    } else {
+      EventHeight.SAME.id
+    }
+  }
   override def trigger = EventTrigger.NONE.id
 
   override def isPlayer = true

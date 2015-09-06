@@ -67,7 +67,16 @@ abstract class Entity(
     allEntities(EntitySpec.playerEntityId).asInstanceOf[PlayerEntity]
 
   def height: Int
-  def zPriority = y
+
+  def zPriority: Float = {
+    val zAdjustment = EventHeight(height) match {
+      case EventHeight.UNDER => -10
+      case EventHeight.SAME => 0
+      case EventHeight.OVER => 10
+    }
+    return y + zAdjustment
+  }
+
   def trigger: Int
 
   // TODO: Remove this ghetto RTTI if possible.
