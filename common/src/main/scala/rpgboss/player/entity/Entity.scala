@@ -63,7 +63,8 @@ abstract class Entity(
   var dir: Int = SpriteSpec.Directions.SOUTH,
   var initialSprite: Option[SpriteSpec] = None) extends EntityLike {
 
-  def playerEntity = allEntities(EntitySpec.playerEntityId)
+  def playerEntity =
+    allEntities(EntitySpec.playerEntityId).asInstanceOf[PlayerEntity]
 
   def height: Int
   def zPriority = y
@@ -155,7 +156,17 @@ abstract class Entity(
     if (blocked)
       return false
 
-    val (_, evtBlocked) = getTouchingAndBlockingEvents(dx, dy)
+    // Run this method pretending that the player is not in a vehicle.
+    var restoreVehicleId = -1
+    if (playerEntity.inVehicle) {
+      restoreVehicleId = playerEntity.inVehicleId
+      playerEntity.setInVehicle(false, 0)
+    }
+    val (_, evtBlocked) = getTouchingAndBlockingEvents(dx, dy, collision = true)
+    if (restoreVehicleId >= 0) {
+      playerEntity.setInVehicle(true, restoreVehicleId)
+    }
+
     if (evtBlocked)
       return false
 
@@ -296,11 +307,11 @@ abstract class Entity(
    * Returns the set of events that this entity is touching, and the smaller
    * set that's blocking it.
    */
-  def getTouchingAndBlockingEvents(dx: Float, dy: Float) = {
+  def getTouchingAndBlockingEvents(dx: Float, dy: Float, collision: Boolean) = {
     val evtsTouched = getAllEventTouches(dx, dy).filter(_ != this)
 
     val evtBlocking =
-      collisionOn && height == EventHeight.SAME.id &&
+      collision && height == EventHeight.SAME.id &&
       evtsTouched.exists(_.height == EventHeight.SAME.id)
 
     (evtsTouched, evtBlocking)
@@ -386,7 +397,7 @@ case class EntityMove(vec: Vector2)
       var movedThisLoop = false
 
       val (evtsTouched, evtBlocking) =
-        entity.getTouchingAndBlockingEvents(dx, dy)
+        entity.getTouchingAndBlockingEvents(dx, dy, entity.collisionOn)
 
       entity.touchEntities(evtsTouched.toSet)
 

@@ -652,7 +652,7 @@ class ScriptInterface(
     for (i <- 0 to 10) {
       val dx = ux * i * 0.1f
       val dy = uy * i * 0.1f
-      if (playerEntity.canStandAt(dx, dy)) {
+      if (syncRun { playerEntity.canStandAt(dx, dy) }) {
         syncRun {
           setLoc(
               VEHICLE_LOC(playerEntity.inVehicleId),

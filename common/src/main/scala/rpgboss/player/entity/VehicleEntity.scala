@@ -11,7 +11,8 @@ class VehicleEntity(game: RpgGame, vehicleId: Int)
       game.mapScreen.mapAndAssetsOption,
       game.mapScreen.allEntities)
   with LazyLogging {
-  override def height = EventHeight.UNDER.id
+  override def height =
+    if (playerInThisVehicle()) EventHeight.OVER.id else EventHeight.SAME.id
   override def trigger = EventTrigger.BUTTON.id
 
   override def activate(activatorsDirection: Int): Option[Finishable] = {

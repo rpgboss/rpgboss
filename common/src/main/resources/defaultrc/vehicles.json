@@ -17,7 +17,7 @@
       "dir":0,
       "step":1
     },
-    "canFly":false
+    "canFly":true
   },
   {
     "name":"Wagon",
