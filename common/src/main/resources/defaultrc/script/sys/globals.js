@@ -320,7 +320,7 @@ game.setWeather = function(weatherTypeId) {
         1.0 /* alpha */, 14 /* framesPerSecond */);
     game.playMusic(
         MusicSlots.WEATHER(),
-        'sys/weather/rain.mp3',
+        'sys/weather/rain.ogg',
         0.5 /* volume */, true /* loop */, 0.5 /* fadeDuration */);
     break;
   case 2:

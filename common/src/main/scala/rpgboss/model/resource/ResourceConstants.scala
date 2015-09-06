@@ -186,13 +186,13 @@ object ResourceConstants {
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -._",
 
     soundCursor =
-      Some(SoundSpec("sys/rpgboss-menu/MenuCursor.mp3")),
+      Some(SoundSpec("sys/rpgboss-menu/MenuCursor.ogg")),
     soundSelect =
-      Some(SoundSpec("sys/rpgboss-menu/MenuSelect.mp3")),
+      Some(SoundSpec("sys/rpgboss-menu/MenuSelect.ogg")),
     soundCancel =
-      Some(SoundSpec("sys/rpgboss-menu/MenuCancel.mp3")),
+      Some(SoundSpec("sys/rpgboss-menu/MenuCancel.ogg")),
     soundCannot =
-      Some(SoundSpec("sys/rpgboss-menu/MenuCannot.mp3")))
+      Some(SoundSpec("sys/rpgboss-menu/MenuCannot.ogg")))
 
   def defaultCharacters = Array(
     Character("Char0", sprite = Some(SpriteSpec("sys/vx_chara01_a.png", 0))),

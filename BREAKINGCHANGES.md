@@ -26,3 +26,7 @@ v0.8.5
 v0.8.6
 ------
  - StartBattle EventCmd has had many of its options removed and put into OverrideMapBattleSettings EventCmd. This may break old StartBatle EventCmds.
+
+v0.9.5
+------
+ - Changed all MP3s to OGGs. Users must update the Menu Sounds under System to the new OGG files.

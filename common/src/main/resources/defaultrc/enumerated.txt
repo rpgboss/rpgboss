@@ -682,5 +682,6 @@ tileset/sys/Refmap-TileD.png
 tileset/sys/Refmap-TileD.png.metadata.json
 tileset/sys/Refmap-TileE.png
 tileset/sys/Refmap-TileE.png.metadata.json
+vehicles.json
 windowskin/sys/LastPhantasm.png
 windowskin/sys/LastPhantasmScanlines.png

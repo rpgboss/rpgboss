@@ -1,0 +1,36 @@
+[
+  {
+    "name":"Ship",
+    "sprite":{
+      "name":"sys/oga_vehicles.png",
+      "spriteIndex":1,
+      "dir":0,
+      "step":1
+    },
+    "canFly":false
+  },
+  {
+    "name":"Airship",
+    "sprite":{
+      "name":"sys/oga_vehicles.png",
+      "spriteIndex":6,
+      "dir":0,
+      "step":1
+    },
+    "canFly":false
+  },
+  {
+    "name":"Wagon",
+    "sprite":{
+      "name":"sys/oga_vehicles.png",
+      "spriteIndex":4,
+      "dir":0,
+      "step":1
+    },
+    "canFly":false
+  },
+  {
+    "name":"",
+    "canFly":false
+  }
+]

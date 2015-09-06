@@ -28,7 +28,7 @@ class VehiclesPane(
       border =
         BorderFactory.createTitledBorder(getMessage("Vehicle_%d".format(i)))
 
-      val model = dbDiag.model.vehicles(i)
+      val model = dbDiag.model.enums.vehicles(i)
       val fSprite = new SpriteField(owner, sm, model.sprite, model.sprite = _)
       val fName = textField(model.name, model.name = _)
       val fCanFly =

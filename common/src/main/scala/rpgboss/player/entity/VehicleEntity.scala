@@ -44,5 +44,5 @@ class VehicleEntity(game: RpgGame, vehicleId: Int)
     }
   }
 
-  setSprite(game.project.data.vehicles(vehicleId).sprite)
+  setSprite(game.project.data.enums.vehicles(vehicleId).sprite)
 }

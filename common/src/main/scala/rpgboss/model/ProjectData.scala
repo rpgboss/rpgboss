@@ -48,7 +48,9 @@ case class ProjectDataEnums(
   var equipTypes: Array[String] = ProjectData.defaultEquipTypes,
   var items: Array[Item] = Array(Item()),
   var skills: Array[Skill] = Array(Skill()),
-  var statusEffects: Array[StatusEffect] = Array(StatusEffect())) {
+  var statusEffects: Array[StatusEffect] = Array(StatusEffect()),
+  var vehicles: Array[Vehicle] =
+      Array.fill(Constants.NUM_VEHICLES)(Vehicle())) {
   lazy val distinctChars = {
     val set = new DistinctCharacterSet
     set.addAll(characters)
@@ -62,6 +64,7 @@ case class ProjectDataEnums(
     set.addAll(items.map(_.desc))
     set.addAll(skills)
     set.addAll(statusEffects)
+    set.addAll(vehicles)
 
     for (eventClass <- eventClasses; state <- eventClass.states) {
       set ++= state.distinctChars
@@ -78,9 +81,7 @@ case class ProjectData(
   var lastCreatedMapId: Int = 1, // Start at 1)
   var startup: ProjectDataStartup = ProjectDataStartup(),
   var enums: ProjectDataEnums = ProjectDataEnums(),
-  var messages: Map[String, String] = ProjectData.defaultMessages,
-  var vehicles: Array[Vehicle] =
-    Array.fill(Constants.NUM_VEHICLES)(Vehicle())) {
+  var messages: Map[String, String] = ProjectData.defaultMessages) {
 
   def writeEnums(dir: File) = {
     def writeModel[T <: AnyRef](name: String, model: T) =
@@ -97,6 +98,7 @@ case class ProjectData(
     writeModel("items", enums.items)
     writeModel("skills", enums.skills)
     writeModel("statusEffects", enums.statusEffects)
+    writeModel("vehicles", enums.vehicles)
   }
 
   def writeRootWithoutEnums(dir: File) = {
@@ -141,6 +143,7 @@ object ProjectData {
       readModel[Array[Item]]("items", enums.items = _)
       readModel[Array[Skill]]("skills", enums.skills = _)
       readModel[Array[StatusEffect]]("statusEffects", enums.statusEffects = _)
+      readModel[Array[Vehicle]]("vehicles", enums.vehicles = _)
     }
 
     modelOpt

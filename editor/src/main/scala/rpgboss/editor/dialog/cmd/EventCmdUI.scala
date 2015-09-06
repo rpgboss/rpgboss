@@ -586,7 +586,7 @@ object PlaceVehicleUI extends EventCmdUI[PlaceVehicle] {
   override def getParameterFields(
     owner: Window, sm: StateMaster, mapName: Option[String],
     model: PlaceVehicle) = Seq(
-    IntEnumIdField(getMessage("Vehicle"), sm.getProjData.vehicles,
+    IntEnumIdField(getMessage("Vehicle"), sm.getProjData.enums.vehicles,
       model.vehicleId))
   override def newInstance(eventLoc: Option[MapLoc]) =
     PlaceVehicle(IntParameter(0), eventLoc.getOrElse(MapLoc()))
