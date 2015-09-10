@@ -52,12 +52,19 @@ class SkillsPanel(
       contents += new BoxPanel(Orientation.Vertical) {
         contents += normalFields
 
-        val damageHelp = new TextArea(
-              "'a' is the attacker and 'b' is the target.\n\n" +
-              "Valid expresions are:\n" +
-              "a.atk, a.spd, a.mag, " +
-              "a.arm, a.mre, a.hp, a.mhp, a.mp, and a.mmp. \n\n" +
-              "Same with b.atk, b.spd, etc.") {
+        val damageHelp = new TextArea {
+          text =
+            "Damage expressions are JavaScript.\n" +
+            "'a' is the attacker and 'b' is the target.\n\n" +
+            "Valid expresions are:\n" +
+            "a.atk, a.spd, a.mag, " +
+            "a.arm, a.mre, a.hp, a.mhp, a.mp, and a.mmp. \n\n" +
+            "Same with b.atk, b.spd, etc.\n\n" +
+            "Examples:\n" +
+            "a.atk*1.2\n" +
+            "Math.max(a.atk - b.def, 0)\n" +
+            "100 + a.mag"
+
           maximumSize = new Dimension(300, 300)
           lineWrap = true
           wordWrap = true
