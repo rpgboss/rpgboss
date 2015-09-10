@@ -139,7 +139,7 @@ case class FaceSpec(
   var faceY: Int)
 
 case class SoundSpec(
-  sound: String = "",
+  var sound: String = "",
   var volume: Float = 1.0f,
   var pitch: Float = 1.0f)
 

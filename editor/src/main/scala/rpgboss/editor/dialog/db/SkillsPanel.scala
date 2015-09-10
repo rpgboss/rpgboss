@@ -25,7 +25,7 @@ class SkillsPanel(
 
   def editPaneForItem(idx: Int, model: Skill) = {
     new BoxPanel(Orientation.Horizontal) with DisposableComponent {
-      contents += new DesignGridPanel {
+      val normalFields = new DesignGridPanel {
         val fName = textField(
           model.name,
           v => {
@@ -46,6 +46,24 @@ class SkillsPanel(
         row().grid(lbl(getMessageColon("Scope"))).add(fScope)
         row().grid(lbl(getMessageColon("Skill_Point_Cost"))).add(fCost)
         row().grid(lbl(getMessageColon("Animation"))).add(fAnimationId)
+
+      }
+
+      contents += new BoxPanel(Orientation.Vertical) {
+        contents += normalFields
+
+        val damageHelp = new TextArea(
+              "'a' is the attacker and 'b' is the target.\n\n" +
+              "Valid expresions are:\n" +
+              "a.atk, a.spd, a.mag, " +
+              "a.arm, a.mre, a.hp, a.mhp, a.mp, and a.mmp. \n\n" +
+              "Same with b.atk, b.spd, etc.") {
+          maximumSize = new Dimension(300, 300)
+          lineWrap = true
+          wordWrap = true
+          editable = false
+        }
+        contents += damageHelp
       }
 
       contents += new BoxPanel(Orientation.Vertical) {
@@ -54,6 +72,7 @@ class SkillsPanel(
                                           EffectContext.Skill)
         val damagePanel =
           new DamageFormulaArrayPanel(dbDiag, model.damages, model.damages = _)
+
 
         contents += effectPanel
         contents += damagePanel

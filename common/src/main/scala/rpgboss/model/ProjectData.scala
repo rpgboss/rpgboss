@@ -131,6 +131,26 @@ object ProjectData {
     }
 
     modelOpt.foreach { model =>
+      // Fix up ProjectData with mp3 menu sounds instead of ogg.
+      val defaultStartup = ResourceConstants.getProjectDataStartup
+      def fixMp3Filename(
+          specOption: Option[SoundSpec], reference: Option[SoundSpec]) = {
+        assert(reference.isDefined)
+        specOption foreach { spec =>
+          val (prefix, extension) = spec.sound.splitAt(spec.sound.length - 3)
+          val referencePrefix =
+            reference.get.sound.substring(0, spec.sound.length - 3)
+
+          if (referencePrefix == prefix && extension == "mp3") {
+            spec.sound = prefix + "ogg"
+          }
+        }
+      }
+      fixMp3Filename(model.startup.soundCancel, defaultStartup.soundCancel)
+      fixMp3Filename(model.startup.soundCannot, defaultStartup.soundCannot)
+      fixMp3Filename(model.startup.soundCursor, defaultStartup.soundCursor)
+      fixMp3Filename(model.startup.soundSelect, defaultStartup.soundSelect)
+
       val enums = model.enums
       readModel[Array[Animation]]("animations", enums.animations = _)
       readModel[Array[Character]]("characters", enums.characters = _)
