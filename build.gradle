@@ -16,7 +16,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '0.9.7'
+    version = '1.0'
     ext {
         appName = "rpgboss"
         gdxVersion = '1.7.0'
@@ -58,6 +58,10 @@ project(":desktop") {
         compile "com.fifesoft:rsyntaxtextarea:2.5.3"
         compile "net.coobird:thumbnailator:0.4.8"
     }
+
+    compileScala {
+        scalaCompileOptions.useCompileDaemon = true
+    }
 }
 
 project(":core") {
@@ -92,6 +96,10 @@ project(":core") {
 
     test {
         maxParallelForks = 1
+    }
+
+    compileScala {
+        scalaCompileOptions.useCompileDaemon = true
     }
 }
 

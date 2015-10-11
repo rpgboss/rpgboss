@@ -103,7 +103,7 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 
 		if(username!="" && password!="") {
 			try {
-				var response = Http(Settings.get("assetserver.host").get+"/api/v1/login/"+username+"/"+password).asString
+				var response = Http("http://"+Settings.get("assetserver.host").get+"/api/v1/login/"+username+"/"+password).asString
 				currentSessionString = response.body
 			}
 			catch {
@@ -172,13 +172,13 @@ class AssetServerConnection(val mainP: MainPanel,sm: StateMaster) {
 
 
 						              	if(data.action=="getProjectData") {
-						              		
+
 						              		var id = data.value
 						              		var ptype = data.value2
 						              		var version = data.value3
 
 						              		var info = PackageManager.getPackageInfo(ptype, id, version, projPath, fullHost)
-						              		
+
 						              		session.getBasicRemote.sendText("command;editor;{\"action\":\"getProjectData\",\"value\":\""+projPath+"\",\"value2\":\""+info(0)+"\",\"value3\":\""+info(1)+"\"}")
 						              	}
 

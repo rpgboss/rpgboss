@@ -1,7 +1,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
-  <jar>../../editor/target/scala-2.11/editor-assembly-0.1.jar</jar>
+  <jar>../../desktop/build/libs/desktop-1.0.jar</jar>
   <outfile>target/rpgboss-editor.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>

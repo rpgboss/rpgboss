@@ -8,7 +8,7 @@ export SRC_DIR=$(cd "$(dirname "$0")"; pwd)
 rm -rfv $SRC_DIR/target/*
 export ARCHIVE_PATH=$SRC_DIR/target/rpgboss-$VERSION
 mkdir -p $ARCHIVE_PATH
-export JARPATH=$SRC_DIR/../../editor/target/scala-2.11/editor-assembly-0.1.jar
+export JARPATH=$SRC_DIR/../../desktop/build/libs/desktop-1.0.jar
 
 cp -v $JARPATH $ARCHIVE_PATH/editor-min.jar
 cp -v $SRC_DIR/icon.png $ARCHIVE_PATH
