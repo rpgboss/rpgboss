@@ -14,3 +14,7 @@ project/plugins/project
 .settings
 Thumbs.db
 *.log
+.gradle
+android/build
+core/build
+desktop/build
