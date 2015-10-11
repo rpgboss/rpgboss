@@ -51,8 +51,8 @@ project(":desktop") {
         compile "org.scala-lang:scala-library:2.11.7"
 
         compile "org.apache.commons:commons-compress:1.9"
-        compile "org.scala-lang.modules:scala-swing_2.11:1.0.1"
-        compile "com.github.benhutchison:scalaswingcontrib:1.5"
+        compile "org.scala-lang.modules:scala-swing_2.11:2.0.0-M2"
+        compile "com.github.benhutchison:scalaswingcontrib_2.11:1.5"
         compile "net.java.dev.designgridlayout:designgridlayout:1.8"
         compile "net.lingala.zip4j:zip4j:1.3.2"
         compile "com.fifesoft:rsyntaxtextarea:2.5.3"

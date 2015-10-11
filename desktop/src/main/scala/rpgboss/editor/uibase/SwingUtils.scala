@@ -21,7 +21,7 @@ object SwingUtils {
     (implicit renderer: ListView.Renderer[B]): ListView.Renderer[A] =
     new ListView.Renderer[A] {
       def componentFor(
-        list: ListView[_],
+        list: ListView[_ <: A],
         isSelected: Boolean,
         focused: Boolean,
         a: A,
@@ -33,14 +33,16 @@ object SwingUtils {
         else
           indexArgument
 
-        renderer.componentFor(list, isSelected, focused, f(a, index), index)
+        renderer.componentFor(
+            list.asInstanceOf[ListView[_ <: B]], isSelected, focused,
+            f(a, index), index)
       }
     }
 
-  def standardIdxRenderer[A, B](labelF: A => B)
-    (implicit renderer: ListView.Renderer[B]) =
+  def standardIdxRenderer[A](labelF: A => String)
+    (implicit renderer: ListView.Renderer[String]) =
       customIdxRenderer((a: A, idx: Int) =>
-        StringUtils.standardIdxFormat(idx, labelF(a).toString))
+        StringUtils.standardIdxFormat(idx, labelF(a)))
 
   def boolField(text: String, initial: Boolean, onUpdate: Boolean => Unit,
                 additionalAction: Option[() => Unit] = None) =
