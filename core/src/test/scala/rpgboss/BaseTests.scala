@@ -1,9 +1,7 @@
 package rpgboss
 
-import com.badlogic.gdx.backends.lwjgl._
 import com.badlogic.gdx._
 import com.google.common.io.Files
-import org.lwjgl.opengl.Display
 import org.scalatest.concurrent.AsyncAssertions.Waiter
 import org.scalatest.concurrent.PatienceConfiguration._
 import org.scalatest.time._

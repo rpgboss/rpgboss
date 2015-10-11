@@ -33,28 +33,17 @@ Build instructions:
     $ cd rpgboss
     ```
 
-3. Run sbt. You will be put in the editor subproject by default. Compile and package it.
+3. Run the included gradlew script to build and run the program:
     ```
-    $ sbt
-    > package
+    Linux / Mac:
+    $ ./gradlew run
+
+    Windows:
+    gradlew.bat run
     ```
 
-4. You can run the editor from the sbt prompt also. Note: This mode of running currently does not support test playing games with the "Test" button. Use Eclipse or run a packaged binary instead.
-    ```
-    > run
-    ```
-
-5. You can generate Eclipse IDE project files. It's what I use, and supports test playing. Your eclipse project files will probably get out of date when dependencies change. You will then have to rerun this command and refresh your project in Eclipse.
-    ```
-    > eclipse
-    ```
-6. For Eclipse, I recommend simply using the Scala IDE package: http://scala-ide.org/. Then, import the projects you generated in the above step into Eclipse.
-
-    There is no need to move the project into your workspace. Leave the project in a folder outside the workspace and import the project into your workspace.
-
-    Warning: If you have a username with non-ASCII / Unicode / International characters, the sbt-eclipse plugin may not generate your Eclipse project correctly. Look at your Java Build Path under Eclipse to verify.
-
-7. Run RpgDesktop.scala in Eclipse to build and run the editor.
+4. You should be able to import the Gradle project into Eclipse or another IDE.
+   See: https://github.com/libgdx/libgdx/wiki/Gradle-and-Eclipse
 
 Commiting and Automated tests
 -----------------------------
@@ -63,7 +52,7 @@ Automated tests are how rpgboss verifies that changes don't break existing funct
 
 1. Run automated tests with:
     ```
-    $ sbt test
+    $ ./gradlew test
     ```
 
 Packaging into binaries
