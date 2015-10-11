@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.scala-lang/scalap/2.11.0/4d1ef078a977e29c32d539fac2900ca56f17fb85/scalap-2.11.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="4d1ef078a977e29c32d539fac2900ca56f17fb85">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/scalap-2.11.0-9d546fef7323f631b2f7495748dbd07c2fb10b46.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/net.sf.opencsv/opencsv/2.0/97a2765dc2db1083e7c5afcc210db5f7cad3b442/opencsv-2.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="97a2765dc2db1083e7c5afcc210db5f7cad3b442">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/opencsv-2.0-e522e9c4e2bc4f7a12328e39c5df2207c8ecbd49.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.scala-lang.modules/scala-xml_2.11/1.0.1/21dbac0088b91b8ffb7ac385301f4340f8ebe71f/scala-xml_2.11-1.0.1.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="21dbac0088b91b8ffb7ac385301f4340f8ebe71f">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/scala-xml_2.11-1.0.1-483389bfb7a0ed0cf1761dfc96cf64cbdaf8a9ad.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/com.thoughtworks.paranamer/paranamer/2.6/52c3c8d8876440d714e23036eb87bcc4244d9aa5/paranamer-2.6.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="52c3c8d8876440d714e23036eb87bcc4244d9aa5">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/paranamer-2.6-ee596cc9fcde957a135b3aaa3868638298c7c379.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-android/1.7.0/d8c0e81a68812893d0bf80cea37fbcba9f23d38b/gdx-backend-android-1.7.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="d8c0e81a68812893d0bf80cea37fbcba9f23d38b">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/gdx-backend-android-1.7.0-4d92fef3950d8a3bba0d127a6c62a3cff876ea93.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.json4s/json4s-ast_2.11/3.2.11/4e3c37960ea52c8cf3672792ef08887bf63e63d7/json4s-ast_2.11-3.2.11.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="4e3c37960ea52c8cf3672792ef08887bf63e63d7">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/json4s-ast_2.11-3.2.11-c9bc0f3072cf548424bb82f1dfd5c3784816d85f.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.scalaj/scalaj-http_2.11/1.1.4/194cede172674dc71b8818c3a32ab418f647a97/scalaj-http_2.11-1.1.4.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="0194cede172674dc71b8818c3a32ab418f647a97">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/scalaj-http_2.11-1.1.4-0e28650e165fda1d239ec7e497dfd54cf2823931.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.mozilla/rhino/1.7R4/e982f2136574b9a423186fbaeaaa98dc3e5a5288/rhino-1.7R4.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="e982f2136574b9a423186fbaeaaa98dc3e5a5288">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/rhino-1.7R4-2a96af4f499ce9260294b52db577f5ae692b92dd.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.json4s/json4s-core_2.11/3.2.11/87d4c44dfdf74727defa32999aeeb62afb4e5375/json4s-core_2.11-3.2.11.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="87d4c44dfdf74727defa32999aeeb62afb4e5375">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/json4s-core_2.11-3.2.11-c7d390455d3602e8ace3fd67671a0358a7a7db77.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-android/1.7.0/512fc901640ccb22578616d7b94ec8ac38d67f22/gdx-controllers-android-1.7.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="512fc901640ccb22578616d7b94ec8ac38d67f22">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/gdx-controllers-android-1.7.0-10ecaa4aedcd5e97642ed9165deb31120a1adda6.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.json4s/json4s-native_2.11/3.2.11/173a191b79edd6b5ab57769631c32ef875184610/json4s-native_2.11-3.2.11.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="173a191b79edd6b5ab57769631c32ef875184610">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/json4s-native_2.11-3.2.11-89dd94146447e492703e814d6f0e0b6b52b96366.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.0.6/132d78b900674cd484e91efc69a4ffd36aadfff3/logback-core-1.0.6.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="132d78b900674cd484e91efc69a4ffd36aadfff3">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/logback-core-1.0.6-94314e7dd59fb18a3c418f75161f092306ba0927.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/javax.websocket/javax.websocket-api/1.1/eeeb68631711256418dfbb47b11c731b6c8f6235/javax.websocket-api-1.1.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="eeeb68631711256418dfbb47b11c731b6c8f6235">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/javax.websocket-api-1.1-92c941156560ea65337ecd338422a0d40957a70c.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.scala-lang.modules/scala-parser-combinators_2.11/1.0.1/f05d7345bf5a58924f2837c6c1f4d73a938e1ff0/scala-parser-combinators_2.11-1.0.1.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="f05d7345bf5a58924f2837c6c1f4d73a938e1ff0">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/scala-parser-combinators_2.11-1.0.1-fa69de1ef4cf46e940f3eaae9cf272186d3e105e.jar" />
+    </item>
+    <item
+        jar="/home/tommycli/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.7/2b8019b6249bb05d81d3a3094e468753e2b21311/slf4j-api-1.7.7.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="2b8019b6249bb05d81d3a3094e468753e2b21311">
+        <dex dex="/home/tommycli/code/rpgboss/rpgboss/android/build/intermediates/pre-dexed/debug/slf4j-api-1.7.7-2f941d42f0a6b070346a0c67ee595d6f04ec7c71.jar" />
+    </item>
+
+</items>

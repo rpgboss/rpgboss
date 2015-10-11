@@ -15,7 +15,6 @@ Below directions assume a POSIX environment. It should still work on Windows (I'
 Pre-requisites:
 
 +  git
-+  sbt - http://www.scala-sbt.org/
 +  Java 6, 7, or 8. OR Openjdk-7, Openjdk-8 (8u40-b27-1 or more)
 
 Build instructions:
@@ -60,7 +59,7 @@ Build instructions:
 Commiting and Automated tests
 -----------------------------
 
-Automated tests are how rpgboss verifies that changes don't break existing functionality. Run automated tests before committing! 
+Automated tests are how rpgboss verifies that changes don't break existing functionality. Run automated tests before committing!
 
 1. Run automated tests with:
     ```
@@ -105,14 +104,14 @@ Project structure
 
 + **Bottom line up front** - Starting *rpgboss.editor.RpgDesktop* as the 'main' class will launch the editor, which will allow you to access the test player.
 
-+ **common** - Contains the models, the game player, and automated tests. 
-  
++ **common** - Contains the models, the game player, and automated tests.
+
   The models are defined in rpgboss.model and its subpackages.
 
   The player is defined in rpgboss.player and its subpackages. The player is based on libgdx. Please look at the [libgdx wiki tutorial](https://github.com/libgdx/libgdx/wiki/A-simple-game) to understand the implementation structure.
-  
+
   rpgboss.player.MyGame contains the ApplicationListener, which contains all the player logic. It doesn't have an explicit main-game-loop inside, but is called by libgdx's loop.
-  
+
   The desktop player has a 'main' class is at rpgboss.player.LwjglPlayer. It requires the path to the game project directory as its first argument to run the game.
 
 + **editor** - Contains the Swing based editor. Contains no game logic, just UI to edit the model defined in the *common* package. The 'main' class is rpgboss.editor.RpgDesktop.
@@ -324,5 +323,3 @@ Tilesets only constrained to be comprised of 32x32 square tiles.
 Iconsets can be any size, but you will need to specify the tile-size when you import it.
 
 Windowskins are in the Rpg Maker XP format.
-
-
