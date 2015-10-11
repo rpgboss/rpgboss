@@ -54,9 +54,6 @@ class GdxPanel(project: Project, canvasW: Int = 40, canvasH: Int = 40)
   }
 
   lazy val gdxCanvas = new LwjglAWTCanvas(gdxListener) {
-
-    logger.info("Gdx Canvas Constructor")
-
     override def start() = {
       logger.debug("Start")
       super.start()

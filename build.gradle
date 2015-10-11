@@ -59,8 +59,14 @@ project(":desktop") {
         compile "net.coobird:thumbnailator:0.4.8"
     }
 
-    compileScala {
-        scalaCompileOptions.useCompileDaemon = true
+    tasks.withType(ScalaCompile) {
+        configure(scalaCompileOptions.forkOptions) {
+            memoryMaximumSize = '1g'
+            jvmArgs = ['-XX:MaxPermSize=512m']
+        }
+    }
+    tasks.withType(ScalaCompile) {
+        scalaCompileOptions.useAnt = false
     }
 }
 
@@ -98,8 +104,14 @@ project(":core") {
         maxParallelForks = 1
     }
 
-    compileScala {
-        scalaCompileOptions.useCompileDaemon = true
+    tasks.withType(ScalaCompile) {
+        configure(scalaCompileOptions.forkOptions) {
+            memoryMaximumSize = '1g'
+            jvmArgs = ['-XX:MaxPermSize=512m']
+        }
+    }
+    tasks.withType(ScalaCompile) {
+        scalaCompileOptions.useAnt = false
     }
 }
 
