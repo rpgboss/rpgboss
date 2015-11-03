@@ -19,11 +19,8 @@ allprojects {
     version = '1.0'
     ext {
         appName = "rpgboss"
-        gdxVersion = '1.7.0'
-        roboVMVersion = '1.8.0'
-        box2DLightsVersion = '1.4'
-        ashleyVersion = '1.6.0'
-        aiVersion = '1.6.0'
+        gdxVersion = '1.7.1'
+        roboVMVersion = '1.9.0'
         mainClass = "rpgboss.editor.RpgDesktop"
     }
 

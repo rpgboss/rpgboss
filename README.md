@@ -88,23 +88,6 @@ Please use LF line endings. This will allow for CRLF line endings under Windows,
     $ git config --global core.autocrlf input
     ```
 
-Project structure
------------------
-
-+ **Bottom line up front** - Starting *rpgboss.editor.RpgDesktop* as the 'main' class will launch the editor, which will allow you to access the test player.
-
-+ **common** - Contains the models, the game player, and automated tests.
-
-  The models are defined in rpgboss.model and its subpackages.
-
-  The player is defined in rpgboss.player and its subpackages. The player is based on libgdx. Please look at the [libgdx wiki tutorial](https://github.com/libgdx/libgdx/wiki/A-simple-game) to understand the implementation structure.
-
-  rpgboss.player.MyGame contains the ApplicationListener, which contains all the player logic. It doesn't have an explicit main-game-loop inside, but is called by libgdx's loop.
-
-  The desktop player has a 'main' class is at rpgboss.player.LwjglPlayer. It requires the path to the game project directory as its first argument to run the game.
-
-+ **editor** - Contains the Swing based editor. Contains no game logic, just UI to edit the model defined in the *common* package. The 'main' class is rpgboss.editor.RpgDesktop.
-
 Development Notes
 -----------------
 
