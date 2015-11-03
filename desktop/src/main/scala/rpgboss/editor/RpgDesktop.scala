@@ -46,11 +46,13 @@ object RpgDesktop
   }
 
   override def startup(args: Array[String]) = {
-    UIManager.setLookAndFeel(
-      UIManager.getSystemLookAndFeelClassName());
-    
+    if (System.getProperty("swing.defaultlaf") == null) {
+      UIManager.setLookAndFeel(
+        UIManager.getSystemLookAndFeelClassName());
+    }
+
     val icon = rpgboss.lib.Utils.readClasspathImage("icon.png")
-    
+
     System.setProperty("sun.awt.exception.handler", "rpgboss.editor.EDTErrorHandler");
     Thread.setDefaultUncaughtExceptionHandler(this);
 
@@ -60,7 +62,7 @@ object RpgDesktop
     if (t.size == new Dimension(0, 0)) t.pack()
     t.visible = true
   }
-  
+
   override def main(args: Array[String]) {
     if (args.size >= 2 && args.head == "--player") {
       rpgboss.player.LwjglPlayer.main(args.tail)
@@ -79,4 +81,3 @@ class EDTErrorHandler {
     t.printStackTrace()
   }
 }
-
