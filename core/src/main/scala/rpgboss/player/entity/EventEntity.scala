@@ -205,8 +205,16 @@ class EventEntity(
     }
 
     if(evtState.animationType == AnimationType.RANDOM_MOVEMENT.id &&
-       moveQueueEmpty) {
-      randomStep()
+       moveQueueEmpty && util.Random.nextInt(120) == 0) {
+       var randomDirection = util.Random.nextInt(4)
+       var length = util.Random.nextInt(4) + 1  // Move between 1 and 4 steps
+
+       var vec = new Vector2(length, 0)
+       vec.rotate(90 * randomDirection)
+
+       dir = Entity.getDirection(vec)
+       val move = EntityMove(vec)
+       enqueueMove(move)
     }
   }
 
