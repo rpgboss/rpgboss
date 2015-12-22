@@ -558,6 +558,18 @@ music/sys/aaron_mcdonald/Titus Andronicus - Cue 2.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Madness Reigns.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Who Is Burried Here.mid
+music/sys/procogram/procogram01.mid
+music/sys/procogram/procogram02.mid
+music/sys/procogram/procogram03.mid
+music/sys/procogram/procogram04.mid
+music/sys/procogram/procogram05.mid
+music/sys/procogram/procogram06.mid
+music/sys/procogram/procogram07.mid
+music/sys/procogram/procogram08.mid
+music/sys/procogram/procogram09.mid
+music/sys/procogram/procogram10.mid
+music/sys/procogram/procogram11.mid
+music/sys/procogram/procogram12.mid
 music/sys/sean_m_stephens/Battle1.mid
 music/sys/sean_m_stephens/Battle2.mid
 music/sys/sean_m_stephens/Battle3.mid
