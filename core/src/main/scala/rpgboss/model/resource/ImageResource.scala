@@ -87,9 +87,20 @@ trait TiledImageResource[T, MT <: AnyRef] extends ImageResource[T, MT] {
 trait ImageResource[T, MT <: AnyRef]
   extends Resource[T, MT]
   with RpgGdxAsset[Texture] {
-  // TODO: Refactor or eliminate this method, since it's unpredictable
-  lazy val img = Option(ImageIO.read(newDataStream)) getOrElse {
-    throw ResourceException("Can't load image: %s".format(name))
+
+  /**
+   * Always returns a non-null BufferedImage. Returns a placeholder image on
+   * error.
+   */
+  lazy val img: BufferedImage = {
+    val stream = newDataStream
+    if (stream == null) {
+      ImageResource.errorTile
+    } else {
+      Option(ImageIO.read(stream)) getOrElse {
+        ImageResource.errorTile
+      }
+    }
   }
 }
 
