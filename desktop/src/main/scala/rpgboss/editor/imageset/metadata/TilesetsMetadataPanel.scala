@@ -4,7 +4,7 @@ import scala.swing._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.misc.TileUtils
 import scala.swing.event._
-import rpgboss.editor.uibase._
+import rpgboss.editor.Internationalized._
 import rpgboss.editor.uibase._
 import rpgboss.model._
 import rpgboss.model.resource._
@@ -142,6 +142,7 @@ class TilesetsMetadataPanel(sm: StateMaster)
   contents += new DesignGridPanel {
     row.grid().add(leftLabel("Tilesets:"))
     row.grid().add(tilesetListView)
+    row.grid().add(leftLabel(getMessage("Tilesets_Help")))
   }
 
   contents += metadataPanelContainer
