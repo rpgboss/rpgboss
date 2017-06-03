@@ -243,9 +243,9 @@ http://rpgmakertimes.agilityhoster.com/2011/02/final-fantasy-i-xpvx-windowskin/
 LordSpirit.jpg:
 http://www.rpgrevolution.com/forums/index.php?autocom=gallery&req=si&img=3701
 
-###Battle Background
+### Battle Background
 
-#####Side View Battle Background
+##### Side View Battle Background
 
 Julian Xin raveolutionx@gmail.com (CC-BY 4.0)  http://creativecommons.org/licenses/by/4.0/
 
