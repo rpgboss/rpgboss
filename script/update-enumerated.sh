@@ -19,7 +19,7 @@ done
 
 for DIR in $(ls); do
   if [ -d "${DIR}" ]; then
-    for FILE in $(find "${DIR}" -type f ! -name ".*" ! -name "*.xcf" ! -name "*.psd"); do
+    for FILE in $(find "${DIR}" -type f ! -name ".*" ! -name "*.xcf" ! -name "*.psd" ! -name "*.svg"); do
       echo "${FILE}" >> "enumerated.txt"
     done
   fi
