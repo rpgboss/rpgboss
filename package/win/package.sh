@@ -22,5 +22,15 @@ else
 	echo "WARNING: keystore.jks not found, executable will not be signed"
 fi
 
-cp -v $SRC_DIR/target/rpgboss-editor.exe $SRC_DIR/../target/rpgboss-${VERSION}.exe
+export ARCHIVE="rpgboss-${VERSION}.zip"
+export ARCHIVE_PATH=$SRC_DIR/target/rpgboss-$VERSION
+
+mkdir -p $ARCHIVE_PATH
+cp -v rpgboss-editor.exe $ARCHIVE_PATH/rpgboss-$VERSION.exe
+
+cd $SRC_DIR/target
+zip -r $ARCHIVE rpgboss-$VERSION
+
+cp -v $SRC_DIR/target/$ARCHIVE $SRC_DIR/../target/rpgboss-$VERSION-win.zip
+
 echo ""
