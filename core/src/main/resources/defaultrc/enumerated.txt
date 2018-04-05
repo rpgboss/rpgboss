@@ -558,6 +558,9 @@ music/sys/aaron_mcdonald/Titus Andronicus - Cue 2.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Madness Reigns.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Who Is Burried Here.mid
+music/sys/Bogart_VGM/Dubious_Dungeon.mp3
+music/sys/Bogart_VGM/Frenetic_Fight.mp3
+music/sys/Hitctrl/The_Secret_Within_The_Silent_Woods.ogg
 music/sys/sean_m_stephens/Battle1.mid
 music/sys/sean_m_stephens/Battle2.mid
 music/sys/sean_m_stephens/Battle3.mid
@@ -570,6 +573,7 @@ music/sys/sean_m_stephens/World1.mid
 music/sys/sean_m_stephens/World2.mid
 music/sys/sean_m_stephens/World3.mid
 music/sys/weather/rain.ogg
+music/sys/will_carpenter/Castle_Town.mid
 picture/sys/GameOver.png
 picture/sys/LordSpirit.jpg
 picture/sys/icon.png

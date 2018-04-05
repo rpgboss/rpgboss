@@ -1,0 +1,13 @@
+
+music/sys/Bogart_VGM/
+
+Dubious_Dungeon.mp3  Bogart VGM; CC BY 4.0; https://opengameart.org/node/82912
+Frenetic_Fight.mp3   Bogart VGM; CC BY 4.0; https://opengameart.org/node/82940
+
+music/sys/Hitctrl/
+
+The_Secret_Within_The_Silent_Woods.ogg  Hitctrl; CC BY 3.0; https://opengameart.org/node/82983
+
+music/sys/will_carpenter/
+
+Castle_Town.mid  Will Carpenter; CC0; https://opengameart.org/node/82991
