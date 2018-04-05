@@ -28,7 +28,9 @@ export ARCHIVE_PATH=$SRC_DIR/target/rpgboss-$VERSION
 mkdir -p $ARCHIVE_PATH
 cp -v rpgboss-editor.exe $ARCHIVE_PATH/rpgboss-$VERSION.exe
 
-if [ ! -d "$ARCHIVE_PATH/docs" ]; then
+if [ -d "$SRC_DIR/../../docs" ]; then
+	cp -vr $SRC_DIR/../../docs $ARCHIVE_PATH
+else
 	mkdir -p $ARCHIVE_PATH/docs
 fi
 

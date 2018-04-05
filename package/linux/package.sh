@@ -15,7 +15,9 @@ cp -v $SRC_DIR/icon.png $ARCHIVE_PATH
 cp -v $SRC_DIR/rpgboss.desktop $ARCHIVE_PATH
 cp -v $SRC_DIR/launch.sh $ARCHIVE_PATH/rpgboss
 
-if [ ! -d "$ARCHIVE_PATH/docs" ]; then
+if [ -d "$SRC_DIR/../../docs" ]; then
+	cp -vr $SRC_DIR/../../docs $ARCHIVE_PATH
+else
 	mkdir -p $ARCHIVE_PATH/docs
 fi
 
