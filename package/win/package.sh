@@ -3,16 +3,42 @@ echo "Packaging for Windows..."
 echo "========================"
 
 export SRC_DIR=$(cd "$(dirname "$0")"; pwd)
+export JSIGN_VER=2.0
+export JSIGN=jsign-$JSIGN_VER.jar
+export JSIGN_URL=https://github.com/ebourg/jsign/releases/download/$JSIGN_VER/$JSIGN
 
 rm -rfv $SRC_DIR/target
 mkdir $SRC_DIR/target/
 
-launch4j $SRC_DIR/config-win.xml 
+launch4j $SRC_DIR/config-win.xml
 launch4j $SRC_DIR/config-win-player.xml
 
-#cd $SRC_DIR/target
-#wget http://people.apache.org/~ebourg/jsign/jsign-1.2.jar
-#java -jar jsign-1.2.jar --keystore $SRC_DIR/../../keystore.jks --storepass password --alias selfsigned --name "rpgboss" --url rpgboss.com rpgboss-editor.exe
+cd $SRC_DIR/target
 
-cp -v $SRC_DIR/target/rpgboss-editor.exe $SRC_DIR/../target/rpgboss-${VERSION}.exe
+if [ -f "$SRC_DIR/../../keystore.jks" ]; then
+	wget $JSIGN_URL
+	java -jar $JSIGN --keystore $SRC_DIR/../../keystore.jks --storepass password --alias selfsigned --name "rpgboss" --url rpgboss.com rpgboss-editor.exe
+else
+	echo "WARNING: keystore.jks not found, executable will not be signed"
+fi
+
+export ARCHIVE="rpgboss-${VERSION}.zip"
+export ARCHIVE_PATH=$SRC_DIR/target/rpgboss-$VERSION
+
+mkdir -p $ARCHIVE_PATH
+cp -v rpgboss-editor.exe $ARCHIVE_PATH/rpgboss-$VERSION.exe
+
+if [ -d "$SRC_DIR/../../docs" ]; then
+	cp -vr $SRC_DIR/../../docs $ARCHIVE_PATH
+else
+	mkdir -p $ARCHIVE_PATH/docs
+fi
+
+cp -v $SRC_DIR/../../LICENSE.txt $ARCHIVE_PATH/docs
+
+cd $SRC_DIR/target
+zip -r $ARCHIVE rpgboss-$VERSION
+
+cp -v $SRC_DIR/target/$ARCHIVE $SRC_DIR/../target/rpgboss-$VERSION-win.zip
+
 echo ""

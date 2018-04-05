@@ -15,6 +15,14 @@ cp -v $SRC_DIR/icon.png $ARCHIVE_PATH
 cp -v $SRC_DIR/rpgboss.desktop $ARCHIVE_PATH
 cp -v $SRC_DIR/launch.sh $ARCHIVE_PATH/rpgboss
 
+if [ -d "$SRC_DIR/../../docs" ]; then
+	cp -vr $SRC_DIR/../../docs $ARCHIVE_PATH
+else
+	mkdir -p $ARCHIVE_PATH/docs
+fi
+
+cp -v $SRC_DIR/../../LICENSE.txt $ARCHIVE_PATH/docs
+
 chmod -v 755 $ARCHIVE_PATH/rpgboss
 
 export ARCHIVE="rpgboss-${VERSION}.zip"
