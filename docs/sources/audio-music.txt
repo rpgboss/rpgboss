@@ -1,4 +1,8 @@
 
+music/sys/Hitctrl/
+
+The_Secret_Within_The_Silent_Woods.ogg  Hitctrl; CC BY 3.0; https://opengameart.org/node/82983
+
 music/sys/will_carpenter/
 
 Castle_Town.mid  Will Carpenter; CC0; https://opengameart.org/node/82991

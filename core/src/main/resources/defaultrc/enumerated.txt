@@ -558,6 +558,7 @@ music/sys/aaron_mcdonald/Titus Andronicus - Cue 2.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Madness Reigns.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Villianous Villians Doing Doubious Deeds.mid
 music/sys/aaron_mcdonald/Titus Andronicus - Who Is Burried Here.mid
+music/sys/Hitctrl/The_Secret_Within_The_Silent_Woods.ogg
 music/sys/sean_m_stephens/Battle1.mid
 music/sys/sean_m_stephens/Battle2.mid
 music/sys/sean_m_stephens/Battle3.mid
