@@ -570,6 +570,7 @@ music/sys/sean_m_stephens/World1.mid
 music/sys/sean_m_stephens/World2.mid
 music/sys/sean_m_stephens/World3.mid
 music/sys/weather/rain.ogg
+music/sys/will_carpenter/Castle_Town.mid
 picture/sys/GameOver.png
 picture/sys/LordSpirit.jpg
 picture/sys/icon.png
