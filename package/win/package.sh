@@ -28,6 +28,12 @@ export ARCHIVE_PATH=$SRC_DIR/target/rpgboss-$VERSION
 mkdir -p $ARCHIVE_PATH
 cp -v rpgboss-editor.exe $ARCHIVE_PATH/rpgboss-$VERSION.exe
 
+if [ ! -d "$ARCHIVE_PATH/docs" ]; then
+	mkdir -p $ARCHIVE_PATH/docs
+fi
+
+cp -v $SRC_DIR/../../LICENSE.txt $ARCHIVE_PATH/docs
+
 cd $SRC_DIR/target
 zip -r $ARCHIVE rpgboss-$VERSION
 
