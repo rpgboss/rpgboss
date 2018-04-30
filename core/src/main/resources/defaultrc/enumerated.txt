@@ -1,3 +1,15 @@
+animations.json
+characters.json
+classes.json
+elements.json
+encounters.json
+enemies.json
+equipTypes.json
+eventClasses.json
+items.json
+skills.json
+statusEffects.json
+vehicles.json
 animation/sys/earth1.png
 animation/sys/earth2.png
 animation/sys/earth3.png
@@ -64,7 +76,6 @@ animation/sys/wind4.png
 animation/sys/wind5.png
 animation/sys/wind6.png
 animation/sys/wind7.png
-animations.json
 autotile/sys/Refmap-A1-0-0-A.png
 autotile/sys/Refmap-A1-0-0-A.png.metadata.json
 autotile/sys/Refmap-A1-0-0-B.png
@@ -332,10 +343,10 @@ battlebg/sys/Etolier/09desert.jpg
 battlebg/sys/Etolier/18kumo.jpg
 battlebg/sys/Etolier/21maou_yama.jpg
 battlebg/sys/Public/beach.jpg
-battlebg/sys/Xin/Palace1.jpg
-battlebg/sys/Xin/Strangedesert.jpg
 battlebg/sys/Xin/factory.jpg
+battlebg/sys/Xin/Palace1.jpg
 battlebg/sys/Xin/rocky.jpg
+battlebg/sys/Xin/Strangedesert.jpg
 battler/sys/AncientBeast/cyberhound.png
 battler/sys/Benalene/firecreature.png
 battler/sys/Benalene/icecreature.png
@@ -373,8 +384,8 @@ battler/sys/Katarzyna/goldenwyrm.png
 battler/sys/Katarzyna/impaler.png
 battler/sys/Katarzyna/magmaspawn.png
 battler/sys/Katarzyna/volpyr.png
-battler/sys/Killoverdrive/Newdron.png
 battler/sys/Killoverdrive/dogun.png
+battler/sys/Killoverdrive/Newdron.png
 battler/sys/Killoverdrive/templar.png
 battler/sys/Kirara/eaglel.png
 battler/sys/Kirara/eagler.png
@@ -387,9 +398,9 @@ battler/sys/MinusCreate/Unknown3.png
 battler/sys/MinusCreate/UnknownPig.png
 battler/sys/MinusCreate/UnknownPig2.png
 battler/sys/MinusCreate/UnknownPig3.png
-battler/sys/Momothecat/Sadmermaid.png
 battler/sys/Momothecat/akhorthegriffin.png
 battler/sys/Momothecat/mohrthegriffin.png
+battler/sys/Momothecat/Sadmermaid.png
 battler/sys/MrBeast/dragon9.png
 battler/sys/MrBeast/ratarcher.png
 battler/sys/MrBeast/ratcleric.png
@@ -400,11 +411,11 @@ battler/sys/NormalArmy/KamaitachiGras.png
 battler/sys/NormalArmy/KamaitachiGras2.png
 battler/sys/NormalArmy/KamaitachiGras3.png
 battler/sys/P0ss/reaper.png
-battler/sys/Public/Lacriatura.png
 battler/sys/Public/basilisk.png
 battler/sys/Public/birdy.png
 battler/sys/Public/blob.png
 battler/sys/Public/demon1.png
+battler/sys/Public/Lacriatura.png
 battler/sys/Public/mushroom1.png
 battler/sys/Public/streammonster1.png
 battler/sys/Public/streammonster2.png
@@ -434,11 +445,11 @@ battler/sys/Redshrike/eaglebadass.png
 battler/sys/Redshrike/eelhelm.png
 battler/sys/Redshrike/fightingrobot.png
 battler/sys/Redshrike/floateye.png
-battler/sys/Redshrike/fossilTrex.png
 battler/sys/Redshrike/fossilbird.png
 battler/sys/Redshrike/fossilgator.png
 battler/sys/Redshrike/fossilray.png
 battler/sys/Redshrike/fossilskel.png
+battler/sys/Redshrike/fossilTrex.png
 battler/sys/Redshrike/fourarmedthing.png
 battler/sys/Redshrike/frogtrident.png
 battler/sys/Redshrike/gargoyle.png
@@ -489,7 +500,6 @@ battler/sys/Redshrike/wasp.png
 battler/sys/Redshrike/xeno.png
 battler/sys/Richtaur/Trex.png
 battler/sys/Sharm/dragon11.png
-battler/sys/Surt/Ghost1.png
 battler/sys/Surt/bat.png
 battler/sys/Surt/blackspider.png
 battler/sys/Surt/bluefly.png
@@ -502,6 +512,7 @@ battler/sys/Surt/dragon6.png
 battler/sys/Surt/flameminion.png
 battler/sys/Surt/flameminion2.png
 battler/sys/Surt/flameminion3.png
+battler/sys/Surt/Ghost1.png
 battler/sys/Surt/greenmushroomkid.png
 battler/sys/Surt/greenmushroomman.png
 battler/sys/Surt/greenshld.png
@@ -521,17 +532,9 @@ battler/sys/Surt/whiteworm.png
 battler/sys/Surt/whitewormkid.png
 battler/sys/Surt/wingshld.png
 battler/sys/Zabin/dragon7.png
-characters.json
-classes.json
-elements.json
-encounters.json
-enemies.json
-equipTypes.json
-eventClasses.json
 faceset/sys/mackie/face_m01a_1.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png
 iconset/sys/420__Pixel_Art__Icons_for_RPG_by_Ails.png.metadata.json
-items.json
 msgfont/sys/VeraMono.ttf
 music/sys/aaron_mcdonald/A Midsummer Night's Dream - A Duel Comences.mid
 music/sys/aaron_mcdonald/A Midsummer Night's Dream - A Forest People.mid
@@ -571,8 +574,8 @@ music/sys/sean_m_stephens/World2.mid
 music/sys/sean_m_stephens/World3.mid
 music/sys/weather/rain.ogg
 picture/sys/GameOver.png
-picture/sys/LordSpirit.jpg
 picture/sys/icon.png
+picture/sys/LordSpirit.jpg
 picture/sys/splash.jpg
 picture/sys/weather/rain/0180.png
 picture/sys/weather/rain/0181.png
@@ -606,11 +609,17 @@ script/sys/start.js
 script/sys/store.js
 script/sys/timer.js
 script/sys/transitions.js
-skills.json
 sound/sys/opengameart-37hitspunches/hit02.ogg
 sound/sys/opengameart-37hitspunches/hit12.ogg
 sound/sys/opengameart-37hitspunches/hit33.ogg
 sound/sys/opengameart-37hitspunches/hit34.ogg
+sound/sys/opengameart-rpg-sound-pack/battle/magic1.ogg
+sound/sys/opengameart-rpg-sound-pack/battle/swing.ogg
+sound/sys/opengameart-rpg-sound-pack/battle/sword-unsheathe.ogg
+sound/sys/opengameart-rpg-sound-pack/inventory/bottle.ogg
+sound/sys/opengameart-rpg-sound-pack/inventory/bubble.ogg
+sound/sys/opengameart-rpg-sound-pack/inventory/cloth.ogg
+sound/sys/opengameart-rpg-sound-pack/inventory/coin3.ogg
 sound/sys/opengameart-rpg-sound-pack/NPC/beetle/bite-small2.ogg
 sound/sys/opengameart-rpg-sound-pack/NPC/gutteral beast/mnstr3.ogg
 sound/sys/opengameart-rpg-sound-pack/NPC/gutteral beast/mnstr5.ogg
@@ -619,13 +628,6 @@ sound/sys/opengameart-rpg-sound-pack/NPC/ogre/ogre3.ogg
 sound/sys/opengameart-rpg-sound-pack/NPC/shade/shade12.ogg
 sound/sys/opengameart-rpg-sound-pack/NPC/shade/shade4.ogg
 sound/sys/opengameart-rpg-sound-pack/NPC/shade/shade7.ogg
-sound/sys/opengameart-rpg-sound-pack/battle/magic1.ogg
-sound/sys/opengameart-rpg-sound-pack/battle/swing.ogg
-sound/sys/opengameart-rpg-sound-pack/battle/sword-unsheathe.ogg
-sound/sys/opengameart-rpg-sound-pack/inventory/bottle.ogg
-sound/sys/opengameart-rpg-sound-pack/inventory/bubble.ogg
-sound/sys/opengameart-rpg-sound-pack/inventory/cloth.ogg
-sound/sys/opengameart-rpg-sound-pack/inventory/coin3.ogg
 sound/sys/opengameart-spell-sounds-starter-pack/blessing2.ogg
 sound/sys/opengameart-spell-sounds-starter-pack/confusion.ogg
 sound/sys/opengameart-spell-sounds-starter-pack/curse.ogg
@@ -671,7 +673,6 @@ spriteset/sys/vx_chara07_a.png
 spriteset/sys/vx_chara07_b.png
 spriteset/sys/vx_chara07_c.png
 spriteset/sys/vx_chara08_a.png
-statusEffects.json
 tileset/sys/Refmap-TileA5.png
 tileset/sys/Refmap-TileA5.png.metadata.json
 tileset/sys/Refmap-TileB.png
@@ -682,6 +683,5 @@ tileset/sys/Refmap-TileD.png
 tileset/sys/Refmap-TileD.png.metadata.json
 tileset/sys/Refmap-TileE.png
 tileset/sys/Refmap-TileE.png.metadata.json
-vehicles.json
 windowskin/sys/LastPhantasm.png
 windowskin/sys/LastPhantasmScanlines.png
