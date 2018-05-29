@@ -80,6 +80,9 @@ class MapScreen(val game: RpgGame)
   var cameraFollowedEntity: Option[Entity] = None
 
   def setPlayerLoc(loc: MapLoc): Unit = {
+    //Save old FaceDirection
+    val oldFaceDirection = if (allEntities.contains(EntitySpec.playerEntityId)) playerEntity.dir else 0
+
     mapAndAssetsOption.map(_.dispose())
     mapAndAssetsOption = None
 
@@ -106,6 +109,7 @@ class MapScreen(val game: RpgGame)
     allEntities.update(EntitySpec.playerEntityId, new PlayerEntity(game, this))
     playerEntity.x = loc.x
     playerEntity.y = loc.y
+    playerEntity.dir = oldFaceDirection
     playerEntity.mapName = Some(loc.map)
 
     playerEntity.updateSprite()

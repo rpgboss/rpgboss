@@ -44,25 +44,32 @@ case class Condition(
     import ConditionType._
     import EventJavascript._
     ConditionType(conditionTypeId) match {
-      case IsTrue => intValue1.rawJs
+      case IsTrue => if (!negate) intValue1.rawJs else RawJs("!%s".format(intValue1.rawJs.exp))
       case NumericComparison =>
         applyOperator(
             intValue1.rawJs,
             ComparisonOperator(operatorId).jsOperator,
-            intValue2.rawJs)
+            intValue2.rawJs,
+            negate)
       case HasItemsInInventory =>
         applyOperator(
             jsCall("game.countItems", intValue1),
             ComparisonOperator.GE.jsOperator,
-            intValue2.rawJs)
+            intValue2.rawJs,
+            negate)
       case HasCharacterInParty =>
-        RawJs("""game.getIntArray(game.PARTY()).indexOf(%s) != -1""".format(
+        if (!negate)
+          RawJs("""game.getIntArray(game.PARTY()).indexOf(%s) != -1""".format(
+              intValue1.rawJs.exp))
+        else
+          RawJs("""game.getIntArray(game.PARTY()).indexOf(%s) == -1""".format(
             intValue1.rawJs.exp))
       case EnemyLifePercentage =>
         applyOperator(
             jsCall("game.getEnemyLifePercentage", intValue1),
             ComparisonOperator(operatorId).jsOperator,
-            intValue2.rawJs)
+            intValue2.rawJs,
+            negate)
     }
   }
 }
