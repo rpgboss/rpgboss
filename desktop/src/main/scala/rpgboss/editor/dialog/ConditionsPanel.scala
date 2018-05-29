@@ -52,7 +52,7 @@ class ConditionsPanel(
 
     new BoxPanel(Orientation.Horizontal) {
       contents += new BoxPanel(Orientation.Vertical) {
-        contents += boolField(getMessage("NOT"), element.negate, element.negate = _)
+        contents += boolField(getMessage("NOT"), element.negate,(x) => element.negate = x )
 
         contents += new BoxPanel(Orientation.Vertical) {
           ConditionType(element.conditionTypeId) match {

@@ -57,9 +57,18 @@ object EventJavascript {
   def applyOperator(
       operand1: RawJs,
       operator: String,
-      operand2: RawJs): RawJs =
-        RawJs("%s %s %s".format(
-            operand1.exp,
-            operator,
-            operand2.exp))
+      operand2: RawJs,
+      negate : Boolean = false): RawJs =
+    {
+      if(!negate)
+        RawJs ("%s %s %s".format (
+        operand1.exp,
+        operator,
+        operand2.exp) )
+      else
+        RawJs ("!(%s %s %s)".format (
+          operand1.exp,
+          operator,
+          operand2.exp) )
+    }
 }
