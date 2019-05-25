@@ -2,6 +2,8 @@ rpgboss-editor
 ==============
 
 [![Build Status](https://travis-ci.org/rpgboss/rpgboss.svg?branch=master)](https://travis-ci.org/rpgboss/rpgboss)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/rpgboss/rpgboss.svg)](http://isitmaintained.com/project/rpgboss/rpgboss "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/rpgboss/rpgboss.svg)](http://isitmaintained.com/project/rpgboss/rpgboss "Percentage of issues still open")
 
 RPG game editor. Runs on Windows, Linux, and Mac. Authored games eventually will run on mobile platforms also. Based on libgdx.
 
